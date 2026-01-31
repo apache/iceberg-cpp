@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_e567eb46dbe88aaa1fd4ccb3586c5e69" kind="dir">
+    <compoundname>iceberg/catalog</compoundname>
+    <innerdir refid="dir_babd9bb2d97b09926a56ad8ae647b0f2">iceberg/catalog/memory</innerdir>
+    <innerdir refid="dir_3772e67070704cbb8771b4d409046ed1">iceberg/catalog/rest</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/"/>
+  </compounddef>
+</doxygen>

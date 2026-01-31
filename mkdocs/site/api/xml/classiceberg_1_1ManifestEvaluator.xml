@@ -1,0 +1,241 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestEvaluator" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestEvaluator</compoundname>
+    <includes refid="manifest__evaluator_8h" local="no">manifest_evaluator.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestEvaluator_1af7585487423527294b5413bc673fc092" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::ManifestEvaluator::expr_</definition>
+        <argsstring></argsstring>
+        <name>expr_</name>
+        <qualifiedname>iceberg::ManifestEvaluator::expr_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.h" line="79" column="19" bodyfile="iceberg/expression/manifest_evaluator.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvaluator_1a46877150b06092f9a38959cc3cd060d2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestEvaluator" kindref="compound">ManifestEvaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestEvaluator &gt; &gt; iceberg::ManifestEvaluator::MakeRowFilter</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const Schema &amp;schema, bool case_sensitive=true)</argsstring>
+        <name>MakeRowFilter</name>
+        <qualifiedname>iceberg::ManifestEvaluator::MakeRowFilter</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Make a manifest evaluator for RowFilter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The expression to evaluate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema of the table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether field name matching is case-sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.h" line="53" column="17" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="355" bodyend="361"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvaluator_1a3f416c5240ba68c30d22063ce8cf04e2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestEvaluator" kindref="compound">ManifestEvaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestEvaluator &gt; &gt; iceberg::ManifestEvaluator::MakePartitionFilter</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const Schema &amp;schema, bool case_sensitive=true)</argsstring>
+        <name>MakePartitionFilter</name>
+        <qualifiedname>iceberg::ManifestEvaluator::MakePartitionFilter</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Make a manifest evaluator for PartitionFilter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The expression to evaluate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema of the table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether field name matching is case-sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.h" line="63" column="17" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="363" bodyend="373"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvaluator_1aae1beee6b28093a2b3b63147529d3800" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestEvaluator::~ManifestEvaluator</definition>
+        <argsstring>()</argsstring>
+        <name>~ManifestEvaluator</name>
+        <qualifiedname>iceberg::ManifestEvaluator::~ManifestEvaluator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.h" line="67" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvaluator_1a0bfce9595781cb8bdfe4186e9fd448d8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvaluator::Evaluate</definition>
+        <argsstring>(const ManifestFile &amp;manifest) const</argsstring>
+        <name>Evaluate</name>
+        <qualifiedname>iceberg::ManifestEvaluator::Evaluate</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+<para>Evaluate the expression against a manifest. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest to evaluate </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the row matches the expression, false otherwise, or error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.h" line="73" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="375" bodyend="381"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvaluator_1a3aa4c8f1a0e3232ee47357d7a5dbc40d" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestEvaluator::ManifestEvaluator</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr)</argsstring>
+        <name>ManifestEvaluator</name>
+        <qualifiedname>iceberg::ManifestEvaluator::ManifestEvaluator</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.h" line="76" column="12" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="350" bodyend="351"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Evaluates an <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> against manifest. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="note"><para>: The evaluator is thread-safe. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="iceberg/expression/manifest_evaluator.h" line="45" column="1" bodyfile="iceberg/expression/manifest_evaluator.h" bodystart="45" bodyend="80"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestEvaluator_1a0bfce9595781cb8bdfe4186e9fd448d8" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvaluator</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1ManifestEvaluator_1af7585487423527294b5413bc673fc092" prot="private" virt="non-virtual"><scope>iceberg::ManifestEvaluator</scope><name>expr_</name></member>
+      <member refid="classiceberg_1_1ManifestEvaluator_1a3f416c5240ba68c30d22063ce8cf04e2" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvaluator</scope><name>MakePartitionFilter</name></member>
+      <member refid="classiceberg_1_1ManifestEvaluator_1a46877150b06092f9a38959cc3cd060d2" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvaluator</scope><name>MakeRowFilter</name></member>
+      <member refid="classiceberg_1_1ManifestEvaluator_1a3aa4c8f1a0e3232ee47357d7a5dbc40d" prot="private" virt="non-virtual"><scope>iceberg::ManifestEvaluator</scope><name>ManifestEvaluator</name></member>
+      <member refid="classiceberg_1_1ManifestEvaluator_1aae1beee6b28093a2b3b63147529d3800" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvaluator</scope><name>~ManifestEvaluator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdatePartitionSpec_1_1TransformKeyHash" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::UpdatePartitionSpec::TransformKeyHash</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1UpdatePartitionSpec_1_1TransformKeyHash_1a62fb7d73b53ab826949f1d0f1a22f27e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::UpdatePartitionSpec::TransformKeyHash::operator()</definition>
+        <argsstring>(const TransformKey &amp;key) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::TransformKeyHash::operator()</qualifiedname>
+        <param>
+          <type>const TransformKey &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="117" column="12" bodyfile="iceberg/update/update_partition_spec.h" bodystart="117" bodyend="119"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Hash function for TransformKey. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/update/update_partition_spec.h" line="116" column="3" bodyfile="iceberg/update/update_partition_spec.h" bodystart="116" bodyend="120"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdatePartitionSpec_1_1TransformKeyHash_1a62fb7d73b53ab826949f1d0f1a22f27e" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec::TransformKeyHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

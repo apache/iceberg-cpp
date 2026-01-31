@@ -1,0 +1,530 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="avro__schema__util__internal_8h" kind="file" language="C++">
+    <compoundname>avro_schema_util_internal.h</compoundname>
+    <includes local="no">stack</includes>
+    <includes local="no">avro/Node.hh</includes>
+    <includes refid="name__mapping_8h" local="yes">iceberg/name_mapping.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="schema__util_8h" local="yes">iceberg/schema_util.h</includes>
+    <includes refid="type_8h" local="yes">iceberg/type.h</includes>
+    <includedby refid="avro__data__util_8cc" local="yes">iceberg/avro/avro_data_util.cc</includedby>
+    <includedby refid="avro__direct__decoder_8cc" local="yes">iceberg/avro/avro_direct_decoder.cc</includedby>
+    <includedby refid="avro__reader_8cc" local="yes">iceberg/avro/avro_reader.cc</includedby>
+    <includedby refid="avro__register_8cc" local="yes">iceberg/avro/avro_register.cc</includedby>
+    <includedby refid="avro__schema__util_8cc" local="yes">iceberg/avro/avro_schema_util.cc</includedby>
+    <includedby refid="avro__writer_8cc" local="yes">iceberg/avro/avro_writer.cc</includedby>
+    <includedby refid="avro__data__test_8cc" local="yes">iceberg/test/avro_data_test.cc</includedby>
+    <includedby refid="avro__schema__test_8cc" local="yes">iceberg/test/avro_schema_test.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>iceberg/avro/avro_schema_util_internal.h</label>
+        <link refid="avro__schema__util__internal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="4">
+        <label>iceberg/name_mapping.h</label>
+        <link refid="name__mapping_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/schema.h</label>
+        <link refid="schema_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/schema_util.h</label>
+        <link refid="schema__util_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="41">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>iceberg/util/int128.h</label>
+        <link refid="int128_8h"/>
+      </node>
+      <node id="25">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>iceberg/util/uuid.h</label>
+        <link refid="uuid_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>algorithm</label>
+      </node>
+      <node id="24">
+        <label>array</label>
+      </node>
+      <node id="3">
+        <label>avro/Node.hh</label>
+      </node>
+      <node id="29">
+        <label>cassert</label>
+      </node>
+      <node id="34">
+        <label>charconv</label>
+      </node>
+      <node id="40">
+        <label>compare</label>
+      </node>
+      <node id="26">
+        <label>concepts</label>
+      </node>
+      <node id="18">
+        <label>cstdint</label>
+      </node>
+      <node id="15">
+        <label>expected</label>
+      </node>
+      <node id="16">
+        <label>format</label>
+      </node>
+      <node id="5">
+        <label>functional</label>
+      </node>
+      <node id="42">
+        <label>iosfwd</label>
+      </node>
+      <node id="6">
+        <label>memory</label>
+      </node>
+      <node id="27">
+        <label>mutex</label>
+      </node>
+      <node id="7">
+        <label>optional</label>
+      </node>
+      <node id="35">
+        <label>ranges</label>
+      </node>
+      <node id="8">
+        <label>span</label>
+      </node>
+      <node id="2">
+        <label>stack</label>
+      </node>
+      <node id="31">
+        <label>stdexcept</label>
+      </node>
+      <node id="9">
+        <label>string</label>
+      </node>
+      <node id="20">
+        <label>string_view</label>
+      </node>
+      <node id="43">
+        <label>type_traits</label>
+      </node>
+      <node id="36">
+        <label>typeinfo</label>
+      </node>
+      <node id="10">
+        <label>unordered_map</label>
+      </node>
+      <node id="11">
+        <label>unordered_set</label>
+      </node>
+      <node id="38">
+        <label>variant</label>
+      </node>
+      <node id="12">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structiceberg_1_1avro_1_1MapLogicalType" prot="public">iceberg::avro::MapLogicalType</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor" prot="public">iceberg::avro::ToAvroNodeVisitor</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1HasIdVisitor" prot="public">iceberg::avro::HasIdVisitor</innerclass>
+    <innernamespace refid="namespaceavro">avro</innernamespace>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1avro">iceberg::avro</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stack&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;avro/Node.hh&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/name_mapping.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/schema_util.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type_8h" kindref="compound">iceberg/type.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">avro<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">Schema;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">ValidSchema;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>avro</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::avro<sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="structiceberg_1_1avro_1_1MapLogicalType" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1avro_1_1MapLogicalType" kindref="compound">MapLogicalType</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::avro::CustomLogicalType<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1avro_1_1MapLogicalType" kindref="compound">MapLogicalType</ref>()<sp/>:<sp/>::avro::CustomLogicalType(</highlight><highlight class="stringliteral">&quot;map&quot;</highlight><highlight class="normal">)<sp/>{}</highlight></codeline>
+<codeline lineno="40"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor" kindref="compound">ToAvroNodeVisitor</ref><sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>Status<sp/>Visit(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1BooleanType" kindref="compound">BooleanType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1IntType" kindref="compound">IntType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1LongType" kindref="compound">LongType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1FloatType" kindref="compound">FloatType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1DoubleType" kindref="compound">DoubleType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1DecimalType" kindref="compound">DecimalType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1DateType" kindref="compound">DateType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TimeType" kindref="compound">TimeType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TimestampType" kindref="compound">TimestampType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TimestampTzType" kindref="compound">TimestampTzType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1StringType" kindref="compound">StringType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1UuidType" kindref="compound">UuidType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1FixedType" kindref="compound">FixedType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1BinaryType" kindref="compound">BinaryType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref>&amp;<sp/>type,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="expression__visitor_8h_1adfd2545dd2069fa4ab5d30ea46813edc" kindref="member">Visit</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref>&amp;<sp/>field,<sp/>::avro::NodePtr*<sp/>node);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Store<sp/>recently<sp/>accessed<sp/>field<sp/>ids<sp/>on<sp/>the<sp/>current<sp/>visitor<sp/>path.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>std::stack&lt;int32_t&gt;<sp/>field_ids_;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="classiceberg_1_1avro_1_1HasIdVisitor" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1avro_1_1HasIdVisitor" kindref="compound">HasIdVisitor</ref><sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1avro_1_1HasIdVisitor" kindref="compound">HasIdVisitor</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1avro_1_1HasIdVisitor_1a4c0309e5edafca0324e393e56b688681" kindref="member">Visit</ref>(const<sp/>::avro::NodePtr&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1avro_1_1HasIdVisitor_1a4c0309e5edafca0324e393e56b688681" kindref="member">Visit</ref>(const<sp/>::avro::ValidSchema&amp;<sp/>schema);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1avro_1_1HasIdVisitor_1a4c0309e5edafca0324e393e56b688681" kindref="member">Visit</ref>(const<sp/>::avro::Schema&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="classiceberg_1_1avro_1_1HasIdVisitor_1a5bbf5d3157b559ebd1985927d828513c" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1avro_1_1HasIdVisitor_1a5bbf5d3157b559ebd1985927d828513c" kindref="member">AllHaveIds</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>total_fields_<sp/>==<sp/>fields_with_id_<sp/>&amp;&amp;<sp/>fields_with_id_<sp/>!=<sp/>0;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100" refid="classiceberg_1_1avro_1_1HasIdVisitor_1abff99eb2bed0babdbe49891ba0a453c7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1avro_1_1HasIdVisitor_1abff99eb2bed0babdbe49891ba0a453c7" kindref="member">HasNoIds</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>total_fields_<sp/>==<sp/>0;<sp/>}</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>Status<sp/>VisitRecord(const<sp/>::avro::NodePtr&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>Status<sp/>VisitArray(const<sp/>::avro::NodePtr&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>Status<sp/>VisitMap(const<sp/>::avro::NodePtr&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/>Status<sp/>VisitUnion(const<sp/>::avro::NodePtr&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Total<sp/>number<sp/>of<sp/>fields<sp/>visited.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>total_fields_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Number<sp/>of<sp/>fields<sp/>with<sp/>IDs.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>fields_with_id_<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal">Result&lt;SchemaProjection&gt;<sp/>Project(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>&amp;<sp/>expected_schema,</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>::avro::NodePtr&amp;<sp/>avro_node,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>prune_source);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal">std::string<sp/>ToString(const<sp/>::avro::NodePtr&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal">std::string<sp/>ToString(const<sp/>::avro::LogicalType&amp;<sp/>logical_type);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal">std::string<sp/>ToString(const<sp/>::avro::LogicalType::Type&amp;<sp/>logical_type);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>HasMapLogicalType(const<sp/>::avro::NodePtr&amp;<sp/>node);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ValidAvroName(std::string_view<sp/>name);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal">Result&lt;::avro::NodePtr&gt;<sp/>MakeAvroNodeWithFieldIds(const<sp/>::avro::NodePtr&amp;<sp/>original_node,</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref>&amp;<sp/>mapping);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal">std::string<sp/>SanitizeFieldName(std::string_view<sp/>field_name);</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::avro</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/avro/avro_schema_util_internal.h"/>
+  </compounddef>
+</doxygen>

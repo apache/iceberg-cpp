@@ -1,0 +1,1077 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="snapshot__summary__builder__test_8cc" kind="file" language="C++">
+    <compoundname>snapshot_summary_builder_test.cc</compoundname>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes refid="manifest__entry_8h" local="yes">iceberg/manifest/manifest_entry.h</includes>
+    <includes refid="manifest__list_8h" local="yes">iceberg/manifest/manifest_list.h</includes>
+    <includes refid="partition__spec_8h" local="yes">iceberg/partition_spec.h</includes>
+    <includes refid="partition__values_8h" local="yes">iceberg/row/partition_values.h</includes>
+    <includes refid="schema_8h" local="yes">iceberg/schema.h</includes>
+    <includes refid="schema__field_8h" local="yes">iceberg/schema_field.h</includes>
+    <includes refid="snapshot_8h" local="yes">iceberg/snapshot.h</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <includes refid="type_8h" local="yes">iceberg/type.h</includes>
+    <incdepgraph>
+      <node id="48">
+        <label>iceberg/constants.h</label>
+        <link refid="constants_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/file_format.h</label>
+        <link refid="file__format_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="3">
+        <label>iceberg/manifest/manifest_entry.h</label>
+        <link refid="manifest__entry_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>iceberg/manifest/manifest_list.h</label>
+        <link refid="manifest__list_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="50">
+        <label>iceberg/partition_field.h</label>
+        <link refid="partition__field_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>iceberg/partition_spec.h</label>
+        <link refid="partition__spec_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/row/partition_values.h</label>
+        <link refid="partition__values_8h"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>iceberg/row/struct_like.h</label>
+        <link refid="struct__like_8h"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>iceberg/schema.h</label>
+        <link refid="schema_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="60">
+        <label>iceberg/snapshot.h</label>
+        <link refid="snapshot_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>iceberg/table_metadata.h</label>
+        <link refid="table__metadata_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>iceberg/table_properties.h</label>
+        <link refid="table__properties_8h_source"/>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+      </node>
+      <node id="61">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/snapshot_summary_builder_test.cc</label>
+        <link refid="snapshot__summary__builder__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="55">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>iceberg/util/int128.h</label>
+        <link refid="int128_8h"/>
+      </node>
+      <node id="34">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>iceberg/util/timepoint.h</label>
+        <link refid="timepoint_8h_source"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>iceberg/util/uuid.h</label>
+        <link refid="uuid_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>algorithm</label>
+      </node>
+      <node id="29">
+        <label>array</label>
+      </node>
+      <node id="38">
+        <label>cassert</label>
+      </node>
+      <node id="19">
+        <label>charconv</label>
+      </node>
+      <node id="58">
+        <label>chrono</label>
+      </node>
+      <node id="26">
+        <label>compare</label>
+      </node>
+      <node id="35">
+        <label>concepts</label>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
+      <node id="15">
+        <label>expected</label>
+      </node>
+      <node id="16">
+        <label>format</label>
+      </node>
+      <node id="23">
+        <label>functional</label>
+      </node>
+      <node id="62">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="2">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="42">
+        <label>iosfwd</label>
+      </node>
+      <node id="53">
+        <label>limits</label>
+      </node>
+      <node id="5">
+        <label>map</label>
+      </node>
+      <node id="6">
+        <label>memory</label>
+      </node>
+      <node id="36">
+        <label>mutex</label>
+      </node>
+      <node id="7">
+        <label>optional</label>
+      </node>
+      <node id="20">
+        <label>ranges</label>
+      </node>
+      <node id="24">
+        <label>span</label>
+      </node>
+      <node id="40">
+        <label>stdexcept</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>string_view</label>
+      </node>
+      <node id="43">
+        <label>type_traits</label>
+      </node>
+      <node id="21">
+        <label>typeinfo</label>
+      </node>
+      <node id="30">
+        <label>unordered_map</label>
+      </node>
+      <node id="54">
+        <label>unordered_set</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="27">
+        <label>variant</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1SnapshotSummaryBuilderTest" prot="public">iceberg::SnapshotSummaryBuilderTest</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="manifest__entry_8h" kindref="compound">iceberg/manifest/manifest_entry.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="manifest__list_8h" kindref="compound">iceberg/manifest/manifest_list.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="partition__spec_8h" kindref="compound">iceberg/partition_spec.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="partition__values_8h" kindref="compound">iceberg/row/partition_values.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="schema_8h" kindref="compound">iceberg/schema.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="schema__field_8h" kindref="compound">iceberg/schema_field.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/snapshot.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type_8h" kindref="compound">iceberg/type.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34" refid="classiceberg_1_1SnapshotSummaryBuilderTest" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1SnapshotSummaryBuilderTest" kindref="compound">SnapshotSummaryBuilderTest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::Test<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>SetUp()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Create<sp/>a<sp/>simple<sp/>schema</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/>schema_<sp/>=<sp/>std::make_shared&lt;Schema&gt;(std::vector&lt;SchemaField&gt;{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>()),</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(2,<sp/></highlight><highlight class="stringliteral">&quot;data&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">()),</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Create<sp/>unpartitioned<sp/>spec</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>spec_<sp/>=<sp/><ref refid="classiceberg_1_1PartitionSpec_1a2955a97e29cf0637fa5275b031b198dc" kindref="member">PartitionSpec::Unpartitioned</ref>();</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>CreateDataFile(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>path,<sp/>int64_t<sp/>size,<sp/>int64_t<sp/>record_count)<sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>file;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" kindref="member">content</ref><sp/>=<sp/>DataFile::Content::kData;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" kindref="member">file_path</ref><sp/>=<sp/>path;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a368bc28fe2db97e3ec6001ff810cb527" kindref="member">file_format</ref><sp/>=<sp/>FileFormatType::kParquet;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a3b73f63230f0fd255c787221eec1967a" kindref="member">file_size_in_bytes</ref><sp/>=<sp/>size;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a45beea978f69e41e67719c532c935141" kindref="member">record_count</ref><sp/>=<sp/>record_count;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a42b8804daaa21ad80279831a1fd9eaf1" kindref="member">partition</ref><sp/>=<sp/><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>{};</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>file;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>CreatePosDeleteFile(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>path,<sp/>int64_t<sp/>size,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>record_count)<sp/>{</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>file;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" kindref="member">content</ref><sp/>=<sp/>DataFile::Content::kPositionDeletes;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" kindref="member">file_path</ref><sp/>=<sp/>path;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a368bc28fe2db97e3ec6001ff810cb527" kindref="member">file_format</ref><sp/>=<sp/>FileFormatType::kParquet;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a3b73f63230f0fd255c787221eec1967a" kindref="member">file_size_in_bytes</ref><sp/>=<sp/>size;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a45beea978f69e41e67719c532c935141" kindref="member">record_count</ref><sp/>=<sp/>record_count;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a42b8804daaa21ad80279831a1fd9eaf1" kindref="member">partition</ref><sp/>=<sp/><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>{};</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>file;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>CreateEqDeleteFile(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>path,<sp/>int64_t<sp/>size,</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>record_count)<sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>file;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" kindref="member">content</ref><sp/>=<sp/>DataFile::Content::kEqualityDeletes;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" kindref="member">file_path</ref><sp/>=<sp/>path;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a368bc28fe2db97e3ec6001ff810cb527" kindref="member">file_format</ref><sp/>=<sp/>FileFormatType::kParquet;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a3b73f63230f0fd255c787221eec1967a" kindref="member">file_size_in_bytes</ref><sp/>=<sp/>size;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a45beea978f69e41e67719c532c935141" kindref="member">record_count</ref><sp/>=<sp/>record_count;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a42b8804daaa21ad80279831a1fd9eaf1" kindref="member">partition</ref><sp/>=<sp/><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>{};</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a4d44d6ae245ac89a8a6fa3f39ec518ed" kindref="member">equality_ids</ref><sp/>=<sp/>{1};<sp/><sp/></highlight><highlight class="comment">//<sp/>Delete<sp/>on<sp/>column<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>file;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>CreateDeletionVector(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>path,<sp/>int64_t<sp/>size,</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>record_count)<sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>file;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" kindref="member">content</ref><sp/>=<sp/>DataFile::Content::kPositionDeletes;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" kindref="member">file_path</ref><sp/>=<sp/>path;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a368bc28fe2db97e3ec6001ff810cb527" kindref="member">file_format</ref><sp/>=<sp/>FileFormatType::kPuffin;<sp/><sp/></highlight><highlight class="comment">//<sp/>DVs<sp/>use<sp/>Puffin<sp/>format</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a3b73f63230f0fd255c787221eec1967a" kindref="member">file_size_in_bytes</ref><sp/>=<sp/>size;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a45beea978f69e41e67719c532c935141" kindref="member">record_count</ref><sp/>=<sp/>record_count;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>file.<ref refid="structiceberg_1_1DataFile_1a42b8804daaa21ad80279831a1fd9eaf1" kindref="member">partition</ref><sp/>=<sp/><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>{};</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>file;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Schema&gt;<sp/>schema_;</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;PartitionSpec&gt;<sp/>spec_;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>basic<sp/>file<sp/>addition</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal">TEST_F(<ref refid="classiceberg_1_1SnapshotSummaryBuilderTest" kindref="compound">SnapshotSummaryBuilderTest</ref>,<sp/>AddDataFile)<sp/>{</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotSummaryBuilder" kindref="compound">SnapshotSummaryBuilder</ref><sp/>builder;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data.parquet&quot;</highlight><highlight class="normal">,<sp/>1000,<sp/>100);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.<ref refid="classiceberg_1_1SnapshotSummaryBuilder_1a5b143effb1da9b3a86471d565fee3d9a" kindref="member">AddedFile</ref>(*spec_,<sp/>file),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.<ref refid="classiceberg_1_1SnapshotSummaryBuilder_1a882193f24962a5f7fe76b9c2d2230600" kindref="member">Build</ref>();</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;100&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1000&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" kindref="member">SnapshotSummaryFields::kDeletedDataFiles</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" kindref="member">SnapshotSummaryFields::kRemovedFileSize</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>basic<sp/>file<sp/>deletion</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>DeleteDataFile)<sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data.parquet&quot;</highlight><highlight class="normal">,<sp/>1000,<sp/>100);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.DeletedFile(*spec_,<sp/>file),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" kindref="member">SnapshotSummaryFields::kDeletedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ac33705014c833f33714170c7f14ccae6" kindref="member">SnapshotSummaryFields::kDeletedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;100&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" kindref="member">SnapshotSummaryFields::kRemovedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1000&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>adding<sp/>and<sp/>removing<sp/>files<sp/>together</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>AddAndDeleteFiles)<sp/>{</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file_a<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data-a.parquet&quot;</highlight><highlight class="normal">,<sp/>500,<sp/>50);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file_b<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data-b.parquet&quot;</highlight><highlight class="normal">,<sp/>1000,<sp/>100);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>file_a),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.DeletedFile(*spec_,<sp/>file_b),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;50&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;500&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" kindref="member">SnapshotSummaryFields::kDeletedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ac33705014c833f33714170c7f14ccae6" kindref="member">SnapshotSummaryFields::kDeletedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;100&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" kindref="member">SnapshotSummaryFields::kRemovedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1000&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>position<sp/>delete<sp/>files</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>AddPositionDeleteFile)<sp/>{</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>delete_file<sp/>=<sp/>CreatePosDeleteFile(</highlight><highlight class="stringliteral">&quot;/path/to/deletes.parquet&quot;</highlight><highlight class="normal">,<sp/>100,<sp/>10);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>delete_file),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" kindref="member">SnapshotSummaryFields::kAddedPosDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" kindref="member">SnapshotSummaryFields::kAddedDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a380bd771050985107b9eedf47ada2971" kindref="member">SnapshotSummaryFields::kAddedPosDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;10&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;100&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>equality<sp/>delete<sp/>files</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>AddEqualityDeleteFile)<sp/>{</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>delete_file<sp/>=<sp/>CreateEqDeleteFile(</highlight><highlight class="stringliteral">&quot;/path/to/eq-deletes.parquet&quot;</highlight><highlight class="normal">,<sp/>100,<sp/>10);</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>delete_file),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a4c932bf17d7418013939fdd7b802f123" kindref="member">SnapshotSummaryFields::kAddedEqDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" kindref="member">SnapshotSummaryFields::kAddedDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a98f4256862a48cea377ecc2da11d48d3" kindref="member">SnapshotSummaryFields::kAddedEqDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;10&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;100&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" kindref="member">SnapshotSummaryFields::kAddedPosDeleteFiles</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>deletion<sp/>vectors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>AddDeletionVector)<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>dv<sp/>=<sp/>CreateDeletionVector(</highlight><highlight class="stringliteral">&quot;/path/to/dv.puffin&quot;</highlight><highlight class="normal">,<sp/>50,<sp/>5);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>dv),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a5080e87bce473ae588c774f534e2001a" kindref="member">SnapshotSummaryFields::kAddedDVs</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" kindref="member">SnapshotSummaryFields::kAddedDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a380bd771050985107b9eedf47ada2971" kindref="member">SnapshotSummaryFields::kAddedPosDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;5&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;50&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" kindref="member">SnapshotSummaryFields::kAddedPosDeleteFiles</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>removing<sp/>deletion<sp/>vectors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>RemoveDeletionVector)<sp/>{</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>dv<sp/>=<sp/>CreateDeletionVector(</highlight><highlight class="stringliteral">&quot;/path/to/dv.puffin&quot;</highlight><highlight class="normal">,<sp/>50,<sp/>5);</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.DeletedFile(*spec_,<sp/>dv),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a303e5e4d65a75816ee5c883e146bc4e5" kindref="member">SnapshotSummaryFields::kRemovedDVs</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9d24f8c6cbc618551b06cbb442fc3648" kindref="member">SnapshotSummaryFields::kRemovedDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a7ea7416ee086d74d4ccb7259d17f55ab" kindref="member">SnapshotSummaryFields::kRemovedPosDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;5&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" kindref="member">SnapshotSummaryFields::kRemovedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;50&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>duplicate<sp/>delete<sp/>tracking</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>DuplicateDeletes)<sp/>{</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/>builder.IncrementDuplicateDeletes(3);</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1aedd02877d175b0dfa88e9e5219ffd395" kindref="member">SnapshotSummaryFields::kDeletedDuplicatedFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;3&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>custom<sp/>properties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>CustomProperties)<sp/>{</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/>builder.Set(</highlight><highlight class="stringliteral">&quot;custom-key&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;custom-value&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/>builder.Set(</highlight><highlight class="stringliteral">&quot;another-key&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;another-value&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[</highlight><highlight class="stringliteral">&quot;custom-key&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;custom-value&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[</highlight><highlight class="stringliteral">&quot;another-key&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;another-value&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="236"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>merging<sp/>builders</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="239"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>MergeBuilders)<sp/>{</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder1;</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder2;</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file1<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data1.parquet&quot;</highlight><highlight class="normal">,<sp/>500,<sp/>50);</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file2<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data2.parquet&quot;</highlight><highlight class="normal">,<sp/>1000,<sp/>100);</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"></highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder1.AddedFile(*spec_,<sp/>file1),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder2.AddedFile(*spec_,<sp/>file2),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/>builder1.Set(</highlight><highlight class="stringliteral">&quot;custom-prop&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;value1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/>builder2.Set(</highlight><highlight class="stringliteral">&quot;custom-prop&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;value2&quot;</highlight><highlight class="normal">);<sp/><sp/></highlight><highlight class="comment">//<sp/>Should<sp/>override</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/>builder1.Merge(builder2);</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder1.Build();</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;2&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;150&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1500&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[</highlight><highlight class="stringliteral">&quot;custom-prop&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;value2&quot;</highlight><highlight class="normal">);<sp/><sp/></highlight><highlight class="comment">//<sp/>Should<sp/>be<sp/>overridden</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"></highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>manifest<sp/>addition</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="263"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>AddManifest)<sp/>{</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>First<sp/>add<sp/>a<sp/>file<sp/>directly</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data.parquet&quot;</highlight><highlight class="normal">,<sp/>1000,<sp/>100);</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>file),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Create<sp/>a<sp/>manifest</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/>ManifestFile<sp/>manifest;</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/>manifest.content<sp/>=<sp/>ManifestContent::kData;</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/>manifest.added_files_count<sp/>=<sp/>5;</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/>manifest.added_rows_count<sp/>=<sp/>500;</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/>manifest.deleted_files_count<sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/>manifest.deleted_rows_count<sp/>=<sp/>200;</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Add<sp/>manifest<sp/>(this<sp/>should<sp/>clear<sp/>partition<sp/>metrics)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/>builder.AddedManifest(manifest);</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Should<sp/>have<sp/>totals<sp/>from<sp/>both<sp/>file<sp/>and<sp/>manifest</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;6&quot;</highlight><highlight class="normal">);<sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>+<sp/>5</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;600&quot;</highlight><highlight class="normal">);<sp/><sp/></highlight><highlight class="comment">//<sp/>100<sp/>+<sp/>500</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" kindref="member">SnapshotSummaryFields::kDeletedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;2&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ac33705014c833f33714170c7f14ccae6" kindref="member">SnapshotSummaryFields::kDeletedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;200&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Should<sp/>not<sp/>have<sp/>partition<sp/>count<sp/>after<sp/>adding<sp/>manifest</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary.count(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3ec7042a3a98ef42acf4585f3188445a" kindref="member">SnapshotSummaryFields::kChangedPartitionCountProp</ref>),<sp/>0);</highlight></codeline>
+<codeline lineno="291"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"></highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>data<sp/>and<sp/>delete<sp/>files<sp/>together</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>MixedDataAndDeleteFiles)<sp/>{</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"></highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>data_file<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data.parquet&quot;</highlight><highlight class="normal">,<sp/>1000,<sp/>100);</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>pos_delete<sp/>=<sp/>CreatePosDeleteFile(</highlight><highlight class="stringliteral">&quot;/path/to/pos-delete.parquet&quot;</highlight><highlight class="normal">,<sp/>100,<sp/>10);</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>eq_delete<sp/>=<sp/>CreateEqDeleteFile(</highlight><highlight class="stringliteral">&quot;/path/to/eq-delete.parquet&quot;</highlight><highlight class="normal">,<sp/>200,<sp/>20);</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>data_file),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>pos_delete),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>eq_delete),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"></highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;100&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" kindref="member">SnapshotSummaryFields::kAddedDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;2&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" kindref="member">SnapshotSummaryFields::kAddedPosDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a4c932bf17d7418013939fdd7b802f123" kindref="member">SnapshotSummaryFields::kAddedEqDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a380bd771050985107b9eedf47ada2971" kindref="member">SnapshotSummaryFields::kAddedPosDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;10&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a98f4256862a48cea377ecc2da11d48d3" kindref="member">SnapshotSummaryFields::kAddedEqDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;20&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1300&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="315"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"></highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>multiple<sp/>files<sp/>of<sp/>the<sp/>same<sp/>type</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="318"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>MultipleFiles)<sp/>{</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"></highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>10;<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file<sp/>=</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data-&quot;</highlight><highlight class="normal"><sp/>+<sp/>std::to_string(i)<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;.parquet&quot;</highlight><highlight class="normal">,<sp/>100,<sp/>10);</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>file),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"></highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"></highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;10&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;100&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1000&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="332"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>removing<sp/>multiple<sp/>delete<sp/>files</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="335"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>RemoveMultipleDeleteFiles)<sp/>{</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"></highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>pos_delete1<sp/>=<sp/>CreatePosDeleteFile(</highlight><highlight class="stringliteral">&quot;/path/to/pos1.parquet&quot;</highlight><highlight class="normal">,<sp/>100,<sp/>10);</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>pos_delete2<sp/>=<sp/>CreatePosDeleteFile(</highlight><highlight class="stringliteral">&quot;/path/to/pos2.parquet&quot;</highlight><highlight class="normal">,<sp/>150,<sp/>15);</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>eq_delete<sp/>=<sp/>CreateEqDeleteFile(</highlight><highlight class="stringliteral">&quot;/path/to/eq.parquet&quot;</highlight><highlight class="normal">,<sp/>200,<sp/>20);</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"></highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.DeletedFile(*spec_,<sp/>pos_delete1),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.DeletedFile(*spec_,<sp/>pos_delete2),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.DeletedFile(*spec_,<sp/>eq_delete),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"></highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"></highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9d24f8c6cbc618551b06cbb442fc3648" kindref="member">SnapshotSummaryFields::kRemovedDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;3&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1afdde47b2cffe3f60e169b754bbfe439c" kindref="member">SnapshotSummaryFields::kRemovedPosDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;2&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a94fa76aad9462ef4f9e3e069c2a24645" kindref="member">SnapshotSummaryFields::kRemovedEqDeleteFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a7ea7416ee086d74d4ccb7259d17f55ab" kindref="member">SnapshotSummaryFields::kRemovedPosDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;25&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1adf57b3f74d94d4061040647dcb40de0a" kindref="member">SnapshotSummaryFields::kRemovedEqDeletes</ref>],<sp/></highlight><highlight class="stringliteral">&quot;20&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" kindref="member">SnapshotSummaryFields::kRemovedFileSize</ref>],<sp/></highlight><highlight class="stringliteral">&quot;450&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="354"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"></highlight></codeline>
+<codeline lineno="356"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>partition<sp/>summary<sp/>limit</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="357"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>PartitionSummaryLimit)<sp/>{</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/>builder.SetPartitionSummaryLimit(2);</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"></highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file1<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data1.parquet&quot;</highlight><highlight class="normal">,<sp/>100,<sp/>10);</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file2<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data2.parquet&quot;</highlight><highlight class="normal">,<sp/>200,<sp/>20);</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file3<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data3.parquet&quot;</highlight><highlight class="normal">,<sp/>300,<sp/>30);</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"></highlight></codeline>
+<codeline lineno="365"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>file1),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="366"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>file2),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder.AddedFile(*spec_,<sp/>file3),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"></highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="370"><highlight class="normal"></highlight></codeline>
+<codeline lineno="371"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>With<sp/>unpartitioned<sp/>spec,<sp/>all<sp/>files<sp/>go<sp/>to<sp/>the<sp/>same<sp/>partition<sp/>(&quot;&quot;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="372"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>So<sp/>we<sp/>should<sp/>have<sp/>changed<sp/>partition<sp/>count</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="373"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3ec7042a3a98ef42acf4585f3188445a" kindref="member">SnapshotSummaryFields::kChangedPartitionCountProp</ref>],<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="374"><highlight class="normal"></highlight></codeline>
+<codeline lineno="375"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Partition<sp/>summaries<sp/>should<sp/>be<sp/>included<sp/>because<sp/>1<sp/>&lt;=<sp/>2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="376"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ad878f008f1103bfe646a9a794f607bd3" kindref="member">SnapshotSummaryFields::kPartitionSummaryProp</ref>],<sp/></highlight><highlight class="stringliteral">&quot;true&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="377"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="378"><highlight class="normal"></highlight></codeline>
+<codeline lineno="379"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>merge<sp/>with<sp/>duplicates</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="380"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>MergeWithDuplicates)<sp/>{</highlight></codeline>
+<codeline lineno="381"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder1;</highlight></codeline>
+<codeline lineno="382"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder2;</highlight></codeline>
+<codeline lineno="383"><highlight class="normal"></highlight></codeline>
+<codeline lineno="384"><highlight class="normal"><sp/><sp/>builder1.IncrementDuplicateDeletes(5);</highlight></codeline>
+<codeline lineno="385"><highlight class="normal"><sp/><sp/>builder2.IncrementDuplicateDeletes(3);</highlight></codeline>
+<codeline lineno="386"><highlight class="normal"></highlight></codeline>
+<codeline lineno="387"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file1<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data1.parquet&quot;</highlight><highlight class="normal">,<sp/>500,<sp/>50);</highlight></codeline>
+<codeline lineno="388"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>file2<sp/>=<sp/>CreateDataFile(</highlight><highlight class="stringliteral">&quot;/path/to/data2.parquet&quot;</highlight><highlight class="normal">,<sp/>1000,<sp/>100);</highlight></codeline>
+<codeline lineno="389"><highlight class="normal"></highlight></codeline>
+<codeline lineno="390"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder1.AddedFile(*spec_,<sp/>file1),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="391"><highlight class="normal"><sp/><sp/>ASSERT_THAT(builder2.AddedFile(*spec_,<sp/>file2),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="392"><highlight class="normal"></highlight></codeline>
+<codeline lineno="393"><highlight class="normal"><sp/><sp/>builder1.Merge(builder2);</highlight></codeline>
+<codeline lineno="394"><highlight class="normal"></highlight></codeline>
+<codeline lineno="395"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder1.Build();</highlight></codeline>
+<codeline lineno="396"><highlight class="normal"></highlight></codeline>
+<codeline lineno="397"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1aedd02877d175b0dfa88e9e5219ffd395" kindref="member">SnapshotSummaryFields::kDeletedDuplicatedFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;8&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="398"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>],<sp/></highlight><highlight class="stringliteral">&quot;2&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="399"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>],<sp/></highlight><highlight class="stringliteral">&quot;150&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="400"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="401"><highlight class="normal"></highlight></codeline>
+<codeline lineno="402"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>only<sp/>custom<sp/>properties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="403"><highlight class="normal">TEST_F(SnapshotSummaryBuilderTest,<sp/>OnlyCustomProperties)<sp/>{</highlight></codeline>
+<codeline lineno="404"><highlight class="normal"><sp/><sp/>SnapshotSummaryBuilder<sp/>builder;</highlight></codeline>
+<codeline lineno="405"><highlight class="normal"></highlight></codeline>
+<codeline lineno="406"><highlight class="normal"><sp/><sp/>builder.Set(</highlight><highlight class="stringliteral">&quot;operation&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;append&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="407"><highlight class="normal"><sp/><sp/>builder.Set(</highlight><highlight class="stringliteral">&quot;engine-name&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;iceberg-cpp&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="408"><highlight class="normal"></highlight></codeline>
+<codeline lineno="409"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>summary<sp/>=<sp/>builder.Build();</highlight></codeline>
+<codeline lineno="410"><highlight class="normal"></highlight></codeline>
+<codeline lineno="411"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[</highlight><highlight class="stringliteral">&quot;operation&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;append&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="412"><highlight class="normal"><sp/><sp/>EXPECT_EQ(summary[</highlight><highlight class="stringliteral">&quot;engine-name&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;iceberg-cpp&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="413"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="414"><highlight class="normal"></highlight></codeline>
+<codeline lineno="415"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/snapshot_summary_builder_test.cc"/>
+  </compounddef>
+</doxygen>

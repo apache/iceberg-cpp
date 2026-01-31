@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="transaction_8h" kind="file" language="C++">
+    <compoundname>transaction.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">vector</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includedby refid="in__memory__catalog_8cc" local="yes">iceberg/catalog/memory/in_memory_catalog.cc</includedby>
+    <includedby refid="rest__catalog_8cc" local="yes">iceberg/catalog/rest/rest_catalog.cc</includedby>
+    <includedby refid="table_8cc" local="yes">iceberg/table.cc</includedby>
+    <includedby refid="in__memory__catalog__test_8cc" local="yes">iceberg/test/in_memory_catalog_test.cc</includedby>
+    <includedby refid="rest__catalog__test_8cc" local="yes">iceberg/test/rest_catalog_test.cc</includedby>
+    <includedby refid="set__snapshot__test_8cc" local="yes">iceberg/test/set_snapshot_test.cc</includedby>
+    <includedby refid="transaction__test_8cc" local="yes">iceberg/test/transaction_test.cc</includedby>
+    <includedby refid="update__partition__spec__test_8cc" local="yes">iceberg/test/update_partition_spec_test.cc</includedby>
+    <includedby refid="transaction_8cc" local="yes">iceberg/transaction.cc</includedby>
+    <includedby refid="expire__snapshots_8cc" local="yes">iceberg/update/expire_snapshots.cc</includedby>
+    <includedby refid="fast__append_8cc" local="yes">iceberg/update/fast_append.cc</includedby>
+    <includedby refid="pending__update_8cc" local="yes">iceberg/update/pending_update.cc</includedby>
+    <includedby refid="set__snapshot_8cc" local="yes">iceberg/update/set_snapshot.cc</includedby>
+    <includedby refid="snapshot__update_8cc" local="yes">iceberg/update/snapshot_update.cc</includedby>
+    <includedby refid="update__location_8cc" local="yes">iceberg/update/update_location.cc</includedby>
+    <includedby refid="update__partition__spec_8cc" local="yes">iceberg/update/update_partition_spec.cc</includedby>
+    <includedby refid="update__partition__statistics_8cc" local="yes">iceberg/update/update_partition_statistics.cc</includedby>
+    <includedby refid="update__properties_8cc" local="yes">iceberg/update/update_properties.cc</includedby>
+    <includedby refid="update__schema_8cc" local="yes">iceberg/update/update_schema.cc</includedby>
+    <includedby refid="update__snapshot__reference_8cc" local="yes">iceberg/update/update_snapshot_reference.cc</includedby>
+    <includedby refid="update__sort__order_8cc" local="yes">iceberg/update/update_sort_order.cc</includedby>
+    <includedby refid="update__statistics_8cc" local="yes">iceberg/update/update_statistics.cc</includedby>
+    <incdepgraph>
+      <node id="4">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="5">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/transaction.h</label>
+        <link refid="transaction_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="6">
+        <label>expected</label>
+      </node>
+      <node id="7">
+        <label>format</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="8">
+        <label>string</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1Transaction" prot="public">iceberg::Transaction</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="classiceberg_1_1Transaction" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::enable_shared_from_this&lt;Transaction&gt;<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>Kind<sp/>:<sp/>uint8_t<sp/>{<sp/>kCreate,<sp/>kUpdate<sp/>};</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Transaction" kindref="compound">~Transaction</ref>();</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::shared_ptr&lt;Transaction&gt;&gt;<sp/>Make(std::shared_ptr&lt;Table&gt;<sp/>table,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Kind<sp/>kind,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>auto_commit);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="classiceberg_1_1Transaction_1a7564979fbb0ecbaaf7d4795e10479b30" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;Table&gt;&amp;<sp/><ref refid="classiceberg_1_1Transaction_1a7564979fbb0ecbaaf7d4795e10479b30" kindref="member">table</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>table_;<sp/>}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>&amp;<sp/>current()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>std::string<sp/>MetadataFileLocation(std::string_view<sp/>filename)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Table&gt;&gt;<sp/>Commit();</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdatePartitionSpec&gt;&gt;<sp/>NewUpdatePartitionSpec();</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdateProperties&gt;&gt;<sp/>NewUpdateProperties();</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdateSortOrder&gt;&gt;<sp/>NewUpdateSortOrder();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdateSchema&gt;&gt;<sp/>NewUpdateSchema();</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;ExpireSnapshots&gt;&gt;<sp/>NewExpireSnapshots();</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdateStatistics&gt;&gt;<sp/>NewUpdateStatistics();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdatePartitionStatistics&gt;&gt;<sp/>NewUpdatePartitionStatistics();</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdateLocation&gt;&gt;<sp/>NewUpdateLocation();</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;SetSnapshot&gt;&gt;<sp/>NewSetSnapshot();</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;FastAppend&gt;&gt;<sp/>NewFastAppend();</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;UpdateSnapshotReference&gt;&gt;<sp/>NewUpdateSnapshotReference();</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref>(std::shared_ptr&lt;Table&gt;<sp/>table,<sp/>Kind<sp/>kind,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>auto_commit,</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::unique_ptr&lt;TableMetadataBuilder&gt;<sp/>metadata_builder);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>Status<sp/>AddUpdate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;PendingUpdate&gt;&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/>Status<sp/>Apply(<ref refid="classiceberg_1_1PendingUpdate" kindref="compound">PendingUpdate</ref>&amp;<sp/>updates);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Helper<sp/>methods<sp/>for<sp/>applying<sp/>different<sp/>types<sp/>of<sp/>updates</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyExpireSnapshots(<ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/>Status<sp/>ApplySetSnapshot(<ref refid="classiceberg_1_1SetSnapshot" kindref="compound">SetSnapshot</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateLocation(<ref refid="classiceberg_1_1UpdateLocation" kindref="compound">UpdateLocation</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdatePartitionSpec(<ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdatePartitionStatistics(<ref refid="classiceberg_1_1UpdatePartitionStatistics" kindref="compound">UpdatePartitionStatistics</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateProperties(<ref refid="classiceberg_1_1UpdateProperties" kindref="compound">UpdateProperties</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSchema(<ref refid="classiceberg_1_1UpdateSchema" kindref="compound">UpdateSchema</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSnapshot(<ref refid="classiceberg_1_1SnapshotUpdate" kindref="compound">SnapshotUpdate</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSnapshotReference(<ref refid="classiceberg_1_1UpdateSnapshotReference" kindref="compound">UpdateSnapshotReference</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSortOrder(<ref refid="classiceberg_1_1UpdateSortOrder" kindref="compound">UpdateSortOrder</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateStatistics(<ref refid="classiceberg_1_1UpdateStatistics" kindref="compound">UpdateStatistics</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1PendingUpdate" kindref="compound">PendingUpdate</ref>;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>table<sp/>that<sp/>this<sp/>transaction<sp/>will<sp/>update.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Table&gt;<sp/>table_;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>kind<sp/>of<sp/>this<sp/>transaction.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Kind<sp/>kind_;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Whether<sp/>to<sp/>auto-commit<sp/>the<sp/>transaction<sp/>when<sp/>updates<sp/>are<sp/>applied.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>useful<sp/>when<sp/>a<sp/>temporary<sp/>transaction<sp/>is<sp/>created<sp/>for<sp/>a<sp/>single<sp/>operation.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>auto_commit_;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>To<sp/>make<sp/>the<sp/>state<sp/>simple,<sp/>we<sp/>require<sp/>updates<sp/>are<sp/>added<sp/>and<sp/>committed<sp/>in<sp/>order.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>last_update_committed_<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Tracks<sp/>if<sp/>transaction<sp/>has<sp/>been<sp/>committed<sp/>to<sp/>prevent<sp/>double-commit</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>committed_<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Keep<sp/>track<sp/>of<sp/>all<sp/>created<sp/>pending<sp/>updates.<sp/>Use<sp/>weak_ptr<sp/>to<sp/>avoid<sp/>circular<sp/>references.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>is<sp/>useful<sp/>to<sp/>retry<sp/>failed<sp/>updates.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>std::vector&lt;std::weak_ptr&lt;PendingUpdate&gt;&gt;<sp/>pending_updates_;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Accumulated<sp/>updates<sp/>from<sp/>all<sp/>pending<sp/>updates.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableMetadataBuilder&gt;<sp/>metadata_builder_;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/transaction.h"/>
+  </compounddef>
+</doxygen>

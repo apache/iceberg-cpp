@@ -1,0 +1,727 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableScan" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::TableScan</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1DataTableScan" prot="public" virt="non-virtual">iceberg::DataTableScan</derivedcompoundref>
+    <includes refid="table__scan_8h" local="no">table_scan.h</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TableScan_1a82859b6ad01f78883f03c99378c9aa05" prot="protected" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;TableMetadata&gt; iceberg::TableScan::metadata_</definition>
+        <argsstring></argsstring>
+        <name>metadata_</name>
+        <qualifiedname>iceberg::TableScan::metadata_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="309" column="25" bodyfile="iceberg/table_scan.h" bodystart="309" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableScan_1a706e2b5c91c60a89df385d24ad5d2399" prot="protected" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;Schema&gt; iceberg::TableScan::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::TableScan::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="310" column="25" bodyfile="iceberg/table_scan.h" bodystart="310" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableScan_1aa806188a2ac9759f3a172f335f0d0162" prot="protected" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;FileIO&gt; iceberg::TableScan::io_</definition>
+        <argsstring></argsstring>
+        <name>io_</name>
+        <qualifiedname>iceberg::TableScan::io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="311" column="25" bodyfile="iceberg/table_scan.h" bodystart="311" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableScan_1a8e489e45902839a08ab76ad18f8ea5f2" prot="protected" static="no" mutable="no">
+        <type>const internal::TableScanContext</type>
+        <definition>const internal::TableScanContext iceberg::TableScan::context_</definition>
+        <argsstring></argsstring>
+        <name>context_</name>
+        <qualifiedname>iceberg::TableScan::context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="312" column="36" bodyfile="iceberg/table_scan.h" bodystart="312" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableScan_1a097a1d184db89e9685432b7ea9ca570b" prot="protected" static="no" mutable="yes">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TableScan::projected_schema_</definition>
+        <argsstring></argsstring>
+        <name>projected_schema_</name>
+        <qualifiedname>iceberg::TableScan::projected_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="313" column="27" bodyfile="iceberg/table_scan.h" bodystart="313" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a8c61c460814806a96031a5daae6d824b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>iceberg::TableScan::~TableScan</definition>
+        <argsstring>()</argsstring>
+        <name>~TableScan</name>
+        <qualifiedname>iceberg::TableScan::~TableScan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="273" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a2cc2acd4c4babdcd6fa51db2769da27f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; TableMetadata &gt; &amp; iceberg::TableScan::metadata</definition>
+        <argsstring>() const</argsstring>
+        <name>metadata</name>
+        <qualifiedname>iceberg::TableScan::metadata</qualifiedname>
+        <briefdescription>
+<para>Returns the table metadata being scanned. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="276" column="25" bodyfile="iceberg/table_scan.cc" bodystart="381" bodyend="381"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a132a6a7fdfaf3a5c9c9ad193d4d7e91f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt; iceberg::TableScan::snapshot</definition>
+        <argsstring>() const</argsstring>
+        <name>snapshot</name>
+        <qualifiedname>iceberg::TableScan::snapshot</qualifiedname>
+        <briefdescription>
+<para>Returns the snapshot to scan. If there is no snapshot, returns nullptr. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="279" column="10" bodyfile="iceberg/table_scan.cc" bodystart="383" bodyend="390"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a0c126aee72c822b3862b84517dc51e2b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::TableScan::schema</definition>
+        <argsstring>() const</argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::TableScan::schema</qualifiedname>
+        <briefdescription>
+<para>Returns the projected schema for the scan. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="282" column="10" bodyfile="iceberg/table_scan.cc" bodystart="392" bodyend="394"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a66d5d4c54b1af0d4912c39993c2f5720" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const internal::TableScanContext &amp;</type>
+        <definition>const internal::TableScanContext &amp; iceberg::TableScan::context</definition>
+        <argsstring>() const</argsstring>
+        <name>context</name>
+        <qualifiedname>iceberg::TableScan::context</qualifiedname>
+        <briefdescription>
+<para>Returns the scan context. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="285" column="36" bodyfile="iceberg/table_scan.cc" bodystart="396" bodyend="396"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a390effbf41d8465b4c604ee8e45834c0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; FileIO &gt; &amp; iceberg::TableScan::io</definition>
+        <argsstring>() const</argsstring>
+        <name>io</name>
+        <qualifiedname>iceberg::TableScan::io</qualifiedname>
+        <briefdescription>
+<para>Returns the file I/O instance used for reading files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="288" column="25" bodyfile="iceberg/table_scan.cc" bodystart="398" bodyend="398"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1ac55275136f3b7712325529a1ee3f2995" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Expression &gt; &amp; iceberg::TableScan::filter</definition>
+        <argsstring>() const</argsstring>
+        <name>filter</name>
+        <qualifiedname>iceberg::TableScan::filter</qualifiedname>
+        <briefdescription>
+<para>Returns this scan&apos;s filter expression. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="291" column="25" bodyfile="iceberg/table_scan.cc" bodystart="400" bodyend="406"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a6a9482354ac1979bf49df7482f1e6c2d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TableScan::is_case_sensitive</definition>
+        <argsstring>() const</argsstring>
+        <name>is_case_sensitive</name>
+        <qualifiedname>iceberg::TableScan::is_case_sensitive</qualifiedname>
+        <briefdescription>
+<para>Returns whether this scan is case-sensitive. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="294" column="8" bodyfile="iceberg/table_scan.cc" bodystart="408" bodyend="408"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1ad9875109e06d04d303a5a4140b4880dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &gt; &gt; &gt;</type>
+        <definition>virtual Result&lt; std::vector&lt; std::shared_ptr&lt; FileScanTask &gt; &gt; &gt; iceberg::TableScan::PlanFiles</definition>
+        <argsstring>() const =0</argsstring>
+        <name>PlanFiles</name>
+        <qualifiedname>iceberg::TableScan::PlanFiles</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DataTableScan_1a54e61ee382fa5df39683dd2351e11580">PlanFiles</reimplementedby>
+        <briefdescription>
+<para>Plans the scan tasks by resolving manifests and data files. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A Result containing scan tasks or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="298" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a3fc83d20b4ac4295813c975cb580d5a3" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableScan::TableScan</definition>
+        <argsstring>(std::shared_ptr&lt; TableMetadata &gt; metadata, std::shared_ptr&lt; Schema &gt; schema, std::shared_ptr&lt; FileIO &gt; io, internal::TableScanContext context)</argsstring>
+        <name>TableScan</name>
+        <qualifiedname>iceberg::TableScan::TableScan</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>internal::TableScanContext</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="301" column="3" bodyfile="iceberg/table_scan.cc" bodystart="371" bodyend="377"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1a1cd2e8bf8a11a52399277ba3134f41e0" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::reference_wrapper&lt; const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::reference_wrapper&lt; const std::shared_ptr&lt; Schema &gt; &gt; &gt; iceberg::TableScan::ResolveProjectedSchema</definition>
+        <argsstring>() const</argsstring>
+        <name>ResolveProjectedSchema</name>
+        <qualifiedname>iceberg::TableScan::ResolveProjectedSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>TODO(gangwu): port Java BaseScan.lazyColumnProjection to collect field ids from selected column names and bound references in the filter, and then create projected schema based on the collected field ids.</para>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="304" column="10" bodyfile="iceberg/table_scan.cc" bodystart="411" bodyend="429"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScan_1aff69ea2b8c9ff2c7e9bf14ee48854b52" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>const std::vector&lt; std::string &gt; &amp;</type>
+        <definition>const std::vector&lt; std::string &gt; &amp; iceberg::TableScan::ScanColumns</definition>
+        <argsstring>() const</argsstring>
+        <name>ScanColumns</name>
+        <qualifiedname>iceberg::TableScan::ScanColumns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="307" column="29" bodyfile="iceberg/table_scan.cc" bodystart="431" bodyend="433"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a configured scan operation on a table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::DataTableScan</label>
+        <link refid="classiceberg_1_1DataTableScan"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableScan</label>
+        <link refid="classiceberg_1_1TableScan"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="25">
+        <label>iceberg::ConfigBase&lt; TableProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="26" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="18">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="17">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="44">
+        <label>iceberg::BlobMetadata</label>
+        <link refid="structiceberg_1_1BlobMetadata"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="45" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="53">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="50">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="33">
+        <label>iceberg::MetadataLogEntry</label>
+        <link refid="structiceberg_1_1MetadataLogEntry"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>metadata_file</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>iceberg::PartitionStatisticsFile</label>
+        <link refid="structiceberg_1_1PartitionStatisticsFile"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg::Snapshot</label>
+        <link refid="structiceberg_1_1Snapshot"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>manifest_list</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>summary</edgelabel>
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg::SnapshotLogEntry</label>
+        <link refid="structiceberg_1_1SnapshotLogEntry"/>
+      </node>
+      <node id="39">
+        <label>iceberg::SnapshotRef</label>
+        <link refid="structiceberg_1_1SnapshotRef"/>
+        <childnode refid="19" relation="usage">
+          <edgelabel>kMainBranch</edgelabel>
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>iceberg::StatisticsFile</label>
+        <link refid="structiceberg_1_1StatisticsFile"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+        <childnode refid="43" relation="usage">
+          <edgelabel>blob_metadata</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::TableMetadata</label>
+        <link refid="structiceberg_1_1TableMetadata"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>kMinFormatVersions</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>location</edgelabel>
+          <edgelabel>table_uuid</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>schemas</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>partition_specs</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="27" relation="usage">
+          <edgelabel>snapshots</edgelabel>
+        </childnode>
+        <childnode refid="30" relation="usage">
+          <edgelabel>snapshot_log</edgelabel>
+        </childnode>
+        <childnode refid="32" relation="usage">
+          <edgelabel>metadata_log</edgelabel>
+        </childnode>
+        <childnode refid="34" relation="usage">
+          <edgelabel>sort_orders</edgelabel>
+        </childnode>
+        <childnode refid="37" relation="usage">
+          <edgelabel>refs</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>statistics</edgelabel>
+        </childnode>
+        <childnode refid="46" relation="usage">
+          <edgelabel>partition_statistics</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iceberg::TableProperties</label>
+        <link refid="classiceberg_1_1TableProperties"/>
+        <childnode refid="25" relation="public-inheritance">
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>kDefaultNameMapping</edgelabel>
+          <edgelabel>kMetricModeColumnConfPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnEnabledPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnFppPrefix</edgelabel>
+          <edgelabel>kParquetColumnStatsEnabledPrefix</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableScan</label>
+        <link refid="classiceberg_1_1TableScan"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>metadata_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>projected_schema_</edgelabel>
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="49" relation="usage">
+          <edgelabel>io_</edgelabel>
+        </childnode>
+        <childnode refid="51" relation="usage">
+          <edgelabel>context_</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>iceberg::internal::TableScanContext</label>
+        <childnode refid="52" relation="usage">
+          <edgelabel>filter</edgelabel>
+        </childnode>
+        <childnode refid="54" relation="usage">
+          <edgelabel>columns_to_keep_stats</edgelabel>
+        </childnode>
+        <childnode refid="55" relation="usage">
+          <edgelabel>selected_columns</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>projected_schema</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>options</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>branch</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="52">
+        <label>std::shared_ptr&lt; iceberg::Expression &gt;</label>
+        <childnode refid="53" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="49">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="50" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="23" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>std::shared_ptr&lt; iceberg::Snapshot &gt;</label>
+        <childnode refid="29" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="38">
+        <label>std::shared_ptr&lt; iceberg::SnapshotRef &gt;</label>
+        <childnode refid="39" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="35">
+        <label>std::shared_ptr&lt; iceberg::SortOrder &gt;</label>
+        <childnode refid="36" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::TableMetadata &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="47">
+        <label>std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt;</label>
+        <childnode refid="48" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>std::shared_ptr&lt; struct iceberg::StatisticsFile &gt;</label>
+        <childnode refid="42" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="20">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::string_view</label>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_map&lt; TypeId, int8_t &gt;</label>
+      </node>
+      <node id="37">
+        <label>std::unordered_map&lt; std::string, std::shared_ptr&lt; iceberg::SnapshotRef &gt; &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="38" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="26">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="54">
+        <label>std::unordered_set&lt; int32_t &gt;</label>
+      </node>
+      <node id="43">
+        <label>std::vector&lt; iceberg::BlobMetadata &gt;</label>
+        <childnode refid="44" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="32">
+        <label>std::vector&lt; iceberg::MetadataLogEntry &gt;</label>
+        <childnode refid="33" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="30">
+        <label>std::vector&lt; iceberg::SnapshotLogEntry &gt;</label>
+        <childnode refid="31" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="45">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="21">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::PartitionSpec &gt; &gt;</label>
+        <childnode refid="22" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Schema &gt; &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="27">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Snapshot &gt; &gt;</label>
+        <childnode refid="28" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="34">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::SortOrder &gt; &gt;</label>
+        <childnode refid="35" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="46">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt; &gt;</label>
+        <childnode refid="47" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="40">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::StatisticsFile &gt; &gt;</label>
+        <childnode refid="41" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="55">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_scan.h" line="271" column="1" bodyfile="iceberg/table_scan.h" bodystart="271" bodyend="314"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableScan_1a66d5d4c54b1af0d4912c39993c2f5720" prot="public" virt="non-virtual"><scope>iceberg::TableScan</scope><name>context</name></member>
+      <member refid="classiceberg_1_1TableScan_1a8e489e45902839a08ab76ad18f8ea5f2" prot="protected" virt="non-virtual"><scope>iceberg::TableScan</scope><name>context_</name></member>
+      <member refid="classiceberg_1_1TableScan_1ac55275136f3b7712325529a1ee3f2995" prot="public" virt="non-virtual"><scope>iceberg::TableScan</scope><name>filter</name></member>
+      <member refid="classiceberg_1_1TableScan_1a390effbf41d8465b4c604ee8e45834c0" prot="public" virt="non-virtual"><scope>iceberg::TableScan</scope><name>io</name></member>
+      <member refid="classiceberg_1_1TableScan_1aa806188a2ac9759f3a172f335f0d0162" prot="protected" virt="non-virtual"><scope>iceberg::TableScan</scope><name>io_</name></member>
+      <member refid="classiceberg_1_1TableScan_1a6a9482354ac1979bf49df7482f1e6c2d" prot="public" virt="non-virtual"><scope>iceberg::TableScan</scope><name>is_case_sensitive</name></member>
+      <member refid="classiceberg_1_1TableScan_1a2cc2acd4c4babdcd6fa51db2769da27f" prot="public" virt="non-virtual"><scope>iceberg::TableScan</scope><name>metadata</name></member>
+      <member refid="classiceberg_1_1TableScan_1a82859b6ad01f78883f03c99378c9aa05" prot="protected" virt="non-virtual"><scope>iceberg::TableScan</scope><name>metadata_</name></member>
+      <member refid="classiceberg_1_1TableScan_1ad9875109e06d04d303a5a4140b4880dc" prot="public" virt="pure-virtual"><scope>iceberg::TableScan</scope><name>PlanFiles</name></member>
+      <member refid="classiceberg_1_1TableScan_1a097a1d184db89e9685432b7ea9ca570b" prot="protected" virt="non-virtual"><scope>iceberg::TableScan</scope><name>projected_schema_</name></member>
+      <member refid="classiceberg_1_1TableScan_1a1cd2e8bf8a11a52399277ba3134f41e0" prot="protected" virt="non-virtual"><scope>iceberg::TableScan</scope><name>ResolveProjectedSchema</name></member>
+      <member refid="classiceberg_1_1TableScan_1aff69ea2b8c9ff2c7e9bf14ee48854b52" prot="protected" virt="virtual"><scope>iceberg::TableScan</scope><name>ScanColumns</name></member>
+      <member refid="classiceberg_1_1TableScan_1a0c126aee72c822b3862b84517dc51e2b" prot="public" virt="non-virtual"><scope>iceberg::TableScan</scope><name>schema</name></member>
+      <member refid="classiceberg_1_1TableScan_1a706e2b5c91c60a89df385d24ad5d2399" prot="protected" virt="non-virtual"><scope>iceberg::TableScan</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1TableScan_1a132a6a7fdfaf3a5c9c9ad193d4d7e91f" prot="public" virt="non-virtual"><scope>iceberg::TableScan</scope><name>snapshot</name></member>
+      <member refid="classiceberg_1_1TableScan_1a3fc83d20b4ac4295813c975cb580d5a3" prot="protected" virt="non-virtual"><scope>iceberg::TableScan</scope><name>TableScan</name></member>
+      <member refid="classiceberg_1_1TableScan_1a8c61c460814806a96031a5daae6d824b" prot="public" virt="virtual"><scope>iceberg::TableScan</scope><name>~TableScan</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

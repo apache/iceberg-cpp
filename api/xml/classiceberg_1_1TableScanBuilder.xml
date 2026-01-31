@@ -1,0 +1,799 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableScanBuilder" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TableScanBuilder</compoundname>
+    <basecompoundref refid="classiceberg_1_1ErrorCollector" prot="public" virt="non-virtual">iceberg::ErrorCollector</basecompoundref>
+    <includes refid="table__scan_8h" local="no">table_scan.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TableScanBuilder_1abf6be5d5b7b3da269def7f295489d918" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;TableMetadata&gt; iceberg::TableScanBuilder::metadata_</definition>
+        <argsstring></argsstring>
+        <name>metadata_</name>
+        <qualifiedname>iceberg::TableScanBuilder::metadata_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="264" column="19" bodyfile="iceberg/table_scan.h" bodystart="264" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableScanBuilder_1ab38c72547b177ef1d0348e315f525af9" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::TableScanBuilder::io_</definition>
+        <argsstring></argsstring>
+        <name>io_</name>
+        <qualifiedname>iceberg::TableScanBuilder::io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="265" column="19" bodyfile="iceberg/table_scan.h" bodystart="265" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableScanBuilder_1a5092da6f5ffe085016cafcfb782e32e5" prot="private" static="no" mutable="no">
+        <type>internal::TableScanContext</type>
+        <definition>internal::TableScanContext iceberg::TableScanBuilder::context_</definition>
+        <argsstring></argsstring>
+        <name>context_</name>
+        <qualifiedname>iceberg::TableScanBuilder::context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="266" column="30" bodyfile="iceberg/table_scan.h" bodystart="266" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableScanBuilder_1a77348fe0a1c7575384058f7270c73d6c" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TableScanBuilder::snapshot_schema_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_schema_</name>
+        <qualifiedname>iceberg::TableScanBuilder::snapshot_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="267" column="19" bodyfile="iceberg/table_scan.h" bodystart="267" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1abc6dd6bafbe007fa72eebbe255b29562" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TableScanBuilder &gt; &gt; iceberg::TableScanBuilder::Make</definition>
+        <argsstring>(std::shared_ptr&lt; TableMetadata &gt; metadata, std::shared_ptr&lt; FileIO &gt; io)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::TableScanBuilder::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <briefdescription>
+<para>Constructs a <ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> for the given table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Current table metadata. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for reading manifests files. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="134" column="17" bodyfile="iceberg/table_scan.cc" bodystart="210" bodyend="216"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1af885296e5208a01cea8da6b198d72813" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::Option</definition>
+        <argsstring>(std::string key, std::string value)</argsstring>
+        <name>Option</name>
+        <qualifiedname>iceberg::TableScanBuilder::Option</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Update property that will override the table&apos;s behavior based on the incoming pair. Unknown properties will be ignored. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>name of the table property to be overridden </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>value to override with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="141" column="20" bodyfile="iceberg/table_scan.cc" bodystart="222" bodyend="225"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1afb4d030be475bb2f678dae16a145cfd3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::Project</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema)</argsstring>
+        <name>Project</name>
+        <qualifiedname>iceberg::TableScanBuilder::Project</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Set the projected schema. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a projection schema </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="145" column="20" bodyfile="iceberg/table_scan.cc" bodystart="227" bodyend="230"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a8467ce46958c48bced377aa755c461a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::CaseSensitive</definition>
+        <argsstring>(bool case_sensitive)</argsstring>
+        <name>CaseSensitive</name>
+        <qualifiedname>iceberg::TableScanBuilder::CaseSensitive</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>If data columns are selected via <ref refid="classiceberg_1_1TableScanBuilder_1a5fb80ff46c9257183598ed8c6810b7e7" kindref="member">Select()</ref>, controls whether the match to the schema will be done with case sensitivity. Default is true. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>whether the scan is case-sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="150" column="20" bodyfile="iceberg/table_scan.cc" bodystart="232" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a2b3253ad962d98a34163ccde8981633b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::IncludeColumnStats</definition>
+        <argsstring>()</argsstring>
+        <name>IncludeColumnStats</name>
+        <qualifiedname>iceberg::TableScanBuilder::IncludeColumnStats</qualifiedname>
+        <briefdescription>
+<para>Request this scan to load the column stats with each data file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Column stats include: value count, null value count, lower bounds, and upper bounds. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="155" column="20" bodyfile="iceberg/table_scan.cc" bodystart="237" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a92af1bd1e35aeb2cfc3dec577ac00395" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::IncludeColumnStats</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;requested_columns)</argsstring>
+        <name>IncludeColumnStats</name>
+        <qualifiedname>iceberg::TableScanBuilder::IncludeColumnStats</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>requested_columns</declname>
+        </param>
+        <briefdescription>
+<para>Request this scan to load the column stats for the specific columns with each data file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Column stats include: value count, null value count, lower bounds, and upper bounds.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>requested_columns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column names for which to keep the stats. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="163" column="20" bodyfile="iceberg/table_scan.cc" bodystart="242" bodyend="258"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a5fb80ff46c9257183598ed8c6810b7e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::Select</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;column_names)</argsstring>
+        <name>Select</name>
+        <qualifiedname>iceberg::TableScanBuilder::Select</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>column_names</declname>
+        </param>
+        <briefdescription>
+<para>Request this scan to read the given data columns. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This produces an expected schema that includes all fields that are either selected or used by this scan&apos;s filter expression.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_names</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column names from the table&apos;s schema </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="171" column="20" bodyfile="iceberg/table_scan.cc" bodystart="260" bodyend="263"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1add2b6c2c6bbb71320fc0ecdda76a67b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::Filter</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; filter)</argsstring>
+        <name>Filter</name>
+        <qualifiedname>iceberg::TableScanBuilder::Filter</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>filter</declname>
+        </param>
+        <briefdescription>
+<para>Set the expression to filter data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filter</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a filter expression </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="175" column="20" bodyfile="iceberg/table_scan.cc" bodystart="265" bodyend="268"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a998d4877ab22201fd63c444d25a60ce2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::IgnoreResiduals</definition>
+        <argsstring>()</argsstring>
+        <name>IgnoreResiduals</name>
+        <qualifiedname>iceberg::TableScanBuilder::IgnoreResiduals</qualifiedname>
+        <briefdescription>
+<para>Request data filtering to files but not to rows in those files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="178" column="20" bodyfile="iceberg/table_scan.cc" bodystart="270" bodyend="273"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1abe8333577aeca9d32181681039982022" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::MinRowsRequested</definition>
+        <argsstring>(int64_t num_rows)</argsstring>
+        <name>MinRowsRequested</name>
+        <qualifiedname>iceberg::TableScanBuilder::MinRowsRequested</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>num_rows</declname>
+        </param>
+        <briefdescription>
+<para>Request this scan to return at least the given number of rows. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is used as a hint and is entirely optional in order to not have to return more rows than necessary. This may return fewer rows if the scan does not contain that many, or it may return more than requested.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>num_rows</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The minimum number of rows requested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="187" column="20" bodyfile="iceberg/table_scan.cc" bodystart="275" bodyend="278"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a1355527f7b87852f1947b024549eeb6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::UseSnapshot</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>UseSnapshot</name>
+        <qualifiedname>iceberg::TableScanBuilder::UseSnapshot</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Request this scan to use the given snapshot by ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a snapshot ID </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>InvalidArgument will be returned if the snapshot cannot be found </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="192" column="20" bodyfile="iceberg/table_scan.cc" bodystart="280" bodyend="287"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1aca2329b27b170a4ce07fd924880e110c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::UseRef</definition>
+        <argsstring>(const std::string &amp;ref)</argsstring>
+        <name>UseRef</name>
+        <qualifiedname>iceberg::TableScanBuilder::UseRef</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>ref</declname>
+        </param>
+        <briefdescription>
+<para>Request this scan to use the given reference. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>reference </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>InvalidArgument will be returned if a reference with the given name could not be found </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="198" column="20" bodyfile="iceberg/table_scan.cc" bodystart="289" bodyend="307"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1aac56b2fa19aa27f466f21f8666a00bd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::AsOfTime</definition>
+        <argsstring>(int64_t timestamp_millis)</argsstring>
+        <name>AsOfTime</name>
+        <qualifiedname>iceberg::TableScanBuilder::AsOfTime</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>timestamp_millis</declname>
+        </param>
+        <briefdescription>
+<para>Request this scan to use the most recent snapshot as of the given time in milliseconds on the branch in the scan or main if no branch is set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>timestamp_millis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a timestamp in milliseconds. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>InvalidArgument will be returned if the snapshot cannot be found or time travel is attempted on a tag </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="205" column="20" bodyfile="iceberg/table_scan.cc" bodystart="309" bodyend="314"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a99a60415ffd8671fcb50634422d51706" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::FromSnapshot</definition>
+        <argsstring>(int64_t from_snapshot_id, bool inclusive=false)</argsstring>
+        <name>FromSnapshot</name>
+        <qualifiedname>iceberg::TableScanBuilder::FromSnapshot</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>from_snapshot_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>inclusive</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Instructs this scan to look for changes starting from a particular snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the start snapshot is not configured, it defaults to the oldest ancestor of the end snapshot (inclusive).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>from_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the start snapshot ID </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>inclusive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>whether the start snapshot is inclusive, default is false </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>InvalidArgument will be returned if the start snapshot is not an ancestor of the end snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="216" column="20" bodyfile="iceberg/table_scan.cc" bodystart="316" bodyend="319"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a045b7664763efc6a51c9f00956341ae6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::FromSnapshot</definition>
+        <argsstring>(const std::string &amp;ref, bool inclusive=false)</argsstring>
+        <name>FromSnapshot</name>
+        <qualifiedname>iceberg::TableScanBuilder::FromSnapshot</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>ref</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>inclusive</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Instructs this scan to look for changes starting from a particular snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the start snapshot is not configured, it defaults to the oldest ancestor of the end snapshot (inclusive).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the start ref name that points to a particular snapshot ID </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>inclusive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>whether the start snapshot is inclusive, default is false </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>InvalidArgument will be returned if the start snapshot is not an ancestor of the end snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="227" column="20" bodyfile="iceberg/table_scan.cc" bodystart="321" bodyend="324"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1aef3d47b8f1fbf820537a5d3ca0f444a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::ToSnapshot</definition>
+        <argsstring>(int64_t to_snapshot_id)</argsstring>
+        <name>ToSnapshot</name>
+        <qualifiedname>iceberg::TableScanBuilder::ToSnapshot</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>to_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Instructs this scan to look for changes up to a particular snapshot (inclusive). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the end snapshot is not configured, it defaults to the current table snapshot (inclusive).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>to_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the end snapshot ID (inclusive) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="236" column="20" bodyfile="iceberg/table_scan.cc" bodystart="326" bodyend="328"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a936c1f027e807f3105bdd890b20e41bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::ToSnapshot</definition>
+        <argsstring>(const std::string &amp;ref)</argsstring>
+        <name>ToSnapshot</name>
+        <qualifiedname>iceberg::TableScanBuilder::ToSnapshot</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>ref</declname>
+        </param>
+        <briefdescription>
+<para>Instructs this scan to look for changes up to a particular snapshot ref (inclusive). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the end snapshot is not configured, it defaults to the current table snapshot (inclusive).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the end snapshot Ref (inclusive) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="245" column="20" bodyfile="iceberg/table_scan.cc" bodystart="330" bodyend="332"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a3115aaaea8e66f7cf2bb39125403b9b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableScanBuilder" kindref="compound">TableScanBuilder</ref> &amp;</type>
+        <definition>TableScanBuilder &amp; iceberg::TableScanBuilder::UseBranch</definition>
+        <argsstring>(const std::string &amp;branch)</argsstring>
+        <name>UseBranch</name>
+        <qualifiedname>iceberg::TableScanBuilder::UseBranch</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>branch</declname>
+        </param>
+        <briefdescription>
+<para>Use the specified branch. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>branch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the branch name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="249" column="20" bodyfile="iceberg/table_scan.cc" bodystart="334" bodyend="337"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a5c49dd5e6c2a18c20aa0e2f33d769454" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableScan" kindref="compound">TableScan</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TableScan &gt; &gt; iceberg::TableScanBuilder::Build</definition>
+        <argsstring>()</argsstring>
+        <name>Build</name>
+        <qualifiedname>iceberg::TableScanBuilder::Build</qualifiedname>
+        <briefdescription>
+<para>Builds and returns a <ref refid="classiceberg_1_1TableScan" kindref="compound">TableScan</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1TableScan" kindref="compound">TableScan</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="253" column="10" bodyfile="iceberg/table_scan.cc" bodystart="359" bodyend="369"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1a6485caf6871fe9993e4290a6333da48e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableScanBuilder::TableScanBuilder</definition>
+        <argsstring>(std::shared_ptr&lt; TableMetadata &gt; metadata, std::shared_ptr&lt; FileIO &gt; io)</argsstring>
+        <name>TableScanBuilder</name>
+        <qualifiedname>iceberg::TableScanBuilder::TableScanBuilder</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="256" column="3" bodyfile="iceberg/table_scan.cc" bodystart="218" bodyend="220"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1aff4f4e443640434b006a491147b91a5c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::reference_wrapper&lt; const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::reference_wrapper&lt; const std::shared_ptr&lt; Schema &gt; &gt; &gt; iceberg::TableScanBuilder::ResolveSnapshotSchema</definition>
+        <argsstring>()</argsstring>
+        <name>ResolveSnapshotSchema</name>
+        <qualifiedname>iceberg::TableScanBuilder::ResolveSnapshotSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="259" column="10" bodyfile="iceberg/table_scan.cc" bodystart="340" bodyend="353"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableScanBuilder_1af4fa353e3536d6c3358a4e899ff58773" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TableScanBuilder::IsIncrementalScan</definition>
+        <argsstring>() const</argsstring>
+        <name>IsIncrementalScan</name>
+        <qualifiedname>iceberg::TableScanBuilder::IsIncrementalScan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="262" column="8" bodyfile="iceberg/table_scan.cc" bodystart="355" bodyend="357"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Builder class for creating <ref refid="classiceberg_1_1TableScan" kindref="compound">TableScan</ref> instances. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="1">
+        <label>iceberg::TableScanBuilder</label>
+        <link refid="classiceberg_1_1TableScanBuilder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableScanBuilder</label>
+        <link refid="classiceberg_1_1TableScanBuilder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_scan.h" line="129" column="1" bodyfile="iceberg/table_scan.h" bodystart="129" bodyend="268"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1aac56b2fa19aa27f466f21f8666a00bd8" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>AsOfTime</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a5c49dd5e6c2a18c20aa0e2f33d769454" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>Build</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a8467ce46958c48bced377aa755c461a3" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>CaseSensitive</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a5092da6f5ffe085016cafcfb782e32e5" prot="private" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>context_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1add2b6c2c6bbb71320fc0ecdda76a67b5" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>Filter</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a99a60415ffd8671fcb50634422d51706" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>FromSnapshot</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a045b7664763efc6a51c9f00956341ae6" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>FromSnapshot</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a998d4877ab22201fd63c444d25a60ce2" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>IgnoreResiduals</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a2b3253ad962d98a34163ccde8981633b" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>IncludeColumnStats</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a92af1bd1e35aeb2cfc3dec577ac00395" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>IncludeColumnStats</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1ab38c72547b177ef1d0348e315f525af9" prot="private" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>io_</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1af4fa353e3536d6c3358a4e899ff58773" prot="private" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>IsIncrementalScan</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1abc6dd6bafbe007fa72eebbe255b29562" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1abf6be5d5b7b3da269def7f295489d918" prot="private" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>metadata_</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1abe8333577aeca9d32181681039982022" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>MinRowsRequested</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1af885296e5208a01cea8da6b198d72813" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>Option</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1afb4d030be475bb2f678dae16a145cfd3" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>Project</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1aff4f4e443640434b006a491147b91a5c" prot="private" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>ResolveSnapshotSchema</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a5fb80ff46c9257183598ed8c6810b7e7" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>Select</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a77348fe0a1c7575384058f7270c73d6c" prot="private" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>snapshot_schema_</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a6485caf6871fe9993e4290a6333da48e" prot="private" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>TableScanBuilder</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1aef3d47b8f1fbf820537a5d3ca0f444a5" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>ToSnapshot</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a936c1f027e807f3105bdd890b20e41bd" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>ToSnapshot</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a3115aaaea8e66f7cf2bb39125403b9b1" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>UseBranch</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1aca2329b27b170a4ce07fd924880e110c" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>UseRef</name></member>
+      <member refid="classiceberg_1_1TableScanBuilder_1a1355527f7b87852f1947b024549eeb6d" prot="public" virt="non-virtual"><scope>iceberg::TableScanBuilder</scope><name>UseSnapshot</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::TableScanBuilder</scope><name>~ErrorCollector</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

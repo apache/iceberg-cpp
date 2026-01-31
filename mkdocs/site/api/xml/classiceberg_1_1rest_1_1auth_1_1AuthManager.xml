@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1AuthManager" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::rest::auth::AuthManager</compoundname>
+    <includes refid="auth__manager_8h" local="no">auth_manager.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a96e6dd5ca93833cf9d39199a16b4e2eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::rest::auth::AuthManager::~AuthManager</definition>
+        <argsstring>()=default</argsstring>
+        <name>~AuthManager</name>
+        <qualifiedname>iceberg::rest::auth::AuthManager::~AuthManager</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.h" line="39" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a1f528489ce3e2a9a3a7463a40042cb95" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::AuthManager::InitSession</definition>
+        <argsstring>(HttpClient &amp;init_client, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>InitSession</name>
+        <qualifiedname>iceberg::rest::auth::AuthManager::InitSession</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>init_client</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a short-lived session used to contact the configuration endpoint. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This session is used only during catalog initialization to fetch server configuration and perform initial authentication. It is typically discarded after initialization.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>init_client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client used for initialization requests. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Client configuration supplied by the catalog. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Session for initialization or an error if credentials cannot be acquired. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.h" line="50" column="18" bodyfile="iceberg/catalog/rest/auth/auth_manager.cc" bodystart="26" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a105441c178b9a8153e604433ad719563" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::AuthManager::CatalogSession</definition>
+        <argsstring>(HttpClient &amp;shared_client, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)=0</argsstring>
+        <name>CatalogSession</name>
+        <qualifiedname>iceberg::rest::auth::AuthManager::CatalogSession</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>shared_client</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create the long-lived catalog session that acts as the parent session. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This session is used for all catalog-level operations (list namespaces, list tables, etc.) and serves as the parent session for contextual and table-specific sessions. It is owned by the catalog and reused throughout the catalog&apos;s lifetime.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>shared_client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client owned by the catalog and reused for auth calls. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> properties (client config + server defaults). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Session for catalog operations or an error if authentication cannot be set up. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.h" line="64" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a4179a49fc1addd0c0f1fd50239feb028" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::AuthManager::ContextualSession</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;context, std::shared_ptr&lt; AuthSession &gt; parent)</argsstring>
+        <name>ContextualSession</name>
+        <qualifiedname>iceberg::rest::auth::AuthManager::ContextualSession</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+<para>Create or reuse a session for a specific context. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is used by SessionCatalog to create sessions for different contexts (e.g., different users or tenants).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Context properties (e.g., user credentials, tenant info). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> session to inherit from or return as-is. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A context-specific session, or the parent session if no context-specific session is needed, or an error if session creation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.h" line="77" column="18" bodyfile="iceberg/catalog/rest/auth/auth_manager.cc" bodystart="33" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManager_1ad495d10f88c41f093ac03bffb239fc29" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::AuthManager::TableSession</definition>
+        <argsstring>(const TableIdentifier &amp;table, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties, std::shared_ptr&lt; AuthSession &gt; parent)</argsstring>
+        <name>TableSession</name>
+        <qualifiedname>iceberg::rest::auth::AuthManager::TableSession</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+<para>Create or reuse a session scoped to a single table/view. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is called when loading a table that may have table-specific auth properties returned by the server.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target table identifier. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Table-specific auth properties returned by the server. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> or contextual session to inherit from or return as-is. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A table-specific session, or the parent session if no table-specific session is needed, or an error if session creation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.h" line="91" column="18" bodyfile="iceberg/catalog/rest/auth/auth_manager.cc" bodystart="40" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a617f8870e1eb865bc443f059bf12cf94" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::rest::auth::AuthManager::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::rest::auth::AuthManager::Close</qualifiedname>
+        <briefdescription>
+<para>Release resources held by the manager. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Status of the close operation. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.h" line="99" column="18" bodyfile="iceberg/catalog/rest/auth/auth_manager.h" bodystart="99" bodyend="99"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Produces authentication sessions for catalog and table requests. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/auth_manager.h" line="37" column="1" bodyfile="iceberg/catalog/rest/auth/auth_manager.h" bodystart="37" bodyend="100"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a105441c178b9a8153e604433ad719563" prot="public" virt="pure-virtual"><scope>iceberg::rest::auth::AuthManager</scope><name>CatalogSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a617f8870e1eb865bc443f059bf12cf94" prot="public" virt="virtual"><scope>iceberg::rest::auth::AuthManager</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a4179a49fc1addd0c0f1fd50239feb028" prot="public" virt="virtual"><scope>iceberg::rest::auth::AuthManager</scope><name>ContextualSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a1f528489ce3e2a9a3a7463a40042cb95" prot="public" virt="virtual"><scope>iceberg::rest::auth::AuthManager</scope><name>InitSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1ad495d10f88c41f093ac03bffb239fc29" prot="public" virt="virtual"><scope>iceberg::rest::auth::AuthManager</scope><name>TableSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a96e6dd5ca93833cf9d39199a16b4e2eb" prot="public" virt="virtual"><scope>iceberg::rest::auth::AuthManager</scope><name>~AuthManager</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

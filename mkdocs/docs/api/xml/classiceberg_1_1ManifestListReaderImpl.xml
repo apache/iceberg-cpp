@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestListReaderImpl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestListReaderImpl</compoundname>
+    <basecompoundref refid="classiceberg_1_1ManifestListReader" prot="public" virt="non-virtual">iceberg::ManifestListReader</basecompoundref>
+    <includes refid="manifest__reader__internal_8h" local="no">manifest_reader_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestListReaderImpl_1afaf2abd5185b967b60107c13e258b6bf" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ManifestListReaderImpl::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ManifestListReaderImpl::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="137" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestListReaderImpl_1ae12a43d21d338f5c95e6fc2b9aeb88a6" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Reader&gt; iceberg::ManifestListReaderImpl::reader_</definition>
+        <argsstring></argsstring>
+        <name>reader_</name>
+        <qualifiedname>iceberg::ManifestListReaderImpl::reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="138" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="138" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestListReaderImpl_1a6e741919be07e778900382d095d557b1" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestListReaderImpl::ManifestListReaderImpl</definition>
+        <argsstring>(std::unique_ptr&lt; Reader &gt; reader, std::shared_ptr&lt; Schema &gt; schema)</argsstring>
+        <name>ManifestListReaderImpl</name>
+        <qualifiedname>iceberg::ManifestListReaderImpl::ManifestListReaderImpl</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &gt;</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="128" column="12" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="128" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestListReaderImpl_1a4c56c7c82ef2bd536d2dac4a8f97f3bc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::ManifestListReaderImpl::Files</definition>
+        <argsstring>() const override</argsstring>
+        <name>Files</name>
+        <qualifiedname>iceberg::ManifestListReaderImpl::Files</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestListReader_1aff738346c62b86ecddb6ce60cb315eeb">Files</reimplements>
+        <briefdescription>
+<para>Read all manifest files in the manifest list file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="132" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="952" bodyend="970"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestListReaderImpl_1a5682691c97e839871c0816cb594860e8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::ManifestListReaderImpl::Metadata</definition>
+        <argsstring>() const override</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::ManifestListReaderImpl::Metadata</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestListReader_1a95229134617d077aed8736dd06e3e6a3">Metadata</reimplements>
+        <briefdescription>
+<para>Get the metadata of the manifest list file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="134" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="972" bodyend="975"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Read manifest files from a manifest list file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ManifestListReader</label>
+        <link refid="classiceberg_1_1ManifestListReader"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestListReaderImpl</label>
+        <link refid="classiceberg_1_1ManifestListReaderImpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ManifestListReader</label>
+        <link refid="classiceberg_1_1ManifestListReader"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestListReaderImpl</label>
+        <link refid="classiceberg_1_1ManifestListReaderImpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_reader_internal.h" line="126" column="1" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="126" bodyend="139"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestListReaderImpl_1a4c56c7c82ef2bd536d2dac4a8f97f3bc" prot="public" virt="virtual"><scope>iceberg::ManifestListReaderImpl</scope><name>Files</name></member>
+      <member refid="classiceberg_1_1ManifestListReader_1afd7c22f9671a9f637058e16b1a2bba21" prot="public" virt="non-virtual"><scope>iceberg::ManifestListReaderImpl</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestListReaderImpl_1a6e741919be07e778900382d095d557b1" prot="public" virt="non-virtual"><scope>iceberg::ManifestListReaderImpl</scope><name>ManifestListReaderImpl</name></member>
+      <member refid="classiceberg_1_1ManifestListReaderImpl_1a5682691c97e839871c0816cb594860e8" prot="public" virt="virtual"><scope>iceberg::ManifestListReaderImpl</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1ManifestListReaderImpl_1ae12a43d21d338f5c95e6fc2b9aeb88a6" prot="private" virt="non-virtual"><scope>iceberg::ManifestListReaderImpl</scope><name>reader_</name></member>
+      <member refid="classiceberg_1_1ManifestListReaderImpl_1afaf2abd5185b967b60107c13e258b6bf" prot="private" virt="non-virtual"><scope>iceberg::ManifestListReaderImpl</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ManifestListReader_1a33834002a5e7032f12011314a0a88683" prot="public" virt="virtual"><scope>iceberg::ManifestListReaderImpl</scope><name>~ManifestListReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

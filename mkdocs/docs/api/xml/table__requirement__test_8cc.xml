@@ -1,0 +1,655 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="table__requirement__test_8cc" kind="file" language="C++">
+    <compoundname>table_requirement_test.cc</compoundname>
+    <includes refid="table__requirement_8h" local="yes">iceberg/table_requirement.h</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">string</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes refid="snapshot_8h" local="yes">iceberg/snapshot.h</includes>
+    <includes refid="table__metadata_8h" local="yes">iceberg/table_metadata.h</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <incdepgraph>
+      <node id="22">
+        <label>iceberg/constants.h</label>
+        <link refid="constants_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="20">
+        <label>iceberg/manifest/manifest_list.h</label>
+        <link refid="manifest__list_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg/partition_field.h</label>
+        <link refid="partition__field_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/partition_spec.h</label>
+        <link refid="partition__spec_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/snapshot.h</label>
+        <link refid="snapshot_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/table_metadata.h</label>
+        <link refid="table__metadata_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/table_properties.h</label>
+        <link refid="table__properties_8h_source"/>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/table_requirement.h</label>
+        <link refid="table__requirement_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/table_requirement_test.cc</label>
+        <link refid="table__requirement__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="10">
+        <label>iceberg/util/checked_cast.h</label>
+        <link refid="checked__cast_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>iceberg/util/timepoint.h</label>
+        <link refid="timepoint_8h_source"/>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>array</label>
+      </node>
+      <node id="32">
+        <label>cassert</label>
+      </node>
+      <node id="43">
+        <label>chrono</label>
+      </node>
+      <node id="28">
+        <label>concepts</label>
+      </node>
+      <node id="21">
+        <label>cstdint</label>
+      </node>
+      <node id="7">
+        <label>expected</label>
+      </node>
+      <node id="8">
+        <label>format</label>
+      </node>
+      <node id="29">
+        <label>functional</label>
+      </node>
+      <node id="47">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="14">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="38">
+        <label>limits</label>
+      </node>
+      <node id="11">
+        <label>memory</label>
+      </node>
+      <node id="30">
+        <label>mutex</label>
+      </node>
+      <node id="3">
+        <label>optional</label>
+      </node>
+      <node id="16">
+        <label>span</label>
+      </node>
+      <node id="34">
+        <label>stdexcept</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="17">
+        <label>string_view</label>
+      </node>
+      <node id="12">
+        <label>type_traits</label>
+      </node>
+      <node id="18">
+        <label>unordered_map</label>
+      </node>
+      <node id="39">
+        <label>unordered_set</label>
+      </node>
+      <node id="13">
+        <label>utility</label>
+      </node>
+      <node id="19">
+        <label>variant</label>
+      </node>
+      <node id="24">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="table__requirement_8h" kindref="compound">iceberg/table_requirement.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/snapshot.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="table__metadata_8h" kindref="compound">iceberg/table_metadata.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertUUID)<sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>base-&gt;table_uuid<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;test-uuid-1234&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>UUID<sp/>matches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>table::AssertUUID<sp/>requirement(</highlight><highlight class="stringliteral">&quot;test-uuid-1234&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertUUID,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>UUID<sp/>mismatch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>table::AssertUUID<sp/>wrong_uuid(</highlight><highlight class="stringliteral">&quot;wrong-uuid&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>wrong_uuid.Validate(base.get());</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;UUID<sp/>does<sp/>not<sp/>match&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Null<sp/>base<sp/>metadata</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/>table::AssertUUID<sp/>any_uuid(</highlight><highlight class="stringliteral">&quot;any-uuid&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/>status<sp/>=<sp/>any_uuid.Validate(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;metadata<sp/>is<sp/>missing&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Case<sp/>insensitive<sp/>UUID<sp/>comparison</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>base-&gt;table_uuid<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;TEST-UUID-1234&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>table::AssertUUID<sp/>lowercase_uuid(</highlight><highlight class="stringliteral">&quot;test-uuid-1234&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>ASSERT_THAT(lowercase_uuid.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertCurrentSchemaID)<sp/>{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>base-&gt;current_schema_id<sp/>=<sp/>5;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>schema<sp/>ID<sp/>matches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/>table::AssertCurrentSchemaID<sp/>requirement(5);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertCurrentSchemaID,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Schema<sp/>ID<sp/>mismatch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>table::AssertCurrentSchemaID<sp/>wrong_id(10);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>wrong_id.Validate(base.get());</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;schema<sp/>ID<sp/>does<sp/>not<sp/>match&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Null<sp/>base<sp/>metadata</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>table::AssertCurrentSchemaID<sp/>req_for_null(5);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/>status<sp/>=<sp/>req_for_null.Validate(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;metadata<sp/>is<sp/>missing&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertDoesNotExist)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>table<sp/>does<sp/>not<sp/>exist<sp/>(null<sp/>metadata)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>table::AssertDoesNotExist<sp/>requirement;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertDoesNotExist,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Table<sp/>already<sp/>exists</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>requirement.Validate(base.get());</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;table<sp/>already<sp/>exists&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="93"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertRefSnapshotID)<sp/>{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ref<sp/>=<sp/>std::make_shared&lt;SnapshotRef&gt;();</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/>ref-&gt;snapshot_id<sp/>=<sp/>100;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>ref-&gt;retention<sp/>=<sp/>SnapshotRef::Branch{};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>base-&gt;refs[</highlight><highlight class="stringliteral">&quot;main&quot;</highlight><highlight class="normal">]<sp/>=<sp/>ref;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>ref<sp/>snapshot<sp/>ID<sp/>matches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>table::AssertRefSnapshotID<sp/>requirement(</highlight><highlight class="stringliteral">&quot;main&quot;</highlight><highlight class="normal">,<sp/>100);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertRefSnapshotID,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Snapshot<sp/>ID<sp/>mismatch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>table::AssertRefSnapshotID<sp/>wrong_id(</highlight><highlight class="stringliteral">&quot;main&quot;</highlight><highlight class="normal">,<sp/>200);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>wrong_id.Validate(base.get());</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;has<sp/>changed&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Ref<sp/>missing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>table::AssertRefSnapshotID<sp/>missing_ref(</highlight><highlight class="stringliteral">&quot;missing-ref&quot;</highlight><highlight class="normal">,<sp/>100);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/>status<sp/>=<sp/>missing_ref.Validate(base.get());</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;is<sp/>missing&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Ref<sp/>should<sp/>not<sp/>exist<sp/>and<sp/>doesn&apos;t<sp/>(nullopt<sp/>snapshot<sp/>ID)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>table::AssertRefSnapshotID<sp/>nonexistent(</highlight><highlight class="stringliteral">&quot;nonexistent&quot;</highlight><highlight class="normal">,<sp/>std::nullopt);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/>ASSERT_THAT(nonexistent.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Ref<sp/>should<sp/>not<sp/>exist<sp/>but<sp/>does<sp/>(nullopt<sp/>snapshot<sp/>ID<sp/>but<sp/>ref<sp/>exists)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>table::AssertRefSnapshotID<sp/>exists_but_shouldnt(</highlight><highlight class="stringliteral">&quot;main&quot;</highlight><highlight class="normal">,<sp/>std::nullopt);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/>status<sp/>=<sp/>exists_but_shouldnt.Validate(base.get());</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;created<sp/>concurrently&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="128"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertLastAssignedFieldId)<sp/>{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/>base-&gt;last_column_id<sp/>=<sp/>10;</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>field<sp/>ID<sp/>matches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/>table::AssertLastAssignedFieldId<sp/>requirement(10);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertLastAssignedFieldId,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Field<sp/>ID<sp/>mismatch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/>table::AssertLastAssignedFieldId<sp/>wrong_id(15);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>wrong_id.Validate(base.get());</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;last<sp/>assigned<sp/>field<sp/>ID<sp/>does<sp/>not<sp/>match&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Null<sp/>base<sp/>metadata<sp/>(should<sp/>succeed)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>table::AssertLastAssignedFieldId<sp/>req_for_null(10);</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/>EXPECT_THAT(req_for_null.Validate(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="148"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertLastAssignedPartitionId)<sp/>{</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/>base-&gt;last_partition_id<sp/>=<sp/>5;</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>partition<sp/>ID<sp/>matches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/>table::AssertLastAssignedPartitionId<sp/>requirement(5);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertLastAssignedPartitionId,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Partition<sp/>ID<sp/>mismatch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/>table::AssertLastAssignedPartitionId<sp/>wrong_id(8);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>wrong_id.Validate(base.get());</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;last<sp/>assigned<sp/>partition<sp/>ID<sp/>does<sp/>not<sp/>match&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Null<sp/>base<sp/>metadata</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/>table::AssertLastAssignedPartitionId<sp/>req_for_null(5);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/>status<sp/>=<sp/>req_for_null.Validate(</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;metadata<sp/>is<sp/>missing&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="170"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertDefaultSpecID)<sp/>{</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/>base-&gt;default_spec_id<sp/>=<sp/>3;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>spec<sp/>ID<sp/>matches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/>table::AssertDefaultSpecID<sp/>requirement(3);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertDefaultSpecID,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Spec<sp/>ID<sp/>mismatch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/>table::AssertDefaultSpecID<sp/>wrong_id(7);</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>wrong_id.Validate(base.get());</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;spec<sp/>changed&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="186"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal">TEST(TableRequirementTest,<sp/>AssertDefaultSortOrderID)<sp/>{</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>base<sp/>=<sp/>std::make_unique&lt;TableMetadata&gt;();</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/>base-&gt;default_sort_order_id<sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Success<sp/>-<sp/>sort<sp/>order<sp/>ID<sp/>matches</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/>table::AssertDefaultSortOrderID<sp/>requirement(2);</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/>EXPECT_EQ(TableRequirement::Kind::kAssertDefaultSortOrderID,<sp/>requirement.kind());</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/>ASSERT_THAT(requirement.Validate(base.get()),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Sort<sp/>order<sp/>ID<sp/>mismatch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>table::AssertDefaultSortOrderID<sp/>wrong_id(4);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>wrong_id.Validate(base.get());</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>IsError(ErrorKind::kCommitFailed));</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/>EXPECT_THAT(status,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;sort<sp/>order<sp/>changed&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="202"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/table_requirement_test.cc"/>
+  </compounddef>
+</doxygen>

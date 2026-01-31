@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ToArrowSchemaParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ToArrowSchemaParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ToArrowSchemaParam_1a4151ad92c770db80a71a38d6cb3078b0" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::ToArrowSchemaParam::iceberg_type</definition>
+        <argsstring></argsstring>
+        <name>iceberg_type</name>
+        <qualifiedname>iceberg::ToArrowSchemaParam::iceberg_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_test.cc" line="39" column="19" bodyfile="iceberg/test/arrow_test.cc" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ToArrowSchemaParam_1ae5f8023472f146281bbc1edca7fb913e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ToArrowSchemaParam::optional</definition>
+        <argsstring></argsstring>
+        <name>optional</name>
+        <qualifiedname>iceberg::ToArrowSchemaParam::optional</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_test.cc" line="40" column="8" bodyfile="iceberg/test/arrow_test.cc" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ToArrowSchemaParam_1a86db63b8004528aaf8bd6579334c7c3b" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; arrow::DataType &gt;</type>
+        <definition>std::shared_ptr&lt;arrow::DataType&gt; iceberg::ToArrowSchemaParam::arrow_type</definition>
+        <argsstring></argsstring>
+        <name>arrow_type</name>
+        <qualifiedname>iceberg::ToArrowSchemaParam::arrow_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_test.cc" line="41" column="19" bodyfile="iceberg/test/arrow_test.cc" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ToArrowSchemaParam</label>
+        <link refid="structiceberg_1_1ToArrowSchemaParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>iceberg_type</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>arrow_type</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; arrow::DataType &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/arrow_test.cc" line="38" column="1" bodyfile="iceberg/test/arrow_test.cc" bodystart="38" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ToArrowSchemaParam_1a86db63b8004528aaf8bd6579334c7c3b" prot="public" virt="non-virtual"><scope>iceberg::ToArrowSchemaParam</scope><name>arrow_type</name></member>
+      <member refid="structiceberg_1_1ToArrowSchemaParam_1a4151ad92c770db80a71a38d6cb3078b0" prot="public" virt="non-virtual"><scope>iceberg::ToArrowSchemaParam</scope><name>iceberg_type</name></member>
+      <member refid="structiceberg_1_1ToArrowSchemaParam_1ae5f8023472f146281bbc1edca7fb913e" prot="public" virt="non-virtual"><scope>iceberg::ToArrowSchemaParam</scope><name>optional</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

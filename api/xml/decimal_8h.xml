@@ -1,0 +1,591 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="decimal_8h" kind="file" language="C++">
+    <compoundname>decimal.h</compoundname>
+    <includes local="no">array</includes>
+    <includes local="no">compare</includes>
+    <includes local="no">cstdint</includes>
+    <includes local="no">iosfwd</includes>
+    <includes local="no">string</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">type_traits</includes>
+    <includes local="no">vector</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="formattable_8h" local="yes">iceberg/util/formattable.h</includes>
+    <includes refid="int128_8h" local="yes">iceberg/util/int128.h</includes>
+    <includedby refid="literal_8h" local="yes">iceberg/expression/literal.h</includedby>
+    <includedby refid="struct__like_8h" local="yes">iceberg/row/struct_like.h</includedby>
+    <includedby refid="bucket__util__test_8cc" local="yes">iceberg/test/bucket_util_test.cc</includedby>
+    <includedby refid="decimal__test_8cc" local="yes">iceberg/test/decimal_test.cc</includedby>
+    <includedby refid="conversions_8cc" local="yes">iceberg/util/conversions.cc</includedby>
+    <includedby refid="decimal_8cc" local="yes">iceberg/util/decimal.cc</includedby>
+    <includedby refid="projection__util__internal_8h" local="yes">iceberg/util/projection_util_internal.h</includedby>
+    <incdepgraph>
+      <node id="10">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="11">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/util/int128.h</label>
+        <link refid="int128_8h"/>
+      </node>
+      <node id="2">
+        <label>array</label>
+      </node>
+      <node id="3">
+        <label>compare</label>
+      </node>
+      <node id="4">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>expected</label>
+      </node>
+      <node id="13">
+        <label>format</label>
+      </node>
+      <node id="5">
+        <label>iosfwd</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>string_view</label>
+      </node>
+      <node id="8">
+        <label>type_traits</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="35">
+        <label>iceberg/avro/avro_data_util_internal.h</label>
+        <link refid="avro__data__util__internal_8h_source"/>
+      </node>
+      <node id="36">
+        <label>iceberg/avro/avro_direct_decoder_internal.h</label>
+        <link refid="avro__direct__decoder__internal_8h_source"/>
+      </node>
+      <node id="37">
+        <label>iceberg/avro/avro_schema_util_internal.h</label>
+        <link refid="avro__schema__util__internal_8h_source"/>
+      </node>
+      <node id="16">
+        <label>iceberg/avro/avro_writer.h</label>
+        <link refid="avro__writer_8h_source"/>
+      </node>
+      <node id="22">
+        <label>iceberg/data/data_writer.h</label>
+        <link refid="data__writer_8h"/>
+      </node>
+      <node id="23">
+        <label>iceberg/data/equality_delete_writer.h</label>
+        <link refid="equality__delete__writer_8h"/>
+      </node>
+      <node id="24">
+        <label>iceberg/data/position_delete_writer.h</label>
+        <link refid="position__delete__writer_8h"/>
+      </node>
+      <node id="3">
+        <label>iceberg/delete_file_index.h</label>
+        <link refid="delete__file__index_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/expression/aggregate.h</label>
+        <link refid="aggregate_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg/expression/binder.h</label>
+        <link refid="binder_8h"/>
+      </node>
+      <node id="5">
+        <label>iceberg/expression/expression_visitor.h</label>
+        <link refid="expression__visitor_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg/expression/expressions.h</label>
+        <link refid="expressions_8h"/>
+      </node>
+      <node id="2">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/expression/predicate.h</label>
+        <link refid="predicate_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg/expression/rewrite_not.h</label>
+        <link refid="rewrite__not_8h"/>
+      </node>
+      <node id="11">
+        <label>iceberg/expression/term.h</label>
+        <link refid="term_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/file_writer.h</label>
+        <link refid="file__writer_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg/manifest/manifest_entry.h</label>
+        <link refid="manifest__entry_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg/manifest/manifest_group.h</label>
+        <link refid="manifest__group_8h"/>
+      </node>
+      <node id="30">
+        <label>iceberg/manifest/manifest_reader_internal.h</label>
+        <link refid="manifest__reader__internal_8h"/>
+      </node>
+      <node id="17">
+        <label>iceberg/manifest/manifest_writer.h</label>
+        <link refid="manifest__writer_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg/manifest/rolling_manifest_writer.h</label>
+        <link refid="rolling__manifest__writer_8h"/>
+      </node>
+      <node id="14">
+        <label>iceberg/metrics.h</label>
+        <link refid="metrics_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>iceberg/parquet/parquet_data_util_internal.h</label>
+        <link refid="parquet__data__util__internal_8h_source"/>
+      </node>
+      <node id="39">
+        <label>iceberg/parquet/parquet_schema_util_internal.h</label>
+        <link refid="parquet__schema__util__internal_8h_source"/>
+      </node>
+      <node id="19">
+        <label>iceberg/parquet/parquet_writer.h</label>
+        <link refid="parquet__writer_8h_source"/>
+      </node>
+      <node id="20">
+        <label>iceberg/partition_summary_internal.h</label>
+        <link refid="partition__summary__internal_8h_source"/>
+      </node>
+      <node id="32">
+        <label>iceberg/row/arrow_array_wrapper.h</label>
+        <link refid="arrow__array__wrapper_8h"/>
+      </node>
+      <node id="33">
+        <label>iceberg/row/manifest_wrapper.h</label>
+        <link refid="manifest__wrapper_8h_source"/>
+      </node>
+      <node id="21">
+        <label>iceberg/row/partition_values.h</label>
+        <link refid="partition__values_8h"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/row/struct_like.h</label>
+        <link refid="struct__like_8h"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>iceberg/schema_util.h</label>
+        <link refid="schema__util_8h_source"/>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>iceberg/schema_util_internal.h</label>
+        <link refid="schema__util__internal_8h_source"/>
+      </node>
+      <node id="41">
+        <label>iceberg/transform.h</label>
+        <link refid="transform_8h"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>iceberg/transform_function.h</label>
+        <link refid="transform__function_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg/update/fast_append.h</label>
+        <link refid="fast__append_8h"/>
+      </node>
+      <node id="13">
+        <label>iceberg/update/update_sort_order.h</label>
+        <link refid="update__sort__order_8h"/>
+      </node>
+      <node id="26">
+        <label>iceberg/util/content_file_util.h</label>
+        <link refid="content__file__util_8h"/>
+      </node>
+      <node id="43">
+        <label>iceberg/util/conversions.h</label>
+        <link refid="conversions_8h"/>
+      </node>
+      <node id="27">
+        <label>iceberg/util/data_file_set.h</label>
+        <link refid="data__file__set_8h"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>iceberg/util/decimal.cc</label>
+        <link refid="decimal_8cc"/>
+      </node>
+      <node id="1">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg/util/partition_value_util.h</label>
+        <link refid="partition__value__util_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/util/projection_util_internal.h</label>
+        <link refid="projection__util__internal_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classiceberg_1_1Decimal" prot="public">iceberg::Decimal</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+<para>128-bit fixed-point decimal numbers. Adapted from Apache Arrow with only Decimal128 support. <ulink url="https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.h">https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.h</ulink> </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;array&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;compare&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iosfwd&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;type_traits&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="formattable_8h" kindref="compound">iceberg/util/formattable.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="int128_8h" kindref="compound">iceberg/util/int128.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="classiceberg_1_1Decimal" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1util_1_1Formattable" kindref="compound">util::Formattable</ref><sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>int32_t<sp/>kBitWidth<sp/>=<sp/>128;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>int32_t<sp/>kByteWidth<sp/>=<sp/>kBitWidth<sp/>/<sp/>8;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>int32_t<sp/>kMaxPrecision<sp/>=<sp/>38;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>int32_t<sp/>kMaxScale<sp/>=<sp/>38;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="classiceberg_1_1Decimal_1ae63e1b780e6ac1b118179901a0b2412a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal_1ae63e1b780e6ac1b118179901a0b2412a" kindref="member">Decimal</ref>()<sp/>noexcept<sp/>=<sp/>default;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="classiceberg_1_1Decimal_1a75a669d0c23dc618d6ea77bfb66f4078" refkind="member"><highlight class="normal"><sp/><sp/>constexpr<sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>(int128_t<sp/>value)<sp/>noexcept<sp/><sp/></highlight><highlight class="comment">//<sp/>NOLINT<sp/>implicit<sp/>conversion</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>data_(value)<sp/>{}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">requires</highlight><highlight class="normal">(std::is_integral_v&lt;T&gt;<sp/>&amp;&amp;<sp/>(</highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(T)<sp/>&lt;=<sp/></highlight><highlight class="keyword">sizeof</highlight><highlight class="normal">(uint64_t)))</highlight></codeline>
+<codeline lineno="63" refid="classiceberg_1_1Decimal_1a5e57a9033dc325933919ecf53bd60cbb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal_1a5e57a9033dc325933919ecf53bd60cbb" kindref="member">Decimal</ref>(T<sp/>value)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>NOLINT<sp/>implicit<sp/>conversion</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>data_(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int128_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(value))<sp/>{}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>(std::string_view<sp/>str);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classiceberg_1_1Decimal_1ac6f8d5cc9231f35361dbf25003847c9a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal_1ac6f8d5cc9231f35361dbf25003847c9a" kindref="member">Decimal</ref>(int64_t<sp/>high,<sp/>uint64_t<sp/>low)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>data_<sp/>=<sp/>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int128_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(high)<sp/>&lt;&lt;<sp/>64)<sp/>|<sp/>low;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>Negate();</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>Abs();</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref><sp/>Abs(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>value);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator-=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator*=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>Result&lt;std::pair&lt;Decimal,<sp/>Decimal&gt;&gt;<sp/>Divide(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>divisor)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator/=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator|=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator&amp;=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator&lt;&lt;=(uint32_t<sp/>shift);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119" refid="classiceberg_1_1Decimal_1ad9a1babe945e8492c74448578af36225" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref><sp/><ref refid="classiceberg_1_1Decimal_1ad9a1babe945e8492c74448578af36225" kindref="member">operator&lt;&lt;</ref>(uint32_t<sp/>shift)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref><sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>&lt;&lt;=<sp/>shift;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>operator&gt;&gt;=(uint32_t<sp/>shift);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129" refid="classiceberg_1_1Decimal_1a204b44d47eaf08b857ce0b134d6218e9" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref><sp/><ref refid="classiceberg_1_1Decimal_1a204b44d47eaf08b857ce0b134d6218e9" kindref="member">operator&gt;&gt;</ref>(uint32_t<sp/>shift)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref><sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>&gt;&gt;=<sp/>shift;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136" refid="classiceberg_1_1Decimal_1a875c00e32647b8d39e2a9bb77b3ae5d1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>int128_t<sp/><ref refid="classiceberg_1_1Decimal_1a875c00e32647b8d39e2a9bb77b3ae5d1" kindref="member">value</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>data_;<sp/>}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139" refid="classiceberg_1_1Decimal_1ab025a97f157ee7ea1a2135ad34dbb2d2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>int64_t<sp/><ref refid="classiceberg_1_1Decimal_1ab025a97f157ee7ea1a2135ad34dbb2d2" kindref="member">high</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int64_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(data_<sp/>&gt;&gt;<sp/>64);<sp/>}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142" refid="classiceberg_1_1Decimal_1a26a32345b2111f0e4be1ec85bfd5da46" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>uint64_t<sp/><ref refid="classiceberg_1_1Decimal_1a26a32345b2111f0e4be1ec85bfd5da46" kindref="member">low</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">uint64_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(data_);<sp/>}</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/>Result&lt;std::string&gt;<sp/>ToString(int32_t<sp/>scale)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/>std::string<sp/>ToIntegerString()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153" refid="classiceberg_1_1Decimal_1ab78520099cf3c8365b5621c159fc2ff5" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classiceberg_1_1Decimal_1ab78520099cf3c8365b5621c159fc2ff5" kindref="member">ToString</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ToIntegerString();<sp/>}</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;Decimal&gt;<sp/>FromString(std::string_view<sp/>str,<sp/>int32_t*<sp/>precision<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t*<sp/>scale<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;Decimal&gt;<sp/><ref refid="endian_8h_1ad32cff8f6ada2e4ab2e0701f0a043f28" kindref="member">FromBigEndian</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>data,<sp/>int32_t<sp/>length);</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/><ref refid="endian_8h_1aa051ea16b5c1c3d2c4b5c04db46ffa43" kindref="member">ToBigEndian</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/>Result&lt;Decimal&gt;<sp/>Rescale(int32_t<sp/>orig_scale,<sp/>int32_t<sp/>new_scale)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>FitsInPrecision(int32_t<sp/>precision)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="183" refid="classiceberg_1_1Decimal_1a224e99c351e9183fe83cb132a01cbfb1" refkind="member"><highlight class="normal"><sp/><sp/>std::strong_ordering<sp/><ref refid="classiceberg_1_1Decimal_1a224e99c351e9183fe83cb132a01cbfb1" kindref="member">operator&lt;=&gt;</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(high()<sp/>!=<sp/>other.<ref refid="classiceberg_1_1Decimal_1ab025a97f157ee7ea1a2135ad34dbb2d2" kindref="member">high</ref>())<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>high()<sp/>&lt;=&gt;<sp/>other.<ref refid="classiceberg_1_1Decimal_1ab025a97f157ee7ea1a2135ad34dbb2d2" kindref="member">high</ref>();</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>low()<sp/>&lt;=&gt;<sp/>other.<ref refid="classiceberg_1_1Decimal_1a26a32345b2111f0e4be1ec85bfd5da46" kindref="member">low</ref>();</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::partial_ordering<sp/>Compare(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&amp;<sp/>rhs,</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t<sp/>lhs_scale,<sp/>int32_t<sp/>rhs_scale);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>native_endian_bytes()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">reinterpret_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal">uint8_t*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(&amp;data_);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/>std::array&lt;uint8_t,<sp/>kByteWidth&gt;<sp/>ToBytes()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202" refid="classiceberg_1_1Decimal_1af06c220ced2f385e745e9e37ccfe38f1" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="classiceberg_1_1Decimal_1af06c220ced2f385e745e9e37ccfe38f1" kindref="member">Sign</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>1<sp/>|<sp/>(high()<sp/>&gt;&gt;<sp/>63);<sp/>}</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205" refid="classiceberg_1_1Decimal_1a39e113937ee4f3d9075904ca4c9b8cd5" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Decimal_1a39e113937ee4f3d9075904ca4c9b8cd5" kindref="member">IsNegative</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(high()<sp/>&gt;&gt;<sp/>63)<sp/>&lt;<sp/>0;<sp/>}</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">operator</highlight><highlight class="normal"><sp/>bool()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>data_<sp/>!=<sp/>0;<sp/>}</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.data_<sp/>==<sp/>rhs.data_;</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.data_<sp/>!=<sp/>rhs.data_;</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/>ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>Decimal<sp/>operator-(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>operand);</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/>ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>Decimal<sp/>operator~(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>operand);</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/>ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>Decimal<sp/>operator+(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>rhs);</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/>ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>Decimal<sp/>operator-(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>rhs);</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/>ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>Decimal<sp/>operator*(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>rhs);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/>ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>Decimal<sp/>operator/(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>rhs);</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/>ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>Decimal<sp/>operator%(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/>rhs);</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/>int128_t<sp/>data_{0};</highlight></codeline>
+<codeline lineno="228"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal">ICEBERG_EXPORT<sp/>std::ostream&amp;<sp/>operator&lt;&lt;(std::ostream&amp;<sp/>os,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Decimal&amp;<sp/><ref refid="group__type-factories_1gaf9e64fe9d9556ef90130264f95b4d9f2" kindref="member">decimal</ref>);</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/util/decimal.h"/>
+  </compounddef>
+</doxygen>

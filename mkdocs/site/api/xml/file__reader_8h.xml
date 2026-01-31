@@ -1,0 +1,302 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="file__reader_8h" kind="file" language="C++">
+    <compoundname>file_reader.h</compoundname>
+    <includes local="no">functional</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes refid="arrow__c__data_8h" local="yes">iceberg/arrow_c_data.h</includes>
+    <includes refid="file__format_8h" local="yes">iceberg/file_format.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includes refid="config_8h" local="yes">iceberg/util/config.h</includes>
+    <includedby refid="avro__reader_8h" local="yes">iceberg/avro/avro_reader.h</includedby>
+    <includedby refid="file__reader_8cc" local="yes">iceberg/file_reader.cc</includedby>
+    <includedby refid="manifest__reader__internal_8h" local="yes">iceberg/manifest/manifest_reader_internal.h</includedby>
+    <includedby refid="parquet__reader_8h" local="yes">iceberg/parquet/parquet_reader.h</includedby>
+    <includedby refid="table__scan_8cc" local="yes">iceberg/table_scan.cc</includedby>
+    <includedby refid="avro__test_8cc" local="yes">iceberg/test/avro_test.cc</includedby>
+    <includedby refid="manifest__list__versions__test_8cc" local="yes">iceberg/test/manifest_list_versions_test.cc</includedby>
+    <includedby refid="parquet__test_8cc" local="yes">iceberg/test/parquet_test.cc</includedby>
+    <incdepgraph>
+      <node id="5">
+        <label>iceberg/arrow_c_data.h</label>
+        <link refid="arrow__c__data_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg/file_format.h</label>
+        <link refid="file__format_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/file_reader.h</label>
+        <link refid="file__reader_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="11">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="21">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>algorithm</label>
+      </node>
+      <node id="17">
+        <label>charconv</label>
+      </node>
+      <node id="6">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>expected</label>
+      </node>
+      <node id="13">
+        <label>format</label>
+      </node>
+      <node id="2">
+        <label>functional</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="4">
+        <label>optional</label>
+      </node>
+      <node id="18">
+        <label>ranges</label>
+      </node>
+      <node id="24">
+        <label>stdexcept</label>
+      </node>
+      <node id="14">
+        <label>string</label>
+      </node>
+      <node id="8">
+        <label>string_view</label>
+      </node>
+      <node id="19">
+        <label>typeinfo</label>
+      </node>
+      <node id="22">
+        <label>unordered_map</label>
+      </node>
+      <node id="9">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>iceberg/avro/avro_reader.h</label>
+        <link refid="avro__reader_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/file_reader.h</label>
+        <link refid="file__reader_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg/manifest/manifest_reader_internal.h</label>
+        <link refid="manifest__reader__internal_8h"/>
+      </node>
+      <node id="4">
+        <label>iceberg/parquet/parquet_reader.h</label>
+        <link refid="parquet__reader_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classiceberg_1_1Reader" prot="public">iceberg::Reader</innerclass>
+    <innerclass refid="structiceberg_1_1Split" prot="public">iceberg::Split</innerclass>
+    <innerclass refid="classiceberg_1_1ReaderProperties" prot="public">iceberg::ReaderProperties</innerclass>
+    <innerclass refid="structiceberg_1_1ReaderOptions" prot="public">iceberg::ReaderOptions</innerclass>
+    <innerclass refid="structiceberg_1_1ReaderFactoryRegistry" prot="public">iceberg::ReaderFactoryRegistry</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Reader interface for file formats like Parquet, Avro and ORC. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;functional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="arrow__c__data_8h" kindref="compound">iceberg/arrow_c_data.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="file__format_8h" kindref="compound">iceberg/file_format.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/util/config.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="classiceberg_1_1Reader" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Reader" kindref="compound">~Reader</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="classiceberg_1_1Reader_1ad79601bfcecf30aae808c6ffd972cc65" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1Reader_1ad79601bfcecf30aae808c6ffd972cc65" kindref="member">Open</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ReaderOptions" kindref="compound">ReaderOptions</ref>&amp;<sp/>options)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="classiceberg_1_1Reader_1ae85c73b2e7864feb1fe9b7395bf2bda6" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1Reader_1ae85c73b2e7864feb1fe9b7395bf2bda6" kindref="member">Close</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54" refid="classiceberg_1_1Reader_1a28632e4930a68070106075a570f381b8" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::optional&lt;ArrowArray&gt;&gt;<sp/><ref refid="classiceberg_1_1Reader_1a28632e4930a68070106075a570f381b8" kindref="member">Next</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="classiceberg_1_1Reader_1a782ec85ef9bd7bcbe901b35520305dc7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;ArrowSchema&gt;<sp/><ref refid="classiceberg_1_1Reader_1a782ec85ef9bd7bcbe901b35520305dc7" kindref="member">Schema</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="classiceberg_1_1Reader_1ad732e05d7be7c6ce460e56b54ddf4736" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::unordered_map&lt;std::string,<sp/>std::string&gt;&gt;<sp/><ref refid="classiceberg_1_1Reader_1ad732e05d7be7c6ce460e56b54ddf4736" kindref="member">Metadata</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="structiceberg_1_1Split" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1Split" kindref="compound">Split</ref><sp/>{</highlight></codeline>
+<codeline lineno="66" refid="structiceberg_1_1Split_1a481b7cbaf8b03f529d6bcbfec9700632" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Split_1a481b7cbaf8b03f529d6bcbfec9700632" kindref="member">offset</ref>;</highlight></codeline>
+<codeline lineno="68" refid="structiceberg_1_1Split_1aed304e2e09b04f9fb52cc08edbb3f0bb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Split_1aed304e2e09b04f9fb52cc08edbb3f0bb" kindref="member">length</ref>;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="classiceberg_1_1ReaderProperties" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref>&lt;ReaderProperties&gt;<sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Entry<sp/>=<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ConfigBase_1_1Entry" kindref="compound">ConfigBase&lt;ReaderProperties&gt;::Entry</ref>&lt;T&gt;;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="classiceberg_1_1ReaderProperties_1ac41dca455600b179913525bb79b2cd60" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Entry&lt;int64_t&gt;<sp/><ref refid="classiceberg_1_1ReaderProperties_1ac41dca455600b179913525bb79b2cd60" kindref="member">kBatchSize</ref>{</highlight><highlight class="stringliteral">&quot;read.batch-size&quot;</highlight><highlight class="normal">,<sp/>4096};</highlight></codeline>
+<codeline lineno="81" refid="classiceberg_1_1ReaderProperties_1acd2d67afddc7078a168e6fc54a07d4eb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Entry&lt;bool&gt;<sp/><ref refid="classiceberg_1_1ReaderProperties_1acd2d67afddc7078a168e6fc54a07d4eb" kindref="member">kAvroSkipDatum</ref>{</highlight><highlight class="stringliteral">&quot;read.avro.skip-datum&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="83" refid="classiceberg_1_1ReaderProperties_1a6bc67dd5a6ab5a6abf2e6b1b7d461dc3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Entry&lt;int64_t&gt;<sp/><ref refid="classiceberg_1_1ReaderProperties_1a6bc67dd5a6ab5a6abf2e6b1b7d461dc3" kindref="member">kAvroBufferSize</ref>{</highlight><highlight class="stringliteral">&quot;read.avro.buffer-size&quot;</highlight><highlight class="normal">,<sp/>1024<sp/>*<sp/>1024};</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref><sp/><ref refid="classiceberg_1_1ReaderProperties_1a144aa086668ecb63f1cf90d49df08c47" kindref="member">FromMap</ref>(</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>properties);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="structiceberg_1_1ReaderOptions" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1ReaderOptions" kindref="compound">ReaderOptions</ref><sp/>{</highlight></codeline>
+<codeline lineno="93" refid="structiceberg_1_1ReaderOptions_1a959dc0c774f0a3d55991f1eb73753b2c" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1ReaderOptions_1a959dc0c774f0a3d55991f1eb73753b2c" kindref="member">path</ref>;</highlight></codeline>
+<codeline lineno="95" refid="structiceberg_1_1ReaderOptions_1a774ae321e3063b7ae0bbb92c9d552a74" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;size_t&gt;<sp/><ref refid="structiceberg_1_1ReaderOptions_1a774ae321e3063b7ae0bbb92c9d552a74" kindref="member">length</ref>;</highlight></codeline>
+<codeline lineno="97" refid="structiceberg_1_1ReaderOptions_1ad23066ad0bd76b9bddf201e5b9bbeb0e" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;Split&gt;<sp/><ref refid="structiceberg_1_1ReaderOptions_1ad23066ad0bd76b9bddf201e5b9bbeb0e" kindref="member">split</ref>;</highlight></codeline>
+<codeline lineno="101" refid="structiceberg_1_1ReaderOptions_1a49992ba965f62ff27631e8131ed657ea" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;class<sp/>FileIO&gt;<sp/><ref refid="structiceberg_1_1ReaderOptions_1a49992ba965f62ff27631e8131ed657ea" kindref="member">io</ref>;</highlight></codeline>
+<codeline lineno="103" refid="structiceberg_1_1ReaderOptions_1a418c6556965b0db7f12131e4f0070304" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;class<sp/>Schema&gt;<sp/><ref refid="structiceberg_1_1ReaderOptions_1a418c6556965b0db7f12131e4f0070304" kindref="member">projection</ref>;</highlight></codeline>
+<codeline lineno="106" refid="structiceberg_1_1ReaderOptions_1af6504634d4bf0a406fb091d9e10dc8fc" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;class<sp/>Expression&gt;<sp/><ref refid="structiceberg_1_1ReaderOptions_1af6504634d4bf0a406fb091d9e10dc8fc" kindref="member">filter</ref>;</highlight></codeline>
+<codeline lineno="109" refid="structiceberg_1_1ReaderOptions_1ab2824fcc77efcfdd2810ff3945f2a519" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;class<sp/>NameMapping&gt;<sp/><ref refid="structiceberg_1_1ReaderOptions_1ab2824fcc77efcfdd2810ff3945f2a519" kindref="member">name_mapping</ref>;</highlight></codeline>
+<codeline lineno="111" refid="structiceberg_1_1ReaderOptions_1abfe412d377c1207df04c3a2c4fe23d55" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref><sp/><ref refid="structiceberg_1_1ReaderOptions_1abfe412d377c1207df04c3a2c4fe23d55" kindref="member">properties</ref>;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="file__reader_8h_1aadcea35e8b45a436a61aaf23684b939f" refkind="member"><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="file__reader_8h_1aadcea35e8b45a436a61aaf23684b939f" kindref="member">ReaderFactory</ref><sp/>=<sp/>std::function&lt;Result&lt;std::unique_ptr&lt;Reader&gt;&gt;()&gt;;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118" refid="structiceberg_1_1ReaderFactoryRegistry" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1ReaderFactoryRegistry" kindref="compound">ReaderFactoryRegistry</ref><sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1ReaderFactoryRegistry" kindref="compound">ReaderFactoryRegistry</ref>(FileFormatType<sp/>format_type,<sp/><ref refid="file__reader_8h_1aadcea35e8b45a436a61aaf23684b939f" kindref="member">ReaderFactory</ref><sp/>factory);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="file__reader_8h_1aadcea35e8b45a436a61aaf23684b939f" kindref="member">ReaderFactory</ref>&amp;<sp/>GetFactory(FileFormatType<sp/>format_type);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;Reader&gt;&gt;<sp/>Open(FileFormatType<sp/>format_type,</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ReaderOptions" kindref="compound">ReaderOptions</ref>&amp;<sp/>options);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/file_reader.h"/>
+  </compounddef>
+</doxygen>

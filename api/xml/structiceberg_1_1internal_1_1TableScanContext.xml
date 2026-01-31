@@ -1,0 +1,387 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1internal_1_1TableScanContext" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::internal::TableScanContext</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a289117fca201ead433081d98880ba0eb" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::internal::TableScanContext::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::internal::TableScanContext::snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="107" column="17" bodyfile="iceberg/table_scan.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a8a7023a567f1048ca4017c802df72e95" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::internal::TableScanContext::filter</definition>
+        <argsstring></argsstring>
+        <name>filter</name>
+        <qualifiedname>iceberg::internal::TableScanContext::filter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="108" column="19" bodyfile="iceberg/table_scan.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a6d7641dbdaac1fd162481c901fc4e1f9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::internal::TableScanContext::ignore_residuals</definition>
+        <argsstring></argsstring>
+        <name>ignore_residuals</name>
+        <qualifiedname>iceberg::internal::TableScanContext::ignore_residuals</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="109" column="8" bodyfile="iceberg/table_scan.h" bodystart="109" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1ab268004641259baa6c3b5999dc13649b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::internal::TableScanContext::case_sensitive</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive</name>
+        <qualifiedname>iceberg::internal::TableScanContext::case_sensitive</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="110" column="8" bodyfile="iceberg/table_scan.h" bodystart="110" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1aaba43d23ee4e9df0dd9c985ad60464da" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::internal::TableScanContext::return_column_stats</definition>
+        <argsstring></argsstring>
+        <name>return_column_stats</name>
+        <qualifiedname>iceberg::internal::TableScanContext::return_column_stats</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="111" column="8" bodyfile="iceberg/table_scan.h" bodystart="111" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a432184da4e9e7f380653e3946b056352" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::internal::TableScanContext::columns_to_keep_stats</definition>
+        <argsstring></argsstring>
+        <name>columns_to_keep_stats</name>
+        <qualifiedname>iceberg::internal::TableScanContext::columns_to_keep_stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="112" column="22" bodyfile="iceberg/table_scan.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a10ecddc9378990070b7fa9abd12eafa7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::internal::TableScanContext::selected_columns</definition>
+        <argsstring></argsstring>
+        <name>selected_columns</name>
+        <qualifiedname>iceberg::internal::TableScanContext::selected_columns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="113" column="15" bodyfile="iceberg/table_scan.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a001d3651ce3f486c6fd26a0bc9b85316" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::internal::TableScanContext::projected_schema</definition>
+        <argsstring></argsstring>
+        <name>projected_schema</name>
+        <qualifiedname>iceberg::internal::TableScanContext::projected_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="114" column="19" bodyfile="iceberg/table_scan.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a6a973ddb2b3677ae489410d4d1d40535" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::internal::TableScanContext::options</definition>
+        <argsstring></argsstring>
+        <name>options</name>
+        <qualifiedname>iceberg::internal::TableScanContext::options</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="115" column="22" bodyfile="iceberg/table_scan.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1ae2bae94a4fa8f1a96bb2d798b1c9822c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::internal::TableScanContext::from_snapshot_id_inclusive</definition>
+        <argsstring></argsstring>
+        <name>from_snapshot_id_inclusive</name>
+        <qualifiedname>iceberg::internal::TableScanContext::from_snapshot_id_inclusive</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="116" column="8" bodyfile="iceberg/table_scan.h" bodystart="116" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a539d047b9ca0226f1df11d3bc685cb4a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::internal::TableScanContext::from_snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>from_snapshot_id</name>
+        <qualifiedname>iceberg::internal::TableScanContext::from_snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="117" column="17" bodyfile="iceberg/table_scan.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1acc238f823562c566a525f5c121329d65" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::internal::TableScanContext::to_snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>to_snapshot_id</name>
+        <qualifiedname>iceberg::internal::TableScanContext::to_snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="118" column="17" bodyfile="iceberg/table_scan.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1ae83b81268c5dfae6e95153ea6c22bf1d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::internal::TableScanContext::branch</definition>
+        <argsstring></argsstring>
+        <name>branch</name>
+        <qualifiedname>iceberg::internal::TableScanContext::branch</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="119" column="15" bodyfile="iceberg/table_scan.h" bodystart="119" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1TableScanContext_1a9a0a6fa53b5eee17102e08337bc9471c" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::internal::TableScanContext::min_rows_requested</definition>
+        <argsstring></argsstring>
+        <name>min_rows_requested</name>
+        <qualifiedname>iceberg::internal::TableScanContext::min_rows_requested</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="120" column="17" bodyfile="iceberg/table_scan.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1internal_1_1TableScanContext_1a7f446d04361278494edf186c1fcb11ae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::internal::TableScanContext::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::internal::TableScanContext::Validate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="123" column="11" bodyfile="iceberg/table_scan.cc" bodystart="158" bodyend="169"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="18">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="17">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="3">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::internal::TableScanContext</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>filter</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>columns_to_keep_stats</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>selected_columns</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>projected_schema</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>options</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>branch</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::Expression &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="20">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::string</label>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::string_view</label>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_set&lt; int32_t &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_scan.h" line="106" column="1" bodyfile="iceberg/table_scan.h" bodystart="106" bodyend="124"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1ae83b81268c5dfae6e95153ea6c22bf1d" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>branch</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1ab268004641259baa6c3b5999dc13649b" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>case_sensitive</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a432184da4e9e7f380653e3946b056352" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>columns_to_keep_stats</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a8a7023a567f1048ca4017c802df72e95" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>filter</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a539d047b9ca0226f1df11d3bc685cb4a" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>from_snapshot_id</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1ae2bae94a4fa8f1a96bb2d798b1c9822c" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>from_snapshot_id_inclusive</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a6d7641dbdaac1fd162481c901fc4e1f9" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>ignore_residuals</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a9a0a6fa53b5eee17102e08337bc9471c" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>min_rows_requested</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a6a973ddb2b3677ae489410d4d1d40535" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>options</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a001d3651ce3f486c6fd26a0bc9b85316" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>projected_schema</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1aaba43d23ee4e9df0dd9c985ad60464da" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>return_column_stats</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a10ecddc9378990070b7fa9abd12eafa7" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>selected_columns</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a289117fca201ead433081d98880ba0eb" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>snapshot_id</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1acc238f823562c566a525f5c121329d65" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>to_snapshot_id</name></member>
+      <member refid="structiceberg_1_1internal_1_1TableScanContext_1a7f446d04361278494edf186c1fcb11ae" prot="public" virt="non-virtual"><scope>iceberg::internal::TableScanContext</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

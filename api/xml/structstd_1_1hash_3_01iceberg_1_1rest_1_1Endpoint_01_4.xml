@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structstd_1_1hash_3_01iceberg_1_1rest_1_1Endpoint_01_4" kind="struct" language="C++" prot="private">
+    <compoundname>std::hash&lt; iceberg::rest::Endpoint &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structstd_1_1hash_3_01iceberg_1_1rest_1_1Endpoint_01_4_1a2ac9938a00a4827d8922425fcd69f940" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t std::hash&lt; iceberg::rest::Endpoint &gt;::operator()</definition>
+        <argsstring>(const iceberg::rest::Endpoint &amp;endpoint) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>std::hash&lt; iceberg::rest::Endpoint &gt;::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">iceberg::rest::Endpoint</ref> &amp;</type>
+          <declname>endpoint</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="144" column="15" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="144" bodyend="148"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/endpoint.h" line="143" column="1" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="143" bodyend="149"/>
+    <listofallmembers>
+      <member refid="structstd_1_1hash_3_01iceberg_1_1rest_1_1Endpoint_01_4_1a2ac9938a00a4827d8922425fcd69f940" prot="public" virt="non-virtual"><scope>std::hash&lt; iceberg::rest::Endpoint &gt;</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

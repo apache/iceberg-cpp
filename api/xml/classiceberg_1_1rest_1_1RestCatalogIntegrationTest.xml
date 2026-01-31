@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::RestCatalogIntegrationTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1ab2b4d34a3aee83eb01ee8fc82ebedaa5" prot="protected" static="yes" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1DockerCompose" kindref="compound">DockerCompose</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;DockerCompose&gt; iceberg::rest::RestCatalogIntegrationTest::docker_compose_</definition>
+        <argsstring></argsstring>
+        <name>docker_compose_</name>
+        <qualifiedname>iceberg::rest::RestCatalogIntegrationTest::docker_compose_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="151" column="33" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="151" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1a0eaf765ad2b89c4931fa6eaadbf368d0" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::rest::RestCatalogIntegrationTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::rest::RestCatalogIntegrationTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="101" column="15" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="101" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1a507f6beca6ae91e4c9d1bac51022bd70" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::rest::RestCatalogIntegrationTest::TearDownTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>TearDownTestSuite</name>
+        <qualifiedname>iceberg::rest::RestCatalogIntegrationTest::TearDownTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="125" column="15" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="125" bodyend="125"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1aa0167f21c4e2e58dfb2abd8c0949407b" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::RestCatalogIntegrationTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::rest::RestCatalogIntegrationTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="127" column="8" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="127" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1ad6c3003308c8edad297250468f807b39" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::RestCatalogIntegrationTest::TearDown</definition>
+        <argsstring>() override</argsstring>
+        <name>TearDown</name>
+        <qualifiedname>iceberg::rest::RestCatalogIntegrationTest::TearDown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="129" column="8" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="129" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1a8c36a3d13befe6ab24731924efe38d4d" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1RestCatalog" kindref="compound">RestCatalog</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; RestCatalog &gt; &gt; iceberg::rest::RestCatalogIntegrationTest::CreateCatalog</definition>
+        <argsstring>()</argsstring>
+        <name>CreateCatalog</name>
+        <qualifiedname>iceberg::rest::RestCatalogIntegrationTest::CreateCatalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="132" column="10" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="132" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1aa07ac7d10845e8cd08df0a000685aaf3" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::rest::RestCatalogIntegrationTest::CreateDefaultSchema</definition>
+        <argsstring>()</argsstring>
+        <name>CreateDefaultSchema</name>
+        <qualifiedname>iceberg::rest::RestCatalogIntegrationTest::CreateDefaultSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="144" column="19" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="144" bodyend="149"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Integration test fixture for REST catalog with automatic Docker Compose setup。 </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::rest::RestCatalogIntegrationTest</label>
+        <link refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::DockerCompose</label>
+        <link refid="classiceberg_1_1DockerCompose"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::RestCatalogIntegrationTest</label>
+        <link refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>docker_compose_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::DockerCompose &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_catalog_test.cc" line="99" column="1" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="99" bodyend="152"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1a8c36a3d13befe6ab24731924efe38d4d" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogIntegrationTest</scope><name>CreateCatalog</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1aa07ac7d10845e8cd08df0a000685aaf3" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogIntegrationTest</scope><name>CreateDefaultSchema</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1ab2b4d34a3aee83eb01ee8fc82ebedaa5" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogIntegrationTest</scope><name>docker_compose_</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1aa0167f21c4e2e58dfb2abd8c0949407b" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogIntegrationTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1a0eaf765ad2b89c4931fa6eaadbf368d0" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogIntegrationTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1ad6c3003308c8edad297250468f807b39" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogIntegrationTest</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogIntegrationTest_1a507f6beca6ae91e4c9d1bac51022bd70" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogIntegrationTest</scope><name>TearDownTestSuite</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

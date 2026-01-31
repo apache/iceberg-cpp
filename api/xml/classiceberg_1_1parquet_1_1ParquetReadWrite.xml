@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1parquet_1_1ParquetReadWrite" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ParquetReadWrite</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReadWrite_1ad9dc74ca73f577f689e47ab06d8eb660" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::parquet::ParquetReadWrite::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::parquet::ParquetReadWrite::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="397" column="15" bodyfile="iceberg/test/parquet_test.cc" bodystart="397" bodyend="397"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::parquet::ParquetReadWrite</label>
+        <link refid="classiceberg_1_1parquet_1_1ParquetReadWrite"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::parquet::ParquetReadWrite</label>
+        <link refid="classiceberg_1_1parquet_1_1ParquetReadWrite"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/parquet_test.cc" line="395" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="395" bodyend="398"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReadWrite_1ad9dc74ca73f577f689e47ab06d8eb660" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReadWrite</scope><name>SetUpTestSuite</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

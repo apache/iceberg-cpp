@@ -1,0 +1,215 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ConfigBase" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ConfigBase</compoundname>
+    <innerclass refid="classiceberg_1_1ConfigBase_1_1Entry" prot="public">iceberg::ConfigBase::Entry</innerclass>
+    <templateparamlist>
+      <param>
+        <type>class ConcreteConfig</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ConfigBase_1a5988dbb52a6ce914c88ef10c66e5bba7" prot="protected" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::ConfigBase&lt; ConcreteConfig &gt;::configs_</definition>
+        <argsstring></argsstring>
+        <name>configs_</name>
+        <qualifiedname>iceberg::ConfigBase::configs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="131" column="22" bodyfile="iceberg/util/config.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ConfigBase_1a3c626ca9dd5adf5a1f2e72d3f751059c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref> &amp;</type>
+        <definition>ConfigBase &amp; iceberg::ConfigBase&lt; ConcreteConfig &gt;::Set</definition>
+        <argsstring>(const Entry&lt; T &gt; &amp;entry, const T &amp;val)</argsstring>
+        <name>Set</name>
+        <qualifiedname>iceberg::ConfigBase::Set</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ConfigBase_1_1Entry" kindref="compound">Entry</ref>&lt; T &gt; &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>const T &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="91" column="14" bodyfile="iceberg/util/config.h" bodystart="91" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ConfigBase_1a1fe814df79a9ed72e34fa9d7e6e8d443" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type><ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref> &amp;</type>
+        <definition>ConfigBase &amp; iceberg::ConfigBase&lt; ConcreteConfig &gt;::Unset</definition>
+        <argsstring>(const Entry&lt; T &gt; &amp;entry)</argsstring>
+        <name>Unset</name>
+        <qualifiedname>iceberg::ConfigBase::Unset</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ConfigBase_1_1Entry" kindref="compound">Entry</ref>&lt; T &gt; &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="97" column="14" bodyfile="iceberg/util/config.h" bodystart="97" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ConfigBase_1a95b58a9275880fc2437210f42e8946f2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref> &amp;</type>
+        <definition>ConfigBase &amp; iceberg::ConfigBase&lt; ConcreteConfig &gt;::Reset</definition>
+        <argsstring>()</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::ConfigBase::Reset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="102" column="14" bodyfile="iceberg/util/config.h" bodystart="102" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ConfigBase_1a793c5c7e230dac7b87c16200f8263db6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>T iceberg::ConfigBase&lt; ConcreteConfig &gt;::Get</definition>
+        <argsstring>(const Entry&lt; T &gt; &amp;entry) const</argsstring>
+        <name>Get</name>
+        <qualifiedname>iceberg::ConfigBase::Get</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ConfigBase_1_1Entry" kindref="compound">Entry</ref>&lt; T &gt; &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="108" column="5" bodyfile="iceberg/util/config.h" bodystart="108" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ConfigBase_1a464281576df4a683611d8319e578257c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+        <definition>const std::unordered_map&lt; std::string, std::string &gt; &amp; iceberg::ConfigBase&lt; ConcreteConfig &gt;::configs</definition>
+        <argsstring>() const</argsstring>
+        <name>configs</name>
+        <qualifiedname>iceberg::ConfigBase::configs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="113" column="28" bodyfile="iceberg/util/config.h" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ConfigBase_1a75f09e1cd2bb55b4df854298ed678313" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; &amp; iceberg::ConfigBase&lt; ConcreteConfig &gt;::mutable_configs</definition>
+        <argsstring>()</argsstring>
+        <name>mutable_configs</name>
+        <qualifiedname>iceberg::ConfigBase::mutable_configs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="115" column="22" bodyfile="iceberg/util/config.h" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ConfigBase_1a78dc1c7d65af1e096a19fc77d2c9ed39" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; iceberg::ConfigBase&lt; ConcreteConfig &gt;::Extract</definition>
+        <argsstring>(std::string_view prefix) const</argsstring>
+        <name>Extract</name>
+        <qualifiedname>iceberg::ConfigBase::Extract</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>prefix</declname>
+        </param>
+        <briefdescription>
+<para>Extracts the prefix from the configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>prefix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The prefix to extract. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A map of entries that match the prefix with prefix removed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="120" column="22" bodyfile="iceberg/util/config.h" bodystart="120" bodyend="128"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ConfigBase&lt; ConcreteConfig &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/config.h" line="65" column="1" bodyfile="iceberg/util/config.h" bodystart="65" bodyend="132"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ConfigBase_1a464281576df4a683611d8319e578257c" prot="public" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a5988dbb52a6ce914c88ef10c66e5bba7" prot="protected" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>configs_</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a78dc1c7d65af1e096a19fc77d2c9ed39" prot="public" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>Extract</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a793c5c7e230dac7b87c16200f8263db6" prot="public" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a75f09e1cd2bb55b4df854298ed678313" prot="public" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>mutable_configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a95b58a9275880fc2437210f42e8946f2" prot="public" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a3c626ca9dd5adf5a1f2e72d3f751059c" prot="public" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a1fe814df79a9ed72e34fa9d7e6e8d443" prot="public" virt="non-virtual"><scope>iceberg::ConfigBase</scope><name>Unset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,266 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DockerCompose" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DockerCompose</compoundname>
+    <includes refid="docker__compose__util_8h" local="no">docker_compose_util.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DockerCompose_1a754c63fe3d0e88dd5e38d25d2406c039" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::DockerCompose::project_name_</definition>
+        <argsstring></argsstring>
+        <name>project_name_</name>
+        <qualifiedname>iceberg::DockerCompose::project_name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="58" column="15" bodyfile="iceberg/test/util/docker_compose_util.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DockerCompose_1af5863d8d0b697211ac52e502fb96f1a4" prot="private" static="no" mutable="no">
+        <type>std::filesystem::path</type>
+        <definition>std::filesystem::path iceberg::DockerCompose::docker_compose_dir_</definition>
+        <argsstring></argsstring>
+        <name>docker_compose_dir_</name>
+        <qualifiedname>iceberg::DockerCompose::docker_compose_dir_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="59" column="25" bodyfile="iceberg/test/util/docker_compose_util.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1a38d19fb8f11d6064dd98c233c7b93762" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DockerCompose::DockerCompose</definition>
+        <argsstring>(std::string project_name, std::filesystem::path docker_compose_dir)</argsstring>
+        <name>DockerCompose</name>
+        <qualifiedname>iceberg::DockerCompose::DockerCompose</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>project_name</declname>
+        </param>
+        <param>
+          <type>std::filesystem::path</type>
+          <declname>docker_compose_dir</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the Docker Compose manager context. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>project_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A unique identifier for this project to ensure test isolation. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>docker_compose_dir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The directory path containing the target docker-compose.yml. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="37" column="3" bodyfile="iceberg/test/util/docker_compose_util.cc" bodystart="28" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1ac685e639da16d7ee19edd0d09fe593f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DockerCompose::~DockerCompose</definition>
+        <argsstring>()</argsstring>
+        <name>~DockerCompose</name>
+        <qualifiedname>iceberg::DockerCompose::~DockerCompose</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="39" column="3" bodyfile="iceberg/test/util/docker_compose_util.cc" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1ab31bec9f7106d1644a2274836eb42f0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DockerCompose::DockerCompose</definition>
+        <argsstring>(const DockerCompose &amp;)=delete</argsstring>
+        <name>DockerCompose</name>
+        <qualifiedname>iceberg::DockerCompose::DockerCompose</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DockerCompose" kindref="compound">DockerCompose</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="41" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1a10847a40a9264b8e644d68799bb80492" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1DockerCompose" kindref="compound">DockerCompose</ref> &amp;</type>
+        <definition>DockerCompose &amp; iceberg::DockerCompose::operator=</definition>
+        <argsstring>(const DockerCompose &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::DockerCompose::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DockerCompose" kindref="compound">DockerCompose</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="42" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1ab0db1a2ba72dea3b92a26c338be7e4eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DockerCompose::DockerCompose</definition>
+        <argsstring>(DockerCompose &amp;&amp;)=default</argsstring>
+        <name>DockerCompose</name>
+        <qualifiedname>iceberg::DockerCompose::DockerCompose</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1DockerCompose" kindref="compound">DockerCompose</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="43" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1a4bdb9cd3751ccf56fa19b58770f9039e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1DockerCompose" kindref="compound">DockerCompose</ref> &amp;</type>
+        <definition>DockerCompose &amp; iceberg::DockerCompose::operator=</definition>
+        <argsstring>(DockerCompose &amp;&amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::DockerCompose::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1DockerCompose" kindref="compound">DockerCompose</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="44" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1aed38fc903de979c38e505223dafc01a0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::DockerCompose::project_name</definition>
+        <argsstring>() const</argsstring>
+        <name>project_name</name>
+        <qualifiedname>iceberg::DockerCompose::project_name</qualifiedname>
+        <briefdescription>
+<para>Get the docker project name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="47" column="21" bodyfile="iceberg/test/util/docker_compose_util.h" bodystart="47" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1aa262dff63ebf0cb34cb3bb06d8719c58" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DockerCompose::Up</definition>
+        <argsstring>()</argsstring>
+        <name>Up</name>
+        <qualifiedname>iceberg::DockerCompose::Up</qualifiedname>
+        <briefdescription>
+<para>Executes &apos;docker-compose up&apos; to start services. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>May throw an exception if the services fail to start. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="51" column="8" bodyfile="iceberg/test/util/docker_compose_util.cc" bodystart="35" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1a31eac8071a558accac7ca8589b3c18e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DockerCompose::Down</definition>
+        <argsstring>()</argsstring>
+        <name>Down</name>
+        <qualifiedname>iceberg::DockerCompose::Down</qualifiedname>
+        <briefdescription>
+<para>Executes &apos;docker-compose down&apos; to stop and remove services. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>May throw an exception if the services fail to stop. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="55" column="8" bodyfile="iceberg/test/util/docker_compose_util.cc" bodystart="40" bodyend="43"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1DockerCompose_1aa9a1c51b625ff71d66ff78875f735cb1" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Command" kindref="compound">Command</ref></type>
+        <definition>Command iceberg::DockerCompose::BuildDockerCommand</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;args) const</argsstring>
+        <name>BuildDockerCommand</name>
+        <qualifiedname>iceberg::DockerCompose::BuildDockerCommand</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+<para>Build a docker compose <ref refid="classiceberg_1_1Command" kindref="compound">Command</ref> with proper environment. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>args</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Additional command line arguments. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Command" kindref="compound">Command</ref> object ready to execute. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/docker_compose_util.h" line="64" column="11" bodyfile="iceberg/test/util/docker_compose_util.cc" bodystart="45" bodyend="52"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Docker Compose orchestration utilities for integration testing. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/util/docker_compose_util.h" line="31" column="1" bodyfile="iceberg/test/util/docker_compose_util.h" bodystart="31" bodyend="65"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DockerCompose_1aa9a1c51b625ff71d66ff78875f735cb1" prot="private" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>BuildDockerCommand</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1af5863d8d0b697211ac52e502fb96f1a4" prot="private" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>docker_compose_dir_</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1a38d19fb8f11d6064dd98c233c7b93762" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>DockerCompose</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1ab31bec9f7106d1644a2274836eb42f0a" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>DockerCompose</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1ab0db1a2ba72dea3b92a26c338be7e4eb" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>DockerCompose</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1a31eac8071a558accac7ca8589b3c18e1" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>Down</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1a10847a40a9264b8e644d68799bb80492" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1a4bdb9cd3751ccf56fa19b58770f9039e" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1aed38fc903de979c38e505223dafc01a0" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>project_name</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1a754c63fe3d0e88dd5e38d25d2406c039" prot="private" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>project_name_</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1aa262dff63ebf0cb34cb3bb06d8719c58" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>Up</name></member>
+      <member refid="classiceberg_1_1DockerCompose_1ac685e639da16d7ee19edd0d09fe593f5" prot="public" virt="non-virtual"><scope>iceberg::DockerCompose</scope><name>~DockerCompose</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

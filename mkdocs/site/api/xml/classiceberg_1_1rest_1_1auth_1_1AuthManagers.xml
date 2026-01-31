@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1AuthManagers" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::AuthManagers</compoundname>
+    <includes refid="auth__managers_8h" local="no">auth_managers.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; AuthManager &gt; &gt; iceberg::rest::auth::AuthManagers::Load</definition>
+        <argsstring>(std::string_view name, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>Load</name>
+        <qualifiedname>iceberg::rest::auth::AuthManagers::Load</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Load a manager by consulting the &quot;rest.auth.type&quot; configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the auth manager. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> properties used to determine auth type. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Manager instance or an error if no factory matches. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_managers.h" line="54" column="17" bodyfile="iceberg/catalog/rest/auth/auth_managers.cc" bodystart="66" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acfaeccbee99934a746eb3d9ca3cfd4b6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::auth::AuthManagers::Register</definition>
+        <argsstring>(std::string_view auth_type, AuthManagerFactory factory)</argsstring>
+        <name>Register</name>
+        <qualifiedname>iceberg::rest::auth::AuthManagers::Register</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>auth_type</declname>
+        </param>
+        <param>
+          <type><ref refid="auth__managers_8h_1a8dcfa3f158cf6eb8345037e08fef0ef4" kindref="member">AuthManagerFactory</ref></type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+<para>Register or override the factory for a given auth type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is not thread-safe. All registrations should be done during application startup before any concurrent access to <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">Load()</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>auth_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Case-insensitive type identifier (e.g., &quot;basic&quot;). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>factory</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Factory function that produces the manager. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_managers.h" line="65" column="15" bodyfile="iceberg/catalog/rest/auth/auth_managers.cc" bodystart="62" bodyend="64"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Registry-backed factory for <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> implementations. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/auth_managers.h" line="47" column="1" bodyfile="iceberg/catalog/rest/auth/auth_managers.h" bodystart="47" bodyend="66"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthManagers</scope><name>Load</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acfaeccbee99934a746eb3d9ca3cfd4b6" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthManagers</scope><name>Register</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['oauth2tokens_0',['OAuth2Tokens',['../classiceberg_1_1rest_1_1ResourcePaths.html#ad4a2bd02c91621b5b1a6dc7f1c2ac9c7',1,'iceberg::rest::ResourcePaths']]],
+  ['oldestancestor_1',['OldestAncestor',['../classiceberg_1_1SnapshotUtil.html#a1d97496b576b9a8f751a7ce0fd03ce50',1,'iceberg::SnapshotUtil']]],
+  ['oldestancestorafter_2',['OldestAncestorAfter',['../classiceberg_1_1SnapshotUtil.html#adff1d9a01a59c7986e8b084be5db5202',1,'iceberg::SnapshotUtil']]],
+  ['oldestancestorof_3',['OldestAncestorOf',['../classiceberg_1_1SnapshotUtil.html#a6b0ca8ec32e07e44f77400b8ebc4e97e',1,'iceberg::SnapshotUtil']]],
+  ['op_4',['op',['../classiceberg_1_1Aggregate.html#a04e2d2492b3a5580b85a6663f32fd251',1,'iceberg::Aggregate::op()'],['../classiceberg_1_1Expression.html#a5a16ee5d023305b50e4a2216b4047eff',1,'iceberg::Expression::op()'],['../classiceberg_1_1True.html#aa40701eb9c6cc8b57130643a1000ad14',1,'iceberg::True::op()'],['../classiceberg_1_1False.html#aaccc2ef838f10e74398e471743e6fb23',1,'iceberg::False::op()'],['../classiceberg_1_1And.html#a8d680f4240a81b08ed533e9bf89479c9',1,'iceberg::And::op()'],['../classiceberg_1_1Or.html#afe9e736e8ba2e8b5748941f2b349fc6d',1,'iceberg::Or::op()'],['../classiceberg_1_1Not.html#a5ca78cdd707666ff271492a8c45f37ec',1,'iceberg::Not::op()'],['../classiceberg_1_1Predicate.html#a149508fc8ddf4cd5d4da0ae9f4c1c80f',1,'iceberg::Predicate::op()']]],
+  ['open_5',['open',['../classiceberg_1_1avro_1_1AvroReader.html#a0a7dfbbd7f261a82f651c75f8060fb24',1,'iceberg::avro::AvroReader::Open()'],['../classiceberg_1_1parquet_1_1ParquetWriter.html#a144493d7ba4e63daae1b5c9b0d510dbd',1,'iceberg::parquet::ParquetWriter::Open()'],['../classiceberg_1_1parquet_1_1ParquetReader.html#ab75a19e9370963e6790f4f523e5ced32',1,'iceberg::parquet::ParquetReader::Open()'],['../structiceberg_1_1WriterFactoryRegistry.html#afeb69e5f68d62d46d47428cd9730a546',1,'iceberg::WriterFactoryRegistry::Open()'],['../classiceberg_1_1Writer.html#a3088b433357b7589be2aa294fa311346',1,'iceberg::Writer::Open()'],['../structiceberg_1_1ReaderFactoryRegistry.html#a04318c64c78edaedda61a63652c5f4b3',1,'iceberg::ReaderFactoryRegistry::Open()'],['../classiceberg_1_1Reader.html#ad79601bfcecf30aae808c6ffd972cc65',1,'iceberg::Reader::Open()'],['../classiceberg_1_1avro_1_1AvroWriter.html#a6f1f8a09bac758ba7602e13f572f3d62',1,'iceberg::avro::AvroWriter::Open()']]],
+  ['operation_6',['operation',['../structiceberg_1_1Snapshot.html#aee0614438928f4f25b802846c3719cc8',1,'iceberg::Snapshot::Operation()'],['../classiceberg_1_1SnapshotUpdate.html#a7e5cb52a426032eebf3b602b5674c5e0',1,'iceberg::SnapshotUpdate::operation()'],['../classiceberg_1_1FastAppend.html#af48f453a28ecdbab15e2248fd087f6ef',1,'iceberg::FastAppend::operation()']]],
+  ['operator_26_3d_7',['operator&amp;=',['../classiceberg_1_1Decimal.html#a20c799ed953c57ae6a37a23dcfb17d23',1,'iceberg::Decimal']]],
+  ['operator_2a_3d_8',['operator*=',['../classiceberg_1_1Decimal.html#a5e16b07aa6ee5cc90c22ea8a0ad17aed',1,'iceberg::Decimal']]],
+  ['operator_2b_3d_9',['operator+=',['../classiceberg_1_1Decimal.html#a865d5429b1afb8cfe85b5491dd3125e0',1,'iceberg::Decimal']]],
+  ['operator_2d_3d_10',['operator-=',['../classiceberg_1_1Decimal.html#a2f00aca89d7391a8242281b6493c2ec4',1,'iceberg::Decimal']]],
+  ['operator_2f_3d_11',['operator/=',['../classiceberg_1_1Decimal.html#a2eb5aebd9335517d9f3550d5be10d5ca',1,'iceberg::Decimal']]],
+  ['operator_3c_3c_12',['operator&lt;&lt;',['../classiceberg_1_1Decimal.html#ad9a1babe945e8492c74448578af36225',1,'iceberg::Decimal']]],
+  ['operator_3c_3c_3d_13',['operator&lt;&lt;=',['../classiceberg_1_1Decimal.html#a08ff3aa5dc63e3b0b1a2c84524abfbfd',1,'iceberg::Decimal']]],
+  ['operator_3c_3d_3e_14',['operator&lt;=&gt;',['../classiceberg_1_1Literal.html#adf966faf9695eb78381634d0e1a08207',1,'iceberg::Literal::operator&lt;=&gt;()'],['../classiceberg_1_1Decimal.html#a224e99c351e9183fe83cb132a01cbfb1',1,'iceberg::Decimal::operator&lt;=&gt;(const Decimal &amp;other) const']]],
+  ['operator_3e_3e_15',['operator&gt;&gt;',['../classiceberg_1_1Decimal.html#a204b44d47eaf08b857ce0b134d6218e9',1,'iceberg::Decimal']]],
+  ['operator_3e_3e_3d_16',['operator&gt;&gt;=',['../classiceberg_1_1Decimal.html#a2c590d941407e08f8d796ea7f51423ce',1,'iceberg::Decimal']]],
+  ['operator_5b_5d_17',['operator[]',['../classiceberg_1_1Uuid.html#ab42b2c99ed63404a12dc22f9b5c54646',1,'iceberg::Uuid']]],
+  ['operator_7c_3d_18',['operator|=',['../classiceberg_1_1Decimal.html#ac3308230f8d33e807286c815725315e0',1,'iceberg::Decimal']]],
+  ['option_19',['Option',['../classiceberg_1_1TableScanBuilder.html#af885296e5208a01cea8da6b198d72813',1,'iceberg::TableScanBuilder']]],
+  ['optional_20',['optional',['../classiceberg_1_1SchemaField.html#aaee3e5fcc9a0fc3173cdcf1c00552df1',1,'iceberg::SchemaField']]],
+  ['optionallatestsnapshot_21',['OptionalLatestSnapshot',['../classiceberg_1_1SnapshotUtil.html#a7f88f8df4a78dbc616bdeed71602bc74',1,'iceberg::SnapshotUtil']]],
+  ['optionalsnapshotidasoftime_22',['OptionalSnapshotIdAsOfTime',['../classiceberg_1_1SnapshotUtil.html#a6117f0b0254614ba007a811196f5a442',1,'iceberg::SnapshotUtil']]],
+  ['or_23',['or',['../classiceberg_1_1ExpressionVisitor.html#aa21a66f372f1b32f94d8be2bb5643440',1,'iceberg::ExpressionVisitor::Or()'],['../classiceberg_1_1Expressions.html#ab6f02015ae774f2ee14bcb7dfba2c287',1,'iceberg::Expressions::Or()']]],
+  ['order_5fid_24',['order_id',['../classiceberg_1_1SortOrder.html#a435ae990ea0403f3ed72a4ca4eb16826',1,'iceberg::SortOrder']]]
+];

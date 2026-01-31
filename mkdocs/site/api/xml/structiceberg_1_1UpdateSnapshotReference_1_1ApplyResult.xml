@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdateSnapshotReference_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::UpdateSnapshotReference::ApplyResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1UpdateSnapshotReference_1_1ApplyResult_1ad54ce3759a395f19564c67024f235edb" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::pair&lt; std::string, std::shared_ptr&lt; <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &gt; &gt; &gt;</type>
+        <definition>std::vector&lt;std::pair&lt;std::string, std::shared_ptr&lt;SnapshotRef&gt; &gt; &gt; iceberg::UpdateSnapshotReference::ApplyResult::to_set</definition>
+        <argsstring></argsstring>
+        <name>to_set</name>
+        <qualifiedname>iceberg::UpdateSnapshotReference::ApplyResult::to_set</qualifiedname>
+        <briefdescription>
+<para>References to set or update (name, ref pairs) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_snapshot_reference.h" line="139" column="17" bodyfile="iceberg/update/update_snapshot_reference.h" bodystart="139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdateSnapshotReference_1_1ApplyResult_1ac23bc318d4101f8c3b9be298abc9a3a7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::UpdateSnapshotReference::ApplyResult::to_remove</definition>
+        <argsstring></argsstring>
+        <name>to_remove</name>
+        <qualifiedname>iceberg::UpdateSnapshotReference::ApplyResult::to_remove</qualifiedname>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> names to remove. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_snapshot_reference.h" line="141" column="17" bodyfile="iceberg/update/update_snapshot_reference.h" bodystart="141" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::UpdateSnapshotReference::ApplyResult</label>
+        <link refid="structiceberg_1_1UpdateSnapshotReference_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>to_set</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>to_remove</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::pair&lt; std::string, std::shared_ptr&lt; iceberg::SnapshotRef &gt; &gt; &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_snapshot_reference.h" line="137" column="3" bodyfile="iceberg/update/update_snapshot_reference.h" bodystart="137" bodyend="142"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdateSnapshotReference_1_1ApplyResult_1ac23bc318d4101f8c3b9be298abc9a3a7" prot="public" virt="non-virtual"><scope>iceberg::UpdateSnapshotReference::ApplyResult</scope><name>to_remove</name></member>
+      <member refid="structiceberg_1_1UpdateSnapshotReference_1_1ApplyResult_1ad54ce3759a395f19564c67024f235edb" prot="public" virt="non-virtual"><scope>iceberg::UpdateSnapshotReference::ApplyResult</scope><name>to_set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

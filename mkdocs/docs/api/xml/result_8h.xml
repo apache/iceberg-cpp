@@ -1,0 +1,1479 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="result_8h" kind="file" language="C++">
+    <compoundname>result.h</compoundname>
+    <includes local="no">expected</includes>
+    <includes local="no">format</includes>
+    <includes local="no">string</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includedby refid="arrow__status__internal_8h" local="yes">iceberg/arrow/arrow_status_internal.h</includedby>
+    <includedby refid="metadata__column__util__internal_8h" local="yes">iceberg/arrow/metadata_column_util_internal.h</includedby>
+    <includedby refid="avro__direct__decoder__internal_8h" local="yes">iceberg/avro/avro_direct_decoder_internal.h</includedby>
+    <includedby refid="avro__direct__encoder__internal_8h" local="yes">iceberg/avro/avro_direct_encoder_internal.h</includedby>
+    <includedby refid="avro__schema__util__internal_8h" local="yes">iceberg/avro/avro_schema_util_internal.h</includedby>
+    <includedby refid="catalog_8h" local="yes">iceberg/catalog.h</includedby>
+    <includedby refid="auth__manager_8h" local="yes">iceberg/catalog/rest/auth/auth_manager.h</includedby>
+    <includedby refid="auth__managers_8h" local="yes">iceberg/catalog/rest/auth/auth_managers.h</includedby>
+    <includedby refid="auth__session_8h" local="yes">iceberg/catalog/rest/auth/auth_session.h</includedby>
+    <includedby refid="catalog__properties_8h" local="yes">iceberg/catalog/rest/catalog_properties.h</includedby>
+    <includedby refid="endpoint_8h" local="yes">iceberg/catalog/rest/endpoint.h</includedby>
+    <includedby refid="error__handlers_8h" local="yes">iceberg/catalog/rest/error_handlers.h</includedby>
+    <includedby refid="http__client_8cc" local="yes">iceberg/catalog/rest/http_client.cc</includedby>
+    <includedby refid="http__client_8h" local="yes">iceberg/catalog/rest/http_client.h</includedby>
+    <includedby refid="catalog_2rest_2json__serde__internal_8h" local="yes">iceberg/catalog/rest/json_serde_internal.h</includedby>
+    <includedby refid="resource__paths_8h" local="yes">iceberg/catalog/rest/resource_paths.h</includedby>
+    <includedby refid="rest__catalog_8cc" local="yes">iceberg/catalog/rest/rest_catalog.cc</includedby>
+    <includedby refid="rest__catalog_8h" local="yes">iceberg/catalog/rest/rest_catalog.h</includedby>
+    <includedby refid="rest__util_8h" local="yes">iceberg/catalog/rest/rest_util.h</includedby>
+    <includedby refid="types_8h" local="yes">iceberg/catalog/rest/types.h</includedby>
+    <includedby refid="data__writer_8h" local="yes">iceberg/data/data_writer.h</includedby>
+    <includedby refid="equality__delete__writer_8h" local="yes">iceberg/data/equality_delete_writer.h</includedby>
+    <includedby refid="position__delete__writer_8h" local="yes">iceberg/data/position_delete_writer.h</includedby>
+    <includedby refid="writer_8h" local="yes">iceberg/data/writer.h</includedby>
+    <includedby refid="delete__file__index_8h" local="yes">iceberg/delete_file_index.h</includedby>
+    <includedby refid="aggregate_8h" local="yes">iceberg/expression/aggregate.h</includedby>
+    <includedby refid="binder_8cc" local="yes">iceberg/expression/binder.cc</includedby>
+    <includedby refid="evaluator_8h" local="yes">iceberg/expression/evaluator.h</includedby>
+    <includedby refid="expression_8h" local="yes">iceberg/expression/expression.h</includedby>
+    <includedby refid="expression__visitor_8h" local="yes">iceberg/expression/expression_visitor.h</includedby>
+    <includedby refid="inclusive__metrics__evaluator_8h" local="yes">iceberg/expression/inclusive_metrics_evaluator.h</includedby>
+    <includedby refid="expression_2json__serde__internal_8h" local="yes">iceberg/expression/json_serde_internal.h</includedby>
+    <includedby refid="literal_8h" local="yes">iceberg/expression/literal.h</includedby>
+    <includedby refid="manifest__evaluator_8h" local="yes">iceberg/expression/manifest_evaluator.h</includedby>
+    <includedby refid="predicate_8cc" local="yes">iceberg/expression/predicate.cc</includedby>
+    <includedby refid="projections_8cc" local="yes">iceberg/expression/projections.cc</includedby>
+    <includedby refid="projections_8h" local="yes">iceberg/expression/projections.h</includedby>
+    <includedby refid="residual__evaluator_8h" local="yes">iceberg/expression/residual_evaluator.h</includedby>
+    <includedby refid="strict__metrics__evaluator_8h" local="yes">iceberg/expression/strict_metrics_evaluator.h</includedby>
+    <includedby refid="term_8cc" local="yes">iceberg/expression/term.cc</includedby>
+    <includedby refid="file__format_8h" local="yes">iceberg/file_format.h</includedby>
+    <includedby refid="file__io_8h" local="yes">iceberg/file_io.h</includedby>
+    <includedby refid="file__reader_8cc" local="yes">iceberg/file_reader.cc</includedby>
+    <includedby refid="file__reader_8h" local="yes">iceberg/file_reader.h</includedby>
+    <includedby refid="file__writer_8cc" local="yes">iceberg/file_writer.cc</includedby>
+    <includedby refid="file__writer_8h" local="yes">iceberg/file_writer.h</includedby>
+    <includedby refid="inheritable__metadata_8h" local="yes">iceberg/inheritable_metadata.h</includedby>
+    <includedby refid="json__serde_8cc" local="yes">iceberg/json_serde.cc</includedby>
+    <includedby refid="json__serde__internal_8h" local="yes">iceberg/json_serde_internal.h</includedby>
+    <includedby refid="location__provider_8h" local="yes">iceberg/location_provider.h</includedby>
+    <includedby refid="manifest__adapter_8cc" local="yes">iceberg/manifest/manifest_adapter.cc</includedby>
+    <includedby refid="manifest__adapter__internal_8h" local="yes">iceberg/manifest/manifest_adapter_internal.h</includedby>
+    <includedby refid="manifest__entry_8h" local="yes">iceberg/manifest/manifest_entry.h</includedby>
+    <includedby refid="manifest__group_8h" local="yes">iceberg/manifest/manifest_group.h</includedby>
+    <includedby refid="manifest__list_8h" local="yes">iceberg/manifest/manifest_list.h</includedby>
+    <includedby refid="manifest__reader_8h" local="yes">iceberg/manifest/manifest_reader.h</includedby>
+    <includedby refid="manifest__util_8cc" local="yes">iceberg/manifest/manifest_util.cc</includedby>
+    <includedby refid="manifest__util__internal_8h" local="yes">iceberg/manifest/manifest_util_internal.h</includedby>
+    <includedby refid="manifest__writer_8cc" local="yes">iceberg/manifest/manifest_writer.cc</includedby>
+    <includedby refid="manifest__writer_8h" local="yes">iceberg/manifest/manifest_writer.h</includedby>
+    <includedby refid="rolling__manifest__writer_8cc" local="yes">iceberg/manifest/rolling_manifest_writer.cc</includedby>
+    <includedby refid="rolling__manifest__writer_8h" local="yes">iceberg/manifest/rolling_manifest_writer.h</includedby>
+    <includedby refid="v3__metadata_8cc" local="yes">iceberg/manifest/v3_metadata.cc</includedby>
+    <includedby refid="v3__metadata__internal_8h" local="yes">iceberg/manifest/v3_metadata_internal.h</includedby>
+    <includedby refid="metadata__columns_8h" local="yes">iceberg/metadata_columns.h</includedby>
+    <includedby refid="metrics__config_8cc" local="yes">iceberg/metrics_config.cc</includedby>
+    <includedby refid="metrics__config_8h" local="yes">iceberg/metrics_config.h</includedby>
+    <includedby refid="name__mapping_8h" local="yes">iceberg/name_mapping.h</includedby>
+    <includedby refid="parquet__reader_8cc" local="yes">iceberg/parquet/parquet_reader.cc</includedby>
+    <includedby refid="parquet__schema__util_8cc" local="yes">iceberg/parquet/parquet_schema_util.cc</includedby>
+    <includedby refid="partition__spec_8cc" local="yes">iceberg/partition_spec.cc</includedby>
+    <includedby refid="partition__spec_8h" local="yes">iceberg/partition_spec.h</includedby>
+    <includedby refid="partition__summary_8cc" local="yes">iceberg/partition_summary.cc</includedby>
+    <includedby refid="partition__summary__internal_8h" local="yes">iceberg/partition_summary_internal.h</includedby>
+    <includedby refid="arrow__array__wrapper_8cc" local="yes">iceberg/row/arrow_array_wrapper.cc</includedby>
+    <includedby refid="struct__like_8cc" local="yes">iceberg/row/struct_like.cc</includedby>
+    <includedby refid="struct__like_8h" local="yes">iceberg/row/struct_like.h</includedby>
+    <includedby refid="schema_8cc" local="yes">iceberg/schema.cc</includedby>
+    <includedby refid="schema_8h" local="yes">iceberg/schema.h</includedby>
+    <includedby refid="schema__field_8h" local="yes">iceberg/schema_field.h</includedby>
+    <includedby refid="schema__internal_8h" local="yes">iceberg/schema_internal.h</includedby>
+    <includedby refid="schema__util_8h" local="yes">iceberg/schema_util.h</includedby>
+    <includedby refid="snapshot_8h" local="yes">iceberg/snapshot.h</includedby>
+    <includedby refid="sort__field_8h" local="yes">iceberg/sort_field.h</includedby>
+    <includedby refid="sort__order_8cc" local="yes">iceberg/sort_order.cc</includedby>
+    <includedby refid="table_8cc" local="yes">iceberg/table.cc</includedby>
+    <includedby refid="table__identifier_8h" local="yes">iceberg/table_identifier.h</includedby>
+    <includedby refid="table__metadata_8cc" local="yes">iceberg/table_metadata.cc</includedby>
+    <includedby refid="table__requirement_8h" local="yes">iceberg/table_requirement.h</includedby>
+    <includedby refid="table__scan_8cc" local="yes">iceberg/table_scan.cc</includedby>
+    <includedby refid="table__scan_8h" local="yes">iceberg/table_scan.h</includedby>
+    <includedby refid="evaluator__test_8cc" local="yes">iceberg/test/evaluator_test.cc</includedby>
+    <includedby refid="expression__visitor__test_8cc" local="yes">iceberg/test/expression_visitor_test.cc</includedby>
+    <includedby refid="matchers_8h" local="yes">iceberg/test/matchers.h</includedby>
+    <includedby refid="metadata__io__test_8cc" local="yes">iceberg/test/metadata_io_test.cc</includedby>
+    <includedby refid="metrics__config__test_8cc" local="yes">iceberg/test/metrics_config_test.cc</includedby>
+    <includedby refid="parquet__test_8cc" local="yes">iceberg/test/parquet_test.cc</includedby>
+    <includedby refid="rest__catalog__test_8cc" local="yes">iceberg/test/rest_catalog_test.cc</includedby>
+    <includedby refid="rest__json__serde__test_8cc" local="yes">iceberg/test/rest_json_serde_test.cc</includedby>
+    <includedby refid="schema__test_8cc" local="yes">iceberg/test/schema_test.cc</includedby>
+    <includedby refid="set__snapshot__test_8cc" local="yes">iceberg/test/set_snapshot_test.cc</includedby>
+    <includedby refid="std__io_8h" local="yes">iceberg/test/std_io.h</includedby>
+    <includedby refid="table__metadata__builder__test_8cc" local="yes">iceberg/test/table_metadata_builder_test.cc</includedby>
+    <includedby refid="test__resource_8h" local="yes">iceberg/test/test_resource.h</includedby>
+    <includedby refid="update__location__test_8cc" local="yes">iceberg/test/update_location_test.cc</includedby>
+    <includedby refid="update__partition__spec__test_8cc" local="yes">iceberg/test/update_partition_spec_test.cc</includedby>
+    <includedby refid="update__partition__statistics__test_8cc" local="yes">iceberg/test/update_partition_statistics_test.cc</includedby>
+    <includedby refid="update__sort__order__test_8cc" local="yes">iceberg/test/update_sort_order_test.cc</includedby>
+    <includedby refid="update__statistics__test_8cc" local="yes">iceberg/test/update_statistics_test.cc</includedby>
+    <includedby refid="visit__type__test_8cc" local="yes">iceberg/test/visit_type_test.cc</includedby>
+    <includedby refid="transaction_8h" local="yes">iceberg/transaction.h</includedby>
+    <includedby refid="transform_8cc" local="yes">iceberg/transform.cc</includedby>
+    <includedby refid="transform_8h" local="yes">iceberg/transform.h</includedby>
+    <includedby refid="type_8h" local="yes">iceberg/type.h</includedby>
+    <includedby refid="expire__snapshots_8h" local="yes">iceberg/update/expire_snapshots.h</includedby>
+    <includedby refid="fast__append_8h" local="yes">iceberg/update/fast_append.h</includedby>
+    <includedby refid="pending__update_8h" local="yes">iceberg/update/pending_update.h</includedby>
+    <includedby refid="set__snapshot_8h" local="yes">iceberg/update/set_snapshot.h</includedby>
+    <includedby refid="snapshot__update_8h" local="yes">iceberg/update/snapshot_update.h</includedby>
+    <includedby refid="update__location_8cc" local="yes">iceberg/update/update_location.cc</includedby>
+    <includedby refid="update__partition__spec_8h" local="yes">iceberg/update/update_partition_spec.h</includedby>
+    <includedby refid="update__partition__statistics_8cc" local="yes">iceberg/update/update_partition_statistics.cc</includedby>
+    <includedby refid="update__partition__statistics_8h" local="yes">iceberg/update/update_partition_statistics.h</includedby>
+    <includedby refid="update__properties_8cc" local="yes">iceberg/update/update_properties.cc</includedby>
+    <includedby refid="update__properties_8h" local="yes">iceberg/update/update_properties.h</includedby>
+    <includedby refid="update__schema_8h" local="yes">iceberg/update/update_schema.h</includedby>
+    <includedby refid="update__snapshot__reference_8h" local="yes">iceberg/update/update_snapshot_reference.h</includedby>
+    <includedby refid="update__sort__order_8cc" local="yes">iceberg/update/update_sort_order.cc</includedby>
+    <includedby refid="update__statistics_8cc" local="yes">iceberg/update/update_statistics.cc</includedby>
+    <includedby refid="update__statistics_8h" local="yes">iceberg/update/update_statistics.h</includedby>
+    <includedby refid="bucket__util_8h" local="yes">iceberg/util/bucket_util.h</includedby>
+    <includedby refid="content__file__util_8h" local="yes">iceberg/util/content_file_util.h</includedby>
+    <includedby refid="conversions_8h" local="yes">iceberg/util/conversions.h</includedby>
+    <includedby refid="decimal_8cc" local="yes">iceberg/util/decimal.cc</includedby>
+    <includedby refid="decimal_8h" local="yes">iceberg/util/decimal.h</includedby>
+    <includedby refid="error__collector_8h" local="yes">iceberg/util/error_collector.h</includedby>
+    <includedby refid="gzip__internal_8h" local="yes">iceberg/util/gzip_internal.h</includedby>
+    <includedby refid="json__util__internal_8h" local="yes">iceberg/util/json_util_internal.h</includedby>
+    <includedby refid="lazy_8h" local="yes">iceberg/util/lazy.h</includedby>
+    <includedby refid="macros_8h" local="yes">iceberg/util/macros.h</includedby>
+    <includedby refid="projection__util__internal_8h" local="yes">iceberg/util/projection_util_internal.h</includedby>
+    <includedby refid="property__util_8h" local="yes">iceberg/util/property_util.h</includedby>
+    <includedby refid="snapshot__util__internal_8h" local="yes">iceberg/util/snapshot_util_internal.h</includedby>
+    <includedby refid="string__util_8h" local="yes">iceberg/util/string_util.h</includedby>
+    <includedby refid="temporal__util_8h" local="yes">iceberg/util/temporal_util.h</includedby>
+    <includedby refid="truncate__util_8h" local="yes">iceberg/util/truncate_util.h</includedby>
+    <includedby refid="type__util_8cc" local="yes">iceberg/util/type_util.cc</includedby>
+    <includedby refid="type__util_8h" local="yes">iceberg/util/type_util.h</includedby>
+    <includedby refid="uuid_8cc" local="yes">iceberg/util/uuid.cc</includedby>
+    <includedby refid="uuid_8h" local="yes">iceberg/util/uuid.h</includedby>
+    <includedby refid="visit__type_8h" local="yes">iceberg/util/visit_type.h</includedby>
+    <incdepgraph>
+      <node id="5">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>expected</label>
+      </node>
+      <node id="3">
+        <label>format</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="77">
+        <label>iceberg/arrow/arrow_file_io.h</label>
+        <link refid="arrow__file__io_8h_source"/>
+      </node>
+      <node id="78">
+        <label>iceberg/arrow/arrow_fs_file_io_internal.h</label>
+        <link refid="arrow__fs__file__io__internal_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/arrow/arrow_status_internal.h</label>
+        <link refid="arrow__status__internal_8h_source"/>
+      </node>
+      <node id="3">
+        <label>iceberg/arrow/metadata_column_util_internal.h</label>
+        <link refid="metadata__column__util__internal_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg/avro/avro_data_util_internal.h</label>
+        <link refid="avro__data__util__internal_8h_source"/>
+      </node>
+      <node id="5">
+        <label>iceberg/avro/avro_direct_decoder_internal.h</label>
+        <link refid="avro__direct__decoder__internal_8h_source"/>
+      </node>
+      <node id="7">
+        <label>iceberg/avro/avro_direct_encoder_internal.h</label>
+        <link refid="avro__direct__encoder__internal_8h_source"/>
+      </node>
+      <node id="74">
+        <label>iceberg/avro/avro_reader.h</label>
+        <link refid="avro__reader_8h_source"/>
+      </node>
+      <node id="8">
+        <label>iceberg/avro/avro_schema_util_internal.h</label>
+        <link refid="avro__schema__util__internal_8h_source"/>
+      </node>
+      <node id="49">
+        <label>iceberg/avro/avro_writer.h</label>
+        <link refid="avro__writer_8h_source"/>
+      </node>
+      <node id="9">
+        <label>iceberg/catalog.h</label>
+        <link refid="catalog_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/catalog/memory/in_memory_catalog.h</label>
+        <link refid="in__memory__catalog_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/catalog/rest/auth/auth_manager.h</label>
+        <link refid="auth__manager_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/catalog/rest/auth/auth_managers.h</label>
+        <link refid="auth__managers_8h"/>
+      </node>
+      <node id="16">
+        <label>iceberg/catalog/rest/auth/auth_session.h</label>
+        <link refid="auth__session_8h"/>
+      </node>
+      <node id="17">
+        <label>iceberg/catalog/rest/catalog_properties.h</label>
+        <link refid="catalog__properties_8h"/>
+      </node>
+      <node id="18">
+        <label>iceberg/catalog/rest/endpoint.h</label>
+        <link refid="endpoint_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/catalog/rest/error_handlers.h</label>
+        <link refid="error__handlers_8h"/>
+      </node>
+      <node id="23">
+        <label>iceberg/catalog/rest/http_client.h</label>
+        <link refid="http__client_8h"/>
+      </node>
+      <node id="21">
+        <label>iceberg/catalog/rest/json_serde_internal.h</label>
+        <link refid="catalog_2rest_2json__serde__internal_8h"/>
+      </node>
+      <node id="24">
+        <label>iceberg/catalog/rest/resource_paths.h</label>
+        <link refid="resource__paths_8h"/>
+      </node>
+      <node id="12">
+        <label>iceberg/catalog/rest/rest_catalog.h</label>
+        <link refid="rest__catalog_8h"/>
+      </node>
+      <node id="19">
+        <label>iceberg/catalog/rest/rest_util.h</label>
+        <link refid="rest__util_8h_source"/>
+      </node>
+      <node id="20">
+        <label>iceberg/catalog/rest/types.h</label>
+        <link refid="types_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg/data/data_writer.h</label>
+        <link refid="data__writer_8h"/>
+      </node>
+      <node id="26">
+        <label>iceberg/data/equality_delete_writer.h</label>
+        <link refid="equality__delete__writer_8h"/>
+      </node>
+      <node id="27">
+        <label>iceberg/data/position_delete_writer.h</label>
+        <link refid="position__delete__writer_8h"/>
+      </node>
+      <node id="28">
+        <label>iceberg/data/writer.h</label>
+        <link refid="writer_8h"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg/delete_file_index.h</label>
+        <link refid="delete__file__index_8h"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/expression/aggregate.h</label>
+        <link refid="aggregate_8h"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>iceberg/expression/binder.h</label>
+        <link refid="binder_8h"/>
+      </node>
+      <node id="36">
+        <label>iceberg/expression/evaluator.h</label>
+        <link refid="evaluator_8h"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>iceberg/expression/expression.h</label>
+        <link refid="expression_8h"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>iceberg/expression/expression_visitor.h</label>
+        <link refid="expression__visitor_8h"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>iceberg/expression/expressions.h</label>
+        <link refid="expressions_8h"/>
+      </node>
+      <node id="39">
+        <label>iceberg/expression/inclusive_metrics_evaluator.h</label>
+        <link refid="inclusive__metrics__evaluator_8h"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>iceberg/expression/json_serde_internal.h</label>
+        <link refid="expression_2json__serde__internal_8h"/>
+      </node>
+      <node id="46">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="69">
+        <label>iceberg/expression/manifest_evaluator.h</label>
+        <link refid="manifest__evaluator_8h"/>
+      </node>
+      <node id="41">
+        <label>iceberg/expression/predicate.h</label>
+        <link refid="predicate_8h"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="70">
+        <label>iceberg/expression/projections.h</label>
+        <link refid="projections_8h"/>
+      </node>
+      <node id="71">
+        <label>iceberg/expression/residual_evaluator.h</label>
+        <link refid="residual__evaluator_8h"/>
+      </node>
+      <node id="34">
+        <label>iceberg/expression/rewrite_not.h</label>
+        <link refid="rewrite__not_8h"/>
+      </node>
+      <node id="43">
+        <label>iceberg/expression/strict_metrics_evaluator.h</label>
+        <link refid="strict__metrics__evaluator_8h"/>
+      </node>
+      <node id="44">
+        <label>iceberg/expression/term.h</label>
+        <link refid="term_8h"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="72">
+        <label>iceberg/file_format.h</label>
+        <link refid="file__format_8h"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+      </node>
+      <node id="76">
+        <label>iceberg/file_io.h</label>
+        <link refid="file__io_8h_source"/>
+        <childnode refid="77" relation="include">
+        </childnode>
+        <childnode refid="78" relation="include">
+        </childnode>
+        <childnode refid="79" relation="include">
+        </childnode>
+        <childnode refid="80" relation="include">
+        </childnode>
+      </node>
+      <node id="73">
+        <label>iceberg/file_reader.h</label>
+        <link refid="file__reader_8h"/>
+        <childnode refid="74" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="75" relation="include">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>iceberg/file_writer.h</label>
+        <link refid="file__writer_8h"/>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="81">
+        <label>iceberg/inheritable_metadata.h</label>
+        <link refid="inheritable__metadata_8h"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="82">
+        <label>iceberg/json_serde_internal.h</label>
+        <link refid="json__serde__internal_8h_source"/>
+        <childnode refid="83" relation="include">
+        </childnode>
+      </node>
+      <node id="84">
+        <label>iceberg/location_provider.h</label>
+        <link refid="location__provider_8h_source"/>
+      </node>
+      <node id="85">
+        <label>iceberg/manifest/manifest_adapter_internal.h</label>
+        <link refid="manifest__adapter__internal_8h"/>
+        <childnode refid="86" relation="include">
+        </childnode>
+        <childnode refid="87" relation="include">
+        </childnode>
+        <childnode refid="88" relation="include">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>iceberg/manifest/manifest_entry.h</label>
+        <link refid="manifest__entry_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg/manifest/manifest_group.h</label>
+        <link refid="manifest__group_8h"/>
+      </node>
+      <node id="89">
+        <label>iceberg/manifest/manifest_list.h</label>
+        <link refid="manifest__list_8h"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="90" relation="include">
+        </childnode>
+      </node>
+      <node id="94">
+        <label>iceberg/manifest/manifest_reader.h</label>
+        <link refid="manifest__reader_8h"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/manifest/manifest_reader_internal.h</label>
+        <link refid="manifest__reader__internal_8h"/>
+      </node>
+      <node id="95">
+        <label>iceberg/manifest/manifest_util_internal.h</label>
+        <link refid="manifest__util__internal_8h"/>
+      </node>
+      <node id="50">
+        <label>iceberg/manifest/manifest_writer.h</label>
+        <link refid="manifest__writer_8h"/>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>iceberg/manifest/rolling_manifest_writer.h</label>
+        <link refid="rolling__manifest__writer_8h"/>
+      </node>
+      <node id="86">
+        <label>iceberg/manifest/v1_metadata_internal.h</label>
+        <link refid="v1__metadata__internal_8h"/>
+      </node>
+      <node id="87">
+        <label>iceberg/manifest/v2_metadata_internal.h</label>
+        <link refid="v2__metadata__internal_8h"/>
+      </node>
+      <node id="88">
+        <label>iceberg/manifest/v3_metadata_internal.h</label>
+        <link refid="v3__metadata__internal_8h"/>
+      </node>
+      <node id="96">
+        <label>iceberg/metadata_columns.h</label>
+        <link refid="metadata__columns_8h"/>
+      </node>
+      <node id="47">
+        <label>iceberg/metrics.h</label>
+        <link refid="metrics_8h"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+      </node>
+      <node id="97">
+        <label>iceberg/metrics_config.h</label>
+        <link refid="metrics__config_8h"/>
+      </node>
+      <node id="98">
+        <label>iceberg/name_mapping.h</label>
+        <link refid="name__mapping_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg/parquet/parquet_data_util_internal.h</label>
+        <link refid="parquet__data__util__internal_8h_source"/>
+      </node>
+      <node id="75">
+        <label>iceberg/parquet/parquet_reader.h</label>
+        <link refid="parquet__reader_8h_source"/>
+      </node>
+      <node id="64">
+        <label>iceberg/parquet/parquet_schema_util_internal.h</label>
+        <link refid="parquet__schema__util__internal_8h_source"/>
+      </node>
+      <node id="52">
+        <label>iceberg/parquet/parquet_writer.h</label>
+        <link refid="parquet__writer_8h_source"/>
+      </node>
+      <node id="99">
+        <label>iceberg/partition_spec.h</label>
+        <link refid="partition__spec_8h"/>
+        <childnode refid="89" relation="include">
+        </childnode>
+      </node>
+      <node id="53">
+        <label>iceberg/partition_summary_internal.h</label>
+        <link refid="partition__summary__internal_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="69" relation="include">
+        </childnode>
+        <childnode refid="70" relation="include">
+        </childnode>
+        <childnode refid="71" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="72" relation="include">
+        </childnode>
+        <childnode refid="76" relation="include">
+        </childnode>
+        <childnode refid="73" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="81" relation="include">
+        </childnode>
+        <childnode refid="82" relation="include">
+        </childnode>
+        <childnode refid="84" relation="include">
+        </childnode>
+        <childnode refid="85" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="89" relation="include">
+        </childnode>
+        <childnode refid="94" relation="include">
+        </childnode>
+        <childnode refid="95" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="88" relation="include">
+        </childnode>
+        <childnode refid="96" relation="include">
+        </childnode>
+        <childnode refid="97" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+        <childnode refid="101" relation="include">
+        </childnode>
+        <childnode refid="105" relation="include">
+        </childnode>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="90" relation="include">
+        </childnode>
+        <childnode refid="106" relation="include">
+        </childnode>
+        <childnode refid="108" relation="include">
+        </childnode>
+        <childnode refid="109" relation="include">
+        </childnode>
+        <childnode refid="111" relation="include">
+        </childnode>
+        <childnode refid="112" relation="include">
+        </childnode>
+        <childnode refid="80" relation="include">
+        </childnode>
+        <childnode refid="83" relation="include">
+        </childnode>
+        <childnode refid="113" relation="include">
+        </childnode>
+        <childnode refid="66" relation="include">
+        </childnode>
+        <childnode refid="102" relation="include">
+        </childnode>
+        <childnode refid="114" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="115" relation="include">
+        </childnode>
+        <childnode refid="116" relation="include">
+        </childnode>
+        <childnode refid="93" relation="include">
+        </childnode>
+        <childnode refid="118" relation="include">
+        </childnode>
+        <childnode refid="119" relation="include">
+        </childnode>
+        <childnode refid="120" relation="include">
+        </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
+        <childnode refid="122" relation="include">
+        </childnode>
+        <childnode refid="123" relation="include">
+        </childnode>
+        <childnode refid="124" relation="include">
+        </childnode>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="68" relation="include">
+        </childnode>
+        <childnode refid="125" relation="include">
+        </childnode>
+        <childnode refid="126" relation="include">
+        </childnode>
+        <childnode refid="127" relation="include">
+        </childnode>
+        <childnode refid="129" relation="include">
+        </childnode>
+        <childnode refid="130" relation="include">
+        </childnode>
+        <childnode refid="131" relation="include">
+        </childnode>
+        <childnode refid="132" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="133" relation="include">
+        </childnode>
+        <childnode refid="134" relation="include">
+        </childnode>
+        <childnode refid="135" relation="include">
+        </childnode>
+        <childnode refid="136" relation="include">
+        </childnode>
+        <childnode refid="137" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+        <childnode refid="138" relation="include">
+        </childnode>
+        <childnode refid="103" relation="include">
+        </childnode>
+      </node>
+      <node id="61">
+        <label>iceberg/row/arrow_array_wrapper.h</label>
+        <link refid="arrow__array__wrapper_8h"/>
+      </node>
+      <node id="62">
+        <label>iceberg/row/manifest_wrapper.h</label>
+        <link refid="manifest__wrapper_8h_source"/>
+      </node>
+      <node id="54">
+        <label>iceberg/row/partition_values.h</label>
+        <link refid="partition__values_8h"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+      </node>
+      <node id="60">
+        <label>iceberg/row/struct_like.h</label>
+        <link refid="struct__like_8h"/>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+      </node>
+      <node id="100">
+        <label>iceberg/schema.h</label>
+        <link refid="schema_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+      </node>
+      <node id="101">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="89" relation="include">
+        </childnode>
+        <childnode refid="96" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+        <childnode refid="102" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+      </node>
+      <node id="105">
+        <label>iceberg/schema_internal.h</label>
+        <link refid="schema__internal_8h_source"/>
+      </node>
+      <node id="63">
+        <label>iceberg/schema_util.h</label>
+        <link refid="schema__util_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+        <childnode refid="65" relation="include">
+        </childnode>
+      </node>
+      <node id="65">
+        <label>iceberg/schema_util_internal.h</label>
+        <link refid="schema__util__internal_8h_source"/>
+      </node>
+      <node id="90">
+        <label>iceberg/snapshot.h</label>
+        <link refid="snapshot_8h_source"/>
+        <childnode refid="91" relation="include">
+        </childnode>
+        <childnode refid="92" relation="include">
+        </childnode>
+        <childnode refid="93" relation="include">
+        </childnode>
+      </node>
+      <node id="106">
+        <label>iceberg/sort_field.h</label>
+        <link refid="sort__field_8h"/>
+        <childnode refid="107" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+      </node>
+      <node id="107">
+        <label>iceberg/sort_order.h</label>
+        <link refid="sort__order_8h_source"/>
+      </node>
+      <node id="91">
+        <label>iceberg/table.h</label>
+        <link refid="table_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="108">
+        <label>iceberg/table_identifier.h</label>
+        <link refid="table__identifier_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="91" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="128">
+        <label>iceberg/table_metadata.h</label>
+        <link refid="table__metadata_8h"/>
+        <childnode refid="82" relation="include">
+        </childnode>
+        <childnode refid="89" relation="include">
+        </childnode>
+        <childnode refid="83" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="109">
+        <label>iceberg/table_requirement.h</label>
+        <link refid="table__requirement_8h"/>
+        <childnode refid="110" relation="include">
+        </childnode>
+      </node>
+      <node id="110">
+        <label>iceberg/table_requirements.h</label>
+        <link refid="table__requirements_8h"/>
+      </node>
+      <node id="111">
+        <label>iceberg/table_scan.h</label>
+        <link refid="table__scan_8h_source"/>
+      </node>
+      <node id="92">
+        <label>iceberg/table_update.h</label>
+        <link refid="table__update_8h"/>
+      </node>
+      <node id="112">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/test/mock_catalog.h</label>
+        <link refid="mock__catalog_8h_source"/>
+      </node>
+      <node id="79">
+        <label>iceberg/test/mock_io.h</label>
+        <link refid="mock__io_8h_source"/>
+      </node>
+      <node id="80">
+        <label>iceberg/test/std_io.h</label>
+        <link refid="std__io_8h_source"/>
+      </node>
+      <node id="83">
+        <label>iceberg/test/test_resource.h</label>
+        <link refid="test__resource_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/test/update_test_base.h</label>
+        <link refid="update__test__base_8h_source"/>
+      </node>
+      <node id="113">
+        <label>iceberg/transaction.h</label>
+        <link refid="transaction_8h_source"/>
+      </node>
+      <node id="66">
+        <label>iceberg/transform.h</label>
+        <link refid="transform_8h"/>
+        <childnode refid="67" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="67">
+        <label>iceberg/transform_function.h</label>
+        <link refid="transform__function_8h"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="102">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="89" relation="include">
+        </childnode>
+        <childnode refid="96" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+        <childnode refid="103" relation="include">
+        </childnode>
+      </node>
+      <node id="114">
+        <label>iceberg/update/expire_snapshots.h</label>
+        <link refid="expire__snapshots_8h"/>
+      </node>
+      <node id="58">
+        <label>iceberg/update/fast_append.h</label>
+        <link refid="fast__append_8h"/>
+      </node>
+      <node id="115">
+        <label>iceberg/update/pending_update.h</label>
+        <link refid="pending__update_8h"/>
+        <childnode refid="114" relation="include">
+        </childnode>
+        <childnode refid="116" relation="include">
+        </childnode>
+        <childnode refid="93" relation="include">
+        </childnode>
+        <childnode refid="117" relation="include">
+        </childnode>
+        <childnode refid="118" relation="include">
+        </childnode>
+        <childnode refid="119" relation="include">
+        </childnode>
+        <childnode refid="120" relation="include">
+        </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
+        <childnode refid="122" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="123" relation="include">
+        </childnode>
+      </node>
+      <node id="116">
+        <label>iceberg/update/set_snapshot.h</label>
+        <link refid="set__snapshot_8h"/>
+      </node>
+      <node id="93">
+        <label>iceberg/update/snapshot_update.h</label>
+        <link refid="snapshot__update_8h_source"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+      </node>
+      <node id="117">
+        <label>iceberg/update/update_location.h</label>
+        <link refid="update__location_8h"/>
+        <childnode refid="91" relation="include">
+        </childnode>
+      </node>
+      <node id="118">
+        <label>iceberg/update/update_partition_spec.h</label>
+        <link refid="update__partition__spec_8h"/>
+      </node>
+      <node id="119">
+        <label>iceberg/update/update_partition_statistics.h</label>
+        <link refid="update__partition__statistics_8h"/>
+      </node>
+      <node id="120">
+        <label>iceberg/update/update_properties.h</label>
+        <link refid="update__properties_8h"/>
+      </node>
+      <node id="121">
+        <label>iceberg/update/update_schema.h</label>
+        <link refid="update__schema_8h"/>
+      </node>
+      <node id="122">
+        <label>iceberg/update/update_snapshot_reference.h</label>
+        <link refid="update__snapshot__reference_8h"/>
+      </node>
+      <node id="45">
+        <label>iceberg/update/update_sort_order.h</label>
+        <link refid="update__sort__order_8h"/>
+      </node>
+      <node id="123">
+        <label>iceberg/update/update_statistics.h</label>
+        <link refid="update__statistics_8h"/>
+      </node>
+      <node id="124">
+        <label>iceberg/util/bucket_util.h</label>
+        <link refid="bucket__util_8h_source"/>
+      </node>
+      <node id="56">
+        <label>iceberg/util/content_file_util.h</label>
+        <link refid="content__file__util_8h"/>
+      </node>
+      <node id="68">
+        <label>iceberg/util/conversions.h</label>
+        <link refid="conversions_8h"/>
+      </node>
+      <node id="57">
+        <label>iceberg/util/data_file_set.h</label>
+        <link refid="data__file__set_8h"/>
+        <childnode refid="58" relation="include">
+        </childnode>
+      </node>
+      <node id="125">
+        <label>iceberg/util/decimal.cc</label>
+        <link refid="decimal_8cc"/>
+      </node>
+      <node id="126">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="125" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="127">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="128" relation="include">
+        </childnode>
+        <childnode refid="111" relation="include">
+        </childnode>
+        <childnode refid="115" relation="include">
+        </childnode>
+      </node>
+      <node id="129">
+        <label>iceberg/util/gzip_internal.h</label>
+        <link refid="gzip__internal_8h_source"/>
+      </node>
+      <node id="130">
+        <label>iceberg/util/json_util_internal.h</label>
+        <link refid="json__util__internal_8h"/>
+      </node>
+      <node id="131">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="99" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+        <childnode refid="90" relation="include">
+        </childnode>
+        <childnode refid="128" relation="include">
+        </childnode>
+        <childnode refid="102" relation="include">
+        </childnode>
+      </node>
+      <node id="132">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="112" relation="include">
+        </childnode>
+        <childnode refid="125" relation="include">
+        </childnode>
+        <childnode refid="130" relation="include">
+        </childnode>
+        <childnode refid="131" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>iceberg/util/partition_value_util.h</label>
+        <link refid="partition__value__util_8h_source"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>iceberg/util/projection_util_internal.h</label>
+        <link refid="projection__util__internal_8h_source"/>
+      </node>
+      <node id="133">
+        <label>iceberg/util/property_util.h</label>
+        <link refid="property__util_8h_source"/>
+      </node>
+      <node id="134">
+        <label>iceberg/util/snapshot_util_internal.h</label>
+        <link refid="snapshot__util__internal_8h_source"/>
+      </node>
+      <node id="135">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="72" relation="include">
+        </childnode>
+        <childnode refid="97" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+        <childnode refid="118" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+      </node>
+      <node id="136">
+        <label>iceberg/util/temporal_util.h</label>
+        <link refid="temporal__util_8h_source"/>
+      </node>
+      <node id="137">
+        <label>iceberg/util/truncate_util.h</label>
+        <link refid="truncate__util_8h_source"/>
+      </node>
+      <node id="104">
+        <label>iceberg/util/type_util.h</label>
+        <link refid="type__util_8h"/>
+      </node>
+      <node id="138">
+        <label>iceberg/util/uuid.h</label>
+        <link refid="uuid_8h"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="103">
+        <label>iceberg/util/visit_type.h</label>
+        <link refid="visit__type_8h"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structiceberg_1_1Error" prot="public">iceberg::Error</innerclass>
+    <innerclass refid="structiceberg_1_1DefaultError" prot="public">iceberg::DefaultError</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="result_8h_1a6ca8899014a60b322118d779e12948ab" prot="public" static="no">
+        <name>DEFINE_ERROR_FUNCTION</name>
+        <param><defname>name</defname></param>
+        <initializer>  template &lt;typename... Args&gt;                                                 \
+  inline auto name(const std::format_string&lt;Args...&gt; fmt, Args&amp;&amp;... args)     \
+      -&gt; std::unexpected&lt;Error&gt; {                                             \
+    return std::unexpected&lt;Error&gt;(                                            \
+        {ErrorKind::k##name, std::format(fmt, std::forward&lt;Args&gt;(args)...)}); \
+  }                                                                           \
+  inline auto name(const std::string&amp; message) -&gt; std::unexpected&lt;Error&gt; {    \
+    return std::unexpected&lt;Error&gt;({ErrorKind::k##name, message});             \
+  }</initializer>
+        <briefdescription>
+<para>Macro to define error creation functions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/result.h" line="84" column="9" bodyfile="iceberg/result.h" bodystart="84" bodyend="93"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;expected&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;format&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>ErrorKind<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/>kAlreadyExists,</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>kAuthenticationFailed,</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>kBadRequest,</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>kCommitFailed,</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>kCommitStateUnknown,</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/>kDecompressError,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>kForbidden,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>kInternalServerError,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>kInvalid,<sp/><sp/></highlight><highlight class="comment">//<sp/>For<sp/>general<sp/>invalid<sp/>errors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/>kInvalidArgument,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>kInvalidArrowData,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>kInvalidExpression,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>kInvalidManifest,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>kInvalidManifestList,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>kInvalidSchema,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/>kIOError,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>kJsonParseError,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/>kNamespaceNotEmpty,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/>kNoSuchNamespace,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>kNoSuchTable,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>kNoSuchView,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>kNotAllowed,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>kNotAuthorized,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>kNotFound,</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>kNotImplemented,</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>kNotSupported,</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/>kRestError,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/>kServiceUnavailable,</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>kTokenExpired,</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>kUnknownError,</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>kValidationFailed,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="structiceberg_1_1Error" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/>[[nodiscard]]<sp/><ref refid="structiceberg_1_1Error" kindref="compound">Error</ref><sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>ErrorKind<sp/>kind;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>std::string<sp/>message;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>T&gt;</highlight></codeline>
+<codeline lineno="73" refid="structiceberg_1_1DefaultError" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1DefaultError" kindref="compound">DefaultError</ref><sp/>{</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1Error" kindref="compound">type</ref><sp/>=<sp/><ref refid="structiceberg_1_1Error" kindref="compound">Error</ref>;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal">template<sp/>&lt;typename<sp/>T,<sp/>typename<sp/>E<sp/>=<sp/>typename<sp/>DefaultError&lt;T&gt;::type&gt;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Result<sp/>=<sp/>std::expected&lt;T,<sp/>E&gt;;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">Status<sp/>=<sp/>Result&lt;void&gt;;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="preprocessor">#define<sp/>DEFINE_ERROR_FUNCTION(name)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="85"><highlight class="preprocessor"><sp/><sp/>template<sp/>&lt;typename...<sp/>Args&gt;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="86"><highlight class="preprocessor"><sp/><sp/>inline<sp/>auto<sp/>name(const<sp/>std::format_string&lt;Args...&gt;<sp/>fmt,<sp/>Args&amp;&amp;...<sp/>args)<sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="87"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>-&gt;<sp/>std::unexpected&lt;Error&gt;<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="88"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>return<sp/>std::unexpected&lt;Error&gt;(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="89"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{ErrorKind::k##name,<sp/>std::format(fmt,<sp/>std::forward&lt;Args&gt;(args)...)});<sp/>\</highlight></codeline>
+<codeline lineno="90"><highlight class="preprocessor"><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="91"><highlight class="preprocessor"><sp/><sp/>inline<sp/>auto<sp/>name(const<sp/>std::string&amp;<sp/>message)<sp/>-&gt;<sp/>std::unexpected&lt;Error&gt;<sp/>{<sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="92"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>return<sp/>std::unexpected&lt;Error&gt;({ErrorKind::k##name,<sp/>message});<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="93"><highlight class="preprocessor"><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal">DEFINE_ERROR_FUNCTION(AlreadyExists)</highlight></codeline>
+<codeline lineno="96"><highlight class="normal">DEFINE_ERROR_FUNCTION(AuthenticationFailed)</highlight></codeline>
+<codeline lineno="97"><highlight class="normal">DEFINE_ERROR_FUNCTION(BadRequest)</highlight></codeline>
+<codeline lineno="98"><highlight class="normal">DEFINE_ERROR_FUNCTION(CommitFailed)</highlight></codeline>
+<codeline lineno="99"><highlight class="normal">DEFINE_ERROR_FUNCTION(CommitStateUnknown)</highlight></codeline>
+<codeline lineno="100"><highlight class="normal">DEFINE_ERROR_FUNCTION(DecompressError)</highlight></codeline>
+<codeline lineno="101"><highlight class="normal">DEFINE_ERROR_FUNCTION(Forbidden)</highlight></codeline>
+<codeline lineno="102"><highlight class="normal">DEFINE_ERROR_FUNCTION(InternalServerError)</highlight></codeline>
+<codeline lineno="103"><highlight class="normal">DEFINE_ERROR_FUNCTION(Invalid)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal">DEFINE_ERROR_FUNCTION(InvalidArgument)</highlight></codeline>
+<codeline lineno="105"><highlight class="normal">DEFINE_ERROR_FUNCTION(InvalidArrowData)</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">DEFINE_ERROR_FUNCTION(InvalidExpression)</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">DEFINE_ERROR_FUNCTION(InvalidManifest)</highlight></codeline>
+<codeline lineno="108"><highlight class="normal">DEFINE_ERROR_FUNCTION(InvalidManifestList)</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">DEFINE_ERROR_FUNCTION(InvalidSchema)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal">DEFINE_ERROR_FUNCTION(IOError)</highlight></codeline>
+<codeline lineno="111"><highlight class="normal">DEFINE_ERROR_FUNCTION(JsonParseError)</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">DEFINE_ERROR_FUNCTION(NamespaceNotEmpty)</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">DEFINE_ERROR_FUNCTION(NoSuchNamespace)</highlight></codeline>
+<codeline lineno="114"><highlight class="normal">DEFINE_ERROR_FUNCTION(NoSuchTable)</highlight></codeline>
+<codeline lineno="115"><highlight class="normal">DEFINE_ERROR_FUNCTION(NoSuchView)</highlight></codeline>
+<codeline lineno="116"><highlight class="normal">DEFINE_ERROR_FUNCTION(NotAllowed)</highlight></codeline>
+<codeline lineno="117"><highlight class="normal">DEFINE_ERROR_FUNCTION(NotAuthorized)</highlight></codeline>
+<codeline lineno="118"><highlight class="normal">DEFINE_ERROR_FUNCTION(NotFound)</highlight></codeline>
+<codeline lineno="119"><highlight class="normal">DEFINE_ERROR_FUNCTION(NotImplemented)</highlight></codeline>
+<codeline lineno="120"><highlight class="normal">DEFINE_ERROR_FUNCTION(NotSupported)</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">DEFINE_ERROR_FUNCTION(RestError)</highlight></codeline>
+<codeline lineno="122"><highlight class="normal">DEFINE_ERROR_FUNCTION(ServiceUnavailable)</highlight></codeline>
+<codeline lineno="123"><highlight class="normal">DEFINE_ERROR_FUNCTION(TokenExpired)</highlight></codeline>
+<codeline lineno="124"><highlight class="normal">DEFINE_ERROR_FUNCTION(UnknownError)</highlight></codeline>
+<codeline lineno="125"><highlight class="normal">DEFINE_ERROR_FUNCTION(ValidationFailed)</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="preprocessor">#undef<sp/>DEFINE_ERROR_FUNCTION</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/result.h"/>
+  </compounddef>
+</doxygen>

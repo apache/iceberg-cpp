@@ -1,0 +1,756 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="snapshot_8h" kind="file" language="C++">
+    <compoundname>snapshot.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">span</includes>
+    <includes local="no">string</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">variant</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="manifest__list_8h" local="yes">iceberg/manifest/manifest_list.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includes refid="lazy_8h" local="yes">iceberg/util/lazy.h</includes>
+    <includes refid="timepoint_8h" local="yes">iceberg/util/timepoint.h</includes>
+    <includedby refid="json__serde_8cc" local="yes">iceberg/json_serde.cc</includedby>
+    <includedby refid="manifest__util_8cc" local="yes">iceberg/manifest/manifest_util.cc</includedby>
+    <includedby refid="snapshot_8cc" local="yes">iceberg/snapshot.cc</includedby>
+    <includedby refid="table_8h" local="yes">iceberg/table.h</includedby>
+    <includedby refid="table__metadata_8cc" local="yes">iceberg/table_metadata.cc</includedby>
+    <includedby refid="table__requirement_8cc" local="yes">iceberg/table_requirement.cc</includedby>
+    <includedby refid="table__requirements_8cc" local="yes">iceberg/table_requirements.cc</includedby>
+    <includedby refid="table__scan_8cc" local="yes">iceberg/table_scan.cc</includedby>
+    <includedby refid="table__update_8cc" local="yes">iceberg/table_update.cc</includedby>
+    <includedby refid="table__update_8h" local="yes">iceberg/table_update.h</includedby>
+    <includedby refid="json__serde__test_8cc" local="yes">iceberg/test/json_serde_test.cc</includedby>
+    <includedby refid="metadata__io__test_8cc" local="yes">iceberg/test/metadata_io_test.cc</includedby>
+    <includedby refid="metadata__serde__test_8cc" local="yes">iceberg/test/metadata_serde_test.cc</includedby>
+    <includedby refid="set__snapshot__test_8cc" local="yes">iceberg/test/set_snapshot_test.cc</includedby>
+    <includedby refid="snapshot__summary__builder__test_8cc" local="yes">iceberg/test/snapshot_summary_builder_test.cc</includedby>
+    <includedby refid="snapshot__test_8cc" local="yes">iceberg/test/snapshot_test.cc</includedby>
+    <includedby refid="snapshot__util__test_8cc" local="yes">iceberg/test/snapshot_util_test.cc</includedby>
+    <includedby refid="table__metadata__builder__test_8cc" local="yes">iceberg/test/table_metadata_builder_test.cc</includedby>
+    <includedby refid="table__requirement__test_8cc" local="yes">iceberg/test/table_requirement_test.cc</includedby>
+    <includedby refid="table__requirements__test_8cc" local="yes">iceberg/test/table_requirements_test.cc</includedby>
+    <includedby refid="table__scan__test_8cc" local="yes">iceberg/test/table_scan_test.cc</includedby>
+    <includedby refid="table__update__test_8cc" local="yes">iceberg/test/table_update_test.cc</includedby>
+    <includedby refid="update__partition__spec__test_8cc" local="yes">iceberg/test/update_partition_spec_test.cc</includedby>
+    <includedby refid="transaction_8cc" local="yes">iceberg/transaction.cc</includedby>
+    <includedby refid="expire__snapshots_8cc" local="yes">iceberg/update/expire_snapshots.cc</includedby>
+    <includedby refid="fast__append_8cc" local="yes">iceberg/update/fast_append.cc</includedby>
+    <includedby refid="set__snapshot_8cc" local="yes">iceberg/update/set_snapshot.cc</includedby>
+    <includedby refid="snapshot__update_8h" local="yes">iceberg/update/snapshot_update.h</includedby>
+    <includedby refid="update__snapshot__reference_8cc" local="yes">iceberg/update/update_snapshot_reference.cc</includedby>
+    <includedby refid="snapshot__util_8cc" local="yes">iceberg/util/snapshot_util.cc</includedby>
+    <incdepgraph>
+      <node id="13">
+        <label>iceberg/constants.h</label>
+        <link refid="constants_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="10">
+        <label>iceberg/manifest/manifest_list.h</label>
+        <link refid="manifest__list_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg/partition_field.h</label>
+        <link refid="partition__field_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/partition_spec.h</label>
+        <link refid="partition__spec_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/snapshot.h</label>
+        <link refid="snapshot_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/table_metadata.h</label>
+        <link refid="table__metadata_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>iceberg/table_properties.h</label>
+        <link refid="table__properties_8h_source"/>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="35">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/util/timepoint.h</label>
+        <link refid="timepoint_8h_source"/>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>array</label>
+      </node>
+      <node id="27">
+        <label>cassert</label>
+      </node>
+      <node id="38">
+        <label>chrono</label>
+      </node>
+      <node id="23">
+        <label>concepts</label>
+      </node>
+      <node id="11">
+        <label>cstdint</label>
+      </node>
+      <node id="20">
+        <label>expected</label>
+      </node>
+      <node id="21">
+        <label>format</label>
+      </node>
+      <node id="24">
+        <label>functional</label>
+      </node>
+      <node id="33">
+        <label>limits</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="25">
+        <label>mutex</label>
+      </node>
+      <node id="3">
+        <label>optional</label>
+      </node>
+      <node id="4">
+        <label>span</label>
+      </node>
+      <node id="29">
+        <label>stdexcept</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>string_view</label>
+      </node>
+      <node id="7">
+        <label>unordered_map</label>
+      </node>
+      <node id="34">
+        <label>unordered_set</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="8">
+        <label>variant</label>
+      </node>
+      <node id="15">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/snapshot.h</label>
+        <link refid="snapshot_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/table.h</label>
+        <link refid="table_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg/table_update.h</label>
+        <link refid="table__update_8h"/>
+      </node>
+      <node id="3">
+        <label>iceberg/test/update_test_base.h</label>
+        <link refid="update__test__base_8h_source"/>
+      </node>
+      <node id="6">
+        <label>iceberg/update/fast_append.h</label>
+        <link refid="fast__append_8h"/>
+      </node>
+      <node id="5">
+        <label>iceberg/update/snapshot_update.h</label>
+        <link refid="snapshot__update_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structiceberg_1_1SnapshotRef" prot="public">iceberg::SnapshotRef</innerclass>
+    <innerclass refid="structiceberg_1_1SnapshotRef_1_1Branch" prot="public">iceberg::SnapshotRef::Branch</innerclass>
+    <innerclass refid="structiceberg_1_1SnapshotRef_1_1Tag" prot="public">iceberg::SnapshotRef::Tag</innerclass>
+    <innerclass refid="structiceberg_1_1SnapshotSummaryFields" prot="public">iceberg::SnapshotSummaryFields</innerclass>
+    <innerclass refid="classiceberg_1_1SnapshotSummaryBuilder" prot="public">iceberg::SnapshotSummaryBuilder</innerclass>
+    <innerclass refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics" prot="private">iceberg::SnapshotSummaryBuilder::UpdateMetrics</innerclass>
+    <innerclass refid="structiceberg_1_1DataOperation" prot="public">iceberg::DataOperation</innerclass>
+    <innerclass refid="structiceberg_1_1Snapshot" prot="public">iceberg::Snapshot</innerclass>
+    <innerclass refid="classiceberg_1_1SnapshotCache" prot="public">iceberg::SnapshotCache</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;span&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;variant&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="manifest__list_8h" kindref="compound">iceberg/manifest/manifest_list.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="lazy_8h" kindref="compound">iceberg/util/lazy.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/util/timepoint.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>SnapshotRefType<sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>kBranch,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>kTag,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal">ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>ToString(SnapshotRefType<sp/>type)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(type)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>SnapshotRefType::kBranch:</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;branch&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>SnapshotRefType::kTag:</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;tag&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>std::unreachable();</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>Result&lt;SnapshotRefType&gt;<sp/>SnapshotRefTypeFromString(</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string_view<sp/>str)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(str<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;branch&quot;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>SnapshotRefType::kBranch;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(str<sp/>==<sp/></highlight><highlight class="stringliteral">&quot;tag&quot;</highlight><highlight class="normal">)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>SnapshotRefType::kTag;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>InvalidArgument(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>snapshot<sp/>reference<sp/>type:<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>str);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="structiceberg_1_1SnapshotRef" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref><sp/>{</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kMainBranch<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;main&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="structiceberg_1_1SnapshotRef_1_1Branch" refkind="compound"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref><sp/>{</highlight></codeline>
+<codeline lineno="75" refid="structiceberg_1_1SnapshotRef_1_1Branch_1a4e263cc1792d5e41e495fc1d0d22c48a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;int32_t&gt;<sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch_1a4e263cc1792d5e41e495fc1d0d22c48a" kindref="member">min_snapshots_to_keep</ref>;</highlight></codeline>
+<codeline lineno="79" refid="structiceberg_1_1SnapshotRef_1_1Branch_1a51b4eb07baf51b45ae89bc533092db3f" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch_1a51b4eb07baf51b45ae89bc533092db3f" kindref="member">max_snapshot_age_ms</ref>;</highlight></codeline>
+<codeline lineno="83" refid="structiceberg_1_1SnapshotRef_1_1Branch_1a66bddbcaaf9655ed5c4528ecab20d57e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch_1a66bddbcaaf9655ed5c4528ecab20d57e" kindref="member">max_ref_age_ms</ref>;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86" refid="structiceberg_1_1SnapshotRef_1_1Branch_1a72566c422b25279bd143b8b39006e506" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch_1a72566c422b25279bd143b8b39006e506" kindref="member">operator==</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref>&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.Equals(rhs);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Equals(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="structiceberg_1_1SnapshotRef_1_1Tag" refkind="compound"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref><sp/>{</highlight></codeline>
+<codeline lineno="99" refid="structiceberg_1_1SnapshotRef_1_1Tag_1a51a7a1608df43d8eff2cc8cd1600420e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Tag_1a51a7a1608df43d8eff2cc8cd1600420e" kindref="member">max_ref_age_ms</ref>;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102" refid="structiceberg_1_1SnapshotRef_1_1Tag_1ac2b7639cd47e0904f7e8bd8ca4efe367" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Tag_1ac2b7639cd47e0904f7e8bd8ca4efe367" kindref="member">operator==</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref>&amp;<sp/>rhs)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.Equals(rhs);<sp/>}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Equals(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="structiceberg_1_1SnapshotRef_1a63ac8ff0babbe68126fb52e54e7e1adb" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="structiceberg_1_1SnapshotRef_1a63ac8ff0babbe68126fb52e54e7e1adb" kindref="member">snapshot_id</ref>;</highlight></codeline>
+<codeline lineno="112" refid="structiceberg_1_1SnapshotRef_1ae89f6fb03dacc07e6cde3c81a133add1" refkind="member"><highlight class="normal"><sp/><sp/>std::variant&lt;Branch,<sp/>Tag&gt;<sp/><ref refid="structiceberg_1_1SnapshotRef_1ae89f6fb03dacc07e6cde3c81a133add1" kindref="member">retention</ref>;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>SnapshotRefType<sp/>type()<sp/>const<sp/>noexcept;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><ref refid="namespacestd" kindref="compound">std</ref>::optional&lt;int64_t&gt;<sp/>max_ref_age_ms()<sp/>const<sp/>noexcept;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>static<sp/>Result&lt;<ref refid="namespacestd" kindref="compound">std</ref>::unique_ptr&lt;<ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref>&gt;&gt;<sp/>MakeBranch(</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>snapshot_id,<sp/><ref refid="namespacestd" kindref="compound">std</ref>::optional&lt;int32_t&gt;<sp/>min_snapshots_to_keep<sp/>=<sp/><ref refid="namespacestd" kindref="compound">std</ref>::nullopt,</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacestd" kindref="compound">std</ref>::optional&lt;int64_t&gt;<sp/>max_snapshot_age_ms<sp/>=<sp/><ref refid="namespacestd" kindref="compound">std</ref>::nullopt,</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacestd" kindref="compound">std</ref>::optional&lt;int64_t&gt;<sp/>max_ref_age_ms<sp/>=<sp/><ref refid="namespacestd" kindref="compound">std</ref>::nullopt);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/>static<sp/>Result&lt;<ref refid="namespacestd" kindref="compound">std</ref>::unique_ptr&lt;<ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref>&gt;&gt;<sp/>MakeTag(</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>snapshot_id,<sp/><ref refid="namespacestd" kindref="compound">std</ref>::optional&lt;int64_t&gt;<sp/>max_ref_age_ms<sp/>=<sp/><ref refid="namespacestd" kindref="compound">std</ref>::nullopt);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><ref refid="namespacestd" kindref="compound">std</ref>::unique_ptr&lt;<ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref>&gt;<sp/>Clone(</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacestd" kindref="compound">std</ref>::optional&lt;int64_t&gt;<sp/>new_snapshot_id<sp/>=<sp/><ref refid="namespacestd" kindref="compound">std</ref>::nullopt)<sp/>const;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/>Status<sp/>Validate()<sp/>const;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152" refid="structiceberg_1_1SnapshotRef_1a01bf700dbfb0e7307921d30795db8819" refkind="member"><highlight class="normal"><sp/><sp/>friend<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(const<sp/><ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref>&amp;<sp/>lhs,<sp/>const<sp/><ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref>&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.Equals(rhs);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Equals(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162" refid="structiceberg_1_1SnapshotSummaryFields" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1SnapshotSummaryFields" kindref="compound">SnapshotSummaryFields</ref><sp/>{</highlight></codeline>
+<codeline lineno="164" refid="structiceberg_1_1SnapshotSummaryFields_1ada7f5effa8afb4169e68ed2639bd4fde" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kOperation<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;operation&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="166" refid="structiceberg_1_1SnapshotSummaryFields_1a2b56093fd8bb220fdb55834b1a23e61b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kFirstRowId<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;first-row-id&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="168" refid="structiceberg_1_1SnapshotSummaryFields_1a4e4fac2b70ad11701e6e8800c6508833" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedRows<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-rows&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"></codeline>
+<codeline lineno="173" refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedDataFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-data-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="175" refid="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kDeletedDataFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;deleted-data-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="177" refid="structiceberg_1_1SnapshotSummaryFields_1ad314de2d955f77cd7d14ddccb6370134" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kTotalDataFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;total-data-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="180" refid="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedDeleteFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-delete-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="182" refid="structiceberg_1_1SnapshotSummaryFields_1a4c932bf17d7418013939fdd7b802f123" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedEqDeleteFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-equality-delete-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="184" refid="structiceberg_1_1SnapshotSummaryFields_1a94fa76aad9462ef4f9e3e069c2a24645" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kRemovedEqDeleteFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;removed-equality-delete-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="186" refid="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedPosDeleteFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-position-delete-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="188" refid="structiceberg_1_1SnapshotSummaryFields_1afdde47b2cffe3f60e169b754bbfe439c" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kRemovedPosDeleteFiles<sp/>=</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;removed-position-delete-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="191" refid="structiceberg_1_1SnapshotSummaryFields_1a5080e87bce473ae588c774f534e2001a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedDVs<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-dvs&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="193" refid="structiceberg_1_1SnapshotSummaryFields_1a303e5e4d65a75816ee5c883e146bc4e5" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kRemovedDVs<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;removed-dvs&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="196" refid="structiceberg_1_1SnapshotSummaryFields_1a9d24f8c6cbc618551b06cbb442fc3648" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kRemovedDeleteFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;removed-delete-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="199" refid="structiceberg_1_1SnapshotSummaryFields_1a65fbe108a5aa316dad4977e789e4e71f" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kTotalDeleteFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;total-delete-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="201" refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedRecords<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-records&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="203" refid="structiceberg_1_1SnapshotSummaryFields_1ac33705014c833f33714170c7f14ccae6" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kDeletedRecords<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;deleted-records&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="205" refid="structiceberg_1_1SnapshotSummaryFields_1a80def77f8cc4f4383fb384334cd8cd27" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kTotalRecords<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;total-records&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="207" refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedFileSize<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-files-size&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="209" refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kRemovedFileSize<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;removed-files-size&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="211" refid="structiceberg_1_1SnapshotSummaryFields_1a5d0e0fdd138a86f767d89498e251cf00" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kTotalFileSize<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;total-files-size&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="213" refid="structiceberg_1_1SnapshotSummaryFields_1a380bd771050985107b9eedf47ada2971" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedPosDeletes<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-position-deletes&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="215" refid="structiceberg_1_1SnapshotSummaryFields_1a7ea7416ee086d74d4ccb7259d17f55ab" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kRemovedPosDeletes<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;removed-position-deletes&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="217" refid="structiceberg_1_1SnapshotSummaryFields_1a13125d9c90d79c55a71fc93b48d6f8a3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kTotalPosDeletes<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;total-position-deletes&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="219" refid="structiceberg_1_1SnapshotSummaryFields_1a98f4256862a48cea377ecc2da11d48d3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAddedEqDeletes<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;added-equality-deletes&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="221" refid="structiceberg_1_1SnapshotSummaryFields_1adf57b3f74d94d4061040647dcb40de0a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kRemovedEqDeletes<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;removed-equality-deletes&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="223" refid="structiceberg_1_1SnapshotSummaryFields_1a12a98242c22498ab0a06257d817342c8" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kTotalEqDeletes<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;total-equality-deletes&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="226" refid="structiceberg_1_1SnapshotSummaryFields_1aedd02877d175b0dfa88e9e5219ffd395" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kDeletedDuplicatedFiles<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;deleted-duplicate-files&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="228" refid="structiceberg_1_1SnapshotSummaryFields_1a3ec7042a3a98ef42acf4585f3188445a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kChangedPartitionCountProp<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;changed-partition-count&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="230" refid="structiceberg_1_1SnapshotSummaryFields_1a5a1161c5b716f77c7de652fbc7953e81" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kManifestsCreated<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;manifests-created&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="232" refid="structiceberg_1_1SnapshotSummaryFields_1ab525d5ecc8f2e18307a2f3bac04e4b7e" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kManifestsKept<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;manifests-kept&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="234" refid="structiceberg_1_1SnapshotSummaryFields_1ac64b1239d07fa9f2973980b67e0bd0c2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kManifestsReplaced<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;manifests-replaced&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="236" refid="structiceberg_1_1SnapshotSummaryFields_1a1887f72168261587466ae196542f483d" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kEntriesProcessed<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;entries-processed&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="238" refid="structiceberg_1_1SnapshotSummaryFields_1af3e791ce37cdfa4db991281e1c517c48" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kChangedPartitionPrefix<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;partitions.&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="240" refid="structiceberg_1_1SnapshotSummaryFields_1ad878f008f1103bfe646a9a794f607bd3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kPartitionSummaryProp<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;partition-summaries-included&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"></codeline>
+<codeline lineno="245" refid="structiceberg_1_1SnapshotSummaryFields_1afc7f6deb2bb4a1bf4b502dccd25966e0" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kWAPId<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;wap.id&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="247" refid="structiceberg_1_1SnapshotSummaryFields_1af9a33f3042070032e8c3e1c8547f51a0" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kPublishedWAPId<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;published-wap-id&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="249" refid="structiceberg_1_1SnapshotSummaryFields_1a39d6322a77f82167dba5cc97c6c44bc1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kSourceSnapshotId<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;source-snapshot-id&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="251" refid="structiceberg_1_1SnapshotSummaryFields_1a33984769c91862036640e65730d608f4" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kEngineName<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;engine-name&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="253" refid="structiceberg_1_1SnapshotSummaryFields_1a7d43f0413e29fcd04c72b2b268505035" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kEngineVersion<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;engine-version&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="254"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260" refid="classiceberg_1_1SnapshotSummaryBuilder" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1SnapshotSummaryBuilder" kindref="compound">SnapshotSummaryBuilder</ref><sp/>{</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">UpdateMetrics<sp/>{</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Clear();</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>AddTo(std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>builder)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>AddedFile(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>&amp;<sp/>file);</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>RemovedFile(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>&amp;<sp/>file);</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>AddedManifest(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref>&amp;<sp/>manifest);</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Merge(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>UpdateMetrics&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>added_size_{0};</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>removed_size_{0};</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>added_files_{0};</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>removed_files_{0};</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>added_eq_delete_files_{0};</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>removed_eq_delete_files_{0};</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>added_pos_delete_files_{0};</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>removed_pos_delete_files_{0};</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>added_dvs_{0};</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>removed_dvs_{0};</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>added_delete_files_{0};</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>removed_delete_files_{0};</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>added_records_{0};</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>deleted_records_{0};</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>added_pos_deletes_{0};</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>removed_pos_deletes_{0};</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>added_eq_deletes_{0};</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>removed_eq_deletes_{0};</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>trust_size_and_delete_counts_{</highlight><highlight class="keyword">true</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotSummaryBuilder" kindref="compound">SnapshotSummaryBuilder</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Clear();</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>SetPartitionSummaryLimit(int32_t<sp/>max);</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>IncrementDuplicateDeletes(int32_t<sp/>increment<sp/>=<sp/>1);</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"></highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/>Status<sp/>AddedFile(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref>&amp;<sp/>spec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>&amp;<sp/>file);</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"></highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/>Status<sp/>DeletedFile(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref>&amp;<sp/>spec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>&amp;<sp/>file);</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>AddedManifest(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref>&amp;<sp/>manifest);</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"></highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Set(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>property,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>value);</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"></highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Merge(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SnapshotSummaryBuilder" kindref="compound">SnapshotSummaryBuilder</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"></highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>Build()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"></highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/>Status<sp/>UpdatePartitions(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref>&amp;<sp/>spec,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>&amp;<sp/>file,</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_addition);</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classiceberg_1_1PartitionSummary" kindref="compound">PartitionSummary</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>UpdateMetrics&amp;<sp/>metrics)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"></highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties_;</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>UpdateMetrics&gt;<sp/>partition_metrics_;</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/>UpdateMetrics<sp/>metrics_;</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/>int32_t<sp/>max_changed_partitions_for_summaries_{0};</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/>int64_t<sp/>deleted_duplicate_files_{0};</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>trust_partition_metrics_{</highlight><highlight class="keyword">true</highlight><highlight class="normal">};</highlight></codeline>
+<codeline lineno="362"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"></highlight></codeline>
+<codeline lineno="369" refid="structiceberg_1_1DataOperation" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1DataOperation" kindref="compound">DataOperation</ref><sp/>{</highlight></codeline>
+<codeline lineno="371" refid="structiceberg_1_1DataOperation_1a98c420e62fe063cc7b3011717e854ecf" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kAppend<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;append&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="374" refid="structiceberg_1_1DataOperation_1a3dab031174d6722419961d46fbbd572a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kReplace<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;replace&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="377" refid="structiceberg_1_1DataOperation_1a8a93dd2be0906a5303a41145fa7498bf" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kOverwrite<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;overwrite&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="380" refid="structiceberg_1_1DataOperation_1a4c3e08ef4b4a8308ec8845244050b126" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kDelete<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;delete&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="381"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="382"><highlight class="normal"></highlight></codeline>
+<codeline lineno="389" refid="structiceberg_1_1Snapshot" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref><sp/>{</highlight></codeline>
+<codeline lineno="391" refid="structiceberg_1_1Snapshot_1a128c409cc977968fbb9d9e893ba7d0c6" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="structiceberg_1_1Snapshot_1a128c409cc977968fbb9d9e893ba7d0c6" kindref="member">snapshot_id</ref>;</highlight></codeline>
+<codeline lineno="393" refid="structiceberg_1_1Snapshot_1aef3a444c939ab4f76e0b9a28f96c6b7a" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1Snapshot_1aef3a444c939ab4f76e0b9a28f96c6b7a" kindref="member">parent_snapshot_id</ref>;</highlight></codeline>
+<codeline lineno="395" refid="structiceberg_1_1Snapshot_1a6f9b97d42b48be0d05dd4befd2602256" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="structiceberg_1_1Snapshot_1a6f9b97d42b48be0d05dd4befd2602256" kindref="member">sequence_number</ref>;</highlight></codeline>
+<codeline lineno="398" refid="structiceberg_1_1Snapshot_1ac401c19cb4161ce5a39ab9ba16e458ac" refkind="member"><highlight class="normal"><sp/><sp/>TimePointMs<sp/><ref refid="structiceberg_1_1Snapshot_1ac401c19cb4161ce5a39ab9ba16e458ac" kindref="member">timestamp_ms</ref>;</highlight></codeline>
+<codeline lineno="401" refid="structiceberg_1_1Snapshot_1afb198e3e0b1f335fade82e462a600e95" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1Snapshot_1afb198e3e0b1f335fade82e462a600e95" kindref="member">manifest_list</ref>;</highlight></codeline>
+<codeline lineno="403" refid="structiceberg_1_1Snapshot_1afb3b362767783fd344a459451796b2e8" refkind="member"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/><ref refid="structiceberg_1_1Snapshot_1afb3b362767783fd344a459451796b2e8" kindref="member">summary</ref>;</highlight></codeline>
+<codeline lineno="405" refid="structiceberg_1_1Snapshot_1a70e026926993c72c71ae9bc75298d5e1" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int32_t&gt;<sp/><ref refid="structiceberg_1_1Snapshot_1a70e026926993c72c71ae9bc75298d5e1" kindref="member">schema_id</ref>;</highlight></codeline>
+<codeline lineno="406"><highlight class="normal"></highlight></codeline>
+<codeline lineno="408"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;Snapshot&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="409"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>sequence_number,<sp/>int64_t<sp/>snapshot_id,</highlight></codeline>
+<codeline lineno="410"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;int64_t&gt;<sp/>parent_snapshot_id,<sp/>TimePointMs<sp/>timestamp_ms,</highlight></codeline>
+<codeline lineno="411"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/>operation,<sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>summary,</highlight></codeline>
+<codeline lineno="412"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;int32_t&gt;<sp/>schema_id,<sp/>std::string<sp/>manifest_list,</highlight></codeline>
+<codeline lineno="413"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;int64_t&gt;<sp/>first_row_id<sp/>=<sp/>std::nullopt,</highlight></codeline>
+<codeline lineno="414"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;int64_t&gt;<sp/>added_rows<sp/>=<sp/>std::nullopt);</highlight></codeline>
+<codeline lineno="415"><highlight class="normal"></highlight></codeline>
+<codeline lineno="421"><highlight class="normal"><sp/><sp/>std::optional&lt;std::string_view&gt;<sp/>Operation()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="422"><highlight class="normal"></highlight></codeline>
+<codeline lineno="432"><highlight class="normal"><sp/><sp/>Result&lt;std::optional&lt;int64_t&gt;&gt;<sp/>FirstRowId()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="433"><highlight class="normal"></highlight></codeline>
+<codeline lineno="444"><highlight class="normal"><sp/><sp/>Result&lt;std::optional&lt;int64_t&gt;&gt;<sp/>AddedRows()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="445"><highlight class="normal"></highlight></codeline>
+<codeline lineno="447" refid="structiceberg_1_1Snapshot_1a110ad1a8614e25b2b749bfb411b7b0f9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot_1a110ad1a8614e25b2b749bfb411b7b0f9" kindref="member">operator==</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.Equals(rhs);</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="450"><highlight class="normal"></highlight></codeline>
+<codeline lineno="451"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="453"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Equals(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="454"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="455"><highlight class="normal"></highlight></codeline>
+<codeline lineno="459" refid="classiceberg_1_1SnapshotCache" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1SnapshotCache" kindref="compound">SnapshotCache</ref><sp/>{</highlight></codeline>
+<codeline lineno="460"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="461"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SnapshotCache" kindref="compound">SnapshotCache</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>*<sp/>snapshot)<sp/>:<sp/>snapshot_(snapshot)<sp/>{}</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"></highlight></codeline>
+<codeline lineno="464" refid="classiceberg_1_1SnapshotCache_1a673648c4ae8593852e7d7bf762cb9df3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotCache_1a673648c4ae8593852e7d7bf762cb9df3" kindref="member">snapshot</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*snapshot_;<sp/>}</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"></highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/>Result&lt;std::span&lt;ManifestFile&gt;&gt;<sp/>Manifests(std::shared_ptr&lt;FileIO&gt;<sp/>file_io)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"></highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/>Result&lt;std::span&lt;ManifestFile&gt;&gt;<sp/>DataManifests(std::shared_ptr&lt;FileIO&gt;<sp/>file_io)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="478"><highlight class="normal"></highlight></codeline>
+<codeline lineno="483"><highlight class="normal"><sp/><sp/>Result&lt;std::span&lt;ManifestFile&gt;&gt;<sp/>DeleteManifests(std::shared_ptr&lt;FileIO&gt;<sp/>file_io)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"></highlight></codeline>
+<codeline lineno="485"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">ManifestsCache<sp/>=<sp/>std::pair&lt;std::vector&lt;ManifestFile&gt;,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal">&gt;;</highlight></codeline>
+<codeline lineno="491"><highlight class="normal"></highlight></codeline>
+<codeline lineno="496"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;ManifestsCache&gt;<sp/>InitManifestsCache(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>*<sp/>snapshot,</highlight></codeline>
+<codeline lineno="497"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;FileIO&gt;<sp/>file_io);</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"></highlight></codeline>
+<codeline lineno="500"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>*<sp/>snapshot_;</highlight></codeline>
+<codeline lineno="501"><highlight class="normal"></highlight></codeline>
+<codeline lineno="503"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy&lt;InitManifestsCache&gt;</ref><sp/>manifests_cache_;</highlight></codeline>
+<codeline lineno="504"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="505"><highlight class="normal"></highlight></codeline>
+<codeline lineno="506"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/snapshot.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,483 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PartitionMap" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PartitionMap</compoundname>
+    <includes refid="partition__value__util_8h" local="no">partition_value_util.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename V</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1PartitionMap_1afccadbec0afa97c46966b611d8e94ab9" prot="public" static="no">
+        <type>std::unordered_map&lt; PartitionKey, V, <ref refid="structiceberg_1_1PartitionKeyHash" kindref="compound">PartitionKeyHash</ref>, <ref refid="structiceberg_1_1PartitionKeyEqual" kindref="compound">PartitionKeyEqual</ref> &gt;</type>
+        <definition>using iceberg::PartitionMap&lt; V &gt;::map_type =  std::unordered_map&lt;PartitionKey, V, PartitionKeyHash, PartitionKeyEqual&gt;</definition>
+        <argsstring></argsstring>
+        <name>map_type</name>
+        <qualifiedname>iceberg::PartitionMap::map_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="117" column="3" bodyfile="iceberg/util/partition_value_util.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1PartitionMap_1a7e8d43b40531c10ee45f4b43246dd9d3" prot="public" static="no">
+        <type>typename map_type::iterator</type>
+        <definition>using iceberg::PartitionMap&lt; V &gt;::iterator =  typename map_type::iterator</definition>
+        <argsstring></argsstring>
+        <name>iterator</name>
+        <qualifiedname>iceberg::PartitionMap::iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="119" column="3" bodyfile="iceberg/util/partition_value_util.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1PartitionMap_1aa8e7cf3899aa7e35b3158635f988f028" prot="public" static="no">
+        <type>typename map_type::const_iterator</type>
+        <definition>using iceberg::PartitionMap&lt; V &gt;::const_iterator =  typename map_type::const_iterator</definition>
+        <argsstring></argsstring>
+        <name>const_iterator</name>
+        <qualifiedname>iceberg::PartitionMap::const_iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="120" column="3" bodyfile="iceberg/util/partition_value_util.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PartitionMap_1a4d65abf1f36b01e9e39a70b2a50a9cec" prot="private" static="no" mutable="no">
+        <type>map_type</type>
+        <definition>map_type iceberg::PartitionMap&lt; V &gt;::map_</definition>
+        <argsstring></argsstring>
+        <name>map_</name>
+        <qualifiedname>iceberg::PartitionMap::map_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="200" column="12" bodyfile="iceberg/util/partition_value_util.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a6739c1e0d4d6611cae95760fd83962d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionMap&lt; V &gt;::PartitionMap</definition>
+        <argsstring>()=default</argsstring>
+        <name>PartitionMap</name>
+        <qualifiedname>iceberg::PartitionMap::PartitionMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="122" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a5738bb4dd60ac18df3558f45449fad7d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::PartitionMap&lt; V &gt;::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::PartitionMap::size</qualifiedname>
+        <briefdescription>
+<para>Get the number of entries in the map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="125" column="10" bodyfile="iceberg/util/partition_value_util.h" bodystart="125" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1af7217d05bde0386b324836e21dd2da27" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionMap&lt; V &gt;::empty</definition>
+        <argsstring>() const</argsstring>
+        <name>empty</name>
+        <qualifiedname>iceberg::PartitionMap::empty</qualifiedname>
+        <briefdescription>
+<para>Check if the map is empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="128" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="128" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1abf20fd624b6b472c917356a77d8c9e31" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::PartitionMap&lt; V &gt;::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>iceberg::PartitionMap::clear</qualifiedname>
+        <briefdescription>
+<para>Clear all entries from the map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="131" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="131" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a246b0860456fe5b18b5bdbc0f29d7fac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionMap&lt; V &gt;::contains</definition>
+        <argsstring>(int32_t spec_id, const PartitionValues &amp;values) const</argsstring>
+        <name>contains</name>
+        <qualifiedname>iceberg::PartitionMap::contains</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Check if the map contains a key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the key exists, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="137" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="137" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1aad3aef080bffcf431dd842c64ec3c2fa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::optional&lt; std::reference_wrapper&lt; V &gt; &gt;</type>
+        <definition>std::optional&lt; std::reference_wrapper&lt; V &gt; &gt; iceberg::PartitionMap&lt; V &gt;::get</definition>
+        <argsstring>(int32_t spec_id, const PartitionValues &amp;values)</argsstring>
+        <name>get</name>
+        <qualifiedname>iceberg::PartitionMap::get</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Get the value associated with a key. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to the value if found, std::nullopt otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="145" column="17" bodyfile="iceberg/util/partition_value_util.h" bodystart="145" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a80591b187615041524268d840cf3e4a8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::optional&lt; std::reference_wrapper&lt; const V &gt; &gt;</type>
+        <definition>std::optional&lt; std::reference_wrapper&lt; const V &gt; &gt; iceberg::PartitionMap&lt; V &gt;::get</definition>
+        <argsstring>(int32_t spec_id, const PartitionValues &amp;values) const</argsstring>
+        <name>get</name>
+        <qualifiedname>iceberg::PartitionMap::get</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Get the value associated with a key (const version). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to the value if found, std::nullopt otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="155" column="17" bodyfile="iceberg/util/partition_value_util.h" bodystart="155" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a3a636bef5195a38c0e79fd4e0c7c941c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionMap&lt; V &gt;::put</definition>
+        <argsstring>(int32_t spec_id, PartitionValues values, V value)</argsstring>
+        <name>put</name>
+        <qualifiedname>iceberg::PartitionMap::put</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref></type>
+          <declname>values</declname>
+        </param>
+        <param>
+          <type>V</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Insert or update a value in the map. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition values. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value to insert. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the entry was updated, false if it was inserted. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="166" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="166" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a929b3585cf3c393f74cd52557d58e021" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionMap&lt; V &gt;::remove</definition>
+        <argsstring>(int32_t spec_id, const PartitionValues &amp;values)</argsstring>
+        <name>remove</name>
+        <qualifiedname>iceberg::PartitionMap::remove</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Remove an entry from the map. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition values. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the entry was removed, false if it didn&apos;t exist. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="180" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="180" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a21159aeb3ae334c05f619b554f0fd329" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>iterator</type>
+        <definition>iterator iceberg::PartitionMap&lt; V &gt;::begin</definition>
+        <argsstring>()</argsstring>
+        <name>begin</name>
+        <qualifiedname>iceberg::PartitionMap::begin</qualifiedname>
+        <briefdescription>
+<para>Get iterator to the beginning. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="190" column="12" bodyfile="iceberg/util/partition_value_util.h" bodystart="190" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1ac1f7ff9676e8793e88b32dc663ae1773" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::PartitionMap&lt; V &gt;::begin</definition>
+        <argsstring>() const</argsstring>
+        <name>begin</name>
+        <qualifiedname>iceberg::PartitionMap::begin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="191" column="18" bodyfile="iceberg/util/partition_value_util.h" bodystart="191" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1ab0baca9d530442b0a10ad35e4a32b688" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::PartitionMap&lt; V &gt;::cbegin</definition>
+        <argsstring>() const</argsstring>
+        <name>cbegin</name>
+        <qualifiedname>iceberg::PartitionMap::cbegin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="192" column="18" bodyfile="iceberg/util/partition_value_util.h" bodystart="192" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a6b188d9adb334b132f8f201e4d2eae65" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>iterator</type>
+        <definition>iterator iceberg::PartitionMap&lt; V &gt;::end</definition>
+        <argsstring>()</argsstring>
+        <name>end</name>
+        <qualifiedname>iceberg::PartitionMap::end</qualifiedname>
+        <briefdescription>
+<para>Get iterator to the end. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="195" column="12" bodyfile="iceberg/util/partition_value_util.h" bodystart="195" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1aaf5023a9382a8501372e82a209e8acb2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::PartitionMap&lt; V &gt;::end</definition>
+        <argsstring>() const</argsstring>
+        <name>end</name>
+        <qualifiedname>iceberg::PartitionMap::end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="196" column="18" bodyfile="iceberg/util/partition_value_util.h" bodystart="196" bodyend="196"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionMap_1a33816486588d8bdd2d87388ec01cedb8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::PartitionMap&lt; V &gt;::cend</definition>
+        <argsstring>() const</argsstring>
+        <name>cend</name>
+        <qualifiedname>iceberg::PartitionMap::cend</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="197" column="18" bodyfile="iceberg/util/partition_value_util.h" bodystart="197" bodyend="197"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A map that uses a pair of spec ID and partition tuple as keys. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>V</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the type of values </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="iceberg/util/partition_value_util.h" line="115" column="1" bodyfile="iceberg/util/partition_value_util.h" bodystart="115" bodyend="201"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PartitionMap_1a21159aeb3ae334c05f619b554f0fd329" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>begin</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1ac1f7ff9676e8793e88b32dc663ae1773" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>begin</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1ab0baca9d530442b0a10ad35e4a32b688" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>cbegin</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a33816486588d8bdd2d87388ec01cedb8" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>cend</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1abf20fd624b6b472c917356a77d8c9e31" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>clear</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1aa8e7cf3899aa7e35b3158635f988f028" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>const_iterator</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a246b0860456fe5b18b5bdbc0f29d7fac" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>contains</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1af7217d05bde0386b324836e21dd2da27" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>empty</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a6b188d9adb334b132f8f201e4d2eae65" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>end</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1aaf5023a9382a8501372e82a209e8acb2" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>end</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1aad3aef080bffcf431dd842c64ec3c2fa" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>get</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a80591b187615041524268d840cf3e4a8" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>get</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a7e8d43b40531c10ee45f4b43246dd9d3" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>iterator</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a4d65abf1f36b01e9e39a70b2a50a9cec" prot="private" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>map_</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1afccadbec0afa97c46966b611d8e94ab9" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>map_type</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a6739c1e0d4d6611cae95760fd83962d3" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>PartitionMap</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a3a636bef5195a38c0e79fd4e0c7c941c" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>put</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a929b3585cf3c393f74cd52557d58e021" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>remove</name></member>
+      <member refid="classiceberg_1_1PartitionMap_1a5738bb4dd60ac18df3558f45449fad7d" prot="public" virt="non-virtual"><scope>iceberg::PartitionMap</scope><name>size</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

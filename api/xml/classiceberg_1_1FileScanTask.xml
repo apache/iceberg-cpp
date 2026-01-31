@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FileScanTask" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FileScanTask</compoundname>
+    <basecompoundref refid="classiceberg_1_1ScanTask" prot="public" virt="non-virtual">iceberg::ScanTask</basecompoundref>
+    <includes refid="table__scan_8h" local="no">table_scan.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTask_1afc16acbb23dd7161f9c38453ca7d01bd" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::FileScanTask::data_file_</definition>
+        <argsstring></argsstring>
+        <name>data_file_</name>
+        <qualifiedname>iceberg::FileScanTask::data_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="98" column="19" bodyfile="iceberg/table_scan.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTask_1a6d64585fbac7387b77da9b5efc4e89c3" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;DataFile&gt; &gt; iceberg::FileScanTask::delete_files_</definition>
+        <argsstring></argsstring>
+        <name>delete_files_</name>
+        <qualifiedname>iceberg::FileScanTask::delete_files_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="99" column="15" bodyfile="iceberg/table_scan.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTask_1a5c2db9fed9903272616f56775c090649" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::FileScanTask::residual_filter_</definition>
+        <argsstring></argsstring>
+        <name>residual_filter_</name>
+        <qualifiedname>iceberg::FileScanTask::residual_filter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="100" column="19" bodyfile="iceberg/table_scan.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1ac3c2ad71911295e9b98f7f9f70064dd6" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FileScanTask::FileScanTask</definition>
+        <argsstring>(std::shared_ptr&lt; DataFile &gt; data_file, std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; delete_files={}, std::shared_ptr&lt; Expression &gt; filter=nullptr)</argsstring>
+        <name>FileScanTask</name>
+        <qualifiedname>iceberg::FileScanTask::FileScanTask</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>data_file</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+          <defval>{}</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>filter</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Construct with data file, delete files, and residual filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data file to read. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>delete_files</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Delete files that apply to this data file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filter</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional residual filter to apply after reading. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="67" column="12" bodyfile="iceberg/table_scan.cc" bodystart="177" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1aa01703278a2d290967f5bfcb887a0c49" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; DataFile &gt; &amp; iceberg::FileScanTask::data_file</definition>
+        <argsstring>() const</argsstring>
+        <name>data_file</name>
+        <qualifiedname>iceberg::FileScanTask::data_file</qualifiedname>
+        <briefdescription>
+<para>The data file that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="72" column="25" bodyfile="iceberg/table_scan.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1ac460cab44912a93e186703987d3bd6e7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt; &amp;</type>
+        <definition>const std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; &amp; iceberg::FileScanTask::delete_files</definition>
+        <argsstring>() const</argsstring>
+        <name>delete_files</name>
+        <qualifiedname>iceberg::FileScanTask::delete_files</qualifiedname>
+        <briefdescription>
+<para>Delete files that apply to this data file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="75" column="21" bodyfile="iceberg/table_scan.h" bodystart="75" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1aa4a9be432f54a1dcf932cdbb3b1180e5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Expression &gt; &amp; iceberg::FileScanTask::residual_filter</definition>
+        <argsstring>() const</argsstring>
+        <name>residual_filter</name>
+        <qualifiedname>iceberg::FileScanTask::residual_filter</qualifiedname>
+        <briefdescription>
+<para>Residual filter to apply after reading. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="80" column="25" bodyfile="iceberg/table_scan.h" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1a98a4912bc062e02fcdb26b71b9e79480" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::FileScanTask::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::FileScanTask::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a3e223ab9964f78b6e99791567c82e1b6">kind</reimplements>
+        <briefdescription>
+<para>The kind of scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="82" column="8" bodyfile="iceberg/table_scan.h" bodystart="82" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1ab9cafa54598c24e7278ecf1ffc58163e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::FileScanTask::size_bytes</definition>
+        <argsstring>() const override</argsstring>
+        <name>size_bytes</name>
+        <qualifiedname>iceberg::FileScanTask::size_bytes</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a196044bb4a1fc867fb9dbece6ae3f47c">size_bytes</reimplements>
+        <briefdescription>
+<para>The number of bytes that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="83" column="11" bodyfile="iceberg/table_scan.cc" bodystart="186" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1a5222b5f4cc30a36bf058745d9ae9f1d9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::FileScanTask::files_count</definition>
+        <argsstring>() const override</argsstring>
+        <name>files_count</name>
+        <qualifiedname>iceberg::FileScanTask::files_count</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a014e83fb779a07601b71dd503871986b">files_count</reimplements>
+        <briefdescription>
+<para>The number of files that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="84" column="11" bodyfile="iceberg/table_scan.cc" bodystart="188" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1a40c1b4c68a2b3fe147afcbad05a5b624" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::FileScanTask::estimated_row_count</definition>
+        <argsstring>() const override</argsstring>
+        <name>estimated_row_count</name>
+        <qualifiedname>iceberg::FileScanTask::estimated_row_count</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a1065f2e9db3b7d9d42f861bfca839232">estimated_row_count</reimplements>
+        <briefdescription>
+<para>The number of rows that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="85" column="11" bodyfile="iceberg/table_scan.cc" bodystart="190" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTask_1ac10db5da7600207ec2cc6ca11025b152" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>Result&lt; ArrowArrayStream &gt; iceberg::FileScanTask::ToArrow</definition>
+        <argsstring>(const std::shared_ptr&lt; FileIO &gt; &amp;io, std::shared_ptr&lt; Schema &gt; projected_schema) const</argsstring>
+        <name>ToArrow</name>
+        <qualifiedname>iceberg::FileScanTask::ToArrow</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>projected_schema</declname>
+        </param>
+        <briefdescription>
+<para>Returns a C-ABI compatible <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> to read the data for this task. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>TODO(gangwu): move it to iceberg/data/task_scanner.h</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for accessing the file data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>projected_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The projected schema for reading the data. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing an <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref>, or an error on failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="94" column="10" bodyfile="iceberg/table_scan.cc" bodystart="192" bodyend="208"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Task representing a data file and its corresponding delete files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::FileScanTask</label>
+        <link refid="classiceberg_1_1FileScanTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ScanTask</label>
+        <link refid="classiceberg_1_1ScanTask"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::FileScanTask</label>
+        <link refid="classiceberg_1_1FileScanTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ScanTask</label>
+        <link refid="classiceberg_1_1ScanTask"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_scan.h" line="60" column="1" bodyfile="iceberg/table_scan.h" bodystart="60" bodyend="101"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FileScanTask_1aa01703278a2d290967f5bfcb887a0c49" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>data_file</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1afc16acbb23dd7161f9c38453ca7d01bd" prot="private" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>data_file_</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1ac460cab44912a93e186703987d3bd6e7" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>delete_files</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1a6d64585fbac7387b77da9b5efc4e89c3" prot="private" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>delete_files_</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1a40c1b4c68a2b3fe147afcbad05a5b624" prot="public" virt="virtual"><scope>iceberg::FileScanTask</scope><name>estimated_row_count</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1a5222b5f4cc30a36bf058745d9ae9f1d9" prot="public" virt="virtual"><scope>iceberg::FileScanTask</scope><name>files_count</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1ac3c2ad71911295e9b98f7f9f70064dd6" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>FileScanTask</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1a98a4912bc062e02fcdb26b71b9e79480" prot="public" virt="virtual"><scope>iceberg::FileScanTask</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1ScanTask_1ab28bdbcb5d183627dfec1ef4d3321c1f" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1aa4a9be432f54a1dcf932cdbb3b1180e5" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>residual_filter</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1a5c2db9fed9903272616f56775c090649" prot="private" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>residual_filter_</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1ab9cafa54598c24e7278ecf1ffc58163e" prot="public" virt="virtual"><scope>iceberg::FileScanTask</scope><name>size_bytes</name></member>
+      <member refid="classiceberg_1_1FileScanTask_1ac10db5da7600207ec2cc6ca11025b152" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask</scope><name>ToArrow</name></member>
+      <member refid="classiceberg_1_1ScanTask_1abfdda64a7967dbfda4543c4a6cb085ec" prot="public" virt="virtual"><scope>iceberg::FileScanTask</scope><name>~ScanTask</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

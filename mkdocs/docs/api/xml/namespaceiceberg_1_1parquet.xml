@@ -1,0 +1,1238 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1parquet" kind="namespace" language="C++">
+    <compoundname>iceberg::parquet</compoundname>
+    <innerclass refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes" prot="public">iceberg::parquet::ParquetExtraAttributes</innerclass>
+    <innerclass refid="classiceberg_1_1parquet_1_1ParquetReader" prot="public">iceberg::parquet::ParquetReader</innerclass>
+    <innerclass refid="classiceberg_1_1parquet_1_1ParquetReaderTest" prot="public">iceberg::parquet::ParquetReaderTest</innerclass>
+    <innerclass refid="classiceberg_1_1parquet_1_1ParquetReadWrite" prot="public">iceberg::parquet::ParquetReadWrite</innerclass>
+    <innerclass refid="classiceberg_1_1parquet_1_1ParquetWriter" prot="public">iceberg::parquet::ParquetWriter</innerclass>
+    <innerclass refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam" prot="public">iceberg::parquet::ProjectRecordBatchParam</innerclass>
+    <innerclass refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" prot="public">iceberg::parquet::ProjectRecordBatchTest</innerclass>
+    <innerclass refid="structiceberg_1_1parquet_1_1ReadContext" prot="public">iceberg::parquet::ReadContext</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="parquet__data__test_8cc_1a029441840c9e24d12ecf37fba0ebd240" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam" kindref="compound">ProjectRecordBatchParam</ref> &gt;</type>
+        <definition>const std::vector&lt;ProjectRecordBatchParam&gt; iceberg::parquet::kPrimitiveTestCases</definition>
+        <argsstring></argsstring>
+        <name>kPrimitiveTestCases</name>
+        <qualifiedname>iceberg::parquet::kPrimitiveTestCases</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="102" column="19" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="102" bodyend="220"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="parquet__data__util_8cc_1a5670dc80aec94e8b49484e82cea1579d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::RecordBatch &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::RecordBatch &gt; &gt; iceberg::parquet::ProjectRecordBatch</definition>
+        <argsstring>(std::shared_ptr&lt;::arrow::RecordBatch &gt; record_batch, const std::shared_ptr&lt;::arrow::Schema &gt; &amp;output_arrow_schema, const Schema &amp;projected_schema, const SchemaProjection &amp;projection, const arrow::MetadataColumnContext &amp;metadata_context, ::arrow::MemoryPool *pool)</argsstring>
+        <name>ProjectRecordBatch</name>
+        <qualifiedname>iceberg::parquet::ProjectRecordBatch</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::RecordBatch &gt;</type>
+          <declname>record_batch</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt;::arrow::Schema &gt; &amp;</type>
+          <declname>output_arrow_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>projected_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref> &amp;</type>
+          <declname>projection</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1arrow_1_1MetadataColumnContext" kindref="compound">arrow::MetadataColumnContext</ref> &amp;</type>
+          <declname>metadata_context</declname>
+        </param>
+        <param>
+          <type>::arrow::MemoryPool *</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+<para>Convert record batch read from a Parquet file to projected Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>record_batch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The record batch to convert. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output_arrow_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Arrow schema to convert to. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>projected_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The projected Iceberg schema. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>projection</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The projection from projected Iceberg schema to the record batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata_context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metadata column context for populating _file and _pos. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The arrow memory pool. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The converted record batch. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_data_util.cc" line="314" column="8" bodyfile="iceberg/parquet/parquet_data_util.cc" bodystart="314" bodyend="329" declfile="iceberg/parquet/parquet_data_util_internal.h" declline="38" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__reader_8cc_1ab1a466bcebadc1dfc5cef755c190da24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::parquet::RegisterReader</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterReader</name>
+        <qualifiedname>iceberg::parquet::RegisterReader</qualifiedname>
+        <briefdescription>
+<para>Register Parquet reader implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="296" column="6" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="296" bodyend="301" declfile="iceberg/parquet/parquet_register.h" declline="30" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__register_8cc_1a8f241303247c8ab833f9e99ffe9fea88" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::parquet::RegisterAll</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterAll</name>
+        <qualifiedname>iceberg::parquet::RegisterAll</qualifiedname>
+        <briefdescription>
+<para>Register Parquet reader and writer implementations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_register.cc" line="24" column="6" bodyfile="iceberg/parquet/parquet_register.cc" bodystart="24" bodyend="27" declfile="iceberg/parquet/parquet_register.h" declline="36" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__register_8h_1a5df589ba87ff62b23a305a3e13d728c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>void iceberg::parquet::RegisterWriter</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterWriter</name>
+        <qualifiedname>iceberg::parquet::RegisterWriter</qualifiedname>
+        <briefdescription>
+<para>Register Parquet writer implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="200" column="6" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="200" bodyend="205" declfile="iceberg/parquet/parquet_register.h" declline="33" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__util_8cc_1a3e193141af09b824a7ede51c6299ef81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref> &gt;</type>
+        <definition>Result&lt; SchemaProjection &gt; iceberg::parquet::Project</definition>
+        <argsstring>(const Schema &amp;expected_schema, const ::parquet::arrow::SchemaManifest &amp;parquet_schema)</argsstring>
+        <name>Project</name>
+        <qualifiedname>iceberg::parquet::Project</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>expected_schema</declname>
+        </param>
+        <param>
+          <type>const ::parquet::arrow::SchemaManifest &amp;</type>
+          <declname>parquet_schema</declname>
+        </param>
+        <briefdescription>
+<para>Project an Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> onto a Parquet <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function creates a projection from an Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> to a Parquet schema. The projection determines how to read data from the Parquet schema into the expected Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expected_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> that defines the expected structure. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parquet_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Parquet schema to read data from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The schema projection result with column indices of projected Parquet columns specified via <ref refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes" kindref="compound">ParquetExtraAttributes</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_schema_util.cc" line="396" column="8" bodyfile="iceberg/parquet/parquet_schema_util.cc" bodystart="396" bodyend="402" declfile="iceberg/parquet/parquet_schema_util_internal.h" declline="50" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__util_8cc_1a86a6556266d20d10f512d18eb568ce41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt; int32_t &gt; iceberg::parquet::SelectedColumnIndices</definition>
+        <argsstring>(const SchemaProjection &amp;projection)</argsstring>
+        <name>SelectedColumnIndices</name>
+        <qualifiedname>iceberg::parquet::SelectedColumnIndices</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref> &amp;</type>
+          <declname>projection</declname>
+        </param>
+        <briefdescription>
+<para>Get the selected column indices by walking through the projection result. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>projection</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema projection result. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The selected column indices. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_schema_util.cc" line="404" column="13" bodyfile="iceberg/parquet/parquet_schema_util.cc" bodystart="404" bodyend="411" declfile="iceberg/parquet/parquet_schema_util_internal.h" declline="57" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__util_8cc_1afc413304027ec5ad8c801d879fdd338a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::parquet::HasFieldIds</definition>
+        <argsstring>(const ::parquet::schema::NodePtr &amp;root_node)</argsstring>
+        <name>HasFieldIds</name>
+        <qualifiedname>iceberg::parquet::HasFieldIds</qualifiedname>
+        <param>
+          <type>const ::parquet::schema::NodePtr &amp;</type>
+          <declname>root_node</declname>
+        </param>
+        <briefdescription>
+<para>Check whether the Parquet schema has field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>root_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The root node of the Parquet schema. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1True" kindref="compound">True</ref> if the Parquet schema has field IDs, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_schema_util.cc" line="413" column="6" bodyfile="iceberg/parquet/parquet_schema_util.cc" bodystart="413" bodyend="428" declfile="iceberg/parquet/parquet_schema_util_internal.h" declline="63" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1aab534f78f1a9e0b6fb267c925e7c51e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt;::arrow::RecordBatch &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::RecordBatch &gt; iceberg::parquet::RecordBatchFromJson</definition>
+        <argsstring>(const std::shared_ptr&lt;::arrow::Schema &gt; &amp;schema, const std::string &amp;json_data)</argsstring>
+        <name>RecordBatchFromJson</name>
+        <qualifiedname>iceberg::parquet::RecordBatchFromJson</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt;::arrow::Schema &gt; &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="48" column="17" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="48" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a41db7f95c5af7dbe6538ed8aa57b346a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::parquet::VerifyProjectRecordBatch</definition>
+        <argsstring>(const Schema &amp;projected_schema, const Schema &amp;source_schema, const std::string &amp;input_json, const std::string &amp;expected_json)</argsstring>
+        <name>VerifyProjectRecordBatch</name>
+        <qualifiedname>iceberg::parquet::VerifyProjectRecordBatch</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>projected_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>source_schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>input_json</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>expected_json</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="57" column="6" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="57" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a5932f9a518bbdd4c137eddcb71abcfe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_P</definition>
+        <argsstring>(ProjectRecordBatchTest, PrimitiveType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::parquet::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="90" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="90" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a8f4173a7e893972213b8e0252a5992b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(AllPrimitiveTypes, ProjectRecordBatchTest, ::testing::ValuesIn(kPrimitiveTestCases), [](const ::testing::TestParamInfo&lt; ProjectRecordBatchParam &gt; &amp;info) { return info.param.name;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::parquet::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>AllPrimitiveTypes</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::ValuesIn(kPrimitiveTestCases)</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; <ref refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam" kindref="compound">ProjectRecordBatchParam</ref> &gt; &amp;info) { return info.param.name;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="222" column="1" declfile="iceberg/test/parquet_data_test.cc" declline="222" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1adca2209d8a162b9f4dc998e6fa95c738" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, StructWithTwoFields)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>StructWithTwoFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="228" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="228" bodyend="239"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a8fbc1e6430b205bbf3eeff68a7ddddd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, NestedStruct)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>NestedStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="241" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="241" bodyend="258"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a37dd6a89614857e18e51ffb23c4baa53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, ListOfIntegers)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>ListOfIntegers</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="260" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="260" bodyend="274"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a4455827c7995a0c05b0c1ec5b922c270" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, ListOfStructs)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>ListOfStructs</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="276" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="276" bodyend="300"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1aac68e2767261d0b9ec1d440ad43f085a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, MapStringToInt)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>MapStringToInt</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="302" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="302" bodyend="317"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a76f63a34fe07257717da46a8e986b6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, MapStringToStruct)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>MapStringToStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="319" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="319" bodyend="340"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a81082c19ceddcb6cf8dc53566574d8c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, StructWithMissingOptionalField)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>StructWithMissingOptionalField</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="342" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="342" bodyend="366"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1aa82275e133996447a52e07e03d5ebf9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, NestedStructWithMissingOptionalFields)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>NestedStructWithMissingOptionalFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="368" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="368" bodyend="400"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a521f4e2c6e6e21fea0199584e4d2aa2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, ListWithMissingOptionalElementFields)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>ListWithMissingOptionalElementFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="402" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="402" bodyend="447"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a01ccd559bcc655c85da573e8805ecb52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, FieldReordering)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>FieldReordering</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="449" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="449" bodyend="471"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a4f1e00d6ce6ff78c3184f05e20747c32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, FieldSubset)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>FieldSubset</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="473" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="473" bodyend="495"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a9ab84c3186927841b2360eb03ae58c74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, EmptyRecordBatch)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>EmptyRecordBatch</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="497" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="497" bodyend="507"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1affebac6588649688a335673f14f037e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, LargeListOfIntegers)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>LargeListOfIntegers</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="509" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="509" bodyend="582"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__data__test_8cc_1a008b96144f3cb9634730b70479eb3190" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ProjectRecordBatchTest, LargeListOfStructs)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ProjectRecordBatchTest" kindref="compound">ProjectRecordBatchTest</ref></type>
+        </param>
+        <param>
+          <type>LargeListOfStructs</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="584" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="584" bodyend="663"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1adcd93804465b1af8d86a7d3f0894455f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(HasFieldIdsTest, PrimitiveNode)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>HasFieldIdsTest</type>
+        </param>
+        <param>
+          <type>PrimitiveNode</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="135" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="135" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a4c8d561336d088a6df638dd534362c86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(HasFieldIdsTest, GroupNode)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>HasFieldIdsTest</type>
+        </param>
+        <param>
+          <type>GroupNode</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="142" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="142" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1af394cc067412072d347951c9535b3f2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectIdenticalSchemas)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectIdenticalSchemas</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="161" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="161" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a55ac1757f76ebee49f44b07f1cf2d63b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectSubsetSchema)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSubsetSchema</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="187" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="187" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1af512af1c499ec4b1f7ae0d83114c9bd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectMissingOptionalField)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMissingOptionalField</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="210" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="210" bodyend="232"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1adda9809a293cd152ac4d45b71a149877" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectMissingRequiredField)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMissingRequiredField</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="234" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="234" bodyend="249"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a07f72f393f431bc710492a9b85a4c169" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectMetadataColumn)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMetadataColumn</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="251" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="251" bodyend="270"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1ac578d55d498950cbad0cc9b53498c545" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectSchemaEvolutionIntToLong)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSchemaEvolutionIntToLong</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="272" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="272" bodyend="287"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1afd988711457f6e55de21825b90b1634a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSchemaEvolutionFloatToDouble</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="289" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="289" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a823241c474f8862cfca0de51a049db26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectSchemaEvolutionIncompatibleTypes)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSchemaEvolutionIncompatibleTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="306" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="306" bodyend="318"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1ae02126f5a87000db137e43c08efbf6dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectNestedStructures)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectNestedStructures</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="320" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="320" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1acbf3d03a268f24e9c69e938d4542ad5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectListType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectListType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="359" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="359" bodyend="389"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a7ed4b419664c8783a07c9cbe7719afa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectMapType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMapType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="391" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="391" bodyend="421"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a50d40e53b36a82175ab9a8af983b3597" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectListOfStruct)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectListOfStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="423" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="423" bodyend="464"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a70c432e61e14e458debae84073e104b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectDecimalType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectDecimalType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="466" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="466" bodyend="483"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a92fdc3e30d8f5667db379581ee582c1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectDecimalIncompatible)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectDecimalIncompatible</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="485" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="485" bodyend="499"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1ab41bd25c1ca0d7f485f61943d1db5454" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectDuplicateFieldIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectDuplicateFieldIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="501" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="501" bodyend="517"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a2839b9d9408865f64afe76d50ba20f79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, ProjectPrimitiveType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectPrimitiveType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="519" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="519" bodyend="588"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__schema__test_8cc_1a4c88e891352b5882b2e2c7a851db6b01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST</definition>
+        <argsstring>(ParquetSchemaProjectionTest, UnsuportedProjection)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::parquet::TEST</qualifiedname>
+        <param>
+          <type>ParquetSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>UnsuportedProjection</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="590" column="1" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="590" bodyend="636"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1ab82bac7f74d47c9fbb3c1dab5f89b539" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReaderTest, ReadTwoFields)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReaderTest" kindref="compound">ParquetReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadTwoFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="216" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="216" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1a8614a495e96a653100e9940950eb18be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReaderTest, ReadReorderedFieldsWithNulls)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReaderTest" kindref="compound">ParquetReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadReorderedFieldsWithNulls</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="235" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="235" bodyend="252"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1a56e15849c352332bf22450a4d061c710" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReaderTest, ReadWithBatchSize)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReaderTest" kindref="compound">ParquetReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadWithBatchSize</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="254" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="254" bodyend="274"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1a78d811b4b9c870ecacf208f015b4bfb8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReaderTest, ReadSplit)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReaderTest" kindref="compound">ParquetReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadSplit</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="276" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="276" bodyend="324"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1ae1fe6fa094771c17d9b70c831c92392b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReaderTest, ReadMetadataColumns)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReaderTest" kindref="compound">ParquetReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadMetadataColumns</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="326" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="326" bodyend="347"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1aa0a3842be2c03f3e0ec9a469e0a6103c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReaderTest, ReadRowPositionWithBatchSize)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReaderTest" kindref="compound">ParquetReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadRowPositionWithBatchSize</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="349" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="349" bodyend="371"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1ad2077bb7e7c338515db4ab4065848fea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReaderTest, ReadMetadataOnlyProjection)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReaderTest" kindref="compound">ParquetReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadMetadataOnlyProjection</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="373" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="373" bodyend="393"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1a0cfc1247d60033749741203c324bdc75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReadWrite, EmptyStruct)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReadWrite" kindref="compound">ParquetReadWrite</ref></type>
+        </param>
+        <param>
+          <type>EmptyStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="400" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="400" bodyend="418"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1a321365e5071cf147d9dee80cce38beba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReadWrite, SimpleStructRoundTrip)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReadWrite" kindref="compound">ParquetReadWrite</ref></type>
+        </param>
+        <param>
+          <type>SimpleStructRoundTrip</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="420" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="420" bodyend="442"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__test_8cc_1ad0d5afaafc21784b5020f82a371b354c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::TEST_F</definition>
+        <argsstring>(ParquetReadWrite, SimpleTypeRoundTrip)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::parquet::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1parquet_1_1ParquetReadWrite" kindref="compound">ParquetReadWrite</ref></type>
+        </param>
+        <param>
+          <type>SimpleTypeRoundTrip</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="444" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="444" bodyend="469"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/parquet/parquet_data_util.cc" line="35" column="1"/>
+  </compounddef>
+</doxygen>

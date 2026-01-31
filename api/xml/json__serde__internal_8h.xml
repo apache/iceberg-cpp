@@ -1,0 +1,414 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="json__serde__internal_8h" kind="file" language="C++">
+    <compoundname>json_serde_internal.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">nlohmann/json_fwd.hpp</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="statistics__file_8h" local="yes">iceberg/statistics_file.h</includes>
+    <includes refid="table__metadata_8h" local="yes">iceberg/table_metadata.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includedby refid="http__client_8cc" local="yes">iceberg/catalog/rest/http_client.cc</includedby>
+    <includedby refid="catalog_2rest_2json__serde_8cc" local="yes">iceberg/catalog/rest/json_serde.cc</includedby>
+    <includedby refid="rest__catalog_8cc" local="yes">iceberg/catalog/rest/rest_catalog.cc</includedby>
+    <includedby refid="json__serde_8cc" local="yes">iceberg/json_serde.cc</includedby>
+    <includedby refid="v1__metadata_8cc" local="yes">iceberg/manifest/v1_metadata.cc</includedby>
+    <includedby refid="v2__metadata_8cc" local="yes">iceberg/manifest/v2_metadata.cc</includedby>
+    <includedby refid="v3__metadata_8cc" local="yes">iceberg/manifest/v3_metadata.cc</includedby>
+    <includedby refid="table__metadata_8cc" local="yes">iceberg/table_metadata.cc</includedby>
+    <includedby refid="json__serde__test_8cc" local="yes">iceberg/test/json_serde_test.cc</includedby>
+    <includedby refid="metadata__io__test_8cc" local="yes">iceberg/test/metadata_io_test.cc</includedby>
+    <includedby refid="partition__spec__test_8cc" local="yes">iceberg/test/partition_spec_test.cc</includedby>
+    <includedby refid="schema__json__test_8cc" local="yes">iceberg/test/schema_json_test.cc</includedby>
+    <includedby refid="test__resource_8h" local="yes">iceberg/test/test_resource.h</includedby>
+    <incdepgraph>
+      <node id="20">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/json_serde_internal.h</label>
+        <link refid="json__serde__internal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/statistics_file.h</label>
+        <link refid="statistics__file_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/table_metadata.h</label>
+        <link refid="table__metadata_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/table_properties.h</label>
+        <link refid="table__properties_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="18">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg/util/timepoint.h</label>
+        <link refid="timepoint_8h_source"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>cassert</label>
+      </node>
+      <node id="30">
+        <label>chrono</label>
+      </node>
+      <node id="25">
+        <label>concepts</label>
+      </node>
+      <node id="10">
+        <label>cstdint</label>
+      </node>
+      <node id="5">
+        <label>expected</label>
+      </node>
+      <node id="6">
+        <label>format</label>
+      </node>
+      <node id="19">
+        <label>functional</label>
+      </node>
+      <node id="16">
+        <label>limits</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="26">
+        <label>mutex</label>
+      </node>
+      <node id="3">
+        <label>nlohmann/json_fwd.hpp</label>
+      </node>
+      <node id="21">
+        <label>stdexcept</label>
+      </node>
+      <node id="7">
+        <label>string</label>
+      </node>
+      <node id="14">
+        <label>string_view</label>
+      </node>
+      <node id="11">
+        <label>unordered_map</label>
+      </node>
+      <node id="17">
+        <label>unordered_set</label>
+      </node>
+      <node id="12">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/json_serde_internal.h</label>
+        <link refid="json__serde__internal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/test/test_resource.h</label>
+        <link refid="test__resource_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg/test/update_test_base.h</label>
+        <link refid="update__test__base_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;nlohmann/json_fwd.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="statistics__file_8h" kindref="compound">iceberg/statistics_file.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="table__metadata_8h" kindref="compound">iceberg/table_metadata.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SortField&amp;<sp/>sort_field);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;SortField&gt;&gt;<sp/>SortFieldFromJson(</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SortOrder&amp;<sp/>sort_order);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;SortOrder&gt;&gt;<sp/>SortOrderFromJson(</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;Schema&gt;&amp;<sp/>current_schema);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;SortOrder&gt;&gt;<sp/>SortOrderFromJson(</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Schema&amp;<sp/>schema);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::string&gt;<sp/>ToJsonString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Schema&amp;<sp/>schema);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;Schema&gt;&gt;<sp/>SchemaFromJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Type&amp;<sp/>type);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;Type&gt;&gt;<sp/>TypeFromJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SchemaField&amp;<sp/>field);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;SchemaField&gt;&gt;<sp/>FieldFromJson(</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>PartitionField&amp;<sp/>partition_field);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;PartitionField&gt;&gt;<sp/>PartitionFieldFromJson(</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>allow_field_id_missing<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>PartitionSpec&amp;<sp/>partition_spec);</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::string&gt;<sp/>ToJsonString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>PartitionSpec&amp;<sp/>partition_spec);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;PartitionSpec&gt;&gt;<sp/>PartitionSpecFromJson(</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;Schema&gt;&amp;<sp/>schema,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json,</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>default_spec_id);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;PartitionSpec&gt;&gt;<sp/>PartitionSpecFromJson(</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SnapshotRef&amp;<sp/>snapshot_ref);</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;SnapshotRef&gt;&gt;<sp/>SnapshotRefFromJson(</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Snapshot&amp;<sp/>snapshot);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;Snapshot&gt;&gt;<sp/>SnapshotFromJson(</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>StatisticsFile&amp;<sp/>statistics_file);</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;StatisticsFile&gt;&gt;<sp/>StatisticsFileFromJson(</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>PartitionStatisticsFile&amp;<sp/>partition_statistics_file);</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;PartitionStatisticsFile&gt;&gt;</highlight></codeline>
+<codeline lineno="253"><highlight class="normal">PartitionStatisticsFileFromJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SnapshotLogEntry&amp;<sp/>snapshot_log_entry);</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;SnapshotLogEntry&gt;<sp/>SnapshotLogEntryFromJson(</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MetadataLogEntry&amp;<sp/>metadata_log_entry);</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"></highlight></codeline>
+<codeline lineno="278"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;MetadataLogEntry&gt;<sp/>MetadataLogEntryFromJson(</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight></codeline>
+<codeline lineno="285"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TableMetadata&amp;<sp/>table_metadata);</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="291"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::string&gt;<sp/>ToJsonString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TableMetadata&amp;<sp/>table_metadata);</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"></highlight></codeline>
+<codeline lineno="297"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;TableMetadata&gt;&gt;<sp/>TableMetadataFromJson(</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight></codeline>
+<codeline lineno="304"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;nlohmann::json&gt;<sp/>FromJsonString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>json_string);</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::string&gt;<sp/>ToJsonString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"></highlight></codeline>
+<codeline lineno="316"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MappedField&amp;<sp/>field);</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;MappedField&gt;<sp/>MappedFieldFromJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight></codeline>
+<codeline lineno="328"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MappedFields&amp;<sp/>mapped_fields);</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;MappedFields&gt;&gt;<sp/>MappedFieldsFromJson(</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"></highlight></codeline>
+<codeline lineno="341"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>NameMapping&amp;<sp/>name_mapping);</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"></highlight></codeline>
+<codeline lineno="347"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;NameMapping&gt;&gt;<sp/>NameMappingFromJson(</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"></highlight></codeline>
+<codeline lineno="355"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TableIdentifier&amp;<sp/>identifier);</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"></highlight></codeline>
+<codeline lineno="361"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;TableIdentifier&gt;<sp/>TableIdentifierFromJson(</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"></highlight></codeline>
+<codeline lineno="368"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Namespace&amp;<sp/>ns);</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"></highlight></codeline>
+<codeline lineno="374"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;Namespace&gt;<sp/>NamespaceFromJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"></highlight></codeline>
+<codeline lineno="380"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TableUpdate&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="381"><highlight class="normal"></highlight></codeline>
+<codeline lineno="386"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;TableUpdate&gt;&gt;<sp/>TableUpdateFromJson(</highlight></codeline>
+<codeline lineno="387"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="388"><highlight class="normal"></highlight></codeline>
+<codeline lineno="393"><highlight class="normal">ICEBERG_EXPORT<sp/>nlohmann::json<sp/>ToJson(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TableRequirement&amp;<sp/>requirement);</highlight></codeline>
+<codeline lineno="394"><highlight class="normal"></highlight></codeline>
+<codeline lineno="399"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;std::unique_ptr&lt;TableRequirement&gt;&gt;<sp/>TableRequirementFromJson(</highlight></codeline>
+<codeline lineno="400"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>nlohmann::json&amp;<sp/>json);</highlight></codeline>
+<codeline lineno="401"><highlight class="normal"></highlight></codeline>
+<codeline lineno="402"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/json_serde_internal.h"/>
+  </compounddef>
+</doxygen>

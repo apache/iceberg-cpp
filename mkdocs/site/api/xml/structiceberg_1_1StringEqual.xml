@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1StringEqual" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::StringEqual</compoundname>
+    <includes refid="string__util_8h" local="no">string_util.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1StringEqual_1adc66cc58aa5d953040f02ebbdac7c8af" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::StringEqual::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::StringEqual::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="99" column="3" bodyfile="iceberg/util/string_util.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1StringEqual_1ad5b058f14ed35071a1869d197c43ba71" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StringEqual::operator()</definition>
+        <argsstring>(std::string_view lhs, std::string_view rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StringEqual::operator()</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="101" column="8" bodyfile="iceberg/util/string_util.h" bodystart="101" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1StringEqual_1a4150153a7c493d53b79ef17209fdb01c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StringEqual::operator()</definition>
+        <argsstring>(const std::string &amp;lhs, const std::string &amp;rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StringEqual::operator()</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="102" column="8" bodyfile="iceberg/util/string_util.h" bodystart="102" bodyend="104"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Transparent equality function that supports std::string_view as lookup key. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/string_util.h" line="98" column="1" bodyfile="iceberg/util/string_util.h" bodystart="98" bodyend="105"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1StringEqual_1adc66cc58aa5d953040f02ebbdac7c8af" prot="public" virt="non-virtual"><scope>iceberg::StringEqual</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1StringEqual_1ad5b058f14ed35071a1869d197c43ba71" prot="public" virt="non-virtual"><scope>iceberg::StringEqual</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1StringEqual_1a4150153a7c493d53b79ef17209fdb01c" prot="public" virt="non-virtual"><scope>iceberg::StringEqual</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

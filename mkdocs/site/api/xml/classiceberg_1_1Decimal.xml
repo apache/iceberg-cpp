@@ -1,0 +1,1122 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Decimal" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Decimal</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <includes refid="decimal_8h" local="no">decimal.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Decimal_1a4914f026115284b5df30bcf07c05049a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::Decimal::kBitWidth</definition>
+        <argsstring></argsstring>
+        <name>kBitWidth</name>
+        <qualifiedname>iceberg::Decimal::kBitWidth</qualifiedname>
+        <initializer>= 128</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="48" column="28" bodyfile="iceberg/util/decimal.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Decimal_1a7960de90614c63d7dbcd2c01c525fe2e" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::Decimal::kByteWidth</definition>
+        <argsstring></argsstring>
+        <name>kByteWidth</name>
+        <qualifiedname>iceberg::Decimal::kByteWidth</qualifiedname>
+        <initializer>= kBitWidth / 8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="49" column="28" bodyfile="iceberg/util/decimal.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Decimal_1a416a4206faa4f7ba6acc63cca52b1e32" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::Decimal::kMaxPrecision</definition>
+        <argsstring></argsstring>
+        <name>kMaxPrecision</name>
+        <qualifiedname>iceberg::Decimal::kMaxPrecision</qualifiedname>
+        <initializer>= 38</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="50" column="28" bodyfile="iceberg/util/decimal.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Decimal_1adb21cc2c8e1a7db8c283e889380d52c1" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::Decimal::kMaxScale</definition>
+        <argsstring></argsstring>
+        <name>kMaxScale</name>
+        <qualifiedname>iceberg::Decimal::kMaxScale</qualifiedname>
+        <initializer>= 38</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="51" column="28" bodyfile="iceberg/util/decimal.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Decimal_1a5730979fc071ac92cb3af6bd7b296134" prot="private" static="no" mutable="no">
+        <type>int128_t</type>
+        <definition>int128_t iceberg::Decimal::data_</definition>
+        <argsstring></argsstring>
+        <name>data_</name>
+        <qualifiedname>iceberg::Decimal::data_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="227" column="12" bodyfile="iceberg/util/decimal.h" bodystart="227" bodyend="227"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1ae63e1b780e6ac1b118179901a0b2412a" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::Decimal::Decimal</definition>
+        <argsstring>() noexcept=default</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>iceberg::Decimal::Decimal</qualifiedname>
+        <briefdescription>
+<para>Default constructor initializes to zero. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="54" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a75a669d0c23dc618d6ea77bfb66f4078" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::Decimal::Decimal</definition>
+        <argsstring>(int128_t value) noexcept</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>iceberg::Decimal::Decimal</qualifiedname>
+        <param>
+          <type>int128_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> from a 128-bit integer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="57" column="13" bodyfile="iceberg/util/decimal.h" bodystart="57" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a5e57a9033dc325933919ecf53bd60cbb" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::Decimal::Decimal</definition>
+        <argsstring>(T value) noexcept</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>iceberg::Decimal::Decimal</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>value</declname>
+        </param>
+    <requiresclause>(std::is_integral_v&lt;T&gt; &amp;&amp; (sizeof(T) &lt;= sizeof(uint64_t)))    </requiresclause>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> from any integer not wider than 64 bits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="63" column="13" bodyfile="iceberg/util/decimal.h" bodystart="63" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1aaac2f890631d7962d61b058c0ae6e0bf" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Decimal::Decimal</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>iceberg::Decimal::Decimal</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parse a <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> from a string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>This</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>constructor throws an exception if parsing fails. Use <ref refid="classiceberg_1_1Decimal_1a4f84f5bdfacbd10dce52d76f73311466" kindref="member">Decimal::FromString()</ref> if you want to handle errors more gracefully. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="69" column="12" bodyfile="iceberg/util/decimal.cc" bodystart="301" bodyend="306"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1ac6f8d5cc9231f35361dbf25003847c9a" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::Decimal::Decimal</definition>
+        <argsstring>(int64_t high, uint64_t low) noexcept</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>iceberg::Decimal::Decimal</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>high</declname>
+        </param>
+        <param>
+          <type>uint64_t</type>
+          <declname>low</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> from two 64-bit integers. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="72" column="13" bodyfile="iceberg/util/decimal.h" bodystart="72" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a40b38869f003bdc49428f65863509712" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::Negate</definition>
+        <argsstring>()</argsstring>
+        <name>Negate</name>
+        <qualifiedname>iceberg::Decimal::Negate</qualifiedname>
+        <briefdescription>
+<para>Negate the current <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value (in place) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="77" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="308" bodyend="312"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1aa47f3734360f2253e82192f4c4debb86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::Abs</definition>
+        <argsstring>()</argsstring>
+        <name>Abs</name>
+        <qualifiedname>iceberg::Decimal::Abs</qualifiedname>
+        <briefdescription>
+<para>Absolute value of the current <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value (in place) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="80" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="314" bodyend="314"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a865d5429b1afb8cfe85b5491dd3125e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator+=</definition>
+        <argsstring>(const Decimal &amp;other)</argsstring>
+        <name>operator+=</name>
+        <qualifiedname>iceberg::Decimal::operator+=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Add a number to this one. The result is truncated to 128 bits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="86" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="321" bodyend="324"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a2f00aca89d7391a8242281b6493c2ec4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator-=</definition>
+        <argsstring>(const Decimal &amp;other)</argsstring>
+        <name>operator-=</name>
+        <qualifiedname>iceberg::Decimal::operator-=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Subtract a number from this one. The result is truncated to 128 bits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="89" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="326" bodyend="329"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a5e16b07aa6ee5cc90c22ea8a0ad17aed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator*=</definition>
+        <argsstring>(const Decimal &amp;other)</argsstring>
+        <name>operator*=</name>
+        <qualifiedname>iceberg::Decimal::operator*=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Multiply this number by another. The result is truncated to 128 bits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="92" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="331" bodyend="334"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a95e555b097856aee26473044b3337aa2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::pair&lt; <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>, <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::pair&lt; Decimal, Decimal &gt; &gt; iceberg::Decimal::Divide</definition>
+        <argsstring>(const Decimal &amp;divisor) const</argsstring>
+        <name>Divide</name>
+        <qualifiedname>iceberg::Decimal::Divide</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>divisor</declname>
+        </param>
+        <briefdescription>
+<para>Divide this number by another. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The operation does not modify the current <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value. The answer rounds towards zero. Signs work like: 21 / 5 -&gt; 4, 1 -21 / 5 -&gt; -4, -1 21 / -5 -&gt; -4, 1 -21 / -5 -&gt; 4, -1 <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">divisor</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the number to divide by </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>the pair of the quotient and the remainder </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="104" column="10" bodyfile="iceberg/util/decimal.cc" bodystart="336" bodyend="342"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a2eb5aebd9335517d9f3550d5be10d5ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator/=</definition>
+        <argsstring>(const Decimal &amp;other)</argsstring>
+        <name>operator/=</name>
+        <qualifiedname>iceberg::Decimal::operator/=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>In place division. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="107" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="344" bodyend="347"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1ac3308230f8d33e807286c815725315e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator|=</definition>
+        <argsstring>(const Decimal &amp;other)</argsstring>
+        <name>operator|=</name>
+        <qualifiedname>iceberg::Decimal::operator|=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Bitwise OR operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="110" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="349" bodyend="352"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a20c799ed953c57ae6a37a23dcfb17d23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator&amp;=</definition>
+        <argsstring>(const Decimal &amp;other)</argsstring>
+        <name>operator&amp;=</name>
+        <qualifiedname>iceberg::Decimal::operator&amp;=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Bitwise AND operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="113" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="354" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a08ff3aa5dc63e3b0b1a2c84524abfbfd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator&lt;&lt;=</definition>
+        <argsstring>(uint32_t shift)</argsstring>
+        <name>operator&lt;&lt;=</name>
+        <qualifiedname>iceberg::Decimal::operator&lt;&lt;=</qualifiedname>
+        <param>
+          <type>uint32_t</type>
+          <declname>shift</declname>
+        </param>
+        <briefdescription>
+<para>Shift left by the given number of bits (in place). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="116" column="3" bodyfile="iceberg/util/decimal.cc" bodystart="359" bodyend="365"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1ad9a1babe945e8492c74448578af36225" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>Decimal iceberg::Decimal::operator&lt;&lt;</definition>
+        <argsstring>(uint32_t shift) const</argsstring>
+        <name>operator&lt;&lt;</name>
+        <qualifiedname>iceberg::Decimal::operator&lt;&lt;</qualifiedname>
+        <param>
+          <type>uint32_t</type>
+          <declname>shift</declname>
+        </param>
+        <briefdescription>
+<para>Shift left by the given number of bits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="119" column="3" bodyfile="iceberg/util/decimal.h" bodystart="119" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a2c590d941407e08f8d796ea7f51423ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; iceberg::Decimal::operator&gt;&gt;=</definition>
+        <argsstring>(uint32_t shift)</argsstring>
+        <name>operator&gt;&gt;=</name>
+        <qualifiedname>iceberg::Decimal::operator&gt;&gt;=</qualifiedname>
+        <param>
+          <type>uint32_t</type>
+          <declname>shift</declname>
+        </param>
+        <briefdescription>
+<para>Shift right by the given number of bits (in place). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="126" column="11" bodyfile="iceberg/util/decimal.cc" bodystart="367" bodyend="373"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a204b44d47eaf08b857ce0b134d6218e9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>Decimal iceberg::Decimal::operator&gt;&gt;</definition>
+        <argsstring>(uint32_t shift) const</argsstring>
+        <name>operator&gt;&gt;</name>
+        <qualifiedname>iceberg::Decimal::operator&gt;&gt;</qualifiedname>
+        <param>
+          <type>uint32_t</type>
+          <declname>shift</declname>
+        </param>
+        <briefdescription>
+<para>Shift right by the given number of bits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="129" column="11" bodyfile="iceberg/util/decimal.h" bodystart="129" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a875c00e32647b8d39e2a9bb77b3ae5d1" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr int128_t</type>
+        <definition>constexpr int128_t iceberg::Decimal::value</definition>
+        <argsstring>() const</argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::Decimal::value</qualifiedname>
+        <briefdescription>
+<para>Get the underlying 128-bit integer representation of the number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="136" column="22" bodyfile="iceberg/util/decimal.h" bodystart="136" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1ab025a97f157ee7ea1a2135ad34dbb2d2" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::Decimal::high</definition>
+        <argsstring>() const</argsstring>
+        <name>high</name>
+        <qualifiedname>iceberg::Decimal::high</qualifiedname>
+        <briefdescription>
+<para>Get the high bits of the two&apos;s complement representation of the number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="139" column="21" bodyfile="iceberg/util/decimal.h" bodystart="139" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a26a32345b2111f0e4be1ec85bfd5da46" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr uint64_t</type>
+        <definition>constexpr uint64_t iceberg::Decimal::low</definition>
+        <argsstring>() const</argsstring>
+        <name>low</name>
+        <qualifiedname>iceberg::Decimal::low</qualifiedname>
+        <briefdescription>
+<para>Get the low bits of the two&apos;s complement representation of the number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="142" column="22" bodyfile="iceberg/util/decimal.h" bodystart="142" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a013cab67c5697cc92b72c8980c54b8bc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::Decimal::ToString</definition>
+        <argsstring>(int32_t scale) const</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Decimal::ToString</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+<para>Convert the <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value to a base 10 decimal string with the given scale. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>scale</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The scale to use for the string representation. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The string representation of the <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="147" column="10" bodyfile="iceberg/util/decimal.cc" bodystart="375" bodyend="384"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a0bc5d140db7aa661b7eec36eba814030" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Decimal::ToIntegerString</definition>
+        <argsstring>() const</argsstring>
+        <name>ToIntegerString</name>
+        <qualifiedname>iceberg::Decimal::ToIntegerString</qualifiedname>
+        <briefdescription>
+<para>Convert the <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value to an integer string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="150" column="15" bodyfile="iceberg/util/decimal.cc" bodystart="386" bodyend="428"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1ab78520099cf3c8365b5621c159fc2ff5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Decimal::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Decimal::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Returns an integer string representation of the decimal value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="153" column="15" bodyfile="iceberg/util/decimal.h" bodystart="153" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a32bbefbbb0619f4c9c9bcc7977eb9c8c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt; uint8_t &gt; iceberg::Decimal::ToBigEndian</definition>
+        <argsstring>() const</argsstring>
+        <name>ToBigEndian</name>
+        <qualifiedname>iceberg::Decimal::ToBigEndian</qualifiedname>
+        <briefdescription>
+<para>Convert <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref>&apos;s unscaled value to two’s-complement big-endian binary, using the minimum number of bytes for the value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A vector containing the big-endian bytes. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="172" column="15" bodyfile="iceberg/util/decimal.cc" bodystart="521" bodyend="549"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1acc3d29efbd74dee487f42a0f6dd266d3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &gt;</type>
+        <definition>Result&lt; Decimal &gt; iceberg::Decimal::Rescale</definition>
+        <argsstring>(int32_t orig_scale, int32_t new_scale) const</argsstring>
+        <name>Rescale</name>
+        <qualifiedname>iceberg::Decimal::Rescale</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>orig_scale</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>new_scale</declname>
+        </param>
+        <briefdescription>
+<para>Convert <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> from one scale to another. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="175" column="10" bodyfile="iceberg/util/decimal.cc" bodystart="551" bodyend="570"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a939e31479b688f7326f126b9e71f901d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Decimal::FitsInPrecision</definition>
+        <argsstring>(int32_t precision) const</argsstring>
+        <name>FitsInPrecision</name>
+        <qualifiedname>iceberg::Decimal::FitsInPrecision</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>precision</declname>
+        </param>
+        <briefdescription>
+<para>Whether this number fits in the given precision. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns true if the number of significant digits is less or equal to <computeroutput>precision</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="180" column="8" bodyfile="iceberg/util/decimal.cc" bodystart="572" bodyend="575"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a224e99c351e9183fe83cb132a01cbfb1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::strong_ordering</type>
+        <definition>std::strong_ordering iceberg::Decimal::operator&lt;=&gt;</definition>
+        <argsstring>(const Decimal &amp;other) const</argsstring>
+        <name>operator&lt;=&gt;</name>
+        <qualifiedname>iceberg::Decimal::operator&lt;=&gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Spaceship operator for three-way comparison. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="183" column="3" bodyfile="iceberg/util/decimal.h" bodystart="183" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a4fb7c013c7dc949dbe92afb400f0ec6a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t * iceberg::Decimal::native_endian_bytes</definition>
+        <argsstring>() const</argsstring>
+        <name>native_endian_bytes</name>
+        <qualifiedname>iceberg::Decimal::native_endian_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="194" column="17" bodyfile="iceberg/util/decimal.h" bodystart="194" bodyend="196"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a877ddbf70f3b9f9b62bf1a5abd8d72f4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::array&lt; uint8_t, kByteWidth &gt;</type>
+        <definition>std::array&lt; uint8_t, Decimal::kByteWidth &gt; iceberg::Decimal::ToBytes</definition>
+        <argsstring>() const</argsstring>
+        <name>ToBytes</name>
+        <qualifiedname>iceberg::Decimal::ToBytes</qualifiedname>
+        <briefdescription>
+<para>Returns the raw bytes of the value in native-endian byte order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="199" column="14" bodyfile="iceberg/util/decimal.cc" bodystart="623" bodyend="627"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1af06c220ced2f385e745e9e37ccfe38f1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::Decimal::Sign</definition>
+        <argsstring>() const</argsstring>
+        <name>Sign</name>
+        <qualifiedname>iceberg::Decimal::Sign</qualifiedname>
+        <briefdescription>
+<para>Returns 1 if positive or zero, -1 if strictly negative. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="202" column="11" bodyfile="iceberg/util/decimal.h" bodystart="202" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a39e113937ee4f3d9075904ca4c9b8cd5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Decimal::IsNegative</definition>
+        <argsstring>() const</argsstring>
+        <name>IsNegative</name>
+        <qualifiedname>iceberg::Decimal::IsNegative</qualifiedname>
+        <briefdescription>
+<para>Check if the <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value is negative. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="205" column="8" bodyfile="iceberg/util/decimal.h" bodystart="205" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1acddd11b61445fa5102664a0a8a85163c" prot="public" static="no" const="yes" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Decimal::operator bool</definition>
+        <argsstring>() const</argsstring>
+        <name>operator bool</name>
+        <qualifiedname>iceberg::Decimal::operator bool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="207" column="12" bodyfile="iceberg/util/decimal.h" bodystart="207" bodyend="207"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1aa7f12b1f4712a6dde0e3c6622b0822b2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>Decimal iceberg::Decimal::Abs</definition>
+        <argsstring>(const Decimal &amp;value)</argsstring>
+        <name>Abs</name>
+        <qualifiedname>iceberg::Decimal::Abs</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Absolute value of the current <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="83" column="18" bodyfile="iceberg/util/decimal.cc" bodystart="316" bodyend="319"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a4f84f5bdfacbd10dce52d76f73311466" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &gt;</type>
+        <definition>Result&lt; Decimal &gt; iceberg::Decimal::FromString</definition>
+        <argsstring>(std::string_view str, int32_t *precision=nullptr, int32_t *scale=nullptr)</argsstring>
+        <name>FromString</name>
+        <qualifiedname>iceberg::Decimal::FromString</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>precision</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>scale</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Convert the decimal string to a <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value, optionally including precision and scale if they are provided not null. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string representation of the <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">precision</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional pointer to store the precision of the parsed value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">scale</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional pointer to store the scale of the parsed value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="161" column="17" bodyfile="iceberg/util/decimal.cc" bodystart="430" bodyend="487"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1a80eb853e26b317cf250a676686566911" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &gt;</type>
+        <definition>Result&lt; Decimal &gt; iceberg::Decimal::FromBigEndian</definition>
+        <argsstring>(const uint8_t *data, int32_t length)</argsstring>
+        <name>FromBigEndian</name>
+        <qualifiedname>iceberg::Decimal::FromBigEndian</qualifiedname>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Convert from a big-endian byte representation. The length must be between 1 and 16. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>error status if the length is an invalid value </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="167" column="17" bodyfile="iceberg/util/decimal.cc" bodystart="489" bodyend="519"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Decimal_1abe0ed62190e2ebcacc4b6690e7d2094b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::partial_ordering</type>
+        <definition>std::partial_ordering iceberg::Decimal::Compare</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs, int32_t lhs_scale, int32_t rhs_scale)</argsstring>
+        <name>Compare</name>
+        <qualifiedname>iceberg::Decimal::Compare</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>lhs_scale</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>rhs_scale</declname>
+        </param>
+        <briefdescription>
+<para>Compare two Decimals with different scales. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="191" column="32" bodyfile="iceberg/util/decimal.cc" bodystart="577" bodyend="621"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1a9c565d57bc21067b5524f1d91506eab4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Decimal::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="209" column="15" bodyfile="iceberg/util/decimal.h" bodystart="209" bodyend="211"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1a3d157b5f6a07a252499e19ced05f2b5a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator!=</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs)</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>iceberg::Decimal::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="213" column="15" bodyfile="iceberg/util/decimal.h" bodystart="213" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1ab147a51432b2267e0a0de46f676c69b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>ICEBERG_EXPORT friend Decimal operator-</definition>
+        <argsstring>(const Decimal &amp;operand)</argsstring>
+        <name>operator-</name>
+        <qualifiedname>iceberg::Decimal::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>operand</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="217" column="33" bodyfile="iceberg/util/decimal.cc" bodystart="635" bodyend="638"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1adfa9949872e17928a0d6fbc6d1c49d1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>ICEBERG_EXPORT friend Decimal operator~</definition>
+        <argsstring>(const Decimal &amp;operand)</argsstring>
+        <name>operator~</name>
+        <qualifiedname>iceberg::Decimal::operator~</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>operand</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="218" column="33" bodyfile="iceberg/util/decimal.cc" bodystart="640" bodyend="640"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1a6898d406799932740d4a5efef6fb810a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>ICEBERG_EXPORT friend Decimal operator+</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs)</argsstring>
+        <name>operator+</name>
+        <qualifiedname>iceberg::Decimal::operator+</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="220" column="33" bodyfile="iceberg/util/decimal.cc" bodystart="643" bodyend="647"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1a56365ce7bf62690d0924809de7efec74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>ICEBERG_EXPORT friend Decimal operator-</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs)</argsstring>
+        <name>operator-</name>
+        <qualifiedname>iceberg::Decimal::operator-</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="221" column="33" bodyfile="iceberg/util/decimal.cc" bodystart="649" bodyend="653"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1ab00334b2a8311a2c4d1baee73f76ede8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>ICEBERG_EXPORT friend Decimal operator*</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs)</argsstring>
+        <name>operator*</name>
+        <qualifiedname>iceberg::Decimal::operator*</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="222" column="33" bodyfile="iceberg/util/decimal.cc" bodystart="655" bodyend="659"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1a97beb161234cc5137c26471bf3ebaa3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>ICEBERG_EXPORT friend Decimal operator/</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs)</argsstring>
+        <name>operator/</name>
+        <qualifiedname>iceberg::Decimal::operator/</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="223" column="33" bodyfile="iceberg/util/decimal.cc" bodystart="661" bodyend="663"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Decimal_1ac3b41ecbf7ec0877b631cd60b21f127f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>ICEBERG_EXPORT friend Decimal operator%</definition>
+        <argsstring>(const Decimal &amp;lhs, const Decimal &amp;rhs)</argsstring>
+        <name>operator%</name>
+        <qualifiedname>iceberg::Decimal::operator%</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/decimal.h" line="224" column="33" bodyfile="iceberg/util/decimal.cc" bodystart="665" bodyend="667"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents 128-bit fixed-point decimal numbers. The max decimal precision that can be safely represented is 38 significant digits. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Decimal</label>
+        <link refid="classiceberg_1_1Decimal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Decimal</label>
+        <link refid="classiceberg_1_1Decimal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/decimal.h" line="46" column="1" bodyfile="iceberg/util/decimal.h" bodystart="46" bodyend="228"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Decimal_1aa47f3734360f2253e82192f4c4debb86" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Abs</name></member>
+      <member refid="classiceberg_1_1Decimal_1aa7f12b1f4712a6dde0e3c6622b0822b2" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Abs</name></member>
+      <member refid="classiceberg_1_1Decimal_1abe0ed62190e2ebcacc4b6690e7d2094b" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Compare</name></member>
+      <member refid="classiceberg_1_1Decimal_1a5730979fc071ac92cb3af6bd7b296134" prot="private" virt="non-virtual"><scope>iceberg::Decimal</scope><name>data_</name></member>
+      <member refid="classiceberg_1_1Decimal_1ae63e1b780e6ac1b118179901a0b2412a" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Decimal</name></member>
+      <member refid="classiceberg_1_1Decimal_1a75a669d0c23dc618d6ea77bfb66f4078" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Decimal</name></member>
+      <member refid="classiceberg_1_1Decimal_1a5e57a9033dc325933919ecf53bd60cbb" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Decimal</name></member>
+      <member refid="classiceberg_1_1Decimal_1aaac2f890631d7962d61b058c0ae6e0bf" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Decimal</name></member>
+      <member refid="classiceberg_1_1Decimal_1ac6f8d5cc9231f35361dbf25003847c9a" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Decimal</name></member>
+      <member refid="classiceberg_1_1Decimal_1a95e555b097856aee26473044b3337aa2" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Divide</name></member>
+      <member refid="classiceberg_1_1Decimal_1a939e31479b688f7326f126b9e71f901d" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>FitsInPrecision</name></member>
+      <member refid="classiceberg_1_1Decimal_1a80eb853e26b317cf250a676686566911" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>FromBigEndian</name></member>
+      <member refid="classiceberg_1_1Decimal_1a4f84f5bdfacbd10dce52d76f73311466" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>FromString</name></member>
+      <member refid="classiceberg_1_1Decimal_1ab025a97f157ee7ea1a2135ad34dbb2d2" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>high</name></member>
+      <member refid="classiceberg_1_1Decimal_1a39e113937ee4f3d9075904ca4c9b8cd5" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>IsNegative</name></member>
+      <member refid="classiceberg_1_1Decimal_1a4914f026115284b5df30bcf07c05049a" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>kBitWidth</name></member>
+      <member refid="classiceberg_1_1Decimal_1a7960de90614c63d7dbcd2c01c525fe2e" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>kByteWidth</name></member>
+      <member refid="classiceberg_1_1Decimal_1a416a4206faa4f7ba6acc63cca52b1e32" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>kMaxPrecision</name></member>
+      <member refid="classiceberg_1_1Decimal_1adb21cc2c8e1a7db8c283e889380d52c1" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>kMaxScale</name></member>
+      <member refid="classiceberg_1_1Decimal_1a26a32345b2111f0e4be1ec85bfd5da46" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>low</name></member>
+      <member refid="classiceberg_1_1Decimal_1a4fb7c013c7dc949dbe92afb400f0ec6a" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>native_endian_bytes</name></member>
+      <member refid="classiceberg_1_1Decimal_1a40b38869f003bdc49428f65863509712" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1Decimal_1acddd11b61445fa5102664a0a8a85163c" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator bool</name></member>
+      <member refid="classiceberg_1_1Decimal_1a3d157b5f6a07a252499e19ced05f2b5a" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator!=</name></member>
+      <member refid="classiceberg_1_1Decimal_1ac3b41ecbf7ec0877b631cd60b21f127f" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator%</name></member>
+      <member refid="classiceberg_1_1Decimal_1a20c799ed953c57ae6a37a23dcfb17d23" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator&amp;=</name></member>
+      <member refid="classiceberg_1_1Decimal_1ab00334b2a8311a2c4d1baee73f76ede8" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator*</name></member>
+      <member refid="classiceberg_1_1Decimal_1a5e16b07aa6ee5cc90c22ea8a0ad17aed" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator*=</name></member>
+      <member refid="classiceberg_1_1Decimal_1a6898d406799932740d4a5efef6fb810a" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator+</name></member>
+      <member refid="classiceberg_1_1Decimal_1a865d5429b1afb8cfe85b5491dd3125e0" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator+=</name></member>
+      <member refid="classiceberg_1_1Decimal_1ab147a51432b2267e0a0de46f676c69b1" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator-</name></member>
+      <member refid="classiceberg_1_1Decimal_1a56365ce7bf62690d0924809de7efec74" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator-</name></member>
+      <member refid="classiceberg_1_1Decimal_1a2f00aca89d7391a8242281b6493c2ec4" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator-=</name></member>
+      <member refid="classiceberg_1_1Decimal_1a97beb161234cc5137c26471bf3ebaa3b" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator/</name></member>
+      <member refid="classiceberg_1_1Decimal_1a2eb5aebd9335517d9f3550d5be10d5ca" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator/=</name></member>
+      <member refid="classiceberg_1_1Decimal_1ad9a1babe945e8492c74448578af36225" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classiceberg_1_1Decimal_1a08ff3aa5dc63e3b0b1a2c84524abfbfd" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator&lt;&lt;=</name></member>
+      <member refid="classiceberg_1_1Decimal_1a224e99c351e9183fe83cb132a01cbfb1" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator&lt;=&gt;</name></member>
+      <member refid="classiceberg_1_1Decimal_1a9c565d57bc21067b5524f1d91506eab4" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1Decimal_1a204b44d47eaf08b857ce0b134d6218e9" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator&gt;&gt;</name></member>
+      <member refid="classiceberg_1_1Decimal_1a2c590d941407e08f8d796ea7f51423ce" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator&gt;&gt;=</name></member>
+      <member refid="classiceberg_1_1Decimal_1ac3308230f8d33e807286c815725315e0" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator|=</name></member>
+      <member refid="classiceberg_1_1Decimal_1adfa9949872e17928a0d6fbc6d1c49d1e" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>operator~</name></member>
+      <member refid="classiceberg_1_1Decimal_1acc3d29efbd74dee487f42a0f6dd266d3" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Rescale</name></member>
+      <member refid="classiceberg_1_1Decimal_1af06c220ced2f385e745e9e37ccfe38f1" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>Sign</name></member>
+      <member refid="classiceberg_1_1Decimal_1a32bbefbbb0619f4c9c9bcc7977eb9c8c" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>ToBigEndian</name></member>
+      <member refid="classiceberg_1_1Decimal_1a877ddbf70f3b9f9b62bf1a5abd8d72f4" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>ToBytes</name></member>
+      <member refid="classiceberg_1_1Decimal_1a0bc5d140db7aa661b7eec36eba814030" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>ToIntegerString</name></member>
+      <member refid="classiceberg_1_1Decimal_1a013cab67c5697cc92b72c8980c54b8bc" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Decimal_1ab78520099cf3c8365b5621c159fc2ff5" prot="public" virt="virtual"><scope>iceberg::Decimal</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Decimal_1a875c00e32647b8d39e2a9bb77b3ae5d1" prot="public" virt="non-virtual"><scope>iceberg::Decimal</scope><name>value</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Decimal</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

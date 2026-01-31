@@ -1,0 +1,3529 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1avro" kind="namespace" language="C++">
+    <compoundname>iceberg::avro</compoundname>
+    <innerclass refid="structiceberg_1_1avro_1_1AppendDatumParam" prot="public">iceberg::avro::AppendDatumParam</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" prot="public">iceberg::avro::AppendDatumToBuilderTest</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroInputStream" prot="public">iceberg::avro::AvroInputStream</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroOutputStream" prot="public">iceberg::avro::AvroOutputStream</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroReader" prot="public">iceberg::avro::AvroReader</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" prot="public">iceberg::avro::AvroReaderParameterizedTest</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroReaderTest" prot="public">iceberg::avro::AvroReaderTest</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroRoundTripConversionTest" prot="public">iceberg::avro::AvroRoundTripConversionTest</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AVROStreamTest" prot="public">iceberg::avro::AVROStreamTest</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroWriter" prot="public">iceberg::avro::AvroWriter</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroWriterTest" prot="public">iceberg::avro::AvroWriterTest</innerclass>
+    <innerclass refid="structiceberg_1_1avro_1_1DecodeContext" prot="public">iceberg::avro::DecodeContext</innerclass>
+    <innerclass refid="structiceberg_1_1avro_1_1EncodeContext" prot="public">iceberg::avro::EncodeContext</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" prot="public">iceberg::avro::ExtractDatumFromArrayTest</innerclass>
+    <innerclass refid="structiceberg_1_1avro_1_1ExtractDatumParam" prot="public">iceberg::avro::ExtractDatumParam</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1HasIdVisitor" prot="public">iceberg::avro::HasIdVisitor</innerclass>
+    <innerclass refid="structiceberg_1_1avro_1_1MapLogicalType" prot="public">iceberg::avro::MapLogicalType</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" prot="public">iceberg::avro::NameMappingAvroSchemaTest</innerclass>
+    <innerclass refid="structiceberg_1_1avro_1_1RoundTripParam" prot="public">iceberg::avro::RoundTripParam</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor" prot="public">iceberg::avro::ToAvroNodeVisitor</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="avro__constants_8h_1adb861c4d4f22cff7751335aef2bdbbc2" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kMapLogicalType</definition>
+        <argsstring></argsstring>
+        <name>kMapLogicalType</name>
+        <qualifiedname>iceberg::avro::kMapLogicalType</qualifiedname>
+        <initializer>= &quot;map&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="27" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1a88e0258c0b1576d56df02be7d50b3bf3" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kElement</definition>
+        <argsstring></argsstring>
+        <name>kElement</name>
+        <qualifiedname>iceberg::avro::kElement</qualifiedname>
+        <initializer>= &quot;element&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="30" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1a277efc68736f9a57472292f26e0bfc07" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kKey</definition>
+        <argsstring></argsstring>
+        <name>kKey</name>
+        <qualifiedname>iceberg::avro::kKey</qualifiedname>
+        <initializer>= &quot;key&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="31" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1a77cd29e25706fa6f135b925d1cebb821" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kValue</definition>
+        <argsstring></argsstring>
+        <name>kValue</name>
+        <qualifiedname>iceberg::avro::kValue</qualifiedname>
+        <initializer>= &quot;value&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="32" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1a598fbf0d50b7e724e64c353bbe7deee3" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kIcebergFieldNameProp</definition>
+        <argsstring></argsstring>
+        <name>kIcebergFieldNameProp</name>
+        <qualifiedname>iceberg::avro::kIcebergFieldNameProp</qualifiedname>
+        <initializer>= &quot;iceberg-field-name&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="35" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1aae38077ac99bdf39faca7e58af1caf6a" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kFieldIdProp</definition>
+        <argsstring></argsstring>
+        <name>kFieldIdProp</name>
+        <qualifiedname>iceberg::avro::kFieldIdProp</qualifiedname>
+        <initializer>= &quot;field-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="36" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1acd799486f5acf79a4cfb401fa76c0a67" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kKeyIdProp</definition>
+        <argsstring></argsstring>
+        <name>kKeyIdProp</name>
+        <qualifiedname>iceberg::avro::kKeyIdProp</qualifiedname>
+        <initializer>= &quot;key-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="37" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1a5b89aac5162438b638263f31d1783e94" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kValueIdProp</definition>
+        <argsstring></argsstring>
+        <name>kValueIdProp</name>
+        <qualifiedname>iceberg::avro::kValueIdProp</qualifiedname>
+        <initializer>= &quot;value-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="38" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1a90c1dbf3ea6a5cf3549466b9debec909" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kElementIdProp</definition>
+        <argsstring></argsstring>
+        <name>kElementIdProp</name>
+        <qualifiedname>iceberg::avro::kElementIdProp</qualifiedname>
+        <initializer>= &quot;element-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="39" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__constants_8h_1a12bd4744046215a5e1730b027f11ba60" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kAdjustToUtcProp</definition>
+        <argsstring></argsstring>
+        <name>kAdjustToUtcProp</name>
+        <qualifiedname>iceberg::avro::kAdjustToUtcProp</qualifiedname>
+        <initializer>= &quot;adjust-to-utc&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="40" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__data__test_8cc_1a06e8b4cfeb7e4171ee0a12fba74a089b" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1avro_1_1AppendDatumParam" kindref="compound">AppendDatumParam</ref> &gt;</type>
+        <definition>const std::vector&lt;AppendDatumParam&gt; iceberg::avro::kPrimitiveTestCases</definition>
+        <argsstring></argsstring>
+        <name>kPrimitiveTestCases</name>
+        <qualifiedname>iceberg::avro::kPrimitiveTestCases</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="118" column="19" bodyfile="iceberg/test/avro_data_test.cc" bodystart="118" bodyend="339"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__data__test_8cc_1a947465603d1256e1ab995d01bdec54d7" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1avro_1_1ExtractDatumParam" kindref="compound">ExtractDatumParam</ref> &gt;</type>
+        <definition>const std::vector&lt;ExtractDatumParam&gt; iceberg::avro::kExtractDatumTestCases</definition>
+        <argsstring></argsstring>
+        <name>kExtractDatumTestCases</name>
+        <qualifiedname>iceberg::avro::kExtractDatumTestCases</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="796" column="19" bodyfile="iceberg/test/avro_data_test.cc" bodystart="796" bodyend="951"/>
+      </memberdef>
+      <memberdef kind="variable" id="avro__data__test_8cc_1a5db5a0b6fc3a94c03f18d78032cc7a4d" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1avro_1_1RoundTripParam" kindref="compound">RoundTripParam</ref> &gt;</type>
+        <definition>const std::vector&lt;RoundTripParam&gt; iceberg::avro::kRoundTripTestCases</definition>
+        <argsstring></argsstring>
+        <name>kRoundTripTestCases</name>
+        <qualifiedname>iceberg::avro::kRoundTripTestCases</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1246" column="19" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1246" bodyend="1470"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="avro__data__util_8cc_1aa9e596b4f18cd6a23d06835d428509a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::AppendDatumToBuilder</definition>
+        <argsstring>(const ::avro::NodePtr &amp;avro_node, const ::avro::GenericDatum &amp;avro_datum, const SchemaProjection &amp;projection, const Schema &amp;projected_schema, const arrow::MetadataColumnContext &amp;metadata_context, ::arrow::ArrayBuilder *array_builder)</argsstring>
+        <name>AppendDatumToBuilder</name>
+        <qualifiedname>iceberg::avro::AppendDatumToBuilder</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>avro_node</declname>
+        </param>
+        <param>
+          <type>const ::avro::GenericDatum &amp;</type>
+          <declname>avro_datum</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref> &amp;</type>
+          <declname>projection</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>projected_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1arrow_1_1MetadataColumnContext" kindref="compound">arrow::MetadataColumnContext</ref> &amp;</type>
+          <declname>metadata_context</declname>
+        </param>
+        <param>
+          <type>::arrow::ArrayBuilder *</type>
+          <declname>array_builder</declname>
+        </param>
+        <briefdescription>
+<para>Append an Avro datum to an Arrow array builder. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function handles schema evolution by using the provided projection to map fields from the Avro data to the expected Arrow schema.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>avro_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro schema node (must be a record at root level) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>avro_datum</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro data to append </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>projection</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> projection from <computeroutput>projected_schema</computeroutput> to <computeroutput>avro_node</computeroutput> </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>projected_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The projected schema </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata_context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Context for populating metadata columns </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>array_builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Arrow array builder to append to (must be a struct builder) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_data_util.cc" line="471" column="8" bodyfile="iceberg/avro/avro_data_util.cc" bodystart="471" bodyend="479" declfile="iceberg/avro/avro_data_util_internal.h" declline="42" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__util_8cc_1a9ec989015c8a165c930696c4c70b56a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ExtractDatumFromArray</definition>
+        <argsstring>(const ::arrow::Array &amp;array, int64_t index, ::avro::GenericDatum *datum)</argsstring>
+        <name>ExtractDatumFromArray</name>
+        <qualifiedname>iceberg::avro::ExtractDatumFromArray</qualifiedname>
+        <param>
+          <type>const ::arrow::Array &amp;</type>
+          <declname>array</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>::avro::GenericDatum *</type>
+          <declname>datum</declname>
+        </param>
+        <briefdescription>
+<para>Extract an Avro datum from an Arrow array. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>array</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Arrow array to extract from. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the element to extract. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>datum</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro datum to extract to. Its Avro type should be consistent with the Arrow type. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_data_util.cc" line="489" column="8" bodyfile="iceberg/avro/avro_data_util.cc" bodystart="489" bodyend="706" declfile="iceberg/avro/avro_data_util_internal.h" declline="55" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__direct__decoder_8cc_1ac7f814d9def2c39c3cc298d93fe05b6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::DecodeAvroToBuilder</definition>
+        <argsstring>(const ::avro::NodePtr &amp;avro_node, ::avro::Decoder &amp;decoder, const SchemaProjection &amp;projection, const Schema &amp;projected_schema, const arrow::MetadataColumnContext &amp;metadata_context, ::arrow::ArrayBuilder *array_builder, DecodeContext &amp;ctx)</argsstring>
+        <name>DecodeAvroToBuilder</name>
+        <qualifiedname>iceberg::avro::DecodeAvroToBuilder</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>avro_node</declname>
+        </param>
+        <param>
+          <type>::avro::Decoder &amp;</type>
+          <declname>decoder</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref> &amp;</type>
+          <declname>projection</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>projected_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1arrow_1_1MetadataColumnContext" kindref="compound">arrow::MetadataColumnContext</ref> &amp;</type>
+          <declname>metadata_context</declname>
+        </param>
+        <param>
+          <type>::arrow::ArrayBuilder *</type>
+          <declname>array_builder</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1avro_1_1DecodeContext" kindref="compound">DecodeContext</ref> &amp;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Directly decode Avro data to Arrow array builders without GenericDatum. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Eliminates the GenericDatum intermediate layer by directly calling Avro decoder methods and immediately appending to Arrow builders. Matches Java Iceberg&apos;s ValueReader approach for better performance.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>avro_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro schema node for the data being decoded </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>decoder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro decoder positioned at the data to read </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>projection</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field projections (from Project() function) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>projected_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The target Iceberg schema after projection </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata_context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metadata column context for populating them </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>array_builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Arrow array builder to append decoded data to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Decode context for reusing scratch buffers </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success, or an error status </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_direct_decoder.cc" line="610" column="8" bodyfile="iceberg/avro/avro_direct_decoder.cc" bodystart="610" bodyend="618" declfile="iceberg/avro/avro_direct_decoder_internal.h" declline="63" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__direct__encoder_8cc_1a6116dae5846a3717b68a862a55e4abdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::EncodeArrowToAvro</definition>
+        <argsstring>(const ::avro::NodePtr &amp;avro_node, ::avro::Encoder &amp;encoder, const Type &amp;type, const ::arrow::Array &amp;array, int64_t row_index, EncodeContext &amp;ctx)</argsstring>
+        <name>EncodeArrowToAvro</name>
+        <qualifiedname>iceberg::avro::EncodeArrowToAvro</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>avro_node</declname>
+        </param>
+        <param>
+          <type>::avro::Encoder &amp;</type>
+          <declname>encoder</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const ::arrow::Array &amp;</type>
+          <declname>array</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>row_index</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1avro_1_1EncodeContext" kindref="compound">EncodeContext</ref> &amp;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+<para>Directly encode Arrow data to Avro without GenericDatum. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Eliminates the GenericDatum intermediate layer by directly calling Avro encoder methods from Arrow arrays.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>avro_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro schema node for the data being encoded </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>encoder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro encoder to write data to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Iceberg type for the data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>array</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Arrow array containing the data to encode </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>row_index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the row to encode within the array </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ctx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Encode context for reusing scratch buffers </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success, or an error status </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_direct_encoder.cc" line="62" column="8" bodyfile="iceberg/avro/avro_direct_encoder.cc" bodystart="62" bodyend="375" declfile="iceberg/avro/avro_direct_encoder_internal.h" declline="55" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__reader_8cc_1a29650a99c58e4d9e14eb85cea3003471" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::avro::RegisterReader</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterReader</name>
+        <qualifiedname>iceberg::avro::RegisterReader</qualifiedname>
+        <briefdescription>
+<para>Register Avro reader implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="432" column="6" bodyfile="iceberg/avro/avro_reader.cc" bodystart="432" bodyend="436" declfile="iceberg/avro/avro_register.h" declline="33" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__register_8cc_1a671519698754240d57c812a100ad2948" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::avro::RegisterLogicalTypes</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterLogicalTypes</name>
+        <qualifiedname>iceberg::avro::RegisterLogicalTypes</qualifiedname>
+        <briefdescription>
+<para>Register all the logical types. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_register.cc" line="26" column="6" bodyfile="iceberg/avro/avro_register.cc" bodystart="26" bodyend="31" declfile="iceberg/avro/avro_register.h" declline="30" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__register_8cc_1a0ec7e27c0910d3f34abf5bce8e7cdc69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::avro::RegisterAll</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterAll</name>
+        <qualifiedname>iceberg::avro::RegisterAll</qualifiedname>
+        <briefdescription>
+<para>Register all the logical types, Avro reader, and Avro writer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_register.cc" line="33" column="6" bodyfile="iceberg/avro/avro_register.cc" bodystart="33" bodyend="37" declfile="iceberg/avro/avro_register.h" declline="39" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__register_8h_1a42329324ebd0ec13e7a774e79ab03f1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>void iceberg::avro::RegisterWriter</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterWriter</name>
+        <qualifiedname>iceberg::avro::RegisterWriter</qualifiedname>
+        <briefdescription>
+<para>Register Avro writer implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.cc" line="307" column="6" bodyfile="iceberg/avro/avro_writer.cc" bodystart="307" bodyend="311" declfile="iceberg/avro/avro_register.h" declline="36" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1a628978c6aafb8f8b86e234903ccd6ff4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::avro::ValidAvroName</definition>
+        <argsstring>(std::string_view name)</argsstring>
+        <name>ValidAvroName</name>
+        <qualifiedname>iceberg::avro::ValidAvroName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Check if a string is a valid Avro name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Valid Avro names must:<orderedlist>
+<listitem><para>Start with a letter or underscore</para>
+</listitem><listitem><para>Contain only letters, digits, or underscores</para>
+</listitem></orderedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name to check. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1True" kindref="compound">True</ref> if the name is valid, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="70" column="6" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="70" bodyend="87" declfile="iceberg/avro/avro_schema_util_internal.h" declline="160" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1a666eaaea19496fb012bf9799df7e74c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::SanitizeFieldName</definition>
+        <argsstring>(std::string_view field_name)</argsstring>
+        <name>SanitizeFieldName</name>
+        <qualifiedname>iceberg::avro::SanitizeFieldName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>field_name</declname>
+        </param>
+        <briefdescription>
+<para>Sanitize a field name to make it compatible with Avro field name requirements. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Converts names that are not valid Avro names to valid Avro names. Conversion rules:<orderedlist>
+<listitem><para>If the first character is not a letter or underscore, it is specially handled:<itemizedlist>
+<listitem><para>Digits: Prefixed with an underscore (e.g., &apos;3&apos; -&gt; &apos;_3&apos;)</para>
+</listitem><listitem><para>Other characters: Converted to &apos;_x&apos; followed by the uppercase hexadecimal representation of the character (e.g., &apos;$&apos; -&gt; &apos;_x24&apos;)</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem><para>For characters other than the first:<itemizedlist>
+<listitem><para>If it&apos;s a letter, digit, or underscore, it remains unchanged</para>
+</listitem><listitem><para>Other characters: Converted to &apos;_x&apos; followed by the uppercase hexadecimal representation</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+<para>Examples:<itemizedlist>
+<listitem><para>&quot;123field&quot; -&gt; &quot;_123field&quot;</para>
+</listitem><listitem><para>&quot;user-name&quot; -&gt; &quot;user_x2Dname&quot;</para>
+</listitem><listitem><para>&quot;$price&quot; -&gt; &quot;_x24price&quot;</para>
+</listitem><listitem><para>&quot;valid_name_123&quot; -&gt; &quot;valid_name_123&quot; (no conversion needed)</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>field_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The original field name to sanitize. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A sanitized field name that follows Avro naming conventions. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="89" column="13" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="89" bodyend="112" declfile="iceberg/avro/avro_schema_util_internal.h" declline="190" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1a00ffd0dd9540468d79147087919b15bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::ToString</definition>
+        <argsstring>(const ::avro::NodePtr &amp;node)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::avro::ToString</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="114" column="13" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="114" bodyend="118" declfile="iceberg/avro/avro_schema_util_internal.h" declline="143" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1ac1f0c466db08ebd98f26ba0dc1dc5aae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::ToString</definition>
+        <argsstring>(const ::avro::LogicalType &amp;logical_type)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::avro::ToString</qualifiedname>
+        <param>
+          <type>const ::avro::LogicalType &amp;</type>
+          <declname>logical_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="120" column="13" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="120" bodyend="124" declfile="iceberg/avro/avro_schema_util_internal.h" declline="144" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1a7d33517bdbaf0bb2975604b9711d6cc6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::ToString</definition>
+        <argsstring>(const ::avro::LogicalType::Type &amp;logical_type)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::avro::ToString</qualifiedname>
+        <param>
+          <type>const ::avro::LogicalType::Type &amp;</type>
+          <declname>logical_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="126" column="13" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="126" bodyend="128" declfile="iceberg/avro/avro_schema_util_internal.h" declline="145" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1ae7784dc128ef9cf889ea1e697c620f30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::avro::HasMapLogicalType</definition>
+        <argsstring>(const ::avro::NodePtr &amp;node)</argsstring>
+        <name>HasMapLogicalType</name>
+        <qualifiedname>iceberg::avro::HasMapLogicalType</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Check if an Avro node has a map logical type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro node to check. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1True" kindref="compound">True</ref> if the node has a map logical type, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="816" column="6" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="816" bodyend="820" declfile="iceberg/avro/avro_schema_util_internal.h" declline="150" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1a1579ca64d3aecf46306a0fa3adee2591" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref> &gt;</type>
+        <definition>Result&lt; SchemaProjection &gt; iceberg::avro::Project</definition>
+        <argsstring>(const Schema &amp;expected_schema, const ::avro::NodePtr &amp;avro_node, bool prune_source)</argsstring>
+        <name>Project</name>
+        <qualifiedname>iceberg::avro::Project</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>expected_schema</declname>
+        </param>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>avro_node</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>prune_source</declname>
+        </param>
+        <briefdescription>
+<para>Project an Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> onto an Avro NodePtr. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function creates a projection from an Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> to an Avro schema node. The projection determines how to read data from the Avro schema into the expected Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expected_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> that defines the expected structure. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>avro_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro node to read data from. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>prune_source</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether the source schema can be pruned. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The schema projection result. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="822" column="8" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="822" bodyend="828" declfile="iceberg/avro/avro_schema_util_internal.h" declline="140" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__util_8cc_1abb61e62f65330873f72e8e7381ae97a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt;::avro::NodePtr &gt;</type>
+        <definition>Result&lt;::avro::NodePtr &gt; iceberg::avro::MakeAvroNodeWithFieldIds</definition>
+        <argsstring>(const ::avro::NodePtr &amp;original_node, const NameMapping &amp;mapping)</argsstring>
+        <name>MakeAvroNodeWithFieldIds</name>
+        <qualifiedname>iceberg::avro::MakeAvroNodeWithFieldIds</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>original_node</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &amp;</type>
+          <declname>mapping</declname>
+        </param>
+        <briefdescription>
+<para>Create a new Avro node with field IDs from name mapping. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>original_node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The original Avro node to copy. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mapping</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name mapping to apply field IDs from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new Avro node with field IDs applied, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util.cc" line="1033" column="8" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="1033" bodyend="1037" declfile="iceberg/avro/avro_schema_util_internal.h" declline="166" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1af63999e13e5fd9bc6324ea54e517d23c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt;::avro::GenericDatum &gt;</type>
+        <definition>std::vector&lt;::avro::GenericDatum &gt; iceberg::avro::CreateTestData</definition>
+        <argsstring>(const ::avro::NodePtr &amp;avro_node, const std::function&lt; void(::avro::GenericDatum &amp;, int)&gt; &amp;value_setter, int count=3)</argsstring>
+        <name>CreateTestData</name>
+        <qualifiedname>iceberg::avro::CreateTestData</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>avro_node</declname>
+        </param>
+        <param>
+          <type>const std::function&lt; void(::avro::GenericDatum &amp;, int)&gt; &amp;</type>
+          <declname>value_setter</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>count</declname>
+          <defval>3</defval>
+        </param>
+        <briefdescription>
+<para>Helper function to create test data for a primitive type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="52" column="13" bodyfile="iceberg/test/avro_data_test.cc" bodystart="52" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a1a81310a07bedbc3d1ce1c304278fc1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::VerifyAppendDatumToBuilder</definition>
+        <argsstring>(const Schema &amp;projected_schema, const ::avro::NodePtr &amp;avro_node, const std::vector&lt;::avro::GenericDatum &gt; &amp;avro_data, std::string_view expected_array_json)</argsstring>
+        <name>VerifyAppendDatumToBuilder</name>
+        <qualifiedname>iceberg::avro::VerifyAppendDatumToBuilder</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>projected_schema</declname>
+        </param>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>avro_node</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt;::avro::GenericDatum &gt; &amp;</type>
+          <declname>avro_data</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>expected_array_json</declname>
+        </param>
+        <briefdescription>
+<para>Utility function to verify AppendDatumToBuilder behavior. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="65" column="6" bodyfile="iceberg/test/avro_data_test.cc" bodystart="65" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1aa8cf7b129ffec25d27496ca980e3fc2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AppendDatumToBuilderTest, PrimitiveType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="101" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="101" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a9b2bc21a22a4bef4959d0b82edc1cf7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(AllPrimitiveTypes, AppendDatumToBuilderTest, ::testing::ValuesIn(kPrimitiveTestCases), [](const ::testing::TestParamInfo&lt; AppendDatumParam &gt; &amp;info) { return info.param.name;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::avro::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>AllPrimitiveTypes</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::ValuesIn(kPrimitiveTestCases)</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; <ref refid="structiceberg_1_1avro_1_1AppendDatumParam" kindref="compound">AppendDatumParam</ref> &gt; &amp;info) { return info.param.name;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="341" column="1" declfile="iceberg/test/avro_data_test.cc" declline="341" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1ac3a8a14d6f59fc9a6441e2f0c42558e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, StructWithTwoFields)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>StructWithTwoFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="347" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="347" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a26358dbfb0ee19ea0442ba30c998b6db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, NestedStruct)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>NestedStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="366" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="366" bodyend="402"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a414ba814c1e420b2f622d6a575c5e338" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, ListOfIntegers)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>ListOfIntegers</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="404" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="404" bodyend="436"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1adad43c9d85244c4a909debbe657645dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, ListOfStructs)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>ListOfStructs</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="438" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="438" bodyend="483"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1ad3e1236dc0492f028a6658b7b8f3d712" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, MapStringToInt)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>MapStringToInt</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="485" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="485" bodyend="520"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1added52d347cdba9b52cfd58c2214591c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, MapIntToStringAsArray)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>MapIntToStringAsArray</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="522" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="522" bodyend="557"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a0c5c557352799f9d073c682e8ea3c241" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, MapStringToStruct)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>MapStringToStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="559" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="559" bodyend="601"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1af4c9133946efa13663ae709bb4bad8eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, StructWithMissingOptionalField)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>StructWithMissingOptionalField</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="603" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="603" bodyend="639"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a4235b5d3d692af1b1c2cc1b0f01ed656" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>NestedStructWithMissingOptionalFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="641" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="641" bodyend="693"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1aff3445dc38510dcc441112e8d42bf77d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AppendDatumToBuilderTest, ListWithMissingOptionalElementFields)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kindref="compound">AppendDatumToBuilderTest</ref></type>
+        </param>
+        <param>
+          <type>ListWithMissingOptionalElementFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="695" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="695" bodyend="759"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1aebb15e505adb913f3e56eea527e1b7ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::VerifyExtractDatumFromArray</definition>
+        <argsstring>(const ExtractDatumParam &amp;test_case)</argsstring>
+        <name>VerifyExtractDatumFromArray</name>
+        <qualifiedname>iceberg::avro::VerifyExtractDatumFromArray</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1avro_1_1ExtractDatumParam" kindref="compound">ExtractDatumParam</ref> &amp;</type>
+          <declname>test_case</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="768" column="6" bodyfile="iceberg/test/avro_data_test.cc" bodystart="768" bodyend="788"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1ab4d1b95a9fc9120daf74a607eec0cfa4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(ExtractDatumFromArrayTest, PrimitiveType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="792" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="792" bodyend="794"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a408971e6a46fb36dc9d136b38d21d85c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(AllPrimitiveTypes, ExtractDatumFromArrayTest, ::testing::ValuesIn(kExtractDatumTestCases), [](const ::testing::TestParamInfo&lt; ExtractDatumParam &gt; &amp;info) { return info.param.name;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::avro::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>AllPrimitiveTypes</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::ValuesIn(kExtractDatumTestCases)</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; <ref refid="structiceberg_1_1avro_1_1ExtractDatumParam" kindref="compound">ExtractDatumParam</ref> &gt; &amp;info) { return info.param.name;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="953" column="1" declfile="iceberg/test/avro_data_test.cc" declline="953" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a622a846ceb30e5946586f22f8aaf9085" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ExtractDatumFromArrayTest, StructWithTwoFields)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type>StructWithTwoFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="959" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="959" bodyend="995"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1ada15184551b48e6ebcafbf9a446b913f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ExtractDatumFromArrayTest, NestedStruct)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type>NestedStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="997" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="997" bodyend="1045"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a35ec9f165aa8351f15225d986f6a5ac1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ExtractDatumFromArrayTest, ListOfIntegers)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type>ListOfIntegers</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1047" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1047" bodyend="1088"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a2fe2134a2842fd3c1925be6ac394baed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ExtractDatumFromArrayTest, MapStringToInt)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type>MapStringToInt</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1090" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1090" bodyend="1137"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1afedba74c86bc4b08f5899f875b7f95da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ExtractDatumFromArrayTest, ErrorHandling)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type>ErrorHandling</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1139" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1139" bodyend="1162"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1abad5c554b9f674c0d066074c0318a714" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ExtractDatumFromArrayTest, NullHandling)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kindref="compound">ExtractDatumFromArrayTest</ref></type>
+        </param>
+        <param>
+          <type>NullHandling</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1164" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1164" bodyend="1190"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1adfe3b3d5eedfd49b4109a02ec5b9f497" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::VerifyRoundTripConversion</definition>
+        <argsstring>(const RoundTripParam &amp;test_case)</argsstring>
+        <name>VerifyRoundTripConversion</name>
+        <qualifiedname>iceberg::avro::VerifyRoundTripConversion</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1avro_1_1RoundTripParam" kindref="compound">RoundTripParam</ref> &amp;</type>
+          <declname>test_case</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1198" column="6" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1198" bodyend="1238"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a72a114fd4dbd05796bf8720bd153ad63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroRoundTripConversionTest, ConvertTypes)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroRoundTripConversionTest" kindref="compound">AvroRoundTripConversionTest</ref></type>
+        </param>
+        <param>
+          <type>ConvertTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1242" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1242" bodyend="1244"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__data__test_8cc_1a6e826b3450a27c680b6f969323cdd394" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(AllTypes, AvroRoundTripConversionTest, ::testing::ValuesIn(kRoundTripTestCases), [](const ::testing::TestParamInfo&lt; RoundTripParam &gt; &amp;info) { return info.param.name;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::avro::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>AllTypes</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroRoundTripConversionTest" kindref="compound">AvroRoundTripConversionTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::ValuesIn(kRoundTripTestCases)</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; <ref refid="structiceberg_1_1avro_1_1RoundTripParam" kindref="compound">RoundTripParam</ref> &gt; &amp;info) { return info.param.name;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1472" column="1" declfile="iceberg/test/avro_data_test.cc" declline="1472" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a239fc8d2193410887265daf2d9d7a81a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ValidAvroNameTest, ValidNames)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ValidAvroNameTest</type>
+        </param>
+        <param>
+          <type>ValidNames</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="61" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="61" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1acd883fd4302326f030e2906dea197efb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ValidAvroNameTest, InvalidNames)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ValidAvroNameTest</type>
+        </param>
+        <param>
+          <type>InvalidNames</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="70" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="70" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a73bc039289bc5b464862c45e21fd1523" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ValidAvroNameTest, EmptyName)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ValidAvroNameTest</type>
+        </param>
+        <param>
+          <type>EmptyName</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="83" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="83" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ad0c95e088a5c0ddc5a33a64c3f9677f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(SanitizeFieldNameTest, ValidFieldNames)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>SanitizeFieldNameTest</type>
+        </param>
+        <param>
+          <type>ValidFieldNames</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="88" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="88" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a875aa77b366aa3b496771dbad4eaca4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(SanitizeFieldNameTest, InvalidFieldNames)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>SanitizeFieldNameTest</type>
+        </param>
+        <param>
+          <type>InvalidFieldNames</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="97" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="97" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ac4ffef3f91958532a20c0a225482e008" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(SanitizeFieldNameTest, EdgeCases)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>SanitizeFieldNameTest</type>
+        </param>
+        <param>
+          <type>EdgeCases</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="115" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="115" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a449545c12b33627893eb054a19394c3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, BooleanType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1BooleanType" kindref="compound">BooleanType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="127" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="127" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a167309627fe93f43bff471b67f424f0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, IntType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1IntType" kindref="compound">IntType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="133" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="133" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a7e191153c9460cdb53c97e1a54acbb2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, LongType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1LongType" kindref="compound">LongType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="139" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="139" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1abd9e0cb332c14108542949f3df6c4824" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, FloatType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1FloatType" kindref="compound">FloatType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="145" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="145" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a5ebf0a6a26fdb93a6780efbfcf560a0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, DoubleType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1DoubleType" kindref="compound">DoubleType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="151" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="151" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ac6a23b933cbf4cd8918bb9926fc13409" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, DecimalType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1DecimalType" kindref="compound">DecimalType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="157" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="157" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a1a74ff7a4f6ea5b31de87be12f54bdf3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, DateType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1DateType" kindref="compound">DateType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="168" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="168" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a5a63ef16c54a064f50ef9bfd6c37661a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, TimeType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1TimeType" kindref="compound">TimeType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="175" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="175" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a53356030131204747707b431e85adf7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, TimestampType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1TimestampType" kindref="compound">TimestampType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="182" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="182" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ab77dd9b84ea2be90934bdd003835a6be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, TimestampTzType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1TimestampTzType" kindref="compound">TimestampTzType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="192" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="192" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a2cc9151e6e084666bb59e65fc19f708c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, StringType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1StringType" kindref="compound">StringType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="202" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="202" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ac83f04e704bb8f57a92a5885dc976cbd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, UuidType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1UuidType" kindref="compound">UuidType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="208" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="208" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a19febd456f664999fc4165462238c353" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, FixedType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1FixedType" kindref="compound">FixedType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="218" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="218" bodyend="225"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a18321259d432db990719d0563e439cdd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, BinaryType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1BinaryType" kindref="compound">BinaryType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="227" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="227" bodyend="231"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a6669556973d0553822579ff80fdd87d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, StructType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="233" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="233" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ab36ffbf43f634fbefc8af4b682615f07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, StructTypeWithFieldNames)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type>StructTypeWithFieldNames</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="259" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="259" bodyend="311"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a01c74153abb63b7b8dc0139670881ba9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, ListType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="313" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="313" bodyend="330"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a4ff1c7667cf74218e0d9766847a6bb0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, MapTypeWithStringKey)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type>MapTypeWithStringKey</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="332" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="332" bodyend="351"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a5790f0b1a34178e16fdb4f7d4e8fe19f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, MapTypeWithNonStringKey)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type>MapTypeWithNonStringKey</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="353" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="353" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a4a3b7baaebbf99f27198b64fb5790279" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, InvalidMapKeyType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type>InvalidMapKeyType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="382" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="382" bodyend="392"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a80c1e3b30471fce00e1e719261756496" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(ToAvroNodeVisitorTest, NestedTypes)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>ToAvroNodeVisitorTest</type>
+        </param>
+        <param>
+          <type>NestedTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="394" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="394" bodyend="454"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a261550efda9b6219a88bfbf98293101b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, HasNoIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>HasNoIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="456" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="456" bodyend="461"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a3b97b114bdc9e5b8ab4bafcbf63117f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, RecordWithFieldIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>RecordWithFieldIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="463" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="463" bodyend="477"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a07090de31f1f2414f90e2d8a7995c43a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, RecordWithMissingFieldIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>RecordWithMissingFieldIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="479" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="479" bodyend="493"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a5fd85ee38753fca9c075a0299a5a7921" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, ArrayWithElementId)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>ArrayWithElementId</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="495" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="495" bodyend="506"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a2c1c7f27b90d843c58cc8b30a949ce92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, ArrayWithoutElementId)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>ArrayWithoutElementId</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="508" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="508" bodyend="518"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a57c3452ac9ab9306df8fa1b4813827ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, MapWithIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>MapWithIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="520" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="520" bodyend="532"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a0cec53022860758e1705172b389a752e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, MapWithPartialIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>MapWithPartialIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="534" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="534" bodyend="545"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a1de118948095437e88a127f0f99cff24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, UnionType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>UnionType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="547" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="547" bodyend="563"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a14747e9f6bc433c9a6edf0e99fcddd95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, ComplexNestedSchema)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>ComplexNestedSchema</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="565" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="565" bodyend="606"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ae645d8f20706aef6139b77aad80624a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, ArrayBackedMapWithIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>ArrayBackedMapWithIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="608" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="608" bodyend="627"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a04c94b5d5f2fbbeceeb9fbc9e47eab69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(HasIdVisitorTest, ArrayBackedMapWithPartialIds)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>HasIdVisitorTest</type>
+        </param>
+        <param>
+          <type>ArrayBackedMapWithPartialIds</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="629" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="629" bodyend="647"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a9a825085979d05d49222158e31d1168b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectIdenticalSchemas)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectIdenticalSchemas</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="649" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="649" bodyend="681"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ac6e437324945363a15f4ed6b79c834b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectSubsetSchema)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSubsetSchema</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="683" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="683" bodyend="713"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a8fce1e9c81f40aedd4451fba7a31db13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectWithPruning)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectWithPruning</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="715" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="715" bodyend="745"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ac47b1f469786045878482f9b5b4106fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectMissingOptionalField)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMissingOptionalField</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="747" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="747" bodyend="777"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ab74acc39d9a141b2170f9911d40e7814" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectMissingRequiredField)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMissingRequiredField</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="779" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="779" bodyend="801"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a4ef346d569c88e8a278cb425ec449274" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectMetadataColumn)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMetadataColumn</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="803" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="803" bodyend="828"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1acb5bc1f9aaedd0320a79816c39cf7665" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectSchemaEvolutionIntToLong)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSchemaEvolutionIntToLong</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="830" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="830" bodyend="854"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ae9972410fe547ec3d5895a5e05272148" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSchemaEvolutionFloatToDouble</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="856" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="856" bodyend="880"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ae5d4f876b8e06c02a01c47a06c64455b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectSchemaEvolutionIncompatibleTypes)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectSchemaEvolutionIncompatibleTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="882" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="882" bodyend="902"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a0e526bd566a6ffc128ac3d5ce85e57b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectNestedStructures)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectNestedStructures</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="904" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="904" bodyend="951"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a69d173354eba48151fd7485c9a290a09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectListType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectListType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="953" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="953" bodyend="988"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a07b626bdbe26dcecd8f52b37d18eb603" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectMapType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMapType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="990" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="990" bodyend="1024"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a092deabe55ef23a89ca8c8ce57f59d21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectMapTypeWithNonStringKey)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectMapTypeWithNonStringKey</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1026" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1026" bodyend="1068"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ae998b54a2867ecc72eb0864a833f3f33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectListOfStruct)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectListOfStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1070" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1070" bodyend="1121"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ad279826ecbb294408a8ee68f752b0dac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectDecimalType)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectDecimalType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1123" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1123" bodyend="1158"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1ae057395fc5550fa8df227691f447a06c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST</definition>
+        <argsstring>(AvroSchemaProjectionTest, ProjectDecimalIncompatible)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::avro::TEST</qualifiedname>
+        <param>
+          <type>AvroSchemaProjectionTest</type>
+        </param>
+        <param>
+          <type>ProjectDecimalIncompatible</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1160" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1160" bodyend="1191"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1abfd036e424ff71f5bcce8074e3e40770" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(NameMappingAvroSchemaTest, ApplyNameMappingToRecord)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kindref="compound">NameMappingAvroSchemaTest</ref></type>
+        </param>
+        <param>
+          <type>ApplyNameMappingToRecord</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1292" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1292" bodyend="1320"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a98382c5b84f005321fe2641c9e6bb2f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(NameMappingAvroSchemaTest, ApplyNameMappingToNestedRecord)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kindref="compound">NameMappingAvroSchemaTest</ref></type>
+        </param>
+        <param>
+          <type>ApplyNameMappingToNestedRecord</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1322" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1322" bodyend="1368"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a14ffcb28b0e8bae27f428898a1bd317f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(NameMappingAvroSchemaTest, ApplyNameMappingToArray)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kindref="compound">NameMappingAvroSchemaTest</ref></type>
+        </param>
+        <param>
+          <type>ApplyNameMappingToArray</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1370" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1370" bodyend="1410"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a9a82822fba7a25ec7e3af4249798d0a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(NameMappingAvroSchemaTest, ApplyNameMappingToMap)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kindref="compound">NameMappingAvroSchemaTest</ref></type>
+        </param>
+        <param>
+          <type>ApplyNameMappingToMap</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1412" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1412" bodyend="1453"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1a3428f05eae62919184083c19f40d96f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(NameMappingAvroSchemaTest, ApplyNameMappingToComplexMap)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kindref="compound">NameMappingAvroSchemaTest</ref></type>
+        </param>
+        <param>
+          <type>ApplyNameMappingToComplexMap</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1455" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1455" bodyend="1512"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1af934d65a0edb2bd5164bcb7f565eb30a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(NameMappingAvroSchemaTest, ApplyNameMappingToUnion)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kindref="compound">NameMappingAvroSchemaTest</ref></type>
+        </param>
+        <param>
+          <type>ApplyNameMappingToUnion</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1514" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1514" bodyend="1548"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__schema__test_8cc_1adc745d7a7158ce082ea855ff0af3f3f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(NameMappingAvroSchemaTest, MissingFieldIdError)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kindref="compound">NameMappingAvroSchemaTest</ref></type>
+        </param>
+        <param>
+          <type>MissingFieldIdError</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1550" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1550" bodyend="1570"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1a5d09a76f130a26c3f53550d25923b176" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, TestAvroBasicStream)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>TestAvroBasicStream</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="88" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="88" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1a3ffc63e83aad296ace83cfa3487105ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, InputStreamBackup)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>InputStreamBackup</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="106" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="106" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1adeac5e7bc3056f07353afca0bd7c4959" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, InputStreamSkip)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>InputStreamSkip</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="138" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="138" bodyend="164"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1af3aac6702ffc2db80267c4527a9f5188" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, InputStreamSeek)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>InputStreamSeek</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="166" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="166" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1a07cd1ab5883dc3216d736c283899c740" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, OutputStreamBasic)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>OutputStreamBasic</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="194" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="194" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1aec172e4fd7913807522ca72695d0c9e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, OutputStreamMultipleWrites)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>OutputStreamMultipleWrites</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="224" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="224" bodyend="256"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1ae92662da2d9b45d6b9299f41df69a066" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, InputStreamLargeData)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>InputStreamLargeData</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="258" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="258" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__stream__test_8cc_1a0b1b7c0bf843a153bbe30109e7432615" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AVROStreamTest, OutputStreamLargeData)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AVROStreamTest" kindref="compound">AVROStreamTest</ref></type>
+        </param>
+        <param>
+          <type>OutputStreamLargeData</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="298" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="298" bodyend="342"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a8ca05374b27504fc56374a1cb88aecc8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AvroReaderTest, ReadTwoFields)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderTest" kindref="compound">AvroReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadTwoFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="173" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="173" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1ab7972c450e3687fe86c77e92be6d80fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AvroReaderTest, ReadReorderedFieldsWithNulls)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderTest" kindref="compound">AvroReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadReorderedFieldsWithNulls</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="190" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="190" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a877b3a938957e2f445b01f8bdf6028c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AvroReaderTest, ReadWithBatchSize)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderTest" kindref="compound">AvroReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ReadWithBatchSize</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="208" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="208" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a781f970e387b5584c832ff622b188efd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AvroReaderTest, BufferSizeConfiguration)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderTest" kindref="compound">AvroReaderTest</ref></type>
+        </param>
+        <param>
+          <type>BufferSizeConfiguration</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="229" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="229" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1afbd0e14c527b3f24973bc135e1019951" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, AvroWriterBasicType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>AvroWriterBasicType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="262" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="262" bodyend="269"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a09b209b945b71b4caeebed232d3712a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, AvroWriterNestedType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>AvroWriterNestedType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="271" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="271" bodyend="284"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1aa8cfe7ac23a3651437fda134f626fd09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, AllPrimitiveTypes)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>AllPrimitiveTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="286" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="286" bodyend="302"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1ae3f25c8d2cc91aed778c3a3058d09613" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, DateTimeTypes)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>DateTimeTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="306" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="306" bodyend="319"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a50effe2d2e76f115711cc06d6c7a8999" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, NestedStruct)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>NestedStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="321" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="321" bodyend="343"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a0c20bf2b803ff01a635bb5ad9f357946" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, ListType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="345" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="345" bodyend="359"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1abb516db60103d62437feca4bde895b25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, MapType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="361" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="361" bodyend="375"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1ab48e592d96a83ceeb6e672b4fdeeb6dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, MapTypeWithNonStringKey)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>MapTypeWithNonStringKey</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="377" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="377" bodyend="391"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1aacd023df88794196e798a8522ecc2d9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_F</definition>
+        <argsstring>(AvroReaderTest, ProjectionSubsetAndReorder)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::avro::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderTest" kindref="compound">AvroReaderTest</ref></type>
+        </param>
+        <param>
+          <type>ProjectionSubsetAndReorder</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="393" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="393" bodyend="451"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a79d68464cd5e9f3aa5927ac3e7053512" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, ComplexNestedTypes)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>ComplexNestedTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="453" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="453" bodyend="468"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a4fb1479a431f4d6a66b1753e0b344d0b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, OptionalFieldsWithNulls)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>OptionalFieldsWithNulls</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="470" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="470" bodyend="484"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a8b1851c4c766eb88104cf18478dc2272" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, LargeDataset)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>LargeDataset</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="486" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="486" bodyend="501"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a53c0582344345391ee1d23605909b4f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, EmptyCollections)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>EmptyCollections</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="503" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="503" bodyend="516"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1aacc8f038a814d1dea57f6de8ee6ddf9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, ReadFilePathColumn)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>ReadFilePathColumn</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="518" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="518" bodyend="540"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1af324a99b8437a677691129b4e5b08a01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, ReadRowPositionColumn)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>ReadRowPositionColumn</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="542" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="542" bodyend="558"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a82e5e3339e9a376e1dd05e1c54c21233" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, ReadBothMetadataColumns)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>ReadBothMetadataColumns</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="560" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="560" bodyend="583"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a2a49988bb3e6e35f48f186b3d1767d98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, ReadMetadataOnlyProjection)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>ReadMetadataOnlyProjection</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="585" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="585" bodyend="607"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a89469469577d776bbcce0d16b15ff063" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>SplitWithRowPositionNotSupported</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="609" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="609" bodyend="627"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a5bbbf583ed3139e20a5f993c38630d50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(DirectDecoderModes, AvroReaderParameterizedTest, ::testing::Bool(), [](const ::testing::TestParamInfo&lt; bool &gt; &amp;info) { return info.param ? &quot;DirectDecoder&quot; :&quot;GenericDatum&quot;;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::avro::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>DirectDecoderModes</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" kindref="compound">AvroReaderParameterizedTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::Bool()</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; bool &gt; &amp;info) { return info.param ? &quot;DirectDecoder&quot; :&quot;GenericDatum&quot;;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="629" column="1" declfile="iceberg/test/avro_test.cc" declline="629" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1aa11f2040924d3317892c05ff8e01c95e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WritePrimitiveTypes)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WritePrimitiveTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="736" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="736" bodyend="752"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a3afcfda979912b4c6bc6363c513d932a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteTemporalTypes)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteTemporalTypes</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="754" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="754" bodyend="767"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a44e0161a2481cba8bf3147b7b126e656" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteNestedStruct)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteNestedStruct</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="769" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="769" bodyend="785"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1ae14d4c868e8bab44e335b8e8abd3eebb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteListType)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteListType</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="787" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="787" bodyend="802"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a8928c14ac933bfed6b822dff663aae86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteMapTypeWithStringKey)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteMapTypeWithStringKey</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="804" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="804" bodyend="819"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a9d8cb65a607ea37e52bf90bdbebfa8ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteMapTypeWithNonStringKey)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteMapTypeWithNonStringKey</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="821" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="821" bodyend="836"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1ab44f7fc2a4678b36ff4a4c568a1a4d52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteEmptyMaps)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteEmptyMaps</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="838" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="838" bodyend="860"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a16b109519a0cc6ce7d95cc2c54970a88" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteOptionalFields)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteOptionalFields</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="862" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="862" bodyend="877"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1a9cc2df49cca466955ca07ec6a52d5dfc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, WriteLargeDataset)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>WriteLargeDataset</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="879" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="879" bodyend="895"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1aaf8e3d2545c80c44423445710fdc4a1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::TEST_P</definition>
+        <argsstring>(AvroWriterTest, MultipleAvroBlocks)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::avro::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>MultipleAvroBlocks</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="897" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="897" bodyend="937"/>
+      </memberdef>
+      <memberdef kind="function" id="avro__test_8cc_1afbd164c2f141bb5700a559a53ad6ca21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(DirectEncoderModes, AvroWriterTest, ::testing::Values(true, false), [](const ::testing::TestParamInfo&lt; bool &gt; &amp;info) { return info.param ? &quot;DirectEncoder&quot; :&quot;GenericDatum&quot;;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::avro::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>DirectEncoderModes</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1avro_1_1AvroWriterTest" kindref="compound">AvroWriterTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::Values(true, false)</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; bool &gt; &amp;info) { return info.param ? &quot;DirectEncoder&quot; :&quot;GenericDatum&quot;;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="940" column="1" declfile="iceberg/test/avro_test.cc" declline="940" declcolumn="1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/avro/avro_constants.h" line="24" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,276 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TransformUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TransformUtil</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::HumanYear</definition>
+        <argsstring>(int32_t year)</argsstring>
+        <name>HumanYear</name>
+        <qualifiedname>iceberg::TransformUtil::HumanYear</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>year</declname>
+        </param>
+        <briefdescription>
+<para>Returns a human-readable string for a year. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The string is formatted as &quot;yyyy&quot;.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>year</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The year to format. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A human-readable string for the year. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="36" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="33" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::HumanMonth</definition>
+        <argsstring>(int32_t month)</argsstring>
+        <name>HumanMonth</name>
+        <qualifiedname>iceberg::TransformUtil::HumanMonth</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>month</declname>
+        </param>
+        <briefdescription>
+<para>Returns a human-readable string for a month. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The string is formatted as &quot;yyyy-MM&quot;.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>month</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The month to format. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A human-readable string for the month. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="44" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="38" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::HumanDay</definition>
+        <argsstring>(int32_t day_ordinal)</argsstring>
+        <name>HumanDay</name>
+        <qualifiedname>iceberg::TransformUtil::HumanDay</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>day_ordinal</declname>
+        </param>
+        <briefdescription>
+<para>Returns a human-readable string for the given day ordinal. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The string is formatted as: <computeroutput>yyyy-MM-dd</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>day_ordinal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The day ordinal. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A human-readable string for the given day ordinal. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="52" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="43" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::HumanHour</definition>
+        <argsstring>(int32_t hour_ordinal)</argsstring>
+        <name>HumanHour</name>
+        <qualifiedname>iceberg::TransformUtil::HumanHour</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>hour_ordinal</declname>
+        </param>
+        <briefdescription>
+<para>Returns a human-readable string for the given hour ordinal. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The string is formatted as: <computeroutput>yyyy-MM-dd-HH</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>hour_ordinal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The hour ordinal. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A human-readable string for the given hour ordinal. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="60" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="48" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::HumanTime</definition>
+        <argsstring>(int64_t micros_from_midnight)</argsstring>
+        <name>HumanTime</name>
+        <qualifiedname>iceberg::TransformUtil::HumanTime</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>micros_from_midnight</declname>
+        </param>
+        <briefdescription>
+<para>Outputs this time as a String, such as 10:15. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The output will be one of the following ISO-8601 formats: HH:mm HH:mm:ss HH:mm:ss.SSS HH:mm:ss.SSSSSS The format used will be the shortest that outputs the full value of the time where the omitted parts are implied to be zero.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>microseconds_from_midnight</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the time in microseconds from midnight </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a string representation of this time </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="74" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="54" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::HumanTimestamp</definition>
+        <argsstring>(int64_t timestamp_micros)</argsstring>
+        <name>HumanTimestamp</name>
+        <qualifiedname>iceberg::TransformUtil::HumanTimestamp</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>timestamp_micros</declname>
+        </param>
+        <briefdescription>
+<para>Returns a string representation of a timestamp in microseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The output will be one of the following forms, according to the precision of the timestamp:<itemizedlist>
+<listitem><para>yyyy-MM-ddTHH:mm:ss</para>
+</listitem><listitem><para>yyyy-MM-ddTHH:mm:ss.SSS</para>
+</listitem><listitem><para>yyyy-MM-ddTHH:mm:ss.SSSSSS</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>timestamp_micros</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the timestamp in microseconds. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a string representation of this timestamp. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="86" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="69" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::HumanTimestampWithZone</definition>
+        <argsstring>(int64_t timestamp_micros)</argsstring>
+        <name>HumanTimestampWithZone</name>
+        <qualifiedname>iceberg::TransformUtil::HumanTimestampWithZone</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>timestamp_micros</declname>
+        </param>
+        <briefdescription>
+<para>Returns a human-readable string representation of a timestamp with a time zone. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The output will be one of the following forms, according to the precision of the timestamp:<itemizedlist>
+<listitem><para>yyyy-MM-ddTHH:mm:ss+00:00</para>
+</listitem><listitem><para>yyyy-MM-ddTHH:mm:ss.SSS+00:00</para>
+</listitem><listitem><para>yyyy-MM-ddTHH:mm:ss.SSSSSS+00:00</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>timestamp_micros</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the timestamp in microseconds. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a string representation of this timestamp. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="99" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="82" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformUtil::Base64Encode</definition>
+        <argsstring>(std::string_view str_to_encode)</argsstring>
+        <name>Base64Encode</name>
+        <qualifiedname>iceberg::TransformUtil::Base64Encode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str_to_encode</declname>
+        </param>
+        <briefdescription>
+<para>Base64 encode a string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="102" column="22" bodyfile="iceberg/util/transform_util.cc" bodystart="95" bodyend="142"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/transform_util.h" line="28" column="1" bodyfile="iceberg/util/transform_util.h" bodystart="28" bodyend="103"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>Base64Encode</name></member>
+      <member refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>HumanDay</name></member>
+      <member refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>HumanHour</name></member>
+      <member refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>HumanMonth</name></member>
+      <member refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>HumanTime</name></member>
+      <member refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>HumanTimestamp</name></member>
+      <member refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>HumanTimestampWithZone</name></member>
+      <member refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" prot="public" virt="non-virtual"><scope>iceberg::TransformUtil</scope><name>HumanYear</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

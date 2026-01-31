@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1internal_1_1EqualityDeletes" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::internal::EqualityDeletes</compoundname>
+    <includes refid="delete__file__index_8h" local="no">delete_file_index.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1EqualityDeletes_1a28befd5a858a6004adad6cbb76ded646" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+        <definition>const Schema&amp; iceberg::internal::EqualityDeletes::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="209" column="16" bodyfile="iceberg/delete_file_index.h" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1EqualityDeletes_1a62ea9330a9392ac6d5ea8b8f9cfd2681" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1internal_1_1EqualityDeleteFile" kindref="compound">EqualityDeleteFile</ref> &gt;</type>
+        <definition>std::vector&lt;EqualityDeleteFile&gt; iceberg::internal::EqualityDeletes::files_</definition>
+        <argsstring></argsstring>
+        <name>files_</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::files_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="210" column="15" bodyfile="iceberg/delete_file_index.h" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1EqualityDeletes_1a06918542e4c7f1bb2c3e882c9a329ad7" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::internal::EqualityDeletes::seqs_</definition>
+        <argsstring></argsstring>
+        <name>seqs_</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::seqs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="211" column="15" bodyfile="iceberg/delete_file_index.h" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1EqualityDeletes_1a8e2beab6d9be962d5ba734ad5624d963" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::internal::EqualityDeletes::indexed_</definition>
+        <argsstring></argsstring>
+        <name>indexed_</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::indexed_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="212" column="8" bodyfile="iceberg/delete_file_index.h" bodystart="212" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1EqualityDeletes_1aa8794ae283d175c9444d03652abd3e6a" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::EqualityDeletes::EqualityDeletes</definition>
+        <argsstring>(const Schema &amp;schema)</argsstring>
+        <name>EqualityDeletes</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::EqualityDeletes</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="187" column="12" bodyfile="iceberg/delete_file_index.h" bodystart="187" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1EqualityDeletes_1a7f0ccf2096e3f2b65ba40868428f1f99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::internal::EqualityDeletes::Add</definition>
+        <argsstring>(ManifestEntry &amp;&amp;entry)</argsstring>
+        <name>Add</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::Add</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;&amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Add an equality delete file to this group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="190" column="11" bodyfile="iceberg/delete_file_index.cc" bodystart="214" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1EqualityDeletes_1a9362b7b849129747867cd7c8bf77c1dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; &gt; iceberg::internal::EqualityDeletes::Filter</definition>
+        <argsstring>(int64_t seq, const DataFile &amp;data_file)</argsstring>
+        <name>Filter</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::Filter</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>seq</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <briefdescription>
+<para>Filter equality deletes that apply to the given data file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns delete files where:<orderedlist>
+<listitem><para>apply_sequence_number &gt;= the data file&apos;s sequence number</para>
+</listitem><listitem><para>The delete file&apos;s bounds may overlap with the data file </para>
+</listitem></orderedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="197" column="10" bodyfile="iceberg/delete_file_index.cc" bodystart="223" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1EqualityDeletes_1ac55cec216d437ef7997ca6387e8fa6f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::internal::EqualityDeletes::ReferencedDeleteFiles</definition>
+        <argsstring>()</argsstring>
+        <name>ReferencedDeleteFiles</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::ReferencedDeleteFiles</qualifiedname>
+        <briefdescription>
+<para>Get all delete files in this group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="201" column="15" bodyfile="iceberg/delete_file_index.cc" bodystart="244" bodyend="249"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1EqualityDeletes_1ac907508e16e8fd6bbe597b41e5b6f024" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::EqualityDeletes::empty</definition>
+        <argsstring>() const</argsstring>
+        <name>empty</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::empty</qualifiedname>
+        <briefdescription>
+<para>Check if this group is empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="204" column="8" bodyfile="iceberg/delete_file_index.h" bodystart="204" bodyend="204"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1EqualityDeletes_1aae35cde742284ffd2ddc73631323cffc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::internal::EqualityDeletes::IndexIfNeeded</definition>
+        <argsstring>()</argsstring>
+        <name>IndexIfNeeded</name>
+        <qualifiedname>iceberg::internal::EqualityDeletes::IndexIfNeeded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="207" column="8" bodyfile="iceberg/delete_file_index.cc" bodystart="251" bodyend="265"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A group of equality delete files sorted by apply sequence number. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Equality deletes apply to data files with sequence number &lt; the delete&apos;s data sequence number (i.e., apply_sequence_number = data_sequence_number - 1). </para>
+    </detaileddescription>
+    <location file="iceberg/delete_file_index.h" line="185" column="1" bodyfile="iceberg/delete_file_index.h" bodystart="185" bodyend="213"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1a7f0ccf2096e3f2b65ba40868428f1f99" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>Add</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1ac907508e16e8fd6bbe597b41e5b6f024" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>empty</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1aa8794ae283d175c9444d03652abd3e6a" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>EqualityDeletes</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1a62ea9330a9392ac6d5ea8b8f9cfd2681" prot="private" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>files_</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1a9362b7b849129747867cd7c8bf77c1dd" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>Filter</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1a8e2beab6d9be962d5ba734ad5624d963" prot="private" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>indexed_</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1aae35cde742284ffd2ddc73631323cffc" prot="private" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>IndexIfNeeded</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1ac55cec216d437ef7997ca6387e8fa6f2" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>ReferencedDeleteFiles</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1a28befd5a858a6004adad6cbb76ded646" prot="private" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1internal_1_1EqualityDeletes_1a06918542e4c7f1bb2c3e882c9a329ad7" prot="private" virt="non-virtual"><scope>iceberg::internal::EqualityDeletes</scope><name>seqs_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
