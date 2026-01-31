@@ -20,14 +20,19 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg::arrow {
 
 ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeMockFileIO();
 
 ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeLocalFileIO();
+
+ICEBERG_BUNDLE_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIO(
+    const std::string& uri);
 
 }  // namespace iceberg::arrow
