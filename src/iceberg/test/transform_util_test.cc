@@ -21,6 +21,8 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/test/matchers.h"
+
 namespace iceberg {
 
 TEST(TransformUtilTest, HumanYear) {
@@ -156,5 +158,213 @@ TEST(TransformUtilTest, Base64Encode) {
   // Null byte
   EXPECT_EQ("AA==", TransformUtil::Base64Encode({"\x00", 1}));
 }
+
+struct ParseRoundTripParam {
+  std::string name;
+  std::string str;
+  int64_t value;
+  enum Kind { kDay, kTime, kTimestamp, kTimestampTz } kind;
+};
+
+class ParseRoundTripTest : public ::testing::TestWithParam<ParseRoundTripParam> {};
+
+TEST_P(ParseRoundTripTest, RoundTrip) {
+  const auto& param = GetParam();
+  switch (param.kind) {
+    case ParseRoundTripParam::kDay: {
+      EXPECT_EQ(TransformUtil::HumanDay(static_cast<int32_t>(param.value)), param.str);
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TransformUtil::ParseDay(param.str));
+      EXPECT_EQ(parsed, static_cast<int32_t>(param.value));
+      break;
+    }
+    case ParseRoundTripParam::kTime: {
+      EXPECT_EQ(TransformUtil::HumanTime(param.value), param.str);
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TransformUtil::ParseTime(param.str));
+      EXPECT_EQ(parsed, param.value);
+      break;
+    }
+    case ParseRoundTripParam::kTimestamp: {
+      EXPECT_EQ(TransformUtil::HumanTimestamp(param.value), param.str);
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TransformUtil::ParseTimestamp(param.str));
+      EXPECT_EQ(parsed, param.value);
+      break;
+    }
+    case ParseRoundTripParam::kTimestampTz: {
+      EXPECT_EQ(TransformUtil::HumanTimestampWithZone(param.value), param.str);
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed,
+                             TransformUtil::ParseTimestampWithZone(param.str));
+      EXPECT_EQ(parsed, param.value);
+      break;
+    }
+  }
+}
+
+struct ParseOnlyParam {
+  std::string name;
+  std::string str;
+  int64_t value;
+  enum Kind { kDay, kTime, kTimestamp, kTimestampTz } kind;
+};
+
+class ParseOnlyTest : public ::testing::TestWithParam<ParseOnlyParam> {};
+
+TEST_P(ParseOnlyTest, ParsesCorrectly) {
+  const auto& param = GetParam();
+  switch (param.kind) {
+    case ParseOnlyParam::kDay: {
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TransformUtil::ParseDay(param.str));
+      EXPECT_EQ(parsed, static_cast<int32_t>(param.value));
+      break;
+    }
+    case ParseOnlyParam::kTime: {
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TransformUtil::ParseTime(param.str));
+      EXPECT_EQ(parsed, param.value);
+      break;
+    }
+    case ParseOnlyParam::kTimestamp: {
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TransformUtil::ParseTimestamp(param.str));
+      EXPECT_EQ(parsed, param.value);
+      break;
+    }
+    case ParseOnlyParam::kTimestampTz: {
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed,
+                             TransformUtil::ParseTimestampWithZone(param.str));
+      EXPECT_EQ(parsed, param.value);
+      break;
+    }
+  }
+}
+
+struct ParseTimeErrorParam {
+  std::string name;
+  std::string str;
+};
+
+class ParseTimeErrorTest : public ::testing::TestWithParam<ParseTimeErrorParam> {};
+
+TEST_P(ParseTimeErrorTest, ReturnsError) {
+  EXPECT_THAT(TransformUtil::ParseTime(GetParam().str),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TransformUtilTest, ParseRoundTripTest,
+    ::testing::Values(
+        // Day round-trips
+        ParseRoundTripParam{"DayEpoch", "1970-01-01", 0, ParseRoundTripParam::kDay},
+        ParseRoundTripParam{"DayNext", "1970-01-02", 1, ParseRoundTripParam::kDay},
+        ParseRoundTripParam{"DayBeforeEpoch", "1969-12-31", -1,
+                            ParseRoundTripParam::kDay},
+        ParseRoundTripParam{"DayYear999", "0999-12-31", -354286,
+                            ParseRoundTripParam::kDay},
+        ParseRoundTripParam{"DayNonLeap", "1971-01-01", 365, ParseRoundTripParam::kDay},
+        ParseRoundTripParam{"DayY2K", "2000-01-01", 10957, ParseRoundTripParam::kDay},
+        ParseRoundTripParam{"Day2026", "2026-01-01", 20454, ParseRoundTripParam::kDay},
+        // Time round-trips
+        ParseRoundTripParam{"TimeMidnight", "00:00", 0, ParseRoundTripParam::kTime},
+        ParseRoundTripParam{"TimeOneSec", "00:00:01", 1000000,
+                            ParseRoundTripParam::kTime},
+        ParseRoundTripParam{"TimeMillis", "00:00:01.500", 1500000,
+                            ParseRoundTripParam::kTime},
+        ParseRoundTripParam{"TimeOneMillis", "00:00:01.001", 1001000,
+                            ParseRoundTripParam::kTime},
+        ParseRoundTripParam{"TimeMicros", "00:00:01.000001", 1000001,
+                            ParseRoundTripParam::kTime},
+        ParseRoundTripParam{"TimeHourMinSec", "01:02:03", 3723000000,
+                            ParseRoundTripParam::kTime},
+        ParseRoundTripParam{"TimeEndOfDay", "23:59:59", 86399000000,
+                            ParseRoundTripParam::kTime},
+        // Timestamp round-trips
+        ParseRoundTripParam{"TimestampEpoch", "1970-01-01T00:00:00", 0,
+                            ParseRoundTripParam::kTimestamp},
+        ParseRoundTripParam{"TimestampOneSec", "1970-01-01T00:00:01", 1000000,
+                            ParseRoundTripParam::kTimestamp},
+        ParseRoundTripParam{"TimestampMillis", "2026-01-01T00:00:01.500",
+                            1767225601500000L, ParseRoundTripParam::kTimestamp},
+        ParseRoundTripParam{"TimestampOneMillis", "2026-01-01T00:00:01.001",
+                            1767225601001000L, ParseRoundTripParam::kTimestamp},
+        ParseRoundTripParam{"TimestampMicros", "2026-01-01T00:00:01.000001",
+                            1767225601000001L, ParseRoundTripParam::kTimestamp},
+        // TimestampTz round-trips
+        ParseRoundTripParam{"TimestampTzEpoch", "1970-01-01T00:00:00+00:00", 0,
+                            ParseRoundTripParam::kTimestampTz},
+        ParseRoundTripParam{"TimestampTzOneSec", "1970-01-01T00:00:01+00:00", 1000000,
+                            ParseRoundTripParam::kTimestampTz},
+        ParseRoundTripParam{"TimestampTzMillis", "2026-01-01T00:00:01.500+00:00",
+                            1767225601500000L, ParseRoundTripParam::kTimestampTz},
+        ParseRoundTripParam{"TimestampTzOneMillis", "2026-01-01T00:00:01.001+00:00",
+                            1767225601001000L, ParseRoundTripParam::kTimestampTz},
+        ParseRoundTripParam{"TimestampTzMicros", "2026-01-01T00:00:01.000001+00:00",
+                            1767225601000001L, ParseRoundTripParam::kTimestampTz}),
+    [](const ::testing::TestParamInfo<ParseRoundTripParam>& info) {
+      return info.param.name;
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    TransformUtilTest, ParseOnlyTest,
+    ::testing::Values(
+        // TimestampTz with "Z" suffix
+        ParseOnlyParam{"TimestampTzSuffixZ_Epoch", "1970-01-01T00:00:00Z", 0,
+                       ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzSuffixZ_Millis", "2026-01-01T00:00:01.500Z",
+                       1767225601500000L, ParseOnlyParam::kTimestampTz},
+        // TimestampTz with "-00:00" suffix
+        ParseOnlyParam{"TimestampTzNegZero_Epoch", "1970-01-01T00:00:00-00:00", 0,
+                       ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzNegZero_Millis", "2026-01-01T00:00:01.500-00:00",
+                       1767225601500000L, ParseOnlyParam::kTimestampTz},
+        // Fractional micros truncates nanos
+        ParseOnlyParam{"TimeTruncatesNanos", "00:00:01.123456789", 1123456,
+                       ParseOnlyParam::kTime},
+        // Fractional seconds (trimmed trailing zeros)
+        ParseOnlyParam{"1Digit", "00:00:01.5", 1500000, ParseOnlyParam::kTime},
+        ParseOnlyParam{"2Digits", "00:00:01.50", 1500000, ParseOnlyParam::kTime},
+        ParseOnlyParam{"2DigitsNonZero", "00:00:01.12", 1120000, ParseOnlyParam::kTime},
+        ParseOnlyParam{"4Digits", "00:00:01.0001", 1000100, ParseOnlyParam::kTime},
+        // Timestamp without seconds
+        ParseOnlyParam{"TimestampNoSec_Zero", "1970-01-01T00:00", 0,
+                       ParseOnlyParam::kTimestamp},
+        ParseOnlyParam{"TimestampNoSec_OneMin", "1970-01-01T00:01", 60000000,
+                       ParseOnlyParam::kTimestamp},
+        // TimestampTz without seconds
+        ParseOnlyParam{"TimestampTzNoSec_Offset", "1970-01-01T00:00+00:00", 0,
+                       ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzNoSec_OneMin", "1970-01-01T00:01+00:00", 60000000,
+                       ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzNoSec_Z", "1970-01-01T00:00Z", 0,
+                       ParseOnlyParam::kTimestampTz},
+        // Extended year with '+' prefix
+        ParseOnlyParam{"ExtendedYearPlusEpoch", "+1970-01-01", 0, ParseOnlyParam::kDay},
+        ParseOnlyParam{"ExtendedYearPlus2026", "+2026-01-01", 20454,
+                       ParseOnlyParam::kDay},
+        ParseOnlyParam{"ExtendedYearMinus2026", "-2026-01-01", -1459509,
+                       ParseOnlyParam::kDay},
+        // Non-UTC timezone offsets
+        ParseOnlyParam{"TimestampTzPositiveOffset", "1970-01-01T05:00:00+05:00", 0,
+                       ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzNegativeOffset", "1970-01-01T00:00:00-05:00",
+                       18000000000, ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzOffsetWithMillis", "2026-01-01T05:30:01.500+05:30",
+                       1767225601500000L, ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzNegOffsetToEpoch", "1969-12-31T19:00:00-05:00", 0,
+                       ParseOnlyParam::kTimestampTz},
+        ParseOnlyParam{"TimestampTzNoSecWithOffset", "1970-01-01T05:30+05:30", 0,
+                       ParseOnlyParam::kTimestampTz}),
+    [](const ::testing::TestParamInfo<ParseOnlyParam>& info) { return info.param.name; });
+
+INSTANTIATE_TEST_SUITE_P(
+    TransformUtilTest, ParseTimeErrorTest,
+    ::testing::Values(ParseTimeErrorParam{"EmptyString", ""},
+                      ParseTimeErrorParam{"TooShort1Char", "1"},
+                      ParseTimeErrorParam{"TooShort2Chars", "12"},
+                      ParseTimeErrorParam{"TooShort4Chars", "12:3"},
+                      ParseTimeErrorParam{"MissingColon", "1200:00"},
+                      ParseTimeErrorParam{"OutofRangeHours", "24:00:00"},
+                      ParseTimeErrorParam{"OutofRangeMinutes", "12:60:00"},
+                      ParseTimeErrorParam{"OutofRangeSeconds", "12:30:61"},
+                      ParseTimeErrorParam{"SpaceInsteadOfColon", "12 30"}),
+    [](const ::testing::TestParamInfo<ParseTimeErrorParam>& info) {
+      return info.param.name;
+    });
 
 }  // namespace iceberg

@@ -298,10 +298,140 @@ Result<nlohmann::json> ToJson(const Literal& literal) {
   }
 }
 
-Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* /*type*/) {
-  // TODO(gangwu): implement type-aware literal parsing equivalent to Java's
-  // SingleValueParser.fromJson(type, node).
-  return LiteralFromJson(json);
+Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
+  // If {"type": "literal", "value": <actual>} wrapper is present, unwrap it first.
+  if (json.is_object() && json.contains(kType) &&
+      json[kType].get<std::string>() == kLiteral && json.contains(kValue)) {
+    return LiteralFromJson(json[kValue], type);
+  }
+  // If no type context is provided, fall back to untyped parsing.
+  if (type == nullptr) return LiteralFromJson(json);
+
+  // Type-aware parsing equivalent to Java's SingleValueParser.fromJson(type, node).
+  switch (type->type_id()) {
+    case TypeId::kBoolean:
+      if (!json.is_boolean()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a boolean value", SafeDumpJson(json));
+      }
+      return Literal::Boolean(json.get<bool>());
+
+    case TypeId::kInt:
+      if (!json.is_number_integer()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as an int value", SafeDumpJson(json));
+      }
+      return Literal::Int(json.get<int32_t>());
+
+    case TypeId::kLong:
+      if (!json.is_number_integer()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a long value", SafeDumpJson(json));
+      }
+      return Literal::Long(json.get<int64_t>());
+
+    case TypeId::kFloat:
+      if (!json.is_number()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a float value", SafeDumpJson(json));
+      }
+      return Literal::Float(json.get<float>());
+
+    case TypeId::kDouble:
+      if (!json.is_number()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a double value", SafeDumpJson(json));
+      }
+      return Literal::Double(json.get<double>());
+
+    case TypeId::kString:
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a string value", SafeDumpJson(json));
+      }
+      return Literal::String(json.get<std::string>());
+
+    case TypeId::kDate: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a date value", SafeDumpJson(json));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto days,
+                              TransformUtil::ParseDay(json.get<std::string>()));
+      return Literal::Date(days);
+    }
+
+    case TypeId::kTime: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a time value", SafeDumpJson(json));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto micros,
+                              TransformUtil::ParseTime(json.get<std::string>()));
+      return Literal::Time(micros);
+    }
+
+    case TypeId::kTimestamp: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a timestamp value", SafeDumpJson(json));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto micros,
+                              TransformUtil::ParseTimestamp(json.get<std::string>()));
+      return Literal::Timestamp(micros);
+    }
+
+    case TypeId::kTimestampTz: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a timestamptz value",
+                              SafeDumpJson(json));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto micros, TransformUtil::ParseTimestampWithZone(json.get<std::string>()));
+      return Literal::TimestampTz(micros);
+    }
+
+    case TypeId::kUuid: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a uuid value", SafeDumpJson(json));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromString(json.get<std::string>()));
+      return Literal::UUID(uuid);
+    }
+
+    case TypeId::kBinary: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a binary value", SafeDumpJson(json));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto bytes,
+                              StringUtils::HexStringToBytes(json.get<std::string>()));
+      return Literal::Binary(std::move(bytes));
+    }
+
+    case TypeId::kFixed: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a fixed value", SafeDumpJson(json));
+      }
+      const auto& fixed_type = internal::checked_cast<const FixedType&>(*type);
+      const std::string& hex = json.get<std::string>();
+      if (hex.size() != static_cast<size_t>(fixed_type.length()) * 2) [[unlikely]] {
+        return JsonParseError("Cannot parse fixed[{}]: expected {} hex chars, got {}",
+                              fixed_type.length(), fixed_type.length() * 2, hex.size());
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto bytes, StringUtils::HexStringToBytes(hex));
+      return Literal::Fixed(std::move(bytes));
+    }
+
+    case TypeId::kDecimal: {
+      if (!json.is_string()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a decimal value", SafeDumpJson(json));
+      }
+      const auto& dec_type = internal::checked_cast<const DecimalType&>(*type);
+      int32_t parsed_scale = 0;
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto dec, Decimal::FromString(json.get<std::string>(), nullptr, &parsed_scale));
+      if (parsed_scale != dec_type.scale()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a {} value: the scale doesn't match",
+                              SafeDumpJson(json), type->ToString());
+      }
+      return Literal::Decimal(dec.value(), dec_type.precision(), dec_type.scale());
+    }
+
+    default:
+      return NotSupported("Unsupported type for literal JSON parsing: {}",
+                          type->ToString());
+  }
 }
 
 Result<Literal> LiteralFromJson(const nlohmann::json& json) {

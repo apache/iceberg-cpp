@@ -23,11 +23,16 @@
 #include <concepts>
 #include <cstdint>
 #include <string>
+#include <vector>
 
+#include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/temporal_util.h"
+#include "iceberg/util/transform_util.h"
 
 namespace iceberg {
 
@@ -193,12 +198,42 @@ Result<Literal> LiteralCaster::CastFromString(
       ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromString(str_val));
       return Literal::UUID(uuid);
     }
-    case TypeId::kDate:
-    case TypeId::kTime:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-      return NotImplemented("Cast from String to {} is not implemented yet",
-                            target_type->ToString());
+    case TypeId::kDate: {
+      ICEBERG_ASSIGN_OR_RAISE(auto days, TransformUtil::ParseDay(str_val));
+      return Literal::Date(days);
+    }
+    case TypeId::kTime: {
+      ICEBERG_ASSIGN_OR_RAISE(auto micros, TransformUtil::ParseTime(str_val));
+      return Literal::Time(micros);
+    }
+    case TypeId::kTimestamp: {
+      ICEBERG_ASSIGN_OR_RAISE(auto micros, TransformUtil::ParseTimestamp(str_val));
+      return Literal::Timestamp(micros);
+    }
+    case TypeId::kTimestampTz: {
+      ICEBERG_ASSIGN_OR_RAISE(auto micros,
+                              TransformUtil::ParseTimestampWithZone(str_val));
+      return Literal::TimestampTz(micros);
+    }
+    case TypeId::kBinary: {
+      ICEBERG_ASSIGN_OR_RAISE(auto bytes, StringUtils::HexStringToBytes(str_val));
+      return Literal::Binary(std::move(bytes));
+    }
+    case TypeId::kFixed: {
+      ICEBERG_ASSIGN_OR_RAISE(auto bytes, StringUtils::HexStringToBytes(str_val));
+      return Literal::Fixed(std::move(bytes));
+    }
+    case TypeId::kDecimal: {
+      const auto& dec_type = internal::checked_cast<const DecimalType&>(*target_type);
+      int32_t parsed_scale = 0;
+      ICEBERG_ASSIGN_OR_RAISE(auto dec,
+                              Decimal::FromString(str_val, nullptr, &parsed_scale));
+      if (parsed_scale != dec_type.scale()) {
+        return InvalidArgument("Cannot cast {} as a {} value: the scale doesn't match",
+                               str_val, target_type->ToString());
+      }
+      return Literal::Decimal(dec.value(), dec_type.precision(), dec_type.scale());
+    }
     default:
       return NotSupported("Cast from String to {} is not supported",
                           target_type->ToString());

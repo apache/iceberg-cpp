@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,6 +32,7 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 
@@ -404,5 +406,100 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<SetOpRoundTripParam>& info) {
       return info.param.name;
     });
+
+// --- LiteralFromJson(json, type) type-aware tests ---
+
+struct LiteralFromJsonTypedParam {
+  std::string name;
+  nlohmann::json json;
+  std::shared_ptr<Type> type;
+  TypeId expected_type_id;
+  std::optional<std::string> expected_str;
+};
+
+class LiteralFromJsonTypedTest
+    : public ::testing::TestWithParam<LiteralFromJsonTypedParam> {};
+
+TEST_P(LiteralFromJsonTypedTest, Parses) {
+  const auto& p = GetParam();
+  ICEBERG_UNWRAP_OR_FAIL(auto lit, LiteralFromJson(p.json, p.type.get()));
+  EXPECT_EQ(lit.type()->type_id(), p.expected_type_id);
+  if (p.expected_str) EXPECT_EQ(lit.ToString(), *p.expected_str);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    LiteralFromJsonTyped, LiteralFromJsonTypedTest,
+    ::testing::Values(
+        LiteralFromJsonTypedParam{"Boolean", nlohmann::json(true), boolean(),
+                                  TypeId::kBoolean, "true"},
+        LiteralFromJsonTypedParam{"Int", nlohmann::json(123), int32(), TypeId::kInt,
+                                  "123"},
+        LiteralFromJsonTypedParam{"Long", nlohmann::json(9876543210LL), int64(),
+                                  TypeId::kLong, "9876543210"},
+        LiteralFromJsonTypedParam{"Float", nlohmann::json(1.5), float32(), TypeId::kFloat,
+                                  std::nullopt},
+        LiteralFromJsonTypedParam{"Double", nlohmann::json(3.14), float64(),
+                                  TypeId::kDouble, std::nullopt},
+        LiteralFromJsonTypedParam{"String", nlohmann::json("hello"), string(),
+                                  TypeId::kString, std::nullopt},
+        LiteralFromJsonTypedParam{"DateString", nlohmann::json("2024-01-15"), date(),
+                                  TypeId::kDate, std::nullopt},
+        LiteralFromJsonTypedParam{"Uuid",
+                                  nlohmann::json("f79c3e09-677c-4bbd-a479-3f349cb785e7"),
+                                  uuid(), TypeId::kUuid, std::nullopt},
+        LiteralFromJsonTypedParam{"Binary", nlohmann::json("deadbeef"), binary(),
+                                  TypeId::kBinary, std::nullopt},
+        LiteralFromJsonTypedParam{"Fixed", nlohmann::json("cafebabe"), fixed(4),
+                                  TypeId::kFixed, std::nullopt},
+        LiteralFromJsonTypedParam{"DecimalMatchingScale", nlohmann::json("123.4500"),
+                                  decimal(9, 4), TypeId::kDecimal, "123.4500"},
+        LiteralFromJsonTypedParam{"DecimalScaleZero", nlohmann::json("2"), decimal(9, 0),
+                                  TypeId::kDecimal, "2"}),
+    [](const ::testing::TestParamInfo<LiteralFromJsonTypedParam>& info) {
+      return info.param.name;
+    });
+
+struct InvalidLiteralFromJsonTypedParam {
+  std::string name;
+  nlohmann::json json;
+  std::shared_ptr<Type> type;
+};
+
+class InvalidLiteralFromJsonTypedTest
+    : public ::testing::TestWithParam<InvalidLiteralFromJsonTypedParam> {};
+
+TEST_P(InvalidLiteralFromJsonTypedTest, ReturnsError) {
+  const auto& p = GetParam();
+  EXPECT_FALSE(LiteralFromJson(p.json, p.type.get()).has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    LiteralFromJsonTyped, InvalidLiteralFromJsonTypedTest,
+    ::testing::Values(
+        InvalidLiteralFromJsonTypedParam{"BooleanTypeMismatch", nlohmann::json(42),
+                                         boolean()},
+        InvalidLiteralFromJsonTypedParam{"DateTypeMismatch", nlohmann::json(true),
+                                         date()},
+        InvalidLiteralFromJsonTypedParam{"UuidTypeMismatch", nlohmann::json(42), uuid()},
+        InvalidLiteralFromJsonTypedParam{"BinaryInvalidHex", nlohmann::json("xyz"),
+                                         binary()},
+        InvalidLiteralFromJsonTypedParam{"FixedLengthMismatch", nlohmann::json("cafe12"),
+                                         fixed(4)},
+        InvalidLiteralFromJsonTypedParam{"DecimalScaleMismatch", nlohmann::json("123.45"),
+                                         decimal(9, 4)},
+        InvalidLiteralFromJsonTypedParam{"DecimalNotString", nlohmann::json(123.45),
+                                         decimal(9, 2)}),
+    [](const ::testing::TestParamInfo<InvalidLiteralFromJsonTypedParam>& info) {
+      return info.param.name;
+    });
+
+TEST(LiteralFromJsonTyped, SchemaAwareDatePredicateRoundTrip) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "event_date", date())});
+  nlohmann::json pred_json = {
+      {"type", "eq"}, {"term", "event_date"}, {"value", "2024-01-15"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto expr, ExpressionFromJson(pred_json, schema.get()));
+  ASSERT_NE(expr, nullptr);
+}
 
 }  // namespace iceberg
