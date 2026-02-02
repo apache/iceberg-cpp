@@ -46,16 +46,87 @@ ICEBERG_EXPORT nlohmann::json ToJson(Expression::Operation op);
 
 /// \brief Deserializes a JSON object into an Expression.
 ///
+/// When \p schema is nullptr the result is an unbound expression. When \p schema is
+/// provided the expression is bound against the schema before being returned.
+///
 /// \param json A JSON object representing an expression
+/// \param schema Optional schema used to bind field references and coerce literal
+///              types. When null, returns an unbound expression.
 /// \return A shared pointer to the deserialized Expression or an error
 ICEBERG_EXPORT Result<std::shared_ptr<Expression>> ExpressionFromJson(
-    const nlohmann::json& json);
+    const nlohmann::json& json, const Schema* schema = nullptr);
 
 /// \brief Serializes an Expression into its JSON representation.
 ///
 /// \param expr The expression to serialize
-/// \return A JSON object representing the expression
-ICEBERG_EXPORT nlohmann::json ToJson(const Expression& expr);
+/// \return A JSON object representing the expression, or an error
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const Expression& expr);
+
+/// \brief Deserializes a JSON object into a NamedReference.
+///
+/// \param json A JSON object representing a named reference
+/// \return A shared pointer to the deserialized NamedReference or an error
+ICEBERG_EXPORT Result<std::unique_ptr<NamedReference>> NamedReferenceFromJson(
+    const nlohmann::json& json);
+
+/// \brief Serializes a NamedReference into its JSON representation.
+///
+/// \param ref The named reference to serialize
+/// \return A JSON object representing the named reference, or an error
+ICEBERG_EXPORT nlohmann::json ToJson(const NamedReference& ref);
+
+/// \brief Serializes an UnboundTransform into its JSON representation.
+///
+/// \param transform The unbound transform to serialize
+/// \return A JSON object representing the unbound transform, or an error
+ICEBERG_EXPORT nlohmann::json ToJson(const UnboundTransform& transform);
+
+/// \brief Deserializes a JSON object into an UnboundTransform.
+///
+/// \param json A JSON object representing an unbound transform
+/// \return A shared pointer to the deserialized UnboundTransform or an error
+ICEBERG_EXPORT Result<std::unique_ptr<UnboundTransform>> UnboundTransformFromJson(
+    const nlohmann::json& json);
+
+/// \brief Serializes a Literal into its JSON representation.
+///
+/// \param literal The literal to serialize
+/// \return A JSON value representing the literal, or an error
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const Literal& literal);
+
+/// \brief Deserializes a JSON value into a Literal.
+///
+/// \param json A JSON value representing a literal.
+/// \return The deserialized Literal or an error.
+ICEBERG_EXPORT Result<Literal> LiteralFromJson(const nlohmann::json& json);
+
+/// \brief Serializes an UnboundPredicate into its JSON representation.
+///
+/// \param pred The unbound predicate to serialize
+/// \return A JSON object representing the predicate, or an error
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const UnboundPredicate& pred);
+
+/// \brief Serializes a BoundReference into its JSON representation (field name string).
+ICEBERG_EXPORT nlohmann::json ToJson(const BoundReference& ref);
+
+/// \brief Serializes a BoundTransform into its JSON representation.
+ICEBERG_EXPORT nlohmann::json ToJson(const BoundTransform& transform);
+
+/// \brief Serializes a BoundPredicate into its JSON representation.
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const BoundPredicate& pred);
+
+/// \brief Deserializes a JSON object into an UnboundPredicate.
+///
+/// \param json A JSON object representing an unbound predicate
+/// \return A pointer to the deserialized UnboundPredicate or an error
+ICEBERG_EXPORT Result<std::unique_ptr<UnboundPredicate>> UnboundPredicateFromJson(
+    const nlohmann::json& json);
+
+/// \brief Serializes a Term into its JSON representation.
+///
+/// \param term The term to serialize (NamedReference or UnboundTransform)
+/// \return A JSON value representing the term, or an error
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const Term& term);
 
 /// Check if an operation is a unary predicate
 ICEBERG_EXPORT bool IsUnaryOperation(Expression::Operation op);
