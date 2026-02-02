@@ -184,7 +184,6 @@ class TableProperties;
 /// \brief Table update.
 class TableMetadataBuilder;
 class TableUpdate;
-class SnapshotManager;
 class TableRequirement;
 class TableUpdateContext;
 class Transaction;
@@ -194,6 +193,7 @@ class ExpireSnapshots;
 class FastAppend;
 class PendingUpdate;
 class SetSnapshot;
+class SnapshotManager;
 class SnapshotUpdate;
 class UpdateLocation;
 class UpdatePartitionSpec;

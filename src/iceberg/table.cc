@@ -224,7 +224,10 @@ Result<std::shared_ptr<UpdatePartitionStatistics>> Table::NewUpdatePartitionStat
 }
 
 Result<std::shared_ptr<SnapshotManager>> Table::NewSnapshotManager() {
-  return SnapshotManager::Make(name().ToString(), shared_from_this());
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return SnapshotManager::Make(std::move(transaction));
 }
 
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(

@@ -35,47 +35,23 @@
 namespace iceberg {
 
 Result<std::shared_ptr<SnapshotManager>> SnapshotManager::Make(
-    const std::string& table_name, std::shared_ptr<Table> table) {
-  if (table == nullptr) {
-    return InvalidArgument("Table cannot be null");
-  }
-  if (table->metadata() == nullptr) {
-    return InvalidArgument("Cannot manage snapshots: table {} does not exist",
-                           table_name);
-  }
-  // Create a transaction first
-  ICEBERG_ASSIGN_OR_RAISE(auto transaction,
-                          Transaction::Make(table, Transaction::Kind::kUpdate,
-                                            /*auto_commit=*/false));
-  auto manager = std::shared_ptr<SnapshotManager>(
-      new SnapshotManager(std::move(transaction), /*is_external=*/false));
-  return manager;
-}
-
-Result<std::shared_ptr<SnapshotManager>> SnapshotManager::Make(
     std::shared_ptr<Transaction> transaction) {
-  if (transaction == nullptr) {
-    return InvalidArgument("Invalid input transaction: null");
-  }
-  return std::shared_ptr<SnapshotManager>(
-      new SnapshotManager(std::move(transaction), /*is_external=*/true));
+  ICEBERG_PRECHECK(transaction != nullptr, "Invalid input transaction: null");
+  return std::shared_ptr<SnapshotManager>(new SnapshotManager(std::move(transaction)));
 }
 
-SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction,
-                                 bool is_external)
-    : PendingUpdate(transaction), is_external_transaction_(is_external) {}
+SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction)
+    : PendingUpdate(transaction) {}
 
 SnapshotManager::~SnapshotManager() = default;
 
 SnapshotManager& SnapshotManager::Cherrypick(int64_t snapshot_id) {
-  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   // TODO(anyone): Implement cherrypick operation
   ICEBERG_BUILDER_CHECK(false, "Cherrypick operation not yet implemented");
   return *this;
 }
 
 SnapshotManager& SnapshotManager::SetCurrentSnapshot(int64_t snapshot_id) {
-  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->SetCurrentSnapshot(snapshot_id);
   ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
@@ -83,7 +59,6 @@ SnapshotManager& SnapshotManager::SetCurrentSnapshot(int64_t snapshot_id) {
 }
 
 SnapshotManager& SnapshotManager::RollbackToTime(TimePointMs timestamp_ms) {
-  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->RollbackToTime(UnixMsFromTimePointMs(timestamp_ms));
   ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
@@ -91,7 +66,6 @@ SnapshotManager& SnapshotManager::RollbackToTime(TimePointMs timestamp_ms) {
 }
 
 SnapshotManager& SnapshotManager::RollbackTo(int64_t snapshot_id) {
-  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->RollbackTo(snapshot_id);
   ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
@@ -101,9 +75,8 @@ SnapshotManager& SnapshotManager::RollbackTo(int64_t snapshot_id) {
 SnapshotManager& SnapshotManager::CreateBranch(const std::string& name) {
   if (base().current_snapshot_id != kInvalidSnapshotId) {
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_snapshot, base().Snapshot());
-    if (current_snapshot != nullptr) {
-      return CreateBranch(name, current_snapshot->snapshot_id);
-    }
+    ICEBERG_DCHECK(current_snapshot != nullptr, "Current snapshot should not be null");
+    return CreateBranch(name, current_snapshot->snapshot_id);
   }
   const auto& current_refs = base().refs;
   ICEBERG_BUILDER_CHECK(!base().refs.contains(name), "Ref {} already exists", name);
@@ -197,11 +170,8 @@ SnapshotManager& SnapshotManager::SetMaxRefAgeMs(const std::string& name,
 Result<std::shared_ptr<Snapshot>> SnapshotManager::Apply() { return base().Snapshot(); }
 
 Status SnapshotManager::Commit() {
-  ICEBERG_RETURN_UNEXPECTED(CommitIfRefUpdatesExist());
-  if (!is_external_transaction_) {
-    ICEBERG_RETURN_UNEXPECTED(transaction_->Commit());
-  }
-  return {};
+  ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  return CommitIfRefUpdatesExist();
 }
 
 Result<std::shared_ptr<UpdateSnapshotReference>>

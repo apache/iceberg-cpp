@@ -37,14 +37,6 @@ namespace iceberg {
 /// snapshots, and managing branches and tags.
 class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
  public:
-  /// \brief Create a SnapshotManager for a table.
-  ///
-  /// \param table_name The name of the table
-  /// \param table The table to manage snapshots for
-  /// \return A new SnapshotManager instance, or an error if the table doesn't exist
-  static Result<std::shared_ptr<SnapshotManager>> Make(const std::string& table_name,
-                                                       std::shared_ptr<Table> table);
-
   /// \brief Create a SnapshotManager from an existing transaction.
   ///
   /// \param transaction The transaction to use
@@ -194,9 +186,7 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \brief Constructor for creating a SnapshotManager with a transaction.
   ///
   /// \param transaction The transaction to use
-  /// \param is_external Whether this is an external transaction (true) or created
-  /// internally (false)
-  SnapshotManager(std::shared_ptr<Transaction> transaction, bool is_external);
+  explicit SnapshotManager(std::shared_ptr<Transaction> transaction);
 
   /// \brief Get or create the UpdateSnapshotReference operation.
   Result<std::shared_ptr<UpdateSnapshotReference>> UpdateSnapshotReferencesOperation();
@@ -204,7 +194,6 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \brief Commit any pending reference updates if they exist.
   Status CommitIfRefUpdatesExist();
 
-  bool is_external_transaction_;
   std::shared_ptr<UpdateSnapshotReference> update_snapshot_references_operation_;
 };
 
