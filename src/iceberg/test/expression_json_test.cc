@@ -31,6 +31,7 @@
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/transform.h"
 
 namespace iceberg {
 
@@ -61,6 +62,55 @@ TEST(ExpressionJsonTest, OperationTypeTests) {
 
   EXPECT_TRUE(IsUnaryOperation(Expression::Operation::kIsNull));
   EXPECT_FALSE(IsUnaryOperation(Expression::Operation::kTrue));
+}
+
+TEST(ExpressionJsonTest, NameReferenceRoundTrip) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ref, NamedReference::Make("col_name"));
+  auto json = ToJson(*ref);
+  EXPECT_EQ(json.get<std::string>(), "col_name");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, NamedReferenceFromJson(json));
+  EXPECT_EQ(parsed->name(), "col_name");
+}
+
+TEST(ExpressionJsonTest, UnboundTransfromRoundTrip) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ref, NamedReference::Make("ts"));
+  auto transform = Transform::Day();
+  ICEBERG_UNWRAP_OR_FAIL(auto unbound, UnboundTransform::Make(std::move(ref), transform));
+
+  auto json = ToJson(*unbound);
+  EXPECT_EQ(json["type"], "transform");
+  EXPECT_EQ(json["transform"], "day");
+  EXPECT_EQ(json["term"], "ts");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, UnboundTransformFromJson(json));
+  EXPECT_EQ(parsed->reference()->name(), unbound->reference()->name());
+  EXPECT_EQ(parsed->transform()->transform_type(),
+            unbound->transform()->transform_type());
+  EXPECT_EQ(parsed->transform()->ToString(), unbound->transform()->ToString());
+}
+
+TEST(ExpressionJsonTest, BucketTransform) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ref, NamedReference::Make("id"));
+  ICEBERG_UNWRAP_OR_FAIL(auto unbound,
+                         UnboundTransform::Make(std::move(ref), Transform::Bucket(16)));
+
+  auto json = ToJson(*unbound);
+  EXPECT_EQ(json["type"], "transform");
+  EXPECT_EQ(json["transform"], "bucket[16]");
+  EXPECT_EQ(json["term"], "id");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, UnboundTransformFromJson(json));
+  EXPECT_EQ(parsed->transform()->transform_type(),
+            unbound->transform()->transform_type());
+  EXPECT_EQ(parsed->transform()->ToString(), unbound->transform()->ToString());
+}
+
+TEST(ExpressionJsonTest, InvalidInput) {
+  EXPECT_THAT(UnboundTransformFromJson(nlohmann::json::object()),
+              IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(UnboundTransformFromJson(nlohmann::json{{"type", "other"}}),
+              IsError(ErrorKind::kJsonParseError));
 }
 
 }  // namespace iceberg

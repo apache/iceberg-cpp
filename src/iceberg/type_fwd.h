@@ -131,6 +131,9 @@ class Expression;
 class Literal;
 class Term;
 class UnboundPredicate;
+class NamedReference;
+class UnboundTransform;
+class Transform;
 
 /// \brief Evaluator.
 class Evaluator;

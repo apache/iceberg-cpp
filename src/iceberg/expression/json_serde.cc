@@ -27,12 +27,18 @@
 
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
+#include "iceberg/expression/term.h"
+#include "iceberg/transform.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 namespace {
+// JSON field names
+constexpr std::string_view kType = "type";
+constexpr std::string_view kTerm = "term";
+constexpr std::string_view kTransform = "transform";
 // Expression type strings
 constexpr std::string_view kTypeTrue = "true";
 constexpr std::string_view kTypeFalse = "false";
@@ -121,6 +127,41 @@ nlohmann::json ToJson(Expression::Operation op) {
     return (c == '_') ? '-' : static_cast<char>(std::tolower(c));
   });
   return json;
+}
+
+nlohmann::json ToJson(const NamedReference& ref) { return ref.name(); }
+
+Result<std::shared_ptr<NamedReference>> NamedReferenceFromJson(
+    const nlohmann::json& json) {
+  if (!json.is_string()) [[unlikely]] {
+    return JsonParseError("Expected string for named reference");
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(json.get<std::string>()));
+  return std::shared_ptr<NamedReference>(std::move(ref));
+}
+
+nlohmann::json ToJson(const UnboundTransform& transform) {
+  auto& mutable_transform = const_cast<UnboundTransform&>(transform);
+  nlohmann::json json;
+  json[kType] = std::string(kTransform);
+  json[kTransform] = transform.transform()->ToString();
+  json[kTerm] = mutable_transform.reference()->name();
+  return json;
+}
+
+Result<std::shared_ptr<UnboundTransform>> UnboundTransformFromJson(
+    const nlohmann::json& json) {
+  if (json.is_object() && json.contains(kType) &&
+      json[kType] == std::string(kTransform) && json.contains(kTerm)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto transform_str,
+                            GetJsonValue<std::string>(json, kTransform));
+    ICEBERG_ASSIGN_OR_RAISE(auto transform, TransformFromString(transform_str));
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReferenceFromJson(json[kTerm]));
+    ICEBERG_ASSIGN_OR_RAISE(auto result,
+                            UnboundTransform::Make(std::move(ref), std::move(transform)));
+    return std::shared_ptr<UnboundTransform>(std::move(result));
+  }
+  return JsonParseError("Invalid unbound transform json: {}", SafeDumpJson(json));
 }
 
 Result<std::shared_ptr<Expression>> ExpressionFromJson(const nlohmann::json& json) {
