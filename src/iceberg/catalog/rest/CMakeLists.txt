@@ -33,27 +33,25 @@ set(ICEBERG_REST_SOURCES
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
+set(ICEBERG_REST_SHARED_PRIVATE_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS)
 
-list(APPEND ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>" cpr::cpr)
-list(APPEND ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>" cpr::cpr)
-list(APPEND
-     ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+list(APPEND ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS iceberg_static cpr::cpr)
+list(APPEND ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS iceberg_shared)
+list(APPEND ICEBERG_REST_SHARED_PRIVATE_BUILD_INTERFACE_LIBS cpr::cpr
+     nlohmann_json::nlohmann_json)
+list(APPEND ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS iceberg::iceberg_static
      "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>")
-list(APPEND
-     ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
-     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>")
+list(APPEND ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS iceberg::iceberg_shared)
 
 add_iceberg_lib(iceberg_rest
                 SOURCES
                 ${ICEBERG_REST_SOURCES}
                 SHARED_LINK_LIBS
                 ${ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS}
+                SHARED_PRIVATE_LINK_LIBS
+                ${ICEBERG_REST_SHARED_PRIVATE_BUILD_INTERFACE_LIBS}
                 STATIC_LINK_LIBS
                 ${ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS}
                 STATIC_INSTALL_INTERFACE_LIBS
