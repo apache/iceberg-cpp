@@ -129,8 +129,11 @@ class BoundReference;
 class BoundTransform;
 class Expression;
 class Literal;
+class NamedReference;
 class Term;
+class Transform;
 class UnboundPredicate;
+class UnboundTransform;
 
 /// \brief Evaluator.
 class Evaluator;

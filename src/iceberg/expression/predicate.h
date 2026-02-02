@@ -76,6 +76,12 @@ class ICEBERG_EXPORT UnboundPredicate : public virtual Expression,
 
   bool is_unbound_predicate() const override { return true; }
 
+  /// \brief Returns the term of this predicate as a base Term reference.
+  virtual const Term& predicate_term() const = 0;
+
+  /// \brief Returns the literals of this predicate.
+  virtual std::span<const Literal> literals() const = 0;
+
  protected:
   UnboundPredicate() = default;
 };
@@ -130,7 +136,9 @@ class ICEBERG_EXPORT UnboundPredicateImpl : public UnboundPredicate,
 
   Result<std::shared_ptr<Expression>> Negate() const override;
 
-  std::span<const Literal> literals() const { return values_; }
+  const Term& predicate_term() const override { return *BASE::term(); }
+
+  std::span<const Literal> literals() const override { return values_; }
 
  private:
   UnboundPredicateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
