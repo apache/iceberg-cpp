@@ -26,10 +26,8 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/expression/expression.h"
-#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
-#include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
