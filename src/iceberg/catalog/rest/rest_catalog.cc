@@ -69,15 +69,14 @@ std::unordered_set<Endpoint> GetDefaultEndpoints() {
 }
 
 /// \brief Fetch server configuration from the REST catalog server.
-Result<CatalogConfig> FetchServerConfig(
-    const ResourcePaths& paths, const RestCatalogProperties& current_config,
-    const std::shared_ptr<auth::AuthSession>& session) {
+Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
+                                        const RestCatalogProperties& current_config,
+                                        auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto config_path, paths.Config());
   HttpClient client(current_config.ExtractHeaders());
 
-  // Get authentication headers
   std::unordered_map<std::string, std::string> auth_headers;
-  ICEBERG_RETURN_UNEXPECTED(session->Authenticate(auth_headers));
+  ICEBERG_RETURN_UNEXPECTED(session.Authenticate(auth_headers));
 
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client.Get(config_path, /*params=*/{}, auth_headers,
@@ -137,7 +136,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto init_session,
                           auth_manager->InitSession(init_client, config.configs()));
   ICEBERG_ASSIGN_OR_RAISE(auto server_config,
-                          FetchServerConfig(*paths, config, init_session));
+                          FetchServerConfig(*paths, config, *init_session));
 
   std::unique_ptr<RestCatalogProperties> final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));

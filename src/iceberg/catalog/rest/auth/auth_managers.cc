@@ -35,13 +35,13 @@ using AuthManagerRegistry =
 
 /// \brief Known authentication types that are defined in the Iceberg spec.
 const std::unordered_set<std::string, StringHash, StringEqual>& KnownAuthTypes() {
-  static const std::unordered_set<std::string, StringHash, StringEqual> types = {
+  static const std::unordered_set<std::string, StringHash, StringEqual> kAuthTypes = {
       AuthProperties::kAuthTypeNone,
       AuthProperties::kAuthTypeBasic,
       AuthProperties::kAuthTypeOAuth2,
       AuthProperties::kAuthTypeSigV4,
   };
-  return types;
+  return kAuthTypes;
 }
 
 // Infer the authentication type from properties.
@@ -66,7 +66,7 @@ std::string InferAuthType(
 class NoopAuthManager : public AuthManager {
  public:
   Result<std::shared_ptr<AuthSession>> CatalogSession(
-      [[maybe_unused]] HttpClient& shared_client,
+      [[maybe_unused]] HttpClient& client,
       [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties)
       override {
     return AuthSession::MakeDefault({});
