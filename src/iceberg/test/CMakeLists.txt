@@ -113,6 +113,7 @@ add_iceberg_test(util_test
                  data_file_set_test.cc
                  decimal_test.cc
                  endian_test.cc
+                 file_io_registry_test.cc
                  formatter_test.cc
                  location_util_test.cc
                  string_util_test.cc
@@ -137,6 +138,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    arrow_fs_file_io_test.cc
+                   arrow_s3_file_io_test.cc
                    arrow_test.cc
                    gzip_decompress_test.cc
                    metadata_io_test.cc
