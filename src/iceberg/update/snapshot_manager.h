@@ -46,8 +46,7 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
 
   ~SnapshotManager() override;
 
-  // TODO(xxx): is this correct?
-  Kind kind() const final { return Kind::kUpdateSnapshotReference; }
+  Kind kind() const final { return Kind::kSnapshotManager; }
 
   /// \brief Apply supported changes in given snapshot and create a new snapshot which
   /// will be set as the current snapshot on commit.
