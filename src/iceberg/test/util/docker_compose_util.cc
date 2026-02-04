@@ -19,16 +19,38 @@
 
 #include "iceberg/test/util/docker_compose_util.h"
 
+#include <unistd.h>
+
 #include <cctype>
+#include <chrono>
+#include <format>
+#include <print>
+
+#include <sys/stat.h>
 
 #include "iceberg/test/util/cmd_util.h"
 
 namespace iceberg {
 
+namespace {
+/// \brief Generate a unique test data directory path
+std::filesystem::path GenerateTestDataDir() {
+  auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                       std::chrono::system_clock::now().time_since_epoch())
+                       .count();
+  auto pid = getpid();
+  return {std::format("/tmp/iceberg-test-{}-{}", timestamp, pid)};
+}
+}  // namespace
+
 DockerCompose::DockerCompose(std::string project_name,
                              std::filesystem::path docker_compose_dir)
     : project_name_(std::move(project_name)),
-      docker_compose_dir_(std::move(docker_compose_dir)) {}
+      docker_compose_dir_(std::move(docker_compose_dir)),
+      test_data_dir_(GenerateTestDataDir()) {
+  std::filesystem::create_directories(test_data_dir_);
+  chmod(test_data_dir_.c_str(), 0777);
+}
 
 DockerCompose::~DockerCompose() { Down(); }
 
@@ -39,13 +61,24 @@ void DockerCompose::Up() {
 
 void DockerCompose::Down() {
   auto cmd = BuildDockerCommand({"down", "-v", "--remove-orphans"});
-  return cmd.RunCommand("docker compose down");
+  cmd.RunCommand("docker compose down");
+
+  // Clean up the test data directory
+  if (!test_data_dir_.empty() && std::filesystem::exists(test_data_dir_)) {
+    std::error_code ec;
+    std::filesystem::remove_all(test_data_dir_, ec);
+    if (!ec) {
+      std::println("[INFO] Cleaned up test data directory: {}", test_data_dir_.string());
+    }
+  }
 }
 
 Command DockerCompose::BuildDockerCommand(const std::vector<std::string>& args) const {
   Command cmd("docker");
   // Set working directory
   cmd.CurrentDir(docker_compose_dir_);
+  // Set the test data directory environment variable
+  cmd.Env("ICEBERG_TEST_DATA_DIR", test_data_dir_.string());
   // Use 'docker compose' subcommand with project name
   cmd.Arg("compose").Arg("-p").Arg(project_name_).Args(args);
   return cmd;

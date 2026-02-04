@@ -32,6 +32,14 @@
 
 namespace iceberg::rest {
 
+/// \brief Snapshot loading mode for REST catalog.
+enum class SnapshotMode {
+  /// Load all snapshots from the table metadata.
+  ALL,
+  /// Load only snapshots referenced in snapshot refs (branches/tags).
+  REFS
+};
+
 /// \brief Configuration class for a REST Catalog.
 class ICEBERG_REST_EXPORT RestCatalogProperties
     : public ConfigBase<RestCatalogProperties> {
@@ -47,6 +55,8 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   inline static Entry<std::string> kWarehouse{"warehouse", ""};
   /// \brief The optional prefix for REST API paths.
   inline static Entry<std::string> kPrefix{"prefix", ""};
+  /// \brief The snapshot loading mode (ALL or REFS).
+  inline static Entry<std::string> kSnapshotLoadingMode{"snapshot-loading-mode", "ALL"};
   /// \brief The prefix for HTTP headers.
   inline static constexpr std::string_view kHeaderPrefix = "header.";
 
@@ -63,6 +73,11 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   /// \brief Get the URI of the REST catalog server.
   /// \return The URI if configured, or an error if not set or empty.
   Result<std::string_view> Uri() const;
+
+  /// \brief Get the snapshot loading mode.
+  /// \return SnapshotMode::ALL if configured as "ALL", SnapshotMode::REFS if "REFS",
+  ///         or an error if the value is invalid.
+  Result<SnapshotMode> SnapshotLoadingMode() const;
 
  private:
   RestCatalogProperties() = default;

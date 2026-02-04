@@ -24,3 +24,5 @@ services:
       - CATALOG_WAREHOUSE=file:///tmp/iceberg_warehouse
     ports:
       - "8181:8181"
+    volumes:
+      - ${ICEBERG_TEST_DATA_DIR}:/tmp
