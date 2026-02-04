@@ -19,8 +19,6 @@
 
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 
-#include <algorithm>
-#include <cctype>
 #include <unordered_set>
 
 #include "iceberg/catalog/rest/auth/auth_properties.h"
