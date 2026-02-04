@@ -19,8 +19,6 @@
 
 #include "iceberg/test/util/docker_compose_util.h"
 
-#include <cctype>
-
 #include "iceberg/test/util/cmd_util.h"
 
 namespace iceberg {
