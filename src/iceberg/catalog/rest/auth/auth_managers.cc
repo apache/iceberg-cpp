@@ -19,8 +19,6 @@
 
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 
-#include <algorithm>
-
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/util/string_util.h"
 
