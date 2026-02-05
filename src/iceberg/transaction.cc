@@ -36,6 +36,7 @@
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/set_snapshot.h"
+#include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/snapshot_update.h"
 #include "iceberg/update/update_location.h"
 #include "iceberg/update/update_partition_spec.h"
@@ -62,9 +63,7 @@ Transaction::~Transaction() = default;
 
 Result<std::shared_ptr<Transaction>> Transaction::Make(std::shared_ptr<Table> table,
                                                        Kind kind, bool auto_commit) {
-  if (!table || !table->catalog()) [[unlikely]] {
-    return InvalidArgument("Table and catalog cannot be null");
-  }
+  ICEBERG_PRECHECK(table && table->catalog(), "Table and catalog cannot be null");
 
   std::unique_ptr<TableMetadataBuilder> metadata_builder;
   if (kind == Kind::kCreate) {
@@ -93,9 +92,11 @@ std::string Transaction::MetadataFileLocation(std::string_view filename) const {
 }
 
 Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
-  if (!last_update_committed_) {
-    return InvalidArgument("Cannot add update when previous update is not committed");
-  }
+  ICEBERG_PRECHECK(update->kind() != PendingUpdate::Kind::kSnapshotManager,
+                   "SnapshotManager should not be added to the transaction");
+  ICEBERG_CHECK(last_update_committed_,
+                "Cannot add update when previous update is not committed");
+
   pending_updates_.emplace_back(std::weak_ptr<PendingUpdate>(update));
   last_update_committed_ = false;
   return {};
@@ -301,13 +302,9 @@ Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& up
 }
 
 Result<std::shared_ptr<Table>> Transaction::Commit() {
-  if (committed_) {
-    return Invalid("Transaction already committed");
-  }
-  if (!last_update_committed_) {
-    return InvalidArgument(
-        "Cannot commit transaction when previous update is not committed");
-  }
+  ICEBERG_CHECK(!committed_, "Transaction already committed");
+  ICEBERG_CHECK(last_update_committed_,
+                "Cannot commit transaction when previous update is not committed");
 
   const auto& updates = metadata_builder_->changes();
   if (updates.empty()) {
@@ -426,6 +423,14 @@ Transaction::NewUpdateSnapshotReference() {
                           UpdateSnapshotReference::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_ref));
   return update_ref;
+}
+
+Result<std::shared_ptr<SnapshotManager>> Transaction::NewSnapshotManager() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<SnapshotManager> snapshot_manager,
+                          SnapshotManager::Make(shared_from_this()));
+  // SnapshotManager has its own commit logic, so it is not added to the pending updates.
+  // This differs from the Java implementation.
+  return snapshot_manager;
 }
 
 }  // namespace iceberg
