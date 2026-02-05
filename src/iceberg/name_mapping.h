@@ -20,6 +20,7 @@
 #pragma once
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 #include <span>
@@ -143,16 +144,14 @@ ICEBERG_EXPORT std::string ToString(const NameMapping& mapping);
 /// \return A new NameMapping instance initialized with the schema's fields and names.
 ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> CreateMapping(const Schema& schema);
 
-/// TODO(gangwu): implement this function once SchemaUpdate is supported
-///
 /// \brief Update a name-based mapping using changes to a schema.
 /// \param mapping a name-based mapping
 /// \param updates a map from field ID to updated field definitions
 /// \param adds a map from parent field ID to nested fields to be added
 /// \return an updated mapping with names added to renamed fields and the mapping extended
 /// for new fields
-// ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> UpdateMapping(
-//     const NameMapping& mapping, const std::map<int32_t, SchemaField>& updates,
-//     const std::multimap<int32_t, int32_t>& adds);
+ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> UpdateMapping(
+    const NameMapping& mapping, const std::map<int32_t, SchemaField>& updates,
+    const std::multimap<int32_t, int32_t>& adds);
 
 }  // namespace iceberg

@@ -29,9 +29,12 @@
 #include <utility>
 #include <vector>
 
+#include "iceberg/json_serde_internal.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/transaction.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -592,8 +595,33 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
       auto new_schema,
       Schema::Make(std::move(new_fields), schema_->schema_id(), fresh_identifier_ids));
 
+  std::unordered_map<std::string, std::string> updated_props;
+  const auto& base_metadata = base();
+  const auto& properties = base_metadata.properties.configs();
+
+  auto mapping_it = properties.find(std::string(TableProperties::kDefaultNameMapping));
+  if (mapping_it != properties.end() && !mapping_it->second.empty()) {
+    std::map<int32_t, SchemaField> updates;
+    for (const auto& [id, field_ptr] : updates_) {
+      updates.emplace(id, *field_ptr);
+    }
+    std::multimap<int32_t, int32_t> adds;
+    for (const auto& [parent_id, child_ids] : parent_to_added_ids_) {
+      std::ranges::for_each(child_ids, [&adds, parent_id](int32_t child_id) {
+        adds.emplace(parent_id, child_id);
+      });
+    }
+    auto updated_mapping_json =
+        UpdateMappingFromJsonString(mapping_it->second, updates, adds);
+    if (updated_mapping_json) {
+      updated_props[std::string(TableProperties::kDefaultNameMapping)] =
+          std::move(*updated_mapping_json);
+    }
+  }
+
   return ApplyResult{.schema = std::move(new_schema),
-                     .new_last_column_id = last_column_id_};
+                     .new_last_column_id = last_column_id_,
+                     .updated_props = std::move(updated_props)};
 }
 
 // TODO(Guotao Yu): v3 default value is not yet supported

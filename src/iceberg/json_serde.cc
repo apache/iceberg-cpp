@@ -1270,6 +1270,24 @@ Result<std::unique_ptr<NameMapping>> NameMappingFromJson(const nlohmann::json& j
   return NameMapping::Make(std::move(mapped_fields));
 }
 
+std::optional<std::string> UpdateMappingFromJsonString(
+    std::string_view mapping_json, const std::map<int32_t, SchemaField>& updates,
+    const std::multimap<int32_t, int32_t>& adds) {
+  auto json_result = FromJsonString(std::string(mapping_json));
+  if (!json_result) return std::nullopt;
+
+  auto current_mapping = NameMappingFromJson(*json_result);
+  if (!current_mapping) return std::nullopt;
+
+  auto updated_mapping = UpdateMapping(**current_mapping, updates, adds);
+  if (!updated_mapping) return std::nullopt;
+
+  auto json_str = ToJsonString(ToJson(**updated_mapping));
+  if (!json_str) return std::nullopt;
+
+  return std::move(*json_str);
+}
+
 nlohmann::json ToJson(const TableIdentifier& identifier) {
   nlohmann::json json;
   json[kNamespace] = identifier.ns.levels;
