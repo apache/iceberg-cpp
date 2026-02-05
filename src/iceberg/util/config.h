@@ -67,10 +67,13 @@ class ConfigBase {
   template <typename T>
   class Entry {
    public:
-    Entry(std::string key, const T& val,
+    Entry(std::string key, T val,
           std::function<std::string(const T&)> to_str = internal::DefaultToString<T>,
           std::function<T(const std::string&)> from_str = internal::DefaultFromString<T>)
-        : key_{std::move(key)}, default_{val}, to_str_{to_str}, from_str_{from_str} {}
+        : key_{std::move(key)},
+          default_{std::move(val)},
+          to_str_{std::move(to_str)},
+          from_str_{std::move(from_str)} {}
 
    private:
     const std::string key_;
