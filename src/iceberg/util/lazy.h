@@ -38,10 +38,10 @@ class Lazy {
 
   template <typename R, typename... Args>
   struct Trait<R (*)(Args...)> {
-    using ReturnType = R::value_type;
+    using ReturnType = typename R::value_type;
   };
 
-  using T = Trait<decltype(InitFunc)>::ReturnType;
+  using T = typename Trait<decltype(InitFunc)>::ReturnType;
 
  public:
   template <typename... Args>

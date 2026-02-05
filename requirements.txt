@@ -2,3 +2,4 @@ meson==1.3.0
 ninja==1.13.0
 mkdocs==1.6.1
 mkdocs-material==9.6.22
+pre-commit==4.5.1
