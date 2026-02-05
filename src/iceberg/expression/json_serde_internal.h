@@ -57,6 +57,32 @@ ICEBERG_EXPORT Result<std::shared_ptr<Expression>> ExpressionFromJson(
 /// \return A JSON object representing the expression
 ICEBERG_EXPORT nlohmann::json ToJson(const Expression& expr);
 
+/// \brief Deserializes a JSON object into a NamedReference.
+///
+/// \param json A JSON object representing a named reference
+/// \return A shared pointer to the deserialized NamedReference or an error
+ICEBERG_EXPORT Result<std::shared_ptr<NamedReference>> NamedReferenceFromJson(
+    const nlohmann::json& json);
+
+/// \brief Serializes a NamedReference into its JSON representation.
+///
+/// \param ref The named reference to serialize
+/// \return A JSON object representing the named reference
+ICEBERG_EXPORT nlohmann::json ToJson(const NamedReference& ref);
+
+/// \brief Serializes an UnboundTransform into its JSON representation.
+///
+/// \param transform The unbound transform to serialize
+/// \return A JSON object representing the unbound transform
+ICEBERG_EXPORT nlohmann::json ToJson(const UnboundTransform& transform);
+
+/// \brief Deserializes a JSON object into an UnboundTransform.
+///
+/// \param json A JSON object representing an unbound transform
+/// \return A shared pointer to the deserialized UnboundTransform or an error
+ICEBERG_EXPORT Result<std::shared_ptr<UnboundTransform>> UnboundTransformFromJson(
+    const nlohmann::json& json);
+
 /// Check if an operation is a unary predicate
 ICEBERG_EXPORT bool IsUnaryOperation(Expression::Operation op);
 
