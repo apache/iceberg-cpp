@@ -24,10 +24,8 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
-#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
@@ -51,25 +49,25 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \brief Apply supported changes in given snapshot and create a new snapshot which
   /// will be set as the current snapshot on commit.
   ///
-  /// \param snapshot_id A snapshot ID whose changes to apply
+  /// \param snapshot_id A Snapshot ID whose changes to apply
   /// \return Reference to this for method chaining
   SnapshotManager& Cherrypick(int64_t snapshot_id);
 
-  /// \brief Roll this table's data back to a specific Snapshot identified by id.
+  /// \brief Roll this table's data back to a specific Snapshot ID.
   ///
-  /// \param snapshot_id Long id of the snapshot to roll back table data to
+  /// \param snapshot_id Snapshot ID to roll back table data to
   /// \return Reference to this for method chaining
   SnapshotManager& SetCurrentSnapshot(int64_t snapshot_id);
 
-  /// \brief Roll this table's data back to the last Snapshot before the given timestamp.
+  /// \brief Roll this table's data back to the last snapshot before the given timestamp.
   ///
   /// \param timestamp_ms A timestamp in milliseconds
   /// \return Reference to this for method chaining
-  SnapshotManager& RollbackToTime(TimePointMs timestamp_ms);
+  SnapshotManager& RollbackToTime(int64_t timestamp_ms);
 
-  /// \brief Rollback table's state to a specific Snapshot identified by id.
+  /// \brief Rollback table's state to a specific Snapshot ID.
   ///
-  /// \param snapshot_id Long id of snapshot id to roll back table to. Must be an ancestor
+  /// \param snapshot_id Snapshot ID to roll back table to. Must be an ancestor
   /// of the current snapshot
   /// \return Reference to this for method chaining
   SnapshotManager& RollbackTo(int64_t snapshot_id);
@@ -82,14 +80,14 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \return Reference to this for method chaining
   SnapshotManager& CreateBranch(const std::string& name);
 
-  /// \brief Create a new branch pointing to the given snapshot id.
+  /// \brief Create a new branch pointing to the given Snapshot ID.
   ///
   /// \param name Branch name
-  /// \param snapshot_id ID of the snapshot which will be the head of the branch
+  /// \param snapshot_id Snapshot ID which will be the head of the branch
   /// \return Reference to this for method chaining
   SnapshotManager& CreateBranch(const std::string& name, int64_t snapshot_id);
 
-  /// \brief Create a new tag pointing to the given snapshot id.
+  /// \brief Create a new tag pointing to the given Snapshot ID.
   ///
   /// \param name Tag name
   /// \param snapshot_id Snapshot ID for the head of the new tag
@@ -111,30 +109,30 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \brief Replaces the tag with the given name to point to the specified snapshot.
   ///
   /// \param name Tag to replace
-  /// \param snapshot_id New snapshot id for the given tag
+  /// \param snapshot_id New Snapshot ID for the given tag
   /// \return Reference to this for method chaining
   SnapshotManager& ReplaceTag(const std::string& name, int64_t snapshot_id);
 
   /// \brief Replaces the branch with the given name to point to the specified snapshot.
   ///
   /// \param name Branch to replace
-  /// \param snapshot_id New snapshot id for the given branch
+  /// \param snapshot_id New Snapshot ID for the given branch
   /// \return Reference to this for method chaining
   SnapshotManager& ReplaceBranch(const std::string& name, int64_t snapshot_id);
 
-  /// \brief Replaces the from branch to point to the to snapshot. The to will remain
-  /// unchanged, and from branch will retain its retention properties. If the from branch
-  /// does not exist, it will be created with default retention properties.
+  /// \brief Replaces the `from` branch to point to the `to` snapshot. The `to` will
+  /// remain unchanged, and `from` branch will retain its retention properties. If the
+  /// `from` branch does not exist, it will be created with default retention properties.
   ///
   /// \param from Branch to replace
   /// \param to The branch from should be replaced with
   /// \return Reference to this for method chaining
   SnapshotManager& ReplaceBranch(const std::string& from, const std::string& to);
 
-  /// \brief Performs a fast-forward of from up to the to snapshot if from is an ancestor
-  /// of to. The to will remain unchanged, and from will retain its retention properties.
-  /// If the from branch does not exist, it will be created with default retention
-  /// properties.
+  /// \brief Performs a fast-forward of `from` up to the `to` snapshot if `from` is an
+  /// ancestor of `to`. The `to` will remain unchanged, and `from` will retain its
+  /// retention properties. If the `from` branch does not exist, it will be created with
+  /// default retention properties.
   ///
   /// \param from Branch to fast-forward
   /// \param to Ref for the from branch to be fast forwarded to
@@ -171,11 +169,6 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \return Reference to this for method chaining
   SnapshotManager& SetMaxRefAgeMs(const std::string& name, int64_t max_ref_age_ms);
 
-  /// \brief Apply the pending changes and return the current snapshot.
-  ///
-  /// \return The current snapshot after applying changes, or an error
-  Result<std::shared_ptr<Snapshot>> Apply();
-
   /// \brief Commit all pending changes.
   ///
   /// \return Status indicating success or failure
@@ -193,7 +186,7 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \brief Commit any pending reference updates if they exist.
   Status CommitIfRefUpdatesExist();
 
-  std::shared_ptr<UpdateSnapshotReference> update_snapshot_references_operation_;
+  std::shared_ptr<UpdateSnapshotReference> update_snap_refs_;
 };
 
 }  // namespace iceberg

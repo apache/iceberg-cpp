@@ -80,11 +80,21 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \param branch Which is name of SnapshotRef of type branch
   /// \return Reference to this for method chaining
-  auto& ToBranch(this auto& self, const std::string& branch) {
-    auto status = self.SetTargetBranch(branch);
-    if (!status.has_value()) {
-      return self.AddError(status.error());
+  auto& SetTargetBranch(this auto& self, const std::string& branch) {
+    if (branch.empty()) [[unlikely]] {
+      return self.AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
     }
+
+    if (auto ref_it = self.base().refs.find(branch); ref_it != self.base().refs.end()) {
+      if (ref_it->second->type() != SnapshotRefType::kBranch) {
+        return self.AddError(ErrorKind::kInvalidArgument,
+                             "{} is a tag, not a branch. Tags cannot be targets for "
+                             "producing snapshots",
+                             branch);
+      }
+    }
+
+    self.target_branch_ = branch;
     return self;
   }
 
@@ -133,7 +143,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
       std::span<const std::shared_ptr<DataFile>> files,
       const std::shared_ptr<PartitionSpec>& spec);
 
-  Status SetTargetBranch(const std::string& branch);
   const std::string& target_branch() const { return target_branch_; }
   bool can_inherit_snapshot_id() const { return can_inherit_snapshot_id_; }
   const std::string& commit_uuid() const { return commit_uuid_; }

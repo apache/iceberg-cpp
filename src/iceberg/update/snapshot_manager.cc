@@ -41,7 +41,7 @@ Result<std::shared_ptr<SnapshotManager>> SnapshotManager::Make(
 }
 
 SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction)
-    : PendingUpdate(transaction) {}
+    : PendingUpdate(std::move(transaction)) {}
 
 SnapshotManager::~SnapshotManager() = default;
 
@@ -58,9 +58,9 @@ SnapshotManager& SnapshotManager::SetCurrentSnapshot(int64_t snapshot_id) {
   return *this;
 }
 
-SnapshotManager& SnapshotManager::RollbackToTime(TimePointMs timestamp_ms) {
+SnapshotManager& SnapshotManager::RollbackToTime(int64_t timestamp_ms) {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
-  set_snapshot->RollbackToTime(UnixMsFromTimePointMs(timestamp_ms));
+  set_snapshot->RollbackToTime(timestamp_ms);
   ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
   return *this;
 }
@@ -81,7 +81,7 @@ SnapshotManager& SnapshotManager::CreateBranch(const std::string& name) {
   const auto& current_refs = base().refs;
   ICEBERG_BUILDER_CHECK(!base().refs.contains(name), "Ref {} already exists", name);
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto fast_append, transaction_->NewFastAppend());
-  ICEBERG_BUILDER_RETURN_IF_ERROR(fast_append->ToBranch(name).Commit());
+  ICEBERG_BUILDER_RETURN_IF_ERROR(fast_append->SetTargetBranch(name).Commit());
   return *this;
 }
 
@@ -167,8 +167,6 @@ SnapshotManager& SnapshotManager::SetMaxRefAgeMs(const std::string& name,
   return *this;
 }
 
-Result<std::shared_ptr<Snapshot>> SnapshotManager::Apply() { return base().Snapshot(); }
-
 Status SnapshotManager::Commit() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   return CommitIfRefUpdatesExist();
@@ -176,17 +174,17 @@ Status SnapshotManager::Commit() {
 
 Result<std::shared_ptr<UpdateSnapshotReference>>
 SnapshotManager::UpdateSnapshotReferencesOperation() {
-  if (update_snapshot_references_operation_ == nullptr) {
-    ICEBERG_ASSIGN_OR_RAISE(update_snapshot_references_operation_,
+  if (update_snap_refs_ == nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(update_snap_refs_,
                             transaction_->NewUpdateSnapshotReference());
   }
-  return update_snapshot_references_operation_;
+  return update_snap_refs_;
 }
 
 Status SnapshotManager::CommitIfRefUpdatesExist() {
-  if (update_snapshot_references_operation_ != nullptr) {
-    ICEBERG_RETURN_UNEXPECTED(update_snapshot_references_operation_->Commit());
-    update_snapshot_references_operation_ = nullptr;
+  if (update_snap_refs_ != nullptr) {
+    ICEBERG_RETURN_UNEXPECTED(update_snap_refs_->Commit());
+    update_snap_refs_ = nullptr;
   }
   return {};
 }
