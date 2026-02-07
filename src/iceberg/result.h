@@ -88,8 +88,8 @@ using Status = Result<void>;
     return std::unexpected<Error>(                                            \
         {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)}); \
   }                                                                           \
-  inline auto name(const std::string& message) -> std::unexpected<Error> {    \
-    return std::unexpected<Error>({ErrorKind::k##name, message});             \
+  inline auto name(std::string message) -> std::unexpected<Error> {           \
+    return std::unexpected<Error>({ErrorKind::k##name, std::move(message)});  \
   }
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)

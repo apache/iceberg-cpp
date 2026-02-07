@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include <charconv>
-
 #include <arrow/extension_type.h>
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
@@ -32,8 +30,9 @@
 #include "iceberg/result.h"
 #include "iceberg/schema_util_internal.h"
 #include "iceberg/util/checked_cast.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::parquet {
 
@@ -49,13 +48,11 @@ std::optional<int32_t> FieldIdFromMetadata(
     return std::nullopt;
   }
   std::string field_id_str = metadata->value(key);
-  int32_t field_id = -1;
-  auto [_, ec] = std::from_chars(field_id_str.data(),
-                                 field_id_str.data() + field_id_str.size(), field_id);
-  if (ec != std::errc() || field_id < 0) {
+  auto res = StringUtils::ParseNumber<int32_t>(field_id_str);
+  if (!res.has_value() || res.value() < 0) {
     return std::nullopt;
   }
-  return field_id;
+  return res.value();
 }
 
 std::optional<int32_t> GetFieldId(const ::parquet::arrow::SchemaField& parquet_field) {

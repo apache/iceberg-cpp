@@ -24,6 +24,8 @@
 #include <unordered_map>
 
 #include "iceberg/exception.h"
+#include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 namespace internal {
@@ -50,10 +52,10 @@ U DefaultFromString(const std::string& val) {
     return val;
   } else if constexpr (std::is_same_v<U, bool>) {
     return val == "true";
-  } else if constexpr (std::is_signed_v<U> && std::is_integral_v<U>) {
-    return static_cast<U>(std::stoll(val));
-  } else if constexpr (std::is_floating_point_v<U>) {
-    return static_cast<U>(std::stod(val));
+  } else if constexpr ((std::is_signed_v<U> && std::is_integral_v<U>) ||
+                       std::is_floating_point_v<U>) {
+    ICEBERG_ASSIGN_OR_THROW(auto res, StringUtils::ParseNumber<U>(val));
+    return res;
   } else {
     throw IcebergError(
         std::format("Explicit from_str() is required for {}", typeid(U).name()));

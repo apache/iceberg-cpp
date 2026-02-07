@@ -85,7 +85,7 @@ Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
   auto iter = new_properties.find(TableProperties::kFormatVersion.key());
   if (iter != new_properties.end()) {
     ICEBERG_ASSIGN_OR_RAISE(auto parsed_version,
-                            StringUtils::ParseInt<int32_t>(iter->second));
+                            StringUtils::ParseNumber<int32_t>(iter->second));
 
     if (parsed_version > TableMetadata::kSupportedTableFormatVersion) {
       return InvalidArgument(

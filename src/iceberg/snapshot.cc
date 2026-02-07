@@ -167,7 +167,7 @@ Result<std::optional<int64_t>> Snapshot::FirstRowId() const {
     return std::nullopt;
   }
 
-  return StringUtils::ParseInt<int64_t>(it->second);
+  return StringUtils::ParseNumber<int64_t>(it->second);
 }
 
 Result<std::optional<int64_t>> Snapshot::AddedRows() const {
@@ -176,7 +176,7 @@ Result<std::optional<int64_t>> Snapshot::AddedRows() const {
     return std::nullopt;
   }
 
-  return StringUtils::ParseInt<int64_t>(it->second);
+  return StringUtils::ParseNumber<int64_t>(it->second);
 }
 
 bool Snapshot::Equals(const Snapshot& other) const {

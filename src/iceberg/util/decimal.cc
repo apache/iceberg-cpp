@@ -39,6 +39,7 @@
 #include "iceberg/result.h"
 #include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -201,13 +202,11 @@ inline void ShiftAndAdd(std::string_view input, uint128_t& out) {
   for (size_t pos = 0; pos < input.size();) {
     const size_t group_size = std::min(kInt64DecimalDigits, input.size() - pos);
     const uint64_t multiple = kUInt64PowersOfTen[group_size];
-    uint64_t value = 0;
 
-    auto [_, ec] =
-        std::from_chars(input.data() + pos, input.data() + pos + group_size, value);
-    ICEBERG_DCHECK(ec == std::errc(), "Failed to parse digits in ShiftAndAdd");
+    auto res = StringUtils::ParseNumber<uint64_t>(input.substr(pos, group_size));
+    ICEBERG_DCHECK(res.has_value(), "Failed to parse digits in ShiftAndAdd");
 
-    out = out * multiple + value;
+    out = out * multiple + res.value();
     pos += group_size;
   }
 }

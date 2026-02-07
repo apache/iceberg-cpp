@@ -76,7 +76,7 @@ Result<std::optional<int32_t>> ParseCodecLevel(const WriterProperties& propertie
   if (level_str.empty()) {
     return std::nullopt;
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto level, StringUtils::ParseInt<int32_t>(level_str));
+  ICEBERG_ASSIGN_OR_RAISE(auto level, StringUtils::ParseNumber<int32_t>(level_str));
   return level;
 }
 

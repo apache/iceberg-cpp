@@ -18,7 +18,6 @@
  */
 
 #include <format>
-#include <mutex>
 #include <sstream>
 #include <string_view>
 
@@ -31,13 +30,12 @@
 #include <avro/ValidSchema.hh>
 
 #include "iceberg/avro/avro_constants.h"
-#include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_util_internal.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 #include "iceberg/util/visit_type.h"
@@ -471,7 +469,7 @@ Result<int32_t> GetId(const ::avro::NodePtr& node, const std::string& attr_name,
     return InvalidSchema("Missing avro attribute: {}", attr_name);
   }
 
-  return StringUtils::ParseInt<int32_t>(id_str.value());
+  return StringUtils::ParseNumber<int32_t>(id_str.value());
 }
 
 Result<int32_t> GetElementId(const ::avro::NodePtr& node) {
@@ -729,7 +727,8 @@ Result<FieldProjection> ProjectMap(const MapType& map_type,
   const auto& expected_value_field = map_type.value();
 
   FieldProjection result;
-  int32_t avro_key_id, avro_value_id;
+  int32_t avro_key_id;
+  int32_t avro_value_id;
   ::avro::NodePtr map_node;
 
   if (avro_node->type() == ::avro::AVRO_MAP) {

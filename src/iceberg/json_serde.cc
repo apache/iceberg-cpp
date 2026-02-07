@@ -47,6 +47,7 @@
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
@@ -497,15 +498,20 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
       std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
       std::smatch match;
       if (std::regex_match(type_str, match, fixed_regex)) {
-        return std::make_unique<FixedType>(std::stoi(match[1].str()));
+        ICEBERG_ASSIGN_OR_RAISE(auto length,
+                                StringUtils::ParseNumber<int32_t>(match[1].str()));
+        return std::make_unique<FixedType>(length);
       }
       return JsonParseError("Invalid fixed type: {}", type_str);
     } else if (type_str.starts_with("decimal")) {
       std::regex decimal_regex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
       std::smatch match;
       if (std::regex_match(type_str, match, decimal_regex)) {
-        return std::make_unique<DecimalType>(std::stoi(match[1].str()),
-                                             std::stoi(match[2].str()));
+        ICEBERG_ASSIGN_OR_RAISE(auto precision,
+                                StringUtils::ParseNumber<int32_t>(match[1].str()));
+        ICEBERG_ASSIGN_OR_RAISE(auto scale,
+                                StringUtils::ParseNumber<int32_t>(match[2].str()));
+        return std::make_unique<DecimalType>(precision, scale);
       }
       return JsonParseError("Invalid decimal type: {}", type_str);
     } else {
