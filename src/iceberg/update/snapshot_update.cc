@@ -49,19 +49,19 @@ Status UpdateTotal(std::unordered_map<std::string, std::string>& summary,
   auto total_it = previous_summary.find(total_property);
   if (total_it != previous_summary.end()) {
     ICEBERG_ASSIGN_OR_RAISE(auto new_total,
-                            StringUtils::ParseInt<int64_t>(total_it->second));
+                            StringUtils::ParseNumber<int64_t>(total_it->second));
 
     auto added_it = summary.find(added_property);
     if (new_total >= 0 && added_it != summary.end()) {
       ICEBERG_ASSIGN_OR_RAISE(auto added_value,
-                              StringUtils::ParseInt<int64_t>(added_it->second));
+                              StringUtils::ParseNumber<int64_t>(added_it->second));
       new_total += added_value;
     }
 
     auto deleted_it = summary.find(deleted_property);
     if (new_total >= 0 && deleted_it != summary.end()) {
       ICEBERG_ASSIGN_OR_RAISE(auto deleted_value,
-                              StringUtils::ParseInt<int64_t>(deleted_it->second));
+                              StringUtils::ParseNumber<int64_t>(deleted_it->second));
       new_total -= deleted_value;
     }
 
@@ -276,9 +276,9 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
     auto added_records_it = summary.find(SnapshotSummaryFields::kAddedRecords);
     auto replaced_records_it = summary.find(SnapshotSummaryFields::kDeletedRecords);
     if (added_records_it != summary.cend() && replaced_records_it != summary.cend()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto added_records,
-                              StringUtils::ParseInt<int64_t>(added_records_it->second));
-      ICEBERG_ASSIGN_OR_RAISE(auto replaced_records, StringUtils::ParseInt<int64_t>(
+      ICEBERG_ASSIGN_OR_RAISE(auto added_records, StringUtils::ParseNumber<int64_t>(
+                                                      added_records_it->second));
+      ICEBERG_ASSIGN_OR_RAISE(auto replaced_records, StringUtils::ParseNumber<int64_t>(
                                                          replaced_records_it->second));
       ICEBERG_PRECHECK(
           added_records <= replaced_records,

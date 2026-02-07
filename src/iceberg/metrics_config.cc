@@ -19,7 +19,6 @@
 
 #include "iceberg/metrics_config.h"
 
-#include <charconv>
 #include <string>
 #include <unordered_map>
 
@@ -29,6 +28,8 @@
 #include "iceberg/table.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/type_util.h"
 
 namespace iceberg {
@@ -84,12 +85,12 @@ Result<MetricsMode> MetricsMode::FromString(std::string_view mode) {
   }
 
   if (StringUtils::StartsWithIgnoreCase(mode, kTruncatePrefix) && mode.ends_with(")")) {
-    int32_t length;
-    auto [ptr, ec] = std::from_chars(mode.data() + 9 /* "truncate(" length */,
-                                     mode.data() + mode.size() - 1, length);
-    if (ec != std::errc{}) {
+    auto res = StringUtils::ParseNumber<int32_t>(
+        mode.substr(9 /* "truncate(" length */, mode.size() - 10));
+    if (!res.has_value()) {
       return InvalidArgument("Invalid truncate mode: {}", mode);
     }
+    int32_t length = res.value();
     if (length == kDefaultTruncateLength) {
       return kDefaultMetricsMode;
     }

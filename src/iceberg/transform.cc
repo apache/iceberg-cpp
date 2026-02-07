@@ -31,6 +31,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/projection_util_internal.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/transform_util.h"
 
 namespace iceberg {
@@ -514,7 +515,8 @@ Result<std::shared_ptr<Transform>> TransformFromString(std::string_view transfor
   std::smatch match;
   if (std::regex_match(str, match, param_regex)) {
     const std::string type_str = match[1];
-    const int32_t param = std::stoi(match[2]);
+    ICEBERG_ASSIGN_OR_RAISE(const auto param,
+                            StringUtils::ParseNumber<int32_t>(match[2].str()));
 
     if (type_str == kBucketName) {
       return Transform::Bucket(param);

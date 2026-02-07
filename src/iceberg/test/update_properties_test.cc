@@ -107,7 +107,7 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionInvalidString) {
 
   auto result = update->Apply();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("Failed to parse integer from string"));
+  EXPECT_THAT(result, HasErrorMessage("invalid argument"));
 }
 
 TEST_F(UpdatePropertiesTest, UpgradeFormatVersionOutOfRange) {
