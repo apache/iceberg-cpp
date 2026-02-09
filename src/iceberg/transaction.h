@@ -94,16 +94,8 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
 
-  /// \brief Create a new SetSnapshot to set the current snapshot or rollback to a
-  /// previous snapshot and commit the changes.
-  Result<std::shared_ptr<SetSnapshot>> NewSetSnapshot();
-
   /// \brief Create a new FastAppend to append data files and commit the changes.
   Result<std::shared_ptr<FastAppend>> NewFastAppend();
-
-  /// \brief Create a new UpdateSnapshotReference to update snapshot references (branches
-  /// and tags) and commit the changes.
-  Result<std::shared_ptr<UpdateSnapshotReference>> NewUpdateSnapshotReference();
 
   /// \brief Create a new SnapshotManager to manage snapshots.
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
@@ -113,6 +105,14 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
               std::unique_ptr<TableMetadataBuilder> metadata_builder);
 
   Status AddUpdate(const std::shared_ptr<PendingUpdate>& update);
+
+  /// \brief Create a new SetSnapshot to set the current snapshot or rollback to a
+  /// previous snapshot and commit the changes.
+  Result<std::shared_ptr<SetSnapshot>> NewSetSnapshot();
+
+  /// \brief Create a new UpdateSnapshotReference to update snapshot references (branches
+  /// and tags) and commit the changes.
+  Result<std::shared_ptr<UpdateSnapshotReference>> NewUpdateSnapshotReference();
 
   /// \brief Apply the pending changes to current table.
   Status Apply(PendingUpdate& updates);
@@ -132,6 +132,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
 
  private:
   friend class PendingUpdate;
+  friend class SnapshotManager;
 
   // The table that this transaction will update.
   std::shared_ptr<Table> table_;

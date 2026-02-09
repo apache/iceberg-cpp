@@ -426,11 +426,8 @@ Transaction::NewUpdateSnapshotReference() {
 }
 
 Result<std::shared_ptr<SnapshotManager>> Transaction::NewSnapshotManager() {
-  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<SnapshotManager> snapshot_manager,
-                          SnapshotManager::Make(shared_from_this()));
   // SnapshotManager has its own commit logic, so it is not added to the pending updates.
-  // This differs from the Java implementation.
-  return snapshot_manager;
+  return SnapshotManager::Make(shared_from_this());
 }
 
 }  // namespace iceberg
