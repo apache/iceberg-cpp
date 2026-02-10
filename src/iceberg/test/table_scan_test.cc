@@ -266,7 +266,8 @@ class TableScanTest : public testing::TestWithParam<int8_t> {
 
 TEST_P(TableScanTest, TableScanBuilderOptions) {
   // Test basic scan creation and default values
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto basic_scan, builder->Build());
   EXPECT_NE(basic_scan, nullptr);
   EXPECT_EQ(basic_scan->metadata(), table_metadata_);
@@ -279,10 +280,9 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
   auto filter = Expressions::Equal("id", Literal::Int(42));
   constexpr int64_t kMinRows = 1000;
   constexpr int64_t kSnapshotId = 1000L;
-  const std::string branch_name = "test-branch";
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder2,
-                         TableScanBuilder::Make(table_metadata_, file_io_));
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder2->Option("key1", "value1")
                                         .Option("key2", "value2")
                                         .CaseSensitive(false)
@@ -292,7 +292,6 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
                                         .IgnoreResiduals()
                                         .MinRowsRequested(kMinRows)
                                         .UseSnapshot(kSnapshotId)
-                                        .UseBranch(branch_name)
                                         .Build());
 
   // Verify all options were set correctly
@@ -313,11 +312,10 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
   EXPECT_EQ(context.min_rows_requested.value(), kMinRows);
   EXPECT_TRUE(context.snapshot_id.has_value());
   EXPECT_EQ(context.snapshot_id.value(), kSnapshotId);
-  EXPECT_EQ(context.branch, branch_name);
 
   // Test UseRef separately
   ICEBERG_UNWRAP_OR_FAIL(auto builder3,
-                         TableScanBuilder::Make(table_metadata_, file_io_));
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
   builder3->UseRef("main");
   ICEBERG_UNWRAP_OR_FAIL(auto ref_scan, builder3->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, ref_scan->snapshot());
@@ -326,26 +324,27 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
 
 TEST_P(TableScanTest, TableScanBuilderValidationErrors) {
   // Test negative min rows
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
   builder->MinRowsRequested(-1);
   EXPECT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
 
   // Test invalid snapshot ID
   ICEBERG_UNWRAP_OR_FAIL(auto builder2,
-                         TableScanBuilder::Make(table_metadata_, file_io_));
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
   builder2->UseSnapshot(9999L);
   EXPECT_THAT(builder2->Build(), IsError(ErrorKind::kValidationFailed));
 
   // Test invalid ref
   ICEBERG_UNWRAP_OR_FAIL(auto builder3,
-                         TableScanBuilder::Make(table_metadata_, file_io_));
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
   builder3->UseRef("non-existent-ref");
   EXPECT_THAT(builder3->Build(), IsError(ErrorKind::kValidationFailed));
 
   // Test null inputs
-  EXPECT_THAT(TableScanBuilder::Make(nullptr, file_io_),
+  EXPECT_THAT(DataTableScanBuilder::Make(nullptr, file_io_),
               IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(TableScanBuilder::Make(table_metadata_, nullptr),
+  EXPECT_THAT(DataTableScanBuilder::Make(table_metadata_, nullptr),
               IsError(ErrorKind::kInvalidArgument));
 }
 
@@ -360,7 +359,8 @@ TEST_P(TableScanTest, DataTableScanPlanFilesEmpty) {
                     .snapshots = {},
                     .refs = {}});
 
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(empty_metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         DataTableScanBuilder::Make(empty_metadata, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
@@ -418,7 +418,7 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
                                       })}}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifest, file_io_));
+                         DataTableScanBuilder::Make(metadata_with_manifest, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
@@ -485,7 +485,7 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
                                       })}}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifests, file_io_));
+                         DataTableScanBuilder::Make(metadata_with_manifests, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
@@ -547,7 +547,7 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
 
   // Test 1: Filter matches only data1.parquet (id=25 is in range [1, 50])
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Filter(Expressions::Equal("id", Literal::Int(25)));
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -557,7 +557,7 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
 
   // Test 2: Filter matches only data2.parquet (id=75 is in range [51, 100])
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Filter(Expressions::Equal("id", Literal::Int(75)));
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -567,7 +567,7 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
 
   // Test 3: Filter matches both files (id > 0 covers both ranges)
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Filter(Expressions::GreaterThan("id", Literal::Int(0)));
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -578,7 +578,7 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
 
   // Test 4: Filter matches no files (id=200 is outside both ranges)
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Filter(Expressions::Equal("id", Literal::Int(200)));
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -654,7 +654,7 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
                                       })}}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifests, file_io_));
+                         DataTableScanBuilder::Make(metadata_with_manifests, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
@@ -704,7 +704,7 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
 
   // Select "data" column, filter on "id" column
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Select({"data"}).Filter(Expressions::Equal("id", Literal::Int(42)));
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());
@@ -722,7 +722,7 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
 
   // Select "id" and "value", filter on "data"
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Select({"id", "value"})
         .Filter(Expressions::Equal("data", Literal::String("test")));
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
@@ -742,7 +742,7 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
 
   // Select "id", filter on "id" - should only have "id" once
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Select({"id"}).Filter(Expressions::Equal("id", Literal::Int(42)));
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());
@@ -756,7 +756,7 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
 
   // Select columns without filter
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
     builder->Select({"data"});
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());

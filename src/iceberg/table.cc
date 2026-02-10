@@ -149,8 +149,18 @@ Result<std::unique_ptr<LocationProvider>> Table::location_provider() const {
   return LocationProvider::Make(metadata_->location, metadata_->properties);
 }
 
-Result<std::unique_ptr<TableScanBuilder>> Table::NewScan() const {
-  return TableScanBuilder::Make(metadata_, io_);
+Result<std::unique_ptr<DataTableScanBuilder>> Table::NewScan() const {
+  return DataTableScanBuilder::Make(metadata_, io_);
+}
+
+Result<std::unique_ptr<IncrementalAppendScanBuilder>> Table::NewIncrementalAppendScan()
+    const {
+  return IncrementalAppendScanBuilder::Make(metadata_, io_);
+}
+
+Result<std::unique_ptr<IncrementalChangelogScanBuilder>>
+Table::NewIncrementalChangelogScan() const {
+  return IncrementalChangelogScanBuilder::Make(metadata_, io_);
 }
 
 Result<std::shared_ptr<Transaction>> Table::NewTransaction() {
@@ -247,7 +257,7 @@ Result<std::shared_ptr<StagedTable>> StagedTable::Make(
 
 StagedTable::~StagedTable() = default;
 
-Result<std::unique_ptr<TableScanBuilder>> StagedTable::NewScan() const {
+Result<std::unique_ptr<DataTableScanBuilder>> StagedTable::NewScan() const {
   return NotSupported("Cannot scan a staged table");
 }
 
