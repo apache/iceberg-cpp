@@ -178,7 +178,9 @@ RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
       name_(config_->Get(RestCatalogProperties::kName)),
       supported_endpoints_(std::move(endpoints)),
       auth_manager_(std::move(auth_manager)),
-      catalog_session_(std::move(catalog_session)) {}
+      catalog_session_(std::move(catalog_session)) {
+  ICEBERG_DCHECK(catalog_session_ != nullptr, "catalog_session must not be null");
+}
 
 std::string_view RestCatalog::name() const { return name_; }
 
