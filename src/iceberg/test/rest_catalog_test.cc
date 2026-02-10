@@ -36,6 +36,7 @@
 #include <nlohmann/json.hpp>
 #include <sys/socket.h>
 
+#include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
@@ -164,10 +165,12 @@ TEST_F(RestCatalogIntegrationTest, MakeCatalogSuccess) {
 TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
   // Create HTTP client and fetch config directly
   HttpClient client({});
+  auto noop_session = auth::AuthSession::MakeDefault({});
   std::string config_url =
       std::format("{}:{}/v1/config", kLocalhostUri, kRestCatalogPort);
 
-  auto response_result = client.Get(config_url, {}, *DefaultErrorHandler::Instance());
+  auto response_result =
+      client.Get(config_url, {}, *DefaultErrorHandler::Instance(), *noop_session);
   ASSERT_THAT(response_result, IsOk());
   auto json_result = FromJsonString(response_result->body());
   ASSERT_THAT(json_result, IsOk());

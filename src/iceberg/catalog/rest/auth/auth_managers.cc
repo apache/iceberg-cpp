@@ -80,9 +80,9 @@ class NoopAuthManager : public AuthManager {
 
 template <typename T>
 AuthManagerFactory MakeAuthFactory() {
-  return []([[maybe_unused]] std::string_view name,
-            [[maybe_unused]] const std::unordered_map<std::string, std::string>& props)
-             -> Result<std::unique_ptr<AuthManager>> { return T::Make(name, props); };
+  return
+      [](std::string_view name, const std::unordered_map<std::string, std::string>& props)
+          -> Result<std::unique_ptr<AuthManager>> { return T::Make(name, props); };
 }
 
 AuthManagerRegistry CreateDefaultRegistry() {

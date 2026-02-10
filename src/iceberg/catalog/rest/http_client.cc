@@ -147,20 +147,17 @@ HttpClient::HttpClient(std::unordered_map<std::string, std::string> default_head
 
 HttpClient::~HttpClient() = default;
 
-void HttpClient::SetAuthSession(auth::AuthSession* session) { session_ = session; }
-
-Result<std::unordered_map<std::string, std::string>> HttpClient::AuthHeaders() {
+Result<std::unordered_map<std::string, std::string>> HttpClient::AuthHeaders(
+    auth::AuthSession& session) {
   std::unordered_map<std::string, std::string> headers;
-  if (session_) {
-    ICEBERG_RETURN_UNEXPECTED(session_->Authenticate(headers));
-  }
+  ICEBERG_RETURN_UNEXPECTED(session.Authenticate(headers));
   return headers;
 }
 
 Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
-    const ErrorHandler& error_handler) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+    const ErrorHandler& error_handler, auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
   auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response =
       cpr::Get(cpr::Url{path}, GetParameters(params), final_headers, *connection_pool_);
@@ -172,8 +169,9 @@ Result<HttpResponse> HttpClient::Get(
 }
 
 Result<HttpResponse> HttpClient::Post(const std::string& path, const std::string& body,
-                                      const ErrorHandler& error_handler) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+                                      const ErrorHandler& error_handler,
+                                      auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
   auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response =
       cpr::Post(cpr::Url{path}, cpr::Body{body}, final_headers, *connection_pool_);
@@ -187,8 +185,8 @@ Result<HttpResponse> HttpClient::Post(const std::string& path, const std::string
 Result<HttpResponse> HttpClient::PostForm(
     const std::string& path,
     const std::unordered_map<std::string, std::string>& form_data,
-    const ErrorHandler& error_handler) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+    const ErrorHandler& error_handler, auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
   auto final_headers = MergeHeaders(default_headers_, auth_headers);
   final_headers.insert_or_assign(kHeaderContentType, kMimeTypeFormUrlEncoded);
   std::vector<cpr::Pair> pair_list;
@@ -207,8 +205,9 @@ Result<HttpResponse> HttpClient::PostForm(
 }
 
 Result<HttpResponse> HttpClient::Head(const std::string& path,
-                                      const ErrorHandler& error_handler) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+                                      const ErrorHandler& error_handler,
+                                      auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
   auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response = cpr::Head(cpr::Url{path}, final_headers, *connection_pool_);
 
@@ -220,8 +219,8 @@ Result<HttpResponse> HttpClient::Head(const std::string& path,
 
 Result<HttpResponse> HttpClient::Delete(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
-    const ErrorHandler& error_handler) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+    const ErrorHandler& error_handler, auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
   auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response = cpr::Delete(cpr::Url{path}, GetParameters(params),
                                        final_headers, *connection_pool_);
