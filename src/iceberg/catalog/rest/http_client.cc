@@ -22,6 +22,7 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/json_serde_internal.h"
@@ -146,11 +147,21 @@ HttpClient::HttpClient(std::unordered_map<std::string, std::string> default_head
 
 HttpClient::~HttpClient() = default;
 
+void HttpClient::SetAuthSession(auth::AuthSession* session) { session_ = session; }
+
+Result<std::unordered_map<std::string, std::string>> HttpClient::AuthHeaders() {
+  std::unordered_map<std::string, std::string> headers;
+  if (session_) {
+    ICEBERG_RETURN_UNEXPECTED(session_->Authenticate(headers));
+  }
+  return headers;
+}
+
 Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
-    const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  auto final_headers = MergeHeaders(default_headers_, headers);
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+  auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response =
       cpr::Get(cpr::Url{path}, GetParameters(params), final_headers, *connection_pool_);
 
@@ -160,11 +171,10 @@ Result<HttpResponse> HttpClient::Get(
   return http_response;
 }
 
-Result<HttpResponse> HttpClient::Post(
-    const std::string& path, const std::string& body,
-    const std::unordered_map<std::string, std::string>& headers,
-    const ErrorHandler& error_handler) {
-  auto final_headers = MergeHeaders(default_headers_, headers);
+Result<HttpResponse> HttpClient::Post(const std::string& path, const std::string& body,
+                                      const ErrorHandler& error_handler) {
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+  auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response =
       cpr::Post(cpr::Url{path}, cpr::Body{body}, final_headers, *connection_pool_);
 
@@ -177,9 +187,9 @@ Result<HttpResponse> HttpClient::Post(
 Result<HttpResponse> HttpClient::PostForm(
     const std::string& path,
     const std::unordered_map<std::string, std::string>& form_data,
-    const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  auto final_headers = MergeHeaders(default_headers_, headers);
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+  auto final_headers = MergeHeaders(default_headers_, auth_headers);
   final_headers.insert_or_assign(kHeaderContentType, kMimeTypeFormUrlEncoded);
   std::vector<cpr::Pair> pair_list;
   pair_list.reserve(form_data.size());
@@ -196,10 +206,10 @@ Result<HttpResponse> HttpClient::PostForm(
   return http_response;
 }
 
-Result<HttpResponse> HttpClient::Head(
-    const std::string& path, const std::unordered_map<std::string, std::string>& headers,
-    const ErrorHandler& error_handler) {
-  auto final_headers = MergeHeaders(default_headers_, headers);
+Result<HttpResponse> HttpClient::Head(const std::string& path,
+                                      const ErrorHandler& error_handler) {
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+  auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response = cpr::Head(cpr::Url{path}, final_headers, *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
@@ -210,9 +220,9 @@ Result<HttpResponse> HttpClient::Head(
 
 Result<HttpResponse> HttpClient::Delete(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
-    const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  auto final_headers = MergeHeaders(default_headers_, headers);
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders());
+  auto final_headers = MergeHeaders(default_headers_, auth_headers);
   cpr::Response response = cpr::Delete(cpr::Url{path}, GetParameters(params),
                                        final_headers, *connection_pool_);
 

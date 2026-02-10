@@ -33,7 +33,6 @@ namespace {
 using AuthManagerRegistry =
     std::unordered_map<std::string, AuthManagerFactory, StringHash, StringEqual>;
 
-/// \brief Known authentication types that are defined in the Iceberg spec.
 const std::unordered_set<std::string, StringHash, StringEqual>& KnownAuthTypes() {
   static const std::unordered_set<std::string, StringHash, StringEqual> kAuthTypes = {
       AuthProperties::kAuthTypeNone,
@@ -65,6 +64,12 @@ std::string InferAuthType(
 /// \brief Authentication manager that performs no authentication.
 class NoopAuthManager : public AuthManager {
  public:
+  static Result<std::unique_ptr<AuthManager>> Make(
+      [[maybe_unused]] std::string_view name,
+      [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
+    return std::make_unique<NoopAuthManager>();
+  }
+
   Result<std::shared_ptr<AuthSession>> CatalogSession(
       [[maybe_unused]] HttpClient& client,
       [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties)
@@ -73,18 +78,22 @@ class NoopAuthManager : public AuthManager {
   }
 };
 
+template <typename T>
+AuthManagerFactory MakeAuthFactory() {
+  return []([[maybe_unused]] std::string_view name,
+            [[maybe_unused]] const std::unordered_map<std::string, std::string>& props)
+             -> Result<std::unique_ptr<AuthManager>> { return T::Make(name, props); };
+}
+
+AuthManagerRegistry CreateDefaultRegistry() {
+  return {
+      {AuthProperties::kAuthTypeNone, MakeAuthFactory<NoopAuthManager>()},
+  };
+}
+
 // Get the global registry of auth manager factories.
 AuthManagerRegistry& GetRegistry() {
-  static AuthManagerRegistry registry = [] {
-    AuthManagerRegistry r;
-    r[AuthProperties::kAuthTypeNone] =
-        []([[maybe_unused]] std::string_view name,
-           [[maybe_unused]] const std::unordered_map<std::string, std::string>& props)
-        -> Result<std::unique_ptr<AuthManager>> {
-      return std::make_unique<NoopAuthManager>();
-    };
-    return r;
-  }();
+  static AuthManagerRegistry registry = CreateDefaultRegistry();
   return registry;
 }
 

@@ -111,8 +111,6 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session);
 
-  Result<std::unordered_map<std::string, std::string>> AuthHeaders() const;
-
   Result<std::string> LoadTableInternal(const TableIdentifier& identifier) const;
 
   Result<LoadTableResult> CreateTableInternal(

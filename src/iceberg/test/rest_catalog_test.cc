@@ -167,7 +167,7 @@ TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
   std::string config_url =
       std::format("{}:{}/v1/config", kLocalhostUri, kRestCatalogPort);
 
-  auto response_result = client.Get(config_url, {}, {}, *DefaultErrorHandler::Instance());
+  auto response_result = client.Get(config_url, {}, *DefaultErrorHandler::Instance());
   ASSERT_THAT(response_result, IsOk());
   auto json_result = FromJsonString(response_result->body());
   ASSERT_THAT(json_result, IsOk());
