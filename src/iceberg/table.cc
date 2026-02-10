@@ -152,6 +152,16 @@ Result<std::unique_ptr<TableScanBuilder>> Table::NewScan() const {
   return TableScanBuilder::Make(metadata_, io_);
 }
 
+Result<std::unique_ptr<IncrementalAppendScanBuilder>> Table::NewIncrementalAppendScan()
+    const {
+  return IncrementalAppendScanBuilder::Make(metadata_, io_);
+}
+
+Result<std::unique_ptr<IncrementalChangelogScanBuilder>>
+Table::NewIncrementalChangelogScan() const {
+  return IncrementalChangelogScanBuilder::Make(metadata_, io_);
+}
+
 Result<std::shared_ptr<Transaction>> Table::NewTransaction() {
   // Create a brand new transaction object for the table. Users are expected to commit the
   // transaction manually.
