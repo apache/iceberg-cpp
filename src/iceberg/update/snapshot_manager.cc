@@ -46,12 +46,14 @@ SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction)
 SnapshotManager::~SnapshotManager() = default;
 
 SnapshotManager& SnapshotManager::Cherrypick(int64_t snapshot_id) {
+  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   // TODO(anyone): Implement cherrypick operation
   ICEBERG_BUILDER_CHECK(false, "Cherrypick operation not yet implemented");
   return *this;
 }
 
 SnapshotManager& SnapshotManager::SetCurrentSnapshot(int64_t snapshot_id) {
+  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->SetCurrentSnapshot(snapshot_id);
   ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
@@ -59,6 +61,7 @@ SnapshotManager& SnapshotManager::SetCurrentSnapshot(int64_t snapshot_id) {
 }
 
 SnapshotManager& SnapshotManager::RollbackToTime(int64_t timestamp_ms) {
+  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->RollbackToTime(timestamp_ms);
   ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
@@ -66,6 +69,7 @@ SnapshotManager& SnapshotManager::RollbackToTime(int64_t timestamp_ms) {
 }
 
 SnapshotManager& SnapshotManager::RollbackTo(int64_t snapshot_id) {
+  ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->RollbackTo(snapshot_id);
   ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
@@ -168,8 +172,13 @@ SnapshotManager& SnapshotManager::SetMaxRefAgeMs(const std::string& name,
 }
 
 Status SnapshotManager::Commit() {
+  transaction_->EnableAutoCommit();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  return CommitIfRefUpdatesExist();
+  ICEBERG_RETURN_UNEXPECTED(CommitIfRefUpdatesExist());
+  if (!transaction_->is_committed()) {
+    ICEBERG_RETURN_UNEXPECTED(transaction_->Commit());
+  }
+  return {};
 }
 
 Result<std::shared_ptr<UpdateSnapshotReference>>

@@ -479,6 +479,7 @@ TEST_F(SnapshotManagerTest, CreateReferencesAndRollback) {
     ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
     ICEBERG_UNWRAP_OR_FAIL(auto manager2, reloaded->NewSnapshotManager());
     manager2->RollbackTo(oldest_snapshot_id_);
+    EXPECT_THAT(manager2->Commit(), IsOk());
   }
 
   {
@@ -501,7 +502,6 @@ TEST_F(SnapshotManagerTest, SnapshotManagerThroughTransaction) {
   ICEBERG_UNWRAP_OR_FAIL(auto manager, SnapshotManager::Make(txn));
 
   manager->RollbackTo(oldest_snapshot_id_);
-  EXPECT_THAT(manager->Commit(), IsOk());
   EXPECT_THAT(txn->Commit(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));

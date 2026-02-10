@@ -55,12 +55,21 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \return the location of the metadata file
   std::string MetadataFileLocation(std::string_view filename) const;
 
+  /// \brief Enable auto-commit for this transaction.
+  void EnableAutoCommit() { auto_commit_ = true; }
+
+  /// \brief Disable auto-commit for this transaction.
+  void DisableAutoCommit() { auto_commit_ = false; }
+
   /// \brief Apply the pending changes from all actions and commit.
   ///
   /// \return Updated table if the transaction was committed successfully, or an error:
   /// - ValidationFailed: if any update cannot be applied to the current table metadata.
   /// - CommitFailed: if the updates cannot be committed due to conflicts.
   Result<std::shared_ptr<Table>> Commit();
+
+  /// \brief Returns true if this transaction has been committed.
+  bool is_committed() const { return committed_; }
 
   /// \brief Create a new UpdatePartitionSpec to update the partition spec of this table
   /// and commit the changes.
@@ -140,7 +149,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   const Kind kind_;
   // Whether to auto-commit the transaction when updates are applied.
   // This is useful when a temporary transaction is created for a single operation.
-  const bool auto_commit_;
+  bool auto_commit_;
   // To make the state simple, we require updates are added and committed in order.
   bool last_update_committed_ = true;
   // Tracks if transaction has been committed to prevent double-commit
