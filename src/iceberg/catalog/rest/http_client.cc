@@ -68,19 +68,18 @@ namespace {
 /// \brief Default error type for unparseable REST responses.
 constexpr std::string_view kRestExceptionType = "RESTException";
 
-/// \brief Merges global default headers with request-specific headers.
-///
-/// Combines the global headers derived from RestCatalogProperties with the headers
-/// passed in the specific request. Request-specific headers have higher priority
-/// and will override global defaults if the keys conflict (e.g., overriding
-/// the default "Content-Type").
-cpr::Header MergeHeaders(const std::unordered_map<std::string, std::string>& defaults,
-                         const std::unordered_map<std::string, std::string>& overrides) {
-  cpr::Header combined_headers = {defaults.begin(), defaults.end()};
-  for (const auto& [key, val] : overrides) {
-    combined_headers.insert_or_assign(key, val);
+/// \brief Build final request headers by merging request headers, default headers, and
+/// applying authentication.
+Result<cpr::Header> BuildHeaders(
+    const std::unordered_map<std::string, std::string>& request_headers,
+    const std::unordered_map<std::string, std::string>& default_headers,
+    auth::AuthSession& session) {
+  std::unordered_map<std::string, std::string> headers(request_headers);
+  for (const auto& [key, val] : default_headers) {
+    headers.emplace(key, val);
   }
-  return combined_headers;
+  ICEBERG_RETURN_UNEXPECTED(session.Authenticate(headers));
+  return cpr::Header(headers.begin(), headers.end());
 }
 
 /// \brief Converts a map of string key-value pairs to cpr::Parameters.
@@ -147,20 +146,14 @@ HttpClient::HttpClient(std::unordered_map<std::string, std::string> default_head
 
 HttpClient::~HttpClient() = default;
 
-Result<std::unordered_map<std::string, std::string>> HttpClient::AuthHeaders(
-    auth::AuthSession& session) {
-  std::unordered_map<std::string, std::string> headers;
-  ICEBERG_RETURN_UNEXPECTED(session.Authenticate(headers));
-  return headers;
-}
-
 Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
+    const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
-  auto final_headers = MergeHeaders(default_headers_, auth_headers);
+  ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
+                          BuildHeaders(headers, default_headers_, session));
   cpr::Response response =
-      cpr::Get(cpr::Url{path}, GetParameters(params), final_headers, *connection_pool_);
+      cpr::Get(cpr::Url{path}, GetParameters(params), all_headers, *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -168,13 +161,14 @@ Result<HttpResponse> HttpClient::Get(
   return http_response;
 }
 
-Result<HttpResponse> HttpClient::Post(const std::string& path, const std::string& body,
-                                      const ErrorHandler& error_handler,
-                                      auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
-  auto final_headers = MergeHeaders(default_headers_, auth_headers);
+Result<HttpResponse> HttpClient::Post(
+    const std::string& path, const std::string& body,
+    const std::unordered_map<std::string, std::string>& headers,
+    const ErrorHandler& error_handler, auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
+                          BuildHeaders(headers, default_headers_, session));
   cpr::Response response =
-      cpr::Post(cpr::Url{path}, cpr::Body{body}, final_headers, *connection_pool_);
+      cpr::Post(cpr::Url{path}, cpr::Body{body}, all_headers, *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -185,10 +179,12 @@ Result<HttpResponse> HttpClient::Post(const std::string& path, const std::string
 Result<HttpResponse> HttpClient::PostForm(
     const std::string& path,
     const std::unordered_map<std::string, std::string>& form_data,
+    const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
-  auto final_headers = MergeHeaders(default_headers_, auth_headers);
-  final_headers.insert_or_assign(kHeaderContentType, kMimeTypeFormUrlEncoded);
+  std::unordered_map<std::string, std::string> form_headers(headers);
+  form_headers.insert_or_assign(kHeaderContentType, kMimeTypeFormUrlEncoded);
+  ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
+                          BuildHeaders(form_headers, default_headers_, session));
   std::vector<cpr::Pair> pair_list;
   pair_list.reserve(form_data.size());
   for (const auto& [key, val] : form_data) {
@@ -196,7 +192,7 @@ Result<HttpResponse> HttpClient::PostForm(
   }
   cpr::Response response =
       cpr::Post(cpr::Url{path}, cpr::Payload(pair_list.begin(), pair_list.end()),
-                final_headers, *connection_pool_);
+                all_headers, *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -204,12 +200,12 @@ Result<HttpResponse> HttpClient::PostForm(
   return http_response;
 }
 
-Result<HttpResponse> HttpClient::Head(const std::string& path,
-                                      const ErrorHandler& error_handler,
-                                      auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
-  auto final_headers = MergeHeaders(default_headers_, auth_headers);
-  cpr::Response response = cpr::Head(cpr::Url{path}, final_headers, *connection_pool_);
+Result<HttpResponse> HttpClient::Head(
+    const std::string& path, const std::unordered_map<std::string, std::string>& headers,
+    const ErrorHandler& error_handler, auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
+                          BuildHeaders(headers, default_headers_, session));
+  cpr::Response response = cpr::Head(cpr::Url{path}, all_headers, *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -219,11 +215,12 @@ Result<HttpResponse> HttpClient::Head(const std::string& path,
 
 Result<HttpResponse> HttpClient::Delete(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
+    const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_headers, AuthHeaders(session));
-  auto final_headers = MergeHeaders(default_headers_, auth_headers);
-  cpr::Response response = cpr::Delete(cpr::Url{path}, GetParameters(params),
-                                       final_headers, *connection_pool_);
+  ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
+                          BuildHeaders(headers, default_headers_, session));
+  cpr::Response response =
+      cpr::Delete(cpr::Url{path}, GetParameters(params), all_headers, *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;

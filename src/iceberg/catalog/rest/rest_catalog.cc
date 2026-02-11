@@ -74,10 +74,9 @@ Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
                                         auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto config_path, paths.Config());
   HttpClient client(current_config.ExtractHeaders());
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      const auto response,
-      client.Get(config_path, /*params=*/{}, *DefaultErrorHandler::Instance(), session));
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
+                          client.Get(config_path, /*params=*/{}, /*headers=*/{},
+                                     *DefaultErrorHandler::Instance(), session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return CatalogConfigFromJson(json);
 }
@@ -123,7 +122,6 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   std::string catalog_name = config.Get(RestCatalogProperties::kName);
   ICEBERG_ASSIGN_OR_RAISE(auto auth_manager,
                           auth::AuthManagers::Load(catalog_name, config.configs()));
-
   ICEBERG_ASSIGN_OR_RAISE(
       auto paths, ResourcePaths::Make(std::string(TrimTrailingSlash(uri)),
                                       config.Get(RestCatalogProperties::kPrefix)));
@@ -197,9 +195,10 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) 
     if (!next_token.empty()) {
       params[kQueryParamPageToken] = next_token;
     }
-    ICEBERG_ASSIGN_OR_RAISE(const auto response,
-                            client_->Get(path, params, *NamespaceErrorHandler::Instance(),
-                                         *catalog_session_));
+    ICEBERG_ASSIGN_OR_RAISE(
+        const auto response,
+        client_->Get(path, params, /*headers=*/{}, *NamespaceErrorHandler::Instance(),
+                     *catalog_session_));
     ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
     ICEBERG_ASSIGN_OR_RAISE(auto list_response, ListNamespacesResponseFromJson(json));
     result.insert(result.end(), list_response.namespaces.begin(),
@@ -216,13 +215,12 @@ Status RestCatalog::CreateNamespace(
     const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::CreateNamespace());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespaces());
-
   CreateNamespaceRequest request{.namespace_ = ns, .properties = properties};
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, *NamespaceErrorHandler::Instance(),
-                    *catalog_session_));
+      client_->Post(path, json_request, /*headers=*/{},
+                    *NamespaceErrorHandler::Instance(), *catalog_session_));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto create_response, CreateNamespaceResponseFromJson(json));
   return {};
@@ -232,11 +230,10 @@ Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespacePr
     const Namespace& ns) const {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::GetNamespaceProperties());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
-
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Get(path, /*params=*/{}, *NamespaceErrorHandler::Instance(),
-                   *catalog_session_));
+      client_->Get(path, /*params=*/{}, /*headers=*/{},
+                   *NamespaceErrorHandler::Instance(), *catalog_session_));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto get_response, GetNamespaceResponseFromJson(json));
   return get_response.properties;
@@ -245,11 +242,10 @@ Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespacePr
 Status RestCatalog::DropNamespace(const Namespace& ns) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::DropNamespace());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
-
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Delete(path, /*params=*/{}, *DropNamespaceErrorHandler::Instance(),
-                      *catalog_session_));
+      client_->Delete(path, /*params=*/{}, /*headers=*/{},
+                      *DropNamespaceErrorHandler::Instance(), *catalog_session_));
   return {};
 }
 
@@ -260,9 +256,8 @@ Result<bool> RestCatalog::NamespaceExists(const Namespace& ns) const {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
-
-  return CaptureNoSuchNamespace(
-      client_->Head(path, *NamespaceErrorHandler::Instance(), *catalog_session_));
+  return CaptureNoSuchNamespace(client_->Head(
+      path, /*headers=*/{}, *NamespaceErrorHandler::Instance(), *catalog_session_));
 }
 
 Status RestCatalog::UpdateNamespaceProperties(
@@ -270,15 +265,14 @@ Status RestCatalog::UpdateNamespaceProperties(
     const std::unordered_set<std::string>& removals) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::UpdateNamespace());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->NamespaceProperties(ns));
-
   UpdateNamespacePropertiesRequest request{
       .removals = std::vector<std::string>(removals.begin(), removals.end()),
       .updates = updates};
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, *NamespaceErrorHandler::Instance(),
-                    *catalog_session_));
+      client_->Post(path, json_request, /*headers=*/{},
+                    *NamespaceErrorHandler::Instance(), *catalog_session_));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto update_response,
                           UpdateNamespacePropertiesResponseFromJson(json));
@@ -288,7 +282,6 @@ Status RestCatalog::UpdateNamespaceProperties(
 Result<std::vector<TableIdentifier>> RestCatalog::ListTables(const Namespace& ns) const {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::ListTables());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Tables(ns));
-
   std::vector<TableIdentifier> result;
   std::string next_token;
   while (true) {
@@ -298,7 +291,8 @@ Result<std::vector<TableIdentifier>> RestCatalog::ListTables(const Namespace& ns
     }
     ICEBERG_ASSIGN_OR_RAISE(
         const auto response,
-        client_->Get(path, params, *TableErrorHandler::Instance(), *catalog_session_));
+        client_->Get(path, params, /*headers=*/{}, *TableErrorHandler::Instance(),
+                     *catalog_session_));
     ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
     ICEBERG_ASSIGN_OR_RAISE(auto list_response, ListTablesResponseFromJson(json));
     result.insert(result.end(), list_response.identifiers.begin(),
@@ -332,7 +326,7 @@ Result<LoadTableResult> RestCatalog::CreateTableInternal(
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, *TableErrorHandler::Instance(),
+      client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance(),
                     *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
@@ -371,7 +365,7 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, *TableErrorHandler::Instance(),
+      client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance(),
                     *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
@@ -408,19 +402,20 @@ Status RestCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
   }
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Delete(path, params, *TableErrorHandler::Instance(), *catalog_session_));
+      client_->Delete(path, params, /*headers=*/{}, *TableErrorHandler::Instance(),
+                      *catalog_session_));
   return {};
 }
 
 Result<bool> RestCatalog::TableExists(const TableIdentifier& identifier) const {
   if (!supported_endpoints_.contains(Endpoint::TableExists())) {
+    // Fall back to call LoadTable
     return CaptureNoSuchTable(LoadTableInternal(identifier));
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
-
-  return CaptureNoSuchTable(
-      client_->Head(path, *TableErrorHandler::Instance(), *catalog_session_));
+  return CaptureNoSuchTable(client_->Head(
+      path, /*headers=*/{}, *TableErrorHandler::Instance(), *catalog_session_));
 }
 
 Status RestCatalog::RenameTable(const TableIdentifier& from, const TableIdentifier& to) {
@@ -431,7 +426,7 @@ Status RestCatalog::RenameTable(const TableIdentifier& from, const TableIdentifi
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, *TableErrorHandler::Instance(),
+      client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance(),
                     *catalog_session_));
 
   return {};
@@ -441,10 +436,9 @@ Result<std::string> RestCatalog::LoadTableInternal(
     const TableIdentifier& identifier) const {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::LoadTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
-
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Get(path, /*params=*/{}, *TableErrorHandler::Instance(),
+      client_->Get(path, /*params=*/{}, /*headers=*/{}, *TableErrorHandler::Instance(),
                    *catalog_session_));
   return response.body();
 }
@@ -472,7 +466,7 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, *TableErrorHandler::Instance(),
+      client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance(),
                     *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
