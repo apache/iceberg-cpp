@@ -222,6 +222,10 @@ Status Transaction::ApplyUpdateSchema(UpdateSchema& update) {
   ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
   metadata_builder_->SetCurrentSchema(std::move(result.schema),
                                       result.new_last_column_id);
+  if (!result.updated_props.empty()) {
+    metadata_builder_->SetProperties(result.updated_props);
+  }
+
   return {};
 }
 

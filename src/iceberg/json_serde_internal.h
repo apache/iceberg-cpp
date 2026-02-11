@@ -19,7 +19,11 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 
 #include <nlohmann/json_fwd.hpp>
 
@@ -346,6 +350,14 @@ ICEBERG_EXPORT nlohmann::json ToJson(const NameMapping& name_mapping);
 /// \return A `NameMapping` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> NameMappingFromJson(
     const nlohmann::json& json);
+
+/// \brief Update a name mapping from its JSON string and return updated JSON.
+///
+/// Parses the JSON, calls UpdateMapping, and serializes the result.
+/// Returns nullopt if any step fails.
+ICEBERG_EXPORT std::optional<std::string> UpdateMappingFromJsonString(
+    std::string_view mapping_json, const std::map<int32_t, SchemaField>& updates,
+    const std::multimap<int32_t, int32_t>& adds);
 
 /// \brief Serializes a `TableIdentifier` object to JSON.
 ///

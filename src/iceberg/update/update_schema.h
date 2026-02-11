@@ -337,6 +337,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   struct ApplyResult {
     std::shared_ptr<Schema> schema;
     int32_t new_last_column_id;
+    std::unordered_map<std::string, std::string> updated_props;
   };
 
   /// \brief Apply the pending changes to the original schema and return the result.
