@@ -26,9 +26,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "iceberg/catalog/rest/auth/auth_manager.h"
 #include "iceberg/catalog/rest/auth/auth_managers.h"
-#include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/endpoint.h"
@@ -36,7 +34,6 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
-#include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"

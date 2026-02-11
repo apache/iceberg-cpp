@@ -68,8 +68,7 @@ namespace {
 /// \brief Default error type for unparseable REST responses.
 constexpr std::string_view kRestExceptionType = "RESTException";
 
-/// \brief Build final request headers by merging request headers, default headers, and
-/// applying authentication.
+/// \brief Prepare headers for an HTTP request.
 Result<cpr::Header> BuildHeaders(
     const std::unordered_map<std::string, std::string>& request_headers,
     const std::unordered_map<std::string, std::string>& default_headers,
