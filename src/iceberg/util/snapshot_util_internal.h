@@ -46,31 +46,19 @@ class ICEBERG_EXPORT SnapshotUtil {
 
   /// \brief Returns a vector of ancestors of the given snapshot.
   ///
+  /// \param metadata The table metadata
+  /// \param snapshot_id The snapshot ID to start from
+  /// \return A vector of ancestor snapshots
+  static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsOf(
+      const TableMetadata& metadata, int64_t snapshot_id);
+
+  /// \brief Returns a vector of ancestors of the given snapshot.
+  ///
   /// \param snapshot_id The snapshot ID to start from
   /// \param lookup A function to look up snapshots by ID
   /// \return A vector of ancestor snapshots
   static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsOf(
       int64_t snapshot_id,
-      const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup);
-
-  /// \brief Returns whether ancestor_snapshot_id is an ancestor of snapshot_id.
-  ///
-  /// \param table The table to check
-  /// \param snapshot_id The snapshot ID to check
-  /// \param ancestor_snapshot_id The ancestor snapshot ID to check for
-  /// \return true if ancestor_snapshot_id is an ancestor of snapshot_id
-  static Result<bool> IsAncestorOf(const Table& table, int64_t snapshot_id,
-                                   int64_t ancestor_snapshot_id);
-
-  /// \brief Returns whether ancestor_snapshot_id is an ancestor of snapshot_id using the
-  /// given lookup function.
-  ///
-  /// \param snapshot_id The snapshot ID to check
-  /// \param ancestor_snapshot_id The ancestor snapshot ID to check for
-  /// \param lookup Function to lookup snapshots by ID
-  /// \return true if ancestor_snapshot_id is an ancestor of snapshot_id
-  static Result<bool> IsAncestorOf(
-      int64_t snapshot_id, int64_t ancestor_snapshot_id,
       const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup);
 
   /// \brief Returns whether ancestor_snapshot_id is an ancestor of the table's current
@@ -90,6 +78,35 @@ class ICEBERG_EXPORT SnapshotUtil {
   static Result<bool> IsAncestorOf(const TableMetadata& metadata,
                                    int64_t ancestor_snapshot_id);
 
+  /// \brief Returns whether ancestor_snapshot_id is an ancestor of snapshot_id.
+  ///
+  /// \param table The table to check
+  /// \param snapshot_id The snapshot ID to check
+  /// \param ancestor_snapshot_id The ancestor snapshot ID to check for
+  /// \return true if ancestor_snapshot_id is an ancestor of snapshot_id
+  static Result<bool> IsAncestorOf(const Table& table, int64_t snapshot_id,
+                                   int64_t ancestor_snapshot_id);
+
+  /// \brief Returns whether ancestor_snapshot_id is an ancestor of snapshot_id.
+  ///
+  /// \param metadata The table metadata to check
+  /// \param snapshot_id The snapshot ID to check
+  /// \param ancestor_snapshot_id The ancestor snapshot ID to check for
+  /// \return true if ancestor_snapshot_id is an ancestor of snapshot_id
+  static Result<bool> IsAncestorOf(const TableMetadata& metadata, int64_t snapshot_id,
+                                   int64_t ancestor_snapshot_id);
+
+  /// \brief Returns whether ancestor_snapshot_id is an ancestor of snapshot_id using the
+  /// given lookup function.
+  ///
+  /// \param snapshot_id The snapshot ID to check
+  /// \param ancestor_snapshot_id The ancestor snapshot ID to check for
+  /// \param lookup Function to lookup snapshots by ID
+  /// \return true if ancestor_snapshot_id is an ancestor of snapshot_id
+  static Result<bool> IsAncestorOf(
+      int64_t snapshot_id, int64_t ancestor_snapshot_id,
+      const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup);
+
   /// \brief Returns whether some ancestor of snapshot_id has parentId matches
   /// ancestor_parent_snapshot_id.
   ///
@@ -99,6 +116,28 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \return true if any ancestor has the given parent ID
   static Result<bool> IsParentAncestorOf(const Table& table, int64_t snapshot_id,
                                          int64_t ancestor_parent_snapshot_id);
+
+  /// \brief Returns whether some ancestor of snapshot_id has parentId matches
+  /// ancestor_parent_snapshot_id.
+  ///
+  /// \param metadata The table metadata to check
+  /// \param snapshot_id The snapshot ID to check
+  /// \param ancestor_parent_snapshot_id The ancestor parent snapshot ID to check for
+  /// \return true if any ancestor has the given parent ID
+  static Result<bool> IsParentAncestorOf(const TableMetadata& metadata,
+                                         int64_t snapshot_id,
+                                         int64_t ancestor_parent_snapshot_id);
+
+  /// \brief Returns whether some ancestor of snapshot_id has parentId matches
+  /// ancestor_parent_snapshot_id.
+  ///
+  /// \param snapshot_id The snapshot ID to check
+  /// \param ancestor_parent_snapshot_id The ancestor parent snapshot ID to check for
+  /// \param lookup Function to lookup snapshots by ID
+  /// \return true if any ancestor has the given parent ID
+  static Result<bool> IsParentAncestorOf(
+      int64_t snapshot_id, int64_t ancestor_parent_snapshot_id,
+      const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup);
 
   /// \brief Returns a vector that traverses the table's snapshots from the current to the
   /// last known ancestor.
@@ -147,6 +186,19 @@ class ICEBERG_EXPORT SnapshotUtil {
   static Result<std::optional<std::shared_ptr<Snapshot>>> OldestAncestorOf(
       const Table& table, int64_t snapshot_id);
 
+  /// \brief Traverses the history and finds the oldest ancestor of the specified
+  /// snapshot.
+  ///
+  /// Oldest ancestor is defined as the ancestor snapshot whose parent is null or has been
+  /// expired. If the specified snapshot has no parent or parent has been expired, the
+  /// specified snapshot itself is returned.
+  ///
+  /// \param metadata The table metadata
+  /// \param snapshot_id The ID of the snapshot to find the oldest ancestor
+  /// \return The oldest snapshot, or nullopt if not found
+  static Result<std::optional<std::shared_ptr<Snapshot>>> OldestAncestorOf(
+      const TableMetadata& metadata, int64_t snapshot_id);
+
   /// \brief Traverses the history of the table's current snapshot, finds the oldest
   /// snapshot that was committed either at or after a given time.
   ///
@@ -190,6 +242,17 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \return A vector of ancestor snapshots between the two snapshots
   static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsBetween(
       const Table& table, int64_t latest_snapshot_id,
+      std::optional<int64_t> oldest_snapshot_id);
+
+  /// \brief Returns a vector of ancestors between two snapshots.
+  ///
+  /// \param metadata The table metadata
+  /// \param latest_snapshot_id The latest snapshot ID
+  /// \param oldest_snapshot_id The oldest snapshot ID (optional, nullopt means all
+  /// ancestors)
+  /// \return A vector of ancestor snapshots between the two snapshots
+  static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsBetween(
+      const TableMetadata& metadata, int64_t latest_snapshot_id,
       std::optional<int64_t> oldest_snapshot_id);
 
   /// \brief Traverses the history of the table's current snapshot and finds the snapshot
@@ -317,11 +380,11 @@ class ICEBERG_EXPORT SnapshotUtil {
  private:
   /// \brief Helper function to traverse ancestors of a snapshot.
   ///
-  /// \param table The table
+  /// \param metadata The table metadata
   /// \param snapshot The snapshot to start from
   /// \return A vector of ancestor snapshots
   static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsOf(
-      const Table& table, const std::shared_ptr<Snapshot>& snapshot);
+      const TableMetadata& metadata, const std::shared_ptr<Snapshot>& snapshot);
 
   /// \brief Helper function to traverse ancestors of a snapshot using a lookup function.
   ///
