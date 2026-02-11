@@ -279,7 +279,6 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
   auto filter = Expressions::Equal("id", Literal::Int(42));
   constexpr int64_t kMinRows = 1000;
   constexpr int64_t kSnapshotId = 1000L;
-  const std::string branch_name = "test-branch";
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder2,
                          TableScanBuilder::Make(table_metadata_, file_io_));
@@ -292,7 +291,6 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
                                         .IgnoreResiduals()
                                         .MinRowsRequested(kMinRows)
                                         .UseSnapshot(kSnapshotId)
-                                        .UseBranch(branch_name)
                                         .Build());
 
   // Verify all options were set correctly
@@ -313,7 +311,6 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
   EXPECT_EQ(context.min_rows_requested.value(), kMinRows);
   EXPECT_TRUE(context.snapshot_id.has_value());
   EXPECT_EQ(context.snapshot_id.value(), kSnapshotId);
-  EXPECT_EQ(context.branch, branch_name);
 
   // Test UseRef separately
   ICEBERG_UNWRAP_OR_FAIL(auto builder3,

@@ -140,8 +140,13 @@ class ResidualEvaluator;
 class StrictMetricsEvaluator;
 
 /// \brief Scan.
+class ChangelogScanTask;
 class DataTableScan;
 class FileScanTask;
+class IncrementalAppendScan;
+class IncrementalChangelogScan;
+template <typename ScanType>
+class IncrementalScanBuilder;
 class ScanTask;
 class TableScan;
 class TableScanBuilder;

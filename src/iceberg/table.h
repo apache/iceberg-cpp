@@ -129,6 +129,14 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// filter data.
   virtual Result<std::unique_ptr<TableScanBuilder>> NewScan() const;
 
+  /// \brief Create a new incremental append scan builder for this table
+  virtual Result<std::unique_ptr<IncrementalScanBuilder<IncrementalAppendScan>>>
+  NewIncrementalAppendScan() const;
+
+  /// \brief Create a new incremental changelog scan builder for this table
+  virtual Result<std::unique_ptr<IncrementalScanBuilder<IncrementalChangelogScan>>>
+  NewIncrementalChangelogScan() const;
+
   /// \brief Create a new Transaction to commit multiple table operations at once.
   virtual Result<std::shared_ptr<Transaction>> NewTransaction();
 

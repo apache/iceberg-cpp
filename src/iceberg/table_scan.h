@@ -39,6 +39,7 @@ class ICEBERG_EXPORT ScanTask {
  public:
   enum class Kind : uint8_t {
     kFileScanTask,
+    kChangelogScanTask,
   };
 
   /// \brief The kind of scan task.
@@ -98,6 +99,16 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   std::shared_ptr<DataFile> data_file_;
   std::vector<std::shared_ptr<DataFile>> delete_files_;
   std::shared_ptr<Expression> residual_filter_;
+};
+
+/// \brief A scan task for reading changelog entries between snapshots.
+class ICEBERG_EXPORT ChangelogScanTask : public ScanTask {
+ public:
+  Kind kind() const override { return Kind::kChangelogScanTask; }
+  // TODO(): Return actual values once member fields are implemented
+  int64_t size_bytes() const override { return 0; }
+  int32_t files_count() const override { return 0; }
+  int64_t estimated_row_count() const override { return 0; }
 };
 
 namespace internal {
@@ -204,62 +215,15 @@ class ICEBERG_EXPORT TableScanBuilder : public ErrorCollector {
   /// travel is attempted on a tag
   TableScanBuilder& AsOfTime(int64_t timestamp_millis);
 
-  /// \brief Instructs this scan to look for changes starting from a particular snapshot.
-  ///
-  /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
-  /// end snapshot (inclusive).
-  ///
-  /// \param from_snapshot_id the start snapshot ID
-  /// \param inclusive whether the start snapshot is inclusive, default is false
-  /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
-  /// the end snapshot
-  TableScanBuilder& FromSnapshot(int64_t from_snapshot_id, bool inclusive = false);
-
-  /// \brief Instructs this scan to look for changes starting from a particular snapshot.
-  ///
-  /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
-  /// end snapshot (inclusive).
-  ///
-  /// \param ref the start ref name that points to a particular snapshot ID
-  /// \param inclusive whether the start snapshot is inclusive, default is false
-  /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
-  /// the end snapshot
-  TableScanBuilder& FromSnapshot(const std::string& ref, bool inclusive = false);
-
-  /// \brief Instructs this scan to look for changes up to a particular snapshot
-  /// (inclusive).
-  ///
-  /// If the end snapshot is not configured, it defaults to the current table snapshot
-  /// (inclusive).
-  ///
-  /// \param to_snapshot_id the end snapshot ID (inclusive)
-  TableScanBuilder& ToSnapshot(int64_t to_snapshot_id);
-
-  /// \brief Instructs this scan to look for changes up to a particular snapshot ref
-  /// (inclusive).
-  ///
-  /// If the end snapshot is not configured, it defaults to the current table snapshot
-  /// (inclusive).
-  ///
-  /// \param ref the end snapshot Ref (inclusive)
-  TableScanBuilder& ToSnapshot(const std::string& ref);
-
-  /// \brief Use the specified branch
-  /// \param branch the branch name
-  TableScanBuilder& UseBranch(const std::string& branch);
-
   /// \brief Builds and returns a TableScan instance.
   /// \return A Result containing the TableScan or an error.
-  Result<std::unique_ptr<TableScan>> Build();
+  Result<std::unique_ptr<DataTableScan>> Build();
 
- private:
+ protected:
   TableScanBuilder(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io);
 
   // Return the schema bound to the specified snapshot.
   Result<std::reference_wrapper<const std::shared_ptr<Schema>>> ResolveSnapshotSchema();
-
-  // Return whether current configuration indicates an incremental scan mode.
-  bool IsIncrementalScan() const;
 
   std::shared_ptr<TableMetadata> metadata_;
   std::shared_ptr<FileIO> io_;
@@ -293,10 +257,6 @@ class ICEBERG_EXPORT TableScan {
   /// \brief Returns whether this scan is case-sensitive.
   bool is_case_sensitive() const;
 
-  /// \brief Plans the scan tasks by resolving manifests and data files.
-  /// \return A Result containing scan tasks or an error.
-  virtual Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const = 0;
-
  protected:
   TableScan(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
             std::shared_ptr<FileIO> io, internal::TableScanContext context);
@@ -316,6 +276,8 @@ class ICEBERG_EXPORT TableScan {
 /// \brief A scan that reads data files and applies delete files to filter rows.
 class ICEBERG_EXPORT DataTableScan : public TableScan {
  public:
+  ~DataTableScan() override = default;
+
   /// \brief Constructs a DataTableScan instance.
   static Result<std::unique_ptr<DataTableScan>> Make(
       std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
@@ -323,11 +285,133 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
 
  protected:
-  DataTableScan(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
-                std::shared_ptr<FileIO> io, internal::TableScanContext context);
+  using TableScan::TableScan;
+};
+
+/// \brief Base class for incremental scan builders with common functionality.
+class ICEBERG_EXPORT BaseIncrementalScanBuilder : public TableScanBuilder {
+ public:
+  /// \brief Instructs this scan to look for changes starting from a particular snapshot.
+  ///
+  /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
+  /// end snapshot (inclusive).
+  ///
+  /// \param from_snapshot_id the start snapshot ID
+  /// \param inclusive whether the start snapshot is inclusive, default is false
+  /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
+  /// the end snapshot
+  BaseIncrementalScanBuilder& FromSnapshot(int64_t from_snapshot_id,
+                                           bool inclusive = false);
+
+  /// \brief Instructs this scan to look for changes starting from a particular snapshot.
+  ///
+  /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
+  /// end snapshot (inclusive).
+  ///
+  /// \param ref the start ref name that points to a particular snapshot ID
+  /// \param inclusive whether the start snapshot is inclusive, default is false
+  /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
+  /// the end snapshot
+  BaseIncrementalScanBuilder& FromSnapshot(const std::string& ref,
+                                           bool inclusive = false);
+
+  /// \brief Instructs this scan to look for changes up to a particular snapshot
+  /// (inclusive).
+  ///
+  /// If the end snapshot is not configured, it defaults to the current table snapshot
+  /// (inclusive).
+  ///
+  /// \param to_snapshot_id the end snapshot ID (inclusive)
+  BaseIncrementalScanBuilder& ToSnapshot(int64_t to_snapshot_id);
+
+  /// \brief Instructs this scan to look for changes up to a particular snapshot ref
+  /// (inclusive).
+  ///
+  /// If the end snapshot is not configured, it defaults to the current table snapshot
+  /// (inclusive).
+  ///
+  /// \param ref the end snapshot Ref (inclusive)
+  BaseIncrementalScanBuilder& ToSnapshot(const std::string& ref);
+
+  /// \brief Use the specified branch
+  /// \param branch the branch name
+  BaseIncrementalScanBuilder& UseBranch(const std::string& branch);
+
+ protected:
+  using TableScanBuilder::TableScanBuilder;
+};
+
+/// \brief Builder class for creating incremental scans that read changes between
+/// snapshots.
+template <typename ScanType>
+class ICEBERG_EXPORT IncrementalScanBuilder : public BaseIncrementalScanBuilder {
+ public:
+  static Result<std::unique_ptr<IncrementalScanBuilder<ScanType>>> Make(
+      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io);
+
+  Result<std::unique_ptr<ScanType>> Build();
+
+ protected:
+  using BaseIncrementalScanBuilder::BaseIncrementalScanBuilder;
+};
+
+/// \brief A base template class for incremental scans that read changes between
+/// snapshots, and return scan tasks of the specified type.
+template <typename ScanTaskType>
+class ICEBERG_EXPORT IncrementalScan : public TableScan {
+ public:
+  ~IncrementalScan() override = default;
+
+  /// \brief Plans the scan tasks by resolving manifests and data files.
+  /// \return A Result containing scan tasks or an error.
+  Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles() const;
+
+ protected:
+  virtual Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles(
+      std::optional<int64_t> from_snapshot_id_exclusive,
+      int64_t to_snapshot_id_inclusive) const = 0;
+
+  using TableScan::TableScan;
+};
+
+/// \brief A scan that reads data files added between snapshots (incremental appends).
+class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask> {
+ public:
+  /// \brief Constructs an IncrementalAppendScan instance.
+  static Result<std::unique_ptr<IncrementalAppendScan>> Make(
+      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
+      std::shared_ptr<FileIO> io, internal::TableScanContext context);
+
+  ~IncrementalAppendScan() override = default;
+
+ protected:
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles(
+      std::optional<int64_t> from_snapshot_id_exclusive,
+      int64_t to_snapshot_id_inclusive) const override;
+
+  using IncrementalScan::IncrementalScan;
+};
+
+/// \brief A scan that reads changelog entries between snapshots.
+class ICEBERG_EXPORT IncrementalChangelogScan
+    : public IncrementalScan<ChangelogScanTask> {
+ public:
+  /// \brief Constructs an IncrementalChangelogScan instance.
+  static Result<std::unique_ptr<IncrementalChangelogScan>> Make(
+      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
+      std::shared_ptr<FileIO> io, internal::TableScanContext context);
+
+  ~IncrementalChangelogScan() override = default;
+
+ protected:
+  Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanFiles(
+      std::optional<int64_t> from_snapshot_id_exclusive,
+      int64_t to_snapshot_id_inclusive) const override;
+
+  using IncrementalScan::IncrementalScan;
 };
 
 }  // namespace iceberg
