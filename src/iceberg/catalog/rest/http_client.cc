@@ -73,8 +73,8 @@ Result<cpr::Header> BuildHeaders(
     const std::unordered_map<std::string, std::string>& request_headers,
     const std::unordered_map<std::string, std::string>& default_headers,
     auth::AuthSession& session) {
-  std::unordered_map<std::string, std::string> headers(request_headers);
-  for (const auto& [key, val] : default_headers) {
+  std::unordered_map<std::string, std::string> headers(default_headers);
+  for (const auto& [key, val] : request_headers) {
     headers.emplace(key, val);
   }
   ICEBERG_RETURN_UNEXPECTED(session.Authenticate(headers));
