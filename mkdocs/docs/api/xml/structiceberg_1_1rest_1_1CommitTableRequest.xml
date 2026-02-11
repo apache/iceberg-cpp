@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1CommitTableRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::CommitTableRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CommitTableRequest_1acf56b6176382ee9c66a6068418d7f3bb" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref></type>
+        <definition>TableIdentifier iceberg::rest::CommitTableRequest::identifier</definition>
+        <argsstring></argsstring>
+        <name>identifier</name>
+        <qualifiedname>iceberg::rest::CommitTableRequest::identifier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="252" column="19" bodyfile="iceberg/catalog/rest/types.h" bodystart="252" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CommitTableRequest_1a4b41f545c6dcc83a6147ec1d80d80c51" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;TableRequirement&gt; &gt; iceberg::rest::CommitTableRequest::requirements</definition>
+        <argsstring></argsstring>
+        <name>requirements</name>
+        <qualifiedname>iceberg::rest::CommitTableRequest::requirements</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="253" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="253" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CommitTableRequest_1a3a51767ec47d35ffc1213916d4b0a666" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;TableUpdate&gt; &gt; iceberg::rest::CommitTableRequest::updates</definition>
+        <argsstring></argsstring>
+        <name>updates</name>
+        <qualifiedname>iceberg::rest::CommitTableRequest::updates</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="254" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="254" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1CommitTableRequest_1a737b9b2627d1745f2e91159aaf23656c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::CommitTableRequest::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::CommitTableRequest::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1CommitTableRequest" kindref="compound">CommitTableRequest</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="257" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="257" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1CommitTableRequest_1ae4b695aa1fde4409a48f463d4b789a95" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::CommitTableRequest::operator==</definition>
+        <argsstring>(const CommitTableRequest &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::CommitTableRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1CommitTableRequest" kindref="compound">CommitTableRequest</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="259" column="8" bodyfile="iceberg/catalog/rest/types.cc" bodystart="74" bodyend="104"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Request to commit changes to a table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TableIdentifier</label>
+        <link refid="structiceberg_1_1TableIdentifier"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="12">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::CommitTableRequest</label>
+        <link refid="structiceberg_1_1rest_1_1CommitTableRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>identifier</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>requirements</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>updates</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::TableRequirement &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::shared_ptr&lt; iceberg::TableUpdate &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::TableRequirement &gt; &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::TableUpdate &gt; &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="251" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="251" bodyend="260"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1CommitTableRequest_1acf56b6176382ee9c66a6068418d7f3bb" prot="public" virt="non-virtual"><scope>iceberg::rest::CommitTableRequest</scope><name>identifier</name></member>
+      <member refid="structiceberg_1_1rest_1_1CommitTableRequest_1ae4b695aa1fde4409a48f463d4b789a95" prot="public" virt="non-virtual"><scope>iceberg::rest::CommitTableRequest</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1CommitTableRequest_1a4b41f545c6dcc83a6147ec1d80d80c51" prot="public" virt="non-virtual"><scope>iceberg::rest::CommitTableRequest</scope><name>requirements</name></member>
+      <member refid="structiceberg_1_1rest_1_1CommitTableRequest_1a3a51767ec47d35ffc1213916d4b0a666" prot="public" virt="non-virtual"><scope>iceberg::rest::CommitTableRequest</scope><name>updates</name></member>
+      <member refid="structiceberg_1_1rest_1_1CommitTableRequest_1a737b9b2627d1745f2e91159aaf23656c" prot="public" virt="non-virtual"><scope>iceberg::rest::CommitTableRequest</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

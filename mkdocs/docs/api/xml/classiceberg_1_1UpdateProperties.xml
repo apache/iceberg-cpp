@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1UpdateProperties" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::UpdateProperties</compoundname>
+    <basecompoundref refid="classiceberg_1_1PendingUpdate" prot="public" virt="non-virtual">iceberg::PendingUpdate</basecompoundref>
+    <includes refid="update__properties_8h" local="no">update_properties.h</includes>
+    <innerclass refid="structiceberg_1_1UpdateProperties_1_1ApplyResult" prot="public">iceberg::UpdateProperties::ApplyResult</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1UpdateProperties_1a5fbd948f3bbc618101dc9f1af974f16c" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::UpdateProperties::updates_</definition>
+        <argsstring></argsstring>
+        <name>updates_</name>
+        <qualifiedname>iceberg::UpdateProperties::updates_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="76" column="22" bodyfile="iceberg/update/update_properties.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdateProperties_1a212a7973c8bf67e700a027be55655b21" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; std::string &gt;</type>
+        <definition>std::unordered_set&lt;std::string&gt; iceberg::UpdateProperties::removals_</definition>
+        <argsstring></argsstring>
+        <name>removals_</name>
+        <qualifiedname>iceberg::UpdateProperties::removals_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="77" column="22" bodyfile="iceberg/update/update_properties.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdateProperties_1a3da8c50ba3acaa266ee9278e07825e80" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int8_t &gt;</type>
+        <definition>std::optional&lt;int8_t&gt; iceberg::UpdateProperties::format_version_</definition>
+        <argsstring></argsstring>
+        <name>format_version_</name>
+        <qualifiedname>iceberg::UpdateProperties::format_version_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="78" column="17" bodyfile="iceberg/update/update_properties.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdateProperties_1a43b0988239f1e5c1224eecead1b9e8d5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1UpdateProperties" kindref="compound">UpdateProperties</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; UpdateProperties &gt; &gt; iceberg::UpdateProperties::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::UpdateProperties::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="41" column="17" bodyfile="iceberg/update/update_properties.cc" bodystart="36" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdateProperties_1af7e06710a6a2338ee557d8abf03d1ac1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::UpdateProperties::~UpdateProperties</definition>
+        <argsstring>() override</argsstring>
+        <name>~UpdateProperties</name>
+        <qualifiedname>iceberg::UpdateProperties::~UpdateProperties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="44" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateProperties_1a4dd13166c109f7a746abd2a67103982c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdateProperties" kindref="compound">UpdateProperties</ref> &amp;</type>
+        <definition>UpdateProperties &amp; iceberg::UpdateProperties::Set</definition>
+        <argsstring>(const std::string &amp;key, const std::string &amp;value)</argsstring>
+        <name>Set</name>
+        <qualifiedname>iceberg::UpdateProperties::Set</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Sets a property key to a specified value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The key must not have been previously marked for removal and reserved property keys will be ignored.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property key to set </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property value to set </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this <ref refid="classiceberg_1_1UpdateProperties" kindref="compound">UpdateProperties</ref> for chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="60" column="20" bodyfile="iceberg/update/update_properties.cc" bodystart="48" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateProperties_1a8c0477f16b74e340c2d2518e8c130cf2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdateProperties" kindref="compound">UpdateProperties</ref> &amp;</type>
+        <definition>UpdateProperties &amp; iceberg::UpdateProperties::Remove</definition>
+        <argsstring>(const std::string &amp;key)</argsstring>
+        <name>Remove</name>
+        <qualifiedname>iceberg::UpdateProperties::Remove</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Marks a property for removal. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property key to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this <ref refid="classiceberg_1_1UpdateProperties" kindref="compound">UpdateProperties</ref> for chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="66" column="20" bodyfile="iceberg/update/update_properties.cc" bodystart="62" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateProperties_1ad4a7eac6a75b0a950c41bb18eda1eab5" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::UpdateProperties::kind</definition>
+        <argsstring>() const final</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::UpdateProperties::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdate_1a33fba65ffa4a85fd7c5b9984cb892812">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this pending update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="68" column="8" bodyfile="iceberg/update/update_properties.h" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateProperties_1a147a9dd350902f0e83923ccda08274d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1UpdateProperties_1_1ApplyResult" kindref="compound">ApplyResult</ref> &gt;</type>
+        <definition>Result&lt; UpdateProperties::ApplyResult &gt; iceberg::UpdateProperties::Apply</definition>
+        <argsstring>()</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::UpdateProperties::Apply</qualifiedname>
+        <briefdescription>
+<para>Apply the pending changes and return the updates and removals. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="71" column="10" bodyfile="iceberg/update/update_properties.cc" bodystart="70" bodyend="106"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdateProperties_1a693b7adbbac774eb5e445a94be1489da" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::UpdateProperties::UpdateProperties</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>UpdateProperties</name>
+        <qualifiedname>iceberg::UpdateProperties::UpdateProperties</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="74" column="12" bodyfile="iceberg/update/update_properties.cc" bodystart="43" bodyend="44"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Updates table properties. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdateProperties</label>
+        <link refid="classiceberg_1_1UpdateProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>transaction_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Transaction</label>
+        <link refid="classiceberg_1_1Transaction"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdateProperties</label>
+        <link refid="classiceberg_1_1UpdateProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Transaction &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::enable_shared_from_this&lt; Transaction &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_properties.h" line="39" column="1" bodyfile="iceberg/update/update_properties.h" bodystart="39" bodyend="79"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a147a9dd350902f0e83923ccda08274d6" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a93721051561748b1a29e75b7d4cbbd86" prot="protected" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>base</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a4a5df6d83b7a4a3c4dac19a77945be71" prot="public" virt="virtual"><scope>iceberg::UpdateProperties</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a22441dbf2867204cb175300075e50db9" prot="public" virt="virtual"><scope>iceberg::UpdateProperties</scope><name>Finalize</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a3da8c50ba3acaa266ee9278e07825e80" prot="private" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>format_version_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a5bac3f32c6a0790ba222399fed5c1944" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1ad4a7eac6a75b0a950c41bb18eda1eab5" prot="public" virt="virtual"><scope>iceberg::UpdateProperties</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a43b0988239f1e5c1224eecead1b9e8d5" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::UpdateProperties</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::UpdateProperties</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ab758ff7780442894f3fb0a80d0db064f" prot="protected" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a212a7973c8bf67e700a027be55655b21" prot="private" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>removals_</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a8c0477f16b74e340c2d2518e8c130cf2" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>Remove</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a4dd13166c109f7a746abd2a67103982c" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac57921ff326abc60b8d9558aa7046d10" prot="protected" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>transaction_</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a693b7adbbac774eb5e445a94be1489da" prot="private" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>UpdateProperties</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1a5fbd948f3bbc618101dc9f1af974f16c" prot="private" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>updates_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::UpdateProperties</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ace0dfef0058a64109f51e2638429a9f2" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1UpdateProperties_1af7e06710a6a2338ee557d8abf03d1ac1" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties</scope><name>~UpdateProperties</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

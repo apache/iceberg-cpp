@@ -1,0 +1,1411 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotUtil</compoundname>
+    <includes refid="snapshot__util__internal_8h" local="no">snapshot_util_internal.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a47a80cda09e68bab18d4e82f26da06e6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::AncestorsOf</definition>
+        <argsstring>(const Table &amp;table, int64_t snapshot_id)</argsstring>
+        <name>AncestorsOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::AncestorsOf</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector of ancestors of the given snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID to start from </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of ancestor snapshots </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="44" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="42" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1ac6e5364b6109d40089fcec830b90d270" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::AncestorsOf</definition>
+        <argsstring>(int64_t snapshot_id, const std::function&lt; Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt;(int64_t)&gt; &amp;lookup)</argsstring>
+        <name>AncestorsOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::AncestorsOf</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>const std::function&lt; Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;(int64_t)&gt; &amp;</type>
+          <declname>lookup</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector of ancestors of the given snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID to start from </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lookup</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A function to look up snapshots by ID </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of ancestor snapshots </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="52" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="49" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1ae3da0853e68da0249df527b8ccd5ca97" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::SnapshotUtil::IsAncestorOf</definition>
+        <argsstring>(const Table &amp;table, int64_t snapshot_id, int64_t ancestor_snapshot_id)</argsstring>
+        <name>IsAncestorOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::IsAncestorOf</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>ancestor_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether ancestor_snapshot_id is an ancestor of snapshot_id. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ancestor_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ancestor snapshot ID to check for </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if ancestor_snapshot_id is an ancestor of snapshot_id </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="62" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="57" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a82eb77fad1c18d03682a059fad5f595d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::SnapshotUtil::IsAncestorOf</definition>
+        <argsstring>(int64_t snapshot_id, int64_t ancestor_snapshot_id, const std::function&lt; Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt;(int64_t)&gt; &amp;lookup)</argsstring>
+        <name>IsAncestorOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::IsAncestorOf</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>ancestor_snapshot_id</declname>
+        </param>
+        <param>
+          <type>const std::function&lt; Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;(int64_t)&gt; &amp;</type>
+          <declname>lookup</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether ancestor_snapshot_id is an ancestor of snapshot_id using the given lookup function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ancestor_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ancestor snapshot ID to check for </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lookup</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function to lookup snapshots by ID </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if ancestor_snapshot_id is an ancestor of snapshot_id </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="72" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="65" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1ab2e84754b2696638864856fef240dabf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::SnapshotUtil::IsAncestorOf</definition>
+        <argsstring>(const Table &amp;table, int64_t ancestor_snapshot_id)</argsstring>
+        <name>IsAncestorOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::IsAncestorOf</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>ancestor_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether ancestor_snapshot_id is an ancestor of the table&apos;s current state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ancestor_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ancestor snapshot ID to check for </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if ancestor_snapshot_id is an ancestor of the current snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="82" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="76" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a42b5e0916dd5156dd6db8048b6be968c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::SnapshotUtil::IsAncestorOf</definition>
+        <argsstring>(const TableMetadata &amp;metadata, int64_t ancestor_snapshot_id)</argsstring>
+        <name>IsAncestorOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::IsAncestorOf</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>ancestor_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether ancestor_snapshot_id is an ancestor of the metadata&apos;s current state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ancestor_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ancestor snapshot ID to check for </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if ancestor_snapshot_id is an ancestor of the current snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="90" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="83" bodyend="97"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a0e4a09b5d021e344153b01e297c588c4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::SnapshotUtil::IsParentAncestorOf</definition>
+        <argsstring>(const Table &amp;table, int64_t snapshot_id, int64_t ancestor_parent_snapshot_id)</argsstring>
+        <name>IsParentAncestorOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::IsParentAncestorOf</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>ancestor_parent_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether some ancestor of snapshot_id has parentId matches ancestor_parent_snapshot_id. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID to check </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ancestor_parent_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ancestor parent snapshot ID to check for </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if any ancestor has the given parent ID </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="100" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="99" bodyend="107"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a41179cda4c4d05fdeea7477154414d4f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::CurrentAncestors</definition>
+        <argsstring>(const Table &amp;table)</argsstring>
+        <name>CurrentAncestors</name>
+        <qualifiedname>iceberg::SnapshotUtil::CurrentAncestors</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector that traverses the table&apos;s snapshots from the current to the last known ancestor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector from the table&apos;s current snapshot to its last known ancestor </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="108" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="109" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a9abcf0c2b304b523ee19184d147efbfc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::CurrentAncestors</definition>
+        <argsstring>(const TableMetadata &amp;metadata)</argsstring>
+        <name>CurrentAncestors</name>
+        <qualifiedname>iceberg::SnapshotUtil::CurrentAncestors</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector that traverses the metadata&apos;s snapshots from the current to the last known ancestor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector from the metadata&apos;s current snapshot to its last known ancestor </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="116" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="115" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1addfcd80a9c8bac56fc16bd31d18699b2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; int64_t &gt; &gt; iceberg::SnapshotUtil::CurrentAncestorIds</definition>
+        <argsstring>(const Table &amp;table)</argsstring>
+        <name>CurrentAncestorIds</name>
+        <qualifiedname>iceberg::SnapshotUtil::CurrentAncestorIds</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+<para>Returns the snapshot IDs for the ancestors of the current table state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Ancestor IDs are ordered by commit time, descending. The first ID is the current snapshot, followed by its parent, and so on.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of snapshot IDs of the known ancestor snapshots, including the current ID </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="127" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="125" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a1d97496b576b9a8f751a7ce0fd03ce50" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::OldestAncestor</definition>
+        <argsstring>(const Table &amp;table)</argsstring>
+        <name>OldestAncestor</name>
+        <qualifiedname>iceberg::SnapshotUtil::OldestAncestor</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+<para>Traverses the history of the table&apos;s current snapshot and finds the oldest <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The oldest snapshot, or nullopt if there is no current snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="134" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="129" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a6b0ca8ec32e07e44f77400b8ebc4e97e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::OldestAncestorOf</definition>
+        <argsstring>(const Table &amp;table, int64_t snapshot_id)</argsstring>
+        <name>OldestAncestorOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::OldestAncestorOf</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Traverses the history and finds the oldest ancestor of the specified snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Oldest ancestor is defined as the ancestor snapshot whose parent is null or has been expired. If the specified snapshot has no parent or parent has been expired, the specified snapshot itself is returned.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the snapshot to find the oldest ancestor </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The oldest snapshot, or nullopt if not found </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="147" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="138" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1adff1d9a01a59c7986e8b084be5db5202" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::OldestAncestorAfter</definition>
+        <argsstring>(const Table &amp;table, TimePointMs timestamp_ms)</argsstring>
+        <name>OldestAncestorAfter</name>
+        <qualifiedname>iceberg::SnapshotUtil::OldestAncestorAfter</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>TimePointMs</type>
+          <declname>timestamp_ms</declname>
+        </param>
+        <briefdescription>
+<para>Traverses the history of the table&apos;s current snapshot, finds the oldest snapshot that was committed either at or after a given time. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timestamp_ms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A timestamp in milliseconds </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The first snapshot after the given timestamp, or nullopt if the current snapshot is older than the timestamp. If the first ancestor after the given time can&apos;t be determined, returns a NotFound error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="158" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="147" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a6f041304078006352f813ac95fa4f439" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; int64_t &gt; &gt; iceberg::SnapshotUtil::SnapshotIdsBetween</definition>
+        <argsstring>(const Table &amp;table, int64_t from_snapshot_id, int64_t to_snapshot_id)</argsstring>
+        <name>SnapshotIdsBetween</name>
+        <qualifiedname>iceberg::SnapshotUtil::SnapshotIdsBetween</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>from_snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>to_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns list of snapshot ids in the range (from_snapshot_id,to_snapshot_id]. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method assumes that from_snapshot_id is an ancestor of to_snapshot_id.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>from_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The starting snapshot ID (exclusive) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>to_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ending snapshot ID (inclusive) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of snapshot IDs in the range </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="169" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="175" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a0a719ccd3dc805f3bfe7ae57da9c310f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; int64_t &gt; &gt; iceberg::SnapshotUtil::AncestorIdsBetween</definition>
+        <argsstring>(const Table &amp;table, int64_t latest_snapshot_id, const std::optional&lt; int64_t &gt; &amp;oldest_snapshot_id)</argsstring>
+        <name>AncestorIdsBetween</name>
+        <qualifiedname>iceberg::SnapshotUtil::AncestorIdsBetween</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>latest_snapshot_id</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; int64_t &gt; &amp;</type>
+          <declname>oldest_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector of ancestor IDs between two snapshots. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>latest_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The latest snapshot ID </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>oldest_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The oldest snapshot ID (optional, nullopt means all ancestors) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of snapshot IDs between the two snapshots </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="180" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="194" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a2a564ad9949633d28fe7d865abd6c156" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::AncestorsBetween</definition>
+        <argsstring>(const Table &amp;table, int64_t latest_snapshot_id, std::optional&lt; int64_t &gt; oldest_snapshot_id)</argsstring>
+        <name>AncestorsBetween</name>
+        <qualifiedname>iceberg::SnapshotUtil::AncestorsBetween</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>latest_snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>oldest_snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns a vector of ancestors between two snapshots. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>latest_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The latest snapshot ID </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>oldest_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The oldest snapshot ID (optional, nullopt means all ancestors) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of ancestor snapshots between the two snapshots </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="191" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="200" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a6278cae4c638bf1d629908f7660b1ad3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt; iceberg::SnapshotUtil::SnapshotAfter</definition>
+        <argsstring>(const Table &amp;table, int64_t snapshot_id)</argsstring>
+        <name>SnapshotAfter</name>
+        <qualifiedname>iceberg::SnapshotUtil::SnapshotAfter</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Traverses the history of the table&apos;s current snapshot and finds the snapshot with the given snapshot id as its parent. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The parent snapshot ID </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The snapshot for which the given snapshot is the parent </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="201" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="258" bodyend="274"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a2bb29f1036e7618b64149270df0349d5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::SnapshotUtil::SnapshotIdAsOfTime</definition>
+        <argsstring>(const Table &amp;table, TimePointMs timestamp_ms)</argsstring>
+        <name>SnapshotIdAsOfTime</name>
+        <qualifiedname>iceberg::SnapshotUtil::SnapshotIdAsOfTime</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>TimePointMs</type>
+          <declname>timestamp_ms</declname>
+        </param>
+        <briefdescription>
+<para>Returns the ID of the most recent snapshot for the table as of the timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timestamp_ms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp in millis since the Unix epoch </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The snapshot ID </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="209" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="291" bodyend="295"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1aebf1f0553d8bb18fc569272b843b08c0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::SnapshotUtil::SnapshotIdAsOfTime</definition>
+        <argsstring>(const TableMetadata &amp;metadata, TimePointMs timestamp_ms)</argsstring>
+        <name>SnapshotIdAsOfTime</name>
+        <qualifiedname>iceberg::SnapshotUtil::SnapshotIdAsOfTime</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>TimePointMs</type>
+          <declname>timestamp_ms</declname>
+        </param>
+        <briefdescription>
+<para>Returns the ID of the most recent snapshot for the table as of the timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timestamp_ms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp in millis since the Unix epoch </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The snapshot ID </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="216" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="297" bodyend="303"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a6117f0b0254614ba007a811196f5a442" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt; int64_t &gt; iceberg::SnapshotUtil::OptionalSnapshotIdAsOfTime</definition>
+        <argsstring>(const Table &amp;table, TimePointMs timestamp_ms)</argsstring>
+        <name>OptionalSnapshotIdAsOfTime</name>
+        <qualifiedname>iceberg::SnapshotUtil::OptionalSnapshotIdAsOfTime</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>TimePointMs</type>
+          <declname>timestamp_ms</declname>
+        </param>
+        <briefdescription>
+<para>Returns the ID of the most recent snapshot for the table as of the timestamp, or nullopt if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timestamp_ms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp in millis since the Unix epoch </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The snapshot ID, or nullopt if not found </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="225" column="24" bodyfile="iceberg/util/snapshot_util.cc" bodystart="305" bodyend="308"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a364ddbf0e9a8a911a0547533646f4502" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::SnapshotUtil::SchemaFor</definition>
+        <argsstring>(const Table &amp;table, int64_t snapshot_id)</argsstring>
+        <name>SchemaFor</name>
+        <qualifiedname>iceberg::SnapshotUtil::SchemaFor</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Returns the schema of the table for the specified snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the snapshot </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The schema </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="233" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="310" bodyend="321"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a2452b85ee0473acbc44bb2fcb2b87c6b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::SnapshotUtil::SchemaFor</definition>
+        <argsstring>(const Table &amp;table, TimePointMs timestamp_ms)</argsstring>
+        <name>SchemaFor</name>
+        <qualifiedname>iceberg::SnapshotUtil::SchemaFor</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>TimePointMs</type>
+          <declname>timestamp_ms</declname>
+        </param>
+        <briefdescription>
+<para>Returns the schema of the table for the specified timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>timestamp_ms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp in millis since the Unix epoch </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The schema </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="241" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="323" bodyend="328"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a152cad89bbcb2044cba4ac6623d552eb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::SnapshotUtil::SchemaFor</definition>
+        <argsstring>(const Table &amp;table, const std::string &amp;ref)</argsstring>
+        <name>SchemaFor</name>
+        <qualifiedname>iceberg::SnapshotUtil::SchemaFor</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>ref</declname>
+        </param>
+        <briefdescription>
+<para>Return the schema of the snapshot at a given ref. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the ref does not exist or the ref is a branch, the table schema is returned because it will be the schema when the new branch is created. If the ref is a tag, then the snapshot schema is returned.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Ref name of the table (empty string means main branch) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> of the specific snapshot at the given ref </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="253" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="330" bodyend="343"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1afa664004c952647833bb650ab598419d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::SnapshotUtil::SchemaFor</definition>
+        <argsstring>(const TableMetadata &amp;metadata, const std::string &amp;ref)</argsstring>
+        <name>SchemaFor</name>
+        <qualifiedname>iceberg::SnapshotUtil::SchemaFor</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>ref</declname>
+        </param>
+        <briefdescription>
+<para>Return the schema of the snapshot at a given ref. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the ref does not exist or the ref is a branch, the table schema is returned because it will be the schema when the new branch is created. If the ref is a tag, then the snapshot schema is returned.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Ref name of the table (empty string means main branch) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> of the specific snapshot at the given branch </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="265" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="345" bodyend="362"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1ad348ddc278be4934437f8a3dd0614886" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt; iceberg::SnapshotUtil::LatestSnapshot</definition>
+        <argsstring>(const Table &amp;table, const std::string &amp;branch)</argsstring>
+        <name>LatestSnapshot</name>
+        <qualifiedname>iceberg::SnapshotUtil::LatestSnapshot</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>branch</declname>
+        </param>
+        <briefdescription>
+<para>Fetch the snapshot at the head of the given branch in the given table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method calls <ref refid="structiceberg_1_1TableMetadata_1af4deecc6a29f4a93568ced47803830af" kindref="member">TableMetadata::Snapshot()</ref> instead of using branch API for the main branch so that existing code still goes through the old code path to ensure backwards compatibility.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>branch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Branch name of the table (empty string means main branch) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The latest snapshot for the given branch, or NotFoundError. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="277" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="364" bodyend="367"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a7ac3a589a4a9d4a62c60e8a6cb08249b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt; iceberg::SnapshotUtil::LatestSnapshot</definition>
+        <argsstring>(const TableMetadata &amp;metadata, const std::string &amp;branch)</argsstring>
+        <name>LatestSnapshot</name>
+        <qualifiedname>iceberg::SnapshotUtil::LatestSnapshot</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>branch</declname>
+        </param>
+        <briefdescription>
+<para>Fetch the snapshot at the head of the given branch in the given table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method calls <ref refid="structiceberg_1_1TableMetadata_1af4deecc6a29f4a93568ced47803830af" kindref="member">TableMetadata::Snapshot()</ref> instead of using branch API for the main branch so that existing code still goes through the old code path to ensure backwards compatibility.</para>
+<para>If branch does not exist, the table&apos;s latest snapshot is returned it will be the schema when the new branch is created.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>branch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Branch name of the table metadata (empty string means main branch) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The latest snapshot for the given branch, or NotFoundError. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="293" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="369" bodyend="381"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a7f88f8df4a78dbc616bdeed71602bc74" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt; iceberg::SnapshotUtil::OptionalLatestSnapshot</definition>
+        <argsstring>(const TableMetadata &amp;metadata, const std::string &amp;branch)</argsstring>
+        <name>OptionalLatestSnapshot</name>
+        <qualifiedname>iceberg::SnapshotUtil::OptionalLatestSnapshot</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>branch</declname>
+        </param>
+        <briefdescription>
+<para>Fetch the snapshot at the head of the given branch in the given table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Like LatestSnapshot above except that nullptr is returned if snapshot does not exist.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>branch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Branch name of the table metadata (empty string means main branch) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The latest snapshot for the given branch, or nullptr if not found. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="305" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="383" bodyend="392"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a25c33e9e7731d518b300b699282f1878" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotUtil::GenerateSnapshotId</definition>
+        <argsstring>()</argsstring>
+        <name>GenerateSnapshotId</name>
+        <qualifiedname>iceberg::SnapshotUtil::GenerateSnapshotId</qualifiedname>
+        <briefdescription>
+<para>Generate a new snapshot ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="309" column="18" bodyfile="iceberg/util/snapshot_util.cc" bodystart="394" bodyend="397"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1aef63f4def32ea301f48586a084e8ae34" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotUtil::GenerateSnapshotId</definition>
+        <argsstring>(const TableMetadata &amp;metadata)</argsstring>
+        <name>GenerateSnapshotId</name>
+        <qualifiedname>iceberg::SnapshotUtil::GenerateSnapshotId</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+<para>Generate a new snapshot ID for the given metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new snapshot ID </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="315" column="18" bodyfile="iceberg/util/snapshot_util.cc" bodystart="399" bodyend="405"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1acf980a5b8293a7781d80f385f6f5dae8" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::AncestorsOf</definition>
+        <argsstring>(const Table &amp;table, const std::shared_ptr&lt; Snapshot &gt; &amp;snapshot)</argsstring>
+        <name>AncestorsOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::AncestorsOf</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &amp;</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+<para>Helper function to traverse ancestors of a snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot to start from </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of ancestor snapshots </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="323" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="223" bodyend="226"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1ad824670080b6b24dfdb3ae2ba10580ad" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &gt; iceberg::SnapshotUtil::AncestorsOf</definition>
+        <argsstring>(const std::shared_ptr&lt; Snapshot &gt; &amp;snapshot, const std::function&lt; Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt;(int64_t)&gt; &amp;lookup)</argsstring>
+        <name>AncestorsOf</name>
+        <qualifiedname>iceberg::SnapshotUtil::AncestorsOf</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &amp;</type>
+          <declname>snapshot</declname>
+        </param>
+        <param>
+          <type>const std::function&lt; Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;(int64_t)&gt; &amp;</type>
+          <declname>lookup</declname>
+        </param>
+        <briefdescription>
+<para>Helper function to traverse ancestors of a snapshot using a lookup function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot to start from </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lookup</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function to lookup snapshots by ID </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of ancestor snapshots </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="331" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="228" bodyend="247"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUtil_1a6a4a3ff54a4b47e7227fcb895f70cb1e" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; int64_t &gt; &gt; iceberg::SnapshotUtil::ToIds</definition>
+        <argsstring>(const std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &amp;snapshots)</argsstring>
+        <name>ToIds</name>
+        <qualifiedname>iceberg::SnapshotUtil::ToIds</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &amp;</type>
+          <declname>snapshots</declname>
+        </param>
+        <briefdescription>
+<para>Helper function to convert snapshots to IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshots</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshots </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of snapshot IDs </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/snapshot_util_internal.h" line="339" column="17" bodyfile="iceberg/util/snapshot_util.cc" bodystart="249" bodyend="256"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utility functions for working with snapshots. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="note"><para>All the returned std::shared_ptr&lt;Snapshot&gt; are guaranteed to be not null. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="iceberg/util/snapshot_util_internal.h" line="37" column="1" bodyfile="iceberg/util/snapshot_util_internal.h" bodystart="37" bodyend="341"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotUtil_1a0a719ccd3dc805f3bfe7ae57da9c310f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>AncestorIdsBetween</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a2a564ad9949633d28fe7d865abd6c156" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>AncestorsBetween</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a47a80cda09e68bab18d4e82f26da06e6" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>AncestorsOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1ac6e5364b6109d40089fcec830b90d270" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>AncestorsOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1acf980a5b8293a7781d80f385f6f5dae8" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>AncestorsOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1ad824670080b6b24dfdb3ae2ba10580ad" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>AncestorsOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1addfcd80a9c8bac56fc16bd31d18699b2" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>CurrentAncestorIds</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a41179cda4c4d05fdeea7477154414d4f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>CurrentAncestors</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a9abcf0c2b304b523ee19184d147efbfc" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>CurrentAncestors</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a25c33e9e7731d518b300b699282f1878" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>GenerateSnapshotId</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1aef63f4def32ea301f48586a084e8ae34" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>GenerateSnapshotId</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1ae3da0853e68da0249df527b8ccd5ca97" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>IsAncestorOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a82eb77fad1c18d03682a059fad5f595d" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>IsAncestorOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1ab2e84754b2696638864856fef240dabf" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>IsAncestorOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a42b5e0916dd5156dd6db8048b6be968c" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>IsAncestorOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a0e4a09b5d021e344153b01e297c588c4" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>IsParentAncestorOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1ad348ddc278be4934437f8a3dd0614886" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>LatestSnapshot</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a7ac3a589a4a9d4a62c60e8a6cb08249b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>LatestSnapshot</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a1d97496b576b9a8f751a7ce0fd03ce50" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>OldestAncestor</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1adff1d9a01a59c7986e8b084be5db5202" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>OldestAncestorAfter</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a6b0ca8ec32e07e44f77400b8ebc4e97e" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>OldestAncestorOf</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a7f88f8df4a78dbc616bdeed71602bc74" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>OptionalLatestSnapshot</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a6117f0b0254614ba007a811196f5a442" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>OptionalSnapshotIdAsOfTime</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a364ddbf0e9a8a911a0547533646f4502" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SchemaFor</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a2452b85ee0473acbc44bb2fcb2b87c6b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SchemaFor</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a152cad89bbcb2044cba4ac6623d552eb" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SchemaFor</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1afa664004c952647833bb650ab598419d" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SchemaFor</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a6278cae4c638bf1d629908f7660b1ad3" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SnapshotAfter</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a2bb29f1036e7618b64149270df0349d5" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SnapshotIdAsOfTime</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1aebf1f0553d8bb18fc569272b843b08c0" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SnapshotIdAsOfTime</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a6f041304078006352f813ac95fa4f439" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>SnapshotIdsBetween</name></member>
+      <member refid="classiceberg_1_1SnapshotUtil_1a6a4a3ff54a4b47e7227fcb895f70cb1e" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUtil</scope><name>ToIds</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ManifestList" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ManifestList</compoundname>
+    <includes refid="manifest__list_8h" local="no">manifest_list.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ManifestList_1a493be2bebe19a9d92dfa28ff737c74c5" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::ManifestList::entries</definition>
+        <argsstring></argsstring>
+        <name>entries</name>
+        <qualifiedname>iceberg::ManifestList::entries</qualifiedname>
+        <briefdescription>
+<para>Entries in a manifest list. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="252" column="15" bodyfile="iceberg/manifest/manifest_list.h" bodystart="252" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Snapshots are embedded in table metadata, but the list of manifests for a snapshot are stored in a separate manifest list file.</para>
+<para>A new manifest list is written for each attempt to commit a snapshot because the list of manifests always changes to produce a new snapshot. When a manifest list is written, the (optimistic) sequence number of the snapshot is written for all new manifest files tracked by the list.</para>
+<para>A manifest list includes summary metadata that can be used to avoid scanning all of the manifests in a snapshot when planning a table scan. This includes the number of added, existing, and deleted files, and a summary of values for each field of the partition spec used to write the manifest. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::ManifestFile</label>
+        <link refid="structiceberg_1_1ManifestFile"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>manifest_path</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>partitions</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>kAddedFilesCount</edgelabel>
+          <edgelabel>kAddedRowsCount</edgelabel>
+          <edgelabel>kAddedSnapshotId</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kDeletedFilesCount</edgelabel>
+          <edgelabel>kDeletedRowsCount</edgelabel>
+          <edgelabel>kExistingFilesCount</edgelabel>
+          <edgelabel>kExistingRowsCount</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestList</label>
+        <link refid="structiceberg_1_1ManifestList"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>entries</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::PartitionFieldSummary</label>
+        <link refid="structiceberg_1_1PartitionFieldSummary"/>
+        <childnode refid="8" relation="usage">
+          <edgelabel>kContainsNaN</edgelabel>
+          <edgelabel>kContainsNull</edgelabel>
+          <edgelabel>kLowerBound</edgelabel>
+          <edgelabel>kUpperBound</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; iceberg::ManifestFile &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; iceberg::PartitionFieldSummary &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_list.h" line="250" column="1" bodyfile="iceberg/manifest/manifest_list.h" bodystart="250" bodyend="253"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ManifestList_1a493be2bebe19a9d92dfa28ff737c74c5" prot="public" virt="non-virtual"><scope>iceberg::ManifestList</scope><name>entries</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

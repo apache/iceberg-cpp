@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>iceberg-cpp</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="index_1md__2home_2runner_2work_2iceberg-cpp_2iceberg-cpp_2README"/></para>
+<para><image type="html" name="https://iceberg.apache.org/assets/images/Iceberg-logo.svg" alt="Iceberg" inline="yes"></image>
+</para>
+<para><ulink url="https://apache-iceberg.slack.com/"><image type="html" name="https://img.shields.io/badge/chat-on%20Slack-brightgreen.svg" alt="Slack" inline="yes"></image>
+</ulink> <ulink url="https://deepwiki.com/apache/iceberg-cpp"><image type="html" name="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" inline="yes"></image>
+</ulink></para>
+<sect1 id="index_1autotoc_md1">
+<title>Apache Iceberg™ C++</title>
+<para>C++ implementation of <ulink url="https://iceberg.apache.org/">Apache Iceberg™</ulink>.</para>
+<sect2 id="index_1autotoc_md2">
+<title>Requirements</title>
+<para><itemizedlist>
+<listitem><para>CMake 3.25 or higher</para>
+</listitem><listitem><para>C++23 compliant compiler</para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+<sect2 id="index_1autotoc_md3">
+<title>Customizing Dependency URLs</title>
+<para>If you experience network issues when downloading dependencies, you can customize the download URLs using environment variables.</para>
+<para>The following environment variables can be set to customize dependency URLs:</para>
+<para><itemizedlist>
+<listitem><para><computeroutput>ICEBERG_ARROW_URL</computeroutput>: Apache Arrow tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_AVRO_URL</computeroutput>: Apache Avro tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_AVRO_GIT_URL</computeroutput>: Apache Avro git repository URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_NANOARROW_URL</computeroutput>: Nanoarrow tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_CROARING_URL</computeroutput>: CRoaring tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_NLOHMANN_JSON_URL</computeroutput>: nlohmann-json tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_CPR_URL</computeroutput>: cpr tarball URL</para>
+</listitem></itemizedlist>
+</para>
+<para>Example usage:</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">export<sp/>ICEBERG_ARROW_URL=&quot;https://your-mirror.com/apache-arrow-22.0.0.tar.gz&quot;</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build</highlight></codeline>
+</programlisting></para>
+</sect2>
+<sect2 id="index_1autotoc_md4">
+<title>Build</title>
+<sect3 id="index_1autotoc_md5">
+<title>Build, Run Test and Install Core Libraries</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cd<sp/>iceberg-cpp</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DICEBERG_BUILD_STATIC=ON<sp/>-DICEBERG_BUILD_SHARED=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+</programlisting></para>
+</sect3>
+<sect3 id="index_1autotoc_md6">
+<title>Build and Install Iceberg Bundle Library</title>
+<sect4 id="index_1autotoc_md7">
+<title>Vendored Apache Arrow (default)</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DICEBERG_BUILD_BUNDLE=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+</programlisting></para>
+</sect4>
+<sect4 id="index_1autotoc_md8">
+<title>Provided Apache Arrow</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DCMAKE_PREFIX_PATH=/path/to/arrow<sp/>-DICEBERG_BUILD_BUNDLE=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+</programlisting></para>
+</sect4>
+</sect3>
+<sect3 id="index_1autotoc_md9">
+<title>Build Examples</title>
+<para>After installing the core libraries, you can build the examples:</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cd<sp/>iceberg-cpp/example</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_PREFIX_PATH=/path/to/install</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+</programlisting></para>
+<para>If you are using provided Apache Arrow, you need to include <computeroutput>/path/to/arrow</computeroutput> in <computeroutput>CMAKE_PREFIX_PATH</computeroutput> as below.</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_PREFIX_PATH=&quot;/path/to/install;/path/to/arrow&quot;</highlight></codeline>
+</programlisting></para>
+</sect3>
+</sect2>
+<sect2 id="index_1autotoc_md10">
+<title>Contribute</title>
+<para>Apache Iceberg is an active open-source project, governed under the Apache Software Foundation (ASF). Iceberg-cpp is open to people who want to contribute to it. Here are some ways to get involved:</para>
+<para><itemizedlist>
+<listitem><para>Submit <ulink url="https://github.com/apache/iceberg-cpp/issues/new">Issues</ulink> for bug report or feature requests.</para>
+</listitem><listitem><para>Discuss at <ulink url="mailto:dev@iceberg.apache.org">dev mailing list</ulink> (<ulink url="mailto:dev-subscribe@iceberg.apache.org?subject=(send%20this%20email%20to%20subscribe)">subscribe</ulink> / <ulink url="mailto:dev-unsubscribe@iceberg.apache.org?subject=(send%20this%20email%20to%20unsubscribe)">unsubscribe</ulink> / <ulink url="https://lists.apache.org/list.html?dev@iceberg.apache.org">archives</ulink>)</para>
+</listitem><listitem><para>Talk to the community directly at <ulink url="https://join.slack.com/t/apache-iceberg/shared_invite/zt-1zbov3k6e-KtJfoaxp97YfX6dPz1Bk7A">Slack #cpp channel</ulink>.</para>
+</listitem></itemizedlist>
+</para>
+<para>The Apache Iceberg community is built on the principles described in the <ulink url="https://www.apache.org/theapacheway/index.html">Apache Way</ulink> and all who engage with the community are expected to be respectful, open, come with the best interests of the community in mind, and abide by the Apache Foundation <ulink url="https://www.apache.org/foundation/policies/conduct.html">Code of Conduct</ulink>.</para>
+<sect3 id="index_1autotoc_md11">
+<title>Linting</title>
+<para>Install the python package <computeroutput>pre-commit</computeroutput> and run once <computeroutput>pre-commit install</computeroutput>.</para>
+<para><programlisting><codeline><highlight class="normal">pip<sp/>install<sp/>pre-commit</highlight></codeline>
+<codeline><highlight class="normal">pre-commit<sp/>install</highlight></codeline>
+</programlisting></para>
+<para>This will setup a git pre-commit-hook that is executed on each commit and will report the linting problems. To run all hooks on all files use <computeroutput>pre-commit run -a</computeroutput>.</para>
+</sect3>
+<sect3 id="index_1autotoc_md12">
+<title>Dev Containers</title>
+<para>We provide Dev Container configuration file templates.</para>
+<para>To use a Dev Container as your development environment, follow the steps below, then select <computeroutput>Dev Containers: Reopen in Container</computeroutput> from VS Code&apos;s Command Palette.</para>
+<para><programlisting><codeline><highlight class="normal">cd<sp/>.devcontainer</highlight></codeline>
+<codeline><highlight class="normal">cp<sp/>Dockerfile.template<sp/>Dockerfile</highlight></codeline>
+<codeline><highlight class="normal">cp<sp/>devcontainer.json.template<sp/>devcontainer.json</highlight></codeline>
+</programlisting></para>
+<para>If you make improvements that could benefit all developers, please update the template files and submit a pull request.</para>
+</sect3>
+</sect2>
+<sect2 id="index_1autotoc_md13">
+<title>License</title>
+<para>Licensed under the <ulink url="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</ulink> </para>
+</sect2>
+</sect1>
+    </detaileddescription>
+    <location file="/home/runner/work/iceberg-cpp/iceberg-cpp/README.md"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1StringUtils" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::StringUtils</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1StringUtils_1ac1e8069ce9636e1b11ece55292e19a13" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::StringUtils::ToLower</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ToLower</name>
+        <qualifiedname>iceberg::StringUtils::ToLower</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="37" column="22" bodyfile="iceberg/util/string_util.h" bodystart="37" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StringUtils_1a7fe94da00b5c1f2ca831f6a3ee992171" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::StringUtils::ToUpper</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ToUpper</name>
+        <qualifiedname>iceberg::StringUtils::ToUpper</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="42" column="22" bodyfile="iceberg/util/string_util.h" bodystart="42" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StringUtils_1adc967c3db1ca6cd51370b5434d41eec6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool iceberg::StringUtils::EqualsIgnoreCase</definition>
+        <argsstring>(std::string_view lhs, std::string_view rhs)</argsstring>
+        <name>EqualsIgnoreCase</name>
+        <qualifiedname>iceberg::StringUtils::EqualsIgnoreCase</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="47" column="15" bodyfile="iceberg/util/string_util.h" bodystart="47" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StringUtils_1a16467481259b2ce4a426ef7bbd17a8f2" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool iceberg::StringUtils::StartsWithIgnoreCase</definition>
+        <argsstring>(std::string_view str, std::string_view prefix)</argsstring>
+        <name>StartsWithIgnoreCase</name>
+        <qualifiedname>iceberg::StringUtils::StartsWithIgnoreCase</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>prefix</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="52" column="15" bodyfile="iceberg/util/string_util.h" bodystart="52" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StringUtils_1a4a8d82a80d211f1d8b0a33f32810df63" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>static size_t iceberg::StringUtils::CodePointCount</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>CodePointCount</name>
+        <qualifiedname>iceberg::StringUtils::CodePointCount</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Count the number of code points in a UTF-8 string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="60" column="17" bodyfile="iceberg/util/string_util.h" bodystart="60" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StringUtils_1a4c70b566383b48818019c8062c8b76f7" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>Result&lt; T &gt;</type>
+        <definition>static Result&lt; T &gt; iceberg::StringUtils::ParseNumber</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseNumber</name>
+        <qualifiedname>iceberg::StringUtils::ParseNumber</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+    <requiresclause>std::is_arithmetic_v&lt;T&gt; &amp;&amp; (!std::same_as&lt;T, bool&gt;)    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="72" column="17" bodyfile="iceberg/util/string_util.h" bodystart="72" bodyend="87"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/string_util.h" line="35" column="1" bodyfile="iceberg/util/string_util.h" bodystart="35" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1StringUtils_1a4a8d82a80d211f1d8b0a33f32810df63" prot="public" virt="non-virtual"><scope>iceberg::StringUtils</scope><name>CodePointCount</name></member>
+      <member refid="classiceberg_1_1StringUtils_1adc967c3db1ca6cd51370b5434d41eec6" prot="public" virt="non-virtual"><scope>iceberg::StringUtils</scope><name>EqualsIgnoreCase</name></member>
+      <member refid="classiceberg_1_1StringUtils_1a4c70b566383b48818019c8062c8b76f7" prot="public" virt="non-virtual"><scope>iceberg::StringUtils</scope><name>ParseNumber</name></member>
+      <member refid="classiceberg_1_1StringUtils_1a16467481259b2ce4a426ef7bbd17a8f2" prot="public" virt="non-virtual"><scope>iceberg::StringUtils</scope><name>StartsWithIgnoreCase</name></member>
+      <member refid="classiceberg_1_1StringUtils_1ac1e8069ce9636e1b11ece55292e19a13" prot="public" virt="non-virtual"><scope>iceberg::StringUtils</scope><name>ToLower</name></member>
+      <member refid="classiceberg_1_1StringUtils_1a7fe94da00b5c1f2ca831f6a3ee992171" prot="public" virt="non-virtual"><scope>iceberg::StringUtils</scope><name>ToUpper</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

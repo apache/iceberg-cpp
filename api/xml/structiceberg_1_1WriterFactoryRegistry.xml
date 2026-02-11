@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1WriterFactoryRegistry" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::WriterFactoryRegistry</compoundname>
+    <includes refid="file__writer_8h" local="no">file_writer.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1WriterFactoryRegistry_1a39ed0f872bcc9fa7c49dc190b476ba61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::WriterFactoryRegistry::WriterFactoryRegistry</definition>
+        <argsstring>(FileFormatType format_type, WriterFactory factory)</argsstring>
+        <name>WriterFactoryRegistry</name>
+        <qualifiedname>iceberg::WriterFactoryRegistry::WriterFactoryRegistry</qualifiedname>
+        <param>
+          <type>FileFormatType</type>
+          <declname>format_type</declname>
+        </param>
+        <param>
+          <type><ref refid="file__writer_8h_1accf6d69cf4d7c52851e9dc92d95d3215" kindref="member">WriterFactory</ref></type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+<para>Register a factory function for a specific file format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="126" column="3" bodyfile="iceberg/file_writer.cc" bodystart="50" bodyend="53"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1WriterFactoryRegistry_1a27a4a412a4d468b51471e370e47a9ed6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="file__writer_8h_1accf6d69cf4d7c52851e9dc92d95d3215" kindref="member">WriterFactory</ref> &amp;</type>
+        <definition>WriterFactory &amp; iceberg::WriterFactoryRegistry::GetFactory</definition>
+        <argsstring>(FileFormatType format_type)</argsstring>
+        <name>GetFactory</name>
+        <qualifiedname>iceberg::WriterFactoryRegistry::GetFactory</qualifiedname>
+        <param>
+          <type>FileFormatType</type>
+          <declname>format_type</declname>
+        </param>
+        <briefdescription>
+<para>Get the factory function for a specific file format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="129" column="24" bodyfile="iceberg/file_writer.cc" bodystart="40" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1WriterFactoryRegistry_1afeb69e5f68d62d46d47428cd9730a546" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; Writer &gt; &gt; iceberg::WriterFactoryRegistry::Open</definition>
+        <argsstring>(FileFormatType format_type, const WriterOptions &amp;options)</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::WriterFactoryRegistry::Open</qualifiedname>
+        <param>
+          <type>FileFormatType</type>
+          <declname>format_type</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1WriterOptions" kindref="compound">WriterOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Open a writer for a specific file format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="132" column="17" bodyfile="iceberg/file_writer.cc" bodystart="55" bodyend="60"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Registry of writer factories for different file formats. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/file_writer.h" line="124" column="1" bodyfile="iceberg/file_writer.h" bodystart="124" bodyend="134"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1WriterFactoryRegistry_1a27a4a412a4d468b51471e370e47a9ed6" prot="public" virt="non-virtual"><scope>iceberg::WriterFactoryRegistry</scope><name>GetFactory</name></member>
+      <member refid="structiceberg_1_1WriterFactoryRegistry_1afeb69e5f68d62d46d47428cd9730a546" prot="public" virt="non-virtual"><scope>iceberg::WriterFactoryRegistry</scope><name>Open</name></member>
+      <member refid="structiceberg_1_1WriterFactoryRegistry_1a39ed0f872bcc9fa7c49dc190b476ba61" prot="public" virt="non-virtual"><scope>iceberg::WriterFactoryRegistry</scope><name>WriterFactoryRegistry</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

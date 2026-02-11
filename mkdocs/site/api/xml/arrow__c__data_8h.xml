@@ -1,0 +1,338 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="arrow__c__data_8h" kind="file" language="C++">
+    <compoundname>arrow_c_data.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includedby refid="arrow__c__data__guard__internal_8h" local="yes">iceberg/arrow_c_data_guard_internal.h</includedby>
+    <includedby refid="data__writer_8h" local="yes">iceberg/data/data_writer.h</includedby>
+    <includedby refid="equality__delete__writer_8h" local="yes">iceberg/data/equality_delete_writer.h</includedby>
+    <includedby refid="position__delete__writer_8h" local="yes">iceberg/data/position_delete_writer.h</includedby>
+    <includedby refid="writer_8h" local="yes">iceberg/data/writer.h</includedby>
+    <includedby refid="file__reader_8h" local="yes">iceberg/file_reader.h</includedby>
+    <includedby refid="file__writer_8h" local="yes">iceberg/file_writer.h</includedby>
+    <includedby refid="manifest__adapter__internal_8h" local="yes">iceberg/manifest/manifest_adapter_internal.h</includedby>
+    <includedby refid="arrow__array__wrapper_8h" local="yes">iceberg/row/arrow_array_wrapper.h</includedby>
+    <includedby refid="table__scan_8h" local="yes">iceberg/table_scan.h</includedby>
+    <includedby refid="eval__expr__test_8cc" local="yes">iceberg/test/eval_expr_test.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>iceberg/arrow_c_data.h</label>
+        <link refid="arrow__c__data_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/arrow_c_data.h</label>
+        <link refid="arrow__c__data_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/arrow_c_data_guard_internal.h</label>
+        <link refid="arrow__c__data__guard__internal_8h_source"/>
+      </node>
+      <node id="8">
+        <label>iceberg/avro/avro_reader.h</label>
+        <link refid="avro__reader_8h_source"/>
+      </node>
+      <node id="12">
+        <label>iceberg/avro/avro_writer.h</label>
+        <link refid="avro__writer_8h_source"/>
+      </node>
+      <node id="3">
+        <label>iceberg/data/data_writer.h</label>
+        <link refid="data__writer_8h"/>
+      </node>
+      <node id="4">
+        <label>iceberg/data/equality_delete_writer.h</label>
+        <link refid="equality__delete__writer_8h"/>
+      </node>
+      <node id="5">
+        <label>iceberg/data/position_delete_writer.h</label>
+        <link refid="position__delete__writer_8h"/>
+      </node>
+      <node id="6">
+        <label>iceberg/data/writer.h</label>
+        <link refid="writer_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg/file_reader.h</label>
+        <link refid="file__reader_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/file_writer.h</label>
+        <link refid="file__writer_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg/manifest/manifest_adapter_internal.h</label>
+        <link refid="manifest__adapter__internal_8h"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/manifest/manifest_reader_internal.h</label>
+        <link refid="manifest__reader__internal_8h"/>
+      </node>
+      <node id="13">
+        <label>iceberg/manifest/manifest_writer.h</label>
+        <link refid="manifest__writer_8h"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/manifest/rolling_manifest_writer.h</label>
+        <link refid="rolling__manifest__writer_8h"/>
+      </node>
+      <node id="17">
+        <label>iceberg/manifest/v1_metadata_internal.h</label>
+        <link refid="v1__metadata__internal_8h"/>
+      </node>
+      <node id="18">
+        <label>iceberg/manifest/v2_metadata_internal.h</label>
+        <link refid="v2__metadata__internal_8h"/>
+      </node>
+      <node id="19">
+        <label>iceberg/manifest/v3_metadata_internal.h</label>
+        <link refid="v3__metadata__internal_8h"/>
+      </node>
+      <node id="10">
+        <label>iceberg/parquet/parquet_reader.h</label>
+        <link refid="parquet__reader_8h_source"/>
+      </node>
+      <node id="15">
+        <label>iceberg/parquet/parquet_writer.h</label>
+        <link refid="parquet__writer_8h_source"/>
+      </node>
+      <node id="20">
+        <label>iceberg/row/arrow_array_wrapper.h</label>
+        <link refid="arrow__array__wrapper_8h"/>
+      </node>
+      <node id="21">
+        <label>iceberg/table_scan.h</label>
+        <link refid="table__scan_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structArrowSchema" prot="public">ArrowSchema</innerclass>
+    <innerclass refid="structArrowArray" prot="public">ArrowArray</innerclass>
+    <innerclass refid="structArrowArrayStream" prot="public">ArrowArrayStream</innerclass>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="arrow__c__data_8h_1a62dff1b60bc389d2afc1f9845c8643c8" prot="public" static="no">
+        <name>ARROW_C_DATA_INTERFACE</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="35" column="11" bodyfile="iceberg/arrow_c_data.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="arrow__c__data_8h_1aeb5dd606ecbde0a6d99711756a6da1c1" prot="public" static="no">
+        <name>ARROW_FLAG_DICTIONARY_ORDERED</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="37" column="11" bodyfile="iceberg/arrow_c_data.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="arrow__c__data_8h_1a5e08d487c628beadce561c5fd05ffab0" prot="public" static="no">
+        <name>ARROW_FLAG_NULLABLE</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="38" column="11" bodyfile="iceberg/arrow_c_data.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="arrow__c__data_8h_1a4a8b190bb8b285f924648553ee468171" prot="public" static="no">
+        <name>ARROW_FLAG_MAP_KEYS_SORTED</name>
+        <initializer>4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="39" column="11" bodyfile="iceberg/arrow_c_data.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="arrow__c__data_8h_1aacad63acda264a0ae393bd842a77220d" prot="public" static="no">
+        <name>ARROW_C_STREAM_INTERFACE</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="77" column="11" bodyfile="iceberg/arrow_c_data.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Arrow C data interface</para>
+<para>The Arrow C Data interface (<ulink url="https://arrow.apache.org/docs/format/CDataInterface.html">https://arrow.apache.org/docs/format/CDataInterface.html</ulink>) is part of the Arrow Columnar Format specification (<ulink url="https://arrow.apache.org/docs/format/Columnar.html">https://arrow.apache.org/docs/format/Columnar.html</ulink>). See the Arrow documentation for documentation of these structures. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>ARROW_C_DATA_INTERFACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>ARROW_C_DATA_INTERFACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>ARROW_FLAG_DICTIONARY_ORDERED<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>ARROW_FLAG_NULLABLE<sp/>2</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>ARROW_FLAG_MAP_KEYS_SORTED<sp/>4</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="structArrowSchema" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref><sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Array<sp/>type<sp/>description</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>format;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>name;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>metadata;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>int64_t<sp/>flags;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/>int64_t<sp/>n_children;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref>**<sp/>children;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref>*<sp/>dictionary;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Release<sp/>callback</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>void<sp/>(*release)(</highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref>*);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Opaque<sp/>producer-specific<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>private_data;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="structArrowArray" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArray" kindref="compound">ArrowArray</ref><sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Array<sp/>data<sp/>description</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/>int64_t<sp/>length;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>int64_t<sp/>null_count;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>int64_t<sp/>offset;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>int64_t<sp/>n_buffers;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>int64_t<sp/>n_children;</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">**<sp/>buffers;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArray" kindref="compound">ArrowArray</ref>**<sp/>children;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>dictionary;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Release<sp/>callback</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>void<sp/>(*release)(</highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Opaque<sp/>producer-specific<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>private_data;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">//<sp/>ARROW_C_DATA_INTERFACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>ARROW_C_STREAM_INTERFACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>ARROW_C_STREAM_INTERFACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="structArrowArrayStream" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref><sp/>{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Callback<sp/>to<sp/>get<sp/>the<sp/>stream<sp/>type</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>(will<sp/>be<sp/>the<sp/>same<sp/>for<sp/>all<sp/>arrays<sp/>in<sp/>the<sp/>stream).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Return<sp/>value:<sp/>0<sp/>if<sp/>successful,<sp/>an<sp/>`errno`-compatible<sp/>error<sp/>code<sp/>otherwise.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>successful,<sp/>the<sp/>ArrowSchema<sp/>must<sp/>be<sp/>released<sp/>independently<sp/>from<sp/>the<sp/>stream.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/>int<sp/>(*get_schema)(</highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref>*,<sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref>*<sp/>out);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Callback<sp/>to<sp/>get<sp/>the<sp/>next<sp/>array</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>(if<sp/>no<sp/>error<sp/>and<sp/>the<sp/>array<sp/>is<sp/>released,<sp/>the<sp/>stream<sp/>has<sp/>ended)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Return<sp/>value:<sp/>0<sp/>if<sp/>successful,<sp/>an<sp/>`errno`-compatible<sp/>error<sp/>code<sp/>otherwise.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>successful,<sp/>the<sp/>ArrowArray<sp/>must<sp/>be<sp/>released<sp/>independently<sp/>from<sp/>the<sp/>stream.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>int<sp/>(*get_next)(</highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref>*,<sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>out);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Callback<sp/>to<sp/>get<sp/>optional<sp/>detailed<sp/>error<sp/>information.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>This<sp/>must<sp/>only<sp/>be<sp/>called<sp/>if<sp/>the<sp/>last<sp/>stream<sp/>operation<sp/>failed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>with<sp/>a<sp/>non-0<sp/>return<sp/>code.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Return<sp/>value:<sp/>pointer<sp/>to<sp/>a<sp/>null-terminated<sp/>character<sp/>array<sp/>describing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>last<sp/>error,<sp/>or<sp/>NULL<sp/>if<sp/>no<sp/>description<sp/>is<sp/>available.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>The<sp/>returned<sp/>pointer<sp/>is<sp/>only<sp/>valid<sp/>until<sp/>the<sp/>next<sp/>operation<sp/>on<sp/>this<sp/>stream</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>(including<sp/>release).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>(*get_last_error)(</highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref>*);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Release<sp/>callback:<sp/>release<sp/>the<sp/>stream&apos;s<sp/>own<sp/>resources.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Note<sp/>that<sp/>arrays<sp/>returned<sp/>by<sp/>`get_next`<sp/>must<sp/>be<sp/>individually<sp/>released.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/>void<sp/>(*release)(</highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref>*);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Opaque<sp/>producer-specific<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>private_data;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">//<sp/>ARROW_C_STREAM_INTERFACE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>extern<sp/>&quot;C&quot;</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/arrow_c_data.h"/>
+  </compounddef>
+</doxygen>

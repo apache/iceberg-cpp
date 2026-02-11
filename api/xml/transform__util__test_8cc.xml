@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="transform__util__test_8cc" kind="file" language="C++">
+    <compoundname>transform_util_test.cc</compoundname>
+    <includes refid="transform__util_8h" local="yes">iceberg/util/transform_util.h</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <incdepgraph>
+      <node id="4">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/test/transform_util_test.cc</label>
+        <link refid="transform__util__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/util/transform_util.h</label>
+        <link refid="transform__util_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/util/transform_util.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanYear)<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(0));</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1971&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(1));</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(-1));</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(999<sp/>-<sp/>1970));</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(56));</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanMonth)<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>is<sp/>January<sp/>1970</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(0));</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>is<sp/>Febrary<sp/>1970</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-02&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(1));</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>-1<sp/>is<sp/>December<sp/>1969</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(-1));</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(-11641));</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>12<sp/>is<sp/>January<sp/>1971</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1971-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(12));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>672<sp/>is<sp/>December<sp/>2026-01</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(672));</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanDay)<sp/>{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>is<sp/>Unix<sp/>epoch<sp/>(1970-01-01)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(0));</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>is<sp/>1970-01-02</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-02&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(1));</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>-1<sp/>is<sp/>1969-12-31</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(-1));</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12-31</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(-354286));</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>365<sp/>is<sp/>1971-01-01<sp/>(non-leap<sp/>year)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1971-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(365));</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>20454<sp/>is<sp/>2026-01-01</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(20454));</highlight></codeline>
+<codeline lineno="62"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanHour)<sp/>{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>is<sp/>Unix<sp/>epoch<sp/>at<sp/>00:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01-00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(0));</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>is<sp/>first<sp/>hour<sp/>of<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(1));</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>-1<sp/>is<sp/>previous<sp/>day&apos;s<sp/>last<sp/>hour</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31-23&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(-1));</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>999-12-31<sp/>at<sp/>23:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31-23&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(-8502841));</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>24<sp/>is<sp/>next<sp/>day<sp/>at<sp/>00:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-02-00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(24));</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>490896<sp/>is<sp/>2026-01-01<sp/>at<sp/>00:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01-00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(490896));</highlight></codeline>
+<codeline lineno="77"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanTime)<sp/>{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(0));</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1000000));</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1.5<sp/>seconds<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01.500&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1500000));</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1.001<sp/>seconds<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01.001&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1001000));</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1.000001<sp/>seconds<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01.000001&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1000001));</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>hour,<sp/>2<sp/>minutes,<sp/>3<sp/>seconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;01:02:03&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(3723000000));</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>23:59:59</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;23:59:59&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(86399000000));</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanTimestamp)<sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Unix<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(0));</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>after<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1000000));</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>before<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31T23:59:59&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(-1000000));</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12-31T23:59:59</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31T23:59:59&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(-30610224001000000L));</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precistion<sp/>with<sp/>500<sp/>milliseconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1767225601500000L));</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>millisecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.001&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1767225601001000L));</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>microsecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.000001&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1767225601000001L));</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanTimestampWithZone)<sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Unix<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00+00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(0));</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>after<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:01+00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1000000));</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>before<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31T23:59:59+00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(-1000000));</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12-31T23:59:59</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31T23:59:59+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(-30610224001000000L));</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precistion<sp/>with<sp/>500<sp/>milliseconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1767225601500000L));</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>millisecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.001+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1767225601001000L));</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>microsecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.000001+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1767225601000001L));</highlight></codeline>
+<codeline lineno="133"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal">TEST(TransformUtilTest,<sp/>Base64Encode)<sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Empty<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Single<sp/>character</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YQ==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;a&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWI=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;ab&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJj&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;abc&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Multiple<sp/>of<sp/>3<sp/>characters</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJjZGU=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;abcde&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJjZGVm&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;abcdef&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Common<sp/>strings</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;U29tZSBkYXRhIHdpdGggY2hhcmFjdGVycw==&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;Some<sp/>data<sp/>with<sp/>characters&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;aGVsbG8=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;dGVzdCBzdHJpbmc=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;test<sp/>string&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Unicode</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;8J+EgA==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;\xF0\x9F\x84\x80&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Null<sp/>byte</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;AA==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>({</highlight><highlight class="stringliteral">&quot;\x00&quot;</highlight><highlight class="normal">,<sp/>1}));</highlight></codeline>
+<codeline lineno="158"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/transform_util_test.cc"/>
+  </compounddef>
+</doxygen>

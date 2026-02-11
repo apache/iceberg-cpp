@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Not" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Not</compoundname>
+    <basecompoundref refid="classiceberg_1_1Expression" prot="public" virt="non-virtual">iceberg::Expression</basecompoundref>
+    <includes refid="expression_8h" local="no">expression.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Not_1aceae6fe8b15a7c000db050b5dc6d4642" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::Not::child_</definition>
+        <argsstring></argsstring>
+        <name>child_</name>
+        <qualifiedname>iceberg::Not::child_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="323" column="19" bodyfile="iceberg/expression/expression.h" bodystart="323" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Not_1a3c20b41048d581a535fcad4b7f9735c5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; Not &gt; &gt; iceberg::Not::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; child)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::Not::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>child</declname>
+        </param>
+        <briefdescription>
+<para>Creates a <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> expression from a child expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>child</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The expression to negate </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing a unique pointer to <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref>, or an error if child is nullptr </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="295" column="17" bodyfile="iceberg/expression/expression.cc" bodystart="116" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Not_1a526be706c911b1f0760b5560f3ba1e0c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::Not::MakeFolded</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; child)</argsstring>
+        <name>MakeFolded</name>
+        <qualifiedname>iceberg::Not::MakeFolded</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>child</declname>
+        </param>
+        <briefdescription>
+<para>Creates a folded <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> expression from a child expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>child</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The expression to negate </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing a shared pointer to the folded <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> expression, or an error if child is nullptr </para>
+</simplesect>
+<simplesect kind="note"><para>A folded <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> expression is an expression that is equivalent to the original expression, but with the <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> operation removed. For example, not(not(x)) = x. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="304" column="17" bodyfile="iceberg/expression/expression.cc" bodystart="123" bodyend="139"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Not_1a169da02522c1bea5761454bc40935ca6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Expression &gt; &amp; iceberg::Not::child</definition>
+        <argsstring>() const</argsstring>
+        <name>child</name>
+        <qualifiedname>iceberg::Not::child</qualifiedname>
+        <briefdescription>
+<para>Returns the child expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The child expression being negated </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="310" column="25" bodyfile="iceberg/expression/expression.h" bodystart="310" bodyend="310"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Not_1a5ca78cdd707666ff271492a8c45f37ec" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Operation</ref></type>
+        <definition>Operation iceberg::Not::op</definition>
+        <argsstring>() const override</argsstring>
+        <name>op</name>
+        <qualifiedname>iceberg::Not::op</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a5a16ee5d023305b50e4a2216b4047eff">op</reimplements>
+        <briefdescription>
+<para>Returns the operation for an expression node. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="312" column="13" bodyfile="iceberg/expression/expression.h" bodystart="312" bodyend="312"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Not_1a64edca3880c4eee4918b7c32cfa25d83" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Not::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Not::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a2e9c204f698d069ebc0fefb9e5269ab6">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="314" column="15" bodyfile="iceberg/expression/expression.cc" bodystart="145" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Not_1a7d347d1bfbb07a9678e002bb2eed1495" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::Not::Negate</definition>
+        <argsstring>() const override</argsstring>
+        <name>Negate</name>
+        <qualifiedname>iceberg::Not::Negate</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c">Negate</reimplements>
+        <briefdescription>
+<para>Returns the negation of this expression, equivalent to not(this). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="316" column="10" bodyfile="iceberg/expression/expression.cc" bodystart="147" bodyend="147"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Not_1a5f9793238a0dd8b701b8f3f6dbc613b1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Not::Equals</definition>
+        <argsstring>(const Expression &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::Not::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether this expression will accept the same values as another. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>another expression </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the expressions are equivalent </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="318" column="8" bodyfile="iceberg/expression/expression.cc" bodystart="149" bodyend="152"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1Not_1a51e642348caa83c0f45c35dadf665669" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Not::Not</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; child)</argsstring>
+        <name>Not</name>
+        <qualifiedname>iceberg::Not::Not</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>child</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="321" column="12" bodyfile="iceberg/expression/expression.cc" bodystart="141" bodyend="143"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> that represents logical NOT operation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This expression negates its child expression. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Not</label>
+        <link refid="classiceberg_1_1Not"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Not</label>
+        <link refid="classiceberg_1_1Not"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/expression.h" line="289" column="1" bodyfile="iceberg/expression/expression.h" bodystart="289" bodyend="324"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Not_1a169da02522c1bea5761454bc40935ca6" prot="public" virt="non-virtual"><scope>iceberg::Not</scope><name>child</name></member>
+      <member refid="classiceberg_1_1Not_1aceae6fe8b15a7c000db050b5dc6d4642" prot="private" virt="non-virtual"><scope>iceberg::Not</scope><name>child_</name></member>
+      <member refid="classiceberg_1_1Not_1a5f9793238a0dd8b701b8f3f6dbc613b1" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1Expression_1ab760f80ffc03ab40301be7d59c621a4a" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1Not_1a3c20b41048d581a535fcad4b7f9735c5" prot="public" virt="non-virtual"><scope>iceberg::Not</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1Not_1a526be706c911b1f0760b5560f3ba1e0c" prot="public" virt="non-virtual"><scope>iceberg::Not</scope><name>MakeFolded</name></member>
+      <member refid="classiceberg_1_1Not_1a7d347d1bfbb07a9678e002bb2eed1495" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1Not_1a51e642348caa83c0f45c35dadf665669" prot="private" virt="non-virtual"><scope>iceberg::Not</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1Not_1a5ca78cdd707666ff271492a8c45f37ec" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::Not</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Not_1a64edca3880c4eee4918b7c32cfa25d83" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Not</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

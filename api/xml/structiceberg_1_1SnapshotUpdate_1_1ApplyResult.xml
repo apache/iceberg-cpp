@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SnapshotUpdate_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotUpdate::ApplyResult</compoundname>
+    <includes refid="snapshot__update_8h" local="no">snapshot_update.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotUpdate_1_1ApplyResult_1acea2f175b7711abffd68460aa6833c93" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Snapshot&gt; iceberg::SnapshotUpdate::ApplyResult::snapshot</definition>
+        <argsstring></argsstring>
+        <name>snapshot</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ApplyResult::snapshot</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="47" column="21" bodyfile="iceberg/update/snapshot_update.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotUpdate_1_1ApplyResult_1a4a206488df16d5c2deb6f96c5d576fbc" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SnapshotUpdate::ApplyResult::target_branch</definition>
+        <argsstring></argsstring>
+        <name>target_branch</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ApplyResult::target_branch</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="48" column="17" bodyfile="iceberg/update/snapshot_update.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotUpdate_1_1ApplyResult_1ac6241d5f49fbc748ced4c06bdf0a1b5f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotUpdate::ApplyResult::stage_only</definition>
+        <argsstring></argsstring>
+        <name>stage_only</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ApplyResult::stage_only</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="49" column="10" bodyfile="iceberg/update/snapshot_update.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Result of applying a snapshot update. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Snapshot</label>
+        <link refid="structiceberg_1_1Snapshot"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>manifest_list</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>summary</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotUpdate::ApplyResult</label>
+        <link refid="structiceberg_1_1SnapshotUpdate_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>snapshot</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>target_branch</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::Snapshot &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/snapshot_update.h" line="46" column="3" bodyfile="iceberg/update/snapshot_update.h" bodystart="46" bodyend="50"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SnapshotUpdate_1_1ApplyResult_1acea2f175b7711abffd68460aa6833c93" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate::ApplyResult</scope><name>snapshot</name></member>
+      <member refid="structiceberg_1_1SnapshotUpdate_1_1ApplyResult_1ac6241d5f49fbc748ced4c06bdf0a1b5f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate::ApplyResult</scope><name>stage_only</name></member>
+      <member refid="structiceberg_1_1SnapshotUpdate_1_1ApplyResult_1a4a206488df16d5c2deb6f96c5d576fbc" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate::ApplyResult</scope><name>target_branch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_7fe6e566b014ce0176a95ba72e9ed10b" kind="dir">
+    <compoundname>iceberg/parquet</compoundname>
+    <innerfile refid="parquet__data__util_8cc">parquet_data_util.cc</innerfile>
+    <innerfile refid="parquet__data__util__internal_8h">parquet_data_util_internal.h</innerfile>
+    <innerfile refid="parquet__reader_8cc">parquet_reader.cc</innerfile>
+    <innerfile refid="parquet__reader_8h">parquet_reader.h</innerfile>
+    <innerfile refid="parquet__register_8cc">parquet_register.cc</innerfile>
+    <innerfile refid="parquet__register_8h">parquet_register.h</innerfile>
+    <innerfile refid="parquet__schema__util_8cc">parquet_schema_util.cc</innerfile>
+    <innerfile refid="parquet__schema__util__internal_8h">parquet_schema_util_internal.h</innerfile>
+    <innerfile refid="parquet__writer_8cc">parquet_writer.cc</innerfile>
+    <innerfile refid="parquet__writer_8h">parquet_writer.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/parquet/"/>
+  </compounddef>
+</doxygen>

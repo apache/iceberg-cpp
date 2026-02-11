@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">&lt;!--</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline><highlight class="normal">--&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">![Iceberg](https://iceberg.apache.org/assets/images/Iceberg-logo.svg)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">[![Slack](https://img.shields.io/badge/chat-on%20Slack-brightgreen.svg)](https://apache-iceberg.slack.com/)</highlight></codeline>
+<codeline><highlight class="normal">[![Ask<sp/>DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/apache/iceberg-cpp)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#<sp/>Apache<sp/>Iceberg™<sp/>C++</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">C++<sp/>implementation<sp/>of<sp/>[Apache<sp/>Iceberg™](https://iceberg.apache.org/).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Requirements</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>CMake<sp/>3.25<sp/>or<sp/>higher</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>C++23<sp/>compliant<sp/>compiler</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Customizing<sp/>Dependency<sp/>URLs</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">If<sp/>you<sp/>experience<sp/>network<sp/>issues<sp/>when<sp/>downloading<sp/>dependencies,<sp/>you<sp/>can<sp/>customize<sp/>the<sp/>download<sp/>URLs<sp/>using<sp/>environment<sp/>variables.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>following<sp/>environment<sp/>variables<sp/>can<sp/>be<sp/>set<sp/>to<sp/>customize<sp/>dependency<sp/>URLs:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>`ICEBERG_ARROW_URL`:<sp/>Apache<sp/>Arrow<sp/>tarball<sp/>URL</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>`ICEBERG_AVRO_URL`:<sp/>Apache<sp/>Avro<sp/>tarball<sp/>URL</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>`ICEBERG_AVRO_GIT_URL`:<sp/>Apache<sp/>Avro<sp/>git<sp/>repository<sp/>URL</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>`ICEBERG_NANOARROW_URL`:<sp/>Nanoarrow<sp/>tarball<sp/>URL</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>`ICEBERG_CROARING_URL`:<sp/>CRoaring<sp/>tarball<sp/>URL</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>`ICEBERG_NLOHMANN_JSON_URL`:<sp/>nlohmann-json<sp/>tarball<sp/>URL</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>`ICEBERG_CPR_URL`:<sp/>cpr<sp/>tarball<sp/>URL</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Example<sp/>usage:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```bash</highlight></codeline>
+<codeline><highlight class="normal">export<sp/>ICEBERG_ARROW_URL=&quot;https://your-mirror.com/apache-arrow-22.0.0.tar.gz&quot;</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Build</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Build,<sp/>Run<sp/>Test<sp/>and<sp/>Install<sp/>Core<sp/>Libraries</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```bash</highlight></codeline>
+<codeline><highlight class="normal">cd<sp/>iceberg-cpp</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DICEBERG_BUILD_STATIC=ON<sp/>-DICEBERG_BUILD_SHARED=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Build<sp/>and<sp/>Install<sp/>Iceberg<sp/>Bundle<sp/>Library</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">####<sp/>Vendored<sp/>Apache<sp/>Arrow<sp/>(default)</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```bash</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DICEBERG_BUILD_BUNDLE=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">####<sp/>Provided<sp/>Apache<sp/>Arrow</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```bash</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DCMAKE_PREFIX_PATH=/path/to/arrow<sp/>-DICEBERG_BUILD_BUNDLE=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Build<sp/>Examples</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">After<sp/>installing<sp/>the<sp/>core<sp/>libraries,<sp/>you<sp/>can<sp/>build<sp/>the<sp/>examples:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```bash</highlight></codeline>
+<codeline><highlight class="normal">cd<sp/>iceberg-cpp/example</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_PREFIX_PATH=/path/to/install</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">If<sp/>you<sp/>are<sp/>using<sp/>provided<sp/>Apache<sp/>Arrow,<sp/>you<sp/>need<sp/>to<sp/>include<sp/>`/path/to/arrow`<sp/>in<sp/>`CMAKE_PREFIX_PATH`<sp/>as<sp/>below.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```bash</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_PREFIX_PATH=&quot;/path/to/install;/path/to/arrow&quot;</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Contribute</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Apache<sp/>Iceberg<sp/>is<sp/>an<sp/>active<sp/>open-source<sp/>project,<sp/>governed<sp/>under<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF).<sp/>Iceberg-cpp<sp/>is<sp/>open<sp/>to<sp/>people<sp/>who<sp/>want<sp/>to<sp/>contribute<sp/>to<sp/>it.<sp/>Here<sp/>are<sp/>some<sp/>ways<sp/>to<sp/>get<sp/>involved:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>Submit<sp/>[Issues](https://github.com/apache/iceberg-cpp/issues/new)<sp/>for<sp/>bug<sp/>report<sp/>or<sp/>feature<sp/>requests.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Discuss<sp/>at<sp/>[dev<sp/>mailing<sp/>list](mailto:dev@iceberg.apache.org)<sp/>([subscribe](&lt;mailto:dev-subscribe@iceberg.apache.org?subject=(send%20this%20email%20to%20subscribe)&gt;)<sp/>/<sp/>[unsubscribe](&lt;mailto:dev-unsubscribe@iceberg.apache.org?subject=(send%20this%20email%20to%20unsubscribe)&gt;)<sp/>/<sp/>[archives](https://lists.apache.org/list.html?dev@iceberg.apache.org))</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>Talk<sp/>to<sp/>the<sp/>community<sp/>directly<sp/>at<sp/>[Slack<sp/>#cpp<sp/>channel](https://join.slack.com/t/apache-iceberg/shared_invite/zt-1zbov3k6e-KtJfoaxp97YfX6dPz1Bk7A).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>Apache<sp/>Iceberg<sp/>community<sp/>is<sp/>built<sp/>on<sp/>the<sp/>principles<sp/>described<sp/>in<sp/>the<sp/>[Apache<sp/>Way](https://www.apache.org/theapacheway/index.html)<sp/>and<sp/>all<sp/>who<sp/>engage<sp/>with<sp/>the<sp/>community<sp/>are<sp/>expected<sp/>to<sp/>be<sp/>respectful,<sp/>open,<sp/>come<sp/>with<sp/>the<sp/>best<sp/>interests<sp/>of<sp/>the<sp/>community<sp/>in<sp/>mind,<sp/>and<sp/>abide<sp/>by<sp/>the<sp/>Apache<sp/>Foundation<sp/>[Code<sp/>of<sp/>Conduct](https://www.apache.org/foundation/policies/conduct.html).</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Linting</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Install<sp/>the<sp/>python<sp/>package<sp/>`pre-commit`<sp/>and<sp/>run<sp/>once<sp/>`pre-commit<sp/>install`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">pip<sp/>install<sp/>pre-commit</highlight></codeline>
+<codeline><highlight class="normal">pre-commit<sp/>install</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">This<sp/>will<sp/>setup<sp/>a<sp/>git<sp/>pre-commit-hook<sp/>that<sp/>is<sp/>executed<sp/>on<sp/>each<sp/>commit<sp/>and<sp/>will<sp/>report<sp/>the<sp/>linting<sp/>problems.<sp/>To<sp/>run<sp/>all<sp/>hooks<sp/>on<sp/>all<sp/>files<sp/>use<sp/>`pre-commit<sp/>run<sp/>-a`.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Dev<sp/>Containers</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">We<sp/>provide<sp/>Dev<sp/>Container<sp/>configuration<sp/>file<sp/>templates.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">To<sp/>use<sp/>a<sp/>Dev<sp/>Container<sp/>as<sp/>your<sp/>development<sp/>environment,<sp/>follow<sp/>the<sp/>steps<sp/>below,<sp/>then<sp/>select<sp/>`Dev<sp/>Containers:<sp/>Reopen<sp/>in<sp/>Container`<sp/>from<sp/>VS<sp/>Code&apos;s<sp/>Command<sp/>Palette.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">cd<sp/>.devcontainer</highlight></codeline>
+<codeline><highlight class="normal">cp<sp/>Dockerfile.template<sp/>Dockerfile</highlight></codeline>
+<codeline><highlight class="normal">cp<sp/>devcontainer.json.template<sp/>devcontainer.json</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">If<sp/>you<sp/>make<sp/>improvements<sp/>that<sp/>could<sp/>benefit<sp/>all<sp/>developers,<sp/>please<sp/>update<sp/>the<sp/>template<sp/>files<sp/>and<sp/>submit<sp/>a<sp/>pull<sp/>request.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>License</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Licensed<sp/>under<sp/>the<sp/>[Apache<sp/>License,<sp/>Version<sp/>2.0](http://www.apache.org/licenses/LICENSE-2.0)</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/iceberg-cpp/iceberg-cpp/README.md"/>
+  </compounddef>
+</doxygen>

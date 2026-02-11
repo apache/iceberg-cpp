@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structProjectTestParam" kind="struct" language="C++" prot="public">
+    <compoundname>ProjectTestParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structProjectTestParam_1a9a967546898ace8b100b32abe5fb2f36" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ProjectTestParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>ProjectTestParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="849" column="15" bodyfile="iceberg/test/schema_test.cc" bodystart="849" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structProjectTestParam_1a23bd22b198d7cc422e6509f9c6ce3bd4" prot="public" static="no" mutable="no">
+        <type>std::function&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt;()&gt;</type>
+        <definition>std::function&lt;std::unique_ptr&lt;iceberg::Schema&gt;()&gt; ProjectTestParam::create_schema</definition>
+        <argsstring></argsstring>
+        <name>create_schema</name>
+        <qualifiedname>ProjectTestParam::create_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="850" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="850" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structProjectTestParam_1aadf5cbc7dbad9f68415bfd6c7ecc417a" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; ProjectTestParam::selected_ids</definition>
+        <argsstring></argsstring>
+        <name>selected_ids</name>
+        <qualifiedname>ProjectTestParam::selected_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="851" column="22" bodyfile="iceberg/test/schema_test.cc" bodystart="851" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structProjectTestParam_1a978f5303912834dfb6e196bd4f27bd73" prot="public" static="no" mutable="no">
+        <type>std::function&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt;()&gt;</type>
+        <definition>std::function&lt;std::unique_ptr&lt;iceberg::Schema&gt;()&gt; ProjectTestParam::expected_schema</definition>
+        <argsstring></argsstring>
+        <name>expected_schema</name>
+        <qualifiedname>ProjectTestParam::expected_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="852" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="852" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structProjectTestParam_1a307444ac0fa147b666e028a101b5aba2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool ProjectTestParam::should_succeed</definition>
+        <argsstring></argsstring>
+        <name>should_succeed</name>
+        <qualifiedname>ProjectTestParam::should_succeed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="853" column="8" bodyfile="iceberg/test/schema_test.cc" bodystart="853" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structProjectTestParam_1a3ea873334fea0bd0c94460634dcf6707" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ProjectTestParam::expected_error_message</definition>
+        <argsstring></argsstring>
+        <name>expected_error_message</name>
+        <qualifiedname>ProjectTestParam::expected_error_message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="854" column="15" bodyfile="iceberg/test/schema_test.cc" bodystart="854" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>ProjectTestParam</label>
+        <link refid="structProjectTestParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_message</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>selected_ids</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_set&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/schema_test.cc" line="848" column="1" bodyfile="iceberg/test/schema_test.cc" bodystart="848" bodyend="855"/>
+    <listofallmembers>
+      <member refid="structProjectTestParam_1a23bd22b198d7cc422e6509f9c6ce3bd4" prot="public" virt="non-virtual"><scope>ProjectTestParam</scope><name>create_schema</name></member>
+      <member refid="structProjectTestParam_1a3ea873334fea0bd0c94460634dcf6707" prot="public" virt="non-virtual"><scope>ProjectTestParam</scope><name>expected_error_message</name></member>
+      <member refid="structProjectTestParam_1a978f5303912834dfb6e196bd4f27bd73" prot="public" virt="non-virtual"><scope>ProjectTestParam</scope><name>expected_schema</name></member>
+      <member refid="structProjectTestParam_1aadf5cbc7dbad9f68415bfd6c7ecc417a" prot="public" virt="non-virtual"><scope>ProjectTestParam</scope><name>selected_ids</name></member>
+      <member refid="structProjectTestParam_1a307444ac0fa147b666e028a101b5aba2" prot="public" virt="non-virtual"><scope>ProjectTestParam</scope><name>should_succeed</name></member>
+      <member refid="structProjectTestParam_1a9a967546898ace8b100b32abe5fb2f36" prot="public" virt="non-virtual"><scope>ProjectTestParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,979 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1UpdatePartitionSpec" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::UpdatePartitionSpec</compoundname>
+    <basecompoundref refid="classiceberg_1_1PendingUpdate" prot="public" virt="non-virtual">iceberg::PendingUpdate</basecompoundref>
+    <includes refid="update__partition__spec_8h" local="no">update_partition_spec.h</includes>
+    <innerclass refid="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult" prot="public">iceberg::UpdatePartitionSpec::ApplyResult</innerclass>
+    <innerclass refid="structiceberg_1_1UpdatePartitionSpec_1_1TransformKeyHash" prot="private">iceberg::UpdatePartitionSpec::TransformKeyHash</innerclass>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1UpdatePartitionSpec_1a54caf2e046c83b12eb58b3bc8e6b6e99" prot="private" static="no">
+        <type>std::pair&lt; int32_t, std::string &gt;</type>
+        <definition>using iceberg::UpdatePartitionSpec::TransformKey =  std::pair&lt;int32_t, std::string&gt;</definition>
+        <argsstring></argsstring>
+        <name>TransformKey</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::TransformKey</qualifiedname>
+        <briefdescription>
+<para>Pair of source ID and transform string for indexing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="113" column="3" bodyfile="iceberg/update/update_partition_spec.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a5b85e247ec9fb746a1d3b8dbb65174a9" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::UpdatePartitionSpec::format_version_</definition>
+        <argsstring></argsstring>
+        <name>format_version_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::format_version_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="176" column="11" bodyfile="iceberg/update/update_partition_spec.h" bodystart="176" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a8dff5b5012eeb934ae1cbff9c801c5bd" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::UpdatePartitionSpec::spec_</definition>
+        <argsstring></argsstring>
+        <name>spec_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="177" column="19" bodyfile="iceberg/update/update_partition_spec.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a4b8c82208a0a8efbb8fedd2af4e26282" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::UpdatePartitionSpec::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="178" column="19" bodyfile="iceberg/update/update_partition_spec.h" bodystart="178" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1aab41774cd1c5ca9d6e77dbb0347483a3" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::UpdatePartitionSpec::case_sensitive_</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::case_sensitive_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="179" column="8" bodyfile="iceberg/update/update_partition_spec.h" bodystart="179" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a60b6a6fbd0e3829177b0dd99f4999f6f" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::UpdatePartitionSpec::set_as_default_</definition>
+        <argsstring></argsstring>
+        <name>set_as_default_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::set_as_default_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="180" column="8" bodyfile="iceberg/update/update_partition_spec.h" bodystart="180" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a77ef869d380c57c87813fea7416de3c8" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::UpdatePartitionSpec::last_assigned_partition_id_</definition>
+        <argsstring></argsstring>
+        <name>last_assigned_partition_id_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::last_assigned_partition_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="181" column="11" bodyfile="iceberg/update/update_partition_spec.h" bodystart="181" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1ab455a28e7e8ff0fe5314d5f0bb7fef42" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, const <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> *, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, <ref refid="structiceberg_1_1StringEqual" kindref="compound">StringEqual</ref> &gt;</type>
+        <definition>std::unordered_map&lt;std::string, const PartitionField*, StringHash, StringEqual&gt; iceberg::UpdatePartitionSpec::name_to_field_</definition>
+        <argsstring></argsstring>
+        <name>name_to_field_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::name_to_field_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="185" column="7" bodyfile="iceberg/update/update_partition_spec.h" bodystart="185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a04bc50eb3e8d4618ba90ba70ed046995" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; TransformKey, const <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> *, TransformKeyHash &gt;</type>
+        <definition>std::unordered_map&lt;TransformKey, const PartitionField*, TransformKeyHash&gt; iceberg::UpdatePartitionSpec::transform_to_field_</definition>
+        <argsstring></argsstring>
+        <name>transform_to_field_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::transform_to_field_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="187" column="7" bodyfile="iceberg/update/update_partition_spec.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a45469d0afec2159bc3c1d1d6499835b4" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; TransformKey, <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref>, TransformKeyHash &gt;</type>
+        <definition>std::unordered_map&lt;TransformKey, PartitionField, TransformKeyHash&gt; iceberg::UpdatePartitionSpec::historical_fields_</definition>
+        <argsstring></argsstring>
+        <name>historical_fields_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::historical_fields_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="191" column="22" bodyfile="iceberg/update/update_partition_spec.h" bodystart="191" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a014644ee548bdf90383310fbfbfcc72f" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> &gt;</type>
+        <definition>std::vector&lt;PartitionField&gt; iceberg::UpdatePartitionSpec::adds_</definition>
+        <argsstring></argsstring>
+        <name>adds_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::adds_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="194" column="15" bodyfile="iceberg/update/update_partition_spec.h" bodystart="194" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a8d7489155ed7e5c50ad3c7c1306d902f" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; std::string, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, <ref refid="structiceberg_1_1StringEqual" kindref="compound">StringEqual</ref> &gt;</type>
+        <definition>std::unordered_set&lt;std::string, StringHash, StringEqual&gt; iceberg::UpdatePartitionSpec::added_field_names_</definition>
+        <argsstring></argsstring>
+        <name>added_field_names_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::added_field_names_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="195" column="22" bodyfile="iceberg/update/update_partition_spec.h" bodystart="195" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a582e1c2e7738923c84a0814edad36507" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, std::string &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, std::string&gt; iceberg::UpdatePartitionSpec::added_time_fields_</definition>
+        <argsstring></argsstring>
+        <name>added_time_fields_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::added_time_fields_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="196" column="22" bodyfile="iceberg/update/update_partition_spec.h" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a857a9f0d044e991cc4a643b2c72d716e" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; TransformKey, std::string, TransformKeyHash &gt;</type>
+        <definition>std::unordered_map&lt;TransformKey, std::string, TransformKeyHash&gt; iceberg::UpdatePartitionSpec::transform_to_added_field_</definition>
+        <argsstring></argsstring>
+        <name>transform_to_added_field_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::transform_to_added_field_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="198" column="7" bodyfile="iceberg/update/update_partition_spec.h" bodystart="198" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a3ded95987d6b06fa68d00f9c8d35bf24" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::UpdatePartitionSpec::deletes_</definition>
+        <argsstring></argsstring>
+        <name>deletes_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::deletes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="199" column="22" bodyfile="iceberg/update/update_partition_spec.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1UpdatePartitionSpec_1a5b59234b164194615b52e5dfd1bc2372" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, <ref refid="structiceberg_1_1StringEqual" kindref="compound">StringEqual</ref> &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string, StringHash, StringEqual&gt; iceberg::UpdatePartitionSpec::renames_</definition>
+        <argsstring></argsstring>
+        <name>renames_</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::renames_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="200" column="22" bodyfile="iceberg/update/update_partition_spec.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a9756b60877eb030a20f605695a51bdc2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; UpdatePartitionSpec &gt; &gt; iceberg::UpdatePartitionSpec::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="46" column="17" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="39" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1ade3d7a4c3188eb7ece9b28cd86070877" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::UpdatePartitionSpec::~UpdatePartitionSpec</definition>
+        <argsstring>() override</argsstring>
+        <name>~UpdatePartitionSpec</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::~UpdatePartitionSpec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="49" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1ace38effb710b4d64736136db11b41347" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::CaseSensitive</definition>
+        <argsstring>(bool is_case_sensitive)</argsstring>
+        <name>CaseSensitive</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::CaseSensitive</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>is_case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Set whether column resolution in the source schema should be case sensitive. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="52" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="90" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a33bfa87348f95e0d2dc80e7bd9891083" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::AddField</definition>
+        <argsstring>(std::string_view source_name)</argsstring>
+        <name>AddField</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::AddField</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>source_name</declname>
+        </param>
+        <briefdescription>
+<para>Add a new partition field from a source column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The partition field will use identity transform on the source column, and use source column name as the partition field name.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source column name in the table schema. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="61" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="100" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a39a78ff65cb15877015758f19d40558e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::AddField</definition>
+        <argsstring>(const std::shared_ptr&lt; Term &gt; &amp;term, std::string_view part_name=&quot;&quot;)</argsstring>
+        <name>AddField</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::AddField</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Term" kindref="compound">Term</ref> &gt; &amp;</type>
+          <declname>term</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>part_name</declname>
+          <defval>&quot;&quot;</defval>
+        </param>
+        <briefdescription>
+<para>Add a new partition field with a custom name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>term</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The term representing the source column, should be unbound. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>part_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name for the partition field. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="68" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="111" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a95a5e0eff60baecba88a95e5427a1d9a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::RemoveField</definition>
+        <argsstring>(std::string_view name)</argsstring>
+        <name>RemoveField</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::RemoveField</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Remove a partition field by name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the partition field to remove. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="75" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="224" bodyend="239"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1aa826c876477eee5a72375d95e41a914c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::RemoveField</definition>
+        <argsstring>(const std::shared_ptr&lt; Term &gt; &amp;term)</argsstring>
+        <name>RemoveField</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::RemoveField</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Term" kindref="compound">Term</ref> &gt; &amp;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+<para>Remove a partition field by its source term. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The partition field with the same transform and source reference will be removed. If the term is a reference and does not have a transform, identity transform is used.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>term</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The term representing the source column, should be unbound. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="85" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="241" bodyend="264"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1ad07754da983c6435fb3d5f44d8922659" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::RenameField</definition>
+        <argsstring>(std::string_view name, std::string new_name)</argsstring>
+        <name>RenameField</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::RenameField</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>new_name</declname>
+        </param>
+        <briefdescription>
+<para>Rename a field in the partition spec. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the partition field to rename. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>new_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Replacement name for the partition field. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="92" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="285" bodyend="309"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a3fa536df426187a2d4421b675228f3c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::AddNonDefaultSpec</definition>
+        <argsstring>()</argsstring>
+        <name>AddNonDefaultSpec</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::AddNonDefaultSpec</qualifiedname>
+        <briefdescription>
+<para>Sets that the new partition spec will NOT be set as the default. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The default behavior is to set the new spec as the default partition spec.</para>
+<para><simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="99" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="95" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a6f438d6aaa000f06347b0ae44e29e23c" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::UpdatePartitionSpec::kind</definition>
+        <argsstring>() const final</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdate_1a33fba65ffa4a85fd7c5b9984cb892812">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this pending update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="101" column="8" bodyfile="iceberg/update/update_partition_spec.h" bodystart="101" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1aef8cdad0003135ad89e9b2967d64b806" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult" kindref="compound">ApplyResult</ref> &gt;</type>
+        <definition>Result&lt; UpdatePartitionSpec::ApplyResult &gt; iceberg::UpdatePartitionSpec::Apply</definition>
+        <argsstring>()</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::Apply</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="107" column="10" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="311" bodyend="353"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a88cdd346bffd32be540670528908f51b" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::UpdatePartitionSpec::UpdatePartitionSpec</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>UpdatePartitionSpec</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::UpdatePartitionSpec</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="110" column="12" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="47" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a12cbd961be7b7fe454b6ced6d34b97d3" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::UpdatePartitionSpec::AssignFieldId</definition>
+        <argsstring>()</argsstring>
+        <name>AssignFieldId</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::AssignFieldId</qualifiedname>
+        <briefdescription>
+<para>Assign a new partition field ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="123" column="11" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="355" bodyend="355"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a2001b3604c887f7bb554aa37e3ba5a0c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref></type>
+        <definition>PartitionField iceberg::UpdatePartitionSpec::RecycleOrCreatePartitionField</definition>
+        <argsstring>(int32_t source_id, std::shared_ptr&lt; Transform &gt; transform, std::string_view name)</argsstring>
+        <name>RecycleOrCreatePartitionField</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::RecycleOrCreatePartitionField</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>source_id</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+          <declname>transform</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Recycle or create a partition field. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>In V2 it searches for a similar partition field in historical partition specs. Tries to match on source field ID, transform type and target name (optional). If not found or in V1 cases it creates a new <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The source field ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>transform</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The transform function. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The target partition field name, if specified. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The recycled or newly created partition field. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="135" column="18" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="357" bodyend="372"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a6dffffe8ee32b1b640cffe167a765df9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::AddFieldInternal</definition>
+        <argsstring>(std::string_view name, int32_t source_id, const std::shared_ptr&lt; Transform &gt; &amp;transform)</argsstring>
+        <name>AddFieldInternal</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::AddFieldInternal</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>source_id</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt; &amp;</type>
+          <declname>transform</declname>
+        </param>
+        <briefdescription>
+<para>Internal implementation of AddField with resolved source ID and transform. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="140" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="132" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1abde98d7277731c1d7c574df0805b6d54" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::UpdatePartitionSpec::GeneratePartitionName</definition>
+        <argsstring>(int32_t source_id, const std::shared_ptr&lt; Transform &gt; &amp;transform) const</argsstring>
+        <name>GeneratePartitionName</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::GeneratePartitionName</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>source_id</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt; &amp;</type>
+          <declname>transform</declname>
+        </param>
+        <briefdescription>
+<para>Generate a partition field name from the source and transform. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="144" column="10" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="374" bodyend="382"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1afa299cc6bf69129bfa8c5d45b7cd7e78" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::UpdatePartitionSpec::CheckForRedundantAddedPartitions</definition>
+        <argsstring>(const PartitionField &amp;field)</argsstring>
+        <name>CheckForRedundantAddedPartitions</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::CheckForRedundantAddedPartitions</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Check for redundant time-based partition fields. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="154" column="8" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="400" bodyend="410"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1ae354d1cfc07dcc4ac550ebc596149c04" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::RewriteDeleteAndAddField</definition>
+        <argsstring>(const PartitionField &amp;existing, std::string_view name)</argsstring>
+        <name>RewriteDeleteAndAddField</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::RewriteDeleteAndAddField</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> &amp;</type>
+          <declname>existing</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Handle rewriting a delete-and-add operation for the same field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="157" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="215" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1aa66e813f6ec5cf9008f22376a576d7b0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref> &amp;</type>
+        <definition>UpdatePartitionSpec &amp; iceberg::UpdatePartitionSpec::RemoveFieldByTransform</definition>
+        <argsstring>(const TransformKey &amp;key, std::string_view term_str)</argsstring>
+        <name>RemoveFieldByTransform</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::RemoveFieldByTransform</qualifiedname>
+        <param>
+          <type>const TransformKey &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>term_str</declname>
+        </param>
+        <briefdescription>
+<para>Internal helper to remove a field by transform key. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="161" column="23" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="266" bodyend="283"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a8a880cda9c9c0a5b0fe7c74dbf7313b4" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::UpdatePartitionSpec::BuildHistoricalFieldsIndex</definition>
+        <argsstring>()</argsstring>
+        <name>BuildHistoricalFieldsIndex</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::BuildHistoricalFieldsIndex</qualifiedname>
+        <briefdescription>
+<para>Build index of historical partition fields for efficient recycling (V2+). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="173" column="8" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="433" bodyend="449"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1ae660a6d7bc45154797733d5887876d67" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::UpdatePartitionSpec::IsTimeTransform</definition>
+        <argsstring>(const std::shared_ptr&lt; Transform &gt; &amp;transform)</argsstring>
+        <name>IsTimeTransform</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::IsTimeTransform</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt; &amp;</type>
+          <declname>transform</declname>
+        </param>
+        <briefdescription>
+<para>Check if a transform is a time-based transform. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="148" column="15" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="384" bodyend="394"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1ac1229f012f479af484fbe60894f12b76" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::UpdatePartitionSpec::IsVoidTransform</definition>
+        <argsstring>(const PartitionField &amp;field)</argsstring>
+        <name>IsVoidTransform</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::IsVoidTransform</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Check if a partition field uses void transform. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="151" column="15" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="396" bodyend="398"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a2300f9d805b20bda9b4d2644f9f23be6" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, const <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> *, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, <ref refid="structiceberg_1_1StringEqual" kindref="compound">StringEqual</ref> &gt;</type>
+        <definition>std::unordered_map&lt; std::string, const PartitionField *, StringHash, StringEqual &gt; iceberg::UpdatePartitionSpec::IndexSpecByName</definition>
+        <argsstring>(const PartitionSpec &amp;spec)</argsstring>
+        <name>IndexSpecByName</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::IndexSpecByName</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+<para>Index the spec fields by name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="166" column="3" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="413" bodyend="419"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdatePartitionSpec_1a3fcf0b11d0f86715e8e24aeb1de0dcde" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_map&lt; TransformKey, const <ref refid="classiceberg_1_1PartitionField" kindref="compound">PartitionField</ref> *, TransformKeyHash &gt;</type>
+        <definition>std::unordered_map&lt; UpdatePartitionSpec::TransformKey, const PartitionField *, UpdatePartitionSpec::TransformKeyHash &gt; iceberg::UpdatePartitionSpec::IndexSpecByTransform</definition>
+        <argsstring>(const PartitionSpec &amp;spec)</argsstring>
+        <name>IndexSpecByTransform</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::IndexSpecByTransform</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+<para>Index the spec fields by (source_id, transform) pair. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="170" column="3" bodyfile="iceberg/update/update_partition_spec.cc" bodystart="423" bodyend="431"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>API for partition spec evolution. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>When committing, these changes will be applied to the current table metadata. Commit conflicts will not be resolved and will result in a CommitFailed error. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdatePartitionSpec</label>
+        <link refid="classiceberg_1_1UpdatePartitionSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>transaction_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Transaction</label>
+        <link refid="classiceberg_1_1Transaction"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdatePartitionSpec</label>
+        <link refid="classiceberg_1_1UpdatePartitionSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Transaction &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::enable_shared_from_this&lt; Transaction &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_partition_spec.h" line="44" column="1" bodyfile="iceberg/update/update_partition_spec.h" bodystart="44" bodyend="201"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a8d7489155ed7e5c50ad3c7c1306d902f" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>added_field_names_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a582e1c2e7738923c84a0814edad36507" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>added_time_fields_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a33bfa87348f95e0d2dc80e7bd9891083" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AddField</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a39a78ff65cb15877015758f19d40558e" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AddField</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a6dffffe8ee32b1b640cffe167a765df9" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AddFieldInternal</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a3fa536df426187a2d4421b675228f3c2" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AddNonDefaultSpec</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a014644ee548bdf90383310fbfbfcc72f" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>adds_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1aef8cdad0003135ad89e9b2967d64b806" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a12cbd961be7b7fe454b6ced6d34b97d3" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>AssignFieldId</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a93721051561748b1a29e75b7d4cbbd86" prot="protected" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>base</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a8a880cda9c9c0a5b0fe7c74dbf7313b4" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>BuildHistoricalFieldsIndex</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1aab41774cd1c5ca9d6e77dbb0347483a3" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>case_sensitive_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1ace38effb710b4d64736136db11b41347" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>CaseSensitive</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1afa299cc6bf69129bfa8c5d45b7cd7e78" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>CheckForRedundantAddedPartitions</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a4a5df6d83b7a4a3c4dac19a77945be71" prot="public" virt="virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a3ded95987d6b06fa68d00f9c8d35bf24" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>deletes_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a22441dbf2867204cb175300075e50db9" prot="public" virt="virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>Finalize</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a5b85e247ec9fb746a1d3b8dbb65174a9" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>format_version_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1abde98d7277731c1d7c574df0805b6d54" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>GeneratePartitionName</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a45469d0afec2159bc3c1d1d6499835b4" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>historical_fields_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a2300f9d805b20bda9b4d2644f9f23be6" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>IndexSpecByName</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a3fcf0b11d0f86715e8e24aeb1de0dcde" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>IndexSpecByTransform</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1ae660a6d7bc45154797733d5887876d67" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>IsTimeTransform</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1ac1229f012f479af484fbe60894f12b76" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>IsVoidTransform</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a6f438d6aaa000f06347b0ae44e29e23c" prot="public" virt="virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a5bac3f32c6a0790ba222399fed5c1944" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a77ef869d380c57c87813fea7416de3c8" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>last_assigned_partition_id_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a9756b60877eb030a20f605695a51bdc2" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1ab455a28e7e8ff0fe5314d5f0bb7fef42" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>name_to_field_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::UpdatePartitionSpec</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::UpdatePartitionSpec</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ab758ff7780442894f3fb0a80d0db064f" prot="protected" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a2001b3604c887f7bb554aa37e3ba5a0c" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>RecycleOrCreatePartitionField</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a95a5e0eff60baecba88a95e5427a1d9a" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>RemoveField</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1aa826c876477eee5a72375d95e41a914c" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>RemoveField</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1aa66e813f6ec5cf9008f22376a576d7b0" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>RemoveFieldByTransform</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1ad07754da983c6435fb3d5f44d8922659" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>RenameField</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a5b59234b164194615b52e5dfd1bc2372" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>renames_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1ae354d1cfc07dcc4ac550ebc596149c04" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>RewriteDeleteAndAddField</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a4b8c82208a0a8efbb8fedd2af4e26282" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a60b6a6fbd0e3829177b0dd99f4999f6f" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>set_as_default_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a8dff5b5012eeb934ae1cbff9c801c5bd" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>spec_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac57921ff326abc60b8d9558aa7046d10" prot="protected" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>transaction_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a857a9f0d044e991cc4a643b2c72d716e" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>transform_to_added_field_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a04bc50eb3e8d4618ba90ba70ed046995" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>transform_to_field_</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a54caf2e046c83b12eb58b3bc8e6b6e99" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>TransformKey</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1a88cdd346bffd32be540670528908f51b" prot="private" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>UpdatePartitionSpec</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ace0dfef0058a64109f51e2638429a9f2" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1UpdatePartitionSpec_1ade3d7a4c3188eb7ece9b28cd86070877" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec</scope><name>~UpdatePartitionSpec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
