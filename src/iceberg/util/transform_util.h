@@ -22,6 +22,7 @@
 #include <string>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -97,6 +98,36 @@ class ICEBERG_EXPORT TransformUtil {
   /// \param timestamp_micros the timestamp in microseconds.
   /// \return a string representation of this timestamp.
   static std::string HumanTimestampWithZone(int64_t timestamp_micros);
+
+  /// \brief Parses a date string in "yyyy-MM-dd" format into days since epoch.
+  ///
+  /// \param str The date string to parse.
+  /// \return The number of days since 1970-01-01, or an error.
+  static Result<int32_t> ParseDay(std::string_view str);
+
+  /// \brief Parses a time string into microseconds from midnight.
+  ///
+  /// Accepts: "HH:mm", "HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSSSSS".
+  ///
+  /// \param str The time string to parse.
+  /// \return The number of microseconds from midnight, or an error.
+  static Result<int64_t> ParseTime(std::string_view str);
+
+  /// \brief Parses a timestamp string into microseconds since epoch.
+  ///
+  /// Accepts: "yyyy-MM-ddTHH:mm:ss", with optional fractional seconds (.SSS or .SSSSSS).
+  ///
+  /// \param str The timestamp string to parse.
+  /// \return The number of microseconds since epoch, or an error.
+  static Result<int64_t> ParseTimestamp(std::string_view str);
+
+  /// \brief Parses a timestamp-with-zone string into microseconds since epoch.
+  ///
+  /// Accepts the same formats as ParseTimestamp, with a "+00:00" suffix.
+  ///
+  /// \param str The timestamp string to parse.
+  /// \return The number of microseconds since epoch, or an error.
+  static Result<int64_t> ParseTimestampWithZone(std::string_view str);
 
   /// \brief Base64 encode a string
   static std::string Base64Encode(std::string_view str_to_encode);
