@@ -80,6 +80,13 @@ iceberg_sources = files(
     'manifest/v2_metadata.cc',
     'manifest/v3_metadata.cc',
     'metadata_columns.cc',
+    'metrics/commit_report.cc',
+    'metrics/counter.cc',
+    'metrics/json_serde.cc',
+    'metrics/metrics_context.cc',
+    'metrics/metrics_reporters.cc',
+    'metrics/scan_report.cc',
+    'metrics/timer.cc',
     'metrics_config.cc',
     'name_mapping.cc',
     'partition_field.cc',
@@ -282,6 +289,7 @@ subdir('data')
 subdir('deletes')
 subdir('expression')
 subdir('manifest')
+subdir('metrics')
 subdir('puffin')
 subdir('row')
 subdir('update')
