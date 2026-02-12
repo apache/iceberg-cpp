@@ -33,6 +33,7 @@ namespace iceberg {
 constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 constexpr int64_t kInvalidSnapshotId = -1;
 constexpr int64_t kInvalidSequenceNumber = -1;
+constexpr int64_t kInvalidSchemaId = -1;
 /// \brief Stand-in for the current sequence number that will be assigned when the commit
 /// is successful. This is replaced when writing a manifest list by the ManifestFile
 /// adapter.

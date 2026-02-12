@@ -58,6 +58,13 @@ set(ICEBERG_SOURCES
     manifest/v3_metadata.cc
     metadata_columns.cc
     metrics_config.cc
+    metrics/commit_report.cc
+    metrics/counter.cc
+    metrics/json_serde.cc
+    metrics/metrics_context.cc
+    metrics/metrics_reporters.cc
+    metrics/scan_report.cc
+    metrics/timer.cc
     name_mapping.cc
     partition_field.cc
     partition_spec.cc
@@ -172,6 +179,7 @@ add_subdirectory(puffin)
 add_subdirectory(row)
 add_subdirectory(update)
 add_subdirectory(util)
+add_subdirectory(metrics)
 
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES
