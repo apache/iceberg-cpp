@@ -23,13 +23,45 @@
 #include <concepts>
 #include <cstdint>
 #include <string>
+#include <vector>
 
+#include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/temporal_util.h"
+#include "iceberg/util/transform_util.h"
 
 namespace iceberg {
+
+namespace {
+Result<std::vector<uint8_t>> HexStringToBytes(std::string_view hex) {
+  if (hex.length() % 2 != 0) {
+    return InvalidArgument("Hex string must have an even length");
+  }
+
+  std::vector<uint8_t> bytes;
+  bytes.reserve(hex.length() / 2);
+
+  auto to_nibble = [](char c) -> uint8_t {
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+    throw std::invalid_argument("Invalid hex character");
+  };
+
+  for (size_t i = 0; i < hex.length(); i += 2) {
+    try {
+      bytes.push_back(
+          static_cast<uint8_t>((to_nibble(hex[i]) << 4) | to_nibble(hex[i + 1])));
+    } catch (const std::invalid_argument& e) {
+      return InvalidArgument("Invalid hex character in string: {}", e.what());
+    }
+  }
+  return bytes;
+}
+}  // namespace
 
 /// \brief LiteralCaster handles type casting operations for Literal.
 /// This is an internal implementation class.
@@ -193,12 +225,36 @@ Result<Literal> LiteralCaster::CastFromString(
       ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromString(str_val));
       return Literal::UUID(uuid);
     }
-    case TypeId::kDate:
-    case TypeId::kTime:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-      return NotImplemented("Cast from String to {} is not implemented yet",
-                            target_type->ToString());
+    case TypeId::kDate: {
+      ICEBERG_ASSIGN_OR_RAISE(auto days, TransformUtil::ParseDay(str_val));
+      return Literal::Date(days);
+    }
+    case TypeId::kTime: {
+      ICEBERG_ASSIGN_OR_RAISE(auto micros, TransformUtil::ParseTime(str_val));
+      return Literal::Time(micros);
+    }
+    case TypeId::kTimestamp: {
+      ICEBERG_ASSIGN_OR_RAISE(auto micros, TransformUtil::ParseTimestamp(str_val));
+      return Literal::Timestamp(micros);
+    }
+    case TypeId::kTimestampTz: {
+      ICEBERG_ASSIGN_OR_RAISE(auto micros,
+                              TransformUtil::ParseTimestampWithZone(str_val));
+      return Literal::TimestampTz(micros);
+    }
+    case TypeId::kBinary: {
+      ICEBERG_ASSIGN_OR_RAISE(auto bytes, HexStringToBytes(str_val));
+      return Literal::Binary(std::move(bytes));
+    }
+    case TypeId::kFixed: {
+      ICEBERG_ASSIGN_OR_RAISE(auto bytes, HexStringToBytes(str_val));
+      return Literal::Fixed(std::move(bytes));
+    }
+    case TypeId::kDecimal: {
+      const auto& dec_type = internal::checked_cast<const DecimalType&>(*target_type);
+      ICEBERG_ASSIGN_OR_RAISE(auto dec, Decimal::FromString(str_val));
+      return Literal::Decimal(dec.value(), dec_type.precision(), dec_type.scale());
+    }
     default:
       return NotSupported("Cast from String to {} is not supported",
                           target_type->ToString());
