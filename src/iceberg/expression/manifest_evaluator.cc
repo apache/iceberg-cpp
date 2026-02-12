@@ -340,7 +340,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
       return NotSupported("Bounds of non-primitive partition fields are not supported.");
     }
     return Literal::Deserialize(
-        bound, std::move(internal::checked_pointer_cast<PrimitiveType>(type)));
+        bound, internal::checked_pointer_cast<PrimitiveType>(type)));
   }
 
  private:
