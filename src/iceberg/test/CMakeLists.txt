@@ -172,6 +172,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    file_scan_task_test.cc
+                   incremental_append_scan_test.cc
                    table_scan_test.cc)
 
   add_iceberg_test(table_update_test
