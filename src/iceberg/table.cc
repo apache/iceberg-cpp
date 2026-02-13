@@ -226,7 +226,7 @@ Result<std::shared_ptr<UpdatePartitionStatistics>> Table::NewUpdatePartitionStat
 Result<std::shared_ptr<SnapshotManager>> Table::NewSnapshotManager() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
-                                          /*auto_commit=*/false));
+                                          /*auto_commit=*/true));
   return SnapshotManager::Make(std::move(transaction));
 }
 

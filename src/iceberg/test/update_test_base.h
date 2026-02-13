@@ -43,7 +43,6 @@ class UpdateTestBase : public ::testing::Test {
   void SetUp() override {
     InitializeFileIO();
     RegisterTableFromResource("TableMetadataV2Valid.json");
-    RegisterMinimalTableFromResource("TableMetadataV2ValidMinimal.json");
   }
 
   /// \brief Initialize file IO and create necessary directories.
@@ -57,7 +56,7 @@ class UpdateTestBase : public ::testing::Test {
         static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
     ASSERT_TRUE(arrow_fs != nullptr);
     ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/metadata").ok());
-    ASSERT_TRUE(arrow_fs->CreateDir(minimal_table_location_ + "/metadata").ok());
+    ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/metadata").ok());
   }
 
   /// \brief Register a table from a metadata resource file.
@@ -80,34 +79,58 @@ class UpdateTestBase : public ::testing::Test {
                            catalog_->RegisterTable(table_ident_, metadata_location));
   }
 
+  const TableIdentifier table_ident_{.name = "test_table"};
+  const std::string table_location_{"/warehouse/test_table"};
+  std::shared_ptr<FileIO> file_io_;
+  std::shared_ptr<InMemoryCatalog> catalog_;
+  std::shared_ptr<Table> table_;
+};
+
+// Base test fixture for table update operations on minimal table metadata.
+class MinimalUpdateTestBase : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    InitializeFileIO();
+    RegisterMinimalTableFromResource("TableMetadataV2ValidMinimal.json");
+  }
+
+  /// \brief Initialize file IO and create necessary directories.
+  void InitializeFileIO() {
+    file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+    catalog_ =
+        InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/", /*properties=*/{});
+
+    // Arrow MockFS cannot automatically create directories.
+    auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(
+        static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
+    ASSERT_TRUE(arrow_fs != nullptr);
+    ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/metadata").ok());
+  }
+
   /// \brief Register a minimal table from a metadata resource file.
   ///
   /// \param resource_name The name of the metadata resource file
   void RegisterMinimalTableFromResource(const std::string& resource_name) {
     // Drop existing table if it exists
-    std::ignore = catalog_->DropTable(minimal_table_ident_, /*purge=*/false);
+    std::ignore = catalog_->DropTable(table_ident_, /*purge=*/false);
 
     // Write table metadata to the table location.
-    auto metadata_location =
-        std::format("{}/metadata/00001-{}.metadata.json", minimal_table_location_,
-                    Uuid::GenerateV7().ToString());
+    auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
+                                         table_location_, Uuid::GenerateV7().ToString());
     ICEBERG_UNWRAP_OR_FAIL(auto metadata, ReadTableMetadataFromResource(resource_name));
-    metadata->location = minimal_table_location_;
+    metadata->location = table_location_;
     ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
                 IsOk());
 
     // Register the table in the catalog.
-    ICEBERG_UNWRAP_OR_FAIL(
-        minimal_table_, catalog_->RegisterTable(minimal_table_ident_, metadata_location));
+    ICEBERG_UNWRAP_OR_FAIL(minimal_table_,
+                           catalog_->RegisterTable(table_ident_, metadata_location));
   }
 
-  const TableIdentifier table_ident_{.name = "test_table"};
-  const std::string table_location_{"/warehouse/test_table"};
-  const TableIdentifier minimal_table_ident_{.name = "minimal_table"};
-  const std::string minimal_table_location_{"/warehouse/minimal_table"};
+  const TableIdentifier table_ident_{.name = "minimal_table"};
+  const std::string table_location_{"/warehouse/minimal_table"};
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<InMemoryCatalog> catalog_;
-  std::shared_ptr<Table> table_;
   std::shared_ptr<Table> minimal_table_;
 };
 

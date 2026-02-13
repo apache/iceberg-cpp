@@ -50,6 +50,8 @@ class SnapshotManagerTest : public UpdateTestBase {
   int64_t oldest_snapshot_id_{};
 };
 
+class SnapshotManagerMinimalTableTest : public MinimalUpdateTestBase {};
+
 TEST_F(SnapshotManagerTest, CreateBranch) {
   ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
   manager->CreateBranch("branch1", current_snapshot_id_);
@@ -76,12 +78,12 @@ TEST_F(SnapshotManagerTest, CreateBranchWithoutSnapshotId) {
   EXPECT_EQ(ref->snapshot_id, current_snapshot_id_);
 }
 
-TEST_F(SnapshotManagerTest, CreateBranchOnEmptyTable) {
+TEST_F(SnapshotManagerMinimalTableTest, CreateBranchOnEmptyTable) {
   ICEBERG_UNWRAP_OR_FAIL(auto manager, minimal_table_->NewSnapshotManager());
   manager->CreateBranch("branch1");
   EXPECT_THAT(manager->Commit(), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(minimal_table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   EXPECT_FALSE(
       reloaded->metadata()->refs.contains(std::string(SnapshotRef::kMainBranch)));
   auto it = reloaded->metadata()->refs.find("branch1");
@@ -90,13 +92,13 @@ TEST_F(SnapshotManagerTest, CreateBranchOnEmptyTable) {
   EXPECT_EQ(ref->type(), SnapshotRefType::kBranch);
 }
 
-TEST_F(SnapshotManagerTest, CreateBranchOnEmptyTableFailsWhenRefAlreadyExists) {
+TEST_F(SnapshotManagerMinimalTableTest,
+       CreateBranchOnEmptyTableFailsWhenRefAlreadyExists) {
   ICEBERG_UNWRAP_OR_FAIL(auto manager, minimal_table_->NewSnapshotManager());
   manager->CreateBranch("branch1");
   EXPECT_THAT(manager->Commit(), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto table_with_branch,
-                         catalog_->LoadTable(minimal_table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto table_with_branch, catalog_->LoadTable(table_ident_));
   ICEBERG_UNWRAP_OR_FAIL(auto manager2, table_with_branch->NewSnapshotManager());
   manager2->CreateBranch("branch1");
   auto result = manager2->Commit();
@@ -501,6 +503,34 @@ TEST_F(SnapshotManagerTest, SnapshotManagerThroughTransaction) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto manager, SnapshotManager::Make(txn));
 
+  manager->RollbackTo(oldest_snapshot_id_);
+  EXPECT_THAT(txn->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto current_snapshot, reloaded->current_snapshot());
+  EXPECT_EQ(current_snapshot->snapshot_id, oldest_snapshot_id_);
+}
+
+TEST_F(SnapshotManagerTest, SnapshotManagerFromTableAllowsMultipleSnapshotOperations) {
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
+
+  manager->SetCurrentSnapshot(oldest_snapshot_id_);
+  manager->SetCurrentSnapshot(current_snapshot_id_);
+  manager->RollbackTo(oldest_snapshot_id_);
+  EXPECT_THAT(manager->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto current_snapshot, reloaded->current_snapshot());
+  EXPECT_EQ(current_snapshot->snapshot_id, oldest_snapshot_id_);
+}
+
+TEST_F(SnapshotManagerTest,
+       SnapshotManagerFromTransactionAllowsMultipleSnapshotOperations) {
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, SnapshotManager::Make(txn));
+
+  manager->SetCurrentSnapshot(oldest_snapshot_id_);
+  manager->SetCurrentSnapshot(current_snapshot_id_);
   manager->RollbackTo(oldest_snapshot_id_);
   EXPECT_THAT(txn->Commit(), IsOk());
 

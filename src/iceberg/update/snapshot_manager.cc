@@ -34,6 +34,28 @@
 
 namespace iceberg {
 
+namespace {
+
+class AutoCommitGuard {
+ public:
+  AutoCommitGuard(std::shared_ptr<Transaction> transaction, bool auto_commit)
+      : transaction_(std::move(transaction)), auto_commit_(auto_commit) {}
+
+  ~AutoCommitGuard() {
+    if (auto_commit_) {
+      transaction_->EnableAutoCommit();
+    } else {
+      transaction_->DisableAutoCommit();
+    }
+  }
+
+ private:
+  std::shared_ptr<Transaction> transaction_;
+  bool auto_commit_;
+};
+
+}  // namespace
+
 Result<std::shared_ptr<SnapshotManager>> SnapshotManager::Make(
     std::shared_ptr<Transaction> transaction) {
   ICEBERG_PRECHECK(transaction != nullptr, "Invalid input transaction: null");
@@ -41,7 +63,10 @@ Result<std::shared_ptr<SnapshotManager>> SnapshotManager::Make(
 }
 
 SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction)
-    : PendingUpdate(std::move(transaction)) {}
+    : PendingUpdate(std::move(transaction)),
+      original_auto_commit_(transaction_->auto_commit_) {
+  transaction_->DisableAutoCommit();
+}
 
 SnapshotManager::~SnapshotManager() = default;
 
@@ -172,6 +197,7 @@ SnapshotManager& SnapshotManager::SetMaxRefAgeMs(const std::string& name,
 }
 
 Status SnapshotManager::Commit() {
+  AutoCommitGuard auto_commit_guard(transaction_, original_auto_commit_);
   transaction_->EnableAutoCommit();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_RETURN_UNEXPECTED(CommitIfRefUpdatesExist());

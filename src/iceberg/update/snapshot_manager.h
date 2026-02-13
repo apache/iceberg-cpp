@@ -186,6 +186,7 @@ class ICEBERG_EXPORT SnapshotManager : public PendingUpdate {
   /// \brief Commit any pending reference updates if they exist.
   Status CommitIfRefUpdatesExist();
 
+  bool original_auto_commit_;
   std::shared_ptr<UpdateSnapshotReference> update_snap_refs_;
 };
 
