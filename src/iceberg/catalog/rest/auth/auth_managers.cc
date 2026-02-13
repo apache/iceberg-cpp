@@ -24,6 +24,7 @@
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/transform_util.h"
 
 namespace iceberg::rest::auth {
 
@@ -78,6 +79,34 @@ class NoopAuthManager : public AuthManager {
   }
 };
 
+/// \brief Authentication manager that performs basic authentication.
+class BasicAuthManager : public AuthManager {
+ public:
+  static Result<std::unique_ptr<AuthManager>> Make(
+      [[maybe_unused]] std::string_view name,
+      [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
+    return std::make_unique<BasicAuthManager>();
+  }
+
+  Result<std::shared_ptr<AuthSession>> CatalogSession(
+      [[maybe_unused]] HttpClient& client,
+      const std::unordered_map<std::string, std::string>& properties) override {
+    auto username_it = properties.find(AuthProperties::kBasicUsername);
+    if (username_it == properties.end()) {
+      return InvalidArgument("Invalid username: missing required property '{}'",
+                             AuthProperties::kBasicUsername);
+    }
+    auto password_it = properties.find(AuthProperties::kBasicPassword);
+    if (password_it == properties.end()) {
+      return InvalidArgument("Invalid password: missing required property '{}'",
+                             AuthProperties::kBasicPassword);
+    }
+    std::string credential = username_it->second + ":" + password_it->second;
+    return AuthSession::MakeDefault(
+        {{"Authorization", "Basic " + TransformUtil::Base64Encode(credential)}});
+  }
+};
+
 template <typename T>
 AuthManagerFactory MakeAuthFactory() {
   return
@@ -88,6 +117,7 @@ AuthManagerFactory MakeAuthFactory() {
 AuthManagerRegistry CreateDefaultRegistry() {
   return {
       {AuthProperties::kAuthTypeNone, MakeAuthFactory<NoopAuthManager>()},
+      {AuthProperties::kAuthTypeBasic, MakeAuthFactory<BasicAuthManager>()},
   };
 }
 

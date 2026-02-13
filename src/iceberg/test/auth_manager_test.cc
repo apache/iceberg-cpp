@@ -80,6 +80,90 @@ TEST_F(AuthManagerTest, UnknownAuthTypeReturnsInvalidArgument) {
   EXPECT_THAT(result, HasErrorMessage("Unknown authentication type"));
 }
 
+// Verifies loading BasicAuthManager with valid credentials
+TEST_F(AuthManagerTest, LoadBasicAuthManager) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "basic"},
+      {AuthProperties::kBasicUsername, "admin"},
+      {AuthProperties::kBasicPassword, "secret"}};
+
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+
+  auto session_result = manager_result.value()->CatalogSession(client_, properties);
+  ASSERT_THAT(session_result, IsOk());
+
+  std::unordered_map<std::string, std::string> headers;
+  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  // base64("admin:secret") == "YWRtaW46c2VjcmV0"
+  EXPECT_EQ(headers["Authorization"], "Basic YWRtaW46c2VjcmV0");
+}
+
+// Verifies BasicAuthManager is case-insensitive for auth type
+TEST_F(AuthManagerTest, BasicAuthTypeCaseInsensitive) {
+  for (const auto& auth_type : {"BASIC", "Basic", "bAsIc"}) {
+    std::unordered_map<std::string, std::string> properties = {
+        {AuthProperties::kAuthType, auth_type},
+        {AuthProperties::kBasicUsername, "user"},
+        {AuthProperties::kBasicPassword, "pass"}};
+    auto manager_result = AuthManagers::Load("test-catalog", properties);
+    ASSERT_THAT(manager_result, IsOk()) << "Failed for auth type: " << auth_type;
+
+    auto session_result = manager_result.value()->CatalogSession(client_, properties);
+    ASSERT_THAT(session_result, IsOk()) << "Failed for auth type: " << auth_type;
+
+    std::unordered_map<std::string, std::string> headers;
+    EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+    // base64("user:pass") == "dXNlcjpwYXNz"
+    EXPECT_EQ(headers["Authorization"], "Basic dXNlcjpwYXNz");
+  }
+}
+
+// Verifies BasicAuthManager fails when username is missing
+TEST_F(AuthManagerTest, BasicAuthMissingUsername) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "basic"}, {AuthProperties::kBasicPassword, "secret"}};
+
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+
+  auto session_result = manager_result.value()->CatalogSession(client_, properties);
+  EXPECT_THAT(session_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(session_result, HasErrorMessage("Invalid username"));
+}
+
+// Verifies BasicAuthManager fails when password is missing
+TEST_F(AuthManagerTest, BasicAuthMissingPassword) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "basic"}, {AuthProperties::kBasicUsername, "admin"}};
+
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+
+  auto session_result = manager_result.value()->CatalogSession(client_, properties);
+  EXPECT_THAT(session_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(session_result, HasErrorMessage("Invalid password"));
+}
+
+// Verifies BasicAuthManager handles special characters in credentials
+TEST_F(AuthManagerTest, BasicAuthSpecialCharacters) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "basic"},
+      {AuthProperties::kBasicUsername, "user@domain.com"},
+      {AuthProperties::kBasicPassword, "p@ss:w0rd!"}};
+
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+
+  auto session_result = manager_result.value()->CatalogSession(client_, properties);
+  ASSERT_THAT(session_result, IsOk());
+
+  std::unordered_map<std::string, std::string> headers;
+  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  // base64("user@domain.com:p@ss:w0rd!") == "dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE="
+  EXPECT_EQ(headers["Authorization"], "Basic dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE=");
+}
+
 // Verifies custom auth manager registration
 TEST_F(AuthManagerTest, RegisterCustomAuthManager) {
   AuthManagers::Register(
