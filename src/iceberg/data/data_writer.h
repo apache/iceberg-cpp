@@ -51,9 +51,6 @@ struct ICEBERG_EXPORT DataWriterOptions {
 };
 
 /// \brief Writer for Iceberg data files.
-///
-/// This class is not thread-safe. Concurrent calls to Write(), Close(), or Metadata()
-/// from multiple threads may result in undefined behavior.
 class ICEBERG_EXPORT DataWriter : public FileWriter {
  public:
   ~DataWriter() override;
