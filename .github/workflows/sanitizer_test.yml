@@ -38,6 +38,7 @@ jobs:
     name: "ASAN and UBSAN Tests"
     runs-on: ubuntu-24.04
     strategy:
+      max-parallel: 15
       fail-fast: false
     steps:
       - name: Checkout iceberg-cpp
