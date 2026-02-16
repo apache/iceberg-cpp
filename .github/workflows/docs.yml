@@ -35,8 +35,6 @@ permissions:
 jobs:
   docs:
     runs-on: ubuntu-24.04
-    strategy:
-      max-parallel: 15
 
     steps:
       - uses: actions/checkout@v6.0.2

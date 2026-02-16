@@ -32,8 +32,6 @@ jobs:
     name: Archive
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    strategy:
-      max-parallel: 15
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -128,8 +126,6 @@ jobs:
     needs:
       - verify
     runs-on: ubuntu-24.04
-    strategy:
-      max-parallel: 15
     permissions:
       contents: write
     steps:
