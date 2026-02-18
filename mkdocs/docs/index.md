@@ -25,6 +25,8 @@ If you would like to discuss your proposed change before contributing, we encour
 
 For first-time contributors, feel free to check out our good first issues for an easy way to get started.
 
+In addition, contributors using AI-assisted tools must follow the documented guidelines for AI-assisted contributions available on the Iceberg website: [https://iceberg.apache.org/contribute/#guidelines-for-ai-assisted-contributions](https://iceberg.apache.org/contribute/#guidelines-for-ai-assisted-contributions).
+
 ## Contributing to Iceberg C++
 
 The Iceberg C++ Project is hosted on GitHub at [https://github.com/apache/iceberg-cpp](https://github.com/apache/iceberg-cpp).
