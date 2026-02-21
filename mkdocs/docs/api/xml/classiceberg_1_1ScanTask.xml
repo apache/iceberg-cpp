@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ScanTask" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::ScanTask</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1FileScanTask" prot="public" virt="non-virtual">iceberg::FileScanTask</derivedcompoundref>
+    <includes refid="table__scan_8h" local="no">table_scan.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classiceberg_1_1ScanTask_1ab28bdbcb5d183627dfec1ef4d3321c1f" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::ScanTask::Kind</qualifiedname>
+        <enumvalue id="classiceberg_1_1ScanTask_1ab28bdbcb5d183627dfec1ef4d3321c1fa602153c665564d7ae507267d349a0a57" prot="public">
+          <name>kFileScanTask</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="40" column="3" bodyfile="iceberg/table_scan.h" bodystart="40" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ScanTask_1a3e223ab9964f78b6e99791567c82e1b6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Kind</type>
+        <definition>virtual Kind iceberg::ScanTask::kind</definition>
+        <argsstring>() const =0</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::ScanTask::kind</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FileScanTask_1a98a4912bc062e02fcdb26b71b9e79480">kind</reimplementedby>
+        <briefdescription>
+<para>The kind of scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="45" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTask_1a196044bb4a1fc867fb9dbece6ae3f47c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>int64_t</type>
+        <definition>virtual int64_t iceberg::ScanTask::size_bytes</definition>
+        <argsstring>() const =0</argsstring>
+        <name>size_bytes</name>
+        <qualifiedname>iceberg::ScanTask::size_bytes</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FileScanTask_1ab9cafa54598c24e7278ecf1ffc58163e">size_bytes</reimplementedby>
+        <briefdescription>
+<para>The number of bytes that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="48" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTask_1a014e83fb779a07601b71dd503871986b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>int32_t</type>
+        <definition>virtual int32_t iceberg::ScanTask::files_count</definition>
+        <argsstring>() const =0</argsstring>
+        <name>files_count</name>
+        <qualifiedname>iceberg::ScanTask::files_count</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FileScanTask_1a5222b5f4cc30a36bf058745d9ae9f1d9">files_count</reimplementedby>
+        <briefdescription>
+<para>The number of files that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="51" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTask_1a1065f2e9db3b7d9d42f861bfca839232" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>int64_t</type>
+        <definition>virtual int64_t iceberg::ScanTask::estimated_row_count</definition>
+        <argsstring>() const =0</argsstring>
+        <name>estimated_row_count</name>
+        <qualifiedname>iceberg::ScanTask::estimated_row_count</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FileScanTask_1a40c1b4c68a2b3fe147afcbad05a5b624">estimated_row_count</reimplementedby>
+        <briefdescription>
+<para>The number of rows that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="54" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTask_1abfdda64a7967dbfda4543c4a6cb085ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>iceberg::ScanTask::~ScanTask</definition>
+        <argsstring>()</argsstring>
+        <name>~ScanTask</name>
+        <qualifiedname>iceberg::ScanTask::~ScanTask</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="56" column="11"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An abstract scan task. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FileScanTask</label>
+        <link refid="classiceberg_1_1FileScanTask"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ScanTask</label>
+        <link refid="classiceberg_1_1ScanTask"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/table_scan.h" line="38" column="1" bodyfile="iceberg/table_scan.h" bodystart="38" bodyend="57"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ScanTask_1a1065f2e9db3b7d9d42f861bfca839232" prot="public" virt="pure-virtual"><scope>iceberg::ScanTask</scope><name>estimated_row_count</name></member>
+      <member refid="classiceberg_1_1ScanTask_1a014e83fb779a07601b71dd503871986b" prot="public" virt="pure-virtual"><scope>iceberg::ScanTask</scope><name>files_count</name></member>
+      <member refid="classiceberg_1_1ScanTask_1ab28bdbcb5d183627dfec1ef4d3321c1f" prot="public" virt="non-virtual"><scope>iceberg::ScanTask</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1ScanTask_1a3e223ab9964f78b6e99791567c82e1b6" prot="public" virt="pure-virtual"><scope>iceberg::ScanTask</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1ScanTask_1a196044bb4a1fc867fb9dbece6ae3f47c" prot="public" virt="pure-virtual"><scope>iceberg::ScanTask</scope><name>size_bytes</name></member>
+      <member refid="classiceberg_1_1ScanTask_1abfdda64a7967dbfda4543c4a6cb085ec" prot="public" virt="virtual"><scope>iceberg::ScanTask</scope><name>~ScanTask</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

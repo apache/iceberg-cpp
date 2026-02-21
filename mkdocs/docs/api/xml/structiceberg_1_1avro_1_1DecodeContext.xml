@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1DecodeContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::DecodeContext</compoundname>
+    <includes refid="avro__direct__decoder__internal_8h" local="no">avro_direct_decoder_internal.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1DecodeContext_1a4ff29336486f0536f083c2c5f8311fec" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::DecodeContext::string_scratch</definition>
+        <argsstring></argsstring>
+        <name>string_scratch</name>
+        <qualifiedname>iceberg::avro::DecodeContext::string_scratch</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_direct_decoder_internal.h" line="40" column="15" bodyfile="iceberg/avro/avro_direct_decoder_internal.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1DecodeContext_1ac6dc700911d897435d93e81003fe2ed4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::avro::DecodeContext::bytes_scratch</definition>
+        <argsstring></argsstring>
+        <name>bytes_scratch</name>
+        <qualifiedname>iceberg::avro::DecodeContext::bytes_scratch</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_direct_decoder_internal.h" line="42" column="15" bodyfile="iceberg/avro/avro_direct_decoder_internal.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1DecodeContext_1a8eb949551ffc45002bed55afb9995fbd" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; const <ref refid="structiceberg_1_1FieldProjection" kindref="compound">FieldProjection</ref> *, std::vector&lt; int &gt; &gt;</type>
+        <definition>std::unordered_map&lt;const FieldProjection*, std::vector&lt;int&gt; &gt; iceberg::avro::DecodeContext::avro_to_projection_cache</definition>
+        <argsstring></argsstring>
+        <name>avro_to_projection_cache</name>
+        <qualifiedname>iceberg::avro::DecodeContext::avro_to_projection_cache</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_direct_decoder_internal.h" line="46" column="22" bodyfile="iceberg/avro/avro_direct_decoder_internal.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Context for reusing scratch buffers during Avro decoding. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Avoids frequent small allocations by reusing temporary buffers across multiple decode operations. This is particularly important for string, binary, and fixed-size data types. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="6">
+        <label>iceberg::FieldProjection</label>
+        <link refid="structiceberg_1_1FieldProjection"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>children</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>attributes</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::FieldProjection::ExtraAttributes</label>
+        <link refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes"/>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::DecodeContext</label>
+        <link refid="structiceberg_1_1avro_1_1DecodeContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>string_scratch</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bytes_scratch</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>avro_to_projection_cache</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::FieldProjection::ExtraAttributes &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_map&lt; const iceberg::FieldProjection *, std::vector&lt; int &gt; &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; iceberg::FieldProjection &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; int &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/avro/avro_direct_decoder_internal.h" line="38" column="1" bodyfile="iceberg/avro/avro_direct_decoder_internal.h" bodystart="38" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1DecodeContext_1a8eb949551ffc45002bed55afb9995fbd" prot="public" virt="non-virtual"><scope>iceberg::avro::DecodeContext</scope><name>avro_to_projection_cache</name></member>
+      <member refid="structiceberg_1_1avro_1_1DecodeContext_1ac6dc700911d897435d93e81003fe2ed4" prot="public" virt="non-virtual"><scope>iceberg::avro::DecodeContext</scope><name>bytes_scratch</name></member>
+      <member refid="structiceberg_1_1avro_1_1DecodeContext_1a4ff29336486f0536f083c2c5f8311fec" prot="public" virt="non-virtual"><scope>iceberg::avro::DecodeContext</scope><name>string_scratch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

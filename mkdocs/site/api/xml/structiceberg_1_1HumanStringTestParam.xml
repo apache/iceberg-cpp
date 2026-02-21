@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1HumanStringTestParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::HumanStringTestParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1HumanStringTestParam_1a79660154839e0133d7fc6e22a620a0c0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::HumanStringTestParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::HumanStringTestParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_human_string_test.cc" line="31" column="15" bodyfile="iceberg/test/transform_human_string_test.cc" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1HumanStringTestParam_1a57f50f1236c95f3a3360aa200a0ec691" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::HumanStringTestParam::source_type</definition>
+        <argsstring></argsstring>
+        <name>source_type</name>
+        <qualifiedname>iceberg::HumanStringTestParam::source_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_human_string_test.cc" line="32" column="19" bodyfile="iceberg/test/transform_human_string_test.cc" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1HumanStringTestParam_1aa460a299a80c655ebcd1d5fe11ab73ea" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::HumanStringTestParam::literal</definition>
+        <argsstring></argsstring>
+        <name>literal</name>
+        <qualifiedname>iceberg::HumanStringTestParam::literal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_human_string_test.cc" line="33" column="11" bodyfile="iceberg/test/transform_human_string_test.cc" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1HumanStringTestParam_1a850283591473f3a43c998203ead44b37" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::HumanStringTestParam::expecteds</definition>
+        <argsstring></argsstring>
+        <name>expecteds</name>
+        <qualifiedname>iceberg::HumanStringTestParam::expecteds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_human_string_test.cc" line="34" column="15" bodyfile="iceberg/test/transform_human_string_test.cc" bodystart="34" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::HumanStringTestParam</label>
+        <link refid="structiceberg_1_1HumanStringTestParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>source_type</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>literal</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>expecteds</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/transform_human_string_test.cc" line="30" column="1" bodyfile="iceberg/test/transform_human_string_test.cc" bodystart="30" bodyend="35"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1HumanStringTestParam_1a850283591473f3a43c998203ead44b37" prot="public" virt="non-virtual"><scope>iceberg::HumanStringTestParam</scope><name>expecteds</name></member>
+      <member refid="structiceberg_1_1HumanStringTestParam_1aa460a299a80c655ebcd1d5fe11ab73ea" prot="public" virt="non-virtual"><scope>iceberg::HumanStringTestParam</scope><name>literal</name></member>
+      <member refid="structiceberg_1_1HumanStringTestParam_1a57f50f1236c95f3a3360aa200a0ec691" prot="public" virt="non-virtual"><scope>iceberg::HumanStringTestParam</scope><name>source_type</name></member>
+      <member refid="structiceberg_1_1HumanStringTestParam_1a79660154839e0133d7fc6e22a620a0c0" prot="public" virt="non-virtual"><scope>iceberg::HumanStringTestParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

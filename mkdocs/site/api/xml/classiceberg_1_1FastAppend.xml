@@ -1,0 +1,602 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FastAppend" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FastAppend</compoundname>
+    <basecompoundref refid="classiceberg_1_1SnapshotUpdate" prot="public" virt="non-virtual">iceberg::SnapshotUpdate</basecompoundref>
+    <includes refid="fast__append_8h" local="no">fast_append.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FastAppend_1abed231c7453732c48ae26d86dce8f23e" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::FastAppend::table_name_</definition>
+        <argsstring></argsstring>
+        <name>table_name_</name>
+        <qualifiedname>iceberg::FastAppend::table_name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="96" column="15" bodyfile="iceberg/update/fast_append.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FastAppend_1ad7f4fa7bb246ab2bacf4a95b2f50ac98" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, <ref refid="classiceberg_1_1DataFileSet" kindref="compound">DataFileSet</ref> &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, DataFileSet&gt; iceberg::FastAppend::new_data_files_by_spec_</definition>
+        <argsstring></argsstring>
+        <name>new_data_files_by_spec_</name>
+        <qualifiedname>iceberg::FastAppend::new_data_files_by_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="97" column="22" bodyfile="iceberg/update/fast_append.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FastAppend_1a408a826ed7eb99ed0539bf8d2753f405" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::FastAppend::append_manifests_</definition>
+        <argsstring></argsstring>
+        <name>append_manifests_</name>
+        <qualifiedname>iceberg::FastAppend::append_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="98" column="15" bodyfile="iceberg/update/fast_append.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FastAppend_1a70dd4da99422c44b25e8e8a83462a41f" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::FastAppend::rewritten_append_manifests_</definition>
+        <argsstring></argsstring>
+        <name>rewritten_append_manifests_</name>
+        <qualifiedname>iceberg::FastAppend::rewritten_append_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="99" column="15" bodyfile="iceberg/update/fast_append.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FastAppend_1a21ebe7cd11130d323125fba4bf99033b" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::FastAppend::new_manifests_</definition>
+        <argsstring></argsstring>
+        <name>new_manifests_</name>
+        <qualifiedname>iceberg::FastAppend::new_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="100" column="15" bodyfile="iceberg/update/fast_append.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FastAppend_1a02c937ea53b20c0a7d8eb13501525d4a" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::FastAppend::has_new_files_</definition>
+        <argsstring></argsstring>
+        <name>has_new_files_</name>
+        <qualifiedname>iceberg::FastAppend::has_new_files_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="101" column="8" bodyfile="iceberg/update/fast_append.h" bodystart="101" bodyend="101"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1acf48c8e7f90e4d8499bff4554a128ce8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1FastAppend" kindref="compound">FastAppend</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; FastAppend &gt; &gt; iceberg::FastAppend::Make</definition>
+        <argsstring>(std::string table_name, std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::FastAppend::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>table_name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+<para>Create a new <ref refid="classiceberg_1_1FastAppend" kindref="compound">FastAppend</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>transaction</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The transaction to use for this update </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1FastAppend" kindref="compound">FastAppend</ref> instance or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="49" column="17" bodyfile="iceberg/update/fast_append.cc" bodystart="38" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1a222c1def1b99fb4346bc28ab22066372" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1FastAppend" kindref="compound">FastAppend</ref> &amp;</type>
+        <definition>FastAppend &amp; iceberg::FastAppend::AppendFile</definition>
+        <argsstring>(const std::shared_ptr&lt; DataFile &gt; &amp;file)</argsstring>
+        <name>AppendFile</name>
+        <qualifiedname>iceberg::FastAppend::AppendFile</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Append a data file to this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data file to append </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="56" column="14" bodyfile="iceberg/update/fast_append.cc" bodystart="50" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1a889cf9fa22b7d163bae4408f4612b289" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1FastAppend" kindref="compound">FastAppend</ref> &amp;</type>
+        <definition>FastAppend &amp; iceberg::FastAppend::AppendManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>AppendManifest</name>
+        <qualifiedname>iceberg::FastAppend::AppendManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+<para>Append a manifest file to this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The manifest must only contain added files (no existing or deleted files). If the manifest doesn&apos;t have a snapshot ID assigned and snapshot ID inheritance is enabled, it will be used directly. Otherwise, it will be copied with the new snapshot ID.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest file to append </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="67" column="14" bodyfile="iceberg/update/fast_append.cc" bodystart="68" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1af48f453a28ecdbab15e2248fd087f6ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::FastAppend::operation</definition>
+        <argsstring>() override</argsstring>
+        <name>operation</name>
+        <qualifiedname>iceberg::FastAppend::operation</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a7e5cb52a426032eebf3b602b5674c5e0">operation</reimplements>
+        <briefdescription>
+<para>A string that describes the action that produced the new snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A string operation name </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="69" column="15" bodyfile="iceberg/update/fast_append.cc" bodystart="90" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1a691e82a1c468881b3774a5e4abc12e58" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::FastAppend::Apply</definition>
+        <argsstring>(const TableMetadata &amp;metadata_to_update, const std::shared_ptr&lt; Snapshot &gt; &amp;snapshot) override</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::FastAppend::Apply</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a0d1e461184dd3aa553269ef736202ced">Apply</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata_to_update</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &amp;</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+<para>Apply the update&apos;s changes to the given metadata and snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata_to_update</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to apply changes to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> to apply the changes to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of manifest files for the new snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="71" column="10" bodyfile="iceberg/update/fast_append.cc" bodystart="92" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1a3178b3edb1295fc08504fbd7df5f2b13" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; iceberg::FastAppend::Summary</definition>
+        <argsstring>() override</argsstring>
+        <name>Summary</name>
+        <qualifiedname>iceberg::FastAppend::Summary</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a193bc595ce86911870731a8eebf5950e">Summary</reimplements>
+        <briefdescription>
+<para>Get the summary map for this operation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A map of summary properties </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="74" column="22" bodyfile="iceberg/update/fast_append.cc" bodystart="129" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1affc364f0cc816c7a91e2be173759ce2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::FastAppend::CleanUncommitted</definition>
+        <argsstring>(const std::unordered_set&lt; std::string &gt; &amp;committed) override</argsstring>
+        <name>CleanUncommitted</name>
+        <qualifiedname>iceberg::FastAppend::CleanUncommitted</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a582e2766881ada1c8d07aa0c738449e6">CleanUncommitted</reimplements>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>committed</declname>
+        </param>
+        <briefdescription>
+<para>Clean up any uncommitted manifests that were created. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Manifests may not be committed if Apply is called multiple times because a commit conflict has occurred. Implementations may keep around manifests because the same changes will be made by both Apply calls. This method instructs the implementation to clean up those manifests and passes the paths of the manifests that were actually committed.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>committed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A set of manifest paths that were actually committed </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="75" column="8" bodyfile="iceberg/update/fast_append.cc" bodystart="135" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1a2b64487db1d9c6a252787504dbb9cb87" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::FastAppend::CleanupAfterCommit</definition>
+        <argsstring>() const override</argsstring>
+        <name>CleanupAfterCommit</name>
+        <qualifiedname>iceberg::FastAppend::CleanupAfterCommit</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1aeb89f2ceb3a0fb2abfba3faa6a32e5ac">CleanupAfterCommit</reimplements>
+        <briefdescription>
+<para>Check if cleanup should happen after commit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para><ref refid="classiceberg_1_1True" kindref="compound">True</ref> if cleanup should happen after commit </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="76" column="8" bodyfile="iceberg/update/fast_append.cc" bodystart="158" bodyend="165"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1a3f4b7d58b51f9944c70e65eb5049063c" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FastAppend::FastAppend</definition>
+        <argsstring>(std::string table_name, std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>FastAppend</name>
+        <qualifiedname>iceberg::FastAppend::FastAppend</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>table_name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="79" column="12" bodyfile="iceberg/update/fast_append.cc" bodystart="47" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1ad1916c86f00c8041b5b084399209c18c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; PartitionSpec &gt; &gt; iceberg::FastAppend::Spec</definition>
+        <argsstring>(int32_t spec_id)</argsstring>
+        <name>Spec</name>
+        <qualifiedname>iceberg::FastAppend::Spec</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <briefdescription>
+<para>Get the partition spec by spec ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="82" column="10" bodyfile="iceberg/update/fast_append.cc" bodystart="167" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1ac7a4b292c03d205ea0b1dc446970c65d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>Result&lt; ManifestFile &gt; iceberg::FastAppend::CopyManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>CopyManifest</name>
+        <qualifiedname>iceberg::FastAppend::CopyManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+<para>Copy a manifest file with a new snapshot ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest to copy </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The copied manifest file </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="88" column="10" bodyfile="iceberg/update/fast_append.cc" bodystart="171" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FastAppend_1a74cc6eedcc899d2c6e9587b40ed91aaf" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::FastAppend::WriteNewManifests</definition>
+        <argsstring>()</argsstring>
+        <name>WriteNewManifests</name>
+        <qualifiedname>iceberg::FastAppend::WriteNewManifests</qualifiedname>
+        <briefdescription>
+<para>Write new manifests for the accumulated data files. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A vector of manifest files, or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/fast_append.h" line="93" column="10" bodyfile="iceberg/update/fast_append.cc" bodystart="187" bodyend="210"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Appending new files in a table. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1FastAppend" kindref="compound">FastAppend</ref> is optimized for appending new data files to a table, it creates new manifest files for the added data without compacting or rewriting existing manifests, making it faster for write-heavy workloads. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="1">
+        <label>iceberg::FastAppend</label>
+        <link refid="classiceberg_1_1FastAppend"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::SnapshotUpdate</label>
+        <link refid="classiceberg_1_1SnapshotUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::FastAppend</label>
+        <link refid="classiceberg_1_1FastAppend"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>transaction_</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::SnapshotSummaryBuilder</label>
+        <link refid="classiceberg_1_1SnapshotSummaryBuilder"/>
+      </node>
+      <node id="2">
+        <label>iceberg::SnapshotUpdate</label>
+        <link refid="classiceberg_1_1SnapshotUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>summary_</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::Transaction</label>
+        <link refid="classiceberg_1_1Transaction"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::shared_ptr&lt; iceberg::Transaction &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="11">
+        <label>std::enable_shared_from_this&lt; Transaction &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::string</label>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/fast_append.h" line="42" column="1" bodyfile="iceberg/update/fast_append.h" bodystart="42" bodyend="102"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a408a826ed7eb99ed0539bf8d2753f405" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>append_manifests_</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a222c1def1b99fb4346bc28ab22066372" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>AppendFile</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a889cf9fa22b7d163bae4408f4612b289" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>AppendManifest</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a691e82a1c468881b3774a5e4abc12e58" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a102a35b2c7bab9b1b08f178d1f9bebd7" prot="public" virt="non-virtual" ambiguityscope="iceberg::SnapshotUpdate::"><scope>iceberg::FastAppend</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a7d049f4c752864f55d75ece4b6119a48" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>attempt</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a93721051561748b1a29e75b7d4cbbd86" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>base</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0f15ea5399c070c05a401df3427cf4ba" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>can_inherit_snapshot_id</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1FastAppend_1affc364f0cc816c7a91e2be173759ce2a" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>CleanUncommitted</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a2b64487db1d9c6a252787504dbb9cb87" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>CleanupAfterCommit</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a4a5df6d83b7a4a3c4dac19a77945be71" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a32d03afeb074db14119b5e1f1efcf279" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>commit_uuid</name></member>
+      <member refid="classiceberg_1_1FastAppend_1ac7a4b292c03d205ea0b1dc446970c65d" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>CopyManifest</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af9fc2b6a382fb3c9c9f8e30056d1f7de" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>DeleteFile</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af5a84c539ec3c559260b3c6b868943c7" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>DeleteWith</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a3f4b7d58b51f9944c70e65eb5049063c" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>FastAppend</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ab8f14ca85eb071b445d235c0ccbbaa10" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>Finalize</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a02c937ea53b20c0a7d8eb13501525d4a" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>has_new_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ae194773e0ce37df3780121314322f440" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a5bac3f32c6a0790ba222399fed5c1944" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1FastAppend_1acf48c8e7f90e4d8499bff4554a128ce8" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a89c7e7a09d3c094859f22b3e50a26ae6" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>manifest_count</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0478c16b077f60262329f50bb606746e" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>ManifestListPath</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af474cf9191b5a05ea99ed8d9c01bbda0" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>ManifestPath</name></member>
+      <member refid="classiceberg_1_1FastAppend_1ad7f4fa7bb246ab2bacf4a95b2f50ac98" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>new_data_files_by_spec_</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a21ebe7cd11130d323125fba4bf99033b" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>new_manifests_</name></member>
+      <member refid="classiceberg_1_1FastAppend_1af48f453a28ecdbab15e2248fd087f6ef" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>operation</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::FastAppend</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::FastAppend</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ab758ff7780442894f3fb0a80d0db064f" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a70dd4da99422c44b25e8e8a83462a41f" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>rewritten_append_manifests_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ae19b638ceb6b7e57e4096ec943db223b" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa4fa512c432e46fc2ed7b3f5e7ae9472" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>SetTargetBranch</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aae99085da77d04a9314e8c4773cfb731" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>SnapshotId</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aab9fdceaf807e81a498d7570737d4635" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>SnapshotUpdate</name></member>
+      <member refid="classiceberg_1_1FastAppend_1ad1916c86f00c8041b5b084399209c18c" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>Spec</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a43f427fe952631fffdd3c19e0c5ef434" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>StageOnly</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a3178b3edb1295fc08504fbd7df5f2b13" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>Summary</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a169ac960678daaef3ef8cc793f47d1a3" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>summary_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a89096f41f8602f1d05f6bddc06c9d8e6" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>summary_builder</name></member>
+      <member refid="classiceberg_1_1FastAppend_1abed231c7453732c48ae26d86dce8f23e" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>table_name_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ac1d1956ed16f817a44c0f3f081eb4c5c" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>target_branch</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1abe2bd4f83fb5d90e70bfff6d1f28a40b" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>target_manifest_size_bytes</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac57921ff326abc60b8d9558aa7046d10" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>transaction_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa2d22d7708df6b17bfa53e40abb32f86" prot="protected" virt="virtual"><scope>iceberg::FastAppend</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ad839a5b6b8cd54ceb3d013ddadae9fc5" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>WriteDataManifests</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aef931023c233994b7567d1f8d9cc41ac" prot="protected" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>WriteDeleteManifests</name></member>
+      <member refid="classiceberg_1_1FastAppend_1a74cc6eedcc899d2c6e9587b40ed91aaf" prot="private" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>WriteNewManifests</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::FastAppend</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ace0dfef0058a64109f51e2638429a9f2" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a1473c50bc74b2c0e596c677dfecf95ff" prot="public" virt="non-virtual"><scope>iceberg::FastAppend</scope><name>~SnapshotUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

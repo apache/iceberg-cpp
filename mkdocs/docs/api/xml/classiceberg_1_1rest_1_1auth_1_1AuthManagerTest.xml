@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::AuthManagerTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest_1a177d617bdb2434f911e8e292313d403c" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref></type>
+        <definition>HttpClient iceberg::rest::auth::AuthManagerTest::client_</definition>
+        <argsstring></argsstring>
+        <name>client_</name>
+        <qualifiedname>iceberg::rest::auth::AuthManagerTest::client_</qualifiedname>
+        <initializer>{{}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="38" column="14" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="38" bodyend="38"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::rest::auth::AuthManagerTest</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::rest::HttpClient</label>
+        <link refid="classiceberg_1_1rest_1_1HttpClient"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::auth::AuthManagerTest</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>client_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/auth_manager_test.cc" line="36" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="36" bodyend="39"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest_1a177d617bdb2434f911e8e292313d403c" prot="protected" virt="non-virtual"><scope>iceberg::rest::auth::AuthManagerTest</scope><name>client_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

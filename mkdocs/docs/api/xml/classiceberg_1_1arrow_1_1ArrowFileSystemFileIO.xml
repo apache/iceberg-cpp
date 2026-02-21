@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::arrow::ArrowFileSystemFileIO</compoundname>
+    <basecompoundref refid="classiceberg_1_1FileIO" prot="public" virt="non-virtual">iceberg::FileIO</basecompoundref>
+    <includes refid="arrow__fs__file__io__internal_8h" local="no">arrow_fs_file_io_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1abd4270571372783e1543d67231284b0e" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::fs::FileSystem &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::fs::FileSystem&gt; iceberg::arrow::ArrowFileSystemFileIO::arrow_fs_</definition>
+        <argsstring></argsstring>
+        <name>arrow_fs_</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::arrow_fs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="59" column="19" bodyfile="iceberg/arrow/arrow_fs_file_io_internal.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a1c2bd3b754cfedc803c5005a7bf620e5" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::ArrowFileSystemFileIO::ArrowFileSystemFileIO</definition>
+        <argsstring>(std::shared_ptr&lt;::arrow::fs::FileSystem &gt; arrow_fs)</argsstring>
+        <name>ArrowFileSystemFileIO</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::ArrowFileSystemFileIO</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::fs::FileSystem &gt;</type>
+          <declname>arrow_fs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="34" column="12" bodyfile="iceberg/arrow/arrow_fs_file_io_internal.h" bodystart="34" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a7bb3570d9633769eac579601ad567187" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::ArrowFileSystemFileIO::~ArrowFileSystemFileIO</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~ArrowFileSystemFileIO</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::~ArrowFileSystemFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="43" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1aa023cae7f400db161e6d847c2bf6f2f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::arrow::ArrowFileSystemFileIO::ReadFile</definition>
+        <argsstring>(const std::string &amp;file_location, std::optional&lt; size_t &gt; length) override</argsstring>
+        <name>ReadFile</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::ReadFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a714e3babeac9395ed6ef4b2f5c94a5cd">ReadFile</reimplements>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; size_t &gt;</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Read the content of the file at the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="46" column="10" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="32" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a989c72cecf8dc2463cc90f947d36ba50" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::arrow::ArrowFileSystemFileIO::WriteFile</definition>
+        <argsstring>(const std::string &amp;file_location, std::string_view content) override</argsstring>
+        <name>WriteFile</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::WriteFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a527a78aca1045034250f50a51d8dc0f9">WriteFile</reimplements>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>content</declname>
+        </param>
+        <briefdescription>
+<para>Write the given content to the file at the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="50" column="10" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="58" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a054c596530ea55f4e66155c46308ab74" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::arrow::ArrowFileSystemFileIO::DeleteFile</definition>
+        <argsstring>(const std::string &amp;file_location) override</argsstring>
+        <name>DeleteFile</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::DeleteFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1ace7c9ec329017d5a99082739e8578937">DeleteFile</reimplements>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Delete a file at the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="53" column="10" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="68" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a1220a089e1da05614613613cbfcf0656" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt;::arrow::fs::FileSystem &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt;::arrow::fs::FileSystem &gt; &amp; iceberg::arrow::ArrowFileSystemFileIO::fs</definition>
+        <argsstring>() const</argsstring>
+        <name>fs</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::fs</qualifiedname>
+        <briefdescription>
+<para>Get the Arrow file system. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="56" column="25" bodyfile="iceberg/arrow/arrow_fs_file_io_internal.h" bodystart="56" bodyend="56"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a9f75861e2aeb0c393526e947419d5386" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::ArrowFileSystemFileIO::MakeMockFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeMockFileIO</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::MakeMockFileIO</qualifiedname>
+        <briefdescription>
+<para>Make an in-memory <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> backed by arrow::fs::internal::MockFileSystem. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="38" column="26" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="73" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a88ac7cc4b4c0dd50eef88f3f6b85c7b9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::ArrowFileSystemFileIO::MakeLocalFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeLocalFileIO</name>
+        <qualifiedname>iceberg::arrow::ArrowFileSystemFileIO::MakeLocalFileIO</qualifiedname>
+        <briefdescription>
+<para>Make a local <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> backed by arrow::fs::LocalFileSystem. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="41" column="26" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="79" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A concrete implementation of <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> for Arrow file system. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::arrow::ArrowFileSystemFileIO</label>
+        <link refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::arrow::ArrowFileSystemFileIO</label>
+        <link refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/arrow/arrow_fs_file_io_internal.h" line="32" column="1" bodyfile="iceberg/arrow/arrow_fs_file_io_internal.h" bodystart="32" bodyend="60"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1abd4270571372783e1543d67231284b0e" prot="private" virt="non-virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>arrow_fs_</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a1c2bd3b754cfedc803c5005a7bf620e5" prot="public" virt="non-virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>ArrowFileSystemFileIO</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a054c596530ea55f4e66155c46308ab74" prot="public" virt="virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>DeleteFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a4c7135a7de2494ad9b4ad6aacd65bf45" prot="public" virt="non-virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>FileIO</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a1220a089e1da05614613613cbfcf0656" prot="public" virt="non-virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>fs</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a88ac7cc4b4c0dd50eef88f3f6b85c7b9" prot="public" virt="non-virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>MakeLocalFileIO</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a9f75861e2aeb0c393526e947419d5386" prot="public" virt="non-virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>MakeMockFileIO</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1aa023cae7f400db161e6d847c2bf6f2f3" prot="public" virt="virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>ReadFile</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a989c72cecf8dc2463cc90f947d36ba50" prot="public" virt="virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>WriteFile</name></member>
+      <member refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO_1a7bb3570d9633769eac579601ad567187" prot="public" virt="non-virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>~ArrowFileSystemFileIO</name></member>
+      <member refid="classiceberg_1_1FileIO_1af3d6e79fa37cfcd2c0a8face664a70ec" prot="public" virt="virtual"><scope>iceberg::arrow::ArrowFileSystemFileIO</scope><name>~FileIO</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

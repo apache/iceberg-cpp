@@ -1,0 +1,383 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="endpoint__test_8cc" kind="file" language="C++">
+    <compoundname>endpoint_test.cc</compoundname>
+    <includes refid="endpoint_8h" local="yes">iceberg/catalog/rest/endpoint.h</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes local="no">nlohmann/json.hpp</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>iceberg/catalog/rest/endpoint.h</label>
+        <link refid="endpoint_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h_source"/>
+      </node>
+      <node id="16">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="6">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/endpoint_test.cc</label>
+        <link refid="endpoint__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>cassert</label>
+      </node>
+      <node id="7">
+        <label>expected</label>
+      </node>
+      <node id="8">
+        <label>format</label>
+      </node>
+      <node id="13">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="10">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="11">
+        <label>nlohmann/json.hpp</label>
+      </node>
+      <node id="17">
+        <label>stdexcept</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+      <node id="4">
+        <label>string_view</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="endpoint_8h" kindref="compound">iceberg/catalog/rest/endpoint.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;nlohmann/json.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::rest<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal">TEST(EndpointTest,<sp/>InvalidCreate)<sp/>{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Empty<sp/>path<sp/>template<sp/>should<sp/>fail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kGet,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Endpoint<sp/>cannot<sp/>have<sp/>empty<sp/>path&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal">TEST(EndpointTest,<sp/>ValidFromString)<sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;GET<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint<sp/>=<sp/>result.value();</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/>EXPECT_EQ(endpoint.method(),<sp/>HttpMethod::kGet);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>EXPECT_EQ(endpoint.path(),<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>all<sp/>HTTP<sp/>methods</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal">TEST(EndpointTest,<sp/>AllHttpMethods)<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>get<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kGet,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>ASSERT_THAT(get,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/>EXPECT_EQ(get-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;GET<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>post<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kPost,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>ASSERT_THAT(post,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>EXPECT_EQ(post-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;POST<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>put<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kPut,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>ASSERT_THAT(put,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>EXPECT_EQ(put-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;PUT<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>del<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kDelete,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>ASSERT_THAT(del,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>EXPECT_EQ(del-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;DELETE<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>head<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kHead,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>ASSERT_THAT(head,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/>EXPECT_EQ(head-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;HEAD<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>predefined<sp/>namespace<sp/>endpoints</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal">TEST(EndpointTest,<sp/>NamespaceEndpoints)<sp/>{</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>list_namespaces<sp/>=<sp/>Endpoint::ListNamespaces();</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/>EXPECT_EQ(list_namespaces.method(),<sp/>HttpMethod::kGet);</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>EXPECT_EQ(list_namespaces.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>EXPECT_EQ(list_namespaces.ToString(),<sp/></highlight><highlight class="stringliteral">&quot;GET<sp/>/v1/{prefix}/namespaces&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>get_namespace<sp/>=<sp/>Endpoint::GetNamespaceProperties();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>EXPECT_EQ(get_namespace.method(),<sp/>HttpMethod::kGet);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/>EXPECT_EQ(get_namespace.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>namespace_exists<sp/>=<sp/>Endpoint::NamespaceExists();</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>EXPECT_EQ(namespace_exists.method(),<sp/>HttpMethod::kHead);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>EXPECT_EQ(namespace_exists.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>create_namespace<sp/>=<sp/>Endpoint::CreateNamespace();</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>EXPECT_EQ(create_namespace.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/>EXPECT_EQ(create_namespace.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>update_namespace<sp/>=<sp/>Endpoint::UpdateNamespace();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/>EXPECT_EQ(update_namespace.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/>EXPECT_EQ(update_namespace.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/properties&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>drop_namespace<sp/>=<sp/>Endpoint::DropNamespace();</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/>EXPECT_EQ(drop_namespace.method(),<sp/>HttpMethod::kDelete);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>EXPECT_EQ(drop_namespace.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>predefined<sp/>table<sp/>endpoints</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal">TEST(EndpointTest,<sp/>TableEndpoints)<sp/>{</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>list_tables<sp/>=<sp/>Endpoint::ListTables();</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>EXPECT_EQ(list_tables.method(),<sp/>HttpMethod::kGet);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>EXPECT_EQ(list_tables.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>load_table<sp/>=<sp/>Endpoint::LoadTable();</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>EXPECT_EQ(load_table.method(),<sp/>HttpMethod::kGet);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>EXPECT_EQ(load_table.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables/{table}&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>table_exists<sp/>=<sp/>Endpoint::TableExists();</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>EXPECT_EQ(table_exists.method(),<sp/>HttpMethod::kHead);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>EXPECT_EQ(table_exists.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables/{table}&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>create_table<sp/>=<sp/>Endpoint::CreateTable();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>EXPECT_EQ(create_table.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>EXPECT_EQ(create_table.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>update_table<sp/>=<sp/>Endpoint::UpdateTable();</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/>EXPECT_EQ(update_table.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>EXPECT_EQ(update_table.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables/{table}&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>delete_table<sp/>=<sp/>Endpoint::DeleteTable();</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/>EXPECT_EQ(delete_table.method(),<sp/>HttpMethod::kDelete);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>EXPECT_EQ(delete_table.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables/{table}&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>rename_table<sp/>=<sp/>Endpoint::RenameTable();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>EXPECT_EQ(rename_table.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>EXPECT_EQ(rename_table.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/tables/rename&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>register_table<sp/>=<sp/>Endpoint::RegisterTable();</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/>EXPECT_EQ(register_table.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/>EXPECT_EQ(register_table.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/register&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>report_metrics<sp/>=<sp/>Endpoint::ReportMetrics();</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/>EXPECT_EQ(report_metrics.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/>EXPECT_EQ(report_metrics.path(),</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>table_credentials<sp/>=<sp/>Endpoint::TableCredentials();</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/>EXPECT_EQ(table_credentials.method(),<sp/>HttpMethod::kGet);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/>EXPECT_EQ(table_credentials.path(),</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>predefined<sp/>transaction<sp/>endpoints</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal">TEST(EndpointTest,<sp/>TransactionEndpoints)<sp/>{</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>commit_transaction<sp/>=<sp/>Endpoint::CommitTransaction();</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>EXPECT_EQ(commit_transaction.method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>EXPECT_EQ(commit_transaction.path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/transactions/commit&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>endpoint<sp/>equality</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal">TEST(EndpointTest,<sp/>Equality)<sp/>{</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint1<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kGet,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint2<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kGet,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint3<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kPost,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint4<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kGet,<sp/></highlight><highlight class="stringliteral">&quot;/other&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint1,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint2,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint3,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint4,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Equality</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/>EXPECT_EQ(*endpoint1,<sp/>*endpoint2);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/>EXPECT_NE(*endpoint1,<sp/>*endpoint3);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/>EXPECT_NE(*endpoint1,<sp/>*endpoint4);</highlight></codeline>
+<codeline lineno="164"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>string<sp/>serialization</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal">TEST(EndpointTest,<sp/>ToStringFormat)<sp/>{</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint1<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kGet,<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint1,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/>EXPECT_EQ(endpoint1-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;GET<sp/>/v1/{prefix}/namespaces&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint2<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kPost,<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/tables&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint2,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/>EXPECT_EQ(endpoint2-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;POST<sp/>/v1/{prefix}/tables&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Test<sp/>with<sp/>all<sp/>HTTP<sp/>methods</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint3<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kDelete,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint3,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/>EXPECT_EQ(endpoint3-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;DELETE<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint4<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kPut,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint4,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/>EXPECT_EQ(endpoint4-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;PUT<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>endpoint5<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" kindref="member">Endpoint::Make</ref>(HttpMethod::kHead,<sp/></highlight><highlight class="stringliteral">&quot;/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/>ASSERT_THAT(endpoint5,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/>EXPECT_EQ(endpoint5-&gt;ToString(),<sp/></highlight><highlight class="stringliteral">&quot;HEAD<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>string<sp/>deserialization</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal">TEST(EndpointTest,<sp/>FromStringParsing)<sp/>{</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result1<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;GET<sp/>/v1/{prefix}/namespaces&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result1,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result1-&gt;method(),<sp/>HttpMethod::kGet);</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result1-&gt;path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result2<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;POST<sp/>/v1/{prefix}/namespaces/{namespace}/tables&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result2,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result2-&gt;method(),<sp/>HttpMethod::kPost);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result2-&gt;path(),<sp/></highlight><highlight class="stringliteral">&quot;/v1/{prefix}/namespaces/{namespace}/tables&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Test<sp/>all<sp/>HTTP<sp/>methods</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result3<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;DELETE<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result3,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result3-&gt;method(),<sp/>HttpMethod::kDelete);</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result4<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;PUT<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result4,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result4-&gt;method(),<sp/>HttpMethod::kPut);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result5<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;HEAD<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result5,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result5-&gt;method(),<sp/>HttpMethod::kHead);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>string<sp/>parsing<sp/>with<sp/>invalid<sp/>inputs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal">TEST(EndpointTest,<sp/>FromStringInvalid)<sp/>{</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Invalid<sp/>endpoint<sp/>format<sp/>should<sp/>fail<sp/>-<sp/>missing<sp/>space</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result1<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;/path/without/method&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result1,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result1,</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>endpoint<sp/>format<sp/>(must<sp/>consist<sp/>of<sp/>two<sp/>elements<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;separated<sp/>by<sp/>a<sp/>single<sp/>space)&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Invalid<sp/>HTTP<sp/>method<sp/>should<sp/>fail</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result2<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;INVALID<sp/>/path&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result2,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result2,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>HTTP<sp/>method&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Invalid<sp/>endpoint<sp/>format<sp/>-<sp/>extra<sp/>element<sp/>after<sp/>path</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result3<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(</highlight><highlight class="stringliteral">&quot;GET<sp/>/path<sp/>INVALID&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result3,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result3,</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>endpoint<sp/>format<sp/>(must<sp/>consist<sp/>of<sp/>two<sp/>elements<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;separated<sp/>by<sp/>a<sp/>single<sp/>space)&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="236"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>string<sp/>round-trip</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="239"><highlight class="normal">TEST(EndpointTest,<sp/>StringRoundTrip)<sp/>{</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Create<sp/>various<sp/>endpoints<sp/>and<sp/>verify<sp/>they<sp/>survive<sp/>string<sp/>round-trip</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/>std::vector&lt;Endpoint&gt;<sp/>endpoints<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Endpoint::ListNamespaces(),<sp/><sp/>Endpoint::GetNamespaceProperties(),</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Endpoint::CreateNamespace(),<sp/>Endpoint::LoadTable(),</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Endpoint::CreateTable(),<sp/><sp/><sp/><sp/><sp/>Endpoint::DeleteTable(),</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>original<sp/>:<sp/>endpoints)<sp/>{</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Serialize<sp/>to<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>str<sp/>=<sp/>original.ToString();</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Deserialize<sp/>from<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>deserialized<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" kindref="member">Endpoint::FromString</ref>(str);</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_THAT(deserialized,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Verify<sp/>they<sp/>are<sp/>equal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_EQ(original,<sp/>*deserialized);</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_EQ(original.ToString(),<sp/>deserialized-&gt;ToString());</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="259"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/endpoint_test.cc"/>
+  </compounddef>
+</doxygen>

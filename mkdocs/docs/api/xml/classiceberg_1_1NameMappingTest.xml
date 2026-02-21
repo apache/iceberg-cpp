@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1NameMappingTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::NameMappingTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1NameMappingTest_1ad9f890231a552084d24bfa5106f5e448" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::NameMappingTest::MakeNameMapping</definition>
+        <argsstring>()</argsstring>
+        <name>MakeNameMapping</name>
+        <qualifiedname>iceberg::NameMappingTest::MakeNameMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/name_mapping_test.cc" line="34" column="19" bodyfile="iceberg/test/name_mapping_test.cc" bodystart="34" bodyend="47"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::NameMappingTest</label>
+        <link refid="classiceberg_1_1NameMappingTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::NameMappingTest</label>
+        <link refid="classiceberg_1_1NameMappingTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/name_mapping_test.cc" line="32" column="1" bodyfile="iceberg/test/name_mapping_test.cc" bodystart="32" bodyend="48"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1NameMappingTest_1ad9f890231a552084d24bfa5106f5e448" prot="protected" virt="non-virtual"><scope>iceberg::NameMappingTest</scope><name>MakeNameMapping</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

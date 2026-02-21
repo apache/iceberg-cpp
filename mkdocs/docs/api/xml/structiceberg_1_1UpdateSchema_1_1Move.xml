@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdateSchema_1_1Move" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::UpdateSchema::Move</compoundname>
+    <includes refid="update__schema_8h" local="no">update_schema.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structiceberg_1_1UpdateSchema_1_1Move_1a2d5a9270329244b948e4314830107d24" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>MoveType</name>
+        <qualifiedname>iceberg::UpdateSchema::Move::MoveType</qualifiedname>
+        <enumvalue id="structiceberg_1_1UpdateSchema_1_1Move_1a2d5a9270329244b948e4314830107d24a9fda60ba14f0809e152bc08409aa2737" prot="public">
+          <name>kFirst</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1UpdateSchema_1_1Move_1a2d5a9270329244b948e4314830107d24a4e9eada02e7312ba2311abb8453451c6" prot="public">
+          <name>kBefore</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1UpdateSchema_1_1Move_1a2d5a9270329244b948e4314830107d24ac8c795f4a70925da9b965f3fd2c5a5a4" prot="public">
+          <name>kAfter</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="322" column="5" bodyfile="iceberg/update/update_schema.h" bodystart="322" bodyend="322"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1UpdateSchema_1_1Move_1af44f5b7a0231f275b3ce6f6166bd06e9" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::UpdateSchema::Move::field_id</definition>
+        <argsstring></argsstring>
+        <name>field_id</name>
+        <qualifiedname>iceberg::UpdateSchema::Move::field_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="324" column="13" bodyfile="iceberg/update/update_schema.h" bodystart="324" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdateSchema_1_1Move_1a2c4a7f3ef6719a73e01827bec2dd41b2" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::UpdateSchema::Move::reference_field_id</definition>
+        <argsstring></argsstring>
+        <name>reference_field_id</name>
+        <qualifiedname>iceberg::UpdateSchema::Move::reference_field_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="325" column="13" bodyfile="iceberg/update/update_schema.h" bodystart="325" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdateSchema_1_1Move_1ac04d9bbe89040db015cf17eeaddf3824" prot="public" static="no" mutable="no">
+        <type>MoveType</type>
+        <definition>MoveType iceberg::UpdateSchema::Move::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::UpdateSchema::Move::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="326" column="14" bodyfile="iceberg/update/update_schema.h" bodystart="326" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1UpdateSchema_1_1Move_1a8e297ecfe2f87602bd9f3a89f0c7c76f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1UpdateSchema_1_1Move" kindref="compound">Move</ref></type>
+        <definition>UpdateSchema::Move iceberg::UpdateSchema::Move::First</definition>
+        <argsstring>(int32_t field_id)</argsstring>
+        <name>First</name>
+        <qualifiedname>iceberg::UpdateSchema::Move::First</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="328" column="17" bodyfile="iceberg/update/update_schema.cc" bodystart="310" bodyend="313"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1UpdateSchema_1_1Move_1a5371ce17ca9d8afdc0f508316baa36b2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1UpdateSchema_1_1Move" kindref="compound">Move</ref></type>
+        <definition>UpdateSchema::Move iceberg::UpdateSchema::Move::Before</definition>
+        <argsstring>(int32_t field_id, int32_t reference_field_id)</argsstring>
+        <name>Before</name>
+        <qualifiedname>iceberg::UpdateSchema::Move::Before</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>reference_field_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="330" column="17" bodyfile="iceberg/update/update_schema.cc" bodystart="315" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1UpdateSchema_1_1Move_1acf97e24b4d7307de210e6a2928c59196" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1UpdateSchema_1_1Move" kindref="compound">Move</ref></type>
+        <definition>UpdateSchema::Move iceberg::UpdateSchema::Move::After</definition>
+        <argsstring>(int32_t field_id, int32_t reference_field_id)</argsstring>
+        <name>After</name>
+        <qualifiedname>iceberg::UpdateSchema::Move::After</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>reference_field_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="332" column="17" bodyfile="iceberg/update/update_schema.cc" bodystart="322" bodyend="327"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a column move operation within a struct (internal use only). </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/update/update_schema.h" line="321" column="3" bodyfile="iceberg/update/update_schema.h" bodystart="321" bodyend="333"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdateSchema_1_1Move_1acf97e24b4d7307de210e6a2928c59196" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::Move</scope><name>After</name></member>
+      <member refid="structiceberg_1_1UpdateSchema_1_1Move_1a5371ce17ca9d8afdc0f508316baa36b2" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::Move</scope><name>Before</name></member>
+      <member refid="structiceberg_1_1UpdateSchema_1_1Move_1af44f5b7a0231f275b3ce6f6166bd06e9" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::Move</scope><name>field_id</name></member>
+      <member refid="structiceberg_1_1UpdateSchema_1_1Move_1a8e297ecfe2f87602bd9f3a89f0c7c76f" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::Move</scope><name>First</name></member>
+      <member refid="structiceberg_1_1UpdateSchema_1_1Move_1a2d5a9270329244b948e4314830107d24" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::Move</scope><name>MoveType</name></member>
+      <member refid="structiceberg_1_1UpdateSchema_1_1Move_1a2c4a7f3ef6719a73e01827bec2dd41b2" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::Move</scope><name>reference_field_id</name></member>
+      <member refid="structiceberg_1_1UpdateSchema_1_1Move_1ac04d9bbe89040db015cf17eeaddf3824" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::Move</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

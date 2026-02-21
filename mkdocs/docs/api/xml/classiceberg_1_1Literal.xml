@@ -1,0 +1,716 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Literal" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Literal</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <includes refid="literal_8h" local="no">literal.h</includes>
+    <innerclass refid="structiceberg_1_1Literal_1_1AboveMax" prot="public">iceberg::Literal::AboveMax</innerclass>
+    <innerclass refid="structiceberg_1_1Literal_1_1BelowMin" prot="public">iceberg::Literal::BelowMin</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1Literal_1aa63b99b468adc18d94faafc23be81568" prot="public" static="no">
+        <type>std::variant&lt; std::monostate, bool, int32_t, int64_t, float, double, std::string, std::vector&lt; uint8_t &gt;, <ref refid="classiceberg_1_1Decimal" kindref="compound">::iceberg::Decimal</ref>, <ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref>, <ref refid="structiceberg_1_1Literal_1_1BelowMin" kindref="compound">BelowMin</ref>, <ref refid="structiceberg_1_1Literal_1_1AboveMax" kindref="compound">AboveMax</ref> &gt;</type>
+        <definition>using iceberg::Literal::Value =  std::variant&lt;std::monostate, bool, int32_t, int64_t, float, double, std::string, std::vector&lt;uint8_t&gt;, ::iceberg::Decimal, Uuid, BelowMin, AboveMax&gt;</definition>
+        <argsstring></argsstring>
+        <name>Value</name>
+        <qualifiedname>iceberg::Literal::Value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="56" column="3" bodyfile="iceberg/expression/literal.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1Literal_1af0d3ee474e229c052eedbdb05c130f0d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class Conversions</definition>
+        <argsstring></argsstring>
+        <name>Conversions</name>
+        <qualifiedname>iceberg::Literal::Conversions</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Conversions" kindref="compound">Conversions</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="166" column="16" bodyfile="iceberg/expression/literal.h" bodystart="166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="friend" id="classiceberg_1_1Literal_1a62d78f668abba14fb47cbcb71041ece2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class LiteralCaster</definition>
+        <argsstring></argsstring>
+        <name>LiteralCaster</name>
+        <qualifiedname>iceberg::Literal::LiteralCaster</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1LiteralCaster" kindref="compound">LiteralCaster</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="167" column="16" bodyfile="iceberg/expression/literal.h" bodystart="167" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Literal_1a2d5eff6e4690219ea993dc6f0fc559fd" prot="private" static="no" mutable="no">
+        <type>Value</type>
+        <definition>Value iceberg::Literal::value_</definition>
+        <argsstring></argsstring>
+        <name>value_</name>
+        <qualifiedname>iceberg::Literal::value_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="169" column="9" bodyfile="iceberg/expression/literal.h" bodystart="169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Literal_1a0fe1c974f0522fcbd95e1d7cc0a04c00" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PrimitiveType&gt; iceberg::Literal::type_</definition>
+        <argsstring></argsstring>
+        <name>type_</name>
+        <qualifiedname>iceberg::Literal::type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="170" column="19" bodyfile="iceberg/expression/literal.h" bodystart="170" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Literal_1ada29f73dbb21bde3e3da88e70ec56be3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Boolean</definition>
+        <argsstring>(bool value)</argsstring>
+        <name>Boolean</name>
+        <qualifiedname>iceberg::Literal::Boolean</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Factory methods for primitive types. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="69" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="276" bodyend="276"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a15ad62998d9cf1a8fd30811461f20699" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Int</definition>
+        <argsstring>(int32_t value)</argsstring>
+        <name>Int</name>
+        <qualifiedname>iceberg::Literal::Int</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="70" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="278" bodyend="278"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a5228d44d22c9e79bc6070a6adc352a29" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Date</definition>
+        <argsstring>(int32_t value)</argsstring>
+        <name>Date</name>
+        <qualifiedname>iceberg::Literal::Date</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="71" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="280" bodyend="280"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a6b7d5fc2f9777a7ecef0e9aff89360fc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Long</definition>
+        <argsstring>(int64_t value)</argsstring>
+        <name>Long</name>
+        <qualifiedname>iceberg::Literal::Long</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="72" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="282" bodyend="282"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a88624b476835f77ec280204f7191a839" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Time</definition>
+        <argsstring>(int64_t value)</argsstring>
+        <name>Time</name>
+        <qualifiedname>iceberg::Literal::Time</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="73" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="284" bodyend="284"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1af15845dba265a4caa4cf5d114a9da2a1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Timestamp</definition>
+        <argsstring>(int64_t value)</argsstring>
+        <name>Timestamp</name>
+        <qualifiedname>iceberg::Literal::Timestamp</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="74" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="286" bodyend="286"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a759500c104d15bdd434824b607693c70" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::TimestampTz</definition>
+        <argsstring>(int64_t value)</argsstring>
+        <name>TimestampTz</name>
+        <qualifiedname>iceberg::Literal::TimestampTz</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="75" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="288" bodyend="288"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1aab613cab9fef53309b6ac1e575951cb4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Float</definition>
+        <argsstring>(float value)</argsstring>
+        <name>Float</name>
+        <qualifiedname>iceberg::Literal::Float</qualifiedname>
+        <param>
+          <type>float</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="76" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="290" bodyend="290"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a505daaacd4c6af63976fcd8c99521a9e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Double</definition>
+        <argsstring>(double value)</argsstring>
+        <name>Double</name>
+        <qualifiedname>iceberg::Literal::Double</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="77" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="292" bodyend="292"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1abba2d8d834b929dde5c1816f6ec4b12d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::String</definition>
+        <argsstring>(std::string value)</argsstring>
+        <name>String</name>
+        <qualifiedname>iceberg::Literal::String</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="78" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="294" bodyend="294"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a16cd7b8cf0c54705c365afcfbdd9b8d7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::UUID</definition>
+        <argsstring>(Uuid value)</argsstring>
+        <name>UUID</name>
+        <qualifiedname>iceberg::Literal::UUID</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref></type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="79" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="296" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1ae89917d6cb82ad0ea588a2b2fd2275cf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Binary</definition>
+        <argsstring>(std::vector&lt; uint8_t &gt; value)</argsstring>
+        <name>Binary</name>
+        <qualifiedname>iceberg::Literal::Binary</qualifiedname>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="80" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="298" bodyend="300"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a02b59e86054946aa3535e5926f425848" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Fixed</definition>
+        <argsstring>(std::vector&lt; uint8_t &gt; value)</argsstring>
+        <name>Fixed</name>
+        <qualifiedname>iceberg::Literal::Fixed</qualifiedname>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="81" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="302" bodyend="305"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1adee20c80370bc1256e52a25b6b68e831" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::Literal::Decimal</definition>
+        <argsstring>(int128_t value, int32_t precision, int32_t scale)</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>iceberg::Literal::Decimal</qualifiedname>
+        <param>
+          <type>int128_t</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>precision</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+<para>Create a decimal literal. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unscaled 128-bit integer value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="85" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="307" bodyend="309"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a44431a54eab3ee7b4373b8b13b70960c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>static Literal iceberg::Literal::Null</definition>
+        <argsstring>(std::shared_ptr&lt; PrimitiveType &gt; type)</argsstring>
+        <name>Null</name>
+        <qualifiedname>iceberg::Literal::Null</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Create a literal representing a null value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="88" column="18" bodyfile="iceberg/expression/literal.h" bodystart="88" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1af69eba24c9de92f9d501b8d4c4ffa862" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::Literal::Deserialize</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; data, std::shared_ptr&lt; PrimitiveType &gt; type)</argsstring>
+        <name>Deserialize</name>
+        <qualifiedname>iceberg::Literal::Deserialize</qualifiedname>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Restore a literal from single-value serialization. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See <ulink url="https://iceberg.apache.org/spec/#binary-single-value-serialization">this spec</ulink> for reference. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="96" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="311" bodyend="314"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a58c770f43580faaf120af0acafae5863" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; uint8_t &gt; &gt; iceberg::Literal::Serialize</definition>
+        <argsstring>() const</argsstring>
+        <name>Serialize</name>
+        <qualifiedname>iceberg::Literal::Serialize</qualifiedname>
+        <briefdescription>
+<para>Perform single-value serialization. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>See <ulink url="https://iceberg.apache.org/spec/#binary-single-value-serialization">this spec</ulink> for reference. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="103" column="10" bodyfile="iceberg/expression/literal.cc" bodystart="316" bodyend="318"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a9f29b66609108febbfeb356e55ddf66b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; PrimitiveType &gt; &amp; iceberg::Literal::type</definition>
+        <argsstring>() const</argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::Literal::type</qualifiedname>
+        <briefdescription>
+<para>Get the literal type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="106" column="25" bodyfile="iceberg/expression/literal.cc" bodystart="322" bodyend="322"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a449f298c6f6bdd64dfea2eb2542a2cca" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const Value &amp;</type>
+        <definition>const Value &amp; iceberg::Literal::value</definition>
+        <argsstring>() const</argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::Literal::value</qualifiedname>
+        <briefdescription>
+<para>Get the literal value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="109" column="15" bodyfile="iceberg/expression/literal.h" bodystart="109" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a575da73e9c6821d136dbdd9a43610391" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::Literal::CastTo</definition>
+        <argsstring>(const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type) const</argsstring>
+        <name>CastTo</name>
+        <qualifiedname>iceberg::Literal::CastTo</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Converts this literal to a literal of the given type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When a predicate is bound to a concrete data column, literals are converted to match the bound column&apos;s type. This conversion process is more narrow than a cast and is only intended for cases where substituting one type is a common mistake (e.g. 34 instead of 34L) or where this API avoids requiring a concrete class (e.g., dates).</para>
+<para>If conversion to a target type is not supported, this method returns an error.</para>
+<para>This method may return <ref refid="structiceberg_1_1Literal_1_1BelowMin" kindref="compound">BelowMin</ref> or <ref refid="structiceberg_1_1Literal_1_1AboveMax" kindref="compound">AboveMax</ref> when the target type is not as wide as the original type. These values indicate that the containing predicate can be simplified. For example, std::numeric_limits&lt;int&gt;::max()+1 converted to an int will result in <ref refid="structiceberg_1_1Literal_1_1AboveMax" kindref="compound">AboveMax</ref> and can simplify a &lt; std::numeric_limits&lt;int&gt;::max()+1 to always true.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>target_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A primitive <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing a literal of the given type or an error if conversion was not valid </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="129" column="10" bodyfile="iceberg/expression/literal.cc" bodystart="325" bodyend="327"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a6c3853d8096157c9b83c6aab75e1d8c5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Literal::operator==</definition>
+        <argsstring>(const Literal &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Literal::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="131" column="8" bodyfile="iceberg/expression/literal.cc" bodystart="365" bodyend="365"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1adf966faf9695eb78381634d0e1a08207" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::partial_ordering</type>
+        <definition>std::partial_ordering iceberg::Literal::operator&lt;=&gt;</definition>
+        <argsstring>(const Literal &amp;other) const</argsstring>
+        <name>operator&lt;=&gt;</name>
+        <qualifiedname>iceberg::Literal::operator&lt;=&gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two literals of the same primitive type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The other literal to compare with. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The comparison result as std::partial_ordering. If either side is <ref refid="structiceberg_1_1Literal_1_1AboveMax" kindref="compound">AboveMax</ref>, <ref refid="structiceberg_1_1Literal_1_1BelowMin" kindref="compound">BelowMin</ref> or Null, the result is unordered. Note: This comparison cannot be used for sorting literals if any literal is <ref refid="structiceberg_1_1Literal_1_1AboveMax" kindref="compound">AboveMax</ref>, <ref refid="structiceberg_1_1Literal_1_1BelowMin" kindref="compound">BelowMin</ref> or Null. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="139" column="3" bodyfile="iceberg/expression/literal.cc" bodystart="368" bodyend="455"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a777c8f307faa0f62125ec88dc37a9dd9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Literal::IsAboveMax</definition>
+        <argsstring>() const</argsstring>
+        <name>IsAboveMax</name>
+        <qualifiedname>iceberg::Literal::IsAboveMax</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Check if this literal represents a value above the maximum allowed value for its type. This occurs when casting from a wider type to a narrower type and the value exceeds the target type&apos;s maximum. <simplesect kind="return"><para>true if this literal represents an <ref refid="structiceberg_1_1Literal_1_1AboveMax" kindref="compound">AboveMax</ref> value, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="145" column="8" bodyfile="iceberg/expression/literal.cc" bodystart="523" bodyend="523"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1abe1154e22e548aea9b62f7aac2e21f31" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Literal::IsBelowMin</definition>
+        <argsstring>() const</argsstring>
+        <name>IsBelowMin</name>
+        <qualifiedname>iceberg::Literal::IsBelowMin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Check if this literal represents a value below the minimum allowed value for its type. This occurs when casting from a wider type to a narrower type and the value is less than the target type&apos;s minimum. <simplesect kind="return"><para>true if this literal represents a <ref refid="structiceberg_1_1Literal_1_1BelowMin" kindref="compound">BelowMin</ref> value, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="151" column="8" bodyfile="iceberg/expression/literal.cc" bodystart="521" bodyend="521"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1ada50bc67d35c38bc80a79d6b05602fac" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Literal::IsNull</definition>
+        <argsstring>() const</argsstring>
+        <name>IsNull</name>
+        <qualifiedname>iceberg::Literal::IsNull</qualifiedname>
+        <briefdescription>
+<para>Check if this literal is null. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if this literal is null, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="155" column="8" bodyfile="iceberg/expression/literal.cc" bodystart="525" bodyend="525"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a87705ed1682ce57233927e5995cb443b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Literal::IsNaN</definition>
+        <argsstring>() const</argsstring>
+        <name>IsNaN</name>
+        <qualifiedname>iceberg::Literal::IsNaN</qualifiedname>
+        <briefdescription>
+<para>Check if this literal is NaN. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if this literal is NaN, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="159" column="8" bodyfile="iceberg/expression/literal.cc" bodystart="527" bodyend="530"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Literal_1a1697981c038e303d6efb3a7931521b4f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Literal::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Literal::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="161" column="15" bodyfile="iceberg/expression/literal.cc" bodystart="457" bodyend="519"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1Literal_1ac36e1f868cc4bb1e7b3971d0c5d8cf86" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Literal::Literal</definition>
+        <argsstring>(Value value, std::shared_ptr&lt; PrimitiveType &gt; type)</argsstring>
+        <name>Literal</name>
+        <qualifiedname>iceberg::Literal::Literal</qualifiedname>
+        <param>
+          <type>Value</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="164" column="3" bodyfile="iceberg/expression/literal.cc" bodystart="272" bodyend="273"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> is a literal value that is associated with a primitive type. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/literal.h" line="39" column="1" bodyfile="iceberg/expression/literal.h" bodystart="39" bodyend="171"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Literal_1ae89917d6cb82ad0ea588a2b2fd2275cf" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Binary</name></member>
+      <member refid="classiceberg_1_1Literal_1ada29f73dbb21bde3e3da88e70ec56be3" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Boolean</name></member>
+      <member refid="classiceberg_1_1Literal_1a575da73e9c6821d136dbdd9a43610391" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>CastTo</name></member>
+      <member refid="classiceberg_1_1Literal_1af0d3ee474e229c052eedbdb05c130f0d" prot="private" virt="non-virtual"><scope>iceberg::Literal</scope><name>Conversions</name></member>
+      <member refid="classiceberg_1_1Literal_1a5228d44d22c9e79bc6070a6adc352a29" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Date</name></member>
+      <member refid="classiceberg_1_1Literal_1adee20c80370bc1256e52a25b6b68e831" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Decimal</name></member>
+      <member refid="classiceberg_1_1Literal_1af69eba24c9de92f9d501b8d4c4ffa862" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Deserialize</name></member>
+      <member refid="classiceberg_1_1Literal_1a505daaacd4c6af63976fcd8c99521a9e" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Double</name></member>
+      <member refid="classiceberg_1_1Literal_1a02b59e86054946aa3535e5926f425848" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Fixed</name></member>
+      <member refid="classiceberg_1_1Literal_1aab613cab9fef53309b6ac1e575951cb4" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Float</name></member>
+      <member refid="classiceberg_1_1Literal_1a15ad62998d9cf1a8fd30811461f20699" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Int</name></member>
+      <member refid="classiceberg_1_1Literal_1a777c8f307faa0f62125ec88dc37a9dd9" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>IsAboveMax</name></member>
+      <member refid="classiceberg_1_1Literal_1abe1154e22e548aea9b62f7aac2e21f31" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>IsBelowMin</name></member>
+      <member refid="classiceberg_1_1Literal_1a87705ed1682ce57233927e5995cb443b" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>IsNaN</name></member>
+      <member refid="classiceberg_1_1Literal_1ada50bc67d35c38bc80a79d6b05602fac" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>IsNull</name></member>
+      <member refid="classiceberg_1_1Literal_1ac36e1f868cc4bb1e7b3971d0c5d8cf86" prot="private" virt="non-virtual"><scope>iceberg::Literal</scope><name>Literal</name></member>
+      <member refid="classiceberg_1_1Literal_1a62d78f668abba14fb47cbcb71041ece2" prot="private" virt="non-virtual"><scope>iceberg::Literal</scope><name>LiteralCaster</name></member>
+      <member refid="classiceberg_1_1Literal_1a6b7d5fc2f9777a7ecef0e9aff89360fc" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Long</name></member>
+      <member refid="classiceberg_1_1Literal_1a44431a54eab3ee7b4373b8b13b70960c" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Null</name></member>
+      <member refid="classiceberg_1_1Literal_1adf966faf9695eb78381634d0e1a08207" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>operator&lt;=&gt;</name></member>
+      <member refid="classiceberg_1_1Literal_1a6c3853d8096157c9b83c6aab75e1d8c5" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1Literal_1a58c770f43580faaf120af0acafae5863" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Serialize</name></member>
+      <member refid="classiceberg_1_1Literal_1abba2d8d834b929dde5c1816f6ec4b12d" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>String</name></member>
+      <member refid="classiceberg_1_1Literal_1a88624b476835f77ec280204f7191a839" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Time</name></member>
+      <member refid="classiceberg_1_1Literal_1af15845dba265a4caa4cf5d114a9da2a1" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Timestamp</name></member>
+      <member refid="classiceberg_1_1Literal_1a759500c104d15bdd434824b607693c70" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>TimestampTz</name></member>
+      <member refid="classiceberg_1_1Literal_1a1697981c038e303d6efb3a7931521b4f" prot="public" virt="virtual"><scope>iceberg::Literal</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Literal_1a9f29b66609108febbfeb356e55ddf66b" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>type</name></member>
+      <member refid="classiceberg_1_1Literal_1a0fe1c974f0522fcbd95e1d7cc0a04c00" prot="private" virt="non-virtual"><scope>iceberg::Literal</scope><name>type_</name></member>
+      <member refid="classiceberg_1_1Literal_1a16cd7b8cf0c54705c365afcfbdd9b8d7" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>UUID</name></member>
+      <member refid="classiceberg_1_1Literal_1a449f298c6f6bdd64dfea2eb2542a2cca" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>value</name></member>
+      <member refid="classiceberg_1_1Literal_1aa63b99b468adc18d94faafc23be81568" prot="public" virt="non-virtual"><scope>iceberg::Literal</scope><name>Value</name></member>
+      <member refid="classiceberg_1_1Literal_1a2d5eff6e4690219ea993dc6f0fc559fd" prot="private" virt="non-virtual"><scope>iceberg::Literal</scope><name>value_</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Literal</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

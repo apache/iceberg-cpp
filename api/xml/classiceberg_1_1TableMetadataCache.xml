@@ -1,0 +1,391 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableMetadataCache" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TableMetadataCache</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1a5e22b1c21b3d0f545012f8711a07390f" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>std::unordered_map&lt; int32_t, std::shared_ptr&lt; T &gt; &gt;</type>
+        <definition>using iceberg::TableMetadataCache::ByIdMap =  std::unordered_map&lt;int32_t, std::shared_ptr&lt;T&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>ByIdMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::ByIdMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="173" column="3" bodyfile="iceberg/table_metadata.h" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1a22cee4ac7c44de0215a20a4ddb376949" prot="public" static="no">
+        <type>ByIdMap&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>using iceberg::TableMetadataCache::SchemasMap =  ByIdMap&lt;Schema&gt;</definition>
+        <argsstring></argsstring>
+        <name>SchemasMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::SchemasMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="174" column="3" bodyfile="iceberg/table_metadata.h" bodystart="174" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1ae72c166b95f7dadbc22cfa0c8e83ff6d" prot="public" static="no">
+        <type>ByIdMap&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>using iceberg::TableMetadataCache::PartitionSpecsMap =  ByIdMap&lt;PartitionSpec&gt;</definition>
+        <argsstring></argsstring>
+        <name>PartitionSpecsMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::PartitionSpecsMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="175" column="3" bodyfile="iceberg/table_metadata.h" bodystart="175" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1a1ddc0b10bb9159085ad9f3eb36c5cc7e" prot="public" static="no">
+        <type>ByIdMap&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt;</type>
+        <definition>using iceberg::TableMetadataCache::SortOrdersMap =  ByIdMap&lt;SortOrder&gt;</definition>
+        <argsstring></argsstring>
+        <name>SortOrdersMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::SortOrdersMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="176" column="3" bodyfile="iceberg/table_metadata.h" bodystart="176" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1a6344b126c439f0641d82ed0e7de2bb92" prot="public" static="no">
+        <type>std::unordered_map&lt; int64_t, std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;</type>
+        <definition>using iceberg::TableMetadataCache::SnapshotsMap =  std::unordered_map&lt;int64_t, std::shared_ptr&lt;Snapshot&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>SnapshotsMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::SnapshotsMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="177" column="3" bodyfile="iceberg/table_metadata.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1a69844c981503c2a23c19a791741e3ad3" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const SchemasMap &gt;</type>
+        <definition>using iceberg::TableMetadataCache::SchemasMapRef =  std::reference_wrapper&lt;const SchemasMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>SchemasMapRef</name>
+        <qualifiedname>iceberg::TableMetadataCache::SchemasMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="178" column="3" bodyfile="iceberg/table_metadata.h" bodystart="178" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1a98eba353552e65fdd7f10f735c8db48e" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const PartitionSpecsMap &gt;</type>
+        <definition>using iceberg::TableMetadataCache::PartitionSpecsMapRef =  std::reference_wrapper&lt;const PartitionSpecsMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>PartitionSpecsMapRef</name>
+        <qualifiedname>iceberg::TableMetadataCache::PartitionSpecsMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="179" column="3" bodyfile="iceberg/table_metadata.h" bodystart="179" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1a05744b036b91dccd8a6dd988986a6f0d" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const SortOrdersMap &gt;</type>
+        <definition>using iceberg::TableMetadataCache::SortOrdersMapRef =  std::reference_wrapper&lt;const SortOrdersMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>SortOrdersMapRef</name>
+        <qualifiedname>iceberg::TableMetadataCache::SortOrdersMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="180" column="3" bodyfile="iceberg/table_metadata.h" bodystart="180" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1TableMetadataCache_1af29eac0e106a728304864b5158be2b7f" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const SnapshotsMap &gt;</type>
+        <definition>using iceberg::TableMetadataCache::SnapshotsMapRef =  std::reference_wrapper&lt;const SnapshotsMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>SnapshotsMapRef</name>
+        <qualifiedname>iceberg::TableMetadataCache::SnapshotsMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="181" column="3" bodyfile="iceberg/table_metadata.h" bodystart="181" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TableMetadataCache_1aff010149107c02ec5e28d166bf238d35" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+        <definition>const TableMetadata* iceberg::TableMetadataCache::metadata_</definition>
+        <argsstring></argsstring>
+        <name>metadata_</name>
+        <qualifiedname>iceberg::TableMetadataCache::metadata_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="194" column="23" bodyfile="iceberg/table_metadata.h" bodystart="194" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableMetadataCache_1a9b6182cecfea82441d9b732d62e852e5" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitSchemasMap &gt;</type>
+        <definition>Lazy&lt;InitSchemasMap&gt; iceberg::TableMetadataCache::schemas_map_</definition>
+        <argsstring></argsstring>
+        <name>schemas_map_</name>
+        <qualifiedname>iceberg::TableMetadataCache::schemas_map_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="195" column="8" bodyfile="iceberg/table_metadata.h" bodystart="195" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableMetadataCache_1aae2078642079e14fe0cd63df9be9a7a2" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitPartitionSpecsMap &gt;</type>
+        <definition>Lazy&lt;InitPartitionSpecsMap&gt; iceberg::TableMetadataCache::partition_specs_map_</definition>
+        <argsstring></argsstring>
+        <name>partition_specs_map_</name>
+        <qualifiedname>iceberg::TableMetadataCache::partition_specs_map_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="196" column="8" bodyfile="iceberg/table_metadata.h" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableMetadataCache_1ac5a9f192bf8c76b39b624ac7393d1f7c" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitSortOrdersMap &gt;</type>
+        <definition>Lazy&lt;InitSortOrdersMap&gt; iceberg::TableMetadataCache::sort_orders_map_</definition>
+        <argsstring></argsstring>
+        <name>sort_orders_map_</name>
+        <qualifiedname>iceberg::TableMetadataCache::sort_orders_map_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="197" column="8" bodyfile="iceberg/table_metadata.h" bodystart="197" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableMetadataCache_1a79fe4ef25e516284a1d2be13e784d310" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitSnapshotMap &gt;</type>
+        <definition>Lazy&lt;InitSnapshotMap&gt; iceberg::TableMetadataCache::snapshot_map_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_map_</name>
+        <qualifiedname>iceberg::TableMetadataCache::snapshot_map_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="198" column="8" bodyfile="iceberg/table_metadata.h" bodystart="198" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a0b4eed0a552155c975d024f5e24dbadb" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataCache::TableMetadataCache</definition>
+        <argsstring>(const TableMetadata *metadata)</argsstring>
+        <name>TableMetadataCache</name>
+        <qualifiedname>iceberg::TableMetadataCache::TableMetadataCache</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="170" column="12" bodyfile="iceberg/table_metadata.h" bodystart="170" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1ace496cc958877c21e7bb59c2af7f4c96" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; SchemasMapRef &gt;</type>
+        <definition>Result&lt; TableMetadataCache::SchemasMapRef &gt; iceberg::TableMetadataCache::GetSchemasById</definition>
+        <argsstring>() const</argsstring>
+        <name>GetSchemasById</name>
+        <qualifiedname>iceberg::TableMetadataCache::GetSchemasById</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="183" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="360" bodyend="362"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a1feceb5ef4d9922a0d1422b15f52687f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; PartitionSpecsMapRef &gt;</type>
+        <definition>Result&lt; TableMetadataCache::PartitionSpecsMapRef &gt; iceberg::TableMetadataCache::GetPartitionSpecsById</definition>
+        <argsstring>() const</argsstring>
+        <name>GetPartitionSpecsById</name>
+        <qualifiedname>iceberg::TableMetadataCache::GetPartitionSpecsById</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="184" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="365" bodyend="367"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a56461672fe0a1247eae4723b843a8167" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; SortOrdersMapRef &gt;</type>
+        <definition>Result&lt; TableMetadataCache::SortOrdersMapRef &gt; iceberg::TableMetadataCache::GetSortOrdersById</definition>
+        <argsstring>() const</argsstring>
+        <name>GetSortOrdersById</name>
+        <qualifiedname>iceberg::TableMetadataCache::GetSortOrdersById</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="185" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="369" bodyend="372"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a5851f3c92530ba287414dea52c5b2031" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; SnapshotsMapRef &gt;</type>
+        <definition>Result&lt; TableMetadataCache::SnapshotsMapRef &gt; iceberg::TableMetadataCache::GetSnapshotsById</definition>
+        <argsstring>() const</argsstring>
+        <name>GetSnapshotsById</name>
+        <qualifiedname>iceberg::TableMetadataCache::GetSnapshotsById</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="186" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="374" bodyend="376"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a18fc36bb595afa388de2fe901b0f5f6b" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; SchemasMap &gt;</type>
+        <definition>Result&lt; TableMetadataCache::SchemasMap &gt; iceberg::TableMetadataCache::InitSchemasMap</definition>
+        <argsstring>(const TableMetadata *metadata)</argsstring>
+        <name>InitSchemasMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::InitSchemasMap</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="189" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="378" bodyend="384"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a904487b54d443451f169c6df9fd9ab85" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; PartitionSpecsMap &gt;</type>
+        <definition>Result&lt; TableMetadataCache::PartitionSpecsMap &gt; iceberg::TableMetadataCache::InitPartitionSpecsMap</definition>
+        <argsstring>(const TableMetadata *metadata)</argsstring>
+        <name>InitPartitionSpecsMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::InitPartitionSpecsMap</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="190" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="386" bodyend="392"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a3929c28f2a5e6c396a54bb8d8856dc52" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; SortOrdersMap &gt;</type>
+        <definition>Result&lt; TableMetadataCache::SortOrdersMap &gt; iceberg::TableMetadataCache::InitSortOrdersMap</definition>
+        <argsstring>(const TableMetadata *metadata)</argsstring>
+        <name>InitSortOrdersMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::InitSortOrdersMap</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="191" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="394" bodyend="400"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataCache_1a788faaee5a871ed3e2f684bc6b2fa3e8" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; SnapshotsMap &gt;</type>
+        <definition>Result&lt; TableMetadataCache::SnapshotsMap &gt; iceberg::TableMetadataCache::InitSnapshotMap</definition>
+        <argsstring>(const TableMetadata *metadata)</argsstring>
+        <name>InitSnapshotMap</name>
+        <qualifiedname>iceberg::TableMetadataCache::InitSnapshotMap</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="192" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="402" bodyend="408"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/table_metadata.h" line="168" column="1" bodyfile="iceberg/table_metadata.h" bodystart="168" bodyend="199"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableMetadataCache_1a5e22b1c21b3d0f545012f8711a07390f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>ByIdMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a1feceb5ef4d9922a0d1422b15f52687f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>GetPartitionSpecsById</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1ace496cc958877c21e7bb59c2af7f4c96" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>GetSchemasById</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a5851f3c92530ba287414dea52c5b2031" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>GetSnapshotsById</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a56461672fe0a1247eae4723b843a8167" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>GetSortOrdersById</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a904487b54d443451f169c6df9fd9ab85" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>InitPartitionSpecsMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a18fc36bb595afa388de2fe901b0f5f6b" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>InitSchemasMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a788faaee5a871ed3e2f684bc6b2fa3e8" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>InitSnapshotMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a3929c28f2a5e6c396a54bb8d8856dc52" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>InitSortOrdersMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1aff010149107c02ec5e28d166bf238d35" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>metadata_</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1aae2078642079e14fe0cd63df9be9a7a2" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>partition_specs_map_</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1ae72c166b95f7dadbc22cfa0c8e83ff6d" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>PartitionSpecsMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a98eba353552e65fdd7f10f735c8db48e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>PartitionSpecsMapRef</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a9b6182cecfea82441d9b732d62e852e5" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>schemas_map_</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a22cee4ac7c44de0215a20a4ddb376949" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>SchemasMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a69844c981503c2a23c19a791741e3ad3" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>SchemasMapRef</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a79fe4ef25e516284a1d2be13e784d310" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>snapshot_map_</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a6344b126c439f0641d82ed0e7de2bb92" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>SnapshotsMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1af29eac0e106a728304864b5158be2b7f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>SnapshotsMapRef</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1ac5a9f192bf8c76b39b624ac7393d1f7c" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>sort_orders_map_</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a1ddc0b10bb9159085ad9f3eb36c5cc7e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>SortOrdersMap</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a05744b036b91dccd8a6dd988986a6f0d" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>SortOrdersMapRef</name></member>
+      <member refid="classiceberg_1_1TableMetadataCache_1a0b4eed0a552155c975d024f5e24dbadb" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataCache</scope><name>TableMetadataCache</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

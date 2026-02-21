@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1UpdateStatistics" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::UpdateStatistics</compoundname>
+    <basecompoundref refid="classiceberg_1_1PendingUpdate" prot="public" virt="non-virtual">iceberg::PendingUpdate</basecompoundref>
+    <includes refid="update__statistics_8h" local="no">update_statistics.h</includes>
+    <innerclass refid="structiceberg_1_1UpdateStatistics_1_1ApplyResult" prot="public">iceberg::UpdateStatistics::ApplyResult</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1UpdateStatistics_1ad08086582c29e93147b42347bdeeee56" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; int64_t, std::shared_ptr&lt; <ref refid="structiceberg_1_1StatisticsFile" kindref="compound">StatisticsFile</ref> &gt; &gt;</type>
+        <definition>std::unordered_map&lt;int64_t, std::shared_ptr&lt;StatisticsFile&gt; &gt; iceberg::UpdateStatistics::statistics_to_set_</definition>
+        <argsstring></argsstring>
+        <name>statistics_to_set_</name>
+        <qualifiedname>iceberg::UpdateStatistics::statistics_to_set_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="75" column="22" bodyfile="iceberg/update/update_statistics.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdateStatistics_1a0fa05c6d6e8f9f86a9f2d1b73593d27e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1UpdateStatistics" kindref="compound">UpdateStatistics</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; UpdateStatistics &gt; &gt; iceberg::UpdateStatistics::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::UpdateStatistics::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="41" column="17" bodyfile="iceberg/update/update_statistics.cc" bodystart="34" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdateStatistics_1a846ed0927917d1ce3b108baf1eec5184" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::UpdateStatistics::~UpdateStatistics</definition>
+        <argsstring>() override</argsstring>
+        <name>~UpdateStatistics</name>
+        <qualifiedname>iceberg::UpdateStatistics::~UpdateStatistics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="44" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateStatistics_1a5246101d3205bd3a194b7f3101843b5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdateStatistics" kindref="compound">UpdateStatistics</ref> &amp;</type>
+        <definition>UpdateStatistics &amp; iceberg::UpdateStatistics::SetStatistics</definition>
+        <argsstring>(std::shared_ptr&lt; StatisticsFile &gt; statistics_file)</argsstring>
+        <name>SetStatistics</name>
+        <qualifiedname>iceberg::UpdateStatistics::SetStatistics</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1StatisticsFile" kindref="compound">StatisticsFile</ref> &gt;</type>
+          <declname>statistics_file</declname>
+        </param>
+        <briefdescription>
+<para>Set statistics file for a snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Associates a statistics file with a snapshot ID. If statistics already exist for this snapshot, they will be replaced.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>statistics_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The statistics file to set </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this <ref refid="classiceberg_1_1UpdateStatistics" kindref="compound">UpdateStatistics</ref> for chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="53" column="20" bodyfile="iceberg/update/update_statistics.cc" bodystart="46" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateStatistics_1abcabe980b19b3086770601437050b273" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1UpdateStatistics" kindref="compound">UpdateStatistics</ref> &amp;</type>
+        <definition>UpdateStatistics &amp; iceberg::UpdateStatistics::RemoveStatistics</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>RemoveStatistics</name>
+        <qualifiedname>iceberg::UpdateStatistics::RemoveStatistics</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Remove statistics for a snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Marks the statistics for the given snapshot ID for removal.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID whose statistics to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this <ref refid="classiceberg_1_1UpdateStatistics" kindref="compound">UpdateStatistics</ref> for chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="61" column="20" bodyfile="iceberg/update/update_statistics.cc" bodystart="53" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateStatistics_1a7bdf59fd1eb3866a5f6840f6c36d4d1a" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::UpdateStatistics::kind</definition>
+        <argsstring>() const final</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::UpdateStatistics::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdate_1a33fba65ffa4a85fd7c5b9984cb892812">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this pending update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="63" column="8" bodyfile="iceberg/update/update_statistics.h" bodystart="63" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UpdateStatistics_1a5c43b2440a29b12fe132aadd71afe43b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1UpdateStatistics_1_1ApplyResult" kindref="compound">ApplyResult</ref> &gt;</type>
+        <definition>Result&lt; UpdateStatistics::ApplyResult &gt; iceberg::UpdateStatistics::Apply</definition>
+        <argsstring>()</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::UpdateStatistics::Apply</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="70" column="10" bodyfile="iceberg/update/update_statistics.cc" bodystart="58" bodyend="70"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1UpdateStatistics_1afc58123ecea2f7fdb5dcf6da3c49c4cc" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::UpdateStatistics::UpdateStatistics</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>UpdateStatistics</name>
+        <qualifiedname>iceberg::UpdateStatistics::UpdateStatistics</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="73" column="12" bodyfile="iceberg/update/update_statistics.cc" bodystart="41" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Updates table statistics. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdateStatistics</label>
+        <link refid="classiceberg_1_1UpdateStatistics"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>transaction_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Transaction</label>
+        <link refid="classiceberg_1_1Transaction"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdateStatistics</label>
+        <link refid="classiceberg_1_1UpdateStatistics"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Transaction &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::enable_shared_from_this&lt; Transaction &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_statistics.h" line="39" column="1" bodyfile="iceberg/update/update_statistics.h" bodystart="39" bodyend="76"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1a5c43b2440a29b12fe132aadd71afe43b" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a93721051561748b1a29e75b7d4cbbd86" prot="protected" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>base</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a4a5df6d83b7a4a3c4dac19a77945be71" prot="public" virt="virtual"><scope>iceberg::UpdateStatistics</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a22441dbf2867204cb175300075e50db9" prot="public" virt="virtual"><scope>iceberg::UpdateStatistics</scope><name>Finalize</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1a7bdf59fd1eb3866a5f6840f6c36d4d1a" prot="public" virt="virtual"><scope>iceberg::UpdateStatistics</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a5bac3f32c6a0790ba222399fed5c1944" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1a0fa05c6d6e8f9f86a9f2d1b73593d27e" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::UpdateStatistics</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::UpdateStatistics</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ab758ff7780442894f3fb0a80d0db064f" prot="protected" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1abcabe980b19b3086770601437050b273" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>RemoveStatistics</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1a5246101d3205bd3a194b7f3101843b5d" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>SetStatistics</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1ad08086582c29e93147b42347bdeeee56" prot="private" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>statistics_to_set_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac57921ff326abc60b8d9558aa7046d10" prot="protected" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>transaction_</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1afc58123ecea2f7fdb5dcf6da3c49c4cc" prot="private" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>UpdateStatistics</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::UpdateStatistics</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ace0dfef0058a64109f51e2638429a9f2" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1UpdateStatistics_1a846ed0927917d1ce3b108baf1eec5184" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics</scope><name>~UpdateStatistics</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
