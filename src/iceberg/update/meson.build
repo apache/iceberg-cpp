@@ -21,6 +21,7 @@ install_headers(
         'fast_append.h',
         'pending_update.h',
         'set_snapshot.h',
+        'snapshot_manager.h',
         'snapshot_update.h',
         'update_location.h',
         'update_partition_spec.h',

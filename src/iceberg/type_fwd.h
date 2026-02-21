@@ -193,6 +193,7 @@ class ExpireSnapshots;
 class FastAppend;
 class PendingUpdate;
 class SetSnapshot;
+class SnapshotManager;
 class SnapshotUpdate;
 class UpdateLocation;
 class UpdatePartitionSpec;
