@@ -56,7 +56,7 @@ constexpr Decimal kMaxDecimalValue(5421010862427522170LL, 687399551400673279ULL)
 constexpr Decimal kMinDecimalValue(-5421010862427522171LL, 17759344522308878337ULL);
 
 struct DecimalComponents {
-  std::string_view while_digits;
+  std::string_view whole_digits;
   std::string_view fractional_digits;
   int32_t exponent{0};
   char sign{0};
@@ -92,9 +92,9 @@ bool ParseDecimalComponents(std::string_view str, DecimalComponents* out) {
     out->sign = str[pos++];
   }
   // First run of digits
-  pos = ParseDigitsRun(str, pos, &out->while_digits);
+  pos = ParseDigitsRun(str, pos, &out->whole_digits);
   if (pos == str.size()) {
-    return !out->while_digits.empty();
+    return !out->whole_digits.empty();
   }
 
   // Optional dot
@@ -102,7 +102,7 @@ bool ParseDecimalComponents(std::string_view str, DecimalComponents* out) {
     // Second run of digits after the dot
     pos = ParseDigitsRun(str, ++pos, &out->fractional_digits);
   }
-  if (out->fractional_digits.empty() && out->while_digits.empty()) {
+  if (out->fractional_digits.empty() && out->whole_digits.empty()) {
     // Need at least some digits (whole or fractional)
     return false;
   }
@@ -437,10 +437,10 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
   }
 
   // Count number of significant digits (without leading zeros)
-  size_t first_non_zero = dec.while_digits.find_first_not_of('0');
+  size_t first_non_zero = dec.whole_digits.find_first_not_of('0');
   size_t significant_digits = dec.fractional_digits.size();
   if (first_non_zero != std::string_view::npos) {
-    significant_digits += dec.while_digits.size() - first_non_zero;
+    significant_digits += dec.whole_digits.size() - first_non_zero;
   }
 
   auto parsed_precision = static_cast<int32_t>(significant_digits);
@@ -454,7 +454,7 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
   }
 
   uint128_t value = 0;
-  ShiftAndAdd(dec.while_digits, value);
+  ShiftAndAdd(dec.whole_digits, value);
   ShiftAndAdd(dec.fractional_digits, value);
   Decimal result(static_cast<int128_t>(value));
 

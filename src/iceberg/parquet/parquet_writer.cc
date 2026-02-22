@@ -61,7 +61,7 @@ Result<::arrow::Compression::type> ParseCompression(const WriterProperties& prop
   } else if (compression_name == "zstd") {
     return ::arrow::Compression::ZSTD;
   } else {
-    return InvalidArgument("Unsupported Parquet compression codec: ", compression_name);
+    return InvalidArgument("Unsupported Parquet compression codec: {}", compression_name);
   }
 }
 

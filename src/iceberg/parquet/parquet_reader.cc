@@ -87,7 +87,7 @@ class EmptyRecordBatchReader : public ::arrow::RecordBatchReader {
   std::shared_ptr<::arrow::Schema> schema() const override { return nullptr; }
 
   ::arrow::Status ReadNext(std::shared_ptr<::arrow::RecordBatch>* batch) override {
-    batch = nullptr;
+    *batch = nullptr;
     return ::arrow::Status::OK();
   }
 };
