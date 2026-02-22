@@ -48,7 +48,7 @@ namespace iceberg {
 
 class ICEBERG_EXPORT InclusiveMetricsEvaluator {
  public:
-  /// \brief Make a inclusive metrics evaluator
+  /// \brief Make an inclusive metrics evaluator
   ///
   /// \param expr The expression to evaluate
   /// \param schema The schema of the table
