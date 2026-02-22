@@ -61,7 +61,7 @@ class ZlibImpl {
     stream_.avail_in = static_cast<uInt>(compressed_data.size());
     stream_.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(compressed_data.data()));
 
-    // TODO(xiao.dong) magic buffer, can we get a estimated size from compressed data?
+    // TODO(xiao.dong) magic buffer, can we get an estimated size from compressed data?
     std::vector<char> out_buffer(32 * 1024);
     std::string result;
     int ret = 0;

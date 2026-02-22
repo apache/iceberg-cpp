@@ -31,7 +31,7 @@
 
 namespace iceberg {
 
-/// \brief A metadata about a statistics or indices blob
+/// \brief Metadata about a statistics or indices blob
 struct ICEBERG_EXPORT BlobMetadata {
   /// Type of the blob
   std::string type;
