@@ -43,7 +43,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
@@ -65,7 +65,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Build Iceberg
         shell: bash
         run: ci/scripts/build_iceberg.sh $(pwd)
@@ -78,7 +78,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Install dependencies
         shell: cmd
         run: |
@@ -122,7 +122,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Install build dependencies
         run: |
           python3 -m pip install --upgrade pip
