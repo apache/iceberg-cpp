@@ -73,7 +73,7 @@ class ICEBERG_EXPORT StringUtils {
   }
 
   template <typename T>
-    requires std::is_arithmetic_v<T> && (!std::same_as<T, bool>)
+    requires std::is_arithmetic_v<T> && FromChars<T> && (!std::same_as<T, bool>)
   static Result<T> ParseNumber(std::string_view str) {
     T value = 0;
     auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
