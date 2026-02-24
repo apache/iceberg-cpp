@@ -55,21 +55,12 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \return the location of the metadata file
   std::string MetadataFileLocation(std::string_view filename) const;
 
-  /// \brief Enable auto-commit for this transaction.
-  void EnableAutoCommit() { auto_commit_ = true; }
-
-  /// \brief Disable auto-commit for this transaction.
-  void DisableAutoCommit() { auto_commit_ = false; }
-
   /// \brief Apply the pending changes from all actions and commit.
   ///
   /// \return Updated table if the transaction was committed successfully, or an error:
   /// - ValidationFailed: if any update cannot be applied to the current table metadata.
   /// - CommitFailed: if the updates cannot be committed due to conflicts.
   Result<std::shared_ptr<Table>> Commit();
-
-  /// \brief Returns true if this transaction has been committed.
-  bool is_committed() const { return committed_; }
 
   /// \brief Create a new UpdatePartitionSpec to update the partition spec of this table
   /// and commit the changes.
@@ -109,12 +100,6 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Create a new SnapshotManager to manage snapshots.
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
- private:
-  Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit,
-              std::unique_ptr<TableMetadataBuilder> metadata_builder);
-
-  Status AddUpdate(const std::shared_ptr<PendingUpdate>& update);
-
   /// \brief Create a new SetSnapshot to set the current snapshot or rollback to a
   /// previous snapshot and commit the changes.
   Result<std::shared_ptr<SetSnapshot>> NewSetSnapshot();
@@ -122,6 +107,12 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Create a new UpdateSnapshotReference to update snapshot references (branches
   /// and tags) and commit the changes.
   Result<std::shared_ptr<UpdateSnapshotReference>> NewUpdateSnapshotReference();
+
+ private:
+  Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit,
+              std::unique_ptr<TableMetadataBuilder> metadata_builder);
+
+  Status AddUpdate(const std::shared_ptr<PendingUpdate>& update);
 
   /// \brief Apply the pending changes to current table.
   Status Apply(PendingUpdate& updates);
@@ -141,7 +132,6 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
 
  private:
   friend class PendingUpdate;
-  friend class SnapshotManager;
 
   // The table that this transaction will update.
   std::shared_ptr<Table> table_;

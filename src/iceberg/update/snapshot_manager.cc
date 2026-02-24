@@ -19,11 +19,7 @@
 
 #include "iceberg/update/snapshot_manager.h"
 
-#include <memory>
-#include <string>
-
 #include "iceberg/result.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
@@ -34,39 +30,27 @@
 
 namespace iceberg {
 
-namespace {
-
-class AutoCommitGuard {
- public:
-  AutoCommitGuard(std::shared_ptr<Transaction> transaction, bool auto_commit)
-      : transaction_(std::move(transaction)), auto_commit_(auto_commit) {}
-
-  ~AutoCommitGuard() {
-    if (auto_commit_) {
-      transaction_->EnableAutoCommit();
-    } else {
-      transaction_->DisableAutoCommit();
-    }
-  }
-
- private:
-  std::shared_ptr<Transaction> transaction_;
-  bool auto_commit_;
-};
-
-}  // namespace
+Result<std::shared_ptr<SnapshotManager>> SnapshotManager::Make(
+    std::shared_ptr<Table> table) {
+  ICEBERG_PRECHECK(table != nullptr, "Invalid input table: null");
+  ICEBERG_ASSIGN_OR_RAISE(auto transaction,
+                          Transaction::Make(std::move(table), Transaction::Kind::kUpdate,
+                                            /*auto_commit=*/false));
+  return std::shared_ptr<SnapshotManager>(
+      new SnapshotManager(std::move(transaction), /*is_external_transaction=*/false));
+}
 
 Result<std::shared_ptr<SnapshotManager>> SnapshotManager::Make(
     std::shared_ptr<Transaction> transaction) {
   ICEBERG_PRECHECK(transaction != nullptr, "Invalid input transaction: null");
-  return std::shared_ptr<SnapshotManager>(new SnapshotManager(std::move(transaction)));
+  return std::shared_ptr<SnapshotManager>(
+      new SnapshotManager(std::move(transaction), /*is_external_transaction=*/true));
 }
 
-SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction)
-    : PendingUpdate(std::move(transaction)),
-      original_auto_commit_(transaction_->auto_commit_) {
-  transaction_->DisableAutoCommit();
-}
+SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction,
+                                 bool is_external_transaction)
+    : transaction_(std::move(transaction)),
+      is_external_transaction_(is_external_transaction) {}
 
 SnapshotManager::~SnapshotManager() = default;
 
@@ -102,13 +86,13 @@ SnapshotManager& SnapshotManager::RollbackTo(int64_t snapshot_id) {
 }
 
 SnapshotManager& SnapshotManager::CreateBranch(const std::string& name) {
-  if (base().current_snapshot_id != kInvalidSnapshotId) {
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_snapshot, base().Snapshot());
+  const auto& base = transaction_->current();
+  if (base.current_snapshot_id != kInvalidSnapshotId) {
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_snapshot, base.Snapshot());
     ICEBERG_DCHECK(current_snapshot != nullptr, "Current snapshot should not be null");
     return CreateBranch(name, current_snapshot->snapshot_id);
   }
-  const auto& current_refs = base().refs;
-  ICEBERG_BUILDER_CHECK(!base().refs.contains(name), "Ref {} already exists", name);
+  ICEBERG_BUILDER_CHECK(!base.refs.contains(name), "Ref {} already exists", name);
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto fast_append, transaction_->NewFastAppend());
   ICEBERG_BUILDER_RETURN_IF_ERROR(fast_append->SetTargetBranch(name).Commit());
   return *this;
@@ -197,11 +181,9 @@ SnapshotManager& SnapshotManager::SetMaxRefAgeMs(const std::string& name,
 }
 
 Status SnapshotManager::Commit() {
-  AutoCommitGuard auto_commit_guard(transaction_, original_auto_commit_);
-  transaction_->EnableAutoCommit();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_RETURN_UNEXPECTED(CommitIfRefUpdatesExist());
-  if (!transaction_->is_committed()) {
+  if (!is_external_transaction_) {
     ICEBERG_RETURN_UNEXPECTED(transaction_->Commit());
   }
   return {};

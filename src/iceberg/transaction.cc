@@ -92,8 +92,6 @@ std::string Transaction::MetadataFileLocation(std::string_view filename) const {
 }
 
 Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
-  ICEBERG_PRECHECK(update->kind() != PendingUpdate::Kind::kSnapshotManager,
-                   "SnapshotManager should not be added to the transaction");
   ICEBERG_CHECK(last_update_committed_,
                 "Cannot add update when previous update is not committed");
 
