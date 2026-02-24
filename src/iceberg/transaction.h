@@ -94,12 +94,15 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
 
+  /// \brief Create a new FastAppend to append data files and commit the changes.
+  Result<std::shared_ptr<FastAppend>> NewFastAppend();
+
+  /// \brief Create a new SnapshotManager to manage snapshots.
+  Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
+
   /// \brief Create a new SetSnapshot to set the current snapshot or rollback to a
   /// previous snapshot and commit the changes.
   Result<std::shared_ptr<SetSnapshot>> NewSetSnapshot();
-
-  /// \brief Create a new FastAppend to append data files and commit the changes.
-  Result<std::shared_ptr<FastAppend>> NewFastAppend();
 
   /// \brief Create a new UpdateSnapshotReference to update snapshot references (branches
   /// and tags) and commit the changes.
@@ -136,7 +139,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   const Kind kind_;
   // Whether to auto-commit the transaction when updates are applied.
   // This is useful when a temporary transaction is created for a single operation.
-  const bool auto_commit_;
+  bool auto_commit_;
   // To make the state simple, we require updates are added and committed in order.
   bool last_update_committed_ = true;
   // Tracks if transaction has been committed to prevent double-commit

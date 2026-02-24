@@ -331,20 +331,6 @@ Status SnapshotUpdate::Finalize(std::optional<Error> commit_error) {
   return {};
 }
 
-Status SnapshotUpdate::SetTargetBranch(const std::string& branch) {
-  ICEBERG_PRECHECK(!branch.empty(), "Branch name cannot be empty");
-
-  if (auto ref_it = base().refs.find(branch); ref_it != base().refs.end()) {
-    ICEBERG_PRECHECK(
-        ref_it->second->type() == SnapshotRefType::kBranch,
-        "{} is a tag, not a branch. Tags cannot be targets for producing snapshots",
-        branch);
-  }
-
-  target_branch_ = branch;
-  return {};
-}
-
 Result<std::unordered_map<std::string, std::string>> SnapshotUpdate::ComputeSummary(
     const TableMetadata& previous) {
   std::unordered_map<std::string, std::string> summary = Summary();

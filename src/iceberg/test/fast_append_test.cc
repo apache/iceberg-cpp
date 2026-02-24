@@ -39,10 +39,12 @@ class FastAppendTest : public UpdateTestBase {
  protected:
   static void SetUpTestSuite() { avro::RegisterAll(); }
 
+  std::string MetadataResource() const override {
+    return "TableMetadataV2ValidMinimal.json";
+  }
+
   void SetUp() override {
-    InitializeFileIO();
-    // Use minimal metadata for FastAppend tests
-    RegisterTableFromResource("TableMetadataV2ValidMinimal.json");
+    UpdateTestBase::SetUp();
 
     // Get partition spec and schema from the base table
     ICEBERG_UNWRAP_OR_FAIL(spec_, table_->spec());
