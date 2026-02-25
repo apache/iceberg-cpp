@@ -55,6 +55,9 @@ class ICEBERG_EXPORT DataWriter : public FileWriter {
  public:
   ~DataWriter() override;
 
+  /// \brief Create a new DataWriter instance.
+  static Result<std::unique_ptr<DataWriter>> Make(const DataWriterOptions& options);
+
   Status Write(ArrowArray* data) override;
   Result<int64_t> Length() const override;
   Status Close() override;
@@ -63,6 +66,8 @@ class ICEBERG_EXPORT DataWriter : public FileWriter {
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
+
+  explicit DataWriter(std::unique_ptr<Impl> impl);
 };
 
 }  // namespace iceberg
