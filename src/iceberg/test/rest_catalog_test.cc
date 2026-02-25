@@ -133,12 +133,12 @@ class RestCatalogIntegrationTest : public ::testing::Test {
   Result<std::shared_ptr<RestCatalog>> CreateCatalog() {
     auto config = RestCatalogProperties::default_properties();
     config
-        ->Set(RestCatalogProperties::kUri,
-              std::format("{}:{}", kLocalhostUri, kRestCatalogPort))
+        .Set(RestCatalogProperties::kUri,
+             std::format("{}:{}", kLocalhostUri, kRestCatalogPort))
         .Set(RestCatalogProperties::kName, std::string(kCatalogName))
         .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
     auto file_io = std::make_shared<test::StdFileIO>();
-    return RestCatalog::Make(*config, std::make_shared<test::StdFileIO>());
+    return RestCatalog::Make(config, std::make_shared<test::StdFileIO>());
   }
 
   // Helper function to create a default schema for testing

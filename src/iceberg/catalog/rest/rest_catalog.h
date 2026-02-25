@@ -24,6 +24,7 @@
 #include <unordered_set>
 
 #include "iceberg/catalog.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
@@ -104,9 +105,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
       const std::string& metadata_file_location) override;
 
  private:
-  RestCatalog(std::unique_ptr<RestCatalogProperties> config,
-              std::shared_ptr<FileIO> file_io, std::unique_ptr<HttpClient> client,
-              std::unique_ptr<ResourcePaths> paths,
+  RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
+              std::unique_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
               std::unordered_set<Endpoint> endpoints,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session);
@@ -119,7 +119,7 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties, bool stage_create);
 
-  std::unique_ptr<RestCatalogProperties> config_;
+  RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;
   std::unique_ptr<HttpClient> client_;
   std::unique_ptr<ResourcePaths> paths_;
