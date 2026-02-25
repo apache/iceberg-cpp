@@ -20,10 +20,12 @@
 #pragma once
 
 #include <algorithm>
+#include <cerrno>
 #include <charconv>
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <typeinfo>
 #include <utility>
 
@@ -31,6 +33,9 @@
 #include "iceberg/result.h"
 
 namespace iceberg {
+
+template <typename T>
+concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 
 class ICEBERG_EXPORT StringUtils {
  public:
@@ -68,7 +73,7 @@ class ICEBERG_EXPORT StringUtils {
   }
 
   template <typename T>
-    requires std::is_arithmetic_v<T> && (!std::same_as<T, bool>)
+    requires std::is_arithmetic_v<T> && FromChars<T> && (!std::same_as<T, bool>)
   static Result<T> ParseNumber(std::string_view str) {
     T value = 0;
     auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
@@ -84,6 +89,35 @@ class ICEBERG_EXPORT StringUtils {
                              typeid(T).name(), str);
     }
     std::unreachable();
+  }
+
+  template <typename T>
+    requires std::is_floating_point_v<T> && (!FromChars<T>)
+  static Result<T> ParseNumber(std::string_view str) {
+    T value{};
+    // strto* require null-terminated input; string_view does not guarantee it.
+    std::string owned(str);
+    const char* start = owned.c_str();
+    char* end = nullptr;
+    errno = 0;
+
+    if constexpr (std::same_as<T, float>) {
+      value = std::strtof(start, &end);
+    } else if constexpr (std::same_as<T, double>) {
+      value = std::strtod(start, &end);
+    } else {
+      value = std::strtold(start, &end);
+    }
+
+    if (end == start || end != start + static_cast<std::ptrdiff_t>(owned.size())) {
+      return InvalidArgument("Failed to parse {} from string '{}': invalid argument",
+                             typeid(T).name(), str);
+    }
+    if (errno == ERANGE) {
+      return InvalidArgument("Failed to parse {} from string '{}': value out of range",
+                             typeid(T).name(), str);
+    }
+    return value;
   }
 };
 
