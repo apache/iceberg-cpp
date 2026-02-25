@@ -130,7 +130,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto server_config,
                           FetchServerConfig(*paths, config, *init_session));
 
-  std::unique_ptr<RestCatalogProperties> final_config = RestCatalogProperties::FromMap(
+  RestCatalogProperties final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));
 
   std::unordered_set<Endpoint> endpoints;
@@ -145,22 +145,21 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   }
 
   // Update resource paths based on the final config
-  ICEBERG_ASSIGN_OR_RAISE(auto final_uri, final_config->Uri());
+  ICEBERG_ASSIGN_OR_RAISE(auto final_uri, final_config.Uri());
   ICEBERG_ASSIGN_OR_RAISE(
       paths, ResourcePaths::Make(std::string(TrimTrailingSlash(final_uri)),
-                                 final_config->Get(RestCatalogProperties::kPrefix)));
+                                 final_config.Get(RestCatalogProperties::kPrefix)));
 
-  auto client = std::make_unique<HttpClient>(final_config->ExtractHeaders());
+  auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
-                          auth_manager->CatalogSession(*client, final_config->configs()));
+                          auth_manager->CatalogSession(*client, final_config.configs()));
 
   return std::shared_ptr<RestCatalog>(new RestCatalog(
       std::move(final_config), std::move(file_io), std::move(client), std::move(paths),
       std::move(endpoints), std::move(auth_manager), std::move(catalog_session)));
 }
 
-RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
-                         std::shared_ptr<FileIO> file_io,
+RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
                          std::unique_ptr<HttpClient> client,
                          std::unique_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints,
@@ -170,7 +169,7 @@ RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
       file_io_(std::move(file_io)),
       client_(std::move(client)),
       paths_(std::move(paths)),
-      name_(config_->Get(RestCatalogProperties::kName)),
+      name_(config_.Get(RestCatalogProperties::kName)),
       supported_endpoints_(std::move(endpoints)),
       auth_manager_(std::move(auth_manager)),
       catalog_session_(std::move(catalog_session)) {

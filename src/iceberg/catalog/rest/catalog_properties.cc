@@ -23,15 +23,14 @@
 
 namespace iceberg::rest {
 
-std::unique_ptr<RestCatalogProperties> RestCatalogProperties::default_properties() {
-  return std::unique_ptr<RestCatalogProperties>(new RestCatalogProperties());
+RestCatalogProperties RestCatalogProperties::default_properties() {
+  return RestCatalogProperties();
 }
 
-std::unique_ptr<RestCatalogProperties> RestCatalogProperties::FromMap(
-    const std::unordered_map<std::string, std::string>& properties) {
-  auto rest_catalog_config =
-      std::unique_ptr<RestCatalogProperties>(new RestCatalogProperties());
-  rest_catalog_config->configs_ = properties;
+RestCatalogProperties RestCatalogProperties::FromMap(
+    std::unordered_map<std::string, std::string> properties) {
+  RestCatalogProperties rest_catalog_config;
+  rest_catalog_config.configs_ = std::move(properties);
   return rest_catalog_config;
 }
 

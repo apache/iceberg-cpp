@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -51,11 +50,11 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   inline static constexpr std::string_view kHeaderPrefix = "header.";
 
   /// \brief Create a default RestCatalogProperties instance.
-  static std::unique_ptr<RestCatalogProperties> default_properties();
+  static RestCatalogProperties default_properties();
 
   /// \brief Create a RestCatalogProperties instance from a map of key-value pairs.
-  static std::unique_ptr<RestCatalogProperties> FromMap(
-      const std::unordered_map<std::string, std::string>& properties);
+  static RestCatalogProperties FromMap(
+      std::unordered_map<std::string, std::string> properties);
 
   /// \brief Returns HTTP headers to be added to every request.
   std::unordered_map<std::string, std::string> ExtractHeaders() const;
@@ -63,9 +62,6 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   /// \brief Get the URI of the REST catalog server.
   /// \return The URI if configured, or an error if not set or empty.
   Result<std::string_view> Uri() const;
-
- private:
-  RestCatalogProperties() = default;
 };
 
 }  // namespace iceberg::rest
