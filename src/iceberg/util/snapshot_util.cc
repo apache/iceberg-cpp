@@ -85,12 +85,12 @@ Result<bool> SnapshotUtil::IsAncestorOf(const TableMetadata& metadata,
 Result<bool> SnapshotUtil::IsAncestorOf(
     int64_t snapshot_id, int64_t ancestor_snapshot_id,
     const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup) {
+  ICEBERG_ASSIGN_OR_RAISE(auto current, lookup(snapshot_id));
+  ICEBERG_CHECK(current != nullptr, "Cannot find snapshot: {}", snapshot_id);
+
   if (snapshot_id == ancestor_snapshot_id) {
     return true;
   }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto current, lookup(snapshot_id));
-  ICEBERG_CHECK(current != nullptr, "Cannot find snapshot: {}", snapshot_id);
 
   while (current != nullptr && current->parent_snapshot_id.has_value()) {
     int64_t parent_id = current->parent_snapshot_id.value();
