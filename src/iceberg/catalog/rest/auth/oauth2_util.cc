@@ -78,13 +78,13 @@ Result<OAuthTokenResponse> FetchToken(HttpClient& client,
                                       const std::string& client_id,
                                       const std::string& client_secret,
                                       const std::string& scope, AuthSession& session) {
-  std::unordered_map<std::string, std::string> form_data = {
+  std::unordered_map<std::string, std::string> form_data{
       {std::string(kGrantType), std::string(kClientCredentials)},
       {std::string(kClientId), client_id},
       {std::string(kClientSecret), client_secret},
   };
   if (!scope.empty()) {
-    form_data[std::string(kScope)] = scope;
+    form_data.emplace(std::string(kScope), scope);
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto response,

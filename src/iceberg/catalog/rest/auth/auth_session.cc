@@ -55,12 +55,7 @@ std::shared_ptr<AuthSession> AuthSession::MakeOAuth2(
     const OAuthTokenResponse& initial_token, const std::string& /*token_endpoint*/,
     const std::string& /*client_id*/, const std::string& /*client_secret*/,
     const std::string& /*scope*/, HttpClient& /*client*/) {
-  // TODO(lishuxu): Replace with OAuth2AuthSession that:
-  //   - Stores access_token, refresh_token, expires_in, and token_endpoint
-  //   - Checks token expiration in Authenticate() and transparently refreshes
-  //     using RefreshToken() (or re-fetches via client_credentials if no
-  //     refresh_token is available)
-  // For now, fall back to a static session with the initial token.
+  // TODO(lishuxu): Create OAuth2AuthSession with auto-refresh support.
   return MakeDefault({{"Authorization", "Bearer " + initial_token.access_token}});
 }
 

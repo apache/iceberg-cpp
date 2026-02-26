@@ -69,38 +69,11 @@ ICEBERG_REST_EXPORT Result<OAuthTokenResponse> FetchToken(
     const std::string& client_secret, const std::string& scope, AuthSession& session);
 
 /// \brief Refresh an expired access token using a refresh_token grant.
-///
-/// Sends a POST request with form-encoded body to the token endpoint:
-///   grant_type=refresh_token&refresh_token=...&client_id=...&scope=...
-///
-/// \param client HTTP client to use for the request.
-/// \param token_endpoint Full URL of the OAuth2 token endpoint.
-/// \param client_id OAuth2 client ID (may be empty if not required by server).
-/// \param refresh_token The refresh token from a previous token response.
-/// \param scope OAuth2 scope to request.
-/// \param session Auth session for the request.
-/// \return A new token response with a fresh access_token, or an error.
 ICEBERG_REST_EXPORT Result<OAuthTokenResponse> RefreshToken(
     HttpClient& client, const std::string& token_endpoint, const std::string& client_id,
     const std::string& refresh_token, const std::string& scope, AuthSession& session);
 
 /// \brief Exchange a token for a scoped token using RFC 8693 Token Exchange.
-///
-/// Sends a POST request with form-encoded body to the token endpoint:
-///   grant_type=urn:ietf:params:oauth:grant-type:token-exchange
-///   &subject_token=...&subject_token_type=...&scope=...
-///
-/// Used by TableSession and ContextualSession to obtain table/context-specific
-/// tokens from a parent session's access token.
-///
-/// \param client HTTP client to use for the request.
-/// \param token_endpoint Full URL of the OAuth2 token endpoint.
-/// \param subject_token The access token to exchange.
-/// \param subject_token_type Token type URI (typically
-///        "urn:ietf:params:oauth:token-type:access_token").
-/// \param scope OAuth2 scope to request for the exchanged token.
-/// \param session Auth session for the request.
-/// \return A new token response with a scoped access_token, or an error.
 ICEBERG_REST_EXPORT Result<OAuthTokenResponse> ExchangeToken(
     HttpClient& client, const std::string& token_endpoint,
     const std::string& subject_token, const std::string& subject_token_type,

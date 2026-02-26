@@ -26,7 +26,6 @@
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
-#include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/transform_util.h"
 
@@ -127,7 +126,6 @@ class OAuth2AuthManager : public AuthManager {
   Result<std::shared_ptr<AuthSession>> CatalogSession(
       HttpClient& client,
       const std::unordered_map<std::string, std::string>& properties) override {
-    // Reuse the token fetched during InitSession.
     if (init_token_response_.has_value()) {
       auto token_response = std::move(*init_token_response_);
       init_token_response_.reset();
@@ -136,7 +134,7 @@ class OAuth2AuthManager : public AuthManager {
                                      ctx.client_secret, ctx.scope, client);
     }
 
-    // If both token and credential are provided, prefer the token.
+    // If token is provided, use it directly.
     auto token_it = properties.find(AuthProperties::kOAuth2Token);
     if (token_it != properties.end() && !token_it->second.empty()) {
       return AuthSession::MakeDefault({{"Authorization", "Bearer " + token_it->second}});
