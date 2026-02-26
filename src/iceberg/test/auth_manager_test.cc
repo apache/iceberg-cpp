@@ -129,7 +129,7 @@ TEST_F(AuthManagerTest, BasicAuthMissingUsername) {
 
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   EXPECT_THAT(session_result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(session_result, HasErrorMessage("Invalid username"));
+  EXPECT_THAT(session_result, HasErrorMessage("Missing required property"));
 }
 
 // Verifies BasicAuthManager fails when password is missing
@@ -142,7 +142,7 @@ TEST_F(AuthManagerTest, BasicAuthMissingPassword) {
 
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   EXPECT_THAT(session_result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(session_result, HasErrorMessage("Invalid password"));
+  EXPECT_THAT(session_result, HasErrorMessage("Missing required property"));
 }
 
 // Verifies BasicAuthManager handles special characters in credentials
