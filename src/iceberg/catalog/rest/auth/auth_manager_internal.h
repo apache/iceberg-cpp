@@ -42,4 +42,9 @@ Result<std::unique_ptr<AuthManager>> MakeBasicAuthManager(
     std::string_view name,
     const std::unordered_map<std::string, std::string>& properties);
 
+/// \brief Create an OAuth2 authentication manager.
+Result<std::unique_ptr<AuthManager>> MakeOAuth2AuthManager(
+    std::string_view name,
+    const std::unordered_map<std::string, std::string>& properties);
+
 }  // namespace iceberg::rest::auth
