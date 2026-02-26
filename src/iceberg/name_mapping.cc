@@ -326,8 +326,9 @@ class CreateMappingVisitor {
 // Visitor class for updating name mappings with schema changes
 class UpdateMappingVisitor {
  public:
-  UpdateMappingVisitor(const std::map<int32_t, SchemaField>& updates,
-                       const std::multimap<int32_t, int32_t>& adds)
+  UpdateMappingVisitor(
+      const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates,
+      const std::multimap<int32_t, int32_t>& adds)
       : updates_(updates), adds_(adds) {}
 
   Result<std::unique_ptr<MappedFields>> VisitMapping(const NameMapping& mapping) {
@@ -351,15 +352,15 @@ class UpdateMappingVisitor {
 
     // Build update assignments map for removing reassigned names
     std::unordered_map<std::string, int32_t> update_assignments;
-    std::ranges::for_each(field_results, [&](const auto& field) {
+    for (const auto& field : field_results) {
       if (field.field_id.has_value()) {
         auto update_it = updates_.find(field.field_id.value());
         if (update_it != updates_.end()) {
-          update_assignments.emplace(std::string(update_it->second.name()),
+          update_assignments.emplace(std::string(update_it->second->name()),
                                      field.field_id.value());
         }
       }
-    });
+    }
 
     // Remove reassigned names from all fields
     for (auto& field : field_results) {
@@ -375,7 +376,7 @@ class UpdateMappingVisitor {
     if (field.field_id.has_value()) {
       auto update_it = updates_.find(field.field_id.value());
       if (update_it != updates_.end()) {
-        field_names.insert(std::string(update_it->second.name()));
+        field_names.insert(std::string(update_it->second->name()));
       }
     }
 
@@ -408,7 +409,7 @@ class UpdateMappingVisitor {
     for (auto it = range.first; it != range.second; ++it) {
       auto update_it = updates_.find(it->second);
       if (update_it != updates_.end()) {
-        fields_to_add.push_back(&update_it->second);
+        fields_to_add.push_back(update_it->second.get());
       }
     }
 
@@ -471,7 +472,7 @@ class UpdateMappingVisitor {
     };
   }
 
-  const std::map<int32_t, SchemaField>& updates_;
+  const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates_;
   const std::multimap<int32_t, int32_t>& adds_;
 };
 
@@ -488,7 +489,8 @@ Result<std::unique_ptr<NameMapping>> CreateMapping(const Schema& schema) {
 }
 
 Result<std::unique_ptr<NameMapping>> UpdateMapping(
-    const NameMapping& mapping, const std::map<int32_t, SchemaField>& updates,
+    const NameMapping& mapping,
+    const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates,
     const std::multimap<int32_t, int32_t>& adds) {
   UpdateMappingVisitor visitor(updates, adds);
   auto result = visitor.VisitMapping(mapping);

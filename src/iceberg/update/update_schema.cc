@@ -601,22 +601,17 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
 
   auto mapping_it = properties.find(std::string(TableProperties::kDefaultNameMapping));
   if (mapping_it != properties.end() && !mapping_it->second.empty()) {
-    std::map<int32_t, SchemaField> updates;
-    for (const auto& [id, field_ptr] : updates_) {
-      updates.emplace(id, *field_ptr);
-    }
     std::multimap<int32_t, int32_t> adds;
     for (const auto& [parent_id, child_ids] : parent_to_added_ids_) {
       std::ranges::for_each(child_ids, [&adds, parent_id](int32_t child_id) {
         adds.emplace(parent_id, child_id);
       });
     }
-    auto updated_mapping_json =
-        UpdateMappingFromJsonString(mapping_it->second, updates, adds);
-    if (updated_mapping_json) {
-      updated_props[std::string(TableProperties::kDefaultNameMapping)] =
-          std::move(*updated_mapping_json);
-    }
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto updated_mapping_json,
+        UpdateMappingFromJsonString(mapping_it->second, updates_, adds));
+    updated_props[std::string(TableProperties::kDefaultNameMapping)] =
+        std::move(updated_mapping_json);
   }
 
   return ApplyResult{.schema = std::move(new_schema),

@@ -151,7 +151,8 @@ ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> CreateMapping(const Schema& 
 /// \return an updated mapping with names added to renamed fields and the mapping extended
 /// for new fields
 ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> UpdateMapping(
-    const NameMapping& mapping, const std::map<int32_t, SchemaField>& updates,
+    const NameMapping& mapping,
+    const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates,
     const std::multimap<int32_t, int32_t>& adds);
 
 }  // namespace iceberg

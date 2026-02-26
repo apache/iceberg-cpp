@@ -24,6 +24,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 #include <nlohmann/json_fwd.hpp>
 
@@ -354,9 +355,10 @@ ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> NameMappingFromJson(
 /// \brief Update a name mapping from its JSON string and return updated JSON.
 ///
 /// Parses the JSON, calls UpdateMapping, and serializes the result.
-/// Returns nullopt if any step fails.
-ICEBERG_EXPORT std::optional<std::string> UpdateMappingFromJsonString(
-    std::string_view mapping_json, const std::map<int32_t, SchemaField>& updates,
+/// Returns an error if parsing, mapping update, or serialization fails.
+ICEBERG_EXPORT Result<std::string> UpdateMappingFromJsonString(
+    std::string_view mapping_json,
+    const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates,
     const std::multimap<int32_t, int32_t>& adds);
 
 /// \brief Serializes a `TableIdentifier` object to JSON.
