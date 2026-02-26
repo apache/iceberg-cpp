@@ -21,8 +21,8 @@
 
 #include <unordered_set>
 
+#include "iceberg/catalog/rest/auth/auth_manager_internal.h"
 #include "iceberg/catalog/rest/auth/auth_properties.h"
-#include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::rest::auth {
@@ -61,33 +61,10 @@ std::string InferAuthType(
   return AuthProperties::kAuthTypeNone;
 }
 
-/// \brief Authentication manager that performs no authentication.
-class NoopAuthManager : public AuthManager {
- public:
-  static Result<std::unique_ptr<AuthManager>> Make(
-      [[maybe_unused]] std::string_view name,
-      [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
-    return std::make_unique<NoopAuthManager>();
-  }
-
-  Result<std::shared_ptr<AuthSession>> CatalogSession(
-      [[maybe_unused]] HttpClient& client,
-      [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties)
-      override {
-    return AuthSession::MakeDefault({});
-  }
-};
-
-template <typename T>
-AuthManagerFactory MakeAuthFactory() {
-  return
-      [](std::string_view name, const std::unordered_map<std::string, std::string>& props)
-          -> Result<std::unique_ptr<AuthManager>> { return T::Make(name, props); };
-}
-
 AuthManagerRegistry CreateDefaultRegistry() {
   return {
-      {AuthProperties::kAuthTypeNone, MakeAuthFactory<NoopAuthManager>()},
+      {AuthProperties::kAuthTypeNone, MakeNoopAuthManager},
+      {AuthProperties::kAuthTypeBasic, MakeBasicAuthManager},
   };
 }
 

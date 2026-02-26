@@ -19,7 +19,11 @@
 
 #include "iceberg/catalog/rest/auth/auth_manager.h"
 
+#include "iceberg/catalog/rest/auth/auth_manager_internal.h"
+#include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
+#include "iceberg/util/macros.h"
+#include "iceberg/util/transform_util.h"
 
 namespace iceberg::rest::auth {
 
@@ -43,6 +47,47 @@ Result<std::shared_ptr<AuthSession>> AuthManager::TableSession(
     std::shared_ptr<AuthSession> parent) {
   // By default, return the parent session as-is
   return parent;
+}
+
+/// \brief Authentication manager that performs no authentication.
+class NoopAuthManager : public AuthManager {
+ public:
+  Result<std::shared_ptr<AuthSession>> CatalogSession(
+      [[maybe_unused]] HttpClient& client,
+      [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties)
+      override {
+    return AuthSession::MakeDefault({});
+  }
+};
+
+Result<std::unique_ptr<AuthManager>> MakeNoopAuthManager(
+    [[maybe_unused]] std::string_view name,
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
+  return std::make_unique<NoopAuthManager>();
+}
+
+/// \brief Authentication manager that performs basic authentication.
+class BasicAuthManager : public AuthManager {
+ public:
+  Result<std::shared_ptr<AuthSession>> CatalogSession(
+      [[maybe_unused]] HttpClient& client,
+      const std::unordered_map<std::string, std::string>& properties) override {
+    auto username_it = properties.find(AuthProperties::kBasicUsername);
+    ICEBERG_PRECHECK(username_it != properties.end() && !username_it->second.empty(),
+                     "Missing required property '{}'", AuthProperties::kBasicUsername);
+    auto password_it = properties.find(AuthProperties::kBasicPassword);
+    ICEBERG_PRECHECK(password_it != properties.end() && !password_it->second.empty(),
+                     "Missing required property '{}'", AuthProperties::kBasicPassword);
+    std::string credential = username_it->second + ":" + password_it->second;
+    return AuthSession::MakeDefault(
+        {{"Authorization", "Basic " + TransformUtil::Base64Encode(credential)}});
+  }
+};
+
+Result<std::unique_ptr<AuthManager>> MakeBasicAuthManager(
+    [[maybe_unused]] std::string_view name,
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
+  return std::make_unique<BasicAuthManager>();
 }
 
 }  // namespace iceberg::rest::auth
