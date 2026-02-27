@@ -201,6 +201,9 @@ SnapshotManager::UpdateSnapshotReferencesOperation() {
 Status SnapshotManager::CommitIfRefUpdatesExist() {
   if (update_snap_refs_ != nullptr) {
     ICEBERG_RETURN_UNEXPECTED(update_snap_refs_->Commit());
+    // Keep the shared_ptr alive so that pending_updates_ weak_ptr in Transaction
+    // remains valid until Transaction::Commit() checks CanRetry().
+    committed_snap_refs_.push_back(std::move(update_snap_refs_));
     update_snap_refs_ = nullptr;
   }
   return {};

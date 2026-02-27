@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -49,6 +48,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/retry_util.h"
 
 namespace iceberg {
 
@@ -84,7 +84,7 @@ const TableMetadata& Transaction::current() const { return metadata_builder_->cu
 std::string Transaction::MetadataFileLocation(std::string_view filename) const {
   const auto metadata_location =
       current().properties.Get(TableProperties::kWriteMetadataLocation);
-  if (metadata_location.empty()) {
+  if (!metadata_location.empty()) {
     return std::format("{}/{}", LocationUtil::StripTrailingSlash(metadata_location),
                        filename);
   }
@@ -153,7 +153,7 @@ Status Transaction::Apply(PendingUpdate& update) {
 
   last_update_committed_ = true;
 
-  if (auto_commit_) {
+  if (auto_commit_ && !applying_updates_) {
     ICEBERG_RETURN_UNEXPECTED(Commit());
   }
 
@@ -310,21 +310,25 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
     return table_;
   }
 
-  std::vector<std::unique_ptr<TableRequirement>> requirements;
-  switch (kind_) {
-    case Kind::kCreate: {
-      ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForCreateTable(updates));
-    } break;
-    case Kind::kUpdate: {
-      ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForUpdateTable(
-                                                *metadata_builder_->base(), updates));
+  Result<std::shared_ptr<Table>> commit_result;
+  if (!CanRetry()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto requirements,
+        kind_ == Kind::kCreate
+            ? TableRequirements::ForCreateTable(updates)
+            : TableRequirements::ForUpdateTable(*metadata_builder_->base(), updates));
+    commit_result = table_->catalog()->UpdateTable(table_->name(), requirements, updates);
+  } else {
+    const auto& props = table_->properties();
+    int32_t num_retries = props.Get(TableProperties::kCommitNumRetries);
+    int32_t min_wait_ms = props.Get(TableProperties::kCommitMinRetryWaitMs);
+    int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
+    int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
 
-    } break;
+    commit_result =
+        MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
+            .Run([this]() -> Result<std::shared_ptr<Table>> { return CommitOnce(); });
   }
-
-  // XXX: we should handle commit failure and retry here.
-  auto commit_result =
-      table_->catalog()->UpdateTable(table_->name(), requirements, updates);
 
   for (const auto& update : pending_updates_) {
     if (auto update_ptr = update.lock()) {
@@ -341,6 +345,49 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   table_ = std::move(commit_result.value());
 
   return table_;
+}
+
+Result<std::shared_ptr<Table>> Transaction::CommitOnce() {
+  auto refresh_result = table_->Refresh();
+  if (!refresh_result.has_value()) {
+    return std::unexpected(refresh_result.error());
+  }
+
+  if (metadata_builder_->base() != table_->metadata().get()) {
+    metadata_builder_ = TableMetadataBuilder::BuildFrom(table_->metadata().get());
+    applying_updates_ = true;
+    for (const auto& weak_update : pending_updates_) {
+      if (auto update = weak_update.lock()) {
+        auto commit_status = update->Commit();
+        if (!commit_status.has_value()) {
+          applying_updates_ = false;
+          return std::unexpected(commit_status.error());
+        }
+      }
+    }
+    applying_updates_ = false;
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto requirements, TableRequirements::ForUpdateTable(*metadata_builder_->base(),
+                                                           metadata_builder_->changes()));
+
+  return table_->catalog()->UpdateTable(table_->name(), requirements,
+                                        metadata_builder_->changes());
+}
+
+bool Transaction::CanRetry() const {
+  if (kind_ == Kind::kCreate) {
+    return false;
+  }
+  for (const auto& weak_update : pending_updates_) {
+    if (auto update = weak_update.lock()) {
+      if (!update->IsRetryable()) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 Result<std::shared_ptr<UpdatePartitionSpec>> Transaction::NewUpdatePartitionSpec() {
