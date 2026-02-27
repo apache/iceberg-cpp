@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1NestedType" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::NestedType</compoundname>
+    <basecompoundref refid="classiceberg_1_1Type" prot="public" virt="non-virtual">iceberg::Type</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1ListType" prot="public" virt="non-virtual">iceberg::ListType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1MapType" prot="public" virt="non-virtual">iceberg::MapType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1StructType" prot="public" virt="non-virtual">iceberg::StructType</derivedcompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1NestedType_1a2c000477a9f8bd01766fffc5aeefd309" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>using iceberg::NestedType::SchemaFieldConstRef =  std::reference_wrapper&lt;const SchemaField&gt;</definition>
+        <argsstring></argsstring>
+        <name>SchemaFieldConstRef</name>
+        <qualifiedname>iceberg::NestedType::SchemaFieldConstRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="80" column="3" bodyfile="iceberg/type.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1NestedType_1a973f9a2e897d90e2f7be02c953bc2246" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::NestedType::is_primitive</definition>
+        <argsstring>() const override</argsstring>
+        <name>is_primitive</name>
+        <qualifiedname>iceberg::NestedType::is_primitive</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a5bef201091ac984f54b8f8ff933b3f78">is_primitive</reimplements>
+        <briefdescription>
+<para>Is this a primitive type (may not have child fields)? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="75" column="8" bodyfile="iceberg/type.h" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NestedType_1ad658681f880385907591f637fb20f44b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::NestedType::is_nested</definition>
+        <argsstring>() const override</argsstring>
+        <name>is_nested</name>
+        <qualifiedname>iceberg::NestedType::is_nested</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a7f9a1f227a8c993a7f2531fdc179ef27">is_nested</reimplements>
+        <briefdescription>
+<para>Is this a nested type (may have child fields)? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="76" column="8" bodyfile="iceberg/type.h" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NestedType_1a021e35b83f544695fe139c101ff3d0e3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::span&lt; const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>virtual std::span&lt; const SchemaField &gt; iceberg::NestedType::fields</definition>
+        <argsstring>() const =0</argsstring>
+        <name>fields</name>
+        <qualifiedname>iceberg::NestedType::fields</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StructType_1a450d536bde2a559ac3781cd6c5ebc719">fields</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1a521435361c716f7fed338237c320d6ba">fields</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1a7ec7e791e2fe6fa2b413c3561d696810">fields</reimplementedby>
+        <briefdescription>
+<para>Get a view of the child fields. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="79" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NestedType_1a3c2c55a9e9cbd6cbb9338feaddd839f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>virtual Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt; iceberg::NestedType::GetFieldById</definition>
+        <argsstring>(int32_t field_id) const =0</argsstring>
+        <name>GetFieldById</name>
+        <qualifiedname>iceberg::NestedType::GetFieldById</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StructType_1a29472346ff0ab4cd57b6bbebe2168d52">GetFieldById</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1a09203e19a2b91dafcf67490fa9d54f0d">GetFieldById</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1aa53b12e17a95ba3a5de1b259c4e26c89">GetFieldById</reimplementedby>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by field ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This is O(1) complexity. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="84" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NestedType_1a79fa68dd07b2d1f731d172017205fe6b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>virtual Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt; iceberg::NestedType::GetFieldByIndex</definition>
+        <argsstring>(int32_t index) const =0</argsstring>
+        <name>GetFieldByIndex</name>
+        <qualifiedname>iceberg::NestedType::GetFieldByIndex</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StructType_1a6839caa3cd828fc09282e9cf4f6b69cd">GetFieldByIndex</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1a72444d2101f847ef22aec7b6fb83d6cc">GetFieldByIndex</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1af34201ee16447bc0118924565b534bd5">GetFieldByIndex</reimplementedby>
+        <param>
+          <type>int32_t</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by index. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This is O(1) complexity. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="89" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NestedType_1a270387144b5d75a84ab868bd5553cde2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>virtual Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt; iceberg::NestedType::GetFieldByName</definition>
+        <argsstring>(std::string_view name, bool case_sensitive) const =0</argsstring>
+        <name>GetFieldByName</name>
+        <qualifiedname>iceberg::NestedType::GetFieldByName</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StructType_1a3fd3403e743eba662f0ed50681e015b4">GetFieldByName</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1af6cfa752dffe8a3c662d07b4e39963d6">GetFieldByName</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1af4892d029ae88a8a187d6b686378f1dc">GetFieldByName</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StructType_1a2213c2a9f6606cfc7276faac253d8753">GetFieldByName</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1a2213c2a9f6606cfc7276faac253d8753">GetFieldByName</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1a2213c2a9f6606cfc7276faac253d8753">GetFieldByName</reimplementedby>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by name. Return an error Status if the field name is not unique; prefer GetFieldById or GetFieldByIndex when possible. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This is O(1) complexity. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="96" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NestedType_1a4eaddf68ef7fbdf4ae44d3a67f1fc99d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; NestedType::SchemaFieldConstRef &gt; &gt; iceberg::NestedType::GetFieldByName</definition>
+        <argsstring>(std::string_view name) const</argsstring>
+        <name>GetFieldByName</name>
+        <qualifiedname>iceberg::NestedType::GetFieldByName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by name (case-sensitive). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="99" column="11" bodyfile="iceberg/type.cc" bodystart="37" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type that has child fields. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>iceberg::ListType</label>
+        <link refid="classiceberg_1_1ListType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::MapType</label>
+        <link refid="classiceberg_1_1MapType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="73" column="1" bodyfile="iceberg/type.h" bodystart="73" bodyend="101"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103" prot="protected" virt="pure-virtual"><scope>iceberg::NestedType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1NestedType_1a021e35b83f544695fe139c101ff3d0e3" prot="public" virt="pure-virtual"><scope>iceberg::NestedType</scope><name>fields</name></member>
+      <member refid="classiceberg_1_1NestedType_1a3c2c55a9e9cbd6cbb9338feaddd839f9" prot="public" virt="pure-virtual"><scope>iceberg::NestedType</scope><name>GetFieldById</name></member>
+      <member refid="classiceberg_1_1NestedType_1a79fa68dd07b2d1f731d172017205fe6b" prot="public" virt="pure-virtual"><scope>iceberg::NestedType</scope><name>GetFieldByIndex</name></member>
+      <member refid="classiceberg_1_1NestedType_1a270387144b5d75a84ab868bd5553cde2" prot="public" virt="pure-virtual"><scope>iceberg::NestedType</scope><name>GetFieldByName</name></member>
+      <member refid="classiceberg_1_1NestedType_1a4eaddf68ef7fbdf4ae44d3a67f1fc99d" prot="public" virt="non-virtual"><scope>iceberg::NestedType</scope><name>GetFieldByName</name></member>
+      <member refid="classiceberg_1_1NestedType_1ad658681f880385907591f637fb20f44b" prot="public" virt="virtual"><scope>iceberg::NestedType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1NestedType_1a973f9a2e897d90e2f7be02c953bc2246" prot="public" virt="virtual"><scope>iceberg::NestedType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1NestedType_1a2c000477a9f8bd01766fffc5aeefd309" prot="public" virt="non-virtual"><scope>iceberg::NestedType</scope><name>SchemaFieldConstRef</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386" prot="public" virt="pure-virtual"><scope>iceberg::NestedType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27" prot="public" virt="pure-virtual"><scope>iceberg::NestedType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::NestedType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::NestedType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

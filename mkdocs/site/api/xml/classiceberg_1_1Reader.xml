@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Reader" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Reader</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1avro_1_1AvroReader" prot="public" virt="non-virtual">iceberg::avro::AvroReader</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1parquet_1_1ParquetReader" prot="public" virt="non-virtual">iceberg::parquet::ParquetReader</derivedcompoundref>
+    <includes refid="file__reader_8h" local="no">file_reader.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Reader_1a7ffa2ae98c9a609ae52106e74fa7e26b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Reader::~Reader</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Reader</name>
+        <qualifiedname>iceberg::Reader::~Reader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="40" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1a07def72dc410038fcc0cf31bbcb3c62e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Reader::Reader</definition>
+        <argsstring>()=default</argsstring>
+        <name>Reader</name>
+        <qualifiedname>iceberg::Reader::Reader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="41" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1aaa6eea6c5e3265e32123f5e7eb7b21fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Reader::Reader</definition>
+        <argsstring>(const Reader &amp;)=delete</argsstring>
+        <name>Reader</name>
+        <qualifiedname>iceberg::Reader::Reader</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="42" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1a977c6f67bd254521229a5d8f56ba7042" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+        <definition>Reader &amp; iceberg::Reader::operator=</definition>
+        <argsstring>(const Reader &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::Reader::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="43" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1ad79601bfcecf30aae808c6ffd972cc65" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::Reader::Open</definition>
+        <argsstring>(const ReaderOptions &amp;options)=0</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::Reader::Open</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1avro_1_1AvroReader_1a0a7dfbbd7f261a82f651c75f8060fb24">Open</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1parquet_1_1ParquetReader_1ab75a19e9370963e6790f4f523e5ced32">Open</reimplementedby>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ReaderOptions" kindref="compound">ReaderOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Open the reader. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="46" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1ae85c73b2e7864feb1fe9b7395bf2bda6" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::Reader::Close</definition>
+        <argsstring>()=0</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::Reader::Close</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1avro_1_1AvroReader_1a1d0f89b1e854ac1ea0468d4ad6799bec">Close</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1parquet_1_1ParquetReader_1a4aecbbf7865ac94054fe5c9f559c6aea">Close</reimplementedby>
+        <briefdescription>
+<para>Close the reader. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="49" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1a28632e4930a68070106075a570f381b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::optional&lt; <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::optional&lt; ArrowArray &gt; &gt; iceberg::Reader::Next</definition>
+        <argsstring>()=0</argsstring>
+        <name>Next</name>
+        <qualifiedname>iceberg::Reader::Next</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1avro_1_1AvroReader_1a02002ba0b0f9255b011e1d6d9122399e">Next</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1parquet_1_1ParquetReader_1a34c1a71ce9d5eaf14c1854ca85575bac">Next</reimplementedby>
+        <briefdescription>
+<para>Read next data from file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>std::nullopt if the reader has no more data, otherwise <computeroutput><ref refid="structArrowArray" kindref="compound">ArrowArray</ref></computeroutput>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="54" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1a782ec85ef9bd7bcbe901b35520305dc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &gt;</type>
+        <definition>virtual Result&lt; ArrowSchema &gt; iceberg::Reader::Schema</definition>
+        <argsstring>()=0</argsstring>
+        <name>Schema</name>
+        <qualifiedname>iceberg::Reader::Schema</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1avro_1_1AvroReader_1a839419ad546f8c9e59bacb9b1f91e138">Schema</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1parquet_1_1ParquetReader_1a24fd6d5fcf479c6f6b51db925ad1b25e">Schema</reimplementedby>
+        <briefdescription>
+<para>Get the schema of the data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="57" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reader_1ad732e05d7be7c6ce460e56b54ddf4736" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>virtual Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::Reader::Metadata</definition>
+        <argsstring>()=0</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::Reader::Metadata</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1avro_1_1AvroReader_1a4842dfce45d6b093a49ae5f328dd688d">Metadata</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1parquet_1_1ParquetReader_1ab372da8bb16449db4ff59a319981947a">Metadata</reimplementedby>
+        <briefdescription>
+<para>Get the metadata of the file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="60" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base reader class to read data from different file formats. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Reader</label>
+        <link refid="classiceberg_1_1Reader"/>
+      </node>
+      <node id="2">
+        <label>iceberg::avro::AvroReader</label>
+        <link refid="classiceberg_1_1avro_1_1AvroReader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::parquet::ParquetReader</label>
+        <link refid="classiceberg_1_1parquet_1_1ParquetReader"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/file_reader.h" line="38" column="1" bodyfile="iceberg/file_reader.h" bodystart="38" bodyend="61"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Reader_1ae85c73b2e7864feb1fe9b7395bf2bda6" prot="public" virt="pure-virtual"><scope>iceberg::Reader</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1Reader_1ad732e05d7be7c6ce460e56b54ddf4736" prot="public" virt="pure-virtual"><scope>iceberg::Reader</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1Reader_1a28632e4930a68070106075a570f381b8" prot="public" virt="pure-virtual"><scope>iceberg::Reader</scope><name>Next</name></member>
+      <member refid="classiceberg_1_1Reader_1ad79601bfcecf30aae808c6ffd972cc65" prot="public" virt="pure-virtual"><scope>iceberg::Reader</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1Reader_1a977c6f67bd254521229a5d8f56ba7042" prot="public" virt="non-virtual"><scope>iceberg::Reader</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1Reader_1a07def72dc410038fcc0cf31bbcb3c62e" prot="public" virt="non-virtual"><scope>iceberg::Reader</scope><name>Reader</name></member>
+      <member refid="classiceberg_1_1Reader_1aaa6eea6c5e3265e32123f5e7eb7b21fe" prot="public" virt="non-virtual"><scope>iceberg::Reader</scope><name>Reader</name></member>
+      <member refid="classiceberg_1_1Reader_1a782ec85ef9bd7bcbe901b35520305dc7" prot="public" virt="pure-virtual"><scope>iceberg::Reader</scope><name>Schema</name></member>
+      <member refid="classiceberg_1_1Reader_1a7ffa2ae98c9a609ae52106e74fa7e26b" prot="public" virt="virtual"><scope>iceberg::Reader</scope><name>~Reader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

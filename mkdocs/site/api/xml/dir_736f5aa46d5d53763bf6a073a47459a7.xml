@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_736f5aa46d5d53763bf6a073a47459a7" kind="dir">
+    <compoundname>iceberg/row</compoundname>
+    <innerfile refid="arrow__array__wrapper_8cc">arrow_array_wrapper.cc</innerfile>
+    <innerfile refid="arrow__array__wrapper_8h">arrow_array_wrapper.h</innerfile>
+    <innerfile refid="manifest__wrapper_8cc">manifest_wrapper.cc</innerfile>
+    <innerfile refid="manifest__wrapper_8h">manifest_wrapper.h</innerfile>
+    <innerfile refid="partition__values_8cc">partition_values.cc</innerfile>
+    <innerfile refid="partition__values_8h">partition_values.h</innerfile>
+    <innerfile refid="struct__like_8cc">struct_like.cc</innerfile>
+    <innerfile refid="struct__like_8h">struct_like.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/row/"/>
+  </compounddef>
+</doxygen>

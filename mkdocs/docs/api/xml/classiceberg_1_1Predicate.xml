@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Predicate" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Predicate</compoundname>
+    <basecompoundref refid="classiceberg_1_1Expression" prot="public" virt="virtual">iceberg::Expression</basecompoundref>
+    <includes refid="predicate_8h" local="no">predicate.h</includes>
+    <templateparamlist>
+      <param>
+        <type>TermType</type>
+        <declname>T</declname>
+        <defname>T</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Predicate_1ae7cd54c4e3e6d62b81e5824d84d33381" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+        <definition>Expression::Operation iceberg::Predicate&lt; T &gt;::operation_</definition>
+        <argsstring></argsstring>
+        <name>operation_</name>
+        <qualifiedname>iceberg::Predicate::operation_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="54" column="25" bodyfile="iceberg/expression/predicate.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Predicate_1ab1f8f6820bbbbd1d14ea847cd492aa4a" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; T &gt;</type>
+        <definition>std::shared_ptr&lt;T&gt; iceberg::Predicate&lt; T &gt;::term_</definition>
+        <argsstring></argsstring>
+        <name>term_</name>
+        <qualifiedname>iceberg::Predicate::term_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="55" column="19" bodyfile="iceberg/expression/predicate.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Predicate_1a352e0d8ecbcf3d0a4fec9f5b0de0004d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Predicate&lt; T &gt;::~Predicate</definition>
+        <argsstring>() override</argsstring>
+        <name>~Predicate</name>
+        <qualifiedname>iceberg::Predicate::~Predicate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="40" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+        <definition>Expression::Operation iceberg::Predicate&lt; T &gt;::op</definition>
+        <argsstring>() const override</argsstring>
+        <name>op</name>
+        <qualifiedname>iceberg::Predicate::op</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a5a16ee5d023305b50e4a2216b4047eff">op</reimplements>
+        <briefdescription>
+<para>Returns the operation for an expression node. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="42" column="25" bodyfile="iceberg/expression/predicate.h" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Predicate_1acee9f864ef011a76e45d98f0d9bf42af" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; T &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; T &gt; &amp; iceberg::Predicate&lt; T &gt;::term</definition>
+        <argsstring>() const</argsstring>
+        <name>term</name>
+        <qualifiedname>iceberg::Predicate::term</qualifiedname>
+        <briefdescription>
+<para>Returns the term this predicate tests. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="45" column="25" bodyfile="iceberg/expression/predicate.h" bodystart="45" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1Predicate_1ae1f081b37983ae239d609238ed382f73" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Predicate&lt; T &gt;::Predicate</definition>
+        <argsstring>(Expression::Operation op, std::shared_ptr&lt; T &gt; term)</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::Predicate::Predicate</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; T &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+<para>Create a predicate with an operation and term. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>op</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The operation this predicate performs </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>term</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The term this predicate tests </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="52" column="3" bodyfile="iceberg/expression/predicate.cc" bodystart="37" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A predicate is a boolean expression that tests a term against some criteria. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>TermType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the term being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Predicate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Predicate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/predicate.h" line="38" column="1" bodyfile="iceberg/expression/predicate.h" bodystart="38" bodyend="56"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1Expression_1ab760f80ffc03ab40301be7d59c621a4a" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::Predicate</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Predicate_1ae7cd54c4e3e6d62b81e5824d84d33381" prot="protected" virt="non-virtual"><scope>iceberg::Predicate</scope><name>operation_</name></member>
+      <member refid="classiceberg_1_1Predicate_1ae1f081b37983ae239d609238ed382f73" prot="protected" virt="non-virtual"><scope>iceberg::Predicate</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1Predicate_1acee9f864ef011a76e45d98f0d9bf42af" prot="public" virt="non-virtual"><scope>iceberg::Predicate</scope><name>term</name></member>
+      <member refid="classiceberg_1_1Predicate_1ab1f8f6820bbbbd1d14ea847cd492aa4a" prot="protected" virt="non-virtual"><scope>iceberg::Predicate</scope><name>term_</name></member>
+      <member refid="classiceberg_1_1Expression_1a2e9c204f698d069ebc0fefb9e5269ab6" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Predicate</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Predicate_1a352e0d8ecbcf3d0a4fec9f5b0de0004d" prot="public" virt="non-virtual"><scope>iceberg::Predicate</scope><name>~Predicate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

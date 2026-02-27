@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotTest_1ab9357abdd313dab32ea8a06dee0ad9ea" prot="protected" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::SnapshotTest::summary1</definition>
+        <argsstring></argsstring>
+        <name>summary1</name>
+        <qualifiedname>iceberg::SnapshotTest::summary1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_test.cc" line="78" column="22" bodyfile="iceberg/test/snapshot_test.cc" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotTest_1aa68db4b7fc12b78cc4c561eb20a02863" prot="protected" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::SnapshotTest::summary2</definition>
+        <argsstring></argsstring>
+        <name>summary2</name>
+        <qualifiedname>iceberg::SnapshotTest::summary2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_test.cc" line="79" column="22" bodyfile="iceberg/test/snapshot_test.cc" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotTest_1a718b19353c7f575a3b0b7c4f9a089101" prot="protected" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::SnapshotTest::summary3</definition>
+        <argsstring></argsstring>
+        <name>summary3</name>
+        <qualifiedname>iceberg::SnapshotTest::summary3</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_test.cc" line="80" column="22" bodyfile="iceberg/test/snapshot_test.cc" bodystart="80" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotTest_1ae6b9700c25f3b6833ea153df536f6835" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::SnapshotTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_test.cc" line="66" column="8" bodyfile="iceberg/test/snapshot_test.cc" bodystart="66" bodyend="76"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SnapshotTest</label>
+        <link refid="classiceberg_1_1SnapshotTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SnapshotTest</label>
+        <link refid="classiceberg_1_1SnapshotTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>summary1</edgelabel>
+          <edgelabel>summary2</edgelabel>
+          <edgelabel>summary3</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/snapshot_test.cc" line="64" column="1" bodyfile="iceberg/test/snapshot_test.cc" bodystart="64" bodyend="81"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotTest_1ae6b9700c25f3b6833ea153df536f6835" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1SnapshotTest_1ab9357abdd313dab32ea8a06dee0ad9ea" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotTest</scope><name>summary1</name></member>
+      <member refid="classiceberg_1_1SnapshotTest_1aa68db4b7fc12b78cc4c561eb20a02863" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotTest</scope><name>summary2</name></member>
+      <member refid="classiceberg_1_1SnapshotTest_1a718b19353c7f575a3b0b7c4f9a089101" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotTest</scope><name>summary3</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

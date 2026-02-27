@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TruncateProjectionTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TruncateProjectionTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1TruncateProjectionTest_1a5d2651e889f74802453bf4183a720afd" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TruncateProjectionTest::AssertProjectionStrict</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const Schema &amp;schema, const std::shared_ptr&lt; Expression &gt; &amp;filter, Expression::Operation expected_op)</argsstring>
+        <name>AssertProjectionStrict</name>
+        <qualifiedname>iceberg::TruncateProjectionTest::AssertProjectionStrict</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>filter</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>expected_op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/projections_test.cc" line="899" column="8" bodyfile="iceberg/test/projections_test.cc" bodystart="899" bodyend="905"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateProjectionTest_1a54cdec77f04c65ef5e885ae7400f2776" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TruncateProjectionTest::AssertProjectionInclusive</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const Schema &amp;schema, const std::shared_ptr&lt; Expression &gt; &amp;filter, Expression::Operation expected_op)</argsstring>
+        <name>AssertProjectionInclusive</name>
+        <qualifiedname>iceberg::TruncateProjectionTest::AssertProjectionInclusive</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>filter</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>expected_op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/projections_test.cc" line="907" column="8" bodyfile="iceberg/test/projections_test.cc" bodystart="907" bodyend="913"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::TruncateProjectionTest</label>
+        <link refid="classiceberg_1_1TruncateProjectionTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::TruncateProjectionTest</label>
+        <link refid="classiceberg_1_1TruncateProjectionTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/projections_test.cc" line="897" column="1" bodyfile="iceberg/test/projections_test.cc" bodystart="897" bodyend="914"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TruncateProjectionTest_1a54cdec77f04c65ef5e885ae7400f2776" prot="protected" virt="non-virtual"><scope>iceberg::TruncateProjectionTest</scope><name>AssertProjectionInclusive</name></member>
+      <member refid="classiceberg_1_1TruncateProjectionTest_1a5d2651e889f74802453bf4183a720afd" prot="protected" virt="non-virtual"><scope>iceberg::TruncateProjectionTest</scope><name>AssertProjectionStrict</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

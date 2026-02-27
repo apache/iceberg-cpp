@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SortField" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SortField</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <includes refid="sort__field_8h" local="no">sort_field.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SortField_1ad0e30f0938ed19c587f6f6aa69f6c9cb" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SortField::source_id_</definition>
+        <argsstring></argsstring>
+        <name>source_id_</name>
+        <qualifiedname>iceberg::SortField::source_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="126" column="11" bodyfile="iceberg/sort_field.h" bodystart="126" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortField_1a1af87f010a07b7d0f5d7c705899fc443" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Transform&gt; iceberg::SortField::transform_</definition>
+        <argsstring></argsstring>
+        <name>transform_</name>
+        <qualifiedname>iceberg::SortField::transform_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="127" column="19" bodyfile="iceberg/sort_field.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortField_1a8e6bd919d03ede241260fd90d43448fe" prot="private" static="no" mutable="no">
+        <type><ref refid="sort__field_8h_1a4f6d1460e9650c271d2f5f70766361e1" kindref="member">SortDirection</ref></type>
+        <definition>SortDirection iceberg::SortField::direction_</definition>
+        <argsstring></argsstring>
+        <name>direction_</name>
+        <qualifiedname>iceberg::SortField::direction_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="128" column="17" bodyfile="iceberg/sort_field.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortField_1a9729dc17abc46cea637c6c26868f05e1" prot="private" static="no" mutable="no">
+        <type><ref refid="sort__field_8h_1a7d2f6c79654ba49df0d36c1724041283" kindref="member">NullOrder</ref></type>
+        <definition>NullOrder iceberg::SortField::null_order_</definition>
+        <argsstring></argsstring>
+        <name>null_order_</name>
+        <qualifiedname>iceberg::SortField::null_order_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="129" column="13" bodyfile="iceberg/sort_field.h" bodystart="129" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SortField_1ae538f9629f084c1c8d00e030deb7832a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SortField::SortField</definition>
+        <argsstring>(int32_t source_id, std::shared_ptr&lt; Transform &gt; transform, SortDirection direction, NullOrder null_order)</argsstring>
+        <name>SortField</name>
+        <qualifiedname>iceberg::SortField::SortField</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>source_id</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+          <declname>transform</declname>
+        </param>
+        <param>
+          <type><ref refid="sort__field_8h_1a4f6d1460e9650c271d2f5f70766361e1" kindref="member">SortDirection</ref></type>
+          <declname>direction</declname>
+        </param>
+        <param>
+          <type><ref refid="sort__field_8h_1a7d2f6c79654ba49df0d36c1724041283" kindref="member">NullOrder</ref></type>
+          <declname>null_order</declname>
+        </param>
+        <briefdescription>
+<para>Construct a field. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">source_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The source field ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">transform</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The transform function. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">direction</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The sort direction. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">null_order</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The null order. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="95" column="3" bodyfile="iceberg/sort_field.cc" bodystart="29" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortField_1af05fd46217b7086648bcda9c065cfa47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SortField::source_id</definition>
+        <argsstring>() const</argsstring>
+        <name>source_id</name>
+        <qualifiedname>iceberg::SortField::source_id</qualifiedname>
+        <briefdescription>
+<para>Get the source field ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="99" column="11" bodyfile="iceberg/sort_field.cc" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortField_1a73926ec663830ae08f9c283348097357" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt; &amp;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; const  &amp; iceberg::SortField::transform</definition>
+        <argsstring>() const</argsstring>
+        <name>transform</name>
+        <qualifiedname>iceberg::SortField::transform</qualifiedname>
+        <briefdescription>
+<para>Get the transform type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="102" column="25" bodyfile="iceberg/sort_field.cc" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortField_1a620ff18cb7784e23042395a99fac8ee6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="sort__field_8h_1a4f6d1460e9650c271d2f5f70766361e1" kindref="member">SortDirection</ref></type>
+        <definition>SortDirection iceberg::SortField::direction</definition>
+        <argsstring>() const</argsstring>
+        <name>direction</name>
+        <qualifiedname>iceberg::SortField::direction</qualifiedname>
+        <briefdescription>
+<para>Get the sort direction. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="105" column="17" bodyfile="iceberg/sort_field.cc" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortField_1a8b8d824a9a5adbc0c1e0164be609c11d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="sort__field_8h_1a7d2f6c79654ba49df0d36c1724041283" kindref="member">NullOrder</ref></type>
+        <definition>NullOrder iceberg::SortField::null_order</definition>
+        <argsstring>() const</argsstring>
+        <name>null_order</name>
+        <qualifiedname>iceberg::SortField::null_order</qualifiedname>
+        <briefdescription>
+<para>Get the null order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="108" column="13" bodyfile="iceberg/sort_field.cc" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortField_1a4356f8651d272be36c517cf0db336122" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SortField::Satisfies</definition>
+        <argsstring>(const SortField &amp;other) const</argsstring>
+        <name>Satisfies</name>
+        <qualifiedname>iceberg::SortField::Satisfies</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Checks whether this field&apos;s order satisfies another field&apos;s order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="111" column="8" bodyfile="iceberg/sort_field.cc" bodystart="44" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortField_1a0e78bbc2959d854d6b8700b00e7453a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::SortField::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::SortField::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="113" column="15" bodyfile="iceberg/sort_field.cc" bodystart="54" bodyend="56"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1SortField_1aed0b644de41cdbff98c44d5706dd33a9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const SortField &amp;lhs, const SortField &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::SortField::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="115" column="15" bodyfile="iceberg/sort_field.h" bodystart="115" bodyend="120"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SortField_1ab4e99a2347f68b35b8b52ef84767ac54" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SortField::Equals</definition>
+        <argsstring>(const SortField &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::SortField::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two fields for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_field.h" line="124" column="9" bodyfile="iceberg/sort_field.cc" bodystart="58" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>a field with its transform. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SortField</label>
+        <link refid="classiceberg_1_1SortField"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SortField</label>
+        <link refid="classiceberg_1_1SortField"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/sort_field.h" line="88" column="1" bodyfile="iceberg/sort_field.h" bodystart="88" bodyend="130"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SortField_1a620ff18cb7784e23042395a99fac8ee6" prot="public" virt="non-virtual"><scope>iceberg::SortField</scope><name>direction</name></member>
+      <member refid="classiceberg_1_1SortField_1a8e6bd919d03ede241260fd90d43448fe" prot="private" virt="non-virtual"><scope>iceberg::SortField</scope><name>direction_</name></member>
+      <member refid="classiceberg_1_1SortField_1ab4e99a2347f68b35b8b52ef84767ac54" prot="private" virt="non-virtual"><scope>iceberg::SortField</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1SortField_1a8b8d824a9a5adbc0c1e0164be609c11d" prot="public" virt="non-virtual"><scope>iceberg::SortField</scope><name>null_order</name></member>
+      <member refid="classiceberg_1_1SortField_1a9729dc17abc46cea637c6c26868f05e1" prot="private" virt="non-virtual"><scope>iceberg::SortField</scope><name>null_order_</name></member>
+      <member refid="classiceberg_1_1SortField_1aed0b644de41cdbff98c44d5706dd33a9" prot="public" virt="non-virtual"><scope>iceberg::SortField</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1SortField_1a4356f8651d272be36c517cf0db336122" prot="public" virt="non-virtual"><scope>iceberg::SortField</scope><name>Satisfies</name></member>
+      <member refid="classiceberg_1_1SortField_1ae538f9629f084c1c8d00e030deb7832a" prot="public" virt="non-virtual"><scope>iceberg::SortField</scope><name>SortField</name></member>
+      <member refid="classiceberg_1_1SortField_1af05fd46217b7086648bcda9c065cfa47" prot="public" virt="non-virtual"><scope>iceberg::SortField</scope><name>source_id</name></member>
+      <member refid="classiceberg_1_1SortField_1ad0e30f0938ed19c587f6f6aa69f6c9cb" prot="private" virt="non-virtual"><scope>iceberg::SortField</scope><name>source_id_</name></member>
+      <member refid="classiceberg_1_1SortField_1a0e78bbc2959d854d6b8700b00e7453a9" prot="public" virt="virtual"><scope>iceberg::SortField</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1SortField_1a73926ec663830ae08f9c283348097357" prot="public" virt="non-virtual"><scope>iceberg::SortField</scope><name>transform</name></member>
+      <member refid="classiceberg_1_1SortField_1a1af87f010a07b7d0f5d7c705899fc443" prot="private" virt="non-virtual"><scope>iceberg::SortField</scope><name>transform_</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::SortField</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

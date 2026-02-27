@@ -1,0 +1,376 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PartitionValues" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PartitionValues</compoundname>
+    <basecompoundref refid="classiceberg_1_1StructLike" prot="public" virt="non-virtual">iceberg::StructLike</basecompoundref>
+    <includes refid="partition__values_8h" local="no">partition_values.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PartitionValues_1a9fd77083ccd6d23f2a8b277c5cbda491" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::vector&lt;Literal&gt; iceberg::PartitionValues::values_</definition>
+        <argsstring></argsstring>
+        <name>values_</name>
+        <qualifiedname>iceberg::PartitionValues::values_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="72" column="15" bodyfile="iceberg/row/partition_values.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a0af477786abfee7de54ea1aaf3596c2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionValues::PartitionValues</definition>
+        <argsstring>()=default</argsstring>
+        <name>PartitionValues</name>
+        <qualifiedname>iceberg::PartitionValues::PartitionValues</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="38" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a75a1bd710a63862447e8407edb316b08" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionValues::PartitionValues</definition>
+        <argsstring>(std::vector&lt; Literal &gt; values)</argsstring>
+        <name>PartitionValues</name>
+        <qualifiedname>iceberg::PartitionValues::PartitionValues</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="39" column="12" bodyfile="iceberg/row/partition_values.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a72061bfcc9b2913407835fc5f3a8bc17" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionValues::PartitionValues</definition>
+        <argsstring>(Literal value)</argsstring>
+        <name>PartitionValues</name>
+        <qualifiedname>iceberg::PartitionValues::PartitionValues</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="40" column="12" bodyfile="iceberg/row/partition_values.h" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a102b23262c8abca309e4f82dbaa256f7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionValues::PartitionValues</definition>
+        <argsstring>(const PartitionValues &amp;other)</argsstring>
+        <name>PartitionValues</name>
+        <qualifiedname>iceberg::PartitionValues::PartitionValues</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="42" column="3" bodyfile="iceberg/row/partition_values.h" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a2a962c3c649860fc6bbbe0722b4f7bfe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+        <definition>PartitionValues &amp; iceberg::PartitionValues::operator=</definition>
+        <argsstring>(const PartitionValues &amp;other)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::PartitionValues::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="43" column="19" bodyfile="iceberg/row/partition_values.cc" bodystart="24" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a67802745bb2255cee1d4c22d718fa168" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionValues::PartitionValues</definition>
+        <argsstring>(PartitionValues &amp;&amp;) noexcept=default</argsstring>
+        <name>PartitionValues</name>
+        <qualifiedname>iceberg::PartitionValues::PartitionValues</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="45" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a1a824b8ae72219dcc52915763b531dd0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+        <definition>PartitionValues &amp; iceberg::PartitionValues::operator=</definition>
+        <argsstring>(PartitionValues &amp;&amp;) noexcept=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::PartitionValues::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="46" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a26248067a51655ca7627dbf10e416eef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionValues::~PartitionValues</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~PartitionValues</name>
+        <qualifiedname>iceberg::PartitionValues::~PartitionValues</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="48" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a0e4f25e83c939e00bc2e11cef55754c7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::PartitionValues::GetField</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetField</name>
+        <qualifiedname>iceberg::PartitionValues::GetField</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11">GetField</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="50" column="10" bodyfile="iceberg/row/partition_values.cc" bodystart="35" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a9ac3c4a2e24db605edb3c5a515102fa7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::PartitionValues::num_fields</definition>
+        <argsstring>() const override</argsstring>
+        <name>num_fields</name>
+        <qualifiedname>iceberg::PartitionValues::num_fields</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914">num_fields</reimplements>
+        <briefdescription>
+<para>Get the number of fields in the struct. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="52" column="10" bodyfile="iceberg/row/partition_values.h" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a67fc6f7552b8e38b35011b6c0648959d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::reference_wrapper&lt; const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::reference_wrapper&lt; const Literal &gt; &gt; iceberg::PartitionValues::ValueAt</definition>
+        <argsstring>(size_t pos) const</argsstring>
+        <name>ValueAt</name>
+        <qualifiedname>iceberg::PartitionValues::ValueAt</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the partition field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A reference to the partition field value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="57" column="10" bodyfile="iceberg/row/partition_values.cc" bodystart="83" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1af07e2264eacb417a3a351ac8ba3403ab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::PartitionValues::AddValue</definition>
+        <argsstring>(Literal value)</argsstring>
+        <name>AddValue</name>
+        <qualifiedname>iceberg::PartitionValues::AddValue</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Add a value to the partition values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value to add. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="61" column="8" bodyfile="iceberg/row/partition_values.h" bodystart="61" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a7572b79322554b4dea4eaf3f691be635" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::PartitionValues::Reset</definition>
+        <argsstring>(std::vector&lt; Literal &gt; values)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::PartitionValues::Reset</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+<para>Reset the partition values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>values</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The values to reset to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="65" column="8" bodyfile="iceberg/row/partition_values.h" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1a770e2b0c7197b7ee8f38823eb9a10758" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::span&lt; const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::span&lt; const Literal &gt; iceberg::PartitionValues::values</definition>
+        <argsstring>() const</argsstring>
+        <name>values</name>
+        <qualifiedname>iceberg::PartitionValues::values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="67" column="13" bodyfile="iceberg/row/partition_values.h" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionValues_1af37b9443eb2210d7f6270e08d7dd0c81" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionValues::operator==</definition>
+        <argsstring>(const PartitionValues &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::PartitionValues::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/partition_values.h" line="69" column="8" bodyfile="iceberg/row/partition_values.cc" bodystart="31" bodyend="33"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> wrapper for a vector of literals that represent partition values. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/row/partition_values.h" line="36" column="1" bodyfile="iceberg/row/partition_values.h" bodystart="36" bodyend="73"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PartitionValues_1af07e2264eacb417a3a351ac8ba3403ab" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>AddValue</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a0e4f25e83c939e00bc2e11cef55754c7" prot="public" virt="virtual"><scope>iceberg::PartitionValues</scope><name>GetField</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a9ac3c4a2e24db605edb3c5a515102fa7" prot="public" virt="virtual"><scope>iceberg::PartitionValues</scope><name>num_fields</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a2a962c3c649860fc6bbbe0722b4f7bfe" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a1a824b8ae72219dcc52915763b531dd0" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1af37b9443eb2210d7f6270e08d7dd0c81" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a0af477786abfee7de54ea1aaf3596c2f" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>PartitionValues</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a75a1bd710a63862447e8407edb316b08" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>PartitionValues</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a72061bfcc9b2913407835fc5f3a8bc17" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>PartitionValues</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a102b23262c8abca309e4f82dbaa256f7" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>PartitionValues</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a67802745bb2255cee1d4c22d718fa168" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>PartitionValues</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a7572b79322554b4dea4eaf3f691be635" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a67fc6f7552b8e38b35011b6c0648959d" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>ValueAt</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a770e2b0c7197b7ee8f38823eb9a10758" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>values</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a9fd77083ccd6d23f2a8b277c5cbda491" prot="private" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>values_</name></member>
+      <member refid="classiceberg_1_1PartitionValues_1a26248067a51655ca7627dbf10e416eef" prot="public" virt="non-virtual"><scope>iceberg::PartitionValues</scope><name>~PartitionValues</name></member>
+      <member refid="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" virt="virtual"><scope>iceberg::PartitionValues</scope><name>~StructLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

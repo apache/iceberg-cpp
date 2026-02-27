@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MonthTransform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MonthTransform</compoundname>
+    <basecompoundref refid="classiceberg_1_1TransformFunction" prot="public" virt="non-virtual">iceberg::TransformFunction</basecompoundref>
+    <includes refid="transform__function_8h" local="no">transform_function.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MonthTransform_1ab415fbcdcf96fb04451bbe86064ba8ba" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MonthTransform::MonthTransform</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>MonthTransform</name>
+        <qualifiedname>iceberg::MonthTransform::MonthTransform</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Must be a timestamp type. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="128" column="12" bodyfile="iceberg/transform_function.cc" bodystart="159" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MonthTransform_1a8b6fcd3edd1e043ab7519e3ceed420c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::MonthTransform::Transform</definition>
+        <argsstring>(const Literal &amp;literal) override</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::MonthTransform::Transform</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1afb1c573d9bd098c76d858f476ef16f3f">Transform</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp month, as months from 1970-01-01. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="131" column="10" bodyfile="iceberg/transform_function.cc" bodystart="162" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MonthTransform_1ae7ed2490890c3ba30e13d73e84b96462" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Type &gt; iceberg::MonthTransform::ResultType</definition>
+        <argsstring>() const override</argsstring>
+        <name>ResultType</name>
+        <qualifiedname>iceberg::MonthTransform::ResultType</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1a82841b58ce6380a7467bccf57e18e0d5">ResultType</reimplements>
+        <briefdescription>
+<para>Returns INT32 as the output type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="134" column="19" bodyfile="iceberg/transform_function.cc" bodystart="168" bodyend="168"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MonthTransform_1acd03b7ecf13dbe62f5d86900e0d64952" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TransformFunction &gt; &gt; iceberg::MonthTransform::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::MonthTransform::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1MonthTransform" kindref="compound">MonthTransform</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the input data. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1MonthTransform" kindref="compound">MonthTransform</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="139" column="17" bodyfile="iceberg/transform_function.cc" bodystart="170" bodyend="185"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Month transform that extracts the number of months from timestamp inputs since the epoch. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::MonthTransform</label>
+        <link refid="classiceberg_1_1MonthTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::MonthTransform</label>
+        <link refid="classiceberg_1_1MonthTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/transform_function.h" line="125" column="1" bodyfile="iceberg/transform_function.h" bodystart="125" bodyend="141"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MonthTransform_1acd03b7ecf13dbe62f5d86900e0d64952" prot="public" virt="non-virtual"><scope>iceberg::MonthTransform</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MonthTransform_1ab415fbcdcf96fb04451bbe86064ba8ba" prot="public" virt="non-virtual"><scope>iceberg::MonthTransform</scope><name>MonthTransform</name></member>
+      <member refid="classiceberg_1_1MonthTransform_1ae7ed2490890c3ba30e13d73e84b96462" prot="public" virt="virtual"><scope>iceberg::MonthTransform</scope><name>ResultType</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a5fb6043200973c2a68f1b59b52f3dc91" prot="public" virt="non-virtual"><scope>iceberg::MonthTransform</scope><name>source_type</name></member>
+      <member refid="classiceberg_1_1MonthTransform_1a8b6fcd3edd1e043ab7519e3ceed420c9" prot="public" virt="virtual"><scope>iceberg::MonthTransform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1abf4c9031fa1b0de214e6aa7ffc717c56" prot="public" virt="non-virtual"><scope>iceberg::MonthTransform</scope><name>transform_type</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a3e97589741424abf0fb1c0c01117bb5e" prot="public" virt="non-virtual"><scope>iceberg::MonthTransform</scope><name>TransformFunction</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a523fa272f921de4a2b69a7b6277b39f4" prot="public" virt="virtual"><scope>iceberg::MonthTransform</scope><name>~TransformFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

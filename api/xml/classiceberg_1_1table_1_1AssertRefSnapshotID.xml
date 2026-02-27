@@ -1,0 +1,237 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1AssertRefSnapshotID" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::AssertRefSnapshotID</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableRequirement" prot="public" virt="non-virtual">iceberg::TableRequirement</basecompoundref>
+    <includes refid="table__requirement_8h" local="no">table_requirement.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1a4abd329b858269123ef5edbe92f0b6e3" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::table::AssertRefSnapshotID::ref_name_</definition>
+        <argsstring></argsstring>
+        <name>ref_name_</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::ref_name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="169" column="15" bodyfile="iceberg/table_requirement.h" bodystart="169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1a9e9c7ba3b910253344383290a2a85d7a" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::table::AssertRefSnapshotID::snapshot_id_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id_</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::snapshot_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="170" column="17" bodyfile="iceberg/table_requirement.h" bodystart="170" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1a78f4b8648740b5784933340596deb076" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::AssertRefSnapshotID::AssertRefSnapshotID</definition>
+        <argsstring>(std::string ref_name, std::optional&lt; int64_t &gt; snapshot_id)</argsstring>
+        <name>AssertRefSnapshotID</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::AssertRefSnapshotID</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>ref_name</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="145" column="3" bodyfile="iceberg/table_requirement.h" bodystart="145" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1ad15d1aa106fd0e347b1e6974350180c5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::table::AssertRefSnapshotID::ref_name</definition>
+        <argsstring>() const</argsstring>
+        <name>ref_name</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::ref_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="148" column="21" bodyfile="iceberg/table_requirement.h" bodystart="148" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1a26eefe631e3d774dc95413a0644977d8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::optional&lt; int64_t &gt; &amp;</type>
+        <definition>const std::optional&lt; int64_t &gt; &amp; iceberg::table::AssertRefSnapshotID::snapshot_id</definition>
+        <argsstring>() const</argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="150" column="23" bodyfile="iceberg/table_requirement.h" bodystart="150" bodyend="150"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1ae82fe0cad009d912649472fe20339a26" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::AssertRefSnapshotID::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="152" column="8" bodyfile="iceberg/table_requirement.h" bodystart="152" bodyend="152"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1a55299e43bc5a41ca0af1dbcba9e2d090" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::table::AssertRefSnapshotID::Validate</definition>
+        <argsstring>(const TableMetadata *base) const override</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::Validate</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15">Validate</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Validate this requirement against table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to validate against (may be nullptr) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure with error details </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="154" column="10" bodyfile="iceberg/table_requirement.cc" bodystart="51" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1ad22739ba88ea05d467f1105fb9b9e55b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::AssertRefSnapshotID::Equals</definition>
+        <argsstring>(const TableRequirement &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The requirement to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the requirements are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="156" column="8" bodyfile="iceberg/table_requirement.h" bodystart="156" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertRefSnapshotID_1a199301cef5b50cffde62d8df4dbc795e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableRequirement &gt; iceberg::table::AssertRefSnapshotID::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::AssertRefSnapshotID::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1a2bbf72ce6649e04a8dc1bc2f7bcff353">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="164" column="19" bodyfile="iceberg/table_requirement.h" bodystart="164" bodyend="166"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Requirement that a reference (branch or tag) points to a specific snapshot. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This requirement validates that a named reference (branch or tag) either:<itemizedlist>
+<listitem><para>Points to the expected snapshot ID</para>
+</listitem><listitem><para>Does not exist (if snapshot_id is nullopt) </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertRefSnapshotID</label>
+        <link refid="classiceberg_1_1table_1_1AssertRefSnapshotID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertRefSnapshotID</label>
+        <link refid="classiceberg_1_1table_1_1AssertRefSnapshotID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_requirement.h" line="143" column="1" bodyfile="iceberg/table_requirement.h" bodystart="143" bodyend="171"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a78f4b8648740b5784933340596deb076" prot="public" virt="non-virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>AssertRefSnapshotID</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a199301cef5b50cffde62d8df4dbc795e" prot="public" virt="virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ad22739ba88ea05d467f1105fb9b9e55b" prot="public" virt="virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ae82fe0cad009d912649472fe20339a26" prot="public" virt="virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79" prot="public" virt="non-virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ad15d1aa106fd0e347b1e6974350180c5" prot="public" virt="non-virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>ref_name</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a4abd329b858269123ef5edbe92f0b6e3" prot="private" virt="non-virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>ref_name_</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a26eefe631e3d774dc95413a0644977d8" prot="public" virt="non-virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>snapshot_id</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a9e9c7ba3b910253344383290a2a85d7a" prot="private" virt="non-virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>snapshot_id_</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a55299e43bc5a41ca0af1dbcba9e2d090" prot="public" virt="virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a91a754d5e846ec2607aec5bf09896270" prot="public" virt="virtual"><scope>iceberg::table::AssertRefSnapshotID</scope><name>~TableRequirement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

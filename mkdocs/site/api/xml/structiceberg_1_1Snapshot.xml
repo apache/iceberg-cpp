@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1Snapshot" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::Snapshot</compoundname>
+    <includes refid="snapshot_8h" local="no">snapshot.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1Snapshot_1a128c409cc977968fbb9d9e893ba7d0c6" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::Snapshot::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::Snapshot::snapshot_id</qualifiedname>
+        <briefdescription>
+<para>A unique long ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="391" column="11" bodyfile="iceberg/snapshot.h" bodystart="391" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Snapshot_1aef3a444c939ab4f76e0b9a28f96c6b7a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::Snapshot::parent_snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>parent_snapshot_id</name>
+        <qualifiedname>iceberg::Snapshot::parent_snapshot_id</qualifiedname>
+        <briefdescription>
+<para>The snapshot ID of the snapshot&apos;s parent. Omitted for any snapshot with no parent. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="393" column="17" bodyfile="iceberg/snapshot.h" bodystart="393" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Snapshot_1a6f9b97d42b48be0d05dd4befd2602256" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::Snapshot::sequence_number</definition>
+        <argsstring></argsstring>
+        <name>sequence_number</name>
+        <qualifiedname>iceberg::Snapshot::sequence_number</qualifiedname>
+        <briefdescription>
+<para>A monotonically increasing long that tracks the order of changes to a table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="395" column="11" bodyfile="iceberg/snapshot.h" bodystart="395" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Snapshot_1ac401c19cb4161ce5a39ab9ba16e458ac" prot="public" static="no" mutable="no">
+        <type>TimePointMs</type>
+        <definition>TimePointMs iceberg::Snapshot::timestamp_ms</definition>
+        <argsstring></argsstring>
+        <name>timestamp_ms</name>
+        <qualifiedname>iceberg::Snapshot::timestamp_ms</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A timestamp when the snapshot was created, used for garbage collection and table inspection. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="398" column="15" bodyfile="iceberg/snapshot.h" bodystart="398" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Snapshot_1afb198e3e0b1f335fade82e462a600e95" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::Snapshot::manifest_list</definition>
+        <argsstring></argsstring>
+        <name>manifest_list</name>
+        <qualifiedname>iceberg::Snapshot::manifest_list</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The location of a manifest list for this snapshot that tracks manifest files with additional metadata. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="401" column="15" bodyfile="iceberg/snapshot.h" bodystart="401" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Snapshot_1afb3b362767783fd344a459451796b2e8" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::Snapshot::summary</definition>
+        <argsstring></argsstring>
+        <name>summary</name>
+        <qualifiedname>iceberg::Snapshot::summary</qualifiedname>
+        <briefdescription>
+<para>A string map that summaries the snapshot changes, including operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="403" column="22" bodyfile="iceberg/snapshot.h" bodystart="403" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Snapshot_1a70e026926993c72c71ae9bc75298d5e1" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::Snapshot::schema_id</definition>
+        <argsstring></argsstring>
+        <name>schema_id</name>
+        <qualifiedname>iceberg::Snapshot::schema_id</qualifiedname>
+        <briefdescription>
+<para>ID of the table&apos;s current schema when the snapshot was created. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="405" column="17" bodyfile="iceberg/snapshot.h" bodystart="405" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1Snapshot_1a38ea2c2441df2688f97b4ff1eca256d5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; Snapshot &gt; &gt; iceberg::Snapshot::Make</definition>
+        <argsstring>(int64_t sequence_number, int64_t snapshot_id, std::optional&lt; int64_t &gt; parent_snapshot_id, TimePointMs timestamp_ms, std::string operation, std::unordered_map&lt; std::string, std::string &gt; summary, std::optional&lt; int32_t &gt; schema_id, std::string manifest_list, std::optional&lt; int64_t &gt; first_row_id=std::nullopt, std::optional&lt; int64_t &gt; added_rows=std::nullopt)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::Snapshot::Make</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>sequence_number</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>parent_snapshot_id</declname>
+        </param>
+        <param>
+          <type>TimePointMs</type>
+          <declname>timestamp_ms</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>operation</declname>
+        </param>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>summary</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int32_t &gt;</type>
+          <declname>schema_id</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>manifest_list</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>first_row_id</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>added_rows</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Create a new <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> instance with validation on the inputs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="408" column="17" bodyfile="iceberg/snapshot.cc" bodystart="192" bodyend="221"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1Snapshot_1aee0614438928f4f25b802846c3719cc8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; std::string_view &gt;</type>
+        <definition>std::optional&lt; std::string_view &gt; iceberg::Snapshot::Operation</definition>
+        <argsstring>() const</argsstring>
+        <name>Operation</name>
+        <qualifiedname>iceberg::Snapshot::Operation</qualifiedname>
+        <briefdescription>
+<para>Return the name of the DataOperations data operation that produced this snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the operation that produced this snapshot, or nullopt if the operation is unknown. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="421" column="17" bodyfile="iceberg/snapshot.cc" bodystart="156" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1Snapshot_1af2eba27095e7a55b95affdab9d8f11a1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; int64_t &gt; &gt; iceberg::Snapshot::FirstRowId</definition>
+        <argsstring>() const</argsstring>
+        <name>FirstRowId</name>
+        <qualifiedname>iceberg::Snapshot::FirstRowId</qualifiedname>
+        <briefdescription>
+<para>The row-id of the first newly added row in this snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>All rows added in this snapshot will have a row-id assigned to them greater than this value. All rows with a row-id less than this value were created in a snapshot that was added to the table (but not necessarily committed to this branch) in the past.</para>
+<para><simplesect kind="return"><para>the first row-id to be used in this snapshot or nullopt when row lineage is not supported </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="432" column="10" bodyfile="iceberg/snapshot.cc" bodystart="164" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1Snapshot_1abe3b761b04f61610bda41e16f4d0cead" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; int64_t &gt; &gt; iceberg::Snapshot::AddedRows</definition>
+        <argsstring>() const</argsstring>
+        <name>AddedRows</name>
+        <qualifiedname>iceberg::Snapshot::AddedRows</qualifiedname>
+        <briefdescription>
+<para>The upper bound of number of rows with assigned row IDs in this snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>It can be used safely to increment the table&apos;s <computeroutput>next-row-id</computeroutput> during a commit. It can be more than the number of rows added in this snapshot and include some existing rows.</para>
+<para>This field is optional but is required when the table version supports row lineage.</para>
+<para><simplesect kind="return"><para>the upper bound of number of rows with assigned row IDs in this snapshot or nullopt if the value was not stored. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="444" column="10" bodyfile="iceberg/snapshot.cc" bodystart="173" bodyend="180"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1Snapshot_1a110ad1a8614e25b2b749bfb411b7b0f9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Snapshot &amp;lhs, const Snapshot &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Snapshot::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two snapshots for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="447" column="15" bodyfile="iceberg/snapshot.h" bodystart="447" bodyend="449"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="structiceberg_1_1Snapshot_1af20a8aa3316b171040f2fd2f65851cca" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Snapshot::Equals</definition>
+        <argsstring>(const Snapshot &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::Snapshot::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two snapshots for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="453" column="8" bodyfile="iceberg/snapshot.cc" bodystart="182" bodyend="190"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A snapshot of the data in a table at a point in time. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>A snapshot consist of one or more file manifests, and the complete table contents is the union of all the data files in those manifests.</para>
+<para>Snapshots are created by table operations. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Snapshot</label>
+        <link refid="structiceberg_1_1Snapshot"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>manifest_list</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>summary</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/snapshot.h" line="389" column="1" bodyfile="iceberg/snapshot.h" bodystart="389" bodyend="454"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1Snapshot_1abe3b761b04f61610bda41e16f4d0cead" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>AddedRows</name></member>
+      <member refid="structiceberg_1_1Snapshot_1af20a8aa3316b171040f2fd2f65851cca" prot="private" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>Equals</name></member>
+      <member refid="structiceberg_1_1Snapshot_1af2eba27095e7a55b95affdab9d8f11a1" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>FirstRowId</name></member>
+      <member refid="structiceberg_1_1Snapshot_1a38ea2c2441df2688f97b4ff1eca256d5" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>Make</name></member>
+      <member refid="structiceberg_1_1Snapshot_1afb198e3e0b1f335fade82e462a600e95" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>manifest_list</name></member>
+      <member refid="structiceberg_1_1Snapshot_1aee0614438928f4f25b802846c3719cc8" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>Operation</name></member>
+      <member refid="structiceberg_1_1Snapshot_1a110ad1a8614e25b2b749bfb411b7b0f9" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1Snapshot_1aef3a444c939ab4f76e0b9a28f96c6b7a" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>parent_snapshot_id</name></member>
+      <member refid="structiceberg_1_1Snapshot_1a70e026926993c72c71ae9bc75298d5e1" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>schema_id</name></member>
+      <member refid="structiceberg_1_1Snapshot_1a6f9b97d42b48be0d05dd4befd2602256" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>sequence_number</name></member>
+      <member refid="structiceberg_1_1Snapshot_1a128c409cc977968fbb9d9e893ba7d0c6" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>snapshot_id</name></member>
+      <member refid="structiceberg_1_1Snapshot_1afb3b362767783fd344a459451796b2e8" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>summary</name></member>
+      <member refid="structiceberg_1_1Snapshot_1ac401c19cb4161ce5a39ab9ba16e458ac" prot="public" virt="non-virtual"><scope>iceberg::Snapshot</scope><name>timestamp_ms</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

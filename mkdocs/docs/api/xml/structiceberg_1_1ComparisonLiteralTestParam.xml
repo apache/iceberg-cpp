@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ComparisonLiteralTestParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ComparisonLiteralTestParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ComparisonLiteralTestParam_1a1e8d9f6c546018c1050dd0ff4f3c451e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ComparisonLiteralTestParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::ComparisonLiteralTestParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="54" column="15" bodyfile="iceberg/test/literal_test.cc" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ComparisonLiteralTestParam_1aab20b9410f5523f1d75fab93a78f67c2" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::ComparisonLiteralTestParam::small_literal</definition>
+        <argsstring></argsstring>
+        <name>small_literal</name>
+        <qualifiedname>iceberg::ComparisonLiteralTestParam::small_literal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="55" column="11" bodyfile="iceberg/test/literal_test.cc" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ComparisonLiteralTestParam_1a0a595016a81377e4ded72378df7edc36" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::ComparisonLiteralTestParam::large_literal</definition>
+        <argsstring></argsstring>
+        <name>large_literal</name>
+        <qualifiedname>iceberg::ComparisonLiteralTestParam::large_literal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="56" column="11" bodyfile="iceberg/test/literal_test.cc" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ComparisonLiteralTestParam_1a4777a08ba8a79807bd2ad957876f7f11" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::ComparisonLiteralTestParam::equal_literal</definition>
+        <argsstring></argsstring>
+        <name>equal_literal</name>
+        <qualifiedname>iceberg::ComparisonLiteralTestParam::equal_literal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="57" column="11" bodyfile="iceberg/test/literal_test.cc" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ComparisonLiteralTestParam</label>
+        <link refid="structiceberg_1_1ComparisonLiteralTestParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>equal_literal</edgelabel>
+          <edgelabel>large_literal</edgelabel>
+          <edgelabel>small_literal</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/literal_test.cc" line="53" column="1" bodyfile="iceberg/test/literal_test.cc" bodystart="53" bodyend="58"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ComparisonLiteralTestParam_1a4777a08ba8a79807bd2ad957876f7f11" prot="public" virt="non-virtual"><scope>iceberg::ComparisonLiteralTestParam</scope><name>equal_literal</name></member>
+      <member refid="structiceberg_1_1ComparisonLiteralTestParam_1a0a595016a81377e4ded72378df7edc36" prot="public" virt="non-virtual"><scope>iceberg::ComparisonLiteralTestParam</scope><name>large_literal</name></member>
+      <member refid="structiceberg_1_1ComparisonLiteralTestParam_1aab20b9410f5523f1d75fab93a78f67c2" prot="public" virt="non-virtual"><scope>iceberg::ComparisonLiteralTestParam</scope><name>small_literal</name></member>
+      <member refid="structiceberg_1_1ComparisonLiteralTestParam_1a1e8d9f6c546018c1050dd0ff4f3c451e" prot="public" virt="non-virtual"><scope>iceberg::ComparisonLiteralTestParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

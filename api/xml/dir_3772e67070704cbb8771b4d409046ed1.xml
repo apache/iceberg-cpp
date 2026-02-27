@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_3772e67070704cbb8771b4d409046ed1" kind="dir">
+    <compoundname>iceberg/catalog/rest</compoundname>
+    <innerdir refid="dir_15a0eb8fe5f9120c932acc4ea86169a1">iceberg/catalog/rest/auth</innerdir>
+    <innerfile refid="catalog__properties_8cc">catalog_properties.cc</innerfile>
+    <innerfile refid="catalog__properties_8h">catalog_properties.h</innerfile>
+    <innerfile refid="constant_8h">constant.h</innerfile>
+    <innerfile refid="endpoint_8cc">endpoint.cc</innerfile>
+    <innerfile refid="endpoint_8h">endpoint.h</innerfile>
+    <innerfile refid="error__handlers_8cc">error_handlers.cc</innerfile>
+    <innerfile refid="error__handlers_8h">error_handlers.h</innerfile>
+    <innerfile refid="http__client_8cc">http_client.cc</innerfile>
+    <innerfile refid="http__client_8h">http_client.h</innerfile>
+    <innerfile refid="iceberg__rest__export_8h">iceberg_rest_export.h</innerfile>
+    <innerfile refid="catalog_2rest_2json__serde_8cc">json_serde.cc</innerfile>
+    <innerfile refid="catalog_2rest_2json__serde__internal_8h">json_serde_internal.h</innerfile>
+    <innerfile refid="resource__paths_8cc">resource_paths.cc</innerfile>
+    <innerfile refid="resource__paths_8h">resource_paths.h</innerfile>
+    <innerfile refid="rest__catalog_8cc">rest_catalog.cc</innerfile>
+    <innerfile refid="rest__catalog_8h">rest_catalog.h</innerfile>
+    <innerfile refid="rest__util_8cc">rest_util.cc</innerfile>
+    <innerfile refid="rest__util_8h">rest_util.h</innerfile>
+    <innerfile refid="catalog_2rest_2type__fwd_8h">type_fwd.h</innerfile>
+    <innerfile refid="types_8cc">types.cc</innerfile>
+    <innerfile refid="types_8h">types.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/"/>
+  </compounddef>
+</doxygen>

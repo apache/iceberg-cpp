@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1SetDefaultSortOrder" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::SetDefaultSortOrder</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1a2cc12f1fbb5a8552a75cd10a8a5a70a2" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::SetDefaultSortOrder::sort_order_id_</definition>
+        <argsstring></argsstring>
+        <name>sort_order_id_</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::sort_order_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="326" column="11" bodyfile="iceberg/table_update.h" bodystart="326" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1aa645067e7dd0cd2cc30b2819cecedf3f" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::SetDefaultSortOrder::SetDefaultSortOrder</definition>
+        <argsstring>(int32_t sort_order_id)</argsstring>
+        <name>SetDefaultSortOrder</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::SetDefaultSortOrder</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>sort_order_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="311" column="12" bodyfile="iceberg/table_update.h" bodystart="311" bodyend="311"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1a5eb002f26d2e567da2e99f9e9e735573" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::SetDefaultSortOrder::sort_order_id</definition>
+        <argsstring>() const</argsstring>
+        <name>sort_order_id</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::sort_order_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="313" column="11" bodyfile="iceberg/table_update.h" bodystart="313" bodyend="313"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1ad6769fa7068edcbe436bece2a5a64b00" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetDefaultSortOrder::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="315" column="8" bodyfile="iceberg/table_update.cc" bodystart="257" bodyend="259"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1a3e59dbdf4100ab96b632578a8d2f1826" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetDefaultSortOrder::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="317" column="8" bodyfile="iceberg/table_update.cc" bodystart="261" bodyend="263"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1a3c0ed2ff8f5a57e778b4788403a75e6f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::SetDefaultSortOrder::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="319" column="8" bodyfile="iceberg/table_update.h" bodystart="319" bodyend="319"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1a91685130af45e0c4422090908216d2d1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::SetDefaultSortOrder::Equals</definition>
+        <argsstring>(const TableUpdate &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1afd0780e6106546f7462e8e66d62db1f2">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The update to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the updates are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="321" column="8" bodyfile="iceberg/table_update.cc" bodystart="265" bodyend="271"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultSortOrder_1ad88ea937969f6c4f1478ae569fb2a3f3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableUpdate &gt; iceberg::table::SetDefaultSortOrder::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::SetDefaultSortOrder::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1affb4be490ac63849864bf8ed636363aa">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="323" column="19" bodyfile="iceberg/table_update.cc" bodystart="273" bodyend="275"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents setting the default sort order. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetDefaultSortOrder</label>
+        <link refid="classiceberg_1_1table_1_1SetDefaultSortOrder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetDefaultSortOrder</label>
+        <link refid="classiceberg_1_1table_1_1SetDefaultSortOrder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="309" column="1" bodyfile="iceberg/table_update.h" bodystart="309" bodyend="327"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1ad6769fa7068edcbe436bece2a5a64b00" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1ad88ea937969f6c4f1478ae569fb2a3f3" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1a91685130af45e0c4422090908216d2d1" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1a3e59dbdf4100ab96b632578a8d2f1826" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1a3c0ed2ff8f5a57e778b4788403a75e6f" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1aa645067e7dd0cd2cc30b2819cecedf3f" prot="public" virt="non-virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>SetDefaultSortOrder</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1a5eb002f26d2e567da2e99f9e9e735573" prot="public" virt="non-virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>sort_order_id</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1a2cc12f1fbb5a8552a75cd10a8a5a70a2" prot="private" virt="non-virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>sort_order_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultSortOrder</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

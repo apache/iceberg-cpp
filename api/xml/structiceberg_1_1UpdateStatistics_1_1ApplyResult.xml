@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdateStatistics_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::UpdateStatistics::ApplyResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1UpdateStatistics_1_1ApplyResult_1a5379290f3d6e6f88c8daa16a9698c82c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::pair&lt; int64_t, std::shared_ptr&lt; <ref refid="structiceberg_1_1StatisticsFile" kindref="compound">StatisticsFile</ref> &gt; &gt; &gt;</type>
+        <definition>std::vector&lt;std::pair&lt;int64_t, std::shared_ptr&lt;StatisticsFile&gt; &gt; &gt; iceberg::UpdateStatistics::ApplyResult::to_set</definition>
+        <argsstring></argsstring>
+        <name>to_set</name>
+        <qualifiedname>iceberg::UpdateStatistics::ApplyResult::to_set</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="66" column="17" bodyfile="iceberg/update/update_statistics.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdateStatistics_1_1ApplyResult_1aa2e32573048e4bb4da30248dc71bb2bd" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::UpdateStatistics::ApplyResult::to_remove</definition>
+        <argsstring></argsstring>
+        <name>to_remove</name>
+        <qualifiedname>iceberg::UpdateStatistics::ApplyResult::to_remove</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_statistics.h" line="67" column="17" bodyfile="iceberg/update/update_statistics.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::UpdateStatistics::ApplyResult</label>
+        <link refid="structiceberg_1_1UpdateStatistics_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>to_set</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>to_remove</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::pair&lt; int64_t, std::shared_ptr&lt; iceberg::StatisticsFile &gt; &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_statistics.h" line="65" column="3" bodyfile="iceberg/update/update_statistics.h" bodystart="65" bodyend="68"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdateStatistics_1_1ApplyResult_1aa2e32573048e4bb4da30248dc71bb2bd" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics::ApplyResult</scope><name>to_remove</name></member>
+      <member refid="structiceberg_1_1UpdateStatistics_1_1ApplyResult_1a5379290f3d6e6f88c8daa16a9698c82c" prot="public" virt="non-virtual"><scope>iceberg::UpdateStatistics::ApplyResult</scope><name>to_set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

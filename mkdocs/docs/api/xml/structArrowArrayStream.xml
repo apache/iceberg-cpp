@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structArrowArrayStream" kind="struct" language="C++" prot="public">
+    <compoundname>ArrowArrayStream</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structArrowArrayStream_1ae3a7b23fdfe446a3d095342c39d981c9" prot="public" static="no" mutable="no">
+        <type>int(*</type>
+        <definition>int(* ArrowArrayStream::get_schema) (struct ArrowArrayStream *, struct ArrowSchema *out)</definition>
+        <argsstring>)(struct ArrowArrayStream *, struct ArrowSchema *out)</argsstring>
+        <name>get_schema</name>
+        <qualifiedname>ArrowArrayStream::get_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="86" column="3" bodyfile="iceberg/arrow_c_data.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structArrowArrayStream_1a13f0d5da2fc463ce35463757ddb5d36e" prot="public" static="no" mutable="no">
+        <type>int(*</type>
+        <definition>int(* ArrowArrayStream::get_next) (struct ArrowArrayStream *, struct ArrowArray *out)</definition>
+        <argsstring>)(struct ArrowArrayStream *, struct ArrowArray *out)</argsstring>
+        <name>get_next</name>
+        <qualifiedname>ArrowArrayStream::get_next</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="94" column="3" bodyfile="iceberg/arrow_c_data.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structArrowArrayStream_1a1d4ceb48d2af3583ce0a1002bd283b4f" prot="public" static="no" mutable="no">
+        <type>const char *(*</type>
+        <definition>const char *(* ArrowArrayStream::get_last_error) (struct ArrowArrayStream *)</definition>
+        <argsstring>)(struct ArrowArrayStream *)</argsstring>
+        <name>get_last_error</name>
+        <qualifiedname>ArrowArrayStream::get_last_error</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="105" column="9" bodyfile="iceberg/arrow_c_data.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structArrowArrayStream_1a7fe27fba0eed01ed6f63591b22c6b859" prot="public" static="no" mutable="no">
+        <type>void(*</type>
+        <definition>void(* ArrowArrayStream::release) (struct ArrowArrayStream *)</definition>
+        <argsstring>)(struct ArrowArrayStream *)</argsstring>
+        <name>release</name>
+        <qualifiedname>ArrowArrayStream::release</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="109" column="3" bodyfile="iceberg/arrow_c_data.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structArrowArrayStream_1a35d4fb572d51736c6c447f64406b50d9" prot="public" static="no" mutable="no">
+        <type>void *</type>
+        <definition>void* ArrowArrayStream::private_data</definition>
+        <argsstring></argsstring>
+        <name>private_data</name>
+        <qualifiedname>ArrowArrayStream::private_data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data.h" line="112" column="8" bodyfile="iceberg/arrow_c_data.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data.h" line="79" column="1" bodyfile="iceberg/arrow_c_data.h" bodystart="79" bodyend="113"/>
+    <listofallmembers>
+      <member refid="structArrowArrayStream_1a1d4ceb48d2af3583ce0a1002bd283b4f" prot="public" virt="non-virtual"><scope>ArrowArrayStream</scope><name>get_last_error</name></member>
+      <member refid="structArrowArrayStream_1a13f0d5da2fc463ce35463757ddb5d36e" prot="public" virt="non-virtual"><scope>ArrowArrayStream</scope><name>get_next</name></member>
+      <member refid="structArrowArrayStream_1ae3a7b23fdfe446a3d095342c39d981c9" prot="public" virt="non-virtual"><scope>ArrowArrayStream</scope><name>get_schema</name></member>
+      <member refid="structArrowArrayStream_1a35d4fb572d51736c6c447f64406b50d9" prot="public" virt="non-virtual"><scope>ArrowArrayStream</scope><name>private_data</name></member>
+      <member refid="structArrowArrayStream_1a7fe27fba0eed01ed6f63591b22c6b859" prot="public" virt="non-virtual"><scope>ArrowArrayStream</scope><name>release</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

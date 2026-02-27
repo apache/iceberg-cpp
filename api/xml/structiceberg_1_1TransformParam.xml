@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TransformParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TransformParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TransformParam_1af0f2837ede020cf42e5f1b7cbf5f72c2" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::TransformParam::str</definition>
+        <argsstring></argsstring>
+        <name>str</name>
+        <qualifiedname>iceberg::TransformParam::str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="200" column="15" bodyfile="iceberg/test/transform_test.cc" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TransformParam_1a9373e099421f1ba420c00eb929628d04" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TransformParam::param</definition>
+        <argsstring></argsstring>
+        <name>param</name>
+        <qualifiedname>iceberg::TransformParam::param</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="202" column="11" bodyfile="iceberg/test/transform_test.cc" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TransformParam_1a85b57e068b7087cc4dbc13d7f5d57dc0" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::TransformParam::source_type</definition>
+        <argsstring></argsstring>
+        <name>source_type</name>
+        <qualifiedname>iceberg::TransformParam::source_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="203" column="19" bodyfile="iceberg/test/transform_test.cc" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TransformParam_1ada2b9c2d5b680949ab40d92f58af636a" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::TransformParam::source</definition>
+        <argsstring></argsstring>
+        <name>source</name>
+        <qualifiedname>iceberg::TransformParam::source</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="204" column="11" bodyfile="iceberg/test/transform_test.cc" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TransformParam_1a6964b4538a15d851cb3ef048ac8dedcd" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::TransformParam::expected</definition>
+        <argsstring></argsstring>
+        <name>expected</name>
+        <qualifiedname>iceberg::TransformParam::expected</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="205" column="11" bodyfile="iceberg/test/transform_test.cc" bodystart="205" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="7">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TransformParam</label>
+        <link refid="structiceberg_1_1TransformParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>str</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>source_type</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>expected</edgelabel>
+          <edgelabel>source</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/transform_test.cc" line="199" column="1" bodyfile="iceberg/test/transform_test.cc" bodystart="199" bodyend="206"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TransformParam_1a6964b4538a15d851cb3ef048ac8dedcd" prot="public" virt="non-virtual"><scope>iceberg::TransformParam</scope><name>expected</name></member>
+      <member refid="structiceberg_1_1TransformParam_1a9373e099421f1ba420c00eb929628d04" prot="public" virt="non-virtual"><scope>iceberg::TransformParam</scope><name>param</name></member>
+      <member refid="structiceberg_1_1TransformParam_1ada2b9c2d5b680949ab40d92f58af636a" prot="public" virt="non-virtual"><scope>iceberg::TransformParam</scope><name>source</name></member>
+      <member refid="structiceberg_1_1TransformParam_1a85b57e068b7087cc4dbc13d7f5d57dc0" prot="public" virt="non-virtual"><scope>iceberg::TransformParam</scope><name>source_type</name></member>
+      <member refid="structiceberg_1_1TransformParam_1af0f2837ede020cf42e5f1b7cbf5f72c2" prot="public" virt="non-virtual"><scope>iceberg::TransformParam</scope><name>str</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

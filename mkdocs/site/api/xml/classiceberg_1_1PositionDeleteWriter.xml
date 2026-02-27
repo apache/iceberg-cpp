@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PositionDeleteWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PositionDeleteWriter</compoundname>
+    <basecompoundref refid="classiceberg_1_1FileWriter" prot="public" virt="non-virtual">iceberg::FileWriter</basecompoundref>
+    <includes refid="position__delete__writer_8h" local="no">position_delete_writer.h</includes>
+    <innerclass refid="classiceberg_1_1PositionDeleteWriter_1_1Impl" prot="public">iceberg::PositionDeleteWriter::Impl</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PositionDeleteWriter_1a6dcdb18804068d10d889ff936ca6e92f" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionDeleteWriter_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::PositionDeleteWriter::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::PositionDeleteWriter::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/position_delete_writer.h" line="66" column="19" bodyfile="iceberg/data/position_delete_writer.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteWriter_1a0fa3a7c5cb9b566bb1df01c16196ad91" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PositionDeleteWriter::~PositionDeleteWriter</definition>
+        <argsstring>() override</argsstring>
+        <name>~PositionDeleteWriter</name>
+        <qualifiedname>iceberg::PositionDeleteWriter::~PositionDeleteWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/position_delete_writer.h" line="56" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteWriter_1a74077dc2bae65c4a33f5d7c8368a8db4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PositionDeleteWriter::Write</definition>
+        <argsstring>(ArrowArray *data) override</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::PositionDeleteWriter::Write</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1ad27902863767dbda5a2d7fcf88eb0e28">Write</reimplements>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Write a batch of records. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The ownership of the <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> will be transferred to the writer. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/position_delete_writer.h" line="58" column="10" bodyfile="iceberg/data/position_delete_writer.cc" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteWriter_1a67c570a1c478f34ef065051783a2b719" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PositionDeleteWriter::WriteDelete</definition>
+        <argsstring>(std::string_view file_path, int64_t pos)</argsstring>
+        <name>WriteDelete</name>
+        <qualifiedname>iceberg::PositionDeleteWriter::WriteDelete</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/position_delete_writer.h" line="59" column="10" bodyfile="iceberg/data/position_delete_writer.cc" bodystart="32" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteWriter_1a3e645c21bd752f06e31c0d95136266f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::PositionDeleteWriter::Length</definition>
+        <argsstring>() const override</argsstring>
+        <name>Length</name>
+        <qualifiedname>iceberg::PositionDeleteWriter::Length</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1ad32f2d3323e2fea39baa59a96eb50197">Length</reimplements>
+        <briefdescription>
+<para>Get the current number of bytes written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/position_delete_writer.h" line="60" column="10" bodyfile="iceberg/data/position_delete_writer.cc" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteWriter_1a098428452001832ed2edb4f77c0a67ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PositionDeleteWriter::Close</definition>
+        <argsstring>() override</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::PositionDeleteWriter::Close</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1a6d7f69f445e791c2c864913fc1188370">Close</reimplements>
+        <briefdescription>
+<para>Close the writer and finalize the file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/position_delete_writer.h" line="61" column="10" bodyfile="iceberg/data/position_delete_writer.cc" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteWriter_1a9d0ab61a93de91c618791270b566ec62" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1FileWriter_1_1WriteResult" kindref="compound">WriteResult</ref> &gt;</type>
+        <definition>Result&lt; FileWriter::WriteResult &gt; iceberg::PositionDeleteWriter::Metadata</definition>
+        <argsstring>() override</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::PositionDeleteWriter::Metadata</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1a7206abe67a08dc3362379f810cf11b96">Metadata</reimplements>
+        <briefdescription>
+<para>Get file metadata for all files produced by this writer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This method should be called after <ref refid="classiceberg_1_1PositionDeleteWriter_1a098428452001832ed2edb4f77c0a67ef" kindref="member">Close()</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/position_delete_writer.h" line="62" column="10" bodyfile="iceberg/data/position_delete_writer.cc" bodystart="40" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> for Iceberg position delete files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FileWriter</label>
+        <link refid="classiceberg_1_1FileWriter"/>
+      </node>
+      <node id="1">
+        <label>iceberg::PositionDeleteWriter</label>
+        <link refid="classiceberg_1_1PositionDeleteWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FileWriter</label>
+        <link refid="classiceberg_1_1FileWriter"/>
+      </node>
+      <node id="1">
+        <label>iceberg::PositionDeleteWriter</label>
+        <link refid="classiceberg_1_1PositionDeleteWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/position_delete_writer.h" line="54" column="1" bodyfile="iceberg/data/position_delete_writer.h" bodystart="54" bodyend="67"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PositionDeleteWriter_1a098428452001832ed2edb4f77c0a67ef" prot="public" virt="virtual"><scope>iceberg::PositionDeleteWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1PositionDeleteWriter_1a6dcdb18804068d10d889ff936ca6e92f" prot="private" virt="non-virtual"><scope>iceberg::PositionDeleteWriter</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1PositionDeleteWriter_1a3e645c21bd752f06e31c0d95136266f9" prot="public" virt="virtual"><scope>iceberg::PositionDeleteWriter</scope><name>Length</name></member>
+      <member refid="classiceberg_1_1PositionDeleteWriter_1a9d0ab61a93de91c618791270b566ec62" prot="public" virt="virtual"><scope>iceberg::PositionDeleteWriter</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1PositionDeleteWriter_1a74077dc2bae65c4a33f5d7c8368a8db4" prot="public" virt="virtual"><scope>iceberg::PositionDeleteWriter</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1PositionDeleteWriter_1a67c570a1c478f34ef065051783a2b719" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteWriter</scope><name>WriteDelete</name></member>
+      <member refid="classiceberg_1_1FileWriter_1ac1131a6e8ec6e4541f49528ff7677bc5" prot="public" virt="virtual"><scope>iceberg::PositionDeleteWriter</scope><name>~FileWriter</name></member>
+      <member refid="classiceberg_1_1PositionDeleteWriter_1a0fa3a7c5cb9b566bb1df01c16196ad91" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteWriter</scope><name>~PositionDeleteWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

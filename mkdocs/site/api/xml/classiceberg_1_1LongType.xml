@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1LongType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::LongType</compoundname>
+    <basecompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</basecompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1LongType_1abd6c819fc6a5ba1f2a6109914b7a265a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr const TypeId iceberg::LongType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::LongType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kLong</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="248" column="33" bodyfile="iceberg/type.h" bodystart="248" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1LongType_1a69e74cb497a7f4f71b52bd0848bab2f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::LongType::LongType</definition>
+        <argsstring>()=default</argsstring>
+        <name>LongType</name>
+        <qualifiedname>iceberg::LongType::LongType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="250" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LongType_1a1013f005c4abbc1978ad7154d07d6739" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::LongType::~LongType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~LongType</name>
+        <qualifiedname>iceberg::LongType::~LongType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="251" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LongType_1ad0e64c5fb1a278f713830a1e04b5075a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::LongType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::LongType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="253" column="10" bodyfile="iceberg/type.cc" bodystart="275" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LongType_1a76246839b2bd68f21760fb95df21b751" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::LongType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::LongType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="254" column="15" bodyfile="iceberg/type.cc" bodystart="276" bodyend="276"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1LongType_1a6724cb3e8baf53d3541edafea7411ff7" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::LongType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::LongType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="257" column="8" bodyfile="iceberg/type.cc" bodystart="277" bodyend="277"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing a 64-bit signed integer. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::LongType</label>
+        <link refid="classiceberg_1_1LongType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::LongType</label>
+        <link refid="classiceberg_1_1LongType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="246" column="1" bodyfile="iceberg/type.h" bodystart="246" bodyend="258"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1LongType_1a6724cb3e8baf53d3541edafea7411ff7" prot="protected" virt="virtual"><scope>iceberg::LongType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::LongType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::LongType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1LongType_1abd6c819fc6a5ba1f2a6109914b7a265a" prot="public" virt="non-virtual"><scope>iceberg::LongType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1LongType_1a69e74cb497a7f4f71b52bd0848bab2f8" prot="public" virt="non-virtual"><scope>iceberg::LongType</scope><name>LongType</name></member>
+      <member refid="classiceberg_1_1LongType_1a76246839b2bd68f21760fb95df21b751" prot="public" virt="virtual"><scope>iceberg::LongType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1LongType_1ad0e64c5fb1a278f713830a1e04b5075a" prot="public" virt="virtual"><scope>iceberg::LongType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::LongType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1LongType_1a1013f005c4abbc1978ad7154d07d6739" prot="public" virt="non-virtual"><scope>iceberg::LongType</scope><name>~LongType</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::LongType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

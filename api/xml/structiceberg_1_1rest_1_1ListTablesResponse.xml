@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1ListTablesResponse" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::ListTablesResponse</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ListTablesResponse_1af2bf2e933acaba55f2fd84971817d226" prot="public" static="no" mutable="no">
+        <type><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref></type>
+        <definition>PageToken iceberg::rest::ListTablesResponse::next_page_token</definition>
+        <argsstring></argsstring>
+        <name>next_page_token</name>
+        <qualifiedname>iceberg::rest::ListTablesResponse::next_page_token</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="241" column="13" bodyfile="iceberg/catalog/rest/types.h" bodystart="241" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ListTablesResponse_1ab72dca8e211a8217712e0244839758c5" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &gt;</type>
+        <definition>std::vector&lt;TableIdentifier&gt; iceberg::rest::ListTablesResponse::identifiers</definition>
+        <argsstring></argsstring>
+        <name>identifiers</name>
+        <qualifiedname>iceberg::rest::ListTablesResponse::identifiers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="242" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="242" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1ListTablesResponse_1a0d46520413090320e691b69d78226dae" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::ListTablesResponse::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::ListTablesResponse::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1ListTablesResponse" kindref="compound">ListTablesResponse</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="245" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="245" bodyend="245"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1ListTablesResponse_1a8f805a7ad9a2e2a05c0761247ee877ad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::ListTablesResponse::operator==</definition>
+        <argsstring>(const ListTablesResponse &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::ListTablesResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1ListTablesResponse" kindref="compound">ListTablesResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="247" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Response body for listing tables in a namespace. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="6">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::TableIdentifier</label>
+        <link refid="structiceberg_1_1TableIdentifier"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::ListTablesResponse</label>
+        <link refid="structiceberg_1_1rest_1_1ListTablesResponse"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>next_page_token</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>identifiers</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::TableIdentifier &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="240" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="240" bodyend="248"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1ListTablesResponse_1ab72dca8e211a8217712e0244839758c5" prot="public" virt="non-virtual"><scope>iceberg::rest::ListTablesResponse</scope><name>identifiers</name></member>
+      <member refid="structiceberg_1_1rest_1_1ListTablesResponse_1af2bf2e933acaba55f2fd84971817d226" prot="public" virt="non-virtual"><scope>iceberg::rest::ListTablesResponse</scope><name>next_page_token</name></member>
+      <member refid="structiceberg_1_1rest_1_1ListTablesResponse_1a8f805a7ad9a2e2a05c0761247ee877ad" prot="public" virt="non-virtual"><scope>iceberg::rest::ListTablesResponse</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1ListTablesResponse_1a0d46520413090320e691b69d78226dae" prot="public" virt="non-virtual"><scope>iceberg::rest::ListTablesResponse</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

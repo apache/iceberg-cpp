@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1AssertDefaultSortOrderID" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::AssertDefaultSortOrderID</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableRequirement" prot="public" virt="non-virtual">iceberg::TableRequirement</basecompoundref>
+    <includes refid="table__requirement_8h" local="no">table_requirement.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a29dcdbb5865242287c945bfc7d8d980d" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::AssertDefaultSortOrderID::sort_order_id_</definition>
+        <argsstring></argsstring>
+        <name>sort_order_id_</name>
+        <qualifiedname>iceberg::table::AssertDefaultSortOrderID::sort_order_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="327" column="11" bodyfile="iceberg/table_requirement.h" bodystart="327" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a31cb48d451ada444359e77b7673bde0e" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::AssertDefaultSortOrderID::AssertDefaultSortOrderID</definition>
+        <argsstring>(int32_t sort_order_id)</argsstring>
+        <name>AssertDefaultSortOrderID</name>
+        <qualifiedname>iceberg::table::AssertDefaultSortOrderID::AssertDefaultSortOrderID</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>sort_order_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="304" column="12" bodyfile="iceberg/table_requirement.h" bodystart="304" bodyend="305"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1acdb8452c6b1083a49d537e86392cc6ee" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::AssertDefaultSortOrderID::sort_order_id</definition>
+        <argsstring>() const</argsstring>
+        <name>sort_order_id</name>
+        <qualifiedname>iceberg::table::AssertDefaultSortOrderID::sort_order_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="307" column="11" bodyfile="iceberg/table_requirement.h" bodystart="307" bodyend="307"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a2db247d9bd0eb82c952fee85a7df0f19" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::AssertDefaultSortOrderID::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::AssertDefaultSortOrderID::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="309" column="8" bodyfile="iceberg/table_requirement.h" bodystart="309" bodyend="309"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a85024195b579589dae3240f493cfa6fb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::table::AssertDefaultSortOrderID::Validate</definition>
+        <argsstring>(const TableMetadata *base) const override</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::table::AssertDefaultSortOrderID::Validate</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15">Validate</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Validate this requirement against table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to validate against (may be nullptr) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure with error details </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="311" column="10" bodyfile="iceberg/table_requirement.cc" bodystart="131" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1af50939744fff79c6d03c993a5c813717" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::AssertDefaultSortOrderID::Equals</definition>
+        <argsstring>(const TableRequirement &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::AssertDefaultSortOrderID::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The requirement to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the requirements are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="313" column="8" bodyfile="iceberg/table_requirement.h" bodystart="313" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a24bb4e71aed99b7b30b4764e20499bda" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableRequirement &gt; iceberg::table::AssertDefaultSortOrderID::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::AssertDefaultSortOrderID::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1a2bbf72ce6649e04a8dc1bc2f7bcff353">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="322" column="19" bodyfile="iceberg/table_requirement.h" bodystart="322" bodyend="324"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Requirement that the default sort order ID matches. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This ensures the default sort order hasn&apos;t changed since the metadata was read. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertDefaultSortOrderID</label>
+        <link refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertDefaultSortOrderID</label>
+        <link refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_requirement.h" line="302" column="1" bodyfile="iceberg/table_requirement.h" bodystart="302" bodyend="328"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a31cb48d451ada444359e77b7673bde0e" prot="public" virt="non-virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>AssertDefaultSortOrderID</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a24bb4e71aed99b7b30b4764e20499bda" prot="public" virt="virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1af50939744fff79c6d03c993a5c813717" prot="public" virt="virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a2db247d9bd0eb82c952fee85a7df0f19" prot="public" virt="virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79" prot="public" virt="non-virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1acdb8452c6b1083a49d537e86392cc6ee" prot="public" virt="non-virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>sort_order_id</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a29dcdbb5865242287c945bfc7d8d980d" prot="private" virt="non-virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>sort_order_id_</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a85024195b579589dae3240f493cfa6fb" prot="public" virt="virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a91a754d5e846ec2607aec5bf09896270" prot="public" virt="virtual"><scope>iceberg::table::AssertDefaultSortOrderID</scope><name>~TableRequirement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1MappedField" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::MappedField</compoundname>
+    <includes refid="name__mapping_8h" local="no">name_mapping.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1MappedField_1ab6ecf22afa73722b39834438184f7562" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; std::string &gt;</type>
+        <definition>std::unordered_set&lt;std::string&gt; iceberg::MappedField::names</definition>
+        <argsstring></argsstring>
+        <name>names</name>
+        <qualifiedname>iceberg::MappedField::names</qualifiedname>
+        <briefdescription>
+<para>A required list of 0 or more names for a field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="42" column="22" bodyfile="iceberg/name_mapping.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MappedField_1a401380fe8dea49b9046450893614e696" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::MappedField::field_id</definition>
+        <argsstring></argsstring>
+        <name>field_id</name>
+        <qualifiedname>iceberg::MappedField::field_id</qualifiedname>
+        <briefdescription>
+<para>An optional Iceberg field ID used when a field&apos;s name is present in <computeroutput>names</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="44" column="17" bodyfile="iceberg/name_mapping.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MappedField_1a1f7a31efef059de622709f47131d6639" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; class <ref refid="classiceberg_1_1MappedFields" kindref="compound">MappedFields</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;class MappedFields&gt; iceberg::MappedField::nested_mapping</definition>
+        <argsstring></argsstring>
+        <name>nested_mapping</name>
+        <qualifiedname>iceberg::MappedField::nested_mapping</qualifiedname>
+        <briefdescription>
+<para>An optional list of field mappings for child field of structs, maps, and lists. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="47" column="19" bodyfile="iceberg/name_mapping.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1MappedField_1a45b50d6e79d53566e173b74589d10dce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const MappedField &amp;lhs, const MappedField &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::MappedField::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1MappedField" kindref="compound">MappedField</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1MappedField" kindref="compound">MappedField</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="49" column="15" bodyfile="iceberg/name_mapping.cc" bodystart="219" bodyend="233"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An immutable mapping between a field ID and a set of names. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class is trivial enough that we don&apos;t need any function. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::MappedField</label>
+        <link refid="structiceberg_1_1MappedField"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>names</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>nested_mapping</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::MappedFields</label>
+        <link refid="classiceberg_1_1MappedFields"/>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; class iceberg::MappedFields &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_set&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/name_mapping.h" line="40" column="1" bodyfile="iceberg/name_mapping.h" bodystart="40" bodyend="50"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1MappedField_1a401380fe8dea49b9046450893614e696" prot="public" virt="non-virtual"><scope>iceberg::MappedField</scope><name>field_id</name></member>
+      <member refid="structiceberg_1_1MappedField_1ab6ecf22afa73722b39834438184f7562" prot="public" virt="non-virtual"><scope>iceberg::MappedField</scope><name>names</name></member>
+      <member refid="structiceberg_1_1MappedField_1a1f7a31efef059de622709f47131d6639" prot="public" virt="non-virtual"><scope>iceberg::MappedField</scope><name>nested_mapping</name></member>
+      <member refid="structiceberg_1_1MappedField_1a45b50d6e79d53566e173b74589d10dce" prot="public" virt="non-virtual"><scope>iceberg::MappedField</scope><name>operator==</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

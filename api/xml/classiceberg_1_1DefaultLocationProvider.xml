@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DefaultLocationProvider" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DefaultLocationProvider</compoundname>
+    <basecompoundref refid="classiceberg_1_1LocationProvider" prot="public" virt="non-virtual">iceberg::LocationProvider</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DefaultLocationProvider_1aae1d58d14ca6aa6cc69df079492be219" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::DefaultLocationProvider::data_location_</definition>
+        <argsstring></argsstring>
+        <name>data_location_</name>
+        <qualifiedname>iceberg::DefaultLocationProvider::data_location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/location_provider.cc" line="111" column="15" bodyfile="iceberg/location_provider.cc" bodystart="111" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DefaultLocationProvider_1a9ddd6dd3f7bbc2143b13565d74f4253c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DefaultLocationProvider::DefaultLocationProvider</definition>
+        <argsstring>(std::string_view location, const TableProperties &amp;properties)</argsstring>
+        <name>DefaultLocationProvider</name>
+        <qualifiedname>iceberg::DefaultLocationProvider::DefaultLocationProvider</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref> &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/location_provider.cc" line="102" column="3" bodyfile="iceberg/location_provider.cc" bodystart="115" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DefaultLocationProvider_1a2c6622552ce784fc157c47259df49cca" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::DefaultLocationProvider::NewDataLocation</definition>
+        <argsstring>(std::string_view filename) override</argsstring>
+        <name>NewDataLocation</name>
+        <qualifiedname>iceberg::DefaultLocationProvider::NewDataLocation</qualifiedname>
+        <reimplements refid="classiceberg_1_1LocationProvider_1a0d29eedea9a2149c98cd304d24e35400">NewDataLocation</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Return a fully-qualified data file location for the given filename. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>file name to get location </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a fully-qualified location URI for a data file </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/location_provider.cc" line="104" column="15" bodyfile="iceberg/location_provider.cc" bodystart="120" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DefaultLocationProvider_1a31bb13bd46bf313d806045d1aa499a34" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::DefaultLocationProvider::NewDataLocation</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const PartitionValues &amp;partition, std::string_view filename) override</argsstring>
+        <name>NewDataLocation</name>
+        <qualifiedname>iceberg::DefaultLocationProvider::NewDataLocation</qualifiedname>
+        <reimplements refid="classiceberg_1_1LocationProvider_1a4d887eeb0124f7221e8e062afd602609">NewDataLocation</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Return a fully-qualified data file location for the given partition and filename. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>partition</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a tuple of partition values matching the given spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>file name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a fully-qualified location URI for a data file </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/location_provider.cc" line="106" column="10" bodyfile="iceberg/location_provider.cc" bodystart="124" bodyend="129"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DefaultLocationProvider</label>
+        <link refid="classiceberg_1_1DefaultLocationProvider"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::LocationProvider</label>
+        <link refid="classiceberg_1_1LocationProvider"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DefaultLocationProvider</label>
+        <link refid="classiceberg_1_1DefaultLocationProvider"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::LocationProvider</label>
+        <link refid="classiceberg_1_1LocationProvider"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/location_provider.cc" line="100" column="1" bodyfile="iceberg/location_provider.cc" bodystart="100" bodyend="112"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DefaultLocationProvider_1aae1d58d14ca6aa6cc69df079492be219" prot="private" virt="non-virtual"><scope>iceberg::DefaultLocationProvider</scope><name>data_location_</name></member>
+      <member refid="classiceberg_1_1DefaultLocationProvider_1a9ddd6dd3f7bbc2143b13565d74f4253c" prot="public" virt="non-virtual"><scope>iceberg::DefaultLocationProvider</scope><name>DefaultLocationProvider</name></member>
+      <member refid="classiceberg_1_1LocationProvider_1a82530b5f5a5eb0c2bbc799851e268e39" prot="public" virt="non-virtual"><scope>iceberg::DefaultLocationProvider</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DefaultLocationProvider_1a2c6622552ce784fc157c47259df49cca" prot="public" virt="virtual"><scope>iceberg::DefaultLocationProvider</scope><name>NewDataLocation</name></member>
+      <member refid="classiceberg_1_1DefaultLocationProvider_1a31bb13bd46bf313d806045d1aa499a34" prot="public" virt="virtual"><scope>iceberg::DefaultLocationProvider</scope><name>NewDataLocation</name></member>
+      <member refid="classiceberg_1_1LocationProvider_1a58da5d97b98dc637abdb16dd68555c5a" prot="public" virt="virtual"><scope>iceberg::DefaultLocationProvider</scope><name>~LocationProvider</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

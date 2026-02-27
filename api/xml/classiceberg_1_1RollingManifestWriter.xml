@@ -1,0 +1,469 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1RollingManifestWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::RollingManifestWriter</compoundname>
+    <includes refid="rolling__manifest__writer_8h" local="no">rolling_manifest_writer.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1RollingManifestWriter_1a5fab08a0de87cca6daede640edf8e331" prot="public" static="no">
+        <type>std::function&lt; Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> &gt; &gt;()&gt;</type>
+        <definition>using iceberg::RollingManifestWriter::ManifestWriterFactory =  std::function&lt;Result&lt;std::unique_ptr&lt;ManifestWriter&gt; &gt;()&gt;</definition>
+        <argsstring></argsstring>
+        <name>ManifestWriterFactory</name>
+        <qualifiedname>iceberg::RollingManifestWriter::ManifestWriterFactory</qualifiedname>
+        <briefdescription>
+<para>Factory function type for creating <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> instances. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="41" column="3" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1RollingManifestWriter_1a77f31c6595b136f2c90f4362772785dc" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::RollingManifestWriter::kRowsDivisor</definition>
+        <argsstring></argsstring>
+        <name>kRowsDivisor</name>
+        <qualifiedname>iceberg::RollingManifestWriter::kRowsDivisor</qualifiedname>
+        <initializer>= 250</initializer>
+        <briefdescription>
+<para>The number of rows after which to consider rolling to a new file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This aligned with Iceberg&apos;s Java impl. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="117" column="28" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1RollingManifestWriter_1a8a30ebba4da073b915656f513d6c7c27" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1RollingManifestWriter_1a5fab08a0de87cca6daede640edf8e331" kindref="member">ManifestWriterFactory</ref></type>
+        <definition>ManifestWriterFactory iceberg::RollingManifestWriter::manifest_writer_factory_</definition>
+        <argsstring></argsstring>
+        <name>manifest_writer_factory_</name>
+        <qualifiedname>iceberg::RollingManifestWriter::manifest_writer_factory_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="119" column="25" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RollingManifestWriter_1ab5356cfc3ddb8c72046b39b1a284d402" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::RollingManifestWriter::target_file_size_in_bytes_</definition>
+        <argsstring></argsstring>
+        <name>target_file_size_in_bytes_</name>
+        <qualifiedname>iceberg::RollingManifestWriter::target_file_size_in_bytes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="120" column="11" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RollingManifestWriter_1a39d5edb4ed41e2d67c9315f1878fa327" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::RollingManifestWriter::manifest_files_</definition>
+        <argsstring></argsstring>
+        <name>manifest_files_</name>
+        <qualifiedname>iceberg::RollingManifestWriter::manifest_files_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="121" column="15" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RollingManifestWriter_1a527a48256595eda8a7fd5aa92c0bcdc2" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::RollingManifestWriter::current_file_rows_</definition>
+        <argsstring></argsstring>
+        <name>current_file_rows_</name>
+        <qualifiedname>iceberg::RollingManifestWriter::current_file_rows_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="123" column="11" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="123" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RollingManifestWriter_1ab5ef11740f32f3c2ea70fe9523a419ac" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ManifestWriter&gt; iceberg::RollingManifestWriter::current_writer_</definition>
+        <argsstring></argsstring>
+        <name>current_writer_</name>
+        <qualifiedname>iceberg::RollingManifestWriter::current_writer_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="124" column="19" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="124" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RollingManifestWriter_1ae78105803a5a0fdaf7302193cfabaa22" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::RollingManifestWriter::closed_</definition>
+        <argsstring></argsstring>
+        <name>closed_</name>
+        <qualifiedname>iceberg::RollingManifestWriter::closed_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="125" column="8" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="125" bodyend="125"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1aa2a0c6404dec184d7f760fb206ef687d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RollingManifestWriter::RollingManifestWriter</definition>
+        <argsstring>(ManifestWriterFactory manifest_writer_factory, int64_t target_file_size_in_bytes)</argsstring>
+        <name>RollingManifestWriter</name>
+        <qualifiedname>iceberg::RollingManifestWriter::RollingManifestWriter</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1RollingManifestWriter_1a5fab08a0de87cca6daede640edf8e331" kindref="member">ManifestWriterFactory</ref></type>
+          <declname>manifest_writer_factory</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>target_file_size_in_bytes</declname>
+        </param>
+        <briefdescription>
+<para>Construct a rolling manifest writer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest_writer_factory</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Factory function to create new <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> instances. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>target_file_size_in_bytes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target file size in bytes. When the current file reaches this size (and row count is a multiple of 250), a new file will be created. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="49" column="3" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="28" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1a7b90891b436f675767a7f475eb2bd0bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RollingManifestWriter::~RollingManifestWriter</definition>
+        <argsstring>()</argsstring>
+        <name>~RollingManifestWriter</name>
+        <qualifiedname>iceberg::RollingManifestWriter::~RollingManifestWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="52" column="3" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="33" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1aa32ff509341ef27d59e7fb311fe80b87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::RollingManifestWriter::WriteAddedEntry</definition>
+        <argsstring>(std::shared_ptr&lt; DataFile &gt; file, std::optional&lt; int64_t &gt; data_sequence_number=std::nullopt)</argsstring>
+        <name>WriteAddedEntry</name>
+        <qualifiedname>iceberg::RollingManifestWriter::WriteAddedEntry</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>data_sequence_number</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Add an added entry for a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a data file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+<simplesect kind="note"><para>The entry&apos;s snapshot ID will be this manifest&apos;s snapshot ID. The entry&apos;s data sequence number will be the provided data sequence number. The entry&apos;s file sequence number will be assigned at commit. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="61" column="10" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="38" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1a6dab671d56518a03c4407b2e7ba4c417" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::RollingManifestWriter::WriteExistingEntry</definition>
+        <argsstring>(std::shared_ptr&lt; DataFile &gt; file, int64_t file_snapshot_id, int64_t data_sequence_number, std::optional&lt; int64_t &gt; file_sequence_number=std::nullopt)</argsstring>
+        <name>WriteExistingEntry</name>
+        <qualifiedname>iceberg::RollingManifestWriter::WriteExistingEntry</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>file_snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>data_sequence_number</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>file_sequence_number</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Add an existing entry for a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>an existing data file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>snapshot ID when the data file was added to the table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a data sequence number of the file (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a file sequence number (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+<simplesect kind="note"><para>The original data and file sequence numbers, snapshot ID, which were assigned at commit, must be preserved when adding an existing entry. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="75" column="10" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="47" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1a13239912ef1e674e34a2ac57dc3663ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::RollingManifestWriter::WriteDeletedEntry</definition>
+        <argsstring>(std::shared_ptr&lt; DataFile &gt; file, int64_t data_sequence_number, std::optional&lt; int64_t &gt; file_sequence_number=std::nullopt)</argsstring>
+        <name>WriteDeletedEntry</name>
+        <qualifiedname>iceberg::RollingManifestWriter::WriteDeletedEntry</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>data_sequence_number</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>file_sequence_number</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Add a delete entry for a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a deleted data file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a data sequence number of the file (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a file sequence number (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+<simplesect kind="note"><para>The entry&apos;s snapshot ID will be this manifest&apos;s snapshot ID. However, the original data and file sequence numbers of the file must be preserved when the file is marked as deleted. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="90" column="10" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="57" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1addcb9a2f02554bf4d3db12315cac7f19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::RollingManifestWriter::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::RollingManifestWriter::Close</qualifiedname>
+        <briefdescription>
+<para>Close the rolling manifest writer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="94" column="10" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="67" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1a8bfd6ab601bdbef9cc8b0c8079243f91" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::RollingManifestWriter::ToManifestFiles</definition>
+        <argsstring>() const</argsstring>
+        <name>ToManifestFiles</name>
+        <qualifiedname>iceberg::RollingManifestWriter::ToManifestFiles</qualifiedname>
+        <briefdescription>
+<para>Get the list of manifest files produced by this writer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A vector of <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> objects </para>
+</simplesect>
+<simplesect kind="note"><para>Only valid after the writer is closed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="99" column="10" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="75" bodyend="80"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1a4658ec90b74cc7eca5577f37487b2b86" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> * &gt;</type>
+        <definition>Result&lt; ManifestWriter * &gt; iceberg::RollingManifestWriter::CurrentWriter</definition>
+        <argsstring>()</argsstring>
+        <name>CurrentWriter</name>
+        <qualifiedname>iceberg::RollingManifestWriter::CurrentWriter</qualifiedname>
+        <briefdescription>
+<para>Get or create the current writer, rolling to a new file if needed. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The current <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref>, or an error if creation fails </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="104" column="10" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="82" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1a5066e40c11cea0fb45e42cb44c713313" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RollingManifestWriter::ShouldRollToNewFile</definition>
+        <argsstring>() const</argsstring>
+        <name>ShouldRollToNewFile</name>
+        <qualifiedname>iceberg::RollingManifestWriter::ShouldRollToNewFile</qualifiedname>
+        <briefdescription>
+<para>Check if we should roll to a new file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method checks if the current file has reached the target size or the number of rows has reached the threshold. If so, it rolls to a new file. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="110" column="8" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="93" bodyend="106"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RollingManifestWriter_1a7f46aaa63882147d3b2e1f564718fca9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::RollingManifestWriter::CloseCurrentWriter</definition>
+        <argsstring>()</argsstring>
+        <name>CloseCurrentWriter</name>
+        <qualifiedname>iceberg::RollingManifestWriter::CloseCurrentWriter</qualifiedname>
+        <briefdescription>
+<para>Close the current writer and add its <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> to the list. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/rolling_manifest_writer.h" line="113" column="10" bodyfile="iceberg/manifest/rolling_manifest_writer.cc" bodystart="108" bodyend="117"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A rolling manifest writer that can produce multiple manifest files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/manifest/rolling_manifest_writer.h" line="38" column="1" bodyfile="iceberg/manifest/rolling_manifest_writer.h" bodystart="38" bodyend="126"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1RollingManifestWriter_1addcb9a2f02554bf4d3db12315cac7f19" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a7f46aaa63882147d3b2e1f564718fca9" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>CloseCurrentWriter</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1ae78105803a5a0fdaf7302193cfabaa22" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>closed_</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a527a48256595eda8a7fd5aa92c0bcdc2" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>current_file_rows_</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1ab5ef11740f32f3c2ea70fe9523a419ac" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>current_writer_</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a4658ec90b74cc7eca5577f37487b2b86" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>CurrentWriter</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a77f31c6595b136f2c90f4362772785dc" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>kRowsDivisor</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a39d5edb4ed41e2d67c9315f1878fa327" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>manifest_files_</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a8a30ebba4da073b915656f513d6c7c27" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>manifest_writer_factory_</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a5fab08a0de87cca6daede640edf8e331" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>ManifestWriterFactory</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1aa2a0c6404dec184d7f760fb206ef687d" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>RollingManifestWriter</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a5066e40c11cea0fb45e42cb44c713313" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>ShouldRollToNewFile</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1ab5356cfc3ddb8c72046b39b1a284d402" prot="private" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>target_file_size_in_bytes_</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a8bfd6ab601bdbef9cc8b0c8079243f91" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>ToManifestFiles</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1aa32ff509341ef27d59e7fb311fe80b87" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>WriteAddedEntry</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a13239912ef1e674e34a2ac57dc3663ad" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>WriteDeletedEntry</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a6dab671d56518a03c4407b2e7ba4c417" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>WriteExistingEntry</name></member>
+      <member refid="classiceberg_1_1RollingManifestWriter_1a7b90891b436f675767a7f475eb2bd0bf" prot="public" virt="non-virtual"><scope>iceberg::RollingManifestWriter</scope><name>~RollingManifestWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

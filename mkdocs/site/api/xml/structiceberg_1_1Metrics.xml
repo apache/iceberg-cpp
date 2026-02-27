@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1Metrics" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::Metrics</compoundname>
+    <includes refid="metrics_8h" local="no">metrics.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1Metrics_1a230291663847bba30b77688105fb0812" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::Metrics::row_count</definition>
+        <argsstring></argsstring>
+        <name>row_count</name>
+        <qualifiedname>iceberg::Metrics::row_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="35" column="17" bodyfile="iceberg/metrics.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Metrics_1ab3cceb2d12559d0dfc8512b13ffba718" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, int64_t&gt; iceberg::Metrics::column_sizes</definition>
+        <argsstring></argsstring>
+        <name>column_sizes</name>
+        <qualifiedname>iceberg::Metrics::column_sizes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="36" column="22" bodyfile="iceberg/metrics.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Metrics_1a5229ba8326aef92d8b21522fd422d68e" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, int64_t&gt; iceberg::Metrics::value_counts</definition>
+        <argsstring></argsstring>
+        <name>value_counts</name>
+        <qualifiedname>iceberg::Metrics::value_counts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="37" column="22" bodyfile="iceberg/metrics.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Metrics_1ad105e1a0910b83fbbf965c8216be1452" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, int64_t&gt; iceberg::Metrics::null_value_counts</definition>
+        <argsstring></argsstring>
+        <name>null_value_counts</name>
+        <qualifiedname>iceberg::Metrics::null_value_counts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="38" column="22" bodyfile="iceberg/metrics.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Metrics_1a7ef7d579b901390560707585c5119628" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, int64_t&gt; iceberg::Metrics::nan_value_counts</definition>
+        <argsstring></argsstring>
+        <name>nan_value_counts</name>
+        <qualifiedname>iceberg::Metrics::nan_value_counts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="39" column="22" bodyfile="iceberg/metrics.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Metrics_1ab731be4946fc133fb94ba81f695816b8" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, Literal&gt; iceberg::Metrics::lower_bounds</definition>
+        <argsstring></argsstring>
+        <name>lower_bounds</name>
+        <qualifiedname>iceberg::Metrics::lower_bounds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="40" column="22" bodyfile="iceberg/metrics.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Metrics_1a815ab42ccdde554adbecaa1b727b0523" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, Literal&gt; iceberg::Metrics::upper_bounds</definition>
+        <argsstring></argsstring>
+        <name>upper_bounds</name>
+        <qualifiedname>iceberg::Metrics::upper_bounds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="41" column="22" bodyfile="iceberg/metrics.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Iceberg file format metrics. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Metrics</label>
+        <link refid="structiceberg_1_1Metrics"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::unordered_map&lt; int32_t, iceberg::Literal &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_map&lt; int32_t, int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metrics.h" line="34" column="1" bodyfile="iceberg/metrics.h" bodystart="34" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1Metrics_1ab3cceb2d12559d0dfc8512b13ffba718" prot="public" virt="non-virtual"><scope>iceberg::Metrics</scope><name>column_sizes</name></member>
+      <member refid="structiceberg_1_1Metrics_1ab731be4946fc133fb94ba81f695816b8" prot="public" virt="non-virtual"><scope>iceberg::Metrics</scope><name>lower_bounds</name></member>
+      <member refid="structiceberg_1_1Metrics_1a7ef7d579b901390560707585c5119628" prot="public" virt="non-virtual"><scope>iceberg::Metrics</scope><name>nan_value_counts</name></member>
+      <member refid="structiceberg_1_1Metrics_1ad105e1a0910b83fbbf965c8216be1452" prot="public" virt="non-virtual"><scope>iceberg::Metrics</scope><name>null_value_counts</name></member>
+      <member refid="structiceberg_1_1Metrics_1a230291663847bba30b77688105fb0812" prot="public" virt="non-virtual"><scope>iceberg::Metrics</scope><name>row_count</name></member>
+      <member refid="structiceberg_1_1Metrics_1a815ab42ccdde554adbecaa1b727b0523" prot="public" virt="non-virtual"><scope>iceberg::Metrics</scope><name>upper_bounds</name></member>
+      <member refid="structiceberg_1_1Metrics_1a5229ba8326aef92d8b21522fd422d68e" prot="public" virt="non-virtual"><scope>iceberg::Metrics</scope><name>value_counts</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structSelectTestParam" kind="struct" language="C++" prot="public">
+    <compoundname>SelectTestParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structSelectTestParam_1a210250374ef6c18d055d3793908e7ae2" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string SelectTestParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>SelectTestParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="708" column="15" bodyfile="iceberg/test/schema_test.cc" bodystart="708" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structSelectTestParam_1aa8e3a91b82359adf54cc89c0bc773f62" prot="public" static="no" mutable="no">
+        <type>std::function&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt;()&gt;</type>
+        <definition>std::function&lt;std::unique_ptr&lt;iceberg::Schema&gt;()&gt; SelectTestParam::create_schema</definition>
+        <argsstring></argsstring>
+        <name>create_schema</name>
+        <qualifiedname>SelectTestParam::create_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="709" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="709" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structSelectTestParam_1a11f7795eebbd19a2878e455c3b71644b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; SelectTestParam::select_fields</definition>
+        <argsstring></argsstring>
+        <name>select_fields</name>
+        <qualifiedname>SelectTestParam::select_fields</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="710" column="15" bodyfile="iceberg/test/schema_test.cc" bodystart="710" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structSelectTestParam_1af70392ed3c732fb196da16d2d159b24e" prot="public" static="no" mutable="no">
+        <type>std::function&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt;()&gt;</type>
+        <definition>std::function&lt;std::unique_ptr&lt;iceberg::Schema&gt;()&gt; SelectTestParam::expected_schema</definition>
+        <argsstring></argsstring>
+        <name>expected_schema</name>
+        <qualifiedname>SelectTestParam::expected_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="711" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="711" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structSelectTestParam_1a3bbe88c90977684031636e5f5d55660e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool SelectTestParam::should_succeed</definition>
+        <argsstring></argsstring>
+        <name>should_succeed</name>
+        <qualifiedname>SelectTestParam::should_succeed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="712" column="8" bodyfile="iceberg/test/schema_test.cc" bodystart="712" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structSelectTestParam_1a1dd6697ee1f9c4983f0529e2343b456c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string SelectTestParam::expected_error_message</definition>
+        <argsstring></argsstring>
+        <name>expected_error_message</name>
+        <qualifiedname>SelectTestParam::expected_error_message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="713" column="15" bodyfile="iceberg/test/schema_test.cc" bodystart="713" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structSelectTestParam_1a439b19ea99749a58d8de844723169c3f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool SelectTestParam::case_sensitive</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive</name>
+        <qualifiedname>SelectTestParam::case_sensitive</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="714" column="8" bodyfile="iceberg/test/schema_test.cc" bodystart="714" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>SelectTestParam</label>
+        <link refid="structSelectTestParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_message</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>select_fields</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/schema_test.cc" line="707" column="1" bodyfile="iceberg/test/schema_test.cc" bodystart="707" bodyend="715"/>
+    <listofallmembers>
+      <member refid="structSelectTestParam_1a439b19ea99749a58d8de844723169c3f" prot="public" virt="non-virtual"><scope>SelectTestParam</scope><name>case_sensitive</name></member>
+      <member refid="structSelectTestParam_1aa8e3a91b82359adf54cc89c0bc773f62" prot="public" virt="non-virtual"><scope>SelectTestParam</scope><name>create_schema</name></member>
+      <member refid="structSelectTestParam_1a1dd6697ee1f9c4983f0529e2343b456c" prot="public" virt="non-virtual"><scope>SelectTestParam</scope><name>expected_error_message</name></member>
+      <member refid="structSelectTestParam_1af70392ed3c732fb196da16d2d159b24e" prot="public" virt="non-virtual"><scope>SelectTestParam</scope><name>expected_schema</name></member>
+      <member refid="structSelectTestParam_1a11f7795eebbd19a2878e455c3b71644b" prot="public" virt="non-virtual"><scope>SelectTestParam</scope><name>select_fields</name></member>
+      <member refid="structSelectTestParam_1a3bbe88c90977684031636e5f5d55660e" prot="public" virt="non-virtual"><scope>SelectTestParam</scope><name>should_succeed</name></member>
+      <member refid="structSelectTestParam_1a210250374ef6c18d055d3793908e7ae2" prot="public" virt="non-virtual"><scope>SelectTestParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

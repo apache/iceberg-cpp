@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DataWriter_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DataWriter::Impl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DataWriter_1_1Impl_1a83f1c39770aa44afecddf8fdc5d012cd" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1DataWriterOptions" kindref="compound">DataWriterOptions</ref></type>
+        <definition>DataWriterOptions iceberg::DataWriter::Impl::options_</definition>
+        <argsstring></argsstring>
+        <name>options_</name>
+        <qualifiedname>iceberg::DataWriter::Impl::options_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="114" column="21" bodyfile="iceberg/data/data_writer.cc" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DataWriter_1_1Impl_1a6ac5b00c2cb3e88b0ae55b6c94978409" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Writer&gt; iceberg::DataWriter::Impl::writer_</definition>
+        <argsstring></argsstring>
+        <name>writer_</name>
+        <qualifiedname>iceberg::DataWriter::Impl::writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="115" column="19" bodyfile="iceberg/data/data_writer.cc" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DataWriter_1_1Impl_1a1798f49d271006a67828b111c6f4108c" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::DataWriter::Impl::closed_</definition>
+        <argsstring></argsstring>
+        <name>closed_</name>
+        <qualifiedname>iceberg::DataWriter::Impl::closed_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="116" column="8" bodyfile="iceberg/data/data_writer.cc" bodystart="116" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1DataWriter_1_1Impl_1a012f1b79ae5db1f02f4b667779acbd1b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1DataWriter_1_1Impl" kindref="compound">Impl</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; Impl &gt; &gt; iceberg::DataWriter::Impl::Make</definition>
+        <argsstring>(DataWriterOptions options)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::DataWriter::Impl::Make</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1DataWriterOptions" kindref="compound">DataWriterOptions</ref></type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="32" column="17" bodyfile="iceberg/data/data_writer.cc" bodystart="32" bodyend="44"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DataWriter_1_1Impl_1a98e2ab5d434bf2f1dae0ab0e9f57b4fd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DataWriter::Impl::Write</definition>
+        <argsstring>(ArrowArray *data)</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::DataWriter::Impl::Write</qualifiedname>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="46" column="10" bodyfile="iceberg/data/data_writer.cc" bodystart="46" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataWriter_1_1Impl_1a58bbcf684a6dbb189bd1fad83f7dc868" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::DataWriter::Impl::Length</definition>
+        <argsstring>() const</argsstring>
+        <name>Length</name>
+        <qualifiedname>iceberg::DataWriter::Impl::Length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="51" column="10" bodyfile="iceberg/data/data_writer.cc" bodystart="51" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataWriter_1_1Impl_1a03fd524e889c98a0755458e2fcac2cd1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DataWriter::Impl::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::DataWriter::Impl::Close</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="56" column="10" bodyfile="iceberg/data/data_writer.cc" bodystart="56" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataWriter_1_1Impl_1acb4f8627afeb0baae0c776eb5474cc0e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1FileWriter_1_1WriteResult" kindref="compound">FileWriter::WriteResult</ref> &gt;</type>
+        <definition>Result&lt; FileWriter::WriteResult &gt; iceberg::DataWriter::Impl::Metadata</definition>
+        <argsstring>()</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::DataWriter::Impl::Metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="67" column="10" bodyfile="iceberg/data/data_writer.cc" bodystart="67" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1DataWriter_1_1Impl_1ab68327e92f0e21df56caee1cf2609dc5" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DataWriter::Impl::Impl</definition>
+        <argsstring>(DataWriterOptions options, std::unique_ptr&lt; Writer &gt; writer)</argsstring>
+        <name>Impl</name>
+        <qualifiedname>iceberg::DataWriter::Impl::Impl</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1DataWriterOptions" kindref="compound">DataWriterOptions</ref></type>
+          <declname>options</declname>
+        </param>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> &gt;</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.cc" line="111" column="3" bodyfile="iceberg/data/data_writer.cc" bodystart="111" bodyend="112"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/data/data_writer.cc" line="30" column="1" bodyfile="iceberg/data/data_writer.cc" bodystart="30" bodyend="117"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1a03fd524e889c98a0755458e2fcac2cd1" prot="public" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1a1798f49d271006a67828b111c6f4108c" prot="private" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>closed_</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1ab68327e92f0e21df56caee1cf2609dc5" prot="private" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>Impl</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1a58bbcf684a6dbb189bd1fad83f7dc868" prot="public" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>Length</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1a012f1b79ae5db1f02f4b667779acbd1b" prot="public" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1acb4f8627afeb0baae0c776eb5474cc0e" prot="public" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1a83f1c39770aa44afecddf8fdc5d012cd" prot="private" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>options_</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1a98e2ab5d434bf2f1dae0ab0e9f57b4fd" prot="public" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1DataWriter_1_1Impl_1a6ac5b00c2cb3e88b0ae55b6c94978409" prot="private" virt="non-virtual"><scope>iceberg::DataWriter::Impl</scope><name>writer_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

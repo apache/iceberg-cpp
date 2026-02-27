@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AppendDatumToBuilderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AppendDatumToBuilderTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; AppendDatumParam &gt;</basecompoundref>
+    <briefdescription>
+<para>Test class for primitive types using parameterized tests. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::avro::AppendDatumToBuilderTest</label>
+        <link refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; AppendDatumParam &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::avro::AppendDatumToBuilderTest</label>
+        <link refid="classiceberg_1_1avro_1_1AppendDatumToBuilderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; AppendDatumParam &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_data_test.cc" line="99" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="99" bodyend="99"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

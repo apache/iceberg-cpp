@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DateProjectionTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DateProjectionTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1DateProjectionTest_1a54a83f489753277ba68597d0a51eb9a4" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DateProjectionTest::AssertProjectionStrict</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const Schema &amp;schema, const std::shared_ptr&lt; Expression &gt; &amp;filter, Expression::Operation expected_op)</argsstring>
+        <name>AssertProjectionStrict</name>
+        <qualifiedname>iceberg::DateProjectionTest::AssertProjectionStrict</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>filter</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>expected_op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/projections_test.cc" line="507" column="8" bodyfile="iceberg/test/projections_test.cc" bodystart="507" bodyend="513"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DateProjectionTest_1a8ef2d0b369e078dc2a63228cc26350d7" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DateProjectionTest::AssertProjectionInclusive</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const Schema &amp;schema, const std::shared_ptr&lt; Expression &gt; &amp;filter, Expression::Operation expected_op)</argsstring>
+        <name>AssertProjectionInclusive</name>
+        <qualifiedname>iceberg::DateProjectionTest::AssertProjectionInclusive</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>filter</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>expected_op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/projections_test.cc" line="515" column="8" bodyfile="iceberg/test/projections_test.cc" bodystart="515" bodyend="521"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DateProjectionTest</label>
+        <link refid="classiceberg_1_1DateProjectionTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DateProjectionTest</label>
+        <link refid="classiceberg_1_1DateProjectionTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/projections_test.cc" line="505" column="1" bodyfile="iceberg/test/projections_test.cc" bodystart="505" bodyend="522"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DateProjectionTest_1a8ef2d0b369e078dc2a63228cc26350d7" prot="protected" virt="non-virtual"><scope>iceberg::DateProjectionTest</scope><name>AssertProjectionInclusive</name></member>
+      <member refid="classiceberg_1_1DateProjectionTest_1a54a83f489753277ba68597d0a51eb9a4" prot="protected" virt="non-virtual"><scope>iceberg::DateProjectionTest</scope><name>AssertProjectionStrict</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

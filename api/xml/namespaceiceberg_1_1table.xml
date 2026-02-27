@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1table" kind="namespace" language="C++">
+    <compoundname>iceberg::table</compoundname>
+    <innerclass refid="classiceberg_1_1table_1_1AddPartitionSpec" prot="public">iceberg::table::AddPartitionSpec</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AddSchema" prot="public">iceberg::table::AddSchema</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AddSnapshot" prot="public">iceberg::table::AddSnapshot</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AddSortOrder" prot="public">iceberg::table::AddSortOrder</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertCurrentSchemaID" prot="public">iceberg::table::AssertCurrentSchemaID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID" prot="public">iceberg::table::AssertDefaultSortOrderID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertDefaultSpecID" prot="public">iceberg::table::AssertDefaultSpecID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertDoesNotExist" prot="public">iceberg::table::AssertDoesNotExist</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId" prot="public">iceberg::table::AssertLastAssignedFieldId</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId" prot="public">iceberg::table::AssertLastAssignedPartitionId</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertRefSnapshotID" prot="public">iceberg::table::AssertRefSnapshotID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertUUID" prot="public">iceberg::table::AssertUUID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssignUUID" prot="public">iceberg::table::AssignUUID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1RemovePartitionSpecs" prot="public">iceberg::table::RemovePartitionSpecs</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1RemovePartitionStatistics" prot="public">iceberg::table::RemovePartitionStatistics</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1RemoveProperties" prot="public">iceberg::table::RemoveProperties</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1RemoveSchemas" prot="public">iceberg::table::RemoveSchemas</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1RemoveSnapshotRef" prot="public">iceberg::table::RemoveSnapshotRef</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1RemoveSnapshots" prot="public">iceberg::table::RemoveSnapshots</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1RemoveStatistics" prot="public">iceberg::table::RemoveStatistics</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetCurrentSchema" prot="public">iceberg::table::SetCurrentSchema</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec" prot="public">iceberg::table::SetDefaultPartitionSpec</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetDefaultSortOrder" prot="public">iceberg::table::SetDefaultSortOrder</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetLocation" prot="public">iceberg::table::SetLocation</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetPartitionStatistics" prot="public">iceberg::table::SetPartitionStatistics</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetProperties" prot="public">iceberg::table::SetProperties</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetSnapshotRef" prot="public">iceberg::table::SetSnapshotRef</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1SetStatistics" prot="public">iceberg::table::SetStatistics</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1UpgradeFormatVersion" prot="public">iceberg::table::UpgradeFormatVersion</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/table_requirement.cc" line="27" column="1"/>
+  </compounddef>
+</doxygen>

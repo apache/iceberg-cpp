@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1VoidTransform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::VoidTransform</compoundname>
+    <basecompoundref refid="classiceberg_1_1TransformFunction" prot="public" virt="non-virtual">iceberg::TransformFunction</basecompoundref>
+    <includes refid="transform__function_8h" local="no">transform_function.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1VoidTransform_1a2928b1a47bfe5875bb3b36eb999dcea1" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::VoidTransform::VoidTransform</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>VoidTransform</name>
+        <qualifiedname>iceberg::VoidTransform::VoidTransform</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input type (ignored). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="191" column="12" bodyfile="iceberg/transform_function.cc" bodystart="242" bodyend="243"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1VoidTransform_1a9554ab7ce622f430ba650747f53f8472" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::VoidTransform::Transform</definition>
+        <argsstring>(const Literal &amp;literal) override</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::VoidTransform::Transform</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1afb1c573d9bd098c76d858f476ef16f3f">Transform</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Returns a null literal. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="194" column="10" bodyfile="iceberg/transform_function.cc" bodystart="245" bodyend="247"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1VoidTransform_1a12ad7d4138184a193fd9d57766c4fbc8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Type &gt; iceberg::VoidTransform::ResultType</definition>
+        <argsstring>() const override</argsstring>
+        <name>ResultType</name>
+        <qualifiedname>iceberg::VoidTransform::ResultType</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1a82841b58ce6380a7467bccf57e18e0d5">ResultType</reimplements>
+        <briefdescription>
+<para>Returns the same type as source_type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="197" column="19" bodyfile="iceberg/transform_function.cc" bodystart="249" bodyend="249"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1VoidTransform_1a1bcc599cdb8b51391d292a9fee452a2a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TransformFunction &gt; &gt; iceberg::VoidTransform::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::VoidTransform::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1VoidTransform" kindref="compound">VoidTransform</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input type (ignored). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1VoidTransform" kindref="compound">VoidTransform</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="202" column="17" bodyfile="iceberg/transform_function.cc" bodystart="251" bodyend="257"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Void transform that discards the input and always returns null. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+      <node id="1">
+        <label>iceberg::VoidTransform</label>
+        <link refid="classiceberg_1_1VoidTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+      <node id="1">
+        <label>iceberg::VoidTransform</label>
+        <link refid="classiceberg_1_1VoidTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/transform_function.h" line="188" column="1" bodyfile="iceberg/transform_function.h" bodystart="188" bodyend="204"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1VoidTransform_1a1bcc599cdb8b51391d292a9fee452a2a" prot="public" virt="non-virtual"><scope>iceberg::VoidTransform</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1VoidTransform_1a12ad7d4138184a193fd9d57766c4fbc8" prot="public" virt="virtual"><scope>iceberg::VoidTransform</scope><name>ResultType</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a5fb6043200973c2a68f1b59b52f3dc91" prot="public" virt="non-virtual"><scope>iceberg::VoidTransform</scope><name>source_type</name></member>
+      <member refid="classiceberg_1_1VoidTransform_1a9554ab7ce622f430ba650747f53f8472" prot="public" virt="virtual"><scope>iceberg::VoidTransform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1abf4c9031fa1b0de214e6aa7ffc717c56" prot="public" virt="non-virtual"><scope>iceberg::VoidTransform</scope><name>transform_type</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a3e97589741424abf0fb1c0c01117bb5e" prot="public" virt="non-virtual"><scope>iceberg::VoidTransform</scope><name>TransformFunction</name></member>
+      <member refid="classiceberg_1_1VoidTransform_1a2928b1a47bfe5875bb3b36eb999dcea1" prot="public" virt="non-virtual"><scope>iceberg::VoidTransform</scope><name>VoidTransform</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a523fa272f921de4a2b69a7b6277b39f4" prot="public" virt="virtual"><scope>iceberg::VoidTransform</scope><name>~TransformFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

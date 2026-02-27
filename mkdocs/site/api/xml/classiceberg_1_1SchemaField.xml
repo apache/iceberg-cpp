@@ -1,0 +1,474 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SchemaField" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SchemaField</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <includes refid="schema__field_8h" local="no">schema_field.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SchemaField_1a6b2bb9065eb2b5434c4ec7c59fa2777e" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::SchemaField::kInvalidFieldId</definition>
+        <argsstring></argsstring>
+        <name>kInvalidFieldId</name>
+        <qualifiedname>iceberg::SchemaField::kInvalidFieldId</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="41" column="28" bodyfile="iceberg/schema_field.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SchemaField_1abc876942a15eddc55d9c74d4cb6accf1" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SchemaField::field_id_</definition>
+        <argsstring></argsstring>
+        <name>field_id_</name>
+        <qualifiedname>iceberg::SchemaField::field_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="98" column="11" bodyfile="iceberg/schema_field.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaField_1a226d8bbdbbf816a7c961a340e2d331e6" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SchemaField::name_</definition>
+        <argsstring></argsstring>
+        <name>name_</name>
+        <qualifiedname>iceberg::SchemaField::name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="99" column="15" bodyfile="iceberg/schema_field.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaField_1a9df7bb978efc03f8b4cd797d272b1434" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::SchemaField::type_</definition>
+        <argsstring></argsstring>
+        <name>type_</name>
+        <qualifiedname>iceberg::SchemaField::type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="100" column="19" bodyfile="iceberg/schema_field.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaField_1a771c2e91d845e7da8b4bfd74fbe8b0a4" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::SchemaField::optional_</definition>
+        <argsstring></argsstring>
+        <name>optional_</name>
+        <qualifiedname>iceberg::SchemaField::optional_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="101" column="8" bodyfile="iceberg/schema_field.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaField_1a99978704fe2efeb7c796b6e3f6912575" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SchemaField::doc_</definition>
+        <argsstring></argsstring>
+        <name>doc_</name>
+        <qualifiedname>iceberg::SchemaField::doc_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="102" column="15" bodyfile="iceberg/schema_field.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1af6c8ee3f0e8e4d56bae333686c4f30c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SchemaField::SchemaField</definition>
+        <argsstring>(int32_t field_id, std::string_view name, std::shared_ptr&lt; Type &gt; type, bool optional, std::string_view doc={})</argsstring>
+        <name>SchemaField</name>
+        <qualifiedname>iceberg::SchemaField::SchemaField</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>optional</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>doc</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Construct a field. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">field_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field ID. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field name. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field type. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">optional</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether values of this field are required or nullable. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">doc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional documentation string for the field. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="49" column="3" bodyfile="iceberg/schema_field.cc" bodystart="30" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a23db912890745382ec78ccb6a93bce84" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SchemaField::field_id</definition>
+        <argsstring>() const</argsstring>
+        <name>field_id</name>
+        <qualifiedname>iceberg::SchemaField::field_id</qualifiedname>
+        <briefdescription>
+<para>Get the field ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="60" column="12" bodyfile="iceberg/schema_field.cc" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a733f14fa7ad1900137a97155329239e5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::SchemaField::name</definition>
+        <argsstring>() const</argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::SchemaField::name</qualifiedname>
+        <briefdescription>
+<para>Get the field name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="63" column="21" bodyfile="iceberg/schema_field.cc" bodystart="50" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a9fbf59beb13cbb358fbce94d085ef53f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Type &gt; &amp; iceberg::SchemaField::type</definition>
+        <argsstring>() const</argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::SchemaField::type</qualifiedname>
+        <briefdescription>
+<para>Get the field type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="66" column="26" bodyfile="iceberg/schema_field.cc" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1aaee3e5fcc9a0fc3173cdcf1c00552df1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SchemaField::optional</definition>
+        <argsstring>() const</argsstring>
+        <name>optional</name>
+        <qualifiedname>iceberg::SchemaField::optional</qualifiedname>
+        <briefdescription>
+<para>Get whether the field is optional. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="69" column="9" bodyfile="iceberg/schema_field.cc" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1ad992c1fcedc2d56244138f477efe21f2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::SchemaField::doc</definition>
+        <argsstring>() const</argsstring>
+        <name>doc</name>
+        <qualifiedname>iceberg::SchemaField::doc</qualifiedname>
+        <briefdescription>
+<para>Get the field documentation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="72" column="20" bodyfile="iceberg/schema_field.cc" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a2268e045b8212387bb2d5e1e75e8d0e5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::SchemaField::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::SchemaField::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="74" column="16" bodyfile="iceberg/schema_field.cc" bodystart="68" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a9f9bf0871958e9784fb7958e2e171647" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::SchemaField::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::SchemaField::Validate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="76" column="10" bodyfile="iceberg/schema_field.cc" bodystart="58" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a5942fc853fa4a54966c324df07f10e10" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>SchemaField iceberg::SchemaField::AsRequired</definition>
+        <argsstring>() const</argsstring>
+        <name>AsRequired</name>
+        <qualifiedname>iceberg::SchemaField::AsRequired</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="82" column="15" bodyfile="iceberg/schema_field.h" bodystart="82" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a766c8a0a5c7d95faada5a6279612589b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>SchemaField iceberg::SchemaField::AsOptional</definition>
+        <argsstring>() const</argsstring>
+        <name>AsOptional</name>
+        <qualifiedname>iceberg::SchemaField::AsOptional</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="88" column="15" bodyfile="iceberg/schema_field.h" bodystart="88" bodyend="92"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>SchemaField iceberg::SchemaField::MakeOptional</definition>
+        <argsstring>(int32_t field_id, std::string_view name, std::shared_ptr&lt; Type &gt; type, std::string_view doc={})</argsstring>
+        <name>MakeOptional</name>
+        <qualifiedname>iceberg::SchemaField::MakeOptional</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>doc</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Construct an optional (nullable) field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="53" column="22" bodyfile="iceberg/schema_field.cc" bodystart="38" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>SchemaField iceberg::SchemaField::MakeRequired</definition>
+        <argsstring>(int32_t field_id, std::string_view name, std::shared_ptr&lt; Type &gt; type, std::string_view doc={})</argsstring>
+        <name>MakeRequired</name>
+        <qualifiedname>iceberg::SchemaField::MakeRequired</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>doc</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Construct a required (non-null) field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="56" column="22" bodyfile="iceberg/schema_field.cc" bodystart="43" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1SchemaField_1a02fc28490c65b5033a44315aa57c31c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const SchemaField &amp;lhs, const SchemaField &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::SchemaField::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="78" column="15" bodyfile="iceberg/schema_field.h" bodystart="78" bodyend="80"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SchemaField_1adacc15914ef306f38248741c603ce5ae" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SchemaField::Equals</definition>
+        <argsstring>(const SchemaField &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::SchemaField::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two fields for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_field.h" line="96" column="9" bodyfile="iceberg/schema_field.cc" bodystart="75" bodyend="78"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A type combined with a name. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/schema_field.h" line="39" column="1" bodyfile="iceberg/schema_field.h" bodystart="39" bodyend="103"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SchemaField_1a766c8a0a5c7d95faada5a6279612589b" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>AsOptional</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a5942fc853fa4a54966c324df07f10e10" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>AsRequired</name></member>
+      <member refid="classiceberg_1_1SchemaField_1ad992c1fcedc2d56244138f477efe21f2" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>doc</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a99978704fe2efeb7c796b6e3f6912575" prot="private" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>doc_</name></member>
+      <member refid="classiceberg_1_1SchemaField_1adacc15914ef306f38248741c603ce5ae" prot="private" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a23db912890745382ec78ccb6a93bce84" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>field_id</name></member>
+      <member refid="classiceberg_1_1SchemaField_1abc876942a15eddc55d9c74d4cb6accf1" prot="private" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>field_id_</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a6b2bb9065eb2b5434c4ec7c59fa2777e" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>kInvalidFieldId</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>MakeOptional</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>MakeRequired</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a733f14fa7ad1900137a97155329239e5" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>name</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a226d8bbdbbf816a7c961a340e2d331e6" prot="private" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>name_</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a02fc28490c65b5033a44315aa57c31c1" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1SchemaField_1aaee3e5fcc9a0fc3173cdcf1c00552df1" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>optional</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a771c2e91d845e7da8b4bfd74fbe8b0a4" prot="private" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>optional_</name></member>
+      <member refid="classiceberg_1_1SchemaField_1af6c8ee3f0e8e4d56bae333686c4f30c1" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>SchemaField</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a2268e045b8212387bb2d5e1e75e8d0e5" prot="public" virt="virtual"><scope>iceberg::SchemaField</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a9fbf59beb13cbb358fbce94d085ef53f" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>type</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a9df7bb978efc03f8b4cd797d272b1434" prot="private" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>type_</name></member>
+      <member refid="classiceberg_1_1SchemaField_1a9f9bf0871958e9784fb7958e2e171647" prot="public" virt="non-virtual"><scope>iceberg::SchemaField</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::SchemaField</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

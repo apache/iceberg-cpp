@@ -1,0 +1,517 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1util_1_1Formattable" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::util::Formattable</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1Decimal" prot="public" virt="non-virtual">iceberg::Decimal</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Expression" prot="public" virt="non-virtual">iceberg::Expression</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Literal" prot="public" virt="non-virtual">iceberg::Literal</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1PartitionField" prot="public" virt="non-virtual">iceberg::PartitionField</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1PartitionSpec" prot="public" virt="non-virtual">iceberg::PartitionSpec</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1SchemaField" prot="public" virt="non-virtual">iceberg::SchemaField</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1SortField" prot="public" virt="non-virtual">iceberg::SortField</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1SortOrder" prot="public" virt="non-virtual">iceberg::SortOrder</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Term" prot="public" virt="non-virtual">iceberg::Term</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Transform" prot="public" virt="non-virtual">iceberg::Transform</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Type" prot="public" virt="non-virtual">iceberg::Type</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Uuid" prot="public" virt="non-virtual">iceberg::Uuid</derivedcompoundref>
+    <includes refid="formattable_8h" local="no">formattable.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::util::Formattable::~Formattable</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Formattable</name>
+        <qualifiedname>iceberg::util::Formattable::~Formattable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/formattable.h" line="38" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string iceberg::util::Formattable::ToString</definition>
+        <argsstring>() const =0</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::util::Formattable::ToString</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Expression_1a2e9c204f698d069ebc0fefb9e5269ab6">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1True_1ab2e3e9e09c33a7f8d614b069b1c0ef84">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1False_1a7c87482982da354f63c8b09bab9bde35">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1And_1ad237230ab73f94bec0876c9f49db6850">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Or_1aec794d22f9863e170a65d9a1b89c9655">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Not_1a64edca3880c4eee4918b7c32cfa25d83">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Literal_1a1697981c038e303d6efb3a7931521b4f">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicateImpl_1a77b0726d46f4ef179c83064e010c14a4">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundUnaryPredicate_1a1db67dc9aede8616173aa3e332e0de2d">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundLiteralPredicate_1ade374de33ad17c0c2a6888a99a8f5b0f">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundSetPredicate_1a03d6ebaaf709cc7262c09377c484fa14">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1NamedReference_1ac79a95853baaf85e52186e5b18b18537">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundReference_1af6917de5bfd52d871b2a8a116c03a658">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundTransform_1aac2547c880112427e20259f84d4f2d80">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundTransform_1a2c7919b54bcfb00c713461b2d186bd8f">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionField_1a283571a060eed62337d28d805bd5a09b">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionSpec_1a7a84c89e637abefe4fd13047a072a9a2">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Schema_1a0dc4ba1d458b21509013a1b3ad388f09">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1SchemaField_1a2268e045b8212387bb2d5e1e75e8d0e5">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1SortField_1a0e78bbc2959d854d6b8700b00e7453a9">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1SortOrder_1a7d626fad1d95f50267685adaf32c4603">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Transform_1af5c8b537969e36e0c2f35a5baf3f6d10">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StructType_1a5f17aa7e1e75de4893b77f0ad574cb58">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1a2e7503671ac6daff29b188f183426128">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1a16bf81fedd6fe20180eb8085f9082802">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BooleanType_1a961751d7a337f396a3349b535135d818">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IntType_1a9ea260c0f832ed914549474d707a47c8">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1LongType_1a76246839b2bd68f21760fb95df21b751">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1FloatType_1acb679161dea7b2e9400b77bd9f8ace8e">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DoubleType_1aefaca7a893d3d1753e25b0be5406d162">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DecimalType_1a9e9d5d37f2b1db318eabb0082b5f976d">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DateType_1aba6fa8bcd07668bcbadaff316e210bac">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimeType_1a163dae7e67dc99668b45436248715847">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampType_1a09c276a75e3fe23922446173e3311460">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampTzType_1ab546d2a3dd3ea38da0ef6a8069fa9aa6">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BinaryType_1abb5ee5bda6a06a2a7523dae114975c48">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StringType_1ab8cca835ebe3a989646af5f1294d12ac">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1FixedType_1affe28eb62e7a9fa76cd7fd4ea77798d0">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UuidType_1afc799b3e18a19e0e68ec488abb499a57">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Decimal_1ab78520099cf3c8365b5621c159fc2ff5">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Uuid_1a4985d4b1a1226e78aa0bc05cba49211b">ToString</reimplementedby>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/formattable.h" line="41" column="23"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Interface for objects that can be formatted via std::format. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>You must include <ref refid="formatter_8h" kindref="compound">iceberg/util/formatter.h</ref> when calling std::format. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>iceberg::Aggregate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::Aggregate&lt; UnboundTerm&lt; B &gt; &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::Predicate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::Predicate&lt; UnboundTerm&lt; B &gt; &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg::UnboundTerm&lt; BoundReference &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="36" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>iceberg::UnboundTerm&lt; class BoundTransform &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="36" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg::Aggregate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::And</label>
+        <link refid="classiceberg_1_1And"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="53">
+        <label>iceberg::BinaryType</label>
+        <link refid="classiceberg_1_1BinaryType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="54">
+        <label>iceberg::BooleanType</label>
+        <link refid="classiceberg_1_1BooleanType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::BoundAggregate</label>
+        <link refid="classiceberg_1_1BoundAggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::BoundLiteralPredicate</label>
+        <link refid="classiceberg_1_1BoundLiteralPredicate"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::BoundPredicate</label>
+        <link refid="classiceberg_1_1BoundPredicate"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>iceberg::BoundReference</label>
+        <link refid="classiceberg_1_1BoundReference"/>
+        <childnode refid="41" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::BoundSetPredicate</label>
+        <link refid="classiceberg_1_1BoundSetPredicate"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>iceberg::BoundTerm</label>
+        <link refid="classiceberg_1_1BoundTerm"/>
+        <childnode refid="36" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>iceberg::BoundTransform</label>
+        <link refid="classiceberg_1_1BoundTransform"/>
+        <childnode refid="41" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::BoundUnaryPredicate</label>
+        <link refid="classiceberg_1_1BoundUnaryPredicate"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::CountAggregate</label>
+        <link refid="classiceberg_1_1CountAggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::CountNonNullAggregate</label>
+        <link refid="classiceberg_1_1CountNonNullAggregate"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::CountNullAggregate</label>
+        <link refid="classiceberg_1_1CountNullAggregate"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::CountStarAggregate</label>
+        <link refid="classiceberg_1_1CountStarAggregate"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>iceberg::DateType</label>
+        <link refid="classiceberg_1_1DateType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Decimal</label>
+        <link refid="classiceberg_1_1Decimal"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>iceberg::DecimalType</label>
+        <link refid="classiceberg_1_1DecimalType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>iceberg::DoubleType</label>
+        <link refid="classiceberg_1_1DoubleType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg::False</label>
+        <link refid="classiceberg_1_1False"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>iceberg::FixedType</label>
+        <link refid="classiceberg_1_1FixedType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>iceberg::FloatType</label>
+        <link refid="classiceberg_1_1FloatType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="60">
+        <label>iceberg::IntType</label>
+        <link refid="classiceberg_1_1IntType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>iceberg::ListType</label>
+        <link refid="classiceberg_1_1ListType"/>
+        <childnode refid="47" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="61">
+        <label>iceberg::LongType</label>
+        <link refid="classiceberg_1_1LongType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="49">
+        <label>iceberg::MapType</label>
+        <link refid="classiceberg_1_1MapType"/>
+        <childnode refid="47" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::MaxAggregate</label>
+        <link refid="classiceberg_1_1MaxAggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::MinAggregate</label>
+        <link refid="classiceberg_1_1MinAggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>iceberg::NamedReference</label>
+        <link refid="classiceberg_1_1NamedReference"/>
+        <childnode refid="37" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="46" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iceberg::Not</label>
+        <link refid="classiceberg_1_1Not"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg::Or</label>
+        <link refid="classiceberg_1_1Or"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg::PartitionField</label>
+        <link refid="classiceberg_1_1PartitionField"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>iceberg::Predicate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="46" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="50" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>iceberg::SortField</label>
+        <link refid="classiceberg_1_1SortField"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="62">
+        <label>iceberg::StringType</label>
+        <link refid="classiceberg_1_1StringType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="50">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="47" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg::Term</label>
+        <link refid="classiceberg_1_1Term"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="63">
+        <label>iceberg::TimeType</label>
+        <link refid="classiceberg_1_1TimeType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="64">
+        <label>iceberg::TimestampBase</label>
+        <link refid="classiceberg_1_1TimestampBase"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="65">
+        <label>iceberg::TimestampType</label>
+        <link refid="classiceberg_1_1TimestampType"/>
+        <childnode refid="64" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="66">
+        <label>iceberg::TimestampTzType</label>
+        <link refid="classiceberg_1_1TimestampTzType"/>
+        <childnode refid="64" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>iceberg::Transform</label>
+        <link refid="classiceberg_1_1Transform"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg::True</label>
+        <link refid="classiceberg_1_1True"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg::UnboundAggregate</label>
+        <link refid="classiceberg_1_1UnboundAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::UnboundAggregateImpl&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundAggregateImpl"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+        <childnode refid="28" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg::UnboundPredicate</label>
+        <link refid="classiceberg_1_1UnboundPredicate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg::UnboundPredicateImpl&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundPredicateImpl"/>
+        <childnode refid="19" relation="public-inheritance">
+        </childnode>
+        <childnode refid="29" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>iceberg::UnboundTerm&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="36" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>iceberg::UnboundTransform</label>
+        <link refid="classiceberg_1_1UnboundTransform"/>
+        <childnode refid="39" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="68">
+        <label>iceberg::Uuid</label>
+        <link refid="classiceberg_1_1Uuid"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="67">
+        <label>iceberg::UuidType</label>
+        <link refid="classiceberg_1_1UuidType"/>
+        <childnode refid="52" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/util/formattable.h" line="36" column="1" bodyfile="iceberg/util/formattable.h" bodystart="36" bodyend="42"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386" prot="public" virt="pure-virtual"><scope>iceberg::util::Formattable</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::util::Formattable</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

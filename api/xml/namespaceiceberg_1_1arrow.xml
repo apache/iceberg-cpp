@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1arrow" kind="namespace" language="C++">
+    <compoundname>iceberg::arrow</compoundname>
+    <innerclass refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO" prot="public">iceberg::arrow::ArrowFileSystemFileIO</innerclass>
+    <innerclass refid="structiceberg_1_1arrow_1_1MetadataColumnContext" prot="public">iceberg::arrow::MetadataColumnContext</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="arrow__file__io_8h_1ac01e55e4fc2199c722e98a3c8a42d2f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeMockFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeMockFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeMockFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io.cc" line="84" column="17" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="84" bodyend="86" declfile="iceberg/arrow/arrow_file_io.h" declline="29" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__file__io_8h_1a261510dc94452d5775918724032b63f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeLocalFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeLocalFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeLocalFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io.cc" line="88" column="17" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="88" bodyend="90" declfile="iceberg/arrow/arrow_file_io.h" declline="31" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__status__internal_8h_1a824ce51f59bd212336814486d03a0415" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>ErrorKind</type>
+        <definition>ErrorKind iceberg::arrow::ToErrorKind</definition>
+        <argsstring>(const ::arrow::Status &amp;status)</argsstring>
+        <name>ToErrorKind</name>
+        <qualifiedname>iceberg::arrow::ToErrorKind</qualifiedname>
+        <param>
+          <type>const ::arrow::Status &amp;</type>
+          <declname>status</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_status_internal.h" line="29" column="18" bodyfile="iceberg/arrow/arrow_status_internal.h" bodystart="29" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="metadata__column__util_8cc_1ac4fb744e0e7a79fd72afce17641fe57b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt; iceberg::arrow::MakeFilePathArray</definition>
+        <argsstring>(const std::string &amp;file_path, int64_t num_rows, ::arrow::MemoryPool *pool)</argsstring>
+        <name>MakeFilePathArray</name>
+        <qualifiedname>iceberg::arrow::MakeFilePathArray</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>num_rows</declname>
+        </param>
+        <param>
+          <type>::arrow::MemoryPool *</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+<para>Create a constant string array for _file column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates an Arrow StringArray where all values are the same file path string.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The file path value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_rows</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of rows in the batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Arrow memory pool. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Arrow StringArray with constant file_path value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/metadata_column_util.cc" line="30" column="8" bodyfile="iceberg/arrow/metadata_column_util.cc" bodystart="30" bodyend="41" declfile="iceberg/arrow/metadata_column_util_internal.h" declline="49" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="metadata__column__util_8cc_1a2ab51cdcc6d48ed5c3f15f3b25baf815" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt; iceberg::arrow::MakeRowPositionArray</definition>
+        <argsstring>(int64_t start_position, int64_t num_rows, ::arrow::MemoryPool *pool)</argsstring>
+        <name>MakeRowPositionArray</name>
+        <qualifiedname>iceberg::arrow::MakeRowPositionArray</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>start_position</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>num_rows</declname>
+        </param>
+        <param>
+          <type>::arrow::MemoryPool *</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+<para>Create a sequential int64 array for _pos column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates an Arrow Int64Array with sequential values starting from start_position.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>start_position</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Starting row position (inclusive). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_rows</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of rows in the batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Arrow memory pool. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Arrow Int64Array with values [start_position, start_position + num_rows). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/metadata_column_util.cc" line="43" column="8" bodyfile="iceberg/arrow/metadata_column_util.cc" bodystart="43" bodyend="54" declfile="iceberg/arrow/metadata_column_util_internal.h" declline="61" declcolumn="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow/arrow_file_io.h" line="27" column="1"/>
+  </compounddef>
+</doxygen>

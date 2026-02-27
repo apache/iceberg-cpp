@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MapLike" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::MapLike</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1ArrowArrayMapLike" prot="public" virt="non-virtual">iceberg::ArrowArrayMapLike</derivedcompoundref>
+    <includes refid="struct__like_8h" local="no">struct_like.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MapLike_1ae3323c2af8f85a78c85817e4385e3cc6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::MapLike::~MapLike</definition>
+        <argsstring>()=default</argsstring>
+        <name>~MapLike</name>
+        <qualifiedname>iceberg::MapLike::~MapLike</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="90" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MapLike_1aefb93debfcbe52e3223ee36bf2345b6f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>virtual Result&lt; Scalar &gt; iceberg::MapLike::GetKey</definition>
+        <argsstring>(size_t pos) const =0</argsstring>
+        <name>GetKey</name>
+        <qualifiedname>iceberg::MapLike::GetKey</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ArrowArrayMapLike_1ab6122b7ece0ce63e851a3fa264a930c5">GetKey</reimplementedby>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the key at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the key in the map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="94" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MapLike_1add2591f25282d409167352bbb1c5e558" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>virtual Result&lt; Scalar &gt; iceberg::MapLike::GetValue</definition>
+        <argsstring>(size_t pos) const =0</argsstring>
+        <name>GetValue</name>
+        <qualifiedname>iceberg::MapLike::GetValue</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ArrowArrayMapLike_1a2b8b3eded23593478824d4888f5b3342">GetValue</reimplementedby>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the value in the map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="98" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MapLike_1a9d769b5646f089820800c321bec7f2f6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>size_t</type>
+        <definition>virtual size_t iceberg::MapLike::size</definition>
+        <argsstring>() const =0</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::MapLike::size</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ArrowArrayMapLike_1a36ca31afe3fb870a15a5222eecd35697">size</reimplementedby>
+        <briefdescription>
+<para>Get the number of entries in the map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="101" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An immutable map-like wrapper. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ArrowArrayMapLike</label>
+        <link refid="classiceberg_1_1ArrowArrayMapLike"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MapLike</label>
+        <link refid="classiceberg_1_1MapLike"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/row/struct_like.h" line="88" column="1" bodyfile="iceberg/row/struct_like.h" bodystart="88" bodyend="102"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MapLike_1aefb93debfcbe52e3223ee36bf2345b6f" prot="public" virt="pure-virtual"><scope>iceberg::MapLike</scope><name>GetKey</name></member>
+      <member refid="classiceberg_1_1MapLike_1add2591f25282d409167352bbb1c5e558" prot="public" virt="pure-virtual"><scope>iceberg::MapLike</scope><name>GetValue</name></member>
+      <member refid="classiceberg_1_1MapLike_1a9d769b5646f089820800c321bec7f2f6" prot="public" virt="pure-virtual"><scope>iceberg::MapLike</scope><name>size</name></member>
+      <member refid="classiceberg_1_1MapLike_1ae3323c2af8f85a78c85817e4385e3cc6" prot="public" virt="virtual"><scope>iceberg::MapLike</scope><name>~MapLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

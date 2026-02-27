@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structTypeTestCase" kind="struct" language="C++" prot="public">
+    <compoundname>TypeTestCase</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structTypeTestCase_1a395d0313117cc59640fa3a3aae8bb5fb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string TypeTestCase::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>TypeTestCase::name</qualifiedname>
+        <briefdescription>
+<para>Test case name, must be safe for Googletest (alphanumeric + underscore) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="37" column="15" bodyfile="iceberg/test/type_test.cc" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structTypeTestCase_1a2de525f50f12d985c492d2686c3365f4" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">iceberg::Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;iceberg::Type&gt; TypeTestCase::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>TypeTestCase::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="38" column="19" bodyfile="iceberg/test/type_test.cc" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structTypeTestCase_1ae324c05240bc388a89ce3b8350483588" prot="public" static="no" mutable="no">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">iceberg::TypeId</ref></type>
+        <definition>iceberg::TypeId TypeTestCase::type_id</definition>
+        <argsstring></argsstring>
+        <name>type_id</name>
+        <qualifiedname>TypeTestCase::type_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="39" column="19" bodyfile="iceberg/test/type_test.cc" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structTypeTestCase_1adad3dee51bdcb022db0a3b325d2fa7d4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool TypeTestCase::primitive</definition>
+        <argsstring></argsstring>
+        <name>primitive</name>
+        <qualifiedname>TypeTestCase::primitive</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="40" column="8" bodyfile="iceberg/test/type_test.cc" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structTypeTestCase_1a6cb3a0d6eab1df3de8523cf9d4638de3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string TypeTestCase::repr</definition>
+        <argsstring></argsstring>
+        <name>repr</name>
+        <qualifiedname>TypeTestCase::repr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="41" column="15" bodyfile="iceberg/test/type_test.cc" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>TypeTestCase</label>
+        <link refid="structTypeTestCase"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+          <edgelabel>repr</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/type_test.cc" line="35" column="1" bodyfile="iceberg/test/type_test.cc" bodystart="35" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structTypeTestCase_1a395d0313117cc59640fa3a3aae8bb5fb" prot="public" virt="non-virtual"><scope>TypeTestCase</scope><name>name</name></member>
+      <member refid="structTypeTestCase_1adad3dee51bdcb022db0a3b325d2fa7d4" prot="public" virt="non-virtual"><scope>TypeTestCase</scope><name>primitive</name></member>
+      <member refid="structTypeTestCase_1a6cb3a0d6eab1df3de8523cf9d4638de3" prot="public" virt="non-virtual"><scope>TypeTestCase</scope><name>repr</name></member>
+      <member refid="structTypeTestCase_1a2de525f50f12d985c492d2686c3365f4" prot="public" virt="non-virtual"><scope>TypeTestCase</scope><name>type</name></member>
+      <member refid="structTypeTestCase_1ae324c05240bc388a89ce3b8350483588" prot="public" virt="non-virtual"><scope>TypeTestCase</scope><name>type_id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

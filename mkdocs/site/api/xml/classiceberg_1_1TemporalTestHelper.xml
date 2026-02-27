@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TemporalTestHelper" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TemporalTestHelper</compoundname>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TemporalTestHelper_1a0a64332779125c50bd8e51311980a8e6" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr auto</type>
+        <definition>constexpr auto iceberg::TemporalTestHelper::kEpochDays</definition>
+        <argsstring></argsstring>
+        <name>kEpochDays</name>
+        <qualifiedname>iceberg::TemporalTestHelper::kEpochDays</qualifiedname>
+        <initializer>= sys_days(year{1970} / January / 1)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="67" column="25" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TemporalTestHelper_1aefda458c187052bf1bb772bc3b321a04" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>static int32_t iceberg::TemporalTestHelper::CreateDate</definition>
+        <argsstring>(const DateParts &amp;parts)</argsstring>
+        <name>CreateDate</name>
+        <qualifiedname>iceberg::TemporalTestHelper::CreateDate</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DateParts" kindref="compound">DateParts</ref> &amp;</type>
+          <declname>parts</declname>
+        </param>
+        <briefdescription>
+<para>Construct a Calendar date without timezone or time. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="71" column="18" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="71" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalTestHelper_1a932a3c0963283ee38fca9ea4ffd65fa8" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>static int64_t iceberg::TemporalTestHelper::CreateTime</definition>
+        <argsstring>(const TimeParts &amp;parts)</argsstring>
+        <name>CreateTime</name>
+        <qualifiedname>iceberg::TemporalTestHelper::CreateTime</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TimeParts" kindref="compound">TimeParts</ref> &amp;</type>
+          <declname>parts</declname>
+        </param>
+        <briefdescription>
+<para>Construct a time-of-day, microsecond precision, without date, timezone. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="78" column="18" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="78" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalTestHelper_1a2ae9b1c35bb860df5162b51bed761fe0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>static int64_t iceberg::TemporalTestHelper::CreateTimestamp</definition>
+        <argsstring>(const TimestampParts &amp;parts)</argsstring>
+        <name>CreateTimestamp</name>
+        <qualifiedname>iceberg::TemporalTestHelper::CreateTimestamp</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TimestampParts" kindref="compound">TimestampParts</ref> &amp;</type>
+          <declname>parts</declname>
+        </param>
+        <briefdescription>
+<para>Construct a timestamp, microsecond precision, without timezone. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="86" column="18" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="86" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalTestHelper_1a5a6d083e812d0277aa3c34224a3e75c3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>static int64_t iceberg::TemporalTestHelper::CreateTimestampTz</definition>
+        <argsstring>(const TimestampParts &amp;parts)</argsstring>
+        <name>CreateTimestampTz</name>
+        <qualifiedname>iceberg::TemporalTestHelper::CreateTimestampTz</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TimestampParts" kindref="compound">TimestampParts</ref> &amp;</type>
+          <declname>parts</declname>
+        </param>
+        <briefdescription>
+<para>Construct a timestamp, microsecond precision, with timezone. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="96" column="18" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="96" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalTestHelper_1a31bc9f758575889a945e61c948ace1d3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>static int64_t iceberg::TemporalTestHelper::CreateTimestampNanos</definition>
+        <argsstring>(const TimestampNanosParts &amp;parts)</argsstring>
+        <name>CreateTimestampNanos</name>
+        <qualifiedname>iceberg::TemporalTestHelper::CreateTimestampNanos</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TimestampNanosParts" kindref="compound">TimestampNanosParts</ref> &amp;</type>
+          <declname>parts</declname>
+        </param>
+        <briefdescription>
+<para>Construct a timestamp, nanosecond precision, without timezone. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="107" column="18" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="107" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalTestHelper_1af05826ab1cfab7263cca23ec8babc409" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>static int64_t iceberg::TemporalTestHelper::CreateTimestampTzNanos</definition>
+        <argsstring>(const TimestampNanosParts &amp;parts)</argsstring>
+        <name>CreateTimestampTzNanos</name>
+        <qualifiedname>iceberg::TemporalTestHelper::CreateTimestampTzNanos</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TimestampNanosParts" kindref="compound">TimestampNanosParts</ref> &amp;</type>
+          <declname>parts</declname>
+        </param>
+        <briefdescription>
+<para>Construct a timestamp, nanosecond precision, with timezone. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="117" column="18" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="117" bodyend="125"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/temporal_test_helper.h" line="66" column="1" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="66" bodyend="126"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TemporalTestHelper_1aefda458c187052bf1bb772bc3b321a04" prot="public" virt="non-virtual"><scope>iceberg::TemporalTestHelper</scope><name>CreateDate</name></member>
+      <member refid="classiceberg_1_1TemporalTestHelper_1a932a3c0963283ee38fca9ea4ffd65fa8" prot="public" virt="non-virtual"><scope>iceberg::TemporalTestHelper</scope><name>CreateTime</name></member>
+      <member refid="classiceberg_1_1TemporalTestHelper_1a2ae9b1c35bb860df5162b51bed761fe0" prot="public" virt="non-virtual"><scope>iceberg::TemporalTestHelper</scope><name>CreateTimestamp</name></member>
+      <member refid="classiceberg_1_1TemporalTestHelper_1a31bc9f758575889a945e61c948ace1d3" prot="public" virt="non-virtual"><scope>iceberg::TemporalTestHelper</scope><name>CreateTimestampNanos</name></member>
+      <member refid="classiceberg_1_1TemporalTestHelper_1a5a6d083e812d0277aa3c34224a3e75c3" prot="public" virt="non-virtual"><scope>iceberg::TemporalTestHelper</scope><name>CreateTimestampTz</name></member>
+      <member refid="classiceberg_1_1TemporalTestHelper_1af05826ab1cfab7263cca23ec8babc409" prot="public" virt="non-virtual"><scope>iceberg::TemporalTestHelper</scope><name>CreateTimestampTzNanos</name></member>
+      <member refid="classiceberg_1_1TemporalTestHelper_1a0a64332779125c50bd8e51311980a8e6" prot="private" virt="non-virtual"><scope>iceberg::TemporalTestHelper</scope><name>kEpochDays</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

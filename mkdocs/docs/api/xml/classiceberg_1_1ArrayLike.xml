@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ArrayLike" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::ArrayLike</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1ArrowArrayArrayLike" prot="public" virt="non-virtual">iceberg::ArrowArrayArrayLike</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1PartitionFieldSummaryArrayLike" prot="public" virt="non-virtual">iceberg::PartitionFieldSummaryArrayLike</derivedcompoundref>
+    <includes refid="struct__like_8h" local="no">struct_like.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrayLike_1a2420855468d16012f3619a980d914d91" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::ArrayLike::~ArrayLike</definition>
+        <argsstring>()=default</argsstring>
+        <name>~ArrayLike</name>
+        <qualifiedname>iceberg::ArrayLike::~ArrayLike</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="77" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrayLike_1a11be6b4e1e25d7dc923a7376bd52d9bf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>virtual Result&lt; Scalar &gt; iceberg::ArrayLike::GetElement</definition>
+        <argsstring>(size_t pos) const =0</argsstring>
+        <name>GetElement</name>
+        <qualifiedname>iceberg::ArrayLike::GetElement</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ArrowArrayArrayLike_1ae6a326556ec8e522dc767f171a00e796">GetElement</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionFieldSummaryArrayLike_1ad18c5c1b67489d10c39615095f3d1e30">GetElement</reimplementedby>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the array element at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the element in the array. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="81" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrayLike_1a3bef2486b022eab4c391646447fe2ee8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>size_t</type>
+        <definition>virtual size_t iceberg::ArrayLike::size</definition>
+        <argsstring>() const =0</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::ArrayLike::size</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ArrowArrayArrayLike_1a97396f642dc898fb6fd1716e96f7daa1">size</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionFieldSummaryArrayLike_1abbc2614e2507c5503d767c5372b7a1ea">size</reimplementedby>
+        <briefdescription>
+<para>Get the number of elements in the array. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="84" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An immutable array-like wrapper. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ArrayLike</label>
+        <link refid="classiceberg_1_1ArrayLike"/>
+      </node>
+      <node id="2">
+        <label>iceberg::ArrowArrayArrayLike</label>
+        <link refid="classiceberg_1_1ArrowArrayArrayLike"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::PartitionFieldSummaryArrayLike</label>
+        <link refid="classiceberg_1_1PartitionFieldSummaryArrayLike"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/row/struct_like.h" line="75" column="1" bodyfile="iceberg/row/struct_like.h" bodystart="75" bodyend="85"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ArrayLike_1a11be6b4e1e25d7dc923a7376bd52d9bf" prot="public" virt="pure-virtual"><scope>iceberg::ArrayLike</scope><name>GetElement</name></member>
+      <member refid="classiceberg_1_1ArrayLike_1a3bef2486b022eab4c391646447fe2ee8" prot="public" virt="pure-virtual"><scope>iceberg::ArrayLike</scope><name>size</name></member>
+      <member refid="classiceberg_1_1ArrayLike_1a2420855468d16012f3619a980d914d91" prot="public" virt="virtual"><scope>iceberg::ArrayLike</scope><name>~ArrayLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

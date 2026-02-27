@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_81bb5441034a784c598ffcd7afd30d26" kind="dir">
+    <compoundname>iceberg/avro</compoundname>
+    <innerfile refid="avro__constants_8h">avro_constants.h</innerfile>
+    <innerfile refid="avro__data__util_8cc">avro_data_util.cc</innerfile>
+    <innerfile refid="avro__data__util__internal_8h">avro_data_util_internal.h</innerfile>
+    <innerfile refid="avro__direct__decoder_8cc">avro_direct_decoder.cc</innerfile>
+    <innerfile refid="avro__direct__decoder__internal_8h">avro_direct_decoder_internal.h</innerfile>
+    <innerfile refid="avro__direct__encoder_8cc">avro_direct_encoder.cc</innerfile>
+    <innerfile refid="avro__direct__encoder__internal_8h">avro_direct_encoder_internal.h</innerfile>
+    <innerfile refid="avro__reader_8cc">avro_reader.cc</innerfile>
+    <innerfile refid="avro__reader_8h">avro_reader.h</innerfile>
+    <innerfile refid="avro__register_8cc">avro_register.cc</innerfile>
+    <innerfile refid="avro__register_8h">avro_register.h</innerfile>
+    <innerfile refid="avro__schema__util_8cc">avro_schema_util.cc</innerfile>
+    <innerfile refid="avro__schema__util__internal_8h">avro_schema_util_internal.h</innerfile>
+    <innerfile refid="avro__stream__internal_8cc">avro_stream_internal.cc</innerfile>
+    <innerfile refid="avro__stream__internal_8h">avro_stream_internal.h</innerfile>
+    <innerfile refid="avro__writer_8cc">avro_writer.cc</innerfile>
+    <innerfile refid="avro__writer_8h">avro_writer.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/avro/"/>
+  </compounddef>
+</doxygen>

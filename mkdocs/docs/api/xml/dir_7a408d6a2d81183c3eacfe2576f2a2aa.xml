@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_7a408d6a2d81183c3eacfe2576f2a2aa" kind="dir">
+    <compoundname>iceberg/util</compoundname>
+    <innerfile refid="bucket__util_8cc">bucket_util.cc</innerfile>
+    <innerfile refid="bucket__util_8h">bucket_util.h</innerfile>
+    <innerfile refid="checked__cast_8h">checked_cast.h</innerfile>
+    <innerfile refid="config_8h">config.h</innerfile>
+    <innerfile refid="content__file__util_8cc">content_file_util.cc</innerfile>
+    <innerfile refid="content__file__util_8h">content_file_util.h</innerfile>
+    <innerfile refid="conversions_8cc">conversions.cc</innerfile>
+    <innerfile refid="conversions_8h">conversions.h</innerfile>
+    <innerfile refid="data__file__set_8h">data_file_set.h</innerfile>
+    <innerfile refid="decimal_8cc">decimal.cc</innerfile>
+    <innerfile refid="decimal_8h">decimal.h</innerfile>
+    <innerfile refid="endian_8h">endian.h</innerfile>
+    <innerfile refid="error__collector_8h">error_collector.h</innerfile>
+    <innerfile refid="formattable_8h">formattable.h</innerfile>
+    <innerfile refid="formatter_8h">formatter.h</innerfile>
+    <innerfile refid="formatter__internal_8h">formatter_internal.h</innerfile>
+    <innerfile refid="gzip__internal_8cc">gzip_internal.cc</innerfile>
+    <innerfile refid="gzip__internal_8h">gzip_internal.h</innerfile>
+    <innerfile refid="int128_8h">int128.h</innerfile>
+    <innerfile refid="json__util__internal_8h">json_util_internal.h</innerfile>
+    <innerfile refid="lazy_8h">lazy.h</innerfile>
+    <innerfile refid="location__util_8h">location_util.h</innerfile>
+    <innerfile refid="macros_8h">macros.h</innerfile>
+    <innerfile refid="murmurhash3__internal_8cc">murmurhash3_internal.cc</innerfile>
+    <innerfile refid="murmurhash3__internal_8h">murmurhash3_internal.h</innerfile>
+    <innerfile refid="partition__value__util_8h">partition_value_util.h</innerfile>
+    <innerfile refid="projection__util__internal_8h">projection_util_internal.h</innerfile>
+    <innerfile refid="property__util_8cc">property_util.cc</innerfile>
+    <innerfile refid="property__util_8h">property_util.h</innerfile>
+    <innerfile refid="snapshot__util_8cc">snapshot_util.cc</innerfile>
+    <innerfile refid="snapshot__util__internal_8h">snapshot_util_internal.h</innerfile>
+    <innerfile refid="string__util_8h">string_util.h</innerfile>
+    <innerfile refid="temporal__util_8cc">temporal_util.cc</innerfile>
+    <innerfile refid="temporal__util_8h">temporal_util.h</innerfile>
+    <innerfile refid="timepoint_8cc">timepoint.cc</innerfile>
+    <innerfile refid="timepoint_8h">timepoint.h</innerfile>
+    <innerfile refid="transform__util_8cc">transform_util.cc</innerfile>
+    <innerfile refid="transform__util_8h">transform_util.h</innerfile>
+    <innerfile refid="truncate__util_8cc">truncate_util.cc</innerfile>
+    <innerfile refid="truncate__util_8h">truncate_util.h</innerfile>
+    <innerfile refid="type__util_8cc">type_util.cc</innerfile>
+    <innerfile refid="type__util_8h">type_util.h</innerfile>
+    <innerfile refid="url__encoder_8cc">url_encoder.cc</innerfile>
+    <innerfile refid="url__encoder_8h">url_encoder.h</innerfile>
+    <innerfile refid="uuid_8cc">uuid.cc</innerfile>
+    <innerfile refid="uuid_8h">uuid.h</innerfile>
+    <innerfile refid="visit__type_8h">visit_type.h</innerfile>
+    <innerfile refid="visitor__generate_8h">visitor_generate.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/"/>
+  </compounddef>
+</doxygen>

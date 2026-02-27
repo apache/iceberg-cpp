@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_832d158f51fdfd219125f1a0f5099b44" kind="dir">
+    <compoundname>iceberg/expression</compoundname>
+    <innerfile refid="aggregate_8cc">aggregate.cc</innerfile>
+    <innerfile refid="aggregate_8h">aggregate.h</innerfile>
+    <innerfile refid="binder_8cc">binder.cc</innerfile>
+    <innerfile refid="binder_8h">binder.h</innerfile>
+    <innerfile refid="evaluator_8cc">evaluator.cc</innerfile>
+    <innerfile refid="evaluator_8h">evaluator.h</innerfile>
+    <innerfile refid="expression_8cc">expression.cc</innerfile>
+    <innerfile refid="expression_8h">expression.h</innerfile>
+    <innerfile refid="expression__visitor_8h">expression_visitor.h</innerfile>
+    <innerfile refid="expressions_8cc">expressions.cc</innerfile>
+    <innerfile refid="expressions_8h">expressions.h</innerfile>
+    <innerfile refid="inclusive__metrics__evaluator_8cc">inclusive_metrics_evaluator.cc</innerfile>
+    <innerfile refid="inclusive__metrics__evaluator_8h">inclusive_metrics_evaluator.h</innerfile>
+    <innerfile refid="expression_2json__serde_8cc">json_serde.cc</innerfile>
+    <innerfile refid="expression_2json__serde__internal_8h">json_serde_internal.h</innerfile>
+    <innerfile refid="literal_8cc">literal.cc</innerfile>
+    <innerfile refid="literal_8h">literal.h</innerfile>
+    <innerfile refid="manifest__evaluator_8cc">manifest_evaluator.cc</innerfile>
+    <innerfile refid="manifest__evaluator_8h">manifest_evaluator.h</innerfile>
+    <innerfile refid="predicate_8cc">predicate.cc</innerfile>
+    <innerfile refid="predicate_8h">predicate.h</innerfile>
+    <innerfile refid="projections_8cc">projections.cc</innerfile>
+    <innerfile refid="projections_8h">projections.h</innerfile>
+    <innerfile refid="residual__evaluator_8cc">residual_evaluator.cc</innerfile>
+    <innerfile refid="residual__evaluator_8h">residual_evaluator.h</innerfile>
+    <innerfile refid="rewrite__not_8cc">rewrite_not.cc</innerfile>
+    <innerfile refid="rewrite__not_8h">rewrite_not.h</innerfile>
+    <innerfile refid="strict__metrics__evaluator_8cc">strict_metrics_evaluator.cc</innerfile>
+    <innerfile refid="strict__metrics__evaluator_8h">strict_metrics_evaluator.h</innerfile>
+    <innerfile refid="term_8cc">term.cc</innerfile>
+    <innerfile refid="term_8h">term.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/"/>
+  </compounddef>
+</doxygen>

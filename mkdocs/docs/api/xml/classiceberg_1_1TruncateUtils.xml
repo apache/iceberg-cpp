@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TruncateUtils" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TruncateUtils</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a6275d912510a0380d8fda9236d6b5b5f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::TruncateUtils::TruncateUTF8</definition>
+        <argsstring>(std::string source, size_t L)</argsstring>
+        <name>TruncateUTF8</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateUTF8</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>L</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a UTF-8 string to a specified number of code points. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input string to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>L</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The maximum number of code points allowed in the output string. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A valid UTF-8 string truncated to L code points. If the input string is already valid and has fewer than L code points, it is returned unchanged. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="41" column="22" bodyfile="iceberg/util/truncate_util.h" bodystart="41" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a3e8544c4d16054c21e422a083ae9ea47" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>static T iceberg::TruncateUtils::TruncateInteger</definition>
+        <argsstring>(T v, int32_t W)</argsstring>
+        <name>TruncateInteger</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateInteger</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>W</declname>
+        </param>
+    <requiresclause>std::is_same_v&lt;T, int32_t&gt; || std::is_same_v&lt;T, int64_t&gt;    </requiresclause>
+        <briefdescription>
+<para>Truncate an integer v, either int32_t or int64_t, to v - (v % W). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The remainder, v % W, must be positive. For languages where % can produce negative values, the correct truncate function is: v - (((v % W) + W) % W) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="70" column="19" bodyfile="iceberg/util/truncate_util.h" bodystart="70" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a0dfaebd83447de5c6954743c620aeeaa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>Decimal iceberg::TruncateUtils::TruncateDecimal</definition>
+        <argsstring>(const Decimal &amp;decimal, int32_t width)</argsstring>
+        <name>TruncateDecimal</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateDecimal</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>decimal</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> to a specified width. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>decimal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> truncated to the specified width. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="78" column="18" bodyfile="iceberg/util/truncate_util.cc" bodystart="77" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1ad414dc181f0298379120337646af9d79" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TruncateUtils::TruncateLiteral</definition>
+        <argsstring>(const Literal &amp;literal, int32_t width)</argsstring>
+        <name>TruncateLiteral</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateLiteral</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to a specified width. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>literal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the truncated <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> or an error. Supported types are: INT, LONG, DECIMAL, STRING, BINARY. <ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref>:<itemizedlist>
+<listitem><para><ulink url="https://iceberg.apache.org/spec/#truncate-transform-details">Truncate Transform Details</ulink> </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="88" column="17" bodyfile="iceberg/util/truncate_util.cc" bodystart="85" bodyend="105"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/truncate_util.h" line="32" column="1" bodyfile="iceberg/util/truncate_util.h" bodystart="32" bodyend="89"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TruncateUtils_1a0dfaebd83447de5c6954743c620aeeaa" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateDecimal</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a3e8544c4d16054c21e422a083ae9ea47" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateInteger</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1ad414dc181f0298379120337646af9d79" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateLiteral</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a6275d912510a0380d8fda9236d6b5b5f" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateUTF8</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,303 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1rest_1_1auth" kind="namespace" language="C++">
+    <compoundname>iceberg::rest::auth</compoundname>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" prot="public">iceberg::rest::auth::AuthManager</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers" prot="public">iceberg::rest::auth::AuthManagers</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" prot="public">iceberg::rest::auth::AuthManagerTest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1auth_1_1AuthProperties" prot="public">iceberg::rest::auth::AuthProperties</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" prot="public">iceberg::rest::auth::AuthSession</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1BasicAuthManager" prot="public">iceberg::rest::auth::BasicAuthManager</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1NoopAuthManager" prot="public">iceberg::rest::auth::NoopAuthManager</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="auth__managers_8h_1a8dcfa3f158cf6eb8345037e08fef0ef4" prot="public" static="no">
+        <type>std::function&lt; Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt; &gt;(std::string_view name, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)&gt;</type>
+        <definition>using iceberg::rest::auth::AuthManagerFactory = typedef std::function&lt;Result&lt;std::unique_ptr&lt;AuthManager&gt; &gt;( std::string_view name, const std::unordered_map&lt;std::string, std::string&gt;&amp; properties)&gt;</definition>
+        <argsstring></argsstring>
+        <name>AuthManagerFactory</name>
+        <qualifiedname>iceberg::rest::auth::AuthManagerFactory</qualifiedname>
+        <briefdescription>
+<para>Function that creates an <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> from its name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the auth manager. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Properties required by the auth manager. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Newly created manager instance or an error if creation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_managers.h" line="42" column="1" bodyfile="iceberg/catalog/rest/auth/auth_managers.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="auth__manager_8cc_1a134b1c963c93c55a2b9a6057fcb9ec89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; AuthManager &gt; &gt; iceberg::rest::auth::MakeNoopAuthManager</definition>
+        <argsstring>(std::string_view name, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>MakeNoopAuthManager</name>
+        <qualifiedname>iceberg::rest::auth::MakeNoopAuthManager</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a no-op authentication manager (no authentication). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.cc" line="63" column="8" bodyfile="iceberg/catalog/rest/auth/auth_manager.cc" bodystart="63" bodyend="67" declfile="iceberg/catalog/rest/auth/auth_manager_internal.h" declline="36" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager_8cc_1aaec9c1b8b8703c2b9782647e617f847c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; AuthManager &gt; &gt; iceberg::rest::auth::MakeBasicAuthManager</definition>
+        <argsstring>(std::string_view name, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>MakeBasicAuthManager</name>
+        <qualifiedname>iceberg::rest::auth::MakeBasicAuthManager</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a basic authentication manager. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.cc" line="87" column="8" bodyfile="iceberg/catalog/rest/auth/auth_manager.cc" bodystart="87" bodyend="91" declfile="iceberg/catalog/rest/auth/auth_manager_internal.h" declline="41" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1a01fa46b482eb1ab1e0dc63f733291feb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, LoadNoopAuthManagerExplicit)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>LoadNoopAuthManagerExplicit</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="42" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="42" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1a158c6c19bed44f0aed017167251c63b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, LoadNoopAuthManagerInferred)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>LoadNoopAuthManagerInferred</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="58" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="58" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1a3a0f38a588bfc5d2c1ba4104aef3b48c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, AuthTypeCaseInsensitive)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>AuthTypeCaseInsensitive</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="64" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="64" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1ac81bba1ce86aac3fd01f4f1401c0ed85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, UnknownAuthTypeReturnsInvalidArgument)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>UnknownAuthTypeReturnsInvalidArgument</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="74" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="74" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1ac32d58e6e3ba874fb1c23c1f25fe56f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, LoadBasicAuthManager)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>LoadBasicAuthManager</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="84" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="84" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1ae7f77f87b83b3208efc6907a43e9233f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, BasicAuthTypeCaseInsensitive)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>BasicAuthTypeCaseInsensitive</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="103" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="103" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1aef72aa1c524793c698daa50d3050aeae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, BasicAuthMissingUsername)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>BasicAuthMissingUsername</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="123" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="123" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1ae7bfbf22497f5c1f41ac8f9199fbe55c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, BasicAuthMissingPassword)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>BasicAuthMissingPassword</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="136" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="136" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1a690c519b6afe625eaa744cd49579294a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, BasicAuthSpecialCharacters)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>BasicAuthSpecialCharacters</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="149" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="149" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="auth__manager__test_8cc_1aaa941d3ac47b4de590b5196234cd1092" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TEST_F</definition>
+        <argsstring>(AuthManagerTest, RegisterCustomAuthManager)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::rest::auth::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref></type>
+        </param>
+        <param>
+          <type>RegisterCustomAuthManager</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/auth_manager_test.cc" line="168" column="1" bodyfile="iceberg/test/auth_manager_test.cc" bodystart="168" bodyend="196"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/auth_manager.cc" line="28" column="1"/>
+  </compounddef>
+</doxygen>

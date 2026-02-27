@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structstd_1_1formatter_3_01std_1_1map_3_01K_00_01V_01_4_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>std::formatter&lt; std::map&lt; K, V &gt; &gt;</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::formatter&lt; std::string_view &gt;</basecompoundref>
+    <includes refid="formatter__internal_8h" local="no">formatter_internal.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename K</type>
+      </param>
+      <param>
+        <type>typename V</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structstd_1_1formatter_3_01std_1_1map_3_01K_00_01V_01_4_01_4_1ac1c1efb10f9859429f7ca5e4252b4c7d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class FormatContext</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto std::formatter&lt; std::map&lt; K, V &gt; &gt;::format</definition>
+        <argsstring>(const std::map&lt; K, V &gt; &amp;map, FormatContext &amp;ctx) const</argsstring>
+        <name>format</name>
+        <qualifiedname>std::formatter&lt; std::map&lt; K, V &gt; &gt;::format</qualifiedname>
+        <param>
+          <type>const std::map&lt; K, V &gt; &amp;</type>
+          <declname>map</declname>
+        </param>
+        <param>
+          <type>FormatContext &amp;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/formatter_internal.h" line="98" column="8" bodyfile="iceberg/util/formatter_internal.h" bodystart="98" bodyend="100"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>std::formatter specialization for std::map </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>std::formatter&lt; std::map&lt; K, V &gt; &gt;</label>
+        <link refid="structstd_1_1formatter_3_01std_1_1map_3_01K_00_01V_01_4_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::formatter&lt; std::string_view &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>std::formatter&lt; std::map&lt; K, V &gt; &gt;</label>
+        <link refid="structstd_1_1formatter_3_01std_1_1map_3_01K_00_01V_01_4_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::formatter&lt; std::string_view &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/formatter_internal.h" line="96" column="1" bodyfile="iceberg/util/formatter_internal.h" bodystart="96" bodyend="101"/>
+    <listofallmembers>
+      <member refid="structstd_1_1formatter_3_01std_1_1map_3_01K_00_01V_01_4_01_4_1ac1c1efb10f9859429f7ca5e4252b4c7d" prot="public" virt="non-virtual"><scope>std::formatter&lt; std::map&lt; K, V &gt; &gt;</scope><name>format</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

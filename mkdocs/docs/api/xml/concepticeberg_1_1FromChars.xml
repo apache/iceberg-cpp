@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1FromChars" kind="concept">
+    <compoundname>iceberg::FromChars</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename T&gt;
+concept <ref refid="concepticeberg_1_1FromChars" kindref="compound">iceberg::FromChars</ref> =  requires(const char* p, T&amp; v) { std::from_chars(p, p, v); }    </initializer>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/string_util.h" line="38" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1arrow_1_1MetadataColumnContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::arrow::MetadataColumnContext</compoundname>
+    <includes refid="metadata__column__util__internal_8h" local="no">metadata_column_util_internal.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1MetadataColumnContext_1a3a796d1b3e63dd928456801b9985cd54" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::arrow::MetadataColumnContext::file_path</definition>
+        <argsstring></argsstring>
+        <name>file_path</name>
+        <qualifiedname>iceberg::arrow::MetadataColumnContext::file_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/metadata_column_util_internal.h" line="37" column="15" bodyfile="iceberg/arrow/metadata_column_util_internal.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1MetadataColumnContext_1a3ce9fb97dbea1a0201277bd694c7b3fd" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::arrow::MetadataColumnContext::next_file_pos</definition>
+        <argsstring></argsstring>
+        <name>next_file_pos</name>
+        <qualifiedname>iceberg::arrow::MetadataColumnContext::next_file_pos</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/metadata_column_util_internal.h" line="38" column="11" bodyfile="iceberg/arrow/metadata_column_util_internal.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Context for populating metadata columns during reading. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::arrow::MetadataColumnContext</label>
+        <link refid="structiceberg_1_1arrow_1_1MetadataColumnContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>file_path</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/arrow/metadata_column_util_internal.h" line="36" column="1" bodyfile="iceberg/arrow/metadata_column_util_internal.h" bodystart="36" bodyend="39"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1arrow_1_1MetadataColumnContext_1a3a796d1b3e63dd928456801b9985cd54" prot="public" virt="non-virtual"><scope>iceberg::arrow::MetadataColumnContext</scope><name>file_path</name></member>
+      <member refid="structiceberg_1_1arrow_1_1MetadataColumnContext_1a3ce9fb97dbea1a0201277bd694c7b3fd" prot="public" virt="non-virtual"><scope>iceberg::arrow::MetadataColumnContext</scope><name>next_file_pos</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

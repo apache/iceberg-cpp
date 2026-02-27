@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1AuthSession" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::rest::auth::AuthSession</compoundname>
+    <includes refid="auth__session_8h" local="no">auth_session.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthSession_1abce4fd82aca392e6b43e2f35c93359a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::rest::auth::AuthSession::~AuthSession</definition>
+        <argsstring>()=default</argsstring>
+        <name>~AuthSession</name>
+        <qualifiedname>iceberg::rest::auth::AuthSession::~AuthSession</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="37" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthSession_1ad2a11a55e1a5ecd9af6326f9263b7e67" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::rest::auth::AuthSession::Authenticate</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; &amp;headers)=0</argsstring>
+        <name>Authenticate</name>
+        <qualifiedname>iceberg::rest::auth::AuthSession::Authenticate</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>headers</declname>
+        </param>
+        <briefdescription>
+<para>Authenticate the given request headers. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method adds authentication information (e.g., Authorization header) to the provided headers map. The implementation should be idempotent.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="inout">headers</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The headers map to add authentication information to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or one of the following errors:<itemizedlist>
+<listitem><para>AuthenticationFailed: General authentication failure (invalid credentials, etc.)</para>
+</listitem><listitem><para>TokenExpired: Authentication token has expired and needs refresh</para>
+</listitem><listitem><para>NotAuthorized: <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> authenticated (401)</para>
+</listitem><listitem><para>IOError: Network or connection errors when reaching auth server</para>
+</listitem><listitem><para>RestError: HTTP errors from authentication service </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="52" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthSession_1a98e98d7e9632887f073583389c9da5fd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::rest::auth::AuthSession::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::rest::auth::AuthSession::Close</qualifiedname>
+        <briefdescription>
+<para>Close the session and release any resources. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is called when the session is no longer needed. For stateful sessions (e.g., OAuth2 with token refresh), this should stop any background threads and release resources.</para>
+<para><simplesect kind="return"><para>Status indicating success or failure of closing the session. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="61" column="18" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="61" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthSession_1a733d6e7700056c2b10f93268e7a2c6da" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; AuthSession &gt; iceberg::rest::auth::AuthSession::MakeDefault</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; headers)</argsstring>
+        <name>MakeDefault</name>
+        <qualifiedname>iceberg::rest::auth::AuthSession::MakeDefault</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>headers</declname>
+        </param>
+        <briefdescription>
+<para>Create a default session with static headers. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This factory method creates a session that adds a fixed set of headers to each request. It is suitable for authentication methods that use static credentials, such as Basic auth or static bearer tokens.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>headers</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The headers to add to each request for authentication. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new session that adds the given headers to requests. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="71" column="26" bodyfile="iceberg/catalog/rest/auth/auth_session.cc" bodystart="47" bodyend="50"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An authentication session that can authenticate outgoing HTTP requests. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/auth_session.h" line="35" column="1" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="35" bodyend="73"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthSession_1ad2a11a55e1a5ecd9af6326f9263b7e67" prot="public" virt="pure-virtual"><scope>iceberg::rest::auth::AuthSession</scope><name>Authenticate</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthSession_1a98e98d7e9632887f073583389c9da5fd" prot="public" virt="virtual"><scope>iceberg::rest::auth::AuthSession</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthSession_1a733d6e7700056c2b10f93268e7a2c6da" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthSession</scope><name>MakeDefault</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthSession_1abce4fd82aca392e6b43e2f35c93359a2" prot="public" virt="virtual"><scope>iceberg::rest::auth::AuthSession</scope><name>~AuthSession</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

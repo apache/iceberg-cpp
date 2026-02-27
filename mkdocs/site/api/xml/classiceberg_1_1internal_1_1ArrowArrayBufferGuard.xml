@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1internal_1_1ArrowArrayBufferGuard" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::internal::ArrowArrayBufferGuard</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1ArrowArrayBufferGuard_1a3daa13848be055507a1718abdccdc35e" prot="private" static="no" mutable="no">
+        <type>ArrowBuffer *</type>
+        <definition>ArrowBuffer* iceberg::internal::ArrowArrayBufferGuard::buffer_</definition>
+        <argsstring></argsstring>
+        <name>buffer_</name>
+        <qualifiedname>iceberg::internal::ArrowArrayBufferGuard::buffer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="61" column="15" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1ArrowArrayBufferGuard_1a4bce3353e7a8f792c448c67912b704c4" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::ArrowArrayBufferGuard::ArrowArrayBufferGuard</definition>
+        <argsstring>(ArrowBuffer *buffer)</argsstring>
+        <name>ArrowArrayBufferGuard</name>
+        <qualifiedname>iceberg::internal::ArrowArrayBufferGuard::ArrowArrayBufferGuard</qualifiedname>
+        <param>
+          <type>ArrowBuffer *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="57" column="12" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="57" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1ArrowArrayBufferGuard_1a29b6b3666a171b911dc81796bb1aa8f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::ArrowArrayBufferGuard::~ArrowArrayBufferGuard</definition>
+        <argsstring>()</argsstring>
+        <name>~ArrowArrayBufferGuard</name>
+        <qualifiedname>iceberg::internal::ArrowArrayBufferGuard::~ArrowArrayBufferGuard</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="58" column="3" bodyfile="iceberg/arrow_c_data_guard_internal.cc" bodystart="42" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_guard_internal.h" line="55" column="1" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="55" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1internal_1_1ArrowArrayBufferGuard_1a4bce3353e7a8f792c448c67912b704c4" prot="public" virt="non-virtual"><scope>iceberg::internal::ArrowArrayBufferGuard</scope><name>ArrowArrayBufferGuard</name></member>
+      <member refid="classiceberg_1_1internal_1_1ArrowArrayBufferGuard_1a3daa13848be055507a1718abdccdc35e" prot="private" virt="non-virtual"><scope>iceberg::internal::ArrowArrayBufferGuard</scope><name>buffer_</name></member>
+      <member refid="classiceberg_1_1internal_1_1ArrowArrayBufferGuard_1a29b6b3666a171b911dc81796bb1aa8f6" prot="public" virt="non-virtual"><scope>iceberg::internal::ArrowArrayBufferGuard</scope><name>~ArrowArrayBufferGuard</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1Split" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::Split</compoundname>
+    <includes refid="file__reader_8h" local="no">file_reader.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1Split_1a481b7cbaf8b03f529d6bcbfec9700632" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t iceberg::Split::offset</definition>
+        <argsstring></argsstring>
+        <name>offset</name>
+        <qualifiedname>iceberg::Split::offset</qualifiedname>
+        <briefdescription>
+<para>The offset of the split. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="66" column="10" bodyfile="iceberg/file_reader.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Split_1aed304e2e09b04f9fb52cc08edbb3f0bb" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t iceberg::Split::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <qualifiedname>iceberg::Split::length</qualifiedname>
+        <briefdescription>
+<para>The length of the split. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="68" column="10" bodyfile="iceberg/file_reader.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A split of the file to read. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/file_reader.h" line="64" column="1" bodyfile="iceberg/file_reader.h" bodystart="64" bodyend="69"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1Split_1aed304e2e09b04f9fb52cc08edbb3f0bb" prot="public" virt="non-virtual"><scope>iceberg::Split</scope><name>length</name></member>
+      <member refid="structiceberg_1_1Split_1a481b7cbaf8b03f529d6bcbfec9700632" prot="public" virt="non-virtual"><scope>iceberg::Split</scope><name>offset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FileWriter" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::FileWriter</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1DataWriter" prot="public" virt="non-virtual">iceberg::DataWriter</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1EqualityDeleteWriter" prot="public" virt="non-virtual">iceberg::EqualityDeleteWriter</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1PositionDeleteWriter" prot="public" virt="non-virtual">iceberg::PositionDeleteWriter</derivedcompoundref>
+    <includes refid="writer_8h" local="no">writer.h</includes>
+    <innerclass refid="structiceberg_1_1FileWriter_1_1WriteResult" prot="public">iceberg::FileWriter::WriteResult</innerclass>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FileWriter_1ac1131a6e8ec6e4541f49528ff7677bc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>iceberg::FileWriter::~FileWriter</definition>
+        <argsstring>()</argsstring>
+        <name>~FileWriter</name>
+        <qualifiedname>iceberg::FileWriter::~FileWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/writer.h" line="39" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileWriter_1ad27902863767dbda5a2d7fcf88eb0e28" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::FileWriter::Write</definition>
+        <argsstring>(ArrowArray *data)=0</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::FileWriter::Write</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DataWriter_1a6a72a9a4f9193b389e0465fe4120656d">Write</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1EqualityDeleteWriter_1afce144d0fe922ad0d4a49dce13ce6a96">Write</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PositionDeleteWriter_1a74077dc2bae65c4a33f5d7c8368a8db4">Write</reimplementedby>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Write a batch of records. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The ownership of the <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> will be transferred to the writer. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/writer.h" line="43" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileWriter_1ad32f2d3323e2fea39baa59a96eb50197" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>virtual Result&lt; int64_t &gt; iceberg::FileWriter::Length</definition>
+        <argsstring>() const =0</argsstring>
+        <name>Length</name>
+        <qualifiedname>iceberg::FileWriter::Length</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DataWriter_1a33f636f51003a122b97a5eb836846c3c">Length</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1EqualityDeleteWriter_1a708a6b9afdc78d7e91d8c805cca2ada0">Length</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PositionDeleteWriter_1a3e645c21bd752f06e31c0d95136266f9">Length</reimplementedby>
+        <briefdescription>
+<para>Get the current number of bytes written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/writer.h" line="46" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileWriter_1a6d7f69f445e791c2c864913fc1188370" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::FileWriter::Close</definition>
+        <argsstring>()=0</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::FileWriter::Close</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DataWriter_1acfb7b11e0ddbc46bd984dd5d6f47cb54">Close</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1EqualityDeleteWriter_1a03c473f8e3a8aa2fb29638527b2984e6">Close</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PositionDeleteWriter_1a098428452001832ed2edb4f77c0a67ef">Close</reimplementedby>
+        <briefdescription>
+<para>Close the writer and finalize the file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/writer.h" line="49" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileWriter_1a7206abe67a08dc3362379f810cf11b96" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1FileWriter_1_1WriteResult" kindref="compound">WriteResult</ref> &gt;</type>
+        <definition>virtual Result&lt; WriteResult &gt; iceberg::FileWriter::Metadata</definition>
+        <argsstring>()=0</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::FileWriter::Metadata</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DataWriter_1a981674a97afb37f20d6c8d38417d57b8">Metadata</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1EqualityDeleteWriter_1a4c8da285388678cf6ba5496f3aa23bce">Metadata</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PositionDeleteWriter_1a9d0ab61a93de91c618791270b566ec62">Metadata</reimplementedby>
+        <briefdescription>
+<para>Get file metadata for all files produced by this writer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This method should be called after <ref refid="classiceberg_1_1FileWriter_1a6d7f69f445e791c2c864913fc1188370" kindref="member">Close()</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/writer.h" line="61" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base interface for data file writers. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::DataWriter</label>
+        <link refid="classiceberg_1_1DataWriter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::EqualityDeleteWriter</label>
+        <link refid="classiceberg_1_1EqualityDeleteWriter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::FileWriter</label>
+        <link refid="classiceberg_1_1FileWriter"/>
+      </node>
+      <node id="4">
+        <label>iceberg::PositionDeleteWriter</label>
+        <link refid="classiceberg_1_1PositionDeleteWriter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/data/writer.h" line="37" column="1" bodyfile="iceberg/data/writer.h" bodystart="37" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FileWriter_1a6d7f69f445e791c2c864913fc1188370" prot="public" virt="pure-virtual"><scope>iceberg::FileWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1FileWriter_1ad32f2d3323e2fea39baa59a96eb50197" prot="public" virt="pure-virtual"><scope>iceberg::FileWriter</scope><name>Length</name></member>
+      <member refid="classiceberg_1_1FileWriter_1a7206abe67a08dc3362379f810cf11b96" prot="public" virt="pure-virtual"><scope>iceberg::FileWriter</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1FileWriter_1ad27902863767dbda5a2d7fcf88eb0e28" prot="public" virt="pure-virtual"><scope>iceberg::FileWriter</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1FileWriter_1ac1131a6e8ec6e4541f49528ff7677bc5" prot="public" virt="virtual"><scope>iceberg::FileWriter</scope><name>~FileWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

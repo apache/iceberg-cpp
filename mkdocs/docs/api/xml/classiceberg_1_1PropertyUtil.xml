@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PropertyUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PropertyUtil</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1PropertyUtil_1a1f7333766fbd025e12d893afa30ced03" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PropertyUtil::ValidateCommitProperties</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>ValidateCommitProperties</name>
+        <qualifiedname>iceberg::PropertyUtil::ValidateCommitProperties</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/property_util.h" line="32" column="17" bodyfile="iceberg/util/property_util.cc" bodystart="28" bodyend="50"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/property_util.h" line="30" column="1" bodyfile="iceberg/util/property_util.h" bodystart="30" bodyend="34"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PropertyUtil_1a1f7333766fbd025e12d893afa30ced03" prot="public" virt="non-virtual"><scope>iceberg::PropertyUtil</scope><name>ValidateCommitProperties</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

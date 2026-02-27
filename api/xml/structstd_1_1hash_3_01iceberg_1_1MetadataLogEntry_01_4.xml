@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structstd_1_1hash_3_01iceberg_1_1MetadataLogEntry_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>std::hash&lt; iceberg::MetadataLogEntry &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structstd_1_1hash_3_01iceberg_1_1MetadataLogEntry_01_4_1abb52d4bd6e5eecadcda9831a12af2cc0" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t std::hash&lt; iceberg::MetadataLogEntry &gt;::operator()</definition>
+        <argsstring>(const iceberg::MetadataLogEntry &amp;m) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>std::hash&lt; iceberg::MetadataLogEntry &gt;::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1MetadataLogEntry" kindref="compound">iceberg::MetadataLogEntry</ref> &amp;</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="600" column="10" bodyfile="iceberg/table_metadata.h" bodystart="600" bodyend="602"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/table_metadata.h" line="599" column="1" bodyfile="iceberg/table_metadata.h" bodystart="599" bodyend="603"/>
+    <listofallmembers>
+      <member refid="structstd_1_1hash_3_01iceberg_1_1MetadataLogEntry_01_4_1abb52d4bd6e5eecadcda9831a12af2cc0" prot="public" virt="non-virtual"><scope>std::hash&lt; iceberg::MetadataLogEntry &gt;</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

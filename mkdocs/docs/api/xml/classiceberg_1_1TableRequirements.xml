@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableRequirements" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TableRequirements</compoundname>
+    <includes refid="table__requirements_8h" local="no">table_requirements.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TableRequirements_1a3ec73cafe440067c2f9f46485113786e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::unique_ptr&lt; TableRequirement &gt; &gt; &gt; iceberg::TableRequirements::ForCreateTable</definition>
+        <argsstring>(const std::vector&lt; std::unique_ptr&lt; TableUpdate &gt; &gt; &amp;table_updates)</argsstring>
+        <name>ForCreateTable</name>
+        <qualifiedname>iceberg::TableRequirements::ForCreateTable</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt; &amp;</type>
+          <declname>table_updates</declname>
+        </param>
+        <briefdescription>
+<para>Generate requirements for creating a new table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For table creation, this requires that the table does not already exist.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table_updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The list of table updates for table creation </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A list of table requirements to validate before creation </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="121" column="17" bodyfile="iceberg/table_requirements.cc" bodystart="107" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableRequirements_1a36e610485b3545404eb8c4faec3d1b4b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::unique_ptr&lt; TableRequirement &gt; &gt; &gt; iceberg::TableRequirements::ForReplaceTable</definition>
+        <argsstring>(const TableMetadata &amp;base, const std::vector&lt; std::unique_ptr&lt; TableUpdate &gt; &gt; &amp;table_updates)</argsstring>
+        <name>ForReplaceTable</name>
+        <qualifiedname>iceberg::TableRequirements::ForReplaceTable</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>base</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt; &amp;</type>
+          <declname>table_updates</declname>
+        </param>
+        <briefdescription>
+<para>Generate requirements for replacing an existing table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For table replacement, this requires that the table UUID matches but allows more aggressive changes than a regular update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>table_updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The list of table updates for replacement </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A list of table requirements to validate before replacement </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="132" column="17" bodyfile="iceberg/table_requirements.cc" bodystart="117" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableRequirements_1aed36640e6c4ee1e1b9bead582faf4b20" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::unique_ptr&lt; TableRequirement &gt; &gt; &gt; iceberg::TableRequirements::ForUpdateTable</definition>
+        <argsstring>(const TableMetadata &amp;base, const std::vector&lt; std::unique_ptr&lt; TableUpdate &gt; &gt; &amp;table_updates)</argsstring>
+        <name>ForUpdateTable</name>
+        <qualifiedname>iceberg::TableRequirements::ForUpdateTable</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>base</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt; &amp;</type>
+          <declname>table_updates</declname>
+        </param>
+        <briefdescription>
+<para>Generate requirements for updating an existing table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For table updates, this generates requirements to ensure that key metadata properties haven&apos;t changed concurrently.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>table_updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The list of table updates </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A list of table requirements to validate before update </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="144" column="17" bodyfile="iceberg/table_requirements.cc" bodystart="128" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableRequirements_1a53fbc822029aae8f6f42a0db4c452b13" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::TableRequirements::IsCreate</definition>
+        <argsstring>(const std::vector&lt; std::unique_ptr&lt; TableRequirement &gt; &gt; &amp;requirements)</argsstring>
+        <name>IsCreate</name>
+        <qualifiedname>iceberg::TableRequirements::IsCreate</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &amp;</type>
+          <declname>requirements</declname>
+        </param>
+        <briefdescription>
+<para>Check if the requirements are for table creation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="149" column="17" bodyfile="iceberg/table_requirements.cc" bodystart="139" bodyend="152"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Factory class for generating table requirements. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class analyzes a sequence of table updates and generates the appropriate table requirements to ensure safe concurrent modifications. </para>
+    </detaileddescription>
+    <location file="iceberg/table_requirements.h" line="113" column="1" bodyfile="iceberg/table_requirements.h" bodystart="113" bodyend="151"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableRequirements_1a3ec73cafe440067c2f9f46485113786e" prot="public" virt="non-virtual"><scope>iceberg::TableRequirements</scope><name>ForCreateTable</name></member>
+      <member refid="classiceberg_1_1TableRequirements_1a36e610485b3545404eb8c4faec3d1b4b" prot="public" virt="non-virtual"><scope>iceberg::TableRequirements</scope><name>ForReplaceTable</name></member>
+      <member refid="classiceberg_1_1TableRequirements_1aed36640e6c4ee1e1b9bead582faf4b20" prot="public" virt="non-virtual"><scope>iceberg::TableRequirements</scope><name>ForUpdateTable</name></member>
+      <member refid="classiceberg_1_1TableRequirements_1a53fbc822029aae8f6f42a0db4c452b13" prot="public" virt="non-virtual"><scope>iceberg::TableRequirements</scope><name>IsCreate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

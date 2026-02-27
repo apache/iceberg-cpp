@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1Literal_1_1BelowMin" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::Literal::BelowMin</compoundname>
+    <includes refid="literal_8h" local="no">literal.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1Literal_1_1BelowMin_1a75d271856898b306c3fbf8454fd75792" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Literal::BelowMin::operator==</definition>
+        <argsstring>(const BelowMin &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Literal::BelowMin::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Literal_1_1BelowMin" kindref="compound">BelowMin</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="45" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1Literal_1_1BelowMin_1a77bccac5d83008d741c1d63146c99843" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::strong_ordering</type>
+        <definition>std::strong_ordering iceberg::Literal::BelowMin::operator&lt;=&gt;</definition>
+        <argsstring>(const BelowMin &amp;) const =default</argsstring>
+        <name>operator&lt;=&gt;</name>
+        <qualifiedname>iceberg::Literal::BelowMin::operator&lt;=&gt;</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Literal_1_1BelowMin" kindref="compound">BelowMin</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="46" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Sentinel value to indicate that the literal value is below the valid range of a specific primitive type. It can happen when casting a literal to a narrower primitive type. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/literal.h" line="44" column="3" bodyfile="iceberg/expression/literal.h" bodystart="44" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1Literal_1_1BelowMin_1a77bccac5d83008d741c1d63146c99843" prot="public" virt="non-virtual"><scope>iceberg::Literal::BelowMin</scope><name>operator&lt;=&gt;</name></member>
+      <member refid="structiceberg_1_1Literal_1_1BelowMin_1a75d271856898b306c3fbf8454fd75792" prot="public" virt="non-virtual"><scope>iceberg::Literal::BelowMin</scope><name>operator==</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InMemoryCatalogTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::InMemoryCatalogTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryCatalogTest_1a2350401b55b445abeb03712f8eeacf73" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::InMemoryCatalogTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::InMemoryCatalogTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/in_memory_catalog_test.cc" line="88" column="19" bodyfile="iceberg/test/in_memory_catalog_test.cc" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryCatalogTest_1ad0ba922308c555860b611293d2431182" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1InMemoryCatalog" kindref="compound">InMemoryCatalog</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;InMemoryCatalog&gt; iceberg::InMemoryCatalogTest::catalog_</definition>
+        <argsstring></argsstring>
+        <name>catalog_</name>
+        <qualifiedname>iceberg::InMemoryCatalogTest::catalog_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/in_memory_catalog_test.cc" line="89" column="19" bodyfile="iceberg/test/in_memory_catalog_test.cc" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryCatalogTest_1a566267e97fd6f05173376d9fa75ee94b" prot="protected" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::InMemoryCatalogTest::created_temp_paths_</definition>
+        <argsstring></argsstring>
+        <name>created_temp_paths_</name>
+        <qualifiedname>iceberg::InMemoryCatalogTest::created_temp_paths_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/in_memory_catalog_test.cc" line="91" column="15" bodyfile="iceberg/test/in_memory_catalog_test.cc" bodystart="91" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1InMemoryCatalogTest_1a489793c87d3fb177c61ef7434a66490f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::InMemoryCatalogTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::InMemoryCatalogTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/in_memory_catalog_test.cc" line="51" column="8" bodyfile="iceberg/test/in_memory_catalog_test.cc" bodystart="51" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryCatalogTest_1a232ec01c784768a54ba6e3c34edcdb2b" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::InMemoryCatalogTest::TearDown</definition>
+        <argsstring>() override</argsstring>
+        <name>TearDown</name>
+        <qualifiedname>iceberg::InMemoryCatalogTest::TearDown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/in_memory_catalog_test.cc" line="58" column="8" bodyfile="iceberg/test/in_memory_catalog_test.cc" bodystart="58" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryCatalogTest_1aa0822b40320efa6ee9c350c9b6712c73" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::InMemoryCatalogTest::GenerateTestTableLocation</definition>
+        <argsstring>(std::string table_name)</argsstring>
+        <name>GenerateTestTableLocation</name>
+        <qualifiedname>iceberg::InMemoryCatalogTest::GenerateTestTableLocation</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>table_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/in_memory_catalog_test.cc" line="70" column="15" bodyfile="iceberg/test/in_memory_catalog_test.cc" bodystart="70" bodyend="86"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::InMemoryCatalogTest</label>
+        <link refid="classiceberg_1_1InMemoryCatalogTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="7">
+        <label>iceberg::Catalog</label>
+        <link refid="classiceberg_1_1Catalog"/>
+      </node>
+      <node id="4">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="6">
+        <label>iceberg::InMemoryCatalog</label>
+        <link refid="classiceberg_1_1InMemoryCatalog"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::InMemoryCatalogTest</label>
+        <link refid="classiceberg_1_1InMemoryCatalogTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catalog_</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>created_temp_paths_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::InMemoryCatalog &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="8">
+        <label>std::enable_shared_from_this&lt; InMemoryCatalog &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::string</label>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/in_memory_catalog_test.cc" line="49" column="1" bodyfile="iceberg/test/in_memory_catalog_test.cc" bodystart="49" bodyend="92"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1InMemoryCatalogTest_1ad0ba922308c555860b611293d2431182" prot="protected" virt="non-virtual"><scope>iceberg::InMemoryCatalogTest</scope><name>catalog_</name></member>
+      <member refid="classiceberg_1_1InMemoryCatalogTest_1a566267e97fd6f05173376d9fa75ee94b" prot="protected" virt="non-virtual"><scope>iceberg::InMemoryCatalogTest</scope><name>created_temp_paths_</name></member>
+      <member refid="classiceberg_1_1InMemoryCatalogTest_1a2350401b55b445abeb03712f8eeacf73" prot="protected" virt="non-virtual"><scope>iceberg::InMemoryCatalogTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1InMemoryCatalogTest_1aa0822b40320efa6ee9c350c9b6712c73" prot="protected" virt="non-virtual"><scope>iceberg::InMemoryCatalogTest</scope><name>GenerateTestTableLocation</name></member>
+      <member refid="classiceberg_1_1InMemoryCatalogTest_1a489793c87d3fb177c61ef7434a66490f" prot="protected" virt="non-virtual"><scope>iceberg::InMemoryCatalogTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1InMemoryCatalogTest_1a232ec01c784768a54ba6e3c34edcdb2b" prot="protected" virt="non-virtual"><scope>iceberg::InMemoryCatalogTest</scope><name>TearDown</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

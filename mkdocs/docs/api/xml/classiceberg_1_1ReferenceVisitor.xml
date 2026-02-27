@@ -1,0 +1,307 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ReferenceVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ReferenceVisitor</compoundname>
+    <basecompoundref refid="classiceberg_1_1ExpressionVisitor" prot="public" virt="non-virtual">iceberg::ExpressionVisitor&lt; FieldIdsSetRef &gt;</basecompoundref>
+    <includes refid="binder_8h" local="no">binder.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ReferenceVisitor_1a96748dc5ae2645bb7e9bf4bd94a620bd" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::ReferenceVisitor::referenced_field_ids_</definition>
+        <argsstring></argsstring>
+        <name>referenced_field_ids_</name>
+        <qualifiedname>iceberg::ReferenceVisitor::referenced_field_ids_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="103" column="22" bodyfile="iceberg/expression/binder.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1a48efb8576058a1dfc631a1de34af6c27" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_set&lt; int32_t &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_set&lt; int32_t &gt; &gt; iceberg::ReferenceVisitor::GetReferencedFieldIds</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;expr)</argsstring>
+        <name>GetReferencedFieldIds</name>
+        <qualifiedname>iceberg::ReferenceVisitor::GetReferencedFieldIds</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="84" column="17" bodyfile="iceberg/expression/binder.cc" bodystart="123" bodyend="128"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1a0b953832375a4d9fcecedde8ae2281a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::AlwaysTrue</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysTrue</name>
+        <qualifiedname>iceberg::ReferenceVisitor::AlwaysTrue</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aed1c555ca56ff0aaa898d31aa52f7287">AlwaysTrue</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1True" kindref="compound">True</ref> expression (always evaluates to true). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="87" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="130" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1ae5b76e04dde78755ecc7396c4d302a76" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::AlwaysFalse</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysFalse</name>
+        <qualifiedname>iceberg::ReferenceVisitor::AlwaysFalse</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aa6abb6e1020467e2ab3a2e17563990be">AlwaysFalse</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1False" kindref="compound">False</ref> expression (always evaluates to false). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="88" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="132" bodyend="132"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1a0f6516597a46b3b2db36ac572144d06b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::Not</definition>
+        <argsstring>(const FieldIdsSetRef &amp;child_result) override</argsstring>
+        <name>Not</name>
+        <qualifiedname>iceberg::ReferenceVisitor::Not</qualifiedname>
+        <param>
+          <type>const FieldIdsSetRef &amp;</type>
+          <declname>child_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="89" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="134" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1a4e8e3247916a1c69382032835c8f53ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::And</definition>
+        <argsstring>(const FieldIdsSetRef &amp;left_result, const FieldIdsSetRef &amp;right_result) override</argsstring>
+        <name>And</name>
+        <qualifiedname>iceberg::ReferenceVisitor::And</qualifiedname>
+        <param>
+          <type>const FieldIdsSetRef &amp;</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>const FieldIdsSetRef &amp;</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="90" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="139" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1a0b13a36f58519597655e6f1be0a1490b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::Or</definition>
+        <argsstring>(const FieldIdsSetRef &amp;left_result, const FieldIdsSetRef &amp;right_result) override</argsstring>
+        <name>Or</name>
+        <qualifiedname>iceberg::ReferenceVisitor::Or</qualifiedname>
+        <param>
+          <type>const FieldIdsSetRef &amp;</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>const FieldIdsSetRef &amp;</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="92" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="145" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1ab00f6bdb46bcb2c2d70adf525bbda53d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::ReferenceVisitor::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1ae15b69bbbd82d8c0b941cb4bc3324fc4">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit a bound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="94" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="151" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1ae9d28e70b081213b6613136be7d0ce3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; UnboundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::ReferenceVisitor::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1a1c01ceb403a5c6e2706f9b197d729ead">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit an unbound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="95" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="157" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1ad36efac34ffffc2a12adc29f1c4fc2a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::Aggregate</definition>
+        <argsstring>(const std::shared_ptr&lt; BoundAggregate &gt; &amp;aggregate) override</argsstring>
+        <name>Aggregate</name>
+        <qualifiedname>iceberg::ReferenceVisitor::Aggregate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1a4a7c83473af339c9c64cef5e9f3947ee">Aggregate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundAggregate" kindref="compound">BoundAggregate</ref> &gt; &amp;</type>
+          <declname>aggregate</declname>
+        </param>
+        <briefdescription>
+<para>Visit a bound aggregate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>aggregate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound aggregate to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="97" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="162" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReferenceVisitor_1a38b63773662fdb9955e126bbe2596e3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; FieldIdsSetRef &gt;</type>
+        <definition>Result&lt; FieldIdsSetRef &gt; iceberg::ReferenceVisitor::Aggregate</definition>
+        <argsstring>(const std::shared_ptr&lt; UnboundAggregate &gt; &amp;aggregate) override</argsstring>
+        <name>Aggregate</name>
+        <qualifiedname>iceberg::ReferenceVisitor::Aggregate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1a699e13e4420928256b3fb08a87674a9f">Aggregate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundAggregate" kindref="compound">UnboundAggregate</ref> &gt; &amp;</type>
+          <declname>aggregate</declname>
+        </param>
+        <briefdescription>
+<para>Visit an unbound aggregate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>aggregate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound aggregate to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/binder.h" line="99" column="10" bodyfile="iceberg/expression/binder.cc" bodystart="168" bodyend="171"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Visitor to collect referenced field IDs from an expression. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; FieldIdsSetRef &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ReferenceVisitor</label>
+        <link refid="classiceberg_1_1ReferenceVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; FieldIdsSetRef &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ReferenceVisitor</label>
+        <link refid="classiceberg_1_1ReferenceVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/binder.h" line="82" column="1" bodyfile="iceberg/expression/binder.h" bodystart="82" bodyend="104"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ReferenceVisitor_1ad36efac34ffffc2a12adc29f1c4fc2a9" prot="public" virt="virtual"><scope>iceberg::ReferenceVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1a38b63773662fdb9955e126bbe2596e3b" prot="public" virt="virtual"><scope>iceberg::ReferenceVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1ae5b76e04dde78755ecc7396c4d302a76" prot="public" virt="virtual"><scope>iceberg::ReferenceVisitor</scope><name>AlwaysFalse</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1a0b953832375a4d9fcecedde8ae2281a2" prot="public" virt="virtual"><scope>iceberg::ReferenceVisitor</scope><name>AlwaysTrue</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1a4e8e3247916a1c69382032835c8f53ce" prot="public" virt="non-virtual"><scope>iceberg::ReferenceVisitor</scope><name>And</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a134636ef9aac1bbf8ade254e1c1c24d6" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; FieldIdsSetRef &gt;::"><scope>iceberg::ReferenceVisitor</scope><name>And</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1a48efb8576058a1dfc631a1de34af6c27" prot="public" virt="non-virtual"><scope>iceberg::ReferenceVisitor</scope><name>GetReferencedFieldIds</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1a0f6516597a46b3b2db36ac572144d06b" prot="public" virt="non-virtual"><scope>iceberg::ReferenceVisitor</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a3785b1824deecc35b76c64ae6bb57f23" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; FieldIdsSetRef &gt;::"><scope>iceberg::ReferenceVisitor</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1a0b13a36f58519597655e6f1be0a1490b" prot="public" virt="non-virtual"><scope>iceberg::ReferenceVisitor</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa21a66f372f1b32f94d8be2bb5643440" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; FieldIdsSetRef &gt;::"><scope>iceberg::ReferenceVisitor</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1ab00f6bdb46bcb2c2d70adf525bbda53d" prot="public" virt="virtual"><scope>iceberg::ReferenceVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1ae9d28e70b081213b6613136be7d0ce3b" prot="public" virt="virtual"><scope>iceberg::ReferenceVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1ReferenceVisitor_1a96748dc5ae2645bb7e9bf4bd94a620bd" prot="private" virt="non-virtual"><scope>iceberg::ReferenceVisitor</scope><name>referenced_field_ids_</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a94e8c3eb4910ab2e221163c19fda6492" prot="public" virt="virtual"><scope>iceberg::ReferenceVisitor</scope><name>~ExpressionVisitor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

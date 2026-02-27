@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ParquetWriter::Impl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a1f4573e1b11b3287da56b7bf45129813" prot="private" static="no" mutable="no">
+        <type>::arrow::MemoryPool *</type>
+        <definition>::arrow::MemoryPool* iceberg::parquet::ParquetWriter::Impl::pool_</definition>
+        <argsstring></argsstring>
+        <name>pool_</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::pool_</qualifiedname>
+        <initializer>= ::arrow::default_memory_pool()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="160" column="23" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a6afd4c73baeac771d43fe0a05794eb06" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::Schema &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::Schema&gt; iceberg::parquet::ParquetWriter::Impl::arrow_schema_</definition>
+        <argsstring></argsstring>
+        <name>arrow_schema_</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::arrow_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="162" column="19" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1ab40fa54e149675c826b03c1a80cd3642" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::io::OutputStream &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::io::OutputStream&gt; iceberg::parquet::ParquetWriter::Impl::output_stream_</definition>
+        <argsstring></argsstring>
+        <name>output_stream_</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::output_stream_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="164" column="19" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a5f2e14e3d5a1d28b32b010a1ab7869a9" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt;::parquet::arrow::FileWriter &gt;</type>
+        <definition>std::unique_ptr&lt;::parquet::arrow::FileWriter&gt; iceberg::parquet::ParquetWriter::Impl::writer_</definition>
+        <argsstring></argsstring>
+        <name>writer_</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="166" column="19" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a938090177689a15ebe225e9711ac49d9" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::parquet::ParquetWriter::Impl::total_bytes_</definition>
+        <argsstring></argsstring>
+        <name>total_bytes_</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::total_bytes_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="168" column="11" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="168" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1aad92a8fe9ce46fd82824634dbdf82536" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::parquet::ParquetWriter::Impl::split_offsets_</definition>
+        <argsstring></argsstring>
+        <name>split_offsets_</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::split_offsets_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="170" column="15" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="170" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a264d1562392417ece3327da43d654524" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::parquet::ParquetWriter::Impl::Open</definition>
+        <argsstring>(const WriterOptions &amp;options)</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::Open</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1WriterOptions" kindref="compound">WriterOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="81" column="10" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="81" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a72f7e10c9b6ed6ff208dc391ff51a015" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::parquet::ParquetWriter::Impl::Write</definition>
+        <argsstring>(ArrowArray *array)</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::Write</qualifiedname>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>array</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="115" column="10" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="115" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1ab30a6f9e553b206a5eab9fb1ebc6d528" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::parquet::ParquetWriter::Impl::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::Close</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="125" column="10" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="125" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a230e07aabb8d55eb306f61767d1c0c4b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::parquet::ParquetWriter::Impl::Closed</definition>
+        <argsstring>() const</argsstring>
+        <name>Closed</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::Closed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="143" column="8" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="143" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a5e9ca2b2bf370754936d9cdd0fc86e94" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::parquet::ParquetWriter::Impl::length</definition>
+        <argsstring>()</argsstring>
+        <name>length</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="145" column="10" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="145" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a8a59f3112cfbb35f3c40d832a516d53b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt; int64_t &gt; iceberg::parquet::ParquetWriter::Impl::split_offsets</definition>
+        <argsstring>() const</argsstring>
+        <name>split_offsets</name>
+        <qualifiedname>iceberg::parquet::ParquetWriter::Impl::split_offsets</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_writer.cc" line="156" column="15" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="156" bodyend="156"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/parquet/parquet_writer.cc" line="79" column="1" bodyfile="iceberg/parquet/parquet_writer.cc" bodystart="79" bodyend="171"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a6afd4c73baeac771d43fe0a05794eb06" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>arrow_schema_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1ab30a6f9e553b206a5eab9fb1ebc6d528" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a230e07aabb8d55eb306f61767d1c0c4b" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>Closed</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a5e9ca2b2bf370754936d9cdd0fc86e94" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>length</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a264d1562392417ece3327da43d654524" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1ab40fa54e149675c826b03c1a80cd3642" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>output_stream_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a1f4573e1b11b3287da56b7bf45129813" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>pool_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a8a59f3112cfbb35f3c40d832a516d53b" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>split_offsets</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1aad92a8fe9ce46fd82824634dbdf82536" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>split_offsets_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a938090177689a15ebe225e9711ac49d9" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>total_bytes_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a72f7e10c9b6ed6ff208dc391ff51a015" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetWriter_1_1Impl_1a5f2e14e3d5a1d28b32b010a1ab7869a9" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetWriter::Impl</scope><name>writer_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,263 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BoundExpressionTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::BoundExpressionTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1BoundExpressionTest_1a313961512f2e736aad9b59e816d542f4" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Schema&gt; iceberg::BoundExpressionTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::BoundExpressionTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/eval_expr_test.cc" line="73" column="19" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1BoundExpressionTest_1ab05868fa5c100c491ae6967de50360f3" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::DataType &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::DataType&gt; iceberg::BoundExpressionTest::arrow_data_type_</definition>
+        <argsstring></argsstring>
+        <name>arrow_data_type_</name>
+        <qualifiedname>iceberg::BoundExpressionTest::arrow_data_type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/eval_expr_test.cc" line="74" column="19" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1BoundExpressionTest_1a039ddcf58dbe1cb7fbacfd2859f6cfa8" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::Array &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::Array&gt; iceberg::BoundExpressionTest::arrow_array_</definition>
+        <argsstring></argsstring>
+        <name>arrow_array_</name>
+        <qualifiedname>iceberg::BoundExpressionTest::arrow_array_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/eval_expr_test.cc" line="75" column="19" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1BoundExpressionTest_1a756ac12560e181cdcdd2f9b88c8a0448" prot="protected" static="no" mutable="no">
+        <type><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref></type>
+        <definition>ArrowSchema iceberg::BoundExpressionTest::arrow_c_schema_</definition>
+        <argsstring></argsstring>
+        <name>arrow_c_schema_</name>
+        <qualifiedname>iceberg::BoundExpressionTest::arrow_c_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/eval_expr_test.cc" line="76" column="15" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1BoundExpressionTest_1a7aba0c4abe2492520e8e681bfd557877" prot="protected" static="no" mutable="no">
+        <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref></type>
+        <definition>ArrowArray iceberg::BoundExpressionTest::arrow_c_array_</definition>
+        <argsstring></argsstring>
+        <name>arrow_c_array_</name>
+        <qualifiedname>iceberg::BoundExpressionTest::arrow_c_array_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/eval_expr_test.cc" line="77" column="14" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="77" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundExpressionTest_1af76b3ab27d91545fa49196191d4ae019" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::BoundExpressionTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::BoundExpressionTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/eval_expr_test.cc" line="42" column="8" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="42" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundExpressionTest_1a2c496e0968a4a18be038e2c7ee825cc0" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::BoundExpressionTest::TearDown</definition>
+        <argsstring>() override</argsstring>
+        <name>TearDown</name>
+        <qualifiedname>iceberg::BoundExpressionTest::TearDown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/eval_expr_test.cc" line="64" column="8" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="64" bodyend="71"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::BoundExpressionTest</label>
+        <link refid="classiceberg_1_1BoundExpressionTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="19">
+        <label>ArrowArray</label>
+        <link refid="structArrowArray"/>
+        <childnode refid="19" relation="usage">
+          <edgelabel>children</edgelabel>
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>ArrowSchema</label>
+        <link refid="structArrowSchema"/>
+        <childnode refid="18" relation="usage">
+          <edgelabel>children</edgelabel>
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>iceberg::BoundExpressionTest</label>
+        <link refid="classiceberg_1_1BoundExpressionTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>arrow_data_type_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>arrow_array_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>arrow_c_schema_</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>arrow_c_array_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="17">
+        <label>std::shared_ptr&lt;::arrow::Array &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::shared_ptr&lt;::arrow::DataType &gt;</label>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/eval_expr_test.cc" line="40" column="1" bodyfile="iceberg/test/eval_expr_test.cc" bodystart="40" bodyend="78"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BoundExpressionTest_1a039ddcf58dbe1cb7fbacfd2859f6cfa8" prot="protected" virt="non-virtual"><scope>iceberg::BoundExpressionTest</scope><name>arrow_array_</name></member>
+      <member refid="classiceberg_1_1BoundExpressionTest_1a7aba0c4abe2492520e8e681bfd557877" prot="protected" virt="non-virtual"><scope>iceberg::BoundExpressionTest</scope><name>arrow_c_array_</name></member>
+      <member refid="classiceberg_1_1BoundExpressionTest_1a756ac12560e181cdcdd2f9b88c8a0448" prot="protected" virt="non-virtual"><scope>iceberg::BoundExpressionTest</scope><name>arrow_c_schema_</name></member>
+      <member refid="classiceberg_1_1BoundExpressionTest_1ab05868fa5c100c491ae6967de50360f3" prot="protected" virt="non-virtual"><scope>iceberg::BoundExpressionTest</scope><name>arrow_data_type_</name></member>
+      <member refid="classiceberg_1_1BoundExpressionTest_1a313961512f2e736aad9b59e816d542f4" prot="protected" virt="non-virtual"><scope>iceberg::BoundExpressionTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1BoundExpressionTest_1af76b3ab27d91545fa49196191d4ae019" prot="protected" virt="non-virtual"><scope>iceberg::BoundExpressionTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1BoundExpressionTest_1a2c496e0968a4a18be038e2c7ee825cc0" prot="protected" virt="non-virtual"><scope>iceberg::BoundExpressionTest</scope><name>TearDown</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Bound" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Bound</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1BoundAggregate" prot="public" virt="non-virtual">iceberg::BoundAggregate</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1BoundPredicate" prot="public" virt="non-virtual">iceberg::BoundPredicate</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1BoundTerm" prot="public" virt="non-virtual">iceberg::BoundTerm</derivedcompoundref>
+    <includes refid="expression_8h" local="no">expression.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Bound_1abc22c55a926f2041f458bdc8be7a18b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>iceberg::Bound::~Bound</definition>
+        <argsstring>()</argsstring>
+        <name>~Bound</name>
+        <qualifiedname>iceberg::Bound::~Bound</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="362" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Bound_1ae3accf6c583a065d2bb6b47cdcbac1c3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>virtual Result&lt; Literal &gt; iceberg::Bound::Evaluate</definition>
+        <argsstring>(const StructLike &amp;data) const =0</argsstring>
+        <name>Evaluate</name>
+        <qualifiedname>iceberg::Bound::Evaluate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1CountAggregate_1a413bd870ac74fdc2eca7c58e525d5871">Evaluate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MaxAggregate_1ae27637ed8f26b71702fc02c2c5708141">Evaluate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MinAggregate_1af1eac8269b3a6686bb3ce06964f029e5">Evaluate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundPredicate_1adaca3af8c2e8a95297b8e1bad62f68d2">Evaluate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundReference_1a1c404f52f470ab3426a39532cf15b013">Evaluate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundTransform_1ac4b17a9029177774ea64164ad2c6e2ec">Evaluate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundAggregate_1af9bc8efe3b6b7a6c3c85bf37efd7a6d7">Evaluate</reimplementedby>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Evaluate this expression against a row-based data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="365" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Bound_1a80f0b389e0244809527168fca111a0a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; class <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; class BoundReference &gt; iceberg::Bound::reference</definition>
+        <argsstring>()=0</argsstring>
+        <name>reference</name>
+        <qualifiedname>iceberg::Bound::reference</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1BoundAggregate_1af59679da53f3634d45d775a11f0417e7">reference</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundPredicate_1aa3c404fbe4dc5a3f194c675d03cf50b7">reference</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundReference_1a7bb95549beeb88eed46a9dd24216fe59">reference</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundTransform_1a4de1b8587a665c1a7798ad7c74c8d0cd">reference</reimplementedby>
+        <briefdescription>
+<para>Returns the underlying bound reference for this term. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="368" column="27"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Interface for bound expressions that can be evaluated. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> expressions have been resolved against a concrete schema and contain all necessary information to evaluate against data structures. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="2">
+        <label>iceberg::BoundAggregate</label>
+        <link refid="classiceberg_1_1BoundAggregate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::BoundLiteralPredicate</label>
+        <link refid="classiceberg_1_1BoundLiteralPredicate"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::BoundPredicate</label>
+        <link refid="classiceberg_1_1BoundPredicate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::BoundReference</label>
+        <link refid="classiceberg_1_1BoundReference"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::BoundSetPredicate</label>
+        <link refid="classiceberg_1_1BoundSetPredicate"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::BoundTerm</label>
+        <link refid="classiceberg_1_1BoundTerm"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::BoundTransform</label>
+        <link refid="classiceberg_1_1BoundTransform"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::BoundUnaryPredicate</label>
+        <link refid="classiceberg_1_1BoundUnaryPredicate"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::CountAggregate</label>
+        <link refid="classiceberg_1_1CountAggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::CountNonNullAggregate</label>
+        <link refid="classiceberg_1_1CountNonNullAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::CountNullAggregate</label>
+        <link refid="classiceberg_1_1CountNullAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::CountStarAggregate</label>
+        <link refid="classiceberg_1_1CountStarAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::MaxAggregate</label>
+        <link refid="classiceberg_1_1MaxAggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::MinAggregate</label>
+        <link refid="classiceberg_1_1MinAggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/expression/expression.h" line="360" column="1" bodyfile="iceberg/expression/expression.h" bodystart="360" bodyend="369"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Bound_1ae3accf6c583a065d2bb6b47cdcbac1c3" prot="public" virt="pure-virtual"><scope>iceberg::Bound</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1Bound_1a80f0b389e0244809527168fca111a0a6" prot="public" virt="pure-virtual"><scope>iceberg::Bound</scope><name>reference</name></member>
+      <member refid="classiceberg_1_1Bound_1abc22c55a926f2041f458bdc8be7a18b5" prot="public" virt="virtual"><scope>iceberg::Bound</scope><name>~Bound</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

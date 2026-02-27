@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1parquet_1_1ReadContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ReadContext</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ReadContext_1ae3f0a528d3ec727ae81083ce724fa37a" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::Schema &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::Schema&gt; iceberg::parquet::ReadContext::output_arrow_schema_</definition>
+        <argsstring></argsstring>
+        <name>output_arrow_schema_</name>
+        <qualifiedname>iceberg::parquet::ReadContext::output_arrow_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="102" column="19" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ReadContext_1a4582e7c17e0e5eaa89d7b2321fffd69f" prot="public" static="no" mutable="no">
+        <type>std::unique_ptr&lt;::arrow::RecordBatchReader &gt;</type>
+        <definition>std::unique_ptr&lt;::arrow::RecordBatchReader&gt; iceberg::parquet::ReadContext::record_batch_reader_</definition>
+        <argsstring></argsstring>
+        <name>record_batch_reader_</name>
+        <qualifiedname>iceberg::parquet::ReadContext::record_batch_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="104" column="19" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="104" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::parquet::ReadContext</label>
+        <link refid="structiceberg_1_1parquet_1_1ReadContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>output_arrow_schema_</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>record_batch_reader_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt;::arrow::Schema &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt;::arrow::RecordBatchReader &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/parquet/parquet_reader.cc" line="98" column="1" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="98" bodyend="105"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1parquet_1_1ReadContext_1ae3f0a528d3ec727ae81083ce724fa37a" prot="public" virt="non-virtual"><scope>iceberg::parquet::ReadContext</scope><name>output_arrow_schema_</name></member>
+      <member refid="structiceberg_1_1parquet_1_1ReadContext_1a4582e7c17e0e5eaa89d7b2321fffd69f" prot="public" virt="non-virtual"><scope>iceberg::parquet::ReadContext</scope><name>record_batch_reader_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

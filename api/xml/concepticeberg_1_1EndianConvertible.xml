@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1EndianConvertible" kind="concept">
+    <compoundname>iceberg::EndianConvertible</compoundname>
+    <includes refid="endian_8h" local="no">endian.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename T&gt;
+concept <ref refid="concepticeberg_1_1EndianConvertible" kindref="compound">iceberg::EndianConvertible</ref> =  std::is_arithmetic_v&lt;T&gt;    </initializer>
+    <briefdescription>
+<para>Concept for values that can be converted to/from another endian format. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/endian.h" line="33" column="1"/>
+  </compounddef>
+</doxygen>

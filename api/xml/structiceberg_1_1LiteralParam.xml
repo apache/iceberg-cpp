@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1LiteralParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::LiteralParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1LiteralParam_1af0429b0ff45949b6be97411e2baaed49" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::LiteralParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::LiteralParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="277" column="15" bodyfile="iceberg/test/literal_test.cc" bodystart="277" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LiteralParam_1ac8f1203809efd0efa6e73cc345c9daf8" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::LiteralParam::serialized</definition>
+        <argsstring></argsstring>
+        <name>serialized</name>
+        <qualifiedname>iceberg::LiteralParam::serialized</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="278" column="15" bodyfile="iceberg/test/literal_test.cc" bodystart="278" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LiteralParam_1a67f288f373ae5d3adeb31a99cb5d9c1d" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::LiteralParam::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::LiteralParam::value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="279" column="11" bodyfile="iceberg/test/literal_test.cc" bodystart="279" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LiteralParam_1a799d852aa7432d110c930cd0f68eca29" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PrimitiveType&gt; iceberg::LiteralParam::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::LiteralParam::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="280" column="19" bodyfile="iceberg/test/literal_test.cc" bodystart="280" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::LiteralParam</label>
+        <link refid="structiceberg_1_1LiteralParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>serialized</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>value</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="7">
+        <label>std::shared_ptr&lt; iceberg::PrimitiveType &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/literal_test.cc" line="276" column="1" bodyfile="iceberg/test/literal_test.cc" bodystart="276" bodyend="281"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1LiteralParam_1ac8f1203809efd0efa6e73cc345c9daf8" prot="public" virt="non-virtual"><scope>iceberg::LiteralParam</scope><name>serialized</name></member>
+      <member refid="structiceberg_1_1LiteralParam_1af0429b0ff45949b6be97411e2baaed49" prot="public" virt="non-virtual"><scope>iceberg::LiteralParam</scope><name>test_name</name></member>
+      <member refid="structiceberg_1_1LiteralParam_1a799d852aa7432d110c930cd0f68eca29" prot="public" virt="non-virtual"><scope>iceberg::LiteralParam</scope><name>type</name></member>
+      <member refid="structiceberg_1_1LiteralParam_1a67f288f373ae5d3adeb31a99cb5d9c1d" prot="public" virt="non-virtual"><scope>iceberg::LiteralParam</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

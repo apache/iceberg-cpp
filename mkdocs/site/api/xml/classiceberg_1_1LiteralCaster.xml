@@ -1,0 +1,298 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1LiteralCaster" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::LiteralCaster</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a40920377924dbf0f28fcaba62e8e6845" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastTo</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastTo</name>
+        <qualifiedname>iceberg::LiteralCaster::CastTo</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast a <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to the target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="39" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="534" bodyend="580"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a376129a8851538cc2ec8f102136ae660" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::LiteralCaster::BelowMinLiteral</definition>
+        <argsstring>(std::shared_ptr&lt; PrimitiveType &gt; type)</argsstring>
+        <name>BelowMinLiteral</name>
+        <qualifiedname>iceberg::LiteralCaster::BelowMinLiteral</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Create a literal representing a value below the minimum for the given type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="43" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="86" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a18fa9172618ffb439b6980bc5acb812f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::LiteralCaster::AboveMaxLiteral</definition>
+        <argsstring>(std::shared_ptr&lt; PrimitiveType &gt; type)</argsstring>
+        <name>AboveMaxLiteral</name>
+        <qualifiedname>iceberg::LiteralCaster::AboveMaxLiteral</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Create a literal representing a value above the maximum for the given type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="46" column="18" bodyfile="iceberg/expression/literal.cc" bodystart="90" bodyend="92"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1acd8818cc3fabd113d44f248c80f7965a" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromInt</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromInt</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromInt</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from Int type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="50" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="94" bodyend="112"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a177dcf54361721cc657b1301192ea63a" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromLong</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromLong</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromLong</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from Long type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="54" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="114" bodyend="152"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a3ec068204f6f387b5e74df55b56ba6f9" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromFloat</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromFloat</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromFloat</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from Float type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="58" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="154" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a2949ae0cdf6b414dd4fb51927d841f0a" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromDouble</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromDouble</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromDouble</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from Double type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="62" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="167" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1ad151ae7e6d665eae7827521a99b21d91" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromString</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromString</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromString</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from String type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="66" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="187" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a3d06e4b822a2ba2111becbde10da3a3d" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromTimestamp</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromTimestamp</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromTimestamp</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from Timestamp type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="70" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="208" bodyend="223"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1a145c317c3912ad9d52e9d154555e991a" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromTimestampTz</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromTimestampTz</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromTimestampTz</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from TimestampTz type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="74" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="225" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1ae0f477a0cab53e20da8011c5bc2da40f" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromBinary</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromBinary</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromBinary</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from Binary type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="78" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="242" bodyend="258"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LiteralCaster_1ac98e499c78c8de1f47d8c665ae0fe6d8" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::LiteralCaster::CastFromFixed</definition>
+        <argsstring>(const Literal &amp;literal, const std::shared_ptr&lt; PrimitiveType &gt; &amp;target_type)</argsstring>
+        <name>CastFromFixed</name>
+        <qualifiedname>iceberg::LiteralCaster::CastFromFixed</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt; &amp;</type>
+          <declname>target_type</declname>
+        </param>
+        <briefdescription>
+<para>Cast from Fixed type to target type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.cc" line="82" column="17" bodyfile="iceberg/expression/literal.cc" bodystart="260" bodyend="269"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1LiteralCaster" kindref="compound">LiteralCaster</ref> handles type casting operations for <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>. This is an internal implementation class. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/literal.cc" line="36" column="1" bodyfile="iceberg/expression/literal.cc" bodystart="36" bodyend="84"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1LiteralCaster_1a18fa9172618ffb439b6980bc5acb812f" prot="public" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>AboveMaxLiteral</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1a376129a8851538cc2ec8f102136ae660" prot="public" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>BelowMinLiteral</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1ae0f477a0cab53e20da8011c5bc2da40f" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromBinary</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1a2949ae0cdf6b414dd4fb51927d841f0a" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromDouble</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1ac98e499c78c8de1f47d8c665ae0fe6d8" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromFixed</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1a3ec068204f6f387b5e74df55b56ba6f9" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromFloat</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1acd8818cc3fabd113d44f248c80f7965a" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromInt</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1a177dcf54361721cc657b1301192ea63a" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromLong</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1ad151ae7e6d665eae7827521a99b21d91" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromString</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1a3d06e4b822a2ba2111becbde10da3a3d" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromTimestamp</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1a145c317c3912ad9d52e9d154555e991a" prot="private" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastFromTimestampTz</name></member>
+      <member refid="classiceberg_1_1LiteralCaster_1a40920377924dbf0f28fcaba62e8e6845" prot="public" virt="non-virtual"><scope>iceberg::LiteralCaster</scope><name>CastTo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,406 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SchemaCache" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SchemaCache</compoundname>
+    <innerclass refid="structiceberg_1_1SchemaCache_1_1NameIdMap" prot="public">iceberg::SchemaCache::NameIdMap</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1SchemaCache_1a7c7165719c9268153fe5776a5a2b69ef" prot="public" static="no">
+        <type>std::unordered_map&lt; int32_t, std::reference_wrapper&lt; const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt; &gt;</type>
+        <definition>using iceberg::SchemaCache::IdToFieldMap =  std::unordered_map&lt;int32_t, std::reference_wrapper&lt;const SchemaField&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>IdToFieldMap</name>
+        <qualifiedname>iceberg::SchemaCache::IdToFieldMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="205" column="3" bodyfile="iceberg/schema.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1SchemaCache_1a9e21feff0358906d4abe0a39074e5689" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const IdToFieldMap &gt;</type>
+        <definition>using iceberg::SchemaCache::IdToFieldMapRef =  std::reference_wrapper&lt;const IdToFieldMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>IdToFieldMapRef</name>
+        <qualifiedname>iceberg::SchemaCache::IdToFieldMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="207" column="3" bodyfile="iceberg/schema.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1SchemaCache_1aaca1534305d33fac26625c26585f9caa" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const <ref refid="structiceberg_1_1SchemaCache_1_1NameIdMap" kindref="compound">NameIdMap</ref> &gt;</type>
+        <definition>using iceberg::SchemaCache::NameIdMapRef =  std::reference_wrapper&lt;const NameIdMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>NameIdMapRef</name>
+        <qualifiedname>iceberg::SchemaCache::NameIdMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="223" column="3" bodyfile="iceberg/schema.h" bodystart="223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1SchemaCache_1a2ee7ace1db9fc32cce9107751c1038e4" prot="public" static="no">
+        <type>std::unordered_map&lt; std::string, int32_t, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, std::equal_to&lt;&gt; &gt;</type>
+        <definition>using iceberg::SchemaCache::LowercaseNameToIdMap =  std::unordered_map&lt;std::string, int32_t, StringHash, std::equal_to&lt;&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>LowercaseNameToIdMap</name>
+        <qualifiedname>iceberg::SchemaCache::LowercaseNameToIdMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="225" column="3" bodyfile="iceberg/schema.h" bodystart="226" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1SchemaCache_1a036e26cbae0d61a7a4f71ef32b228a90" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const LowercaseNameToIdMap &gt;</type>
+        <definition>using iceberg::SchemaCache::LowercaseNameToIdMapRef =  std::reference_wrapper&lt;const LowercaseNameToIdMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>LowercaseNameToIdMapRef</name>
+        <qualifiedname>iceberg::SchemaCache::LowercaseNameToIdMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="227" column="3" bodyfile="iceberg/schema.h" bodystart="227" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1SchemaCache_1aa5c1e5a4156ba2ca6f768013be23a617" prot="public" static="no">
+        <type>std::unordered_map&lt; int32_t, std::vector&lt; size_t &gt; &gt;</type>
+        <definition>using iceberg::SchemaCache::IdToPositionPathMap =  std::unordered_map&lt;int32_t, std::vector&lt;size_t&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>IdToPositionPathMap</name>
+        <qualifiedname>iceberg::SchemaCache::IdToPositionPathMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="229" column="3" bodyfile="iceberg/schema.h" bodystart="229" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1SchemaCache_1af445a3a98770dc62222bf3298914ea3b" prot="public" static="no">
+        <type>std::reference_wrapper&lt; const IdToPositionPathMap &gt;</type>
+        <definition>using iceberg::SchemaCache::IdToPositionPathMapRef =  std::reference_wrapper&lt;const IdToPositionPathMap&gt;</definition>
+        <argsstring></argsstring>
+        <name>IdToPositionPathMapRef</name>
+        <qualifiedname>iceberg::SchemaCache::IdToPositionPathMapRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="230" column="3" bodyfile="iceberg/schema.h" bodystart="230" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SchemaCache_1ad864fa3e5dd75b29a11853da3249d356" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+        <definition>const Schema* iceberg::SchemaCache::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::SchemaCache::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="245" column="16" bodyfile="iceberg/schema.h" bodystart="245" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaCache_1a71048ae404045c188fa5232b7372b290" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitIdToFieldMap &gt;</type>
+        <definition>Lazy&lt;InitIdToFieldMap&gt; iceberg::SchemaCache::id_to_field_</definition>
+        <argsstring></argsstring>
+        <name>id_to_field_</name>
+        <qualifiedname>iceberg::SchemaCache::id_to_field_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="247" column="8" bodyfile="iceberg/schema.h" bodystart="247" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaCache_1ab30ce83fe40e2f1a5849f53838b5e009" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitNameIdMap &gt;</type>
+        <definition>Lazy&lt;InitNameIdMap&gt; iceberg::SchemaCache::name_id_map_</definition>
+        <argsstring></argsstring>
+        <name>name_id_map_</name>
+        <qualifiedname>iceberg::SchemaCache::name_id_map_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="249" column="8" bodyfile="iceberg/schema.h" bodystart="249" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaCache_1a2ca4c9a7eadbe06f5fae39c9f144407d" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitLowerCaseNameToIdMap &gt;</type>
+        <definition>Lazy&lt;InitLowerCaseNameToIdMap&gt; iceberg::SchemaCache::lowercase_name_to_id_</definition>
+        <argsstring></argsstring>
+        <name>lowercase_name_to_id_</name>
+        <qualifiedname>iceberg::SchemaCache::lowercase_name_to_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="251" column="8" bodyfile="iceberg/schema.h" bodystart="251" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaCache_1ac9b0edc9a60832cf9ea966ba2862e9d0" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitIdToPositionPath &gt;</type>
+        <definition>Lazy&lt;InitIdToPositionPath&gt; iceberg::SchemaCache::id_to_position_path_</definition>
+        <argsstring></argsstring>
+        <name>id_to_position_path_</name>
+        <qualifiedname>iceberg::SchemaCache::id_to_position_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="253" column="8" bodyfile="iceberg/schema.h" bodystart="253" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SchemaCache_1aaab4be7f4a8afb31d4368a24350dc34c" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitHighestFieldId &gt;</type>
+        <definition>Lazy&lt;InitHighestFieldId&gt; iceberg::SchemaCache::highest_field_id_</definition>
+        <argsstring></argsstring>
+        <name>highest_field_id_</name>
+        <qualifiedname>iceberg::SchemaCache::highest_field_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="255" column="8" bodyfile="iceberg/schema.h" bodystart="255" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1ac78c22104da16cc56cb9e53ab7f00318" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SchemaCache::SchemaCache</definition>
+        <argsstring>(const Schema *schema)</argsstring>
+        <name>SchemaCache</name>
+        <qualifiedname>iceberg::SchemaCache::SchemaCache</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="203" column="12" bodyfile="iceberg/schema.h" bodystart="203" bodyend="203"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1a63821385e6393a682d1afdab81fb7c63" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; IdToFieldMapRef &gt;</type>
+        <definition>Result&lt; SchemaCache::IdToFieldMapRef &gt; iceberg::SchemaCache::GetIdToFieldMap</definition>
+        <argsstring>() const</argsstring>
+        <name>GetIdToFieldMap</name>
+        <qualifiedname>iceberg::SchemaCache::GetIdToFieldMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="232" column="10" bodyfile="iceberg/schema.cc" bodystart="305" bodyend="307"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1a0927c32e677aeea2694dd1fde4b864bb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; NameIdMapRef &gt;</type>
+        <definition>Result&lt; SchemaCache::NameIdMapRef &gt; iceberg::SchemaCache::GetNameIdMap</definition>
+        <argsstring>() const</argsstring>
+        <name>GetNameIdMap</name>
+        <qualifiedname>iceberg::SchemaCache::GetNameIdMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="233" column="10" bodyfile="iceberg/schema.cc" bodystart="309" bodyend="311"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1acc241a3e68fe38cd3b8bcc9fc58ece07" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; LowercaseNameToIdMapRef &gt;</type>
+        <definition>Result&lt; SchemaCache::LowercaseNameToIdMapRef &gt; iceberg::SchemaCache::GetLowercaseNameToIdMap</definition>
+        <argsstring>() const</argsstring>
+        <name>GetLowercaseNameToIdMap</name>
+        <qualifiedname>iceberg::SchemaCache::GetLowercaseNameToIdMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="234" column="10" bodyfile="iceberg/schema.cc" bodystart="313" bodyend="316"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1ab9121612066d77a9697fc3dc5a304a1c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; IdToPositionPathMapRef &gt;</type>
+        <definition>Result&lt; SchemaCache::IdToPositionPathMapRef &gt; iceberg::SchemaCache::GetIdToPositionPathMap</definition>
+        <argsstring>() const</argsstring>
+        <name>GetIdToPositionPathMap</name>
+        <qualifiedname>iceberg::SchemaCache::GetIdToPositionPathMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="235" column="10" bodyfile="iceberg/schema.cc" bodystart="318" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1ab4d4dc561b12a2d18e637de0b31b5fb4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int32_t &gt;</type>
+        <definition>Result&lt; int32_t &gt; iceberg::SchemaCache::GetHighestFieldId</definition>
+        <argsstring>() const</argsstring>
+        <name>GetHighestFieldId</name>
+        <qualifiedname>iceberg::SchemaCache::GetHighestFieldId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="236" column="10" bodyfile="iceberg/schema.cc" bodystart="322" bodyend="324"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1a070d7af49f90ed2e93ee9a66b034a75d" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; IdToFieldMap &gt;</type>
+        <definition>Result&lt; SchemaCache::IdToFieldMap &gt; iceberg::SchemaCache::InitIdToFieldMap</definition>
+        <argsstring>(const Schema *schema)</argsstring>
+        <name>InitIdToFieldMap</name>
+        <qualifiedname>iceberg::SchemaCache::InitIdToFieldMap</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="239" column="17" bodyfile="iceberg/schema.cc" bodystart="326" bodyend="331"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1a482c91a482cccc24e7383710266bb868" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1SchemaCache_1_1NameIdMap" kindref="compound">NameIdMap</ref> &gt;</type>
+        <definition>Result&lt; SchemaCache::NameIdMap &gt; iceberg::SchemaCache::InitNameIdMap</definition>
+        <argsstring>(const Schema *schema)</argsstring>
+        <name>InitNameIdMap</name>
+        <qualifiedname>iceberg::SchemaCache::InitNameIdMap</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="240" column="17" bodyfile="iceberg/schema.cc" bodystart="333" bodyend="341"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1a16f8fccc41631f40374bdba77481ef03" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; LowercaseNameToIdMap &gt;</type>
+        <definition>Result&lt; SchemaCache::LowercaseNameToIdMap &gt; iceberg::SchemaCache::InitLowerCaseNameToIdMap</definition>
+        <argsstring>(const Schema *schema)</argsstring>
+        <name>InitLowerCaseNameToIdMap</name>
+        <qualifiedname>iceberg::SchemaCache::InitLowerCaseNameToIdMap</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="241" column="17" bodyfile="iceberg/schema.cc" bodystart="343" bodyend="353"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1a0f3ff870fdc66a64b92764067745a4e4" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; IdToPositionPathMap &gt;</type>
+        <definition>Result&lt; SchemaCache::IdToPositionPathMap &gt; iceberg::SchemaCache::InitIdToPositionPath</definition>
+        <argsstring>(const Schema *schema)</argsstring>
+        <name>InitIdToPositionPath</name>
+        <qualifiedname>iceberg::SchemaCache::InitIdToPositionPath</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="242" column="17" bodyfile="iceberg/schema.cc" bodystart="355" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SchemaCache_1a1099c03111fdd18d9d6e407cce3bcc28" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int32_t &gt;</type>
+        <definition>Result&lt; int32_t &gt; iceberg::SchemaCache::InitHighestFieldId</definition>
+        <argsstring>(const Schema *schema)</argsstring>
+        <name>InitHighestFieldId</name>
+        <qualifiedname>iceberg::SchemaCache::InitHighestFieldId</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.h" line="243" column="17" bodyfile="iceberg/schema.cc" bodystart="362" bodyend="374"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/schema.h" line="201" column="1" bodyfile="iceberg/schema.h" bodystart="201" bodyend="256"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SchemaCache_1ab4d4dc561b12a2d18e637de0b31b5fb4" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>GetHighestFieldId</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a63821385e6393a682d1afdab81fb7c63" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>GetIdToFieldMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1ab9121612066d77a9697fc3dc5a304a1c" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>GetIdToPositionPathMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1acc241a3e68fe38cd3b8bcc9fc58ece07" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>GetLowercaseNameToIdMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a0927c32e677aeea2694dd1fde4b864bb" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>GetNameIdMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1aaab4be7f4a8afb31d4368a24350dc34c" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>highest_field_id_</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a71048ae404045c188fa5232b7372b290" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>id_to_field_</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1ac9b0edc9a60832cf9ea966ba2862e9d0" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>id_to_position_path_</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a7c7165719c9268153fe5776a5a2b69ef" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>IdToFieldMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a9e21feff0358906d4abe0a39074e5689" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>IdToFieldMapRef</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1aa5c1e5a4156ba2ca6f768013be23a617" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>IdToPositionPathMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1af445a3a98770dc62222bf3298914ea3b" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>IdToPositionPathMapRef</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a1099c03111fdd18d9d6e407cce3bcc28" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>InitHighestFieldId</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a070d7af49f90ed2e93ee9a66b034a75d" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>InitIdToFieldMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a0f3ff870fdc66a64b92764067745a4e4" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>InitIdToPositionPath</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a16f8fccc41631f40374bdba77481ef03" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>InitLowerCaseNameToIdMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a482c91a482cccc24e7383710266bb868" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>InitNameIdMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a2ca4c9a7eadbe06f5fae39c9f144407d" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>lowercase_name_to_id_</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a2ee7ace1db9fc32cce9107751c1038e4" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>LowercaseNameToIdMap</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1a036e26cbae0d61a7a4f71ef32b228a90" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>LowercaseNameToIdMapRef</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1ab30ce83fe40e2f1a5849f53838b5e009" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>name_id_map_</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1aaca1534305d33fac26625c26585f9caa" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>NameIdMapRef</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1ad864fa3e5dd75b29a11853da3249d356" prot="private" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1SchemaCache_1ac78c22104da16cc56cb9e53ab7f00318" prot="public" virt="non-virtual"><scope>iceberg::SchemaCache</scope><name>SchemaCache</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

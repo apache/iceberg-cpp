@@ -1,0 +1,1870 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableProperties" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TableProperties</compoundname>
+    <basecompoundref refid="classiceberg_1_1ConfigBase" prot="public" virt="non-virtual">iceberg::ConfigBase&lt; TableProperties &gt;</basecompoundref>
+    <includes refid="table__properties_8h" local="no">table_properties.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1TableProperties_1a08e29b22f59e15b61db5c3f330045bca" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>const <ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref>&lt; <ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref> &gt;::Entry&lt; T &gt;</type>
+        <definition>using iceberg::TableProperties::Entry =  const ConfigBase&lt;TableProperties&gt;::Entry&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>Entry</name>
+        <qualifiedname>iceberg::TableProperties::Entry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="40" column="3" bodyfile="iceberg/table_properties.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4c9aa5f466b89211335bf1483061abbd" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kFormatVersion</definition>
+        <argsstring></argsstring>
+        <name>kFormatVersion</name>
+        <qualifiedname>iceberg::TableProperties::kFormatVersion</qualifiedname>
+        <initializer>{&quot;format-version&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for table format version. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Iceberg will default a new table&apos;s format version to the latest stable and recommended version. This reserved property keyword allows users to override the Iceberg format version of the table metadata.</para>
+<para>If this table property exists when creating a table, the table will use the specified format version. If a table updates this property, it will try to upgrade to the specified format version.</para>
+<para><simplesect kind="note"><para>incomplete or unstable versions cannot be selected using this property. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="55" column="23" bodyfile="iceberg/table_properties.h" bodystart="55" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4b85f21c1d46975c9debdf33f1cdf78b" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kUuid</definition>
+        <argsstring></argsstring>
+        <name>kUuid</name>
+        <qualifiedname>iceberg::TableProperties::kUuid</qualifiedname>
+        <initializer>{&quot;uuid&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for table UUID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="57" column="23" bodyfile="iceberg/table_properties.h" bodystart="57" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aa019030168d449422f8eb93ac25cf20a" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kSnapshotCount</definition>
+        <argsstring></argsstring>
+        <name>kSnapshotCount</name>
+        <qualifiedname>iceberg::TableProperties::kSnapshotCount</qualifiedname>
+        <initializer>{&quot;snapshot-count&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for the total number of snapshots. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="59" column="23" bodyfile="iceberg/table_properties.h" bodystart="59" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a00533c09e753c0758dc6fc82ad4fb7c6" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kCurrentSnapshotSummary</definition>
+        <argsstring></argsstring>
+        <name>kCurrentSnapshotSummary</name>
+        <qualifiedname>iceberg::TableProperties::kCurrentSnapshotSummary</qualifiedname>
+        <initializer>{&quot;current-snapshot-summary&quot;,
+                                                           &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for current snapshot summary. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="61" column="23" bodyfile="iceberg/table_properties.h" bodystart="61" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a49c37a139d3c56607010bb3461d70677" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kCurrentSnapshotId</definition>
+        <argsstring></argsstring>
+        <name>kCurrentSnapshotId</name>
+        <qualifiedname>iceberg::TableProperties::kCurrentSnapshotId</qualifiedname>
+        <initializer>{&quot;current-snapshot-id&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for current snapshot id. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="64" column="23" bodyfile="iceberg/table_properties.h" bodystart="64" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a20763e470bc3a489e110dafcada81056" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kCurrentSnapshotTimestamp</definition>
+        <argsstring></argsstring>
+        <name>kCurrentSnapshotTimestamp</name>
+        <qualifiedname>iceberg::TableProperties::kCurrentSnapshotTimestamp</qualifiedname>
+        <initializer>{
+      &quot;current-snapshot-<ref refid="group__type-factories_1ga98107734ef37f6f3b36b9fa3a6e30fe9" kindref="member">timestamp</ref>-ms&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for current snapshot timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="66" column="23" bodyfile="iceberg/table_properties.h" bodystart="66" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac64409757073416f03c48b5b60b1f1ca" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kCurrentSchema</definition>
+        <argsstring></argsstring>
+        <name>kCurrentSchema</name>
+        <qualifiedname>iceberg::TableProperties::kCurrentSchema</qualifiedname>
+        <initializer>{&quot;current-schema&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for the JSON representation of current schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="69" column="23" bodyfile="iceberg/table_properties.h" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ad85ed98f30bdff9d0f3b2766e735eb45" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDefaultPartitionSpec</definition>
+        <argsstring></argsstring>
+        <name>kDefaultPartitionSpec</name>
+        <qualifiedname>iceberg::TableProperties::kDefaultPartitionSpec</qualifiedname>
+        <initializer>{&quot;default-partition-spec&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for the JSON representation of current(default) partition spec. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="72" column="23" bodyfile="iceberg/table_properties.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a7073a3c1178a1c7862163c7896c7bfd2" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDefaultSortOrder</definition>
+        <argsstring></argsstring>
+        <name>kDefaultSortOrder</name>
+        <qualifiedname>iceberg::TableProperties::kDefaultSortOrder</qualifiedname>
+        <initializer>{&quot;default-sort-order&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>Reserved table property for the JSON representation of current(default) sort order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="75" column="23" bodyfile="iceberg/table_properties.h" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a1e819866166a549fc5d8598da368008a" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kCommitNumRetries</definition>
+        <argsstring></argsstring>
+        <name>kCommitNumRetries</name>
+        <qualifiedname>iceberg::TableProperties::kCommitNumRetries</qualifiedname>
+        <initializer>{&quot;commit.retry.num-retries&quot;, 4}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="79" column="23" bodyfile="iceberg/table_properties.h" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1abae38542576baf58e374975d2639fe3b" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kCommitMinRetryWaitMs</definition>
+        <argsstring></argsstring>
+        <name>kCommitMinRetryWaitMs</name>
+        <qualifiedname>iceberg::TableProperties::kCommitMinRetryWaitMs</qualifiedname>
+        <initializer>{&quot;commit.retry.min-wait-ms&quot;, 100}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="80" column="23" bodyfile="iceberg/table_properties.h" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1acad1576bc641c34befe6a6ac14b0211a" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kCommitMaxRetryWaitMs</definition>
+        <argsstring></argsstring>
+        <name>kCommitMaxRetryWaitMs</name>
+        <qualifiedname>iceberg::TableProperties::kCommitMaxRetryWaitMs</qualifiedname>
+        <initializer>{&quot;commit.retry.max-wait-ms&quot;,
+                                                     60 * 1000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="81" column="23" bodyfile="iceberg/table_properties.h" bodystart="81" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aa3ab4bf56d332299526f32b47b06a9d7" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kCommitTotalRetryTimeMs</definition>
+        <argsstring></argsstring>
+        <name>kCommitTotalRetryTimeMs</name>
+        <qualifiedname>iceberg::TableProperties::kCommitTotalRetryTimeMs</qualifiedname>
+        <initializer>{&quot;commit.retry.total-timeout-ms&quot;,
+                                                       30 * 60 * 1000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="83" column="23" bodyfile="iceberg/table_properties.h" bodystart="83" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a3cc5eb71e7458c1a267c0573381d8f53" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kCommitNumStatusChecks</definition>
+        <argsstring></argsstring>
+        <name>kCommitNumStatusChecks</name>
+        <qualifiedname>iceberg::TableProperties::kCommitNumStatusChecks</qualifiedname>
+        <initializer>{&quot;commit.status-check.num-retries&quot;,
+                                                      3}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="85" column="23" bodyfile="iceberg/table_properties.h" bodystart="85" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a2c4693e8b144fc2f745534a9592cdc68" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kCommitStatusChecksMinWaitMs</definition>
+        <argsstring></argsstring>
+        <name>kCommitStatusChecksMinWaitMs</name>
+        <qualifiedname>iceberg::TableProperties::kCommitStatusChecksMinWaitMs</qualifiedname>
+        <initializer>{
+      &quot;commit.status-check.min-wait-ms&quot;, int64_t{1000}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="87" column="23" bodyfile="iceberg/table_properties.h" bodystart="87" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a9f8a901c18194f1abdfb2886ab235b1d" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kCommitStatusChecksMaxWaitMs</definition>
+        <argsstring></argsstring>
+        <name>kCommitStatusChecksMaxWaitMs</name>
+        <qualifiedname>iceberg::TableProperties::kCommitStatusChecksMaxWaitMs</qualifiedname>
+        <initializer>{
+      &quot;commit.status-check.max-wait-ms&quot;, int64_t{60 * 1000}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="89" column="23" bodyfile="iceberg/table_properties.h" bodystart="89" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a08dc800bfa38c9a4afd01b6287d8a5a2" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kCommitStatusChecksTotalWaitMs</definition>
+        <argsstring></argsstring>
+        <name>kCommitStatusChecksTotalWaitMs</name>
+        <qualifiedname>iceberg::TableProperties::kCommitStatusChecksTotalWaitMs</qualifiedname>
+        <initializer>{
+      &quot;commit.status-check.total-timeout-ms&quot;, int64_t{30 * 60 * 1000}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="91" column="23" bodyfile="iceberg/table_properties.h" bodystart="91" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aae9fdde6918b1c1d4d1a6c463b4027dd" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kManifestTargetSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kManifestTargetSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kManifestTargetSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;commit.manifest.target-size-bytes&quot;, int64_t{8 * 1024 * 1024}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="96" column="23" bodyfile="iceberg/table_properties.h" bodystart="96" bodyend="97"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aa07bb17fcba76abedc8483db58efbb1a" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kManifestMinMergeCount</definition>
+        <argsstring></argsstring>
+        <name>kManifestMinMergeCount</name>
+        <qualifiedname>iceberg::TableProperties::kManifestMinMergeCount</qualifiedname>
+        <initializer>{
+      &quot;commit.manifest.min-count-to-merge&quot;, 100}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="98" column="23" bodyfile="iceberg/table_properties.h" bodystart="98" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a395174f0bfd6ff74d55a050df5039e5b" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kManifestMergeEnabled</definition>
+        <argsstring></argsstring>
+        <name>kManifestMergeEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kManifestMergeEnabled</qualifiedname>
+        <initializer>{&quot;commit.manifest-merge.enabled&quot;, true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="100" column="23" bodyfile="iceberg/table_properties.h" bodystart="100" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a586732bc1875fc92ba9da8d17f5633e0" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDefaultFileFormat</definition>
+        <argsstring></argsstring>
+        <name>kDefaultFileFormat</name>
+        <qualifiedname>iceberg::TableProperties::kDefaultFileFormat</qualifiedname>
+        <initializer>{&quot;write.format.default&quot;, &quot;parquet&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="104" column="23" bodyfile="iceberg/table_properties.h" bodystart="104" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a1f2b41bdd0a572622f2075a33269187e" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteDefaultFileFormat</definition>
+        <argsstring></argsstring>
+        <name>kDeleteDefaultFileFormat</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteDefaultFileFormat</qualifiedname>
+        <initializer>{&quot;write.delete.format.default&quot;,
+                                                            &quot;parquet&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="105" column="23" bodyfile="iceberg/table_properties.h" bodystart="105" bodyend="106"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a808f33d50261fae60b30b6917700a702" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetRowGroupSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kParquetRowGroupSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kParquetRowGroupSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.row-group-size-bytes&quot;, 128 * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="110" column="23" bodyfile="iceberg/table_properties.h" bodystart="110" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aa15d1f73697c2bb8d5258c3fe3e54a82" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kDeleteParquetRowGroupSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetRowGroupSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetRowGroupSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.row-group-size-bytes&quot;, 128 * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="112" column="23" bodyfile="iceberg/table_properties.h" bodystart="112" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ada5dd80eba5f9aa3a339fbb8a7f771c8" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetPageSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kParquetPageSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kParquetPageSizeBytes</qualifiedname>
+        <initializer>{&quot;write.parquet.page-size-bytes&quot;,
+                                                     1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="114" column="23" bodyfile="iceberg/table_properties.h" bodystart="114" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a08dfd9bf30298ee0269da9c267857960" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kDeleteParquetPageSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetPageSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetPageSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.page-size-bytes&quot;, 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="116" column="23" bodyfile="iceberg/table_properties.h" bodystart="116" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac02aa2aaa0f0da2ba47aabed2befa2f9" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetPageRowLimit</definition>
+        <argsstring></argsstring>
+        <name>kParquetPageRowLimit</name>
+        <qualifiedname>iceberg::TableProperties::kParquetPageRowLimit</qualifiedname>
+        <initializer>{&quot;write.parquet.page-row-limit&quot;,
+                                                    20&apos;000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="118" column="23" bodyfile="iceberg/table_properties.h" bodystart="118" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a1d0dbc4cfd787dc2ebfd40bce753090e" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kDeleteParquetPageRowLimit</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetPageRowLimit</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetPageRowLimit</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.page-row-limit&quot;, 20&apos;000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="120" column="23" bodyfile="iceberg/table_properties.h" bodystart="120" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aece8c8ab721c47a80063fa51ba8b87d7" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetDictSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kParquetDictSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kParquetDictSizeBytes</qualifiedname>
+        <initializer>{&quot;write.parquet.dict-size-bytes&quot;,
+                                                     2 * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="122" column="23" bodyfile="iceberg/table_properties.h" bodystart="122" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a13f7b83bb91e14e93043eff61633350c" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kDeleteParquetDictSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetDictSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetDictSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.dict-size-bytes&quot;, 2 * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="124" column="23" bodyfile="iceberg/table_properties.h" bodystart="124" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ad4a5942969f9ce2d0b007382cd5cc678" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kParquetCompression</definition>
+        <argsstring></argsstring>
+        <name>kParquetCompression</name>
+        <qualifiedname>iceberg::TableProperties::kParquetCompression</qualifiedname>
+        <initializer>{&quot;write.parquet.compression-codec&quot;,
+                                                       &quot;zstd&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="126" column="23" bodyfile="iceberg/table_properties.h" bodystart="126" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a182f35bb69ad454ccc44baefbe302fea" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteParquetCompression</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetCompression</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetCompression</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.compression-codec&quot;, &quot;zstd&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="128" column="23" bodyfile="iceberg/table_properties.h" bodystart="128" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a7635744b1d910c6b56fe18ab656f4abb" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kParquetCompressionLevel</definition>
+        <argsstring></argsstring>
+        <name>kParquetCompressionLevel</name>
+        <qualifiedname>iceberg::TableProperties::kParquetCompressionLevel</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.compression-level&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="130" column="23" bodyfile="iceberg/table_properties.h" bodystart="130" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1afa16f2d83bb2214352c72c1e59f9a6df" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteParquetCompressionLevel</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetCompressionLevel</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetCompressionLevel</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.compression-level&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="132" column="23" bodyfile="iceberg/table_properties.h" bodystart="132" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4cb19008f32024ca90d0eb70e9cc8a1d" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetRowGroupCheckMinRecordCount</definition>
+        <argsstring></argsstring>
+        <name>kParquetRowGroupCheckMinRecordCount</name>
+        <qualifiedname>iceberg::TableProperties::kParquetRowGroupCheckMinRecordCount</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.row-group-check-min-record-count&quot;, 100}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="134" column="23" bodyfile="iceberg/table_properties.h" bodystart="134" bodyend="135"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ae947cff5e809f4c7cb1db0b01319643d" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kDeleteParquetRowGroupCheckMinRecordCount</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetRowGroupCheckMinRecordCount</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetRowGroupCheckMinRecordCount</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.row-group-check-min-record-count&quot;, 100}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="136" column="23" bodyfile="iceberg/table_properties.h" bodystart="136" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aa16ae2a499410631f783edf5d715a343" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetRowGroupCheckMaxRecordCount</definition>
+        <argsstring></argsstring>
+        <name>kParquetRowGroupCheckMaxRecordCount</name>
+        <qualifiedname>iceberg::TableProperties::kParquetRowGroupCheckMaxRecordCount</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.row-group-check-max-record-count&quot;, 10&apos;000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="138" column="23" bodyfile="iceberg/table_properties.h" bodystart="138" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a9f7652216c8446acf72ee220ccf45fbd" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kDeleteParquetRowGroupCheckMaxRecordCount</definition>
+        <argsstring></argsstring>
+        <name>kDeleteParquetRowGroupCheckMaxRecordCount</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteParquetRowGroupCheckMaxRecordCount</qualifiedname>
+        <initializer>{
+      &quot;write.delete.parquet.row-group-check-max-record-count&quot;, 10&apos;000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="140" column="23" bodyfile="iceberg/table_properties.h" bodystart="140" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac690e84a9be8ce21a5fa36524ccba171" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetBloomFilterMaxBytes</definition>
+        <argsstring></argsstring>
+        <name>kParquetBloomFilterMaxBytes</name>
+        <qualifiedname>iceberg::TableProperties::kParquetBloomFilterMaxBytes</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.bloom-filter-max-bytes&quot;, 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="142" column="23" bodyfile="iceberg/table_properties.h" bodystart="142" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1af36d4f8e0e4811af384499a62755bac7" prot="public" static="yes" mutable="no">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::TableProperties::kParquetBloomFilterColumnFppPrefix</definition>
+        <argsstring></argsstring>
+        <name>kParquetBloomFilterColumnFppPrefix</name>
+        <qualifiedname>iceberg::TableProperties::kParquetBloomFilterColumnFppPrefix</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.bloom-filter-fpp.column.&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="144" column="34" bodyfile="iceberg/table_properties.h" bodystart="144" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac5b4953e31a1614935aa9843d008d615" prot="public" static="yes" mutable="no">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::TableProperties::kParquetBloomFilterColumnEnabledPrefix</definition>
+        <argsstring></argsstring>
+        <name>kParquetBloomFilterColumnEnabledPrefix</name>
+        <qualifiedname>iceberg::TableProperties::kParquetBloomFilterColumnEnabledPrefix</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.bloom-filter-enabled.column.&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="146" column="34" bodyfile="iceberg/table_properties.h" bodystart="146" bodyend="147"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ab7a4b63db3d2af3ed089bf55d62c0e5d" prot="public" static="yes" mutable="no">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::TableProperties::kParquetColumnStatsEnabledPrefix</definition>
+        <argsstring></argsstring>
+        <name>kParquetColumnStatsEnabledPrefix</name>
+        <qualifiedname>iceberg::TableProperties::kParquetColumnStatsEnabledPrefix</qualifiedname>
+        <initializer>{
+      &quot;write.parquet.stats-enabled.column.&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="148" column="34" bodyfile="iceberg/table_properties.h" bodystart="148" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a084be3cb6c778caa9dd8e421935e4b12" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kAvroCompression</definition>
+        <argsstring></argsstring>
+        <name>kAvroCompression</name>
+        <qualifiedname>iceberg::TableProperties::kAvroCompression</qualifiedname>
+        <initializer>{&quot;write.avro.compression-codec&quot;,
+                                                    &quot;gzip&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="152" column="23" bodyfile="iceberg/table_properties.h" bodystart="152" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1adce2fedfabc72a586e09319eeafb6bb4" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteAvroCompression</definition>
+        <argsstring></argsstring>
+        <name>kDeleteAvroCompression</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteAvroCompression</qualifiedname>
+        <initializer>{
+      &quot;write.delete.avro.compression-codec&quot;, &quot;gzip&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="154" column="23" bodyfile="iceberg/table_properties.h" bodystart="154" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aac6f902ffb58c708cc727b095454521f" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kAvroCompressionLevel</definition>
+        <argsstring></argsstring>
+        <name>kAvroCompressionLevel</name>
+        <qualifiedname>iceberg::TableProperties::kAvroCompressionLevel</qualifiedname>
+        <initializer>{&quot;write.avro.compression-level&quot;,
+                                                         &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="156" column="23" bodyfile="iceberg/table_properties.h" bodystart="156" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a37a4f648ae3e16c8cb8b7585fbe7745e" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteAvroCompressionLevel</definition>
+        <argsstring></argsstring>
+        <name>kDeleteAvroCompressionLevel</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteAvroCompressionLevel</qualifiedname>
+        <initializer>{
+      &quot;write.delete.avro.compression-level&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="158" column="23" bodyfile="iceberg/table_properties.h" bodystart="158" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a33afcf0bb3488cf667fac77720f1ec96" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kOrcStripeSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kOrcStripeSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kOrcStripeSizeBytes</qualifiedname>
+        <initializer>{&quot;write.orc.stripe-size-bytes&quot;,
+                                                   int64_t{64} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="162" column="23" bodyfile="iceberg/table_properties.h" bodystart="162" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a642a2f2b52459e5e062f14870a178c6e" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kOrcBloomFilterColumns</definition>
+        <argsstring></argsstring>
+        <name>kOrcBloomFilterColumns</name>
+        <qualifiedname>iceberg::TableProperties::kOrcBloomFilterColumns</qualifiedname>
+        <initializer>{
+      &quot;write.orc.bloom.filter.columns&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="164" column="23" bodyfile="iceberg/table_properties.h" bodystart="164" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a6c4671b1316ba506d0e98fe7f2ed8564" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; double &gt;</type>
+        <definition>Entry&lt;double&gt; iceberg::TableProperties::kOrcBloomFilterFpp</definition>
+        <argsstring></argsstring>
+        <name>kOrcBloomFilterFpp</name>
+        <qualifiedname>iceberg::TableProperties::kOrcBloomFilterFpp</qualifiedname>
+        <initializer>{&quot;write.orc.bloom.filter.fpp&quot;, 0.05}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="166" column="23" bodyfile="iceberg/table_properties.h" bodystart="166" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a78aca7d4562ba3805d920c2fe43976ac" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kDeleteOrcStripeSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kDeleteOrcStripeSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteOrcStripeSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.delete.orc.stripe-size-bytes&quot;, int64_t{64} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="167" column="23" bodyfile="iceberg/table_properties.h" bodystart="167" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a1e822b30b324761a9d90b3e442ea322d" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kOrcBlockSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kOrcBlockSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kOrcBlockSizeBytes</qualifiedname>
+        <initializer>{&quot;write.orc.block-size-bytes&quot;,
+                                                  int64_t{256} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="169" column="23" bodyfile="iceberg/table_properties.h" bodystart="169" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a033bab08cfe7bde1f96a77b1bdec06e5" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kDeleteOrcBlockSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kDeleteOrcBlockSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteOrcBlockSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.delete.orc.block-size-bytes&quot;, int64_t{256} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="171" column="23" bodyfile="iceberg/table_properties.h" bodystart="171" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1abd762de237dca1ec49e8cebe93e191f7" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kOrcWriteBatchSize</definition>
+        <argsstring></argsstring>
+        <name>kOrcWriteBatchSize</name>
+        <qualifiedname>iceberg::TableProperties::kOrcWriteBatchSize</qualifiedname>
+        <initializer>{&quot;write.orc.vectorized.batch-size&quot;,
+                                                  1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="173" column="23" bodyfile="iceberg/table_properties.h" bodystart="173" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ae56f58061470fbd5965e1ce1b8832a43" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kDeleteOrcWriteBatchSize</definition>
+        <argsstring></argsstring>
+        <name>kDeleteOrcWriteBatchSize</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteOrcWriteBatchSize</qualifiedname>
+        <initializer>{
+      &quot;write.delete.orc.vectorized.batch-size&quot;, 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="175" column="23" bodyfile="iceberg/table_properties.h" bodystart="175" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4eb20bd8539528909b539db7ecb7101b" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kOrcCompression</definition>
+        <argsstring></argsstring>
+        <name>kOrcCompression</name>
+        <qualifiedname>iceberg::TableProperties::kOrcCompression</qualifiedname>
+        <initializer>{&quot;write.orc.compression-codec&quot;, &quot;zlib&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="177" column="23" bodyfile="iceberg/table_properties.h" bodystart="177" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a9430062c6ab5919ec17baa86ed367523" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteOrcCompression</definition>
+        <argsstring></argsstring>
+        <name>kDeleteOrcCompression</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteOrcCompression</qualifiedname>
+        <initializer>{
+      &quot;write.delete.orc.compression-codec&quot;, &quot;zlib&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="178" column="23" bodyfile="iceberg/table_properties.h" bodystart="178" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac7c1f0b0faedf07b5085af43c82a6afd" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kOrcCompressionStrategy</definition>
+        <argsstring></argsstring>
+        <name>kOrcCompressionStrategy</name>
+        <qualifiedname>iceberg::TableProperties::kOrcCompressionStrategy</qualifiedname>
+        <initializer>{
+      &quot;write.orc.compression-strategy&quot;, &quot;speed&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="180" column="23" bodyfile="iceberg/table_properties.h" bodystart="180" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a2593f53e5ef0e2a92535af68c60827a2" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteOrcCompressionStrategy</definition>
+        <argsstring></argsstring>
+        <name>kDeleteOrcCompressionStrategy</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteOrcCompressionStrategy</qualifiedname>
+        <initializer>{
+      &quot;write.delete.orc.compression-strategy&quot;, &quot;speed&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="182" column="23" bodyfile="iceberg/table_properties.h" bodystart="182" bodyend="183"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a183769d63ff135614d8536efd575f993" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kSplitSize</definition>
+        <argsstring></argsstring>
+        <name>kSplitSize</name>
+        <qualifiedname>iceberg::TableProperties::kSplitSize</qualifiedname>
+        <initializer>{&quot;read.split.target-size&quot;,
+                                          int64_t{128} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="187" column="23" bodyfile="iceberg/table_properties.h" bodystart="187" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a729c5e506e72ae09bf14c9d42a3e9cf1" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kMetadataSplitSize</definition>
+        <argsstring></argsstring>
+        <name>kMetadataSplitSize</name>
+        <qualifiedname>iceberg::TableProperties::kMetadataSplitSize</qualifiedname>
+        <initializer>{&quot;read.split.metadata-target-size&quot;,
+                                                  int64_t{32} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="189" column="23" bodyfile="iceberg/table_properties.h" bodystart="189" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aafb4b1fe35d7182e63a27e8da0e761ef" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kSplitLookback</definition>
+        <argsstring></argsstring>
+        <name>kSplitLookback</name>
+        <qualifiedname>iceberg::TableProperties::kSplitLookback</qualifiedname>
+        <initializer>{&quot;read.split.planning-lookback&quot;, 10}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="191" column="23" bodyfile="iceberg/table_properties.h" bodystart="191" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac675dc647cf01e239788e730c49adcea" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kSplitOpenFileCost</definition>
+        <argsstring></argsstring>
+        <name>kSplitOpenFileCost</name>
+        <qualifiedname>iceberg::TableProperties::kSplitOpenFileCost</qualifiedname>
+        <initializer>{&quot;read.split.open-file-cost&quot;,
+                                                  int64_t{4} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="192" column="23" bodyfile="iceberg/table_properties.h" bodystart="192" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a212d780dc4a93b844836e8e3c35d8292" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kAdaptiveSplitSizeEnabled</definition>
+        <argsstring></argsstring>
+        <name>kAdaptiveSplitSizeEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kAdaptiveSplitSizeEnabled</qualifiedname>
+        <initializer>{&quot;read.split.adaptive-size.enabled&quot;,
+                                                      true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="194" column="23" bodyfile="iceberg/table_properties.h" bodystart="194" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a3eca14c8e3e2e78277f986e79356113f" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kParquetVectorizationEnabled</definition>
+        <argsstring></argsstring>
+        <name>kParquetVectorizationEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kParquetVectorizationEnabled</qualifiedname>
+        <initializer>{
+      &quot;read.parquet.vectorization.enabled&quot;, true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="196" column="23" bodyfile="iceberg/table_properties.h" bodystart="196" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a0c31badc0b2b4979f3e4abe2cf5278a1" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kParquetBatchSize</definition>
+        <argsstring></argsstring>
+        <name>kParquetBatchSize</name>
+        <qualifiedname>iceberg::TableProperties::kParquetBatchSize</qualifiedname>
+        <initializer>{&quot;read.parquet.vectorization.batch-size&quot;,
+                                                 5000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="198" column="23" bodyfile="iceberg/table_properties.h" bodystart="198" bodyend="199"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a759957a2b1ec223bba3f23de4a225b45" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kOrcVectorizationEnabled</definition>
+        <argsstring></argsstring>
+        <name>kOrcVectorizationEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kOrcVectorizationEnabled</qualifiedname>
+        <initializer>{&quot;read.orc.vectorization.enabled&quot;,
+                                                     false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="200" column="23" bodyfile="iceberg/table_properties.h" bodystart="200" bodyend="201"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac43a9d15f30f6e366c1b6169c34912ab" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kOrcBatchSize</definition>
+        <argsstring></argsstring>
+        <name>kOrcBatchSize</name>
+        <qualifiedname>iceberg::TableProperties::kOrcBatchSize</qualifiedname>
+        <initializer>{&quot;read.orc.vectorization.batch-size&quot;, 5000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="202" column="23" bodyfile="iceberg/table_properties.h" bodystart="202" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a37a1bbcac3349d52b671d6ab659802a1" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDataPlanningMode</definition>
+        <argsstring></argsstring>
+        <name>kDataPlanningMode</name>
+        <qualifiedname>iceberg::TableProperties::kDataPlanningMode</qualifiedname>
+        <initializer>{&quot;read.data-planning-mode&quot;, &quot;auto&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="203" column="23" bodyfile="iceberg/table_properties.h" bodystart="203" bodyend="203"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1acf7931e56d375867b4201cec5bc65e38" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeletePlanningMode</definition>
+        <argsstring></argsstring>
+        <name>kDeletePlanningMode</name>
+        <qualifiedname>iceberg::TableProperties::kDeletePlanningMode</qualifiedname>
+        <initializer>{&quot;read.delete-planning-mode&quot;,
+                                                       &quot;auto&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="204" column="23" bodyfile="iceberg/table_properties.h" bodystart="204" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4e6ee604a81edd46ffea19fde2e4de57" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kObjectStoreEnabled</definition>
+        <argsstring></argsstring>
+        <name>kObjectStoreEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kObjectStoreEnabled</qualifiedname>
+        <initializer>{&quot;write.object-storage.enabled&quot;, false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="209" column="23" bodyfile="iceberg/table_properties.h" bodystart="209" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a8f45d9e7831523465872acfb1bf4c1d4" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kWriteObjectStorePartitionedPaths</definition>
+        <argsstring></argsstring>
+        <name>kWriteObjectStorePartitionedPaths</name>
+        <qualifiedname>iceberg::TableProperties::kWriteObjectStorePartitionedPaths</qualifiedname>
+        <initializer>{
+      &quot;write.object-storage.partitioned-paths&quot;, true}</initializer>
+        <briefdescription>
+<para>Excludes the partition values in the path when set to true and object store is enabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="212" column="23" bodyfile="iceberg/table_properties.h" bodystart="212" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aa50d7fa06cb0e4cbd3a7290240626297" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kWriteDataLocation</definition>
+        <argsstring></argsstring>
+        <name>kWriteDataLocation</name>
+        <qualifiedname>iceberg::TableProperties::kWriteDataLocation</qualifiedname>
+        <initializer>{&quot;write.data.path&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>This only applies to files written after this property is set. Files previously written aren&apos;t relocated to reflect this parameter. If not set, defaults to a &quot;data&quot; folder underneath the root path of the table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="217" column="23" bodyfile="iceberg/table_properties.h" bodystart="217" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ab1b90249d85118f93cca262a5bc93b39" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kWriteMetadataLocation</definition>
+        <argsstring></argsstring>
+        <name>kWriteMetadataLocation</name>
+        <qualifiedname>iceberg::TableProperties::kWriteMetadataLocation</qualifiedname>
+        <initializer>{&quot;write.metadata.path&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>This only applies to files written after this property is set. Files previously written aren&apos;t relocated to reflect this parameter. If not set, defaults to a &quot;metadata&quot; folder underneath the root path of the table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="221" column="23" bodyfile="iceberg/table_properties.h" bodystart="221" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4b203f99e45a8f96eed9a0ddb796082a" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kWritePartitionSummaryLimit</definition>
+        <argsstring></argsstring>
+        <name>kWritePartitionSummaryLimit</name>
+        <qualifiedname>iceberg::TableProperties::kWritePartitionSummaryLimit</qualifiedname>
+        <initializer>{
+      &quot;write.summary.partition-limit&quot;, 0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="222" column="23" bodyfile="iceberg/table_properties.h" bodystart="222" bodyend="223"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a677b6924ac244ebb528aadf99d63d6ff" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kMetadataCompression</definition>
+        <argsstring></argsstring>
+        <name>kMetadataCompression</name>
+        <qualifiedname>iceberg::TableProperties::kMetadataCompression</qualifiedname>
+        <initializer>{
+      &quot;write.metadata.compression-codec&quot;, &quot;none&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="224" column="23" bodyfile="iceberg/table_properties.h" bodystart="224" bodyend="225"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1adda90a55f43c7974d36fcaac8627b2c7" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kMetadataPreviousVersionsMax</definition>
+        <argsstring></argsstring>
+        <name>kMetadataPreviousVersionsMax</name>
+        <qualifiedname>iceberg::TableProperties::kMetadataPreviousVersionsMax</qualifiedname>
+        <initializer>{
+      &quot;write.metadata.previous-versions-max&quot;, 100}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="226" column="23" bodyfile="iceberg/table_properties.h" bodystart="226" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a3fb268de46c3cd27a45639e8510b4b89" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kMetadataDeleteAfterCommitEnabled</definition>
+        <argsstring></argsstring>
+        <name>kMetadataDeleteAfterCommitEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kMetadataDeleteAfterCommitEnabled</qualifiedname>
+        <initializer>{
+      &quot;write.metadata.delete-after-commit.enabled&quot;, false}</initializer>
+        <briefdescription>
+<para>This enables to delete the oldest metadata file after commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="229" column="23" bodyfile="iceberg/table_properties.h" bodystart="229" bodyend="230"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a04d3e9452dc82894e47f1f987d921dec" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kMetricsMaxInferredColumnDefaults</definition>
+        <argsstring></argsstring>
+        <name>kMetricsMaxInferredColumnDefaults</name>
+        <qualifiedname>iceberg::TableProperties::kMetricsMaxInferredColumnDefaults</qualifiedname>
+        <initializer>{
+      &quot;write.metadata.metrics.max-inferred-column-defaults&quot;, 100}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="231" column="23" bodyfile="iceberg/table_properties.h" bodystart="231" bodyend="232"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a1eaaf0de51e00f056982333990018140" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::TableProperties::kMetricModeColumnConfPrefix</definition>
+        <argsstring></argsstring>
+        <name>kMetricModeColumnConfPrefix</name>
+        <qualifiedname>iceberg::TableProperties::kMetricModeColumnConfPrefix</qualifiedname>
+        <initializer>=
+      &quot;write.metadata.metrics.column.&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="233" column="44" bodyfile="iceberg/table_properties.h" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a404fb3b78c68fa34cdb74c1d64cca29e" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDefaultWriteMetricsMode</definition>
+        <argsstring></argsstring>
+        <name>kDefaultWriteMetricsMode</name>
+        <qualifiedname>iceberg::TableProperties::kDefaultWriteMetricsMode</qualifiedname>
+        <initializer>{
+      &quot;write.metadata.metrics.default&quot;, &quot;truncate(16)&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="235" column="23" bodyfile="iceberg/table_properties.h" bodystart="235" bodyend="236"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a8f15c8fa48887bc32ae7fa4696dd5092" prot="public" static="yes" mutable="no">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::TableProperties::kDefaultNameMapping</definition>
+        <argsstring></argsstring>
+        <name>kDefaultNameMapping</name>
+        <qualifiedname>iceberg::TableProperties::kDefaultNameMapping</qualifiedname>
+        <initializer>{&quot;schema.name-mapping.default&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="238" column="34" bodyfile="iceberg/table_properties.h" bodystart="238" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4fa34b3b5790158dbcd132c59d4a50b7" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kWriteAuditPublishEnabled</definition>
+        <argsstring></argsstring>
+        <name>kWriteAuditPublishEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kWriteAuditPublishEnabled</qualifiedname>
+        <initializer>{&quot;write.wap.enabled&quot;, false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="240" column="23" bodyfile="iceberg/table_properties.h" bodystart="240" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a9b47cf80fe82d32a3786b371aabcd66a" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kWriteTargetFileSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kWriteTargetFileSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kWriteTargetFileSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.target-file-size-bytes&quot;, int64_t{512} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="241" column="23" bodyfile="iceberg/table_properties.h" bodystart="241" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aa9d6dae35d5937f38e88e1342c559f87" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kDeleteTargetFileSizeBytes</definition>
+        <argsstring></argsstring>
+        <name>kDeleteTargetFileSizeBytes</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteTargetFileSizeBytes</qualifiedname>
+        <initializer>{
+      &quot;write.delete.target-file-size-bytes&quot;, int64_t{64} * 1024 * 1024}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="243" column="23" bodyfile="iceberg/table_properties.h" bodystart="243" bodyend="244"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a608e57cc8cc4799ef8ddba55e7f19dbb" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kSnapshotIdInheritanceEnabled</definition>
+        <argsstring></argsstring>
+        <name>kSnapshotIdInheritanceEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kSnapshotIdInheritanceEnabled</qualifiedname>
+        <initializer>{
+      &quot;compatibility.snapshot-id-inheritance.enabled&quot;, false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="246" column="23" bodyfile="iceberg/table_properties.h" bodystart="246" bodyend="247"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a2875bef801b85dabf68c90d3c273f053" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kGcEnabled</definition>
+        <argsstring></argsstring>
+        <name>kGcEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kGcEnabled</qualifiedname>
+        <initializer>{&quot;gc.enabled&quot;, true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="251" column="23" bodyfile="iceberg/table_properties.h" bodystart="251" bodyend="251"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a53da0a255868e71e2777ee20efcf8a77" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kMaxSnapshotAgeMs</definition>
+        <argsstring></argsstring>
+        <name>kMaxSnapshotAgeMs</name>
+        <qualifiedname>iceberg::TableProperties::kMaxSnapshotAgeMs</qualifiedname>
+        <initializer>{
+      &quot;history.expire.max-snapshot-age-ms&quot;, int64_t{5} * 24 * 60 * 60 * 1000}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="252" column="23" bodyfile="iceberg/table_properties.h" bodystart="252" bodyend="253"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a2d705611398eaccedacbbc9f8ba757e5" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kMinSnapshotsToKeep</definition>
+        <argsstring></argsstring>
+        <name>kMinSnapshotsToKeep</name>
+        <qualifiedname>iceberg::TableProperties::kMinSnapshotsToKeep</qualifiedname>
+        <initializer>{&quot;history.expire.min-snapshots-to-keep&quot;,
+                                                   1}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="254" column="23" bodyfile="iceberg/table_properties.h" bodystart="254" bodyend="255"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a09aec08c69e82ac8d4633a1a451b18e0" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::TableProperties::kMaxRefAgeMs</definition>
+        <argsstring></argsstring>
+        <name>kMaxRefAgeMs</name>
+        <qualifiedname>iceberg::TableProperties::kMaxRefAgeMs</qualifiedname>
+        <initializer>{&quot;history.expire.max-ref-age-ms&quot;,
+                                            (std::numeric_limits&lt;int64_t&gt;::max)()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="256" column="23" bodyfile="iceberg/table_properties.h" bodystart="256" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ad08baa8607ea934a024e00c6675804b4" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteGranularity</definition>
+        <argsstring></argsstring>
+        <name>kDeleteGranularity</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteGranularity</qualifiedname>
+        <initializer>{&quot;write.delete.granularity&quot;,
+                                                      &quot;partition&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="261" column="23" bodyfile="iceberg/table_properties.h" bodystart="261" bodyend="262"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a513fa0a9822de061d0bf5078ab7bb8ce" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteIsolationLevel</definition>
+        <argsstring></argsstring>
+        <name>kDeleteIsolationLevel</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteIsolationLevel</qualifiedname>
+        <initializer>{&quot;write.delete.isolation-level&quot;,
+                                                         &quot;serializable&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="263" column="23" bodyfile="iceberg/table_properties.h" bodystart="263" bodyend="264"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a0eec1d337a0ff472a13446bb7801766e" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kDeleteMode</definition>
+        <argsstring></argsstring>
+        <name>kDeleteMode</name>
+        <qualifiedname>iceberg::TableProperties::kDeleteMode</qualifiedname>
+        <initializer>{&quot;write.delete.mode&quot;, &quot;copy-on-write&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="265" column="23" bodyfile="iceberg/table_properties.h" bodystart="265" bodyend="265"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a74c347728d82d49e4e53f3f418089709" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kUpdateIsolationLevel</definition>
+        <argsstring></argsstring>
+        <name>kUpdateIsolationLevel</name>
+        <qualifiedname>iceberg::TableProperties::kUpdateIsolationLevel</qualifiedname>
+        <initializer>{&quot;write.update.isolation-level&quot;,
+                                                         &quot;serializable&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="267" column="23" bodyfile="iceberg/table_properties.h" bodystart="267" bodyend="268"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a69f226000546986cfdfafc882fa637d6" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kUpdateMode</definition>
+        <argsstring></argsstring>
+        <name>kUpdateMode</name>
+        <qualifiedname>iceberg::TableProperties::kUpdateMode</qualifiedname>
+        <initializer>{&quot;write.update.mode&quot;, &quot;copy-on-write&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="269" column="23" bodyfile="iceberg/table_properties.h" bodystart="269" bodyend="269"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a0be60a272bcdd694376bd7a9252dc18a" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kMergeIsolationLevel</definition>
+        <argsstring></argsstring>
+        <name>kMergeIsolationLevel</name>
+        <qualifiedname>iceberg::TableProperties::kMergeIsolationLevel</qualifiedname>
+        <initializer>{&quot;write.merge.isolation-level&quot;,
+                                                        &quot;serializable&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="271" column="23" bodyfile="iceberg/table_properties.h" bodystart="271" bodyend="272"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1aed9d6e62e39bc1a3a5d0ab3f6168ea30" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kMergeMode</definition>
+        <argsstring></argsstring>
+        <name>kMergeMode</name>
+        <qualifiedname>iceberg::TableProperties::kMergeMode</qualifiedname>
+        <initializer>{&quot;write.merge.mode&quot;, &quot;copy-on-write&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="273" column="23" bodyfile="iceberg/table_properties.h" bodystart="273" bodyend="273"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1ac12ebca6c50a6ba408b5e0a687f94cf4" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::TableProperties::kUpsertEnabled</definition>
+        <argsstring></argsstring>
+        <name>kUpsertEnabled</name>
+        <qualifiedname>iceberg::TableProperties::kUpsertEnabled</qualifiedname>
+        <initializer>{&quot;write.upsert.enabled&quot;, false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="275" column="23" bodyfile="iceberg/table_properties.h" bodystart="275" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a4da737458db65dab7406d23c59907586" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::TableProperties::kEncryptionTableKey</definition>
+        <argsstring></argsstring>
+        <name>kEncryptionTableKey</name>
+        <qualifiedname>iceberg::TableProperties::kEncryptionTableKey</qualifiedname>
+        <initializer>{&quot;encryption.key-id&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="279" column="23" bodyfile="iceberg/table_properties.h" bodystart="279" bodyend="279"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableProperties_1a2c79b913edfefbce4d480d12b8545dcd" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int32_t &gt;</type>
+        <definition>Entry&lt;int32_t&gt; iceberg::TableProperties::kEncryptionDekLength</definition>
+        <argsstring></argsstring>
+        <name>kEncryptionDekLength</name>
+        <qualifiedname>iceberg::TableProperties::kEncryptionDekLength</qualifiedname>
+        <initializer>{&quot;encryption.data-key-length&quot;, 16}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="280" column="23" bodyfile="iceberg/table_properties.h" bodystart="280" bodyend="280"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TableProperties_1a1f8bddf023b70018a63c3231e876b4e2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+        <definition>const std::unordered_set&lt; std::string &gt; &amp; iceberg::TableProperties::reserved_properties</definition>
+        <argsstring>()</argsstring>
+        <name>reserved_properties</name>
+        <qualifiedname>iceberg::TableProperties::reserved_properties</qualifiedname>
+        <briefdescription>
+<para>Get the set of reserved table property keys. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Reserved table properties are only used to control behaviors when creating or updating a table. The values of these properties are not persisted as part of the table metadata.</para>
+<para><simplesect kind="return"><para>The set of reserved property keys </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="289" column="35" bodyfile="iceberg/table_properties.cc" bodystart="24" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableProperties_1ae79c41690204e910aebfdb129aa23a6b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+        <definition>const std::unordered_set&lt; std::string &gt; &amp; iceberg::TableProperties::commit_properties</definition>
+        <argsstring>()</argsstring>
+        <name>commit_properties</name>
+        <qualifiedname>iceberg::TableProperties::commit_properties</qualifiedname>
+        <briefdescription>
+<para>Get the set of commit table property keys. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="292" column="35" bodyfile="iceberg/table_properties.cc" bodystart="34" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableProperties_1ac9d77750fa7e98a7b085f4392051900f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref></type>
+        <definition>TableProperties iceberg::TableProperties::FromMap</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; properties)</argsstring>
+        <name>FromMap</name>
+        <qualifiedname>iceberg::TableProperties::FromMap</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref> instance from a map of key-value pairs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The map containing property key-value pairs </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A unique pointer to a <ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref> instance </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="298" column="26" bodyfile="iceberg/table_properties.cc" bodystart="41" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableProperties_1a42e987f7fe2f4a99ed2821d794058c53" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TableProperties::operator==</definition>
+        <argsstring>(const TableProperties &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::TableProperties::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_properties.h" line="300" column="8" bodyfile="iceberg/table_properties.h" bodystart="300" bodyend="302"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> properties for Iceberg tables. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides configuration entries for various Iceberg table properties including format settings, commit behavior, file formats, compression settings, and other table-level configurations. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; TableProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+      </node>
+      <node id="1">
+        <label>iceberg::TableProperties</label>
+        <link refid="classiceberg_1_1TableProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; TableProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableProperties</label>
+        <link refid="classiceberg_1_1TableProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>kDefaultNameMapping</edgelabel>
+          <edgelabel>kMetricModeColumnConfPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnEnabledPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnFppPrefix</edgelabel>
+          <edgelabel>kParquetColumnStatsEnabledPrefix</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::string_view</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_properties.h" line="37" column="1" bodyfile="iceberg/table_properties.h" bodystart="37" bodyend="303"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableProperties_1ae79c41690204e910aebfdb129aa23a6b" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>commit_properties</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a464281576df4a683611d8319e578257c" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a5988dbb52a6ce914c88ef10c66e5bba7" prot="protected" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>configs_</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a08e29b22f59e15b61db5c3f330045bca" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>Entry</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a78dc1c7d65af1e096a19fc77d2c9ed39" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>Extract</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac9d77750fa7e98a7b085f4392051900f" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>FromMap</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a793c5c7e230dac7b87c16200f8263db6" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a212d780dc4a93b844836e8e3c35d8292" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kAdaptiveSplitSizeEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a084be3cb6c778caa9dd8e421935e4b12" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kAvroCompression</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aac6f902ffb58c708cc727b095454521f" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kAvroCompressionLevel</name></member>
+      <member refid="classiceberg_1_1TableProperties_1acad1576bc641c34befe6a6ac14b0211a" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitMaxRetryWaitMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1abae38542576baf58e374975d2639fe3b" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitMinRetryWaitMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a1e819866166a549fc5d8598da368008a" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitNumRetries</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a3cc5eb71e7458c1a267c0573381d8f53" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitNumStatusChecks</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a9f8a901c18194f1abdfb2886ab235b1d" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitStatusChecksMaxWaitMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a2c4693e8b144fc2f745534a9592cdc68" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitStatusChecksMinWaitMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a08dc800bfa38c9a4afd01b6287d8a5a2" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitStatusChecksTotalWaitMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aa3ab4bf56d332299526f32b47b06a9d7" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCommitTotalRetryTimeMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac64409757073416f03c48b5b60b1f1ca" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCurrentSchema</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a49c37a139d3c56607010bb3461d70677" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCurrentSnapshotId</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a00533c09e753c0758dc6fc82ad4fb7c6" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCurrentSnapshotSummary</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a20763e470bc3a489e110dafcada81056" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kCurrentSnapshotTimestamp</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a37a1bbcac3349d52b671d6ab659802a1" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDataPlanningMode</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a586732bc1875fc92ba9da8d17f5633e0" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDefaultFileFormat</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a8f15c8fa48887bc32ae7fa4696dd5092" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDefaultNameMapping</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ad85ed98f30bdff9d0f3b2766e735eb45" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDefaultPartitionSpec</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a7073a3c1178a1c7862163c7896c7bfd2" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDefaultSortOrder</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a404fb3b78c68fa34cdb74c1d64cca29e" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDefaultWriteMetricsMode</name></member>
+      <member refid="classiceberg_1_1TableProperties_1adce2fedfabc72a586e09319eeafb6bb4" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteAvroCompression</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a37a4f648ae3e16c8cb8b7585fbe7745e" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteAvroCompressionLevel</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a1f2b41bdd0a572622f2075a33269187e" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteDefaultFileFormat</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ad08baa8607ea934a024e00c6675804b4" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteGranularity</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a513fa0a9822de061d0bf5078ab7bb8ce" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteIsolationLevel</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a0eec1d337a0ff472a13446bb7801766e" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteMode</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a033bab08cfe7bde1f96a77b1bdec06e5" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteOrcBlockSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a9430062c6ab5919ec17baa86ed367523" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteOrcCompression</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a2593f53e5ef0e2a92535af68c60827a2" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteOrcCompressionStrategy</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a78aca7d4562ba3805d920c2fe43976ac" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteOrcStripeSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ae56f58061470fbd5965e1ce1b8832a43" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteOrcWriteBatchSize</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a182f35bb69ad454ccc44baefbe302fea" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetCompression</name></member>
+      <member refid="classiceberg_1_1TableProperties_1afa16f2d83bb2214352c72c1e59f9a6df" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetCompressionLevel</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a13f7b83bb91e14e93043eff61633350c" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetDictSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a1d0dbc4cfd787dc2ebfd40bce753090e" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetPageRowLimit</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a08dfd9bf30298ee0269da9c267857960" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetPageSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a9f7652216c8446acf72ee220ccf45fbd" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetRowGroupCheckMaxRecordCount</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ae947cff5e809f4c7cb1db0b01319643d" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetRowGroupCheckMinRecordCount</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aa15d1f73697c2bb8d5258c3fe3e54a82" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteParquetRowGroupSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1acf7931e56d375867b4201cec5bc65e38" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeletePlanningMode</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aa9d6dae35d5937f38e88e1342c559f87" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kDeleteTargetFileSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a2c79b913edfefbce4d480d12b8545dcd" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kEncryptionDekLength</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4da737458db65dab7406d23c59907586" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kEncryptionTableKey</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4c9aa5f466b89211335bf1483061abbd" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kFormatVersion</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a2875bef801b85dabf68c90d3c273f053" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kGcEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a395174f0bfd6ff74d55a050df5039e5b" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kManifestMergeEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aa07bb17fcba76abedc8483db58efbb1a" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kManifestMinMergeCount</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aae9fdde6918b1c1d4d1a6c463b4027dd" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kManifestTargetSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a09aec08c69e82ac8d4633a1a451b18e0" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMaxRefAgeMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a53da0a255868e71e2777ee20efcf8a77" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMaxSnapshotAgeMs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a0be60a272bcdd694376bd7a9252dc18a" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMergeIsolationLevel</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aed9d6e62e39bc1a3a5d0ab3f6168ea30" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMergeMode</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a677b6924ac244ebb528aadf99d63d6ff" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMetadataCompression</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a3fb268de46c3cd27a45639e8510b4b89" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMetadataDeleteAfterCommitEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1adda90a55f43c7974d36fcaac8627b2c7" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMetadataPreviousVersionsMax</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a729c5e506e72ae09bf14c9d42a3e9cf1" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMetadataSplitSize</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a1eaaf0de51e00f056982333990018140" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMetricModeColumnConfPrefix</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a04d3e9452dc82894e47f1f987d921dec" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMetricsMaxInferredColumnDefaults</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a2d705611398eaccedacbbc9f8ba757e5" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kMinSnapshotsToKeep</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4e6ee604a81edd46ffea19fde2e4de57" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kObjectStoreEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac43a9d15f30f6e366c1b6169c34912ab" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcBatchSize</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a1e822b30b324761a9d90b3e442ea322d" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcBlockSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a642a2f2b52459e5e062f14870a178c6e" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcBloomFilterColumns</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a6c4671b1316ba506d0e98fe7f2ed8564" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcBloomFilterFpp</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4eb20bd8539528909b539db7ecb7101b" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcCompression</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac7c1f0b0faedf07b5085af43c82a6afd" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcCompressionStrategy</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a33afcf0bb3488cf667fac77720f1ec96" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcStripeSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a759957a2b1ec223bba3f23de4a225b45" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcVectorizationEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1abd762de237dca1ec49e8cebe93e191f7" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kOrcWriteBatchSize</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a0c31badc0b2b4979f3e4abe2cf5278a1" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetBatchSize</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac5b4953e31a1614935aa9843d008d615" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetBloomFilterColumnEnabledPrefix</name></member>
+      <member refid="classiceberg_1_1TableProperties_1af36d4f8e0e4811af384499a62755bac7" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetBloomFilterColumnFppPrefix</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac690e84a9be8ce21a5fa36524ccba171" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetBloomFilterMaxBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ab7a4b63db3d2af3ed089bf55d62c0e5d" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetColumnStatsEnabledPrefix</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ad4a5942969f9ce2d0b007382cd5cc678" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetCompression</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a7635744b1d910c6b56fe18ab656f4abb" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetCompressionLevel</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aece8c8ab721c47a80063fa51ba8b87d7" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetDictSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac02aa2aaa0f0da2ba47aabed2befa2f9" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetPageRowLimit</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ada5dd80eba5f9aa3a339fbb8a7f771c8" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetPageSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aa16ae2a499410631f783edf5d715a343" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetRowGroupCheckMaxRecordCount</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4cb19008f32024ca90d0eb70e9cc8a1d" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetRowGroupCheckMinRecordCount</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a808f33d50261fae60b30b6917700a702" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetRowGroupSizeBytes</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a3eca14c8e3e2e78277f986e79356113f" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kParquetVectorizationEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aa019030168d449422f8eb93ac25cf20a" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kSnapshotCount</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a608e57cc8cc4799ef8ddba55e7f19dbb" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kSnapshotIdInheritanceEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aafb4b1fe35d7182e63a27e8da0e761ef" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kSplitLookback</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac675dc647cf01e239788e730c49adcea" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kSplitOpenFileCost</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a183769d63ff135614d8536efd575f993" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kSplitSize</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a74c347728d82d49e4e53f3f418089709" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kUpdateIsolationLevel</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a69f226000546986cfdfafc882fa637d6" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kUpdateMode</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ac12ebca6c50a6ba408b5e0a687f94cf4" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kUpsertEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4b85f21c1d46975c9debdf33f1cdf78b" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kUuid</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4fa34b3b5790158dbcd132c59d4a50b7" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kWriteAuditPublishEnabled</name></member>
+      <member refid="classiceberg_1_1TableProperties_1aa50d7fa06cb0e4cbd3a7290240626297" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kWriteDataLocation</name></member>
+      <member refid="classiceberg_1_1TableProperties_1ab1b90249d85118f93cca262a5bc93b39" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kWriteMetadataLocation</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a8f45d9e7831523465872acfb1bf4c1d4" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kWriteObjectStorePartitionedPaths</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a4b203f99e45a8f96eed9a0ddb796082a" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kWritePartitionSummaryLimit</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a9b47cf80fe82d32a3786b371aabcd66a" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>kWriteTargetFileSizeBytes</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a75f09e1cd2bb55b4df854298ed678313" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>mutable_configs</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a42e987f7fe2f4a99ed2821d794058c53" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1TableProperties_1a1f8bddf023b70018a63c3231e876b4e2" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>reserved_properties</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a95b58a9275880fc2437210f42e8946f2" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a3c626ca9dd5adf5a1f2e72d3f751059c" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a1fe814df79a9ed72e34fa9d7e6e8d443" prot="public" virt="non-virtual"><scope>iceberg::TableProperties</scope><name>Unset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

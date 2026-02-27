@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DataOperation" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DataOperation</compoundname>
+    <includes refid="snapshot_8h" local="no">snapshot.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DataOperation_1a98c420e62fe063cc7b3011717e854ecf" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::DataOperation::kAppend</definition>
+        <argsstring></argsstring>
+        <name>kAppend</name>
+        <qualifiedname>iceberg::DataOperation::kAppend</qualifiedname>
+        <initializer>= &quot;append&quot;</initializer>
+        <briefdescription>
+<para>Only data files were added and no files were removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="371" column="35" bodyfile="iceberg/snapshot.h" bodystart="371" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataOperation_1a3dab031174d6722419961d46fbbd572a" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::DataOperation::kReplace</definition>
+        <argsstring></argsstring>
+        <name>kReplace</name>
+        <qualifiedname>iceberg::DataOperation::kReplace</qualifiedname>
+        <initializer>= &quot;replace&quot;</initializer>
+        <briefdescription>
+<para>Data and delete files were added and removed without changing table data; i.e. compaction, change the data file format, or relocating data files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="374" column="35" bodyfile="iceberg/snapshot.h" bodystart="374" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataOperation_1a8a93dd2be0906a5303a41145fa7498bf" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::DataOperation::kOverwrite</definition>
+        <argsstring></argsstring>
+        <name>kOverwrite</name>
+        <qualifiedname>iceberg::DataOperation::kOverwrite</qualifiedname>
+        <initializer>= &quot;overwrite&quot;</initializer>
+        <briefdescription>
+<para>Data and delete files were added and removed in a logical overwrite operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="377" column="35" bodyfile="iceberg/snapshot.h" bodystart="377" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataOperation_1a4c3e08ef4b4a8308ec8845244050b126" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::DataOperation::kDelete</definition>
+        <argsstring></argsstring>
+        <name>kDelete</name>
+        <qualifiedname>iceberg::DataOperation::kDelete</qualifiedname>
+        <initializer>= &quot;delete&quot;</initializer>
+        <briefdescription>
+<para>Data files were removed and their contents logically deleted and/or delete files were added to delete rows. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="380" column="35" bodyfile="iceberg/snapshot.h" bodystart="380" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Data operation that produce snapshots. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>A snapshot can return the operation that created the snapshot to help other components ignore snapshots that are not needed for some tasks. For example, snapshot expiration does not need to clean up deleted files for appends, which have no deleted files. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DataOperation</label>
+        <link refid="structiceberg_1_1DataOperation"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kAppend</edgelabel>
+          <edgelabel>kDelete</edgelabel>
+          <edgelabel>kOverwrite</edgelabel>
+          <edgelabel>kReplace</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/snapshot.h" line="369" column="1" bodyfile="iceberg/snapshot.h" bodystart="369" bodyend="381"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DataOperation_1a98c420e62fe063cc7b3011717e854ecf" prot="public" virt="non-virtual"><scope>iceberg::DataOperation</scope><name>kAppend</name></member>
+      <member refid="structiceberg_1_1DataOperation_1a4c3e08ef4b4a8308ec8845244050b126" prot="public" virt="non-virtual"><scope>iceberg::DataOperation</scope><name>kDelete</name></member>
+      <member refid="structiceberg_1_1DataOperation_1a8a93dd2be0906a5303a41145fa7498bf" prot="public" virt="non-virtual"><scope>iceberg::DataOperation</scope><name>kOverwrite</name></member>
+      <member refid="structiceberg_1_1DataOperation_1a3dab031174d6722419961d46fbbd572a" prot="public" virt="non-virtual"><scope>iceberg::DataOperation</scope><name>kReplace</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

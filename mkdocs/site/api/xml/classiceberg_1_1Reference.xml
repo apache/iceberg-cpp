@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Reference" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Reference</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1BoundReference" prot="public" virt="non-virtual">iceberg::BoundReference</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1NamedReference" prot="public" virt="non-virtual">iceberg::NamedReference</derivedcompoundref>
+    <includes refid="term_8h" local="no">term.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Reference_1a68fe07be50ff579e4f4d146bb772361f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>iceberg::Reference::~Reference</definition>
+        <argsstring>()</argsstring>
+        <name>~Reference</name>
+        <qualifiedname>iceberg::Reference::~Reference</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="92" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Reference_1ac4cb7c4810d5bd567cce304e56ca82e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string_view</type>
+        <definition>virtual std::string_view iceberg::Reference::name</definition>
+        <argsstring>() const =0</argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::Reference::name</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1NamedReference_1a3a61b01701fb7ebfe17d84c2eb2758b9">name</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundReference_1a05d51ca34779b1adf1fc0be388edd1d0">name</reimplementedby>
+        <briefdescription>
+<para>Returns the name of the referenced field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="95" column="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A reference represents a named field in an expression. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::BoundReference</label>
+        <link refid="classiceberg_1_1BoundReference"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::NamedReference</label>
+        <link refid="classiceberg_1_1NamedReference"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Reference</label>
+        <link refid="classiceberg_1_1Reference"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/expression/term.h" line="90" column="1" bodyfile="iceberg/expression/term.h" bodystart="90" bodyend="96"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Reference_1ac4cb7c4810d5bd567cce304e56ca82e4" prot="public" virt="pure-virtual"><scope>iceberg::Reference</scope><name>name</name></member>
+      <member refid="classiceberg_1_1Reference_1a68fe07be50ff579e4f4d146bb772361f" prot="public" virt="virtual"><scope>iceberg::Reference</scope><name>~Reference</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

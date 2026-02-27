@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1HourTransform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::HourTransform</compoundname>
+    <basecompoundref refid="classiceberg_1_1TransformFunction" prot="public" virt="non-virtual">iceberg::TransformFunction</basecompoundref>
+    <includes refid="transform__function_8h" local="no">transform_function.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1HourTransform_1a745f434273451892667756b47a5683e4" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::HourTransform::HourTransform</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>HourTransform</name>
+        <qualifiedname>iceberg::HourTransform::HourTransform</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Must be a timestamp type. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="172" column="12" bodyfile="iceberg/transform_function.cc" bodystart="215" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1HourTransform_1a6b78071b98fe8457e819dd5873403b46" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::HourTransform::Transform</definition>
+        <argsstring>(const Literal &amp;literal) override</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::HourTransform::Transform</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1afb1c573d9bd098c76d858f476ef16f3f">Transform</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a timestamp hour, as hours from 1970-01-01 00:00:00. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="175" column="10" bodyfile="iceberg/transform_function.cc" bodystart="218" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1HourTransform_1a6c352ec3dc3a7a40a9b2f7fc19a76f09" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Type &gt; iceberg::HourTransform::ResultType</definition>
+        <argsstring>() const override</argsstring>
+        <name>ResultType</name>
+        <qualifiedname>iceberg::HourTransform::ResultType</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1a82841b58ce6380a7467bccf57e18e0d5">ResultType</reimplements>
+        <briefdescription>
+<para>Returns INT32 as the output type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="178" column="19" bodyfile="iceberg/transform_function.cc" bodystart="224" bodyend="224"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1HourTransform_1a6a65e158b9d471143f2f3a03b787fccc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TransformFunction &gt; &gt; iceberg::HourTransform::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::HourTransform::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1HourTransform" kindref="compound">HourTransform</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the input data. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1HourTransform" kindref="compound">HourTransform</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="183" column="17" bodyfile="iceberg/transform_function.cc" bodystart="226" bodyend="240"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Hour transform that extracts the number of hours from timestamp inputs since the epoch. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::HourTransform</label>
+        <link refid="classiceberg_1_1HourTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::HourTransform</label>
+        <link refid="classiceberg_1_1HourTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/transform_function.h" line="169" column="1" bodyfile="iceberg/transform_function.h" bodystart="169" bodyend="185"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1HourTransform_1a745f434273451892667756b47a5683e4" prot="public" virt="non-virtual"><scope>iceberg::HourTransform</scope><name>HourTransform</name></member>
+      <member refid="classiceberg_1_1HourTransform_1a6a65e158b9d471143f2f3a03b787fccc" prot="public" virt="non-virtual"><scope>iceberg::HourTransform</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1HourTransform_1a6c352ec3dc3a7a40a9b2f7fc19a76f09" prot="public" virt="virtual"><scope>iceberg::HourTransform</scope><name>ResultType</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a5fb6043200973c2a68f1b59b52f3dc91" prot="public" virt="non-virtual"><scope>iceberg::HourTransform</scope><name>source_type</name></member>
+      <member refid="classiceberg_1_1HourTransform_1a6b78071b98fe8457e819dd5873403b46" prot="public" virt="virtual"><scope>iceberg::HourTransform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1abf4c9031fa1b0de214e6aa7ffc717c56" prot="public" virt="non-virtual"><scope>iceberg::HourTransform</scope><name>transform_type</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a3e97589741424abf0fb1c0c01117bb5e" prot="public" virt="non-virtual"><scope>iceberg::HourTransform</scope><name>TransformFunction</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a523fa272f921de4a2b69a7b6277b39f4" prot="public" virt="virtual"><scope>iceberg::HourTransform</scope><name>~TransformFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

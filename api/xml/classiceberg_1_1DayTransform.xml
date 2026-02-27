@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DayTransform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DayTransform</compoundname>
+    <basecompoundref refid="classiceberg_1_1TransformFunction" prot="public" virt="non-virtual">iceberg::TransformFunction</basecompoundref>
+    <includes refid="transform__function_8h" local="no">transform_function.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DayTransform_1a6d95aec42995a021f6cb8fb76371305c" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DayTransform::DayTransform</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>DayTransform</name>
+        <qualifiedname>iceberg::DayTransform::DayTransform</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Must be a timestamp type. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="148" column="12" bodyfile="iceberg/transform_function.cc" bodystart="187" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DayTransform_1a9617e7803992d5a1d6ad6200c65cba9b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::DayTransform::Transform</definition>
+        <argsstring>(const Literal &amp;literal) override</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::DayTransform::Transform</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1afb1c573d9bd098c76d858f476ef16f3f">Transform</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp day, as days from 1970-01-01. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="151" column="10" bodyfile="iceberg/transform_function.cc" bodystart="190" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DayTransform_1a2030c2ba2ef6a1a167e1576bbb330c06" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Type &gt; iceberg::DayTransform::ResultType</definition>
+        <argsstring>() const override</argsstring>
+        <name>ResultType</name>
+        <qualifiedname>iceberg::DayTransform::ResultType</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1a82841b58ce6380a7467bccf57e18e0d5">ResultType</reimplements>
+        <briefdescription>
+<para>Return the result type of a day transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note: The physical representation conforms to the Iceberg spec as <ref refid="classiceberg_1_1DateType" kindref="compound">DateType</ref> is internally converted to int. The <ref refid="classiceberg_1_1DateType" kindref="compound">DateType</ref> returned here provides a more human-readable way to display the partition field. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="158" column="19" bodyfile="iceberg/transform_function.cc" bodystart="196" bodyend="196"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1DayTransform_1aa5cb7d8a27a8b4e3a6259abff0aec59c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TransformFunction &gt; &gt; iceberg::DayTransform::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::DayTransform::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1DayTransform" kindref="compound">DayTransform</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the input data. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1DayTransform" kindref="compound">DayTransform</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="163" column="17" bodyfile="iceberg/transform_function.cc" bodystart="198" bodyend="213"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Day transform that extracts the number of days from timestamp inputs since the epoch. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DayTransform</label>
+        <link refid="classiceberg_1_1DayTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DayTransform</label>
+        <link refid="classiceberg_1_1DayTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/transform_function.h" line="145" column="1" bodyfile="iceberg/transform_function.h" bodystart="145" bodyend="165"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DayTransform_1a6d95aec42995a021f6cb8fb76371305c" prot="public" virt="non-virtual"><scope>iceberg::DayTransform</scope><name>DayTransform</name></member>
+      <member refid="classiceberg_1_1DayTransform_1aa5cb7d8a27a8b4e3a6259abff0aec59c" prot="public" virt="non-virtual"><scope>iceberg::DayTransform</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DayTransform_1a2030c2ba2ef6a1a167e1576bbb330c06" prot="public" virt="virtual"><scope>iceberg::DayTransform</scope><name>ResultType</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a5fb6043200973c2a68f1b59b52f3dc91" prot="public" virt="non-virtual"><scope>iceberg::DayTransform</scope><name>source_type</name></member>
+      <member refid="classiceberg_1_1DayTransform_1a9617e7803992d5a1d6ad6200c65cba9b" prot="public" virt="virtual"><scope>iceberg::DayTransform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1abf4c9031fa1b0de214e6aa7ffc717c56" prot="public" virt="non-virtual"><scope>iceberg::DayTransform</scope><name>transform_type</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a3e97589741424abf0fb1c0c01117bb5e" prot="public" virt="non-virtual"><scope>iceberg::DayTransform</scope><name>TransformFunction</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a523fa272f921de4a2b69a7b6277b39f4" prot="public" virt="virtual"><scope>iceberg::DayTransform</scope><name>~TransformFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

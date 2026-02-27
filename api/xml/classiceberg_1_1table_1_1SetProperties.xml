@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1SetProperties" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::SetProperties</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1SetProperties_1ad4369159b2a5f90126c4ee091751454c" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::table::SetProperties::updated_</definition>
+        <argsstring></argsstring>
+        <name>updated_</name>
+        <qualifiedname>iceberg::table::SetProperties::updated_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="470" column="22" bodyfile="iceberg/table_update.h" bodystart="470" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetProperties_1a1343b893ae2d920c98d6d6cb264d6052" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::SetProperties::SetProperties</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; updated)</argsstring>
+        <name>SetProperties</name>
+        <qualifiedname>iceberg::table::SetProperties::SetProperties</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>updated</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="454" column="12" bodyfile="iceberg/table_update.h" bodystart="454" bodyend="455"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetProperties_1a360c67a6af3c262819b503c1f60ee326" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+        <definition>const std::unordered_map&lt; std::string, std::string &gt; &amp; iceberg::table::SetProperties::updated</definition>
+        <argsstring>() const</argsstring>
+        <name>updated</name>
+        <qualifiedname>iceberg::table::SetProperties::updated</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="457" column="28" bodyfile="iceberg/table_update.h" bodystart="457" bodyend="457"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetProperties_1a9c287f1415c621fc7d257dc0b487499c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetProperties::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::SetProperties::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="459" column="8" bodyfile="iceberg/table_update.cc" bodystart="396" bodyend="398"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetProperties_1a75d62c2ddc7d0a155fee142d6851af83" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetProperties::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::SetProperties::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="461" column="8" bodyfile="iceberg/table_update.cc" bodystart="400" bodyend="402"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetProperties_1a9a29ea612fb30fbe934c939f9a0c02d5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::SetProperties::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::SetProperties::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="463" column="8" bodyfile="iceberg/table_update.h" bodystart="463" bodyend="463"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetProperties_1aad491a8ef3365740990550b1eddbd36e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::SetProperties::Equals</definition>
+        <argsstring>(const TableUpdate &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::SetProperties::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1afd0780e6106546f7462e8e66d62db1f2">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The update to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the updates are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="465" column="8" bodyfile="iceberg/table_update.cc" bodystart="404" bodyend="410"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetProperties_1ae846cb15b6d8ef1660720c2d722d444b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableUpdate &gt; iceberg::table::SetProperties::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::SetProperties::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1affb4be490ac63849864bf8ed636363aa">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="467" column="19" bodyfile="iceberg/table_update.cc" bodystart="412" bodyend="414"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents setting table properties. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetProperties</label>
+        <link refid="classiceberg_1_1table_1_1SetProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetProperties</label>
+        <link refid="classiceberg_1_1table_1_1SetProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="452" column="1" bodyfile="iceberg/table_update.h" bodystart="452" bodyend="471"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1a9c287f1415c621fc7d257dc0b487499c" prot="public" virt="virtual"><scope>iceberg::table::SetProperties</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1ae846cb15b6d8ef1660720c2d722d444b" prot="public" virt="virtual"><scope>iceberg::table::SetProperties</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1aad491a8ef3365740990550b1eddbd36e" prot="public" virt="virtual"><scope>iceberg::table::SetProperties</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1a75d62c2ddc7d0a155fee142d6851af83" prot="public" virt="virtual"><scope>iceberg::table::SetProperties</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1a9a29ea612fb30fbe934c939f9a0c02d5" prot="public" virt="virtual"><scope>iceberg::table::SetProperties</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::SetProperties</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1a1343b893ae2d920c98d6d6cb264d6052" prot="public" virt="non-virtual"><scope>iceberg::table::SetProperties</scope><name>SetProperties</name></member>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1a360c67a6af3c262819b503c1f60ee326" prot="public" virt="non-virtual"><scope>iceberg::table::SetProperties</scope><name>updated</name></member>
+      <member refid="classiceberg_1_1table_1_1SetProperties_1ad4369159b2a5f90126c4ee091751454c" prot="private" virt="non-virtual"><scope>iceberg::table::SetProperties</scope><name>updated_</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::SetProperties</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1BasicLiteralTestParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::BasicLiteralTestParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1BasicLiteralTestParam_1ac121dbc801209d7fe42e59a4b4be9a3b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::BasicLiteralTestParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::BasicLiteralTestParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="37" column="15" bodyfile="iceberg/test/literal_test.cc" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BasicLiteralTestParam_1a10ed7763acf30ab8ea4a5a94c35e6b43" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::BasicLiteralTestParam::literal</definition>
+        <argsstring></argsstring>
+        <name>literal</name>
+        <qualifiedname>iceberg::BasicLiteralTestParam::literal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="38" column="11" bodyfile="iceberg/test/literal_test.cc" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BasicLiteralTestParam_1a1aea0189fede8f6f1bf5ce593f568cef" prot="public" static="no" mutable="no">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::BasicLiteralTestParam::expected_type_id</definition>
+        <argsstring></argsstring>
+        <name>expected_type_id</name>
+        <qualifiedname>iceberg::BasicLiteralTestParam::expected_type_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="39" column="10" bodyfile="iceberg/test/literal_test.cc" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BasicLiteralTestParam_1aeb56ba9731824b406aaf00367e3d6650" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::BasicLiteralTestParam::expected_string</definition>
+        <argsstring></argsstring>
+        <name>expected_string</name>
+        <qualifiedname>iceberg::BasicLiteralTestParam::expected_string</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="40" column="15" bodyfile="iceberg/test/literal_test.cc" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::BasicLiteralTestParam</label>
+        <link refid="structiceberg_1_1BasicLiteralTestParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_string</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>literal</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/literal_test.cc" line="36" column="1" bodyfile="iceberg/test/literal_test.cc" bodystart="36" bodyend="41"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1BasicLiteralTestParam_1aeb56ba9731824b406aaf00367e3d6650" prot="public" virt="non-virtual"><scope>iceberg::BasicLiteralTestParam</scope><name>expected_string</name></member>
+      <member refid="structiceberg_1_1BasicLiteralTestParam_1a1aea0189fede8f6f1bf5ce593f568cef" prot="public" virt="non-virtual"><scope>iceberg::BasicLiteralTestParam</scope><name>expected_type_id</name></member>
+      <member refid="structiceberg_1_1BasicLiteralTestParam_1a10ed7763acf30ab8ea4a5a94c35e6b43" prot="public" virt="non-virtual"><scope>iceberg::BasicLiteralTestParam</scope><name>literal</name></member>
+      <member refid="structiceberg_1_1BasicLiteralTestParam_1ac121dbc801209d7fe42e59a4b4be9a3b" prot="public" virt="non-virtual"><scope>iceberg::BasicLiteralTestParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

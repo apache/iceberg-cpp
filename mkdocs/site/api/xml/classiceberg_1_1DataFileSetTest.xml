@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DataFileSetTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DataFileSetTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1DataFileSetTest_1abef3105cf62b3cb7e017e777265fc494" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::DataFileSetTest::CreateDataFile</definition>
+        <argsstring>(const std::string &amp;path, int64_t size=100)</argsstring>
+        <name>CreateDataFile</name>
+        <qualifiedname>iceberg::DataFileSetTest::CreateDataFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>size</declname>
+          <defval>100</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_file_set_test.cc" line="32" column="19" bodyfile="iceberg/test/data_file_set_test.cc" bodystart="32" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DataFileSetTest</label>
+        <link refid="classiceberg_1_1DataFileSetTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DataFileSetTest</label>
+        <link refid="classiceberg_1_1DataFileSetTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/data_file_set_test.cc" line="30" column="1" bodyfile="iceberg/test/data_file_set_test.cc" bodystart="30" bodyend="41"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DataFileSetTest_1abef3105cf62b3cb7e017e777265fc494" prot="protected" virt="non-virtual"><scope>iceberg::DataFileSetTest</scope><name>CreateDataFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

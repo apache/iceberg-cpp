@@ -1,0 +1,321 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Type" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Type</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1NestedType" prot="public" virt="non-virtual">iceberg::NestedType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</derivedcompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Type::~Type</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~Type</name>
+        <qualifiedname>iceberg::Type::~Type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="46" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>virtual TypeId iceberg::Type::type_id</definition>
+        <argsstring>() const =0</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::Type::type_id</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StructType_1a1281cfc082575d9656a1e72ba07bdbd1">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1abcd99ff15d8abe7e5a21d649ea8f866d">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1af1763adb966d81cc93e2cd376543f3fa">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BooleanType_1adbec6f047a5f16b7ff2d264a622c7289">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IntType_1a61abd0af77ce392449d0860d9c4d0868">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1LongType_1ad0e64c5fb1a278f713830a1e04b5075a">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1FloatType_1a4cd5de17068a145e122dfef5cd570003">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DoubleType_1ab39c0a4cedf58613e57e962ea91633db">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DecimalType_1aa99e13b91dec926f40361ba16d4aeb2b">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DateType_1a52aaefc8bbbb4245bf6307bdb7d14ded">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimeType_1a7821c76f1ce6345e8217b426fbefeaad">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampType_1a23c89d7d5f5d37eca081d19eb95fff4a">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampTzType_1ad1200dc53d1cfb3249f37877e4d44a71">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BinaryType_1a7426ac50b3072898d4b4a9aead7fc998">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StringType_1aabf0e5ca0fac1e4b287c307ca3f57370">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1FixedType_1adff81035f7139c289bbf97d55ee50807">type_id</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UuidType_1a5e935e9edf29515e9e9cf7d904c22fdb">type_id</reimplementedby>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="49" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Type_1a5bef201091ac984f54b8f8ff933b3f78" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Type::is_primitive</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_primitive</name>
+        <qualifiedname>iceberg::Type::is_primitive</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a">is_primitive</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1NestedType_1a973f9a2e897d90e2f7be02c953bc2246">is_primitive</reimplementedby>
+        <briefdescription>
+<para>Is this a primitive type (may not have child fields)? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="52" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Type_1a7f9a1f227a8c993a7f2531fdc179ef27" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Type::is_nested</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_nested</name>
+        <qualifiedname>iceberg::Type::is_nested</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c">is_nested</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1NestedType_1ad658681f880385907591f637fb20f44b">is_nested</reimplementedby>
+        <briefdescription>
+<para>Is this a nested type (may have child fields)? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="55" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1Type_1a9497fcb3a78c7cf73f21b8d8cb124cb2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Type &amp;lhs, const Type &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Type::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="58" column="15" bodyfile="iceberg/type.h" bodystart="58" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Type::Equals</definition>
+        <argsstring>(const Type &amp;other) const =0</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::Type::Equals</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StructType_1ac409fbe5fd9f8f37b398bb737795da7f">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ListType_1adfb9356f15ea75e3a373dd13210b30f4">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1MapType_1a46328c2281d6c63357fa8132c6397a86">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BooleanType_1a4fad06eec8c8fc3b70c1dcebd75bdd16">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IntType_1aa39dbcac859031a3d95b2f78f8bdbae5">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1LongType_1a6724cb3e8baf53d3541edafea7411ff7">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1FloatType_1ad8d5c5dc96c6ea4b5e5e20a18145a72e">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DoubleType_1a2a5bf07567145c3ce81f4dbb3e936a7c">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DecimalType_1a007634af36bc1840174cd4f8e858932a">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DateType_1ad20312546a7660cc58682d55bf799510">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimeType_1a68d720d141399b0109777b14381ceedf">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampType_1ae99c5656ee8ea8e20ece0368be65f4d5">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampTzType_1a819bff86064e526c1592cd4128159037">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BinaryType_1a0e578d04d92146f70eef86625b90e63b">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StringType_1af2c489a93f3213f378871a24750a2429">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1FixedType_1aff8137285dc267477662d048336a042f">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UuidType_1a7d0e0aa3fe6d1a3b7503540a1a8ae553">Equals</reimplementedby>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="62" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Interface for a data type for a field. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="9">
+        <label>iceberg::BinaryType</label>
+        <link refid="classiceberg_1_1BinaryType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::BooleanType</label>
+        <link refid="classiceberg_1_1BooleanType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::DateType</label>
+        <link refid="classiceberg_1_1DateType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::DecimalType</label>
+        <link refid="classiceberg_1_1DecimalType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::DoubleType</label>
+        <link refid="classiceberg_1_1DoubleType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::FixedType</label>
+        <link refid="classiceberg_1_1FixedType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::FloatType</label>
+        <link refid="classiceberg_1_1FloatType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::IntType</label>
+        <link refid="classiceberg_1_1IntType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::ListType</label>
+        <link refid="classiceberg_1_1ListType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::LongType</label>
+        <link refid="classiceberg_1_1LongType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::MapType</label>
+        <link refid="classiceberg_1_1MapType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::StringType</label>
+        <link refid="classiceberg_1_1StringType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::TimeType</label>
+        <link refid="classiceberg_1_1TimeType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg::TimestampBase</label>
+        <link refid="classiceberg_1_1TimestampBase"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg::TimestampType</label>
+        <link refid="classiceberg_1_1TimestampType"/>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::TimestampTzType</label>
+        <link refid="classiceberg_1_1TimestampTzType"/>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg::UuidType</label>
+        <link refid="classiceberg_1_1UuidType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="44" column="1" bodyfile="iceberg/type.h" bodystart="44" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103" prot="protected" virt="pure-virtual"><scope>iceberg::Type</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1Type_1a7f9a1f227a8c993a7f2531fdc179ef27" prot="public" virt="pure-virtual"><scope>iceberg::Type</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1Type_1a5bef201091ac984f54b8f8ff933b3f78" prot="public" virt="pure-virtual"><scope>iceberg::Type</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1Type_1a9497fcb3a78c7cf73f21b8d8cb124cb2" prot="public" virt="non-virtual"><scope>iceberg::Type</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386" prot="public" virt="pure-virtual"><scope>iceberg::Type</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27" prot="public" virt="pure-virtual"><scope>iceberg::Type</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Type</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::Type</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

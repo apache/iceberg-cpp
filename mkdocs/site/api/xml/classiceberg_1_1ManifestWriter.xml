@@ -1,0 +1,819 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestWriter</compoundname>
+    <includes refid="manifest__writer_8h" local="no">manifest_writer.h</includes>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1af7eae16eac3952a9b698be356d4356e0" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::ManifestWriter::kBatchSize</definition>
+        <argsstring></argsstring>
+        <name>kBatchSize</name>
+        <qualifiedname>iceberg::ManifestWriter::kBatchSize</qualifiedname>
+        <initializer>= 1024</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="149" column="28" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1aa2d5440f21d0c5219506da9ee9a6d83f" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Writer&gt; iceberg::ManifestWriter::writer_</definition>
+        <argsstring></argsstring>
+        <name>writer_</name>
+        <qualifiedname>iceberg::ManifestWriter::writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="150" column="19" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1aa026a3456a375c3477e1c03dde540a94" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; class <ref refid="classiceberg_1_1ManifestEntryAdapter" kindref="compound">ManifestEntryAdapter</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;class ManifestEntryAdapter&gt; iceberg::ManifestWriter::adapter_</definition>
+        <argsstring></argsstring>
+        <name>adapter_</name>
+        <qualifiedname>iceberg::ManifestWriter::adapter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="151" column="19" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1aab3180e10e4679322f837bdef7134c42" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestWriter::closed_</definition>
+        <argsstring></argsstring>
+        <name>closed_</name>
+        <qualifiedname>iceberg::ManifestWriter::closed_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="152" column="8" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="152" bodyend="152"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1a3b3d3002d9488b36f7effa1803da214f" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ManifestWriter::manifest_location_</definition>
+        <argsstring></argsstring>
+        <name>manifest_location_</name>
+        <qualifiedname>iceberg::ManifestWriter::manifest_location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="153" column="15" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1ad9277ccc80a302ed77e8d5133874f749" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::ManifestWriter::first_row_id_</definition>
+        <argsstring></argsstring>
+        <name>first_row_id_</name>
+        <qualifiedname>iceberg::ManifestWriter::first_row_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="154" column="17" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1aad01bd37113ae8149bc3c192d90a544b" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::ManifestWriter::add_files_count_</definition>
+        <argsstring></argsstring>
+        <name>add_files_count_</name>
+        <qualifiedname>iceberg::ManifestWriter::add_files_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="156" column="11" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="156" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1aa0ffed2dbb643794da911e485612c0c0" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::ManifestWriter::existing_files_count_</definition>
+        <argsstring></argsstring>
+        <name>existing_files_count_</name>
+        <qualifiedname>iceberg::ManifestWriter::existing_files_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="157" column="11" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="157" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1a1b92453f715d269be576c3e3dbdbe4b4" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::ManifestWriter::delete_files_count_</definition>
+        <argsstring></argsstring>
+        <name>delete_files_count_</name>
+        <qualifiedname>iceberg::ManifestWriter::delete_files_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="158" column="11" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="158" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1ac5b2c77c73394427085e73983964e194" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ManifestWriter::add_rows_count_</definition>
+        <argsstring></argsstring>
+        <name>add_rows_count_</name>
+        <qualifiedname>iceberg::ManifestWriter::add_rows_count_</qualifiedname>
+        <initializer>{0L}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="159" column="11" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="159" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1a3f4f811168271ae47fd8eadcdfa91b09" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ManifestWriter::existing_rows_count_</definition>
+        <argsstring></argsstring>
+        <name>existing_rows_count_</name>
+        <qualifiedname>iceberg::ManifestWriter::existing_rows_count_</qualifiedname>
+        <initializer>{0L}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="160" column="11" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="160" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1a4544449dfd24612b67f08bb44107f465" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ManifestWriter::delete_rows_count_</definition>
+        <argsstring></argsstring>
+        <name>delete_rows_count_</name>
+        <qualifiedname>iceberg::ManifestWriter::delete_rows_count_</qualifiedname>
+        <initializer>{0L}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="161" column="11" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="161" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1a0a47bd54ebb5d35ffa347ea050de3084" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::ManifestWriter::min_sequence_number_</definition>
+        <argsstring></argsstring>
+        <name>min_sequence_number_</name>
+        <qualifiedname>iceberg::ManifestWriter::min_sequence_number_</qualifiedname>
+        <initializer>{std::nullopt}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="162" column="17" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="162" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriter_1af2f05409a0f64aa0a9043149d81d55f1" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1PartitionSummary" kindref="compound">PartitionSummary</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;PartitionSummary&gt; iceberg::ManifestWriter::partition_summary_</definition>
+        <argsstring></argsstring>
+        <name>partition_summary_</name>
+        <qualifiedname>iceberg::ManifestWriter::partition_summary_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="163" column="19" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1ad6c5e9cceb268bac886c55c3253fe6b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestWriter::~ManifestWriter</definition>
+        <argsstring>()</argsstring>
+        <name>~ManifestWriter</name>
+        <qualifiedname>iceberg::ManifestWriter::~ManifestWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="41" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1ab5b7f3411b9e6e08d7961df4c03139a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::WriteEntry</definition>
+        <argsstring>(const ManifestEntry &amp;entry)</argsstring>
+        <name>WriteEntry</name>
+        <qualifiedname>iceberg::ManifestWriter::WriteEntry</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Write the entry that all its fields are populated correctly. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Manifest entry to write. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+<simplesect kind="note"><para>All other write entry variants delegate to this method after populating the necessary fields. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="48" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="137" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a130bca392b9caca711486c56fae5bc9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::WriteAddedEntry</definition>
+        <argsstring>(std::shared_ptr&lt; DataFile &gt; file, std::optional&lt; int64_t &gt; data_sequence_number=std::nullopt)</argsstring>
+        <name>WriteAddedEntry</name>
+        <qualifiedname>iceberg::ManifestWriter::WriteAddedEntry</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>data_sequence_number</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Add an added entry for a file with a specific sequence number. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>an added data file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a data sequence number for the file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+<simplesect kind="note"><para>The entry&apos;s snapshot ID will be this manifest&apos;s snapshot ID. The entry&apos;s data sequence number will be the provided data sequence number. The entry&apos;s file sequence number will be assigned at commit. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="58" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="51" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a2b6d486bfb6942f2ab1a3f0417c20da7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::WriteAddedEntry</definition>
+        <argsstring>(const ManifestEntry &amp;entry)</argsstring>
+        <name>WriteAddedEntry</name>
+        <qualifiedname>iceberg::ManifestWriter::WriteAddedEntry</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Add a new entry to the manifest. The method populates the snapshot id and status fields of the entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="62" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="74" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1acaed786e94e14d1d0d605d93a0fc9b83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::WriteExistingEntry</definition>
+        <argsstring>(std::shared_ptr&lt; DataFile &gt; file, int64_t file_snapshot_id, int64_t data_sequence_number, std::optional&lt; int64_t &gt; file_sequence_number=std::nullopt)</argsstring>
+        <name>WriteExistingEntry</name>
+        <qualifiedname>iceberg::ManifestWriter::WriteExistingEntry</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>file_snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>data_sequence_number</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>file_sequence_number</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Add an existing entry for a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>an existing data file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>snapshot ID when the data file was added to the table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a data sequence number of the file (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a file sequence number (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+<simplesect kind="note"><para>The original data and file sequence numbers, snapshot ID, which were assigned at commit, must be preserved when adding an existing entry. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="74" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="88" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1aa63626964a29aa89ec0acbebffbfb179" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::WriteExistingEntry</definition>
+        <argsstring>(const ManifestEntry &amp;entry)</argsstring>
+        <name>WriteExistingEntry</name>
+        <qualifiedname>iceberg::ManifestWriter::WriteExistingEntry</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Add an existing entry to the manifest. The method populates the status field of the entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="79" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="106" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a7077a6d0c534749950d1cc704e3baf63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::WriteDeletedEntry</definition>
+        <argsstring>(std::shared_ptr&lt; DataFile &gt; file, int64_t data_sequence_number, std::optional&lt; int64_t &gt; file_sequence_number=std::nullopt)</argsstring>
+        <name>WriteDeletedEntry</name>
+        <qualifiedname>iceberg::ManifestWriter::WriteDeletedEntry</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>data_sequence_number</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>file_sequence_number</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Add a delete entry for a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a deleted data file </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a data sequence number of the file (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a file sequence number (assigned when the file was added) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+<simplesect kind="note"><para>The entry&apos;s snapshot ID will be this manifest&apos;s snapshot ID. However, the original data and file sequence numbers of the file must be preserved when the file is marked as deleted. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="91" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="111" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1adf7cbf49bd2c37e117917ffb40174f79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::WriteDeletedEntry</definition>
+        <argsstring>(const ManifestEntry &amp;entry)</argsstring>
+        <name>WriteDeletedEntry</name>
+        <qualifiedname>iceberg::ManifestWriter::WriteDeletedEntry</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Add a deleted entry to the manifest. The method populates the snapshot id and status fields of the entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="95" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="128" bodyend="135"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1ab6c4ce0f110e409e1b89972f511398fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::AddAll</definition>
+        <argsstring>(const std::vector&lt; ManifestEntry &gt; &amp;entries)</argsstring>
+        <name>AddAll</name>
+        <qualifiedname>iceberg::ManifestWriter::AddAll</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &amp;</type>
+          <declname>entries</declname>
+        </param>
+        <briefdescription>
+<para>Write manifest entries to file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>entries</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Already populated manifest entries to write. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="100" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="200" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a59d487b3ba914704f2f22af6e4839ca8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::ManifestWriter::Close</qualifiedname>
+        <briefdescription>
+<para>Close writer and flush to storage. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="103" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="207" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a977c550526d5aaca0a31c1c796732273" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="manifest__list_8h_1a06efcb6319f35c7b0af2f629a9e7ae05" kindref="member">ManifestContent</ref></type>
+        <definition>ManifestContent iceberg::ManifestWriter::content</definition>
+        <argsstring>() const</argsstring>
+        <name>content</name>
+        <qualifiedname>iceberg::ManifestWriter::content</qualifiedname>
+        <briefdescription>
+<para>Get the content of the manifest. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="106" column="19" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="217" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a5b403555d479afc633c183334349c071" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>Result&lt; Metrics &gt; iceberg::ManifestWriter::metrics</definition>
+        <argsstring>() const</argsstring>
+        <name>metrics</name>
+        <qualifiedname>iceberg::ManifestWriter::metrics</qualifiedname>
+        <briefdescription>
+<para>Get the metrics of written manifest file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>Only valid after the file is closed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="110" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="219" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a727bb9a63b0585f16cca8b92d8c70311" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::ManifestWriter::length</definition>
+        <argsstring>() const</argsstring>
+        <name>length</name>
+        <qualifiedname>iceberg::ManifestWriter::length</qualifiedname>
+        <briefdescription>
+<para>Get the current length of the manifest file in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The current length of the file, or an error if the operation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="114" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="221" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1ad9fbeed661c60158774a86a8e90b36a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>Result&lt; ManifestFile &gt; iceberg::ManifestWriter::ToManifestFile</definition>
+        <argsstring>() const</argsstring>
+        <name>ToManifestFile</name>
+        <qualifiedname>iceberg::ManifestWriter::ToManifestFile</qualifiedname>
+        <briefdescription>
+<para>Get the <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>Only valid after the file is closed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="118" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="223" bodyend="252"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1afcf666ce264296058535f30568302544" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestWriter &gt; &gt; iceberg::ManifestWriter::MakeWriter</definition>
+        <argsstring>(int8_t format_version, std::optional&lt; int64_t &gt; snapshot_id, std::string_view manifest_location, std::shared_ptr&lt; FileIO &gt; file_io, std::shared_ptr&lt; PartitionSpec &gt; partition_spec, std::shared_ptr&lt; Schema &gt; current_schema, ManifestContent content=ManifestContent::kData, std::optional&lt; int64_t &gt; first_row_id=std::nullopt)</argsstring>
+        <name>MakeWriter</name>
+        <qualifiedname>iceberg::ManifestWriter::MakeWriter</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>manifest_location</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>partition_spec</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>current_schema</declname>
+        </param>
+        <param>
+          <type><ref refid="manifest__list_8h_1a06efcb6319f35c7b0af2f629a9e7ae05" kindref="member">ManifestContent</ref></type>
+          <declname>content</declname>
+          <defval><ref refid="manifest__list_8h_1a06efcb6319f35c7b0af2f629a9e7ae05a0ac87546e8b36fcb3034694d4d909ea3" kindref="member">ManifestContent::kData</ref></defval>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>first_row_id</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Factory function to create a writer for a manifest file based on format version. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>format_version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The format version (1, 2, 3, etc.). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>ID of the snapshot. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>manifest_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to the manifest file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO implementation to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>partition_spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Partition spec for the manifest. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>current_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> containing the source fields referenced by partition spec. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>content</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Content of the manifest (required for format_version &gt;= 2). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>first_row_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First row ID of the snapshot (required for format_version &gt;= 3). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the writer or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="132" column="17" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="274" bodyend="319"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1adc24a79023e6ad261d3ee83fce58b23b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestWriter::ManifestWriter</definition>
+        <argsstring>(std::unique_ptr&lt; Writer &gt; writer, std::unique_ptr&lt; class ManifestEntryAdapter &gt; adapter, std::string_view manifest_location, std::optional&lt; int64_t &gt; first_row_id)</argsstring>
+        <name>ManifestWriter</name>
+        <qualifiedname>iceberg::ManifestWriter::ManifestWriter</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> &gt;</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type>std::unique_ptr&lt; class <ref refid="classiceberg_1_1ManifestEntryAdapter" kindref="compound">ManifestEntryAdapter</ref> &gt;</type>
+          <declname>adapter</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>manifest_location</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>first_row_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="143" column="3" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="38" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriter_1a721f73c69b5f33596403d96a23cf501e" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestWriter::CheckDataFile</definition>
+        <argsstring>(const DataFile &amp;file) const</argsstring>
+        <name>CheckDataFile</name>
+        <qualifiedname>iceberg::ManifestWriter::CheckDataFile</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_writer.h" line="147" column="10" bodyfile="iceberg/manifest/manifest_writer.cc" bodystart="179" bodyend="198"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Write manifest entries to a manifest file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/manifest/manifest_writer.h" line="39" column="1" bodyfile="iceberg/manifest/manifest_writer.h" bodystart="39" bodyend="164"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestWriter_1aa026a3456a375c3477e1c03dde540a94" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>adapter_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1aad01bd37113ae8149bc3c192d90a544b" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>add_files_count_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1ac5b2c77c73394427085e73983964e194" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>add_rows_count_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1ab6c4ce0f110e409e1b89972f511398fc" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>AddAll</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a721f73c69b5f33596403d96a23cf501e" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>CheckDataFile</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a59d487b3ba914704f2f22af6e4839ca8" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1aab3180e10e4679322f837bdef7134c42" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>closed_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a977c550526d5aaca0a31c1c796732273" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>content</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a1b92453f715d269be576c3e3dbdbe4b4" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>delete_files_count_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a4544449dfd24612b67f08bb44107f465" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>delete_rows_count_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1aa0ffed2dbb643794da911e485612c0c0" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>existing_files_count_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a3f4f811168271ae47fd8eadcdfa91b09" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>existing_rows_count_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1ad9277ccc80a302ed77e8d5133874f749" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>first_row_id_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1af7eae16eac3952a9b698be356d4356e0" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>kBatchSize</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a727bb9a63b0585f16cca8b92d8c70311" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>length</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1afcf666ce264296058535f30568302544" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>MakeWriter</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a3b3d3002d9488b36f7effa1803da214f" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>manifest_location_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1adc24a79023e6ad261d3ee83fce58b23b" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>ManifestWriter</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a5b403555d479afc633c183334349c071" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>metrics</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a0a47bd54ebb5d35ffa347ea050de3084" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>min_sequence_number_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1af2f05409a0f64aa0a9043149d81d55f1" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>partition_summary_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1ad9fbeed661c60158774a86a8e90b36a5" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>ToManifestFile</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a130bca392b9caca711486c56fae5bc9c" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>WriteAddedEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a2b6d486bfb6942f2ab1a3f0417c20da7" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>WriteAddedEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1a7077a6d0c534749950d1cc704e3baf63" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>WriteDeletedEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1adf7cbf49bd2c37e117917ffb40174f79" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>WriteDeletedEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1ab5b7f3411b9e6e08d7961df4c03139a3" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>WriteEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1acaed786e94e14d1d0d605d93a0fc9b83" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>WriteExistingEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1aa63626964a29aa89ec0acbebffbfb179" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>WriteExistingEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1aa2d5440f21d0c5219506da9ee9a6d83f" prot="private" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>writer_</name></member>
+      <member refid="classiceberg_1_1ManifestWriter_1ad6c5e9cceb268bac886c55c3253fe6b3" prot="public" virt="non-virtual"><scope>iceberg::ManifestWriter</scope><name>~ManifestWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

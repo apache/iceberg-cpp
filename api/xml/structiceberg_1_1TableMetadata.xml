@@ -1,0 +1,1071 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TableMetadata" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TableMetadata</compoundname>
+    <includes refid="table__metadata_8h" local="no">table_metadata.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a810a6a501258d6beb99ee19acceaff54" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int8_t</type>
+        <definition>constexpr int8_t iceberg::TableMetadata::kDefaultTableFormatVersion</definition>
+        <argsstring></argsstring>
+        <name>kDefaultTableFormatVersion</name>
+        <qualifiedname>iceberg::TableMetadata::kDefaultTableFormatVersion</qualifiedname>
+        <initializer>= 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="73" column="27" bodyfile="iceberg/table_metadata.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a80bcf638dfc7aabdbad537b9527e9561" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int8_t</type>
+        <definition>constexpr int8_t iceberg::TableMetadata::kSupportedTableFormatVersion</definition>
+        <argsstring></argsstring>
+        <name>kSupportedTableFormatVersion</name>
+        <qualifiedname>iceberg::TableMetadata::kSupportedTableFormatVersion</qualifiedname>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="74" column="27" bodyfile="iceberg/table_metadata.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a62dcfc89d97741a4272d56152fbe5a48" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int8_t</type>
+        <definition>constexpr int8_t iceberg::TableMetadata::kMinFormatVersionRowLineage</definition>
+        <argsstring></argsstring>
+        <name>kMinFormatVersionRowLineage</name>
+        <qualifiedname>iceberg::TableMetadata::kMinFormatVersionRowLineage</qualifiedname>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="75" column="27" bodyfile="iceberg/table_metadata.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a5520b8458dc7cb55fe8b2c67bb7f58b2" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int8_t</type>
+        <definition>constexpr int8_t iceberg::TableMetadata::kMinFormatVersionDefaultValues</definition>
+        <argsstring></argsstring>
+        <name>kMinFormatVersionDefaultValues</name>
+        <qualifiedname>iceberg::TableMetadata::kMinFormatVersionDefaultValues</qualifiedname>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="76" column="27" bodyfile="iceberg/table_metadata.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1aa2e23a73dab60dbac8dfd8b423ff0ba6" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::TableMetadata::kInitialSequenceNumber</definition>
+        <argsstring></argsstring>
+        <name>kInitialSequenceNumber</name>
+        <qualifiedname>iceberg::TableMetadata::kInitialSequenceNumber</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="77" column="28" bodyfile="iceberg/table_metadata.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a899bb72dbb77de7b53027637f1f515a4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::TableMetadata::kInitialRowId</definition>
+        <argsstring></argsstring>
+        <name>kInitialRowId</name>
+        <qualifiedname>iceberg::TableMetadata::kInitialRowId</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="78" column="28" bodyfile="iceberg/table_metadata.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1abd6ab5c65cdeda230bd5f74ea91cdd29" prot="public" static="yes" mutable="no">
+        <type>const std::unordered_map&lt; <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref>, int8_t &gt;</type>
+        <definition>const std::unordered_map&lt;TypeId, int8_t&gt; iceberg::TableMetadata::kMinFormatVersions</definition>
+        <argsstring></argsstring>
+        <name>kMinFormatVersions</name>
+        <qualifiedname>iceberg::TableMetadata::kMinFormatVersions</qualifiedname>
+        <initializer>= {}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="80" column="42" bodyfile="iceberg/table_metadata.h" bodystart="80" bodyend="80"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1abad559fa525596e692149cb92a6b6c5c" prot="public" static="no" mutable="no">
+        <type>int8_t</type>
+        <definition>int8_t iceberg::TableMetadata::format_version</definition>
+        <argsstring></argsstring>
+        <name>format_version</name>
+        <qualifiedname>iceberg::TableMetadata::format_version</qualifiedname>
+        <briefdescription>
+<para>An integer version number for the format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="83" column="10" bodyfile="iceberg/table_metadata.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1af0cd9c4f120c634f97f78e00373d239b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::TableMetadata::table_uuid</definition>
+        <argsstring></argsstring>
+        <name>table_uuid</name>
+        <qualifiedname>iceberg::TableMetadata::table_uuid</qualifiedname>
+        <briefdescription>
+<para>A UUID that identifies the table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="85" column="15" bodyfile="iceberg/table_metadata.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1aa67595d84febdb9a18cb3717e0103335" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::TableMetadata::location</definition>
+        <argsstring></argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::TableMetadata::location</qualifiedname>
+        <briefdescription>
+<para>The table&apos;s base location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="87" column="15" bodyfile="iceberg/table_metadata.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a7e90cf248dcb13548bd4e252895dd0ab" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::TableMetadata::last_sequence_number</definition>
+        <argsstring></argsstring>
+        <name>last_sequence_number</name>
+        <qualifiedname>iceberg::TableMetadata::last_sequence_number</qualifiedname>
+        <briefdescription>
+<para>The table&apos;s highest assigned sequence number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="89" column="11" bodyfile="iceberg/table_metadata.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a1158b2150b6c8ec623eec50a615e48b3" prot="public" static="no" mutable="no">
+        <type>TimePointMs</type>
+        <definition>TimePointMs iceberg::TableMetadata::last_updated_ms</definition>
+        <argsstring></argsstring>
+        <name>last_updated_ms</name>
+        <qualifiedname>iceberg::TableMetadata::last_updated_ms</qualifiedname>
+        <briefdescription>
+<para>Timestamp in milliseconds from the unix epoch when the table was last updated. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="91" column="15" bodyfile="iceberg/table_metadata.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a429f1dfd74449b8fb224797f1619d10a" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TableMetadata::last_column_id</definition>
+        <argsstring></argsstring>
+        <name>last_column_id</name>
+        <qualifiedname>iceberg::TableMetadata::last_column_id</qualifiedname>
+        <briefdescription>
+<para>The highest assigned column ID for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="93" column="11" bodyfile="iceberg/table_metadata.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1ab39be8853bddb48ad1e68dcfd6709e1e" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;iceberg::Schema&gt; &gt; iceberg::TableMetadata::schemas</definition>
+        <argsstring></argsstring>
+        <name>schemas</name>
+        <qualifiedname>iceberg::TableMetadata::schemas</qualifiedname>
+        <briefdescription>
+<para>A list of schemas. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="95" column="15" bodyfile="iceberg/table_metadata.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1adadd462cb1a447baef0a437b8ed5ce2e" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TableMetadata::current_schema_id</definition>
+        <argsstring></argsstring>
+        <name>current_schema_id</name>
+        <qualifiedname>iceberg::TableMetadata::current_schema_id</qualifiedname>
+        <briefdescription>
+<para>ID of the table&apos;s current schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="97" column="11" bodyfile="iceberg/table_metadata.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a23fcb664a4819dcda141eea1bbd5999e" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">iceberg::PartitionSpec</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;iceberg::PartitionSpec&gt; &gt; iceberg::TableMetadata::partition_specs</definition>
+        <argsstring></argsstring>
+        <name>partition_specs</name>
+        <qualifiedname>iceberg::TableMetadata::partition_specs</qualifiedname>
+        <briefdescription>
+<para>A list of partition specs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="99" column="15" bodyfile="iceberg/table_metadata.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a44476b96f40f56ac4adba561fbb4ef94" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TableMetadata::default_spec_id</definition>
+        <argsstring></argsstring>
+        <name>default_spec_id</name>
+        <qualifiedname>iceberg::TableMetadata::default_spec_id</qualifiedname>
+        <briefdescription>
+<para>ID of the current partition spec that writers should use by default. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="101" column="11" bodyfile="iceberg/table_metadata.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a1ad1a4c75ef80fad6ef477f75373696e" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TableMetadata::last_partition_id</definition>
+        <argsstring></argsstring>
+        <name>last_partition_id</name>
+        <qualifiedname>iceberg::TableMetadata::last_partition_id</qualifiedname>
+        <briefdescription>
+<para>The highest assigned partition field ID across all partition specs for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="103" column="11" bodyfile="iceberg/table_metadata.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a48f696b77d6f772bfcdf9b05cf46fc93" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref></type>
+        <definition>TableProperties iceberg::TableMetadata::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::TableMetadata::properties</qualifiedname>
+        <briefdescription>
+<para>A string to string map of table properties. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="105" column="19" bodyfile="iceberg/table_metadata.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a05d81d023b91bcf46ab4c1729b89b33c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::TableMetadata::current_snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>current_snapshot_id</name>
+        <qualifiedname>iceberg::TableMetadata::current_snapshot_id</qualifiedname>
+        <briefdescription>
+<para>ID of the current table snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="107" column="11" bodyfile="iceberg/table_metadata.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a4e7cb6b428cab513f11b440abcd86251" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">iceberg::Snapshot</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;iceberg::Snapshot&gt; &gt; iceberg::TableMetadata::snapshots</definition>
+        <argsstring></argsstring>
+        <name>snapshots</name>
+        <qualifiedname>iceberg::TableMetadata::snapshots</qualifiedname>
+        <briefdescription>
+<para>A list of valid snapshots. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="109" column="15" bodyfile="iceberg/table_metadata.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1aad9b131ae9842167a287008ac7f12d9e" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1SnapshotLogEntry" kindref="compound">SnapshotLogEntry</ref> &gt;</type>
+        <definition>std::vector&lt;SnapshotLogEntry&gt; iceberg::TableMetadata::snapshot_log</definition>
+        <argsstring></argsstring>
+        <name>snapshot_log</name>
+        <qualifiedname>iceberg::TableMetadata::snapshot_log</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A list of timestamp and snapshot ID pairs that encodes changes to the current snapshot for the table </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="112" column="15" bodyfile="iceberg/table_metadata.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a3290793ebc4158196e9963b430e78a97" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1MetadataLogEntry" kindref="compound">MetadataLogEntry</ref> &gt;</type>
+        <definition>std::vector&lt;MetadataLogEntry&gt; iceberg::TableMetadata::metadata_log</definition>
+        <argsstring></argsstring>
+        <name>metadata_log</name>
+        <qualifiedname>iceberg::TableMetadata::metadata_log</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A list of timestamp and metadata file location pairs that encodes changes to the previous metadata files for the table </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="115" column="15" bodyfile="iceberg/table_metadata.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a5907ebb5587e93ab2ec3b0053def1cc4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">iceberg::SortOrder</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;iceberg::SortOrder&gt; &gt; iceberg::TableMetadata::sort_orders</definition>
+        <argsstring></argsstring>
+        <name>sort_orders</name>
+        <qualifiedname>iceberg::TableMetadata::sort_orders</qualifiedname>
+        <briefdescription>
+<para>A list of sort orders. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="117" column="15" bodyfile="iceberg/table_metadata.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a7a94776809248aa5cd662c9f7bb03d59" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TableMetadata::default_sort_order_id</definition>
+        <argsstring></argsstring>
+        <name>default_sort_order_id</name>
+        <qualifiedname>iceberg::TableMetadata::default_sort_order_id</qualifiedname>
+        <briefdescription>
+<para>Default sort order id of the table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="119" column="11" bodyfile="iceberg/table_metadata.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a4729379ffb32fd8b8046165482718b81" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::shared_ptr&lt; <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &gt; &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::shared_ptr&lt;SnapshotRef&gt; &gt; iceberg::TableMetadata::refs</definition>
+        <argsstring></argsstring>
+        <name>refs</name>
+        <qualifiedname>iceberg::TableMetadata::refs</qualifiedname>
+        <briefdescription>
+<para>A map of snapshot references. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="121" column="22" bodyfile="iceberg/table_metadata.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1ab71ba7cc74ad20d823f3aff32e6566a9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; struct <ref refid="structiceberg_1_1StatisticsFile" kindref="compound">StatisticsFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;struct StatisticsFile&gt; &gt; iceberg::TableMetadata::statistics</definition>
+        <argsstring></argsstring>
+        <name>statistics</name>
+        <qualifiedname>iceberg::TableMetadata::statistics</qualifiedname>
+        <briefdescription>
+<para>A list of table statistics. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="123" column="15" bodyfile="iceberg/table_metadata.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a98ebf368798e69856e71decfe98f9441" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; struct <ref refid="structiceberg_1_1PartitionStatisticsFile" kindref="compound">PartitionStatisticsFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;struct PartitionStatisticsFile&gt; &gt; iceberg::TableMetadata::partition_statistics</definition>
+        <argsstring></argsstring>
+        <name>partition_statistics</name>
+        <qualifiedname>iceberg::TableMetadata::partition_statistics</qualifiedname>
+        <briefdescription>
+<para>A list of partition statistics. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="125" column="15" bodyfile="iceberg/table_metadata.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadata_1a9cd9badc1b5db6b13a10d1cfd35ba153" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::TableMetadata::next_row_id</definition>
+        <argsstring></argsstring>
+        <name>next_row_id</name>
+        <qualifiedname>iceberg::TableMetadata::next_row_id</qualifiedname>
+        <briefdescription>
+<para>A <computeroutput>long</computeroutput> higher than all assigned row IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="127" column="11" bodyfile="iceberg/table_metadata.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1acf8465a15999faaa9a7d4f13df5bf8cf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TableMetadata &gt; &gt; iceberg::TableMetadata::Make</definition>
+        <argsstring>(const iceberg::Schema &amp;schema, const iceberg::PartitionSpec &amp;spec, const iceberg::SortOrder &amp;sort_order, const std::string &amp;location, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties, int format_version=kDefaultTableFormatVersion)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::TableMetadata::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">iceberg::PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortOrder" kindref="compound">iceberg::SortOrder</ref> &amp;</type>
+          <declname>sort_order</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>format_version</declname>
+          <defval>kDefaultTableFormatVersion</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="129" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="193" bodyend="233"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1a800515e6673bfcb36f1d7b69d990ddeb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::TableMetadata::Schema</definition>
+        <argsstring>() const</argsstring>
+        <name>Schema</name>
+        <qualifiedname>iceberg::TableMetadata::Schema</qualifiedname>
+        <briefdescription>
+<para>Get the current schema, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned schema is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="137" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="235" bodyend="237"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1a1fefe72dc59acd4fe33b3f9020a27b74" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::TableMetadata::SchemaById</definition>
+        <argsstring>(int32_t schema_id) const</argsstring>
+        <name>SchemaById</name>
+        <qualifiedname>iceberg::TableMetadata::SchemaById</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>schema_id</declname>
+        </param>
+        <briefdescription>
+<para>Get the current schema by ID, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned schema is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="140" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="239" bodyend="247"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1a1c0a7357653b59ba34e1d067afa1ffab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">iceberg::PartitionSpec</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; PartitionSpec &gt; &gt; iceberg::TableMetadata::PartitionSpec</definition>
+        <argsstring>() const</argsstring>
+        <name>PartitionSpec</name>
+        <qualifiedname>iceberg::TableMetadata::PartitionSpec</qualifiedname>
+        <briefdescription>
+<para>Get the current partition spec, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned partition spec is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="143" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="249" bodyend="251"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1a46d929e38563877b03a3ee3f7d7da4ce" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">iceberg::PartitionSpec</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; PartitionSpec &gt; &gt; iceberg::TableMetadata::PartitionSpecById</definition>
+        <argsstring>(int32_t spec_id) const</argsstring>
+        <name>PartitionSpecById</name>
+        <qualifiedname>iceberg::TableMetadata::PartitionSpecById</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <briefdescription>
+<para>Get the current partition spec by ID, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned partition spec is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="146" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="253" bodyend="262"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1ae8c10f1c60356b274cc500b96ea186b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">iceberg::SortOrder</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; SortOrder &gt; &gt; iceberg::TableMetadata::SortOrder</definition>
+        <argsstring>() const</argsstring>
+        <name>SortOrder</name>
+        <qualifiedname>iceberg::TableMetadata::SortOrder</qualifiedname>
+        <briefdescription>
+<para>Get the current sort order, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned sort order is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="150" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="264" bodyend="266"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1a6f4f18eda391196684122e8f9165ce1e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">iceberg::SortOrder</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; SortOrder &gt; &gt; iceberg::TableMetadata::SortOrderById</definition>
+        <argsstring>(int32_t sort_order_id) const</argsstring>
+        <name>SortOrderById</name>
+        <qualifiedname>iceberg::TableMetadata::SortOrderById</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>sort_order_id</declname>
+        </param>
+        <briefdescription>
+<para>Get the current sort order by ID, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned sort order is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="153" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="268" bodyend="276"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1af4deecc6a29f4a93568ced47803830af" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">iceberg::Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt; iceberg::TableMetadata::Snapshot</definition>
+        <argsstring>() const</argsstring>
+        <name>Snapshot</name>
+        <qualifiedname>iceberg::TableMetadata::Snapshot</qualifiedname>
+        <briefdescription>
+<para>Get the current snapshot, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned snapshot is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="156" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="278" bodyend="283"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1a11d467f7050d996e559898c4258022aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">iceberg::Snapshot</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Snapshot &gt; &gt; iceberg::TableMetadata::SnapshotById</definition>
+        <argsstring>(int64_t snapshot_id) const</argsstring>
+        <name>SnapshotById</name>
+        <qualifiedname>iceberg::TableMetadata::SnapshotById</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Get the snapshot by ID, return NotFoundError if not found. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned snapshot is guaranteed to be not null </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="159" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="285" bodyend="293"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadata_1a893999e4cbc550b5a2052c452145aa33" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::TableMetadata::NextSequenceNumber</definition>
+        <argsstring>() const</argsstring>
+        <name>NextSequenceNumber</name>
+        <qualifiedname>iceberg::TableMetadata::NextSequenceNumber</qualifiedname>
+        <briefdescription>
+<para>Get the next sequence number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="161" column="11" bodyfile="iceberg/table_metadata.cc" bodystart="295" bodyend="297"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1TableMetadata_1afad72d291d5f973777c69636af7ed945" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend bool</type>
+        <definition>ICEBERG_EXPORT friend bool operator==</definition>
+        <argsstring>(const TableMetadata &amp;lhs, const TableMetadata &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::TableMetadata::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="163" column="30" bodyfile="iceberg/table_metadata.cc" bodystart="335" bodyend="356"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents the metadata for an Iceberg table. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Note that it only contains table metadata from the spec. Compared to the Java implementation, missing pieces including: (1) Map&lt;Integer, Schema|PartitionSpec|SortOrder&gt; (2) List&lt;MetadataUpdate&gt; (3) Map&lt;Long, Snapshot&gt; (4) Map&lt;String, SnapshotRef&gt; </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="23">
+        <label>iceberg::ConfigBase&lt; TableProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="24" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="15">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="42">
+        <label>iceberg::BlobMetadata</label>
+        <link refid="structiceberg_1_1BlobMetadata"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="43" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg::MetadataLogEntry</label>
+        <link refid="structiceberg_1_1MetadataLogEntry"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>metadata_file</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>iceberg::PartitionStatisticsFile</label>
+        <link refid="structiceberg_1_1PartitionStatisticsFile"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg::Snapshot</label>
+        <link refid="structiceberg_1_1Snapshot"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>manifest_list</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>summary</edgelabel>
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg::SnapshotLogEntry</label>
+        <link refid="structiceberg_1_1SnapshotLogEntry"/>
+      </node>
+      <node id="37">
+        <label>iceberg::SnapshotRef</label>
+        <link refid="structiceberg_1_1SnapshotRef"/>
+        <childnode refid="17" relation="usage">
+          <edgelabel>kMainBranch</edgelabel>
+        </childnode>
+      </node>
+      <node id="34">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>iceberg::StatisticsFile</label>
+        <link refid="structiceberg_1_1StatisticsFile"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+        <childnode refid="41" relation="usage">
+          <edgelabel>blob_metadata</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableMetadata</label>
+        <link refid="structiceberg_1_1TableMetadata"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kMinFormatVersions</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>location</edgelabel>
+          <edgelabel>table_uuid</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>schemas</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>partition_specs</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="25" relation="usage">
+          <edgelabel>snapshots</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>snapshot_log</edgelabel>
+        </childnode>
+        <childnode refid="30" relation="usage">
+          <edgelabel>metadata_log</edgelabel>
+        </childnode>
+        <childnode refid="32" relation="usage">
+          <edgelabel>sort_orders</edgelabel>
+        </childnode>
+        <childnode refid="35" relation="usage">
+          <edgelabel>refs</edgelabel>
+        </childnode>
+        <childnode refid="38" relation="usage">
+          <edgelabel>statistics</edgelabel>
+        </childnode>
+        <childnode refid="44" relation="usage">
+          <edgelabel>partition_statistics</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::TableProperties</label>
+        <link refid="classiceberg_1_1TableProperties"/>
+        <childnode refid="23" relation="public-inheritance">
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>kDefaultNameMapping</edgelabel>
+          <edgelabel>kMetricModeColumnConfPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnEnabledPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnFppPrefix</edgelabel>
+          <edgelabel>kParquetColumnStatsEnabledPrefix</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="20">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="21" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="26">
+        <label>std::shared_ptr&lt; iceberg::Snapshot &gt;</label>
+        <childnode refid="27" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="36">
+        <label>std::shared_ptr&lt; iceberg::SnapshotRef &gt;</label>
+        <childnode refid="37" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="33">
+        <label>std::shared_ptr&lt; iceberg::SortOrder &gt;</label>
+        <childnode refid="34" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="45">
+        <label>std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt;</label>
+        <childnode refid="46" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="39">
+        <label>std::shared_ptr&lt; struct iceberg::StatisticsFile &gt;</label>
+        <childnode refid="40" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="18">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::string_view</label>
+        <childnode refid="18" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_map&lt; TypeId, int8_t &gt;</label>
+      </node>
+      <node id="35">
+        <label>std::unordered_map&lt; std::string, std::shared_ptr&lt; iceberg::SnapshotRef &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="36" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>std::vector&lt; iceberg::BlobMetadata &gt;</label>
+        <childnode refid="42" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="30">
+        <label>std::vector&lt; iceberg::MetadataLogEntry &gt;</label>
+        <childnode refid="31" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>std::vector&lt; iceberg::SnapshotLogEntry &gt;</label>
+        <childnode refid="29" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="43">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="19">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::PartitionSpec &gt; &gt;</label>
+        <childnode refid="20" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Schema &gt; &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="25">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Snapshot &gt; &gt;</label>
+        <childnode refid="26" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="32">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::SortOrder &gt; &gt;</label>
+        <childnode refid="33" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="44">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt; &gt;</label>
+        <childnode refid="45" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="38">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::StatisticsFile &gt; &gt;</label>
+        <childnode refid="39" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_metadata.h" line="72" column="1" bodyfile="iceberg/table_metadata.h" bodystart="72" bodyend="165"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TableMetadata_1adadd462cb1a447baef0a437b8ed5ce2e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>current_schema_id</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a05d81d023b91bcf46ab4c1729b89b33c" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>current_snapshot_id</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a7a94776809248aa5cd662c9f7bb03d59" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>default_sort_order_id</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a44476b96f40f56ac4adba561fbb4ef94" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>default_spec_id</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1abad559fa525596e692149cb92a6b6c5c" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>format_version</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a810a6a501258d6beb99ee19acceaff54" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>kDefaultTableFormatVersion</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a899bb72dbb77de7b53027637f1f515a4" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>kInitialRowId</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1aa2e23a73dab60dbac8dfd8b423ff0ba6" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>kInitialSequenceNumber</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a5520b8458dc7cb55fe8b2c67bb7f58b2" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>kMinFormatVersionDefaultValues</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a62dcfc89d97741a4272d56152fbe5a48" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>kMinFormatVersionRowLineage</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1abd6ab5c65cdeda230bd5f74ea91cdd29" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>kMinFormatVersions</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a80bcf638dfc7aabdbad537b9527e9561" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>kSupportedTableFormatVersion</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a429f1dfd74449b8fb224797f1619d10a" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>last_column_id</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a1ad1a4c75ef80fad6ef477f75373696e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>last_partition_id</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a7e90cf248dcb13548bd4e252895dd0ab" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>last_sequence_number</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a1158b2150b6c8ec623eec50a615e48b3" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>last_updated_ms</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1aa67595d84febdb9a18cb3717e0103335" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>location</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1acf8465a15999faaa9a7d4f13df5bf8cf" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>Make</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a3290793ebc4158196e9963b430e78a97" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>metadata_log</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a9cd9badc1b5db6b13a10d1cfd35ba153" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>next_row_id</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a893999e4cbc550b5a2052c452145aa33" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>NextSequenceNumber</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1afad72d291d5f973777c69636af7ed945" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a23fcb664a4819dcda141eea1bbd5999e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>partition_specs</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a98ebf368798e69856e71decfe98f9441" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>partition_statistics</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a1c0a7357653b59ba34e1d067afa1ffab" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>PartitionSpec</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a46d929e38563877b03a3ee3f7d7da4ce" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>PartitionSpecById</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a48f696b77d6f772bfcdf9b05cf46fc93" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a4729379ffb32fd8b8046165482718b81" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>refs</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a800515e6673bfcb36f1d7b69d990ddeb" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>Schema</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a1fefe72dc59acd4fe33b3f9020a27b74" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>SchemaById</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1ab39be8853bddb48ad1e68dcfd6709e1e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>schemas</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1af4deecc6a29f4a93568ced47803830af" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>Snapshot</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1aad9b131ae9842167a287008ac7f12d9e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>snapshot_log</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a11d467f7050d996e559898c4258022aa" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>SnapshotById</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a4e7cb6b428cab513f11b440abcd86251" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>snapshots</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a5907ebb5587e93ab2ec3b0053def1cc4" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>sort_orders</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1ae8c10f1c60356b274cc500b96ea186b2" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>SortOrder</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1a6f4f18eda391196684122e8f9165ce1e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>SortOrderById</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1ab71ba7cc74ad20d823f3aff32e6566a9" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>statistics</name></member>
+      <member refid="structiceberg_1_1TableMetadata_1af0cd9c4f120c634f97f78e00373d239b" prot="public" virt="non-virtual"><scope>iceberg::TableMetadata</scope><name>table_uuid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

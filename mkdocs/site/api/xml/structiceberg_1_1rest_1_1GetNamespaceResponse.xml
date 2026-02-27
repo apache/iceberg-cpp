@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1GetNamespaceResponse" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::GetNamespaceResponse</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1GetNamespaceResponse_1a3affe7331268629cfad4773ba8e88600" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref></type>
+        <definition>Namespace iceberg::rest::GetNamespaceResponse::namespace_</definition>
+        <argsstring></argsstring>
+        <name>namespace_</name>
+        <qualifiedname>iceberg::rest::GetNamespaceResponse::namespace_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="218" column="13" bodyfile="iceberg/catalog/rest/types.h" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1GetNamespaceResponse_1a4e2b02ab45a3a77ca44f26e0a771f04b" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::GetNamespaceResponse::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::rest::GetNamespaceResponse::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="219" column="22" bodyfile="iceberg/catalog/rest/types.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1GetNamespaceResponse_1a56c360d82a88df7f5981d3382e47027a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::GetNamespaceResponse::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::GetNamespaceResponse::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1GetNamespaceResponse" kindref="compound">GetNamespaceResponse</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="222" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="222" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1GetNamespaceResponse_1a83685d8cb9555f13dd74478562ef9683" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::GetNamespaceResponse::operator==</definition>
+        <argsstring>(const GetNamespaceResponse &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::GetNamespaceResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1GetNamespaceResponse" kindref="compound">GetNamespaceResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="224" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Response body for loading namespace properties. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::GetNamespaceResponse</label>
+        <link refid="structiceberg_1_1rest_1_1GetNamespaceResponse"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>namespace_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="217" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="217" bodyend="225"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1GetNamespaceResponse_1a3affe7331268629cfad4773ba8e88600" prot="public" virt="non-virtual"><scope>iceberg::rest::GetNamespaceResponse</scope><name>namespace_</name></member>
+      <member refid="structiceberg_1_1rest_1_1GetNamespaceResponse_1a83685d8cb9555f13dd74478562ef9683" prot="public" virt="non-virtual"><scope>iceberg::rest::GetNamespaceResponse</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1GetNamespaceResponse_1a4e2b02ab45a3a77ca44f26e0a771f04b" prot="public" virt="non-virtual"><scope>iceberg::rest::GetNamespaceResponse</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1rest_1_1GetNamespaceResponse_1a56c360d82a88df7f5981d3382e47027a" prot="public" virt="non-virtual"><scope>iceberg::rest::GetNamespaceResponse</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1GenerateRequirementsTestParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::GenerateRequirementsTestParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1GenerateRequirementsTestParam_1af59b7553cf11c1ab2e0a61bb48e648a0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::GenerateRequirementsTestParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::GenerateRequirementsTestParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/table_update_test.cc" line="89" column="15" bodyfile="iceberg/test/table_update_test.cc" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1GenerateRequirementsTestParam_1a3efa20c612ff22a43d00ee656d1df208" prot="public" static="no" mutable="no">
+        <type>std::function&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt;()&gt;</type>
+        <definition>std::function&lt;std::unique_ptr&lt;TableUpdate&gt;()&gt; iceberg::GenerateRequirementsTestParam::update_factory</definition>
+        <argsstring></argsstring>
+        <name>update_factory</name>
+        <qualifiedname>iceberg::GenerateRequirementsTestParam::update_factory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/table_update_test.cc" line="90" column="19" bodyfile="iceberg/test/table_update_test.cc" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1GenerateRequirementsTestParam_1a643988231d0c928c25d9463f44d90509" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t iceberg::GenerateRequirementsTestParam::expected_existing_table_count</definition>
+        <argsstring></argsstring>
+        <name>expected_existing_table_count</name>
+        <qualifiedname>iceberg::GenerateRequirementsTestParam::expected_existing_table_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/table_update_test.cc" line="92" column="10" bodyfile="iceberg/test/table_update_test.cc" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1GenerateRequirementsTestParam_1a0c01d2152c7107ae89bdebb0c9fc3382" prot="public" static="no" mutable="no">
+        <type>std::function&lt; void(const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &amp;, const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *)&gt;</type>
+        <definition>std::function&lt;void(const std::vector&lt;std::unique_ptr&lt;TableRequirement&gt;&gt;&amp;, const TableMetadata*)&gt; iceberg::GenerateRequirementsTestParam::validator</definition>
+        <argsstring></argsstring>
+        <name>validator</name>
+        <qualifiedname>iceberg::GenerateRequirementsTestParam::validator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/table_update_test.cc" line="96" column="7" bodyfile="iceberg/test/table_update_test.cc" bodystart="96" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::GenerateRequirementsTestParam</label>
+        <link refid="structiceberg_1_1GenerateRequirementsTestParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/table_update_test.cc" line="88" column="1" bodyfile="iceberg/test/table_update_test.cc" bodystart="88" bodyend="97"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1GenerateRequirementsTestParam_1a643988231d0c928c25d9463f44d90509" prot="public" virt="non-virtual"><scope>iceberg::GenerateRequirementsTestParam</scope><name>expected_existing_table_count</name></member>
+      <member refid="structiceberg_1_1GenerateRequirementsTestParam_1af59b7553cf11c1ab2e0a61bb48e648a0" prot="public" virt="non-virtual"><scope>iceberg::GenerateRequirementsTestParam</scope><name>test_name</name></member>
+      <member refid="structiceberg_1_1GenerateRequirementsTestParam_1a3efa20c612ff22a43d00ee656d1df208" prot="public" virt="non-virtual"><scope>iceberg::GenerateRequirementsTestParam</scope><name>update_factory</name></member>
+      <member refid="structiceberg_1_1GenerateRequirementsTestParam_1a0c01d2152c7107ae89bdebb0c9fc3382" prot="public" virt="non-virtual"><scope>iceberg::GenerateRequirementsTestParam</scope><name>validator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

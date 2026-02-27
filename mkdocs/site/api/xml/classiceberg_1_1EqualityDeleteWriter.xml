@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1EqualityDeleteWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::EqualityDeleteWriter</compoundname>
+    <basecompoundref refid="classiceberg_1_1FileWriter" prot="public" virt="non-virtual">iceberg::FileWriter</basecompoundref>
+    <includes refid="equality__delete__writer_8h" local="no">equality_delete_writer.h</includes>
+    <innerclass refid="classiceberg_1_1EqualityDeleteWriter_1_1Impl" prot="public">iceberg::EqualityDeleteWriter::Impl</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1EqualityDeleteWriter_1a79f60b80500372eb84fd749b1c01d78c" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1EqualityDeleteWriter_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::EqualityDeleteWriter::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::EqualityDeleteWriter::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="69" column="19" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1EqualityDeleteWriter_1a42037abd6d20fea0ad6f165bda007edd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::EqualityDeleteWriter::~EqualityDeleteWriter</definition>
+        <argsstring>() override</argsstring>
+        <name>~EqualityDeleteWriter</name>
+        <qualifiedname>iceberg::EqualityDeleteWriter::~EqualityDeleteWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="58" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1EqualityDeleteWriter_1afce144d0fe922ad0d4a49dce13ce6a96" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::EqualityDeleteWriter::Write</definition>
+        <argsstring>(ArrowArray *data) override</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::EqualityDeleteWriter::Write</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1ad27902863767dbda5a2d7fcf88eb0e28">Write</reimplements>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Write a batch of records. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The ownership of the <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> will be transferred to the writer. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="60" column="10" bodyfile="iceberg/data/equality_delete_writer.cc" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1EqualityDeleteWriter_1a708a6b9afdc78d7e91d8c805cca2ada0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::EqualityDeleteWriter::Length</definition>
+        <argsstring>() const override</argsstring>
+        <name>Length</name>
+        <qualifiedname>iceberg::EqualityDeleteWriter::Length</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1ad32f2d3323e2fea39baa59a96eb50197">Length</reimplements>
+        <briefdescription>
+<para>Get the current number of bytes written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="61" column="10" bodyfile="iceberg/data/equality_delete_writer.cc" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1EqualityDeleteWriter_1a03c473f8e3a8aa2fb29638527b2984e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::EqualityDeleteWriter::Close</definition>
+        <argsstring>() override</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::EqualityDeleteWriter::Close</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1a6d7f69f445e791c2c864913fc1188370">Close</reimplements>
+        <briefdescription>
+<para>Close the writer and finalize the file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="62" column="10" bodyfile="iceberg/data/equality_delete_writer.cc" bodystart="34" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1EqualityDeleteWriter_1a4c8da285388678cf6ba5496f3aa23bce" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1FileWriter_1_1WriteResult" kindref="compound">WriteResult</ref> &gt;</type>
+        <definition>Result&lt; FileWriter::WriteResult &gt; iceberg::EqualityDeleteWriter::Metadata</definition>
+        <argsstring>() override</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::EqualityDeleteWriter::Metadata</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1a7206abe67a08dc3362379f810cf11b96">Metadata</reimplements>
+        <briefdescription>
+<para>Get file metadata for all files produced by this writer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This method should be called after <ref refid="classiceberg_1_1EqualityDeleteWriter_1a03c473f8e3a8aa2fb29638527b2984e6" kindref="member">Close()</ref>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="63" column="10" bodyfile="iceberg/data/equality_delete_writer.cc" bodystart="36" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1EqualityDeleteWriter_1a14110f1400a497f27f41ad32da3b3961" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::span&lt; const int32_t &gt;</type>
+        <definition>std::span&lt; const int32_t &gt; iceberg::EqualityDeleteWriter::equality_field_ids</definition>
+        <argsstring>() const</argsstring>
+        <name>equality_field_ids</name>
+        <qualifiedname>iceberg::EqualityDeleteWriter::equality_field_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="65" column="13" bodyfile="iceberg/data/equality_delete_writer.cc" bodystart="40" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> for Iceberg equality delete files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::EqualityDeleteWriter</label>
+        <link refid="classiceberg_1_1EqualityDeleteWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::FileWriter</label>
+        <link refid="classiceberg_1_1FileWriter"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::EqualityDeleteWriter</label>
+        <link refid="classiceberg_1_1EqualityDeleteWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::FileWriter</label>
+        <link refid="classiceberg_1_1FileWriter"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/equality_delete_writer.h" line="56" column="1" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="56" bodyend="70"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1EqualityDeleteWriter_1a03c473f8e3a8aa2fb29638527b2984e6" prot="public" virt="virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1EqualityDeleteWriter_1a14110f1400a497f27f41ad32da3b3961" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>equality_field_ids</name></member>
+      <member refid="classiceberg_1_1EqualityDeleteWriter_1a79f60b80500372eb84fd749b1c01d78c" prot="private" virt="non-virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1EqualityDeleteWriter_1a708a6b9afdc78d7e91d8c805cca2ada0" prot="public" virt="virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>Length</name></member>
+      <member refid="classiceberg_1_1EqualityDeleteWriter_1a4c8da285388678cf6ba5496f3aa23bce" prot="public" virt="virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1EqualityDeleteWriter_1afce144d0fe922ad0d4a49dce13ce6a96" prot="public" virt="virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1EqualityDeleteWriter_1a42037abd6d20fea0ad6f165bda007edd" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>~EqualityDeleteWriter</name></member>
+      <member refid="classiceberg_1_1FileWriter_1ac1131a6e8ec6e4541f49528ff7677bc5" prot="public" virt="virtual"><scope>iceberg::EqualityDeleteWriter</scope><name>~FileWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

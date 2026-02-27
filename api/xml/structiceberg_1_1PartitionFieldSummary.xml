@@ -1,0 +1,215 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PartitionFieldSummary" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PartitionFieldSummary</compoundname>
+    <includes refid="manifest__list_8h" local="no">manifest_list.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1a4c6d214a5137f194549c2d41d95341d7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionFieldSummary::contains_null</definition>
+        <argsstring></argsstring>
+        <name>contains_null</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::contains_null</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 509 Whether the manifest contains at least one partition with a null value for the field </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="46" column="8" bodyfile="iceberg/manifest/manifest_list.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1ae9eb0a96032cdc17af89551c19dac602" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; bool &gt;</type>
+        <definition>std::optional&lt;bool&gt; iceberg::PartitionFieldSummary::contains_nan</definition>
+        <argsstring></argsstring>
+        <name>contains_nan</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::contains_nan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 518 Whether the manifest contains at least one partition with a NaN value for the field </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="49" column="17" bodyfile="iceberg/manifest/manifest_list.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1a8c12978875b97dd4f555b86db605c104" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>std::optional&lt;std::vector&lt;uint8_t&gt; &gt; iceberg::PartitionFieldSummary::lower_bound</definition>
+        <argsstring></argsstring>
+        <name>lower_bound</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::lower_bound</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 510 Lower bound for the non-null, non-NaN values in the partition field, or null if all values are null or NaN </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="53" column="17" bodyfile="iceberg/manifest/manifest_list.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1abacf2fd506572ceed3ce049661aa3033" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>std::optional&lt;std::vector&lt;uint8_t&gt; &gt; iceberg::PartitionFieldSummary::upper_bound</definition>
+        <argsstring></argsstring>
+        <name>upper_bound</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::upper_bound</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 511 Upper bound for the non-null, non-NaN values in the partition field, or null if all values are null or NaN </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="57" column="17" bodyfile="iceberg/manifest/manifest_list.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1a9256b9ba3269f92ed89a075137dd907f" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::PartitionFieldSummary::kContainsNull</definition>
+        <argsstring></argsstring>
+        <name>kContainsNull</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::kContainsNull</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(509, &quot;contains_null&quot;, <ref refid="group__type-factories_1gafb5f5aec1d1d6218809ee512e2f87e83" kindref="member">iceberg::boolean</ref>(),
+                                &quot;True if any file has a null partition value&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="59" column="35" bodyfile="iceberg/manifest/manifest_list.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1a007e05556def63020c1b800eb2bbae09" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::PartitionFieldSummary::kContainsNaN</definition>
+        <argsstring></argsstring>
+        <name>kContainsNaN</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::kContainsNaN</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(518, &quot;contains_nan&quot;, <ref refid="group__type-factories_1gafb5f5aec1d1d6218809ee512e2f87e83" kindref="member">iceberg::boolean</ref>(),
+                                &quot;True if any file has a nan partition value&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="62" column="35" bodyfile="iceberg/manifest/manifest_list.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1af6e4e8ead77bd7705ca6c31b5f77fa1b" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::PartitionFieldSummary::kLowerBound</definition>
+        <argsstring></argsstring>
+        <name>kLowerBound</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::kLowerBound</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      510, &quot;lower_bound&quot;, <ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">iceberg::binary</ref>(), &quot;Partition lower bound for all files&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="65" column="35" bodyfile="iceberg/manifest/manifest_list.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionFieldSummary_1a6fee72f41d8674b1497267c72b951a9e" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::PartitionFieldSummary::kUpperBound</definition>
+        <argsstring></argsstring>
+        <name>kUpperBound</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::kUpperBound</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      511, &quot;upper_bound&quot;, <ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">iceberg::binary</ref>(), &quot;Partition upper bound for all files&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="67" column="35" bodyfile="iceberg/manifest/manifest_list.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1PartitionFieldSummary_1a77945a14da9ad7619de7f43111e6a000" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionFieldSummary::operator==</definition>
+        <argsstring>(const PartitionFieldSummary &amp;other) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="70" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1PartitionFieldSummary_1aaba2f2c59dc1f481c2c1fa400f8f44a0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; StructType &gt; &amp; iceberg::PartitionFieldSummary::Type</definition>
+        <argsstring>()</argsstring>
+        <name>Type</name>
+        <qualifiedname>iceberg::PartitionFieldSummary::Type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="72" column="32" bodyfile="iceberg/manifest/manifest_list.cc" bodystart="28" bodyend="36"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Field summary for partition field in the spec. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Each field of this corresponds to a field in the manifest file&apos;s partition spec. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::PartitionFieldSummary</label>
+        <link refid="structiceberg_1_1PartitionFieldSummary"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kContainsNaN</edgelabel>
+          <edgelabel>kContainsNull</edgelabel>
+          <edgelabel>kLowerBound</edgelabel>
+          <edgelabel>kUpperBound</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_list.h" line="43" column="1" bodyfile="iceberg/manifest/manifest_list.h" bodystart="43" bodyend="73"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1ae9eb0a96032cdc17af89551c19dac602" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>contains_nan</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1a4c6d214a5137f194549c2d41d95341d7" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>contains_null</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1a007e05556def63020c1b800eb2bbae09" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>kContainsNaN</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1a9256b9ba3269f92ed89a075137dd907f" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>kContainsNull</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1af6e4e8ead77bd7705ca6c31b5f77fa1b" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>kLowerBound</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1a6fee72f41d8674b1497267c72b951a9e" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>kUpperBound</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1a8c12978875b97dd4f555b86db605c104" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>lower_bound</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1a77945a14da9ad7619de7f43111e6a000" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1aaba2f2c59dc1f481c2c1fa400f8f44a0" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>Type</name></member>
+      <member refid="structiceberg_1_1PartitionFieldSummary_1abacf2fd506572ceed3ce049661aa3033" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummary</scope><name>upper_bound</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

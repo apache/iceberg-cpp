@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1CountNullAggregate" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::CountNullAggregate</compoundname>
+    <basecompoundref refid="classiceberg_1_1CountAggregate" prot="public" virt="non-virtual">iceberg::CountAggregate</basecompoundref>
+    <includes refid="aggregate_8h" local="no">aggregate.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1CountNullAggregate_1ad13c60d2ecd8c48f334741cee8f874fd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1CountNullAggregate" kindref="compound">CountNullAggregate</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; CountNullAggregate &gt; &gt; iceberg::CountNullAggregate::Make</definition>
+        <argsstring>(std::shared_ptr&lt; BoundTerm &gt; term)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::CountNullAggregate::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref> &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="183" column="17" bodyfile="iceberg/expression/aggregate.cc" bodystart="343" bodyend="349"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1CountNullAggregate_1ae32a493e666e3dfa7f31fb316e9c3d4a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::CountNullAggregate::CountFor</definition>
+        <argsstring>(const StructLike &amp;data) const override</argsstring>
+        <name>CountFor</name>
+        <qualifiedname>iceberg::CountNullAggregate::CountFor</qualifiedname>
+        <reimplements refid="classiceberg_1_1CountAggregate_1a1a252cfb0d886a29343eaf0c9ee3a1b9">CountFor</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Count for a single row. Subclasses implement this. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="186" column="10" bodyfile="iceberg/expression/aggregate.cc" bodystart="351" bodyend="354"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CountNullAggregate_1a435725a77a8e7328eaaf0245e94dd13e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::CountNullAggregate::CountFor</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>CountFor</name>
+        <qualifiedname>iceberg::CountNullAggregate::CountFor</qualifiedname>
+        <reimplements refid="classiceberg_1_1CountAggregate_1a5a743c8da58cbfb5d29fb7a4825cbc9a">CountFor</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Count using metrics from a data file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="187" column="10" bodyfile="iceberg/expression/aggregate.cc" bodystart="356" bodyend="362"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CountNullAggregate_1a93b4579159f6452280fa19d27c21ef5e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::CountNullAggregate::HasValue</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>HasValue</name>
+        <qualifiedname>iceberg::CountNullAggregate::HasValue</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundAggregate_1a4159215eb35deeb927c0bf30ad2b8e51">HasValue</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Whether metrics in the data file are sufficient to evaluate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="188" column="8" bodyfile="iceberg/expression/aggregate.cc" bodystart="364" bodyend="366"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1CountNullAggregate_1a338780bebdab68206d101a8b3360d1f4" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::CountNullAggregate::CountNullAggregate</definition>
+        <argsstring>(std::shared_ptr&lt; BoundTerm &gt; term)</argsstring>
+        <name>CountNullAggregate</name>
+        <qualifiedname>iceberg::CountNullAggregate::CountNullAggregate</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref> &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="191" column="12" bodyfile="iceberg/expression/aggregate.cc" bodystart="340" bodyend="341"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>COUNT_NULL(term) aggregate. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>iceberg::Aggregate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="3">
+        <label>iceberg::BoundAggregate</label>
+        <link refid="classiceberg_1_1BoundAggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::CountAggregate</label>
+        <link refid="classiceberg_1_1CountAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::CountNullAggregate</label>
+        <link refid="classiceberg_1_1CountNullAggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::Aggregate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="3">
+        <label>iceberg::BoundAggregate</label>
+        <link refid="classiceberg_1_1BoundAggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::CountAggregate</label>
+        <link refid="classiceberg_1_1CountAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::CountNullAggregate</label>
+        <link refid="classiceberg_1_1CountNullAggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/aggregate.h" line="181" column="1" bodyfile="iceberg/expression/aggregate.h" bodystart="181" bodyend="192"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Aggregate_1a6faf5ff7b6ecd69dc6cd26ee84a3dd30" prot="protected" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1ab096b57c1d6b00adf59ab5191cf90057" prot="protected" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>BoundAggregate</name></member>
+      <member refid="classiceberg_1_1CountAggregate_1ad3cfa614cf73ea5a832f7050f89f5ccc" prot="protected" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>CountAggregate</name></member>
+      <member refid="classiceberg_1_1CountNullAggregate_1ae32a493e666e3dfa7f31fb316e9c3d4a" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>CountFor</name></member>
+      <member refid="classiceberg_1_1CountNullAggregate_1a435725a77a8e7328eaaf0245e94dd13e" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>CountFor</name></member>
+      <member refid="classiceberg_1_1CountNullAggregate_1a338780bebdab68206d101a8b3360d1f4" prot="private" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>CountNullAggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1CountAggregate_1a413bd870ac74fdc2eca7c58e525d5871" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1CountAggregate_1a7a73b9835f8f3d7228018146e1f77919" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1CountNullAggregate_1a93b4579159f6452280fa19d27c21ef5e" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>HasValue</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1a14aa0f3e84ca3ec8323134d4b0fa43d7" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a5af32b25e4103d34dfc370064e1a14a9" prot="protected" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>IsSupportedOp</name></member>
+      <member refid="classiceberg_1_1CountNullAggregate_1ad13c60d2ecd8c48f334741cee8f874fd" prot="public" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1CountAggregate_1a3a814a707821cc0854e02f265d41b80c" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>NewAggregator</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a4dbbc648f79d02a088ede60b0158dfee" prot="protected" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>operation_</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1af59679da53f3634d45d775a11f0417e7" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>reference</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a761fc9c146cc30271fa100b2906bf056" prot="public" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>term</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a96a91318a214bade482691853f82ee03" prot="protected" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>term_</name></member>
+      <member refid="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a1473f637e1355db39626813ed10831c6" prot="public" virt="non-virtual"><scope>iceberg::CountNullAggregate</scope><name>~Aggregate</name></member>
+      <member refid="classiceberg_1_1Bound_1abc22c55a926f2041f458bdc8be7a18b5" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>~Bound</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::CountNullAggregate</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

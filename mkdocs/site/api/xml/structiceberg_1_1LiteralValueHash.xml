@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1LiteralValueHash" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::LiteralValueHash</compoundname>
+    <includes refid="literal_8h" local="no">literal.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1LiteralValueHash_1a0286fa220b68220d45c713efc58aa935" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::LiteralValueHash::operator()</definition>
+        <argsstring>(const Literal::Value &amp;value) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::LiteralValueHash::operator()</qualifiedname>
+        <param>
+          <type>const Literal::Value &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="175" column="15" bodyfile="iceberg/expression/literal.cc" bodystart="583" bodyend="627"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Hash function for <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to facilitate use in unordered containers. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/literal.h" line="174" column="1" bodyfile="iceberg/expression/literal.h" bodystart="174" bodyend="176"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1LiteralValueHash_1a0286fa220b68220d45c713efc58aa935" prot="public" virt="non-virtual"><scope>iceberg::LiteralValueHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,664 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1MetadataColumns" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::MetadataColumns</compoundname>
+    <includes refid="metadata__columns_8h" local="no">metadata_columns.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a7a8cbfccf955c76c7651d6a5f3a46094" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kInt32Max</definition>
+        <argsstring></argsstring>
+        <name>kInt32Max</name>
+        <qualifiedname>iceberg::MetadataColumns::kInt32Max</qualifiedname>
+        <initializer>= std::numeric_limits&lt;int32_t&gt;::max()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="39" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a978bde955f0abf19c6ea1fefd8a013a2" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kFilePathColumnId</definition>
+        <argsstring></argsstring>
+        <name>kFilePathColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kFilePathColumnId</qualifiedname>
+        <initializer>= kInt32Max - 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="42" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a8648bac1863b7ddd70a443089fd13bbc" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kFilePath</definition>
+        <argsstring></argsstring>
+        <name>kFilePath</name>
+        <qualifiedname>iceberg::MetadataColumns::kFilePath</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(
+      kFilePathColumnId, &quot;_file&quot;, <ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">string</ref>(), &quot;Path of the file in which a row is stored&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="43" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1adccd1358a78457a475f1b01bb3f2a253" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kFilePositionColumnId</definition>
+        <argsstring></argsstring>
+        <name>kFilePositionColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kFilePositionColumnId</qualifiedname>
+        <initializer>= kInt32Max - 2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="46" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a9328cd12426f8ef598eeaaaef8519dfd" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kRowPosition</definition>
+        <argsstring></argsstring>
+        <name>kRowPosition</name>
+        <qualifiedname>iceberg::MetadataColumns::kRowPosition</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(kFilePositionColumnId, &quot;_pos&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),
+                                &quot;Ordinal position of a row in the source data file&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="47" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a3eed25fbb180d5f45c0aef0fbfbd5cc0" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kIsDeletedColumnId</definition>
+        <argsstring></argsstring>
+        <name>kIsDeletedColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kIsDeletedColumnId</qualifiedname>
+        <initializer>= kInt32Max - 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="51" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a5b38304d91819822fe09ed7b6a5671ae" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kIsDeleted</definition>
+        <argsstring></argsstring>
+        <name>kIsDeleted</name>
+        <qualifiedname>iceberg::MetadataColumns::kIsDeleted</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(
+      kIsDeletedColumnId, &quot;_deleted&quot;, <ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">binary</ref>(), &quot;Whether the row has been deleted&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="52" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a8502260f823cd08bca60e7fdb9a12aa4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kSpecIdColumnId</definition>
+        <argsstring></argsstring>
+        <name>kSpecIdColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kSpecIdColumnId</qualifiedname>
+        <initializer>= kInt32Max - 4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="55" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a7fbc4620ba60093bef39a3a77608a7d7" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kSpecId</definition>
+        <argsstring></argsstring>
+        <name>kSpecId</name>
+        <qualifiedname>iceberg::MetadataColumns::kSpecId</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(kSpecIdColumnId, &quot;_spec_id&quot;, <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>(),
+                                &quot;Spec ID used to track the file containing a row&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="56" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1afe5ea729ded82aea47935765fa79b84e" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kPartitionColumnId</definition>
+        <argsstring></argsstring>
+        <name>kPartitionColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kPartitionColumnId</qualifiedname>
+        <initializer>= kInt32Max - 5</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="61" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1ae3cca391729eac6230769d4c5245eea8" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::MetadataColumns::kPartitionColumnName</definition>
+        <argsstring></argsstring>
+        <name>kPartitionColumnName</name>
+        <qualifiedname>iceberg::MetadataColumns::kPartitionColumnName</qualifiedname>
+        <initializer>= &quot;_partition&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="62" column="37" bodyfile="iceberg/metadata_columns.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a61811d8738c96a6994bd33c0faeb53b7" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::MetadataColumns::kPartitionColumnDoc</definition>
+        <argsstring></argsstring>
+        <name>kPartitionColumnDoc</name>
+        <qualifiedname>iceberg::MetadataColumns::kPartitionColumnDoc</qualifiedname>
+        <initializer>=
+      &quot;Partition to which a row belongs to&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="63" column="37" bodyfile="iceberg/metadata_columns.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a68a35e025211a3eed0ca592e0ba0b111" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kContentOffsetColumnId</definition>
+        <argsstring></argsstring>
+        <name>kContentOffsetColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kContentOffsetColumnId</qualifiedname>
+        <initializer>= kInt32Max - 6</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="66" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a7a2b0e291f61ba5c66d938343185a391" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kContentSizeInBytesColumnId</definition>
+        <argsstring></argsstring>
+        <name>kContentSizeInBytesColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kContentSizeInBytesColumnId</qualifiedname>
+        <initializer>= kInt32Max - 7</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="67" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1afa54a87dfbe1f410cb6a719f56e53e30" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kDeleteFilePathColumnId</definition>
+        <argsstring></argsstring>
+        <name>kDeleteFilePathColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kDeleteFilePathColumnId</qualifiedname>
+        <initializer>= kInt32Max - 101</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="70" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a3b1296698d2938712945af6ba2b5cd1c" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kDeleteFilePath</definition>
+        <argsstring></argsstring>
+        <name>kDeleteFilePath</name>
+        <qualifiedname>iceberg::MetadataColumns::kDeleteFilePath</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(kDeleteFilePathColumnId, &quot;file_path&quot;, <ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">string</ref>(),
+                                &quot;Path of a file in which a deleted row is stored&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="71" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a1cdc147d7f466f49139b9ab437d63b65" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kDeleteFilePosColumnId</definition>
+        <argsstring></argsstring>
+        <name>kDeleteFilePosColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kDeleteFilePosColumnId</qualifiedname>
+        <initializer>= kInt32Max - 102</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="75" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a52f0228de72fe1b2b025ed7459e5c5a9" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kDeleteFilePos</definition>
+        <argsstring></argsstring>
+        <name>kDeleteFilePos</name>
+        <qualifiedname>iceberg::MetadataColumns::kDeleteFilePos</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(kDeleteFilePosColumnId, &quot;pos&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),
+                                &quot;Ordinal position of a deleted row in the data file&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="76" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a57b38f3fc9329e85cff548dd24d8cd88" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kDeleteFileRowColumnId</definition>
+        <argsstring></argsstring>
+        <name>kDeleteFileRowColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kDeleteFileRowColumnId</qualifiedname>
+        <initializer>= kInt32Max - 103</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="81" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a0de807fae539ef4c66552a843e32ffca" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::MetadataColumns::kDeleteFileRowFieldName</definition>
+        <argsstring></argsstring>
+        <name>kDeleteFileRowFieldName</name>
+        <qualifiedname>iceberg::MetadataColumns::kDeleteFileRowFieldName</qualifiedname>
+        <initializer>= &quot;row&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="82" column="37" bodyfile="iceberg/metadata_columns.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a5229ae365e4adb94bbff2cfa865b3bbd" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::MetadataColumns::kDeleteFileRowDoc</definition>
+        <argsstring></argsstring>
+        <name>kDeleteFileRowDoc</name>
+        <qualifiedname>iceberg::MetadataColumns::kDeleteFileRowDoc</qualifiedname>
+        <initializer>= &quot;Deleted row values&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="83" column="37" bodyfile="iceberg/metadata_columns.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a8e8fc3074b2e5d74bd4acf7870a1bbe8" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kChangeTypeColumnId</definition>
+        <argsstring></argsstring>
+        <name>kChangeTypeColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kChangeTypeColumnId</qualifiedname>
+        <initializer>= kInt32Max - 104</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="85" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a40e36470c364b5fac61df8383d7cb77f" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kChangeType</definition>
+        <argsstring></argsstring>
+        <name>kChangeType</name>
+        <qualifiedname>iceberg::MetadataColumns::kChangeType</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(
+      kChangeTypeColumnId, &quot;_change_type&quot;, <ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">string</ref>(), &quot;Record type in changelog&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="86" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1acb056537f9952e5edde616c3e90ec2eb" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kChangeOrdinalColumnId</definition>
+        <argsstring></argsstring>
+        <name>kChangeOrdinalColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kChangeOrdinalColumnId</qualifiedname>
+        <initializer>= kInt32Max - 105</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="89" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a8ec6c47e1bb7ef4138c7f2667dfae84f" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kChangeOrdinal</definition>
+        <argsstring></argsstring>
+        <name>kChangeOrdinal</name>
+        <qualifiedname>iceberg::MetadataColumns::kChangeOrdinal</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kChangeOrdinalColumnId, &quot;_change_ordinal&quot;, <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>(), &quot;Change ordinal in changelog&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="90" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1afbd752a83b4e135773634935cee3e361" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kCommitSnapshotIdColumnId</definition>
+        <argsstring></argsstring>
+        <name>kCommitSnapshotIdColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kCommitSnapshotIdColumnId</qualifiedname>
+        <initializer>= kInt32Max - 106</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="93" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a77b7b1cacca0cf8012ef5ea54a6eb458" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kCommitSnapshotId</definition>
+        <argsstring></argsstring>
+        <name>kCommitSnapshotId</name>
+        <qualifiedname>iceberg::MetadataColumns::kCommitSnapshotId</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kCommitSnapshotIdColumnId, &quot;_commit_snapshot_id&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(), &quot;Commit snapshot ID&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="94" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1acf5e049f12ac69118fa7c4a2ec038a57" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kRowIdColumnId</definition>
+        <argsstring></argsstring>
+        <name>kRowIdColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kRowIdColumnId</qualifiedname>
+        <initializer>= kInt32Max - 107</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="97" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1a9aebb1f3436cb15088f5a30043998bf0" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kRowId</definition>
+        <argsstring></argsstring>
+        <name>kRowId</name>
+        <qualifiedname>iceberg::MetadataColumns::kRowId</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(kRowIdColumnId, &quot;_row_id&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),
+                                &quot;Implicit row ID that is automatically assigned&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="98" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1ac0cb884a34a3ba2881ebdec06b1c7825" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::MetadataColumns::kLastUpdatedSequenceNumberColumnId</definition>
+        <argsstring></argsstring>
+        <name>kLastUpdatedSequenceNumberColumnId</name>
+        <qualifiedname>iceberg::MetadataColumns::kLastUpdatedSequenceNumberColumnId</qualifiedname>
+        <initializer>= kInt32Max - 108</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="102" column="28" bodyfile="iceberg/metadata_columns.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataColumns_1ad1f33dc8fdccb04d4f9243d36a966404" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::MetadataColumns::kLastUpdatedSequenceNumber</definition>
+        <argsstring></argsstring>
+        <name>kLastUpdatedSequenceNumber</name>
+        <qualifiedname>iceberg::MetadataColumns::kLastUpdatedSequenceNumber</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kLastUpdatedSequenceNumberColumnId, &quot;_last_updated_sequence_number&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),
+      &quot;Sequence number when the row was last updated&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="103" column="35" bodyfile="iceberg/metadata_columns.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1MetadataColumns_1af919e6a2e1ee84f20633690bd2db7e75" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::set&lt; int32_t &gt; &amp;</type>
+        <definition>const std::set&lt; int32_t &gt; &amp; iceberg::MetadataColumns::MetadataFieldIds</definition>
+        <argsstring>()</argsstring>
+        <name>MetadataFieldIds</name>
+        <qualifiedname>iceberg::MetadataColumns::MetadataFieldIds</qualifiedname>
+        <briefdescription>
+<para>Get the set of metadata field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="108" column="25" bodyfile="iceberg/metadata_columns.cc" bodystart="56" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MetadataColumns_1af0670f934efb90662696d0b2386888a9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::MetadataColumns::IsMetadataColumn</definition>
+        <argsstring>(std::string_view name)</argsstring>
+        <name>IsMetadataColumn</name>
+        <qualifiedname>iceberg::MetadataColumns::IsMetadataColumn</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Check if a column name is a metadata column. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="111" column="15" bodyfile="iceberg/metadata_columns.cc" bodystart="60" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MetadataColumns_1a76f53938ccb418ccc1a58276ab967602" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::MetadataColumns::IsMetadataColumn</definition>
+        <argsstring>(int32_t id)</argsstring>
+        <name>IsMetadataColumn</name>
+        <qualifiedname>iceberg::MetadataColumns::IsMetadataColumn</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Check if a column ID is a metadata column. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="114" column="15" bodyfile="iceberg/metadata_columns.cc" bodystart="65" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MetadataColumns_1a7a496d3d7ced66f2a5a9088b018a4bfb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> * &gt;</type>
+        <definition>Result&lt; const SchemaField * &gt; iceberg::MetadataColumns::MetadataColumn</definition>
+        <argsstring>(std::string_view name)</argsstring>
+        <name>MetadataColumn</name>
+        <qualifiedname>iceberg::MetadataColumns::MetadataColumn</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Get a metadata column by name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the metadata column. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The metadata column, or an error if the name does not refer to a metadata column. The returned pointer is guaranteed to be valid. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metadata_columns.h" line="121" column="17" bodyfile="iceberg/metadata_columns.cc" bodystart="69" bodyend="76"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A class containing constants and utility methods for metadata columns. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::MetadataColumns</label>
+        <link refid="structiceberg_1_1MetadataColumns"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kChangeOrdinal</edgelabel>
+          <edgelabel>kChangeType</edgelabel>
+          <edgelabel>kCommitSnapshotId</edgelabel>
+          <edgelabel>kDeleteFilePath</edgelabel>
+          <edgelabel>kDeleteFilePos</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kIsDeleted</edgelabel>
+          <edgelabel>kLastUpdatedSequenceNumber</edgelabel>
+          <edgelabel>kRowId</edgelabel>
+          <edgelabel>kRowPosition</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>kDeleteFileRowDoc</edgelabel>
+          <edgelabel>kDeleteFileRowFieldName</edgelabel>
+          <edgelabel>kPartitionColumnDoc</edgelabel>
+          <edgelabel>kPartitionColumnName</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="5">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string_view</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metadata_columns.h" line="38" column="1" bodyfile="iceberg/metadata_columns.h" bodystart="38" bodyend="124"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1MetadataColumns_1af0670f934efb90662696d0b2386888a9" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>IsMetadataColumn</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a76f53938ccb418ccc1a58276ab967602" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>IsMetadataColumn</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a8ec6c47e1bb7ef4138c7f2667dfae84f" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kChangeOrdinal</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1acb056537f9952e5edde616c3e90ec2eb" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kChangeOrdinalColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a40e36470c364b5fac61df8383d7cb77f" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kChangeType</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a8e8fc3074b2e5d74bd4acf7870a1bbe8" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kChangeTypeColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a77b7b1cacca0cf8012ef5ea54a6eb458" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kCommitSnapshotId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1afbd752a83b4e135773634935cee3e361" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kCommitSnapshotIdColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a68a35e025211a3eed0ca592e0ba0b111" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kContentOffsetColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a7a2b0e291f61ba5c66d938343185a391" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kContentSizeInBytesColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a3b1296698d2938712945af6ba2b5cd1c" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kDeleteFilePath</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1afa54a87dfbe1f410cb6a719f56e53e30" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kDeleteFilePathColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a52f0228de72fe1b2b025ed7459e5c5a9" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kDeleteFilePos</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a1cdc147d7f466f49139b9ab437d63b65" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kDeleteFilePosColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a57b38f3fc9329e85cff548dd24d8cd88" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kDeleteFileRowColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a5229ae365e4adb94bbff2cfa865b3bbd" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kDeleteFileRowDoc</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a0de807fae539ef4c66552a843e32ffca" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kDeleteFileRowFieldName</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a8648bac1863b7ddd70a443089fd13bbc" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kFilePath</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a978bde955f0abf19c6ea1fefd8a013a2" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kFilePathColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1adccd1358a78457a475f1b01bb3f2a253" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kFilePositionColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a7a8cbfccf955c76c7651d6a5f3a46094" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kInt32Max</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a5b38304d91819822fe09ed7b6a5671ae" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kIsDeleted</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a3eed25fbb180d5f45c0aef0fbfbd5cc0" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kIsDeletedColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1ad1f33dc8fdccb04d4f9243d36a966404" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kLastUpdatedSequenceNumber</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1ac0cb884a34a3ba2881ebdec06b1c7825" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kLastUpdatedSequenceNumberColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a61811d8738c96a6994bd33c0faeb53b7" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kPartitionColumnDoc</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1afe5ea729ded82aea47935765fa79b84e" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kPartitionColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1ae3cca391729eac6230769d4c5245eea8" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kPartitionColumnName</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a9aebb1f3436cb15088f5a30043998bf0" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kRowId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1acf5e049f12ac69118fa7c4a2ec038a57" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kRowIdColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a9328cd12426f8ef598eeaaaef8519dfd" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kRowPosition</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a7fbc4620ba60093bef39a3a77608a7d7" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kSpecId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a8502260f823cd08bca60e7fdb9a12aa4" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>kSpecIdColumnId</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1a7a496d3d7ced66f2a5a9088b018a4bfb" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>MetadataColumn</name></member>
+      <member refid="structiceberg_1_1MetadataColumns_1af919e6a2e1ee84f20633690bd2db7e75" prot="public" virt="non-virtual"><scope>iceberg::MetadataColumns</scope><name>MetadataFieldIds</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

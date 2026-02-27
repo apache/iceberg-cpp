@@ -1,0 +1,312 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BoundUnaryPredicate" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::BoundUnaryPredicate</compoundname>
+    <basecompoundref refid="classiceberg_1_1BoundPredicate" prot="public" virt="non-virtual">iceberg::BoundPredicate</basecompoundref>
+    <includes refid="predicate_8h" local="no">predicate.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1a498f79808f8215ce32630d24371d646c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1BoundUnaryPredicate" kindref="compound">BoundUnaryPredicate</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; BoundUnaryPredicate &gt; &gt; iceberg::BoundUnaryPredicate::Make</definition>
+        <argsstring>(Expression::Operation op, std::shared_ptr&lt; BoundTerm &gt; term)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::Make</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref> &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+<para>Create a bound unary predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>op</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unary operation (kIsNull, kNotNull, kIsNan, kNotNan) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>term</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound term to test </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Result containing the bound unary predicate or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="198" column="17" bodyfile="iceberg/expression/predicate.cc" bodystart="372" bodyend="379"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1a14a3e0a2f68b299c76da9ddb0c32e499" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BoundUnaryPredicate::~BoundUnaryPredicate</definition>
+        <argsstring>() override</argsstring>
+        <name>~BoundUnaryPredicate</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::~BoundUnaryPredicate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="201" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1a2e69b6be58a346231451d5fd2f7a80bb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::BoundUnaryPredicate::Test</definition>
+        <argsstring>(const Literal &amp;value) const override</argsstring>
+        <name>Test</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::Test</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundPredicate_1a77c567c25ebc867a38447a141ddc83d1">Test</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Test a value against this predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to test </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the predicate passes, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="203" column="10" bodyfile="iceberg/expression/predicate.cc" bodystart="389" bodyend="402"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1a8c70db8cf8110480995edb4852a6edf8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::BoundUnaryPredicate::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundPredicate_1a0c55acc20da1543acab053040834b2c3">kind</reimplements>
+        <briefdescription>
+<para>Returns the kind of this bound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="205" column="8" bodyfile="iceberg/expression/predicate.h" bodystart="205" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1a1db67dc9aede8616173aa3e332e0de2d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::BoundUnaryPredicate::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="207" column="15" bodyfile="iceberg/expression/predicate.cc" bodystart="422" bodyend="435"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1ac15e4e053e268ecb0a0e3d0297bd6ca8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::BoundUnaryPredicate::Negate</definition>
+        <argsstring>() const override</argsstring>
+        <name>Negate</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::Negate</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c">Negate</reimplements>
+        <briefdescription>
+<para>Returns the negation of this expression, equivalent to not(this). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="209" column="10" bodyfile="iceberg/expression/predicate.cc" bodystart="404" bodyend="407"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1a3ad39a4f9541ec0eeb24611213faae43" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::BoundUnaryPredicate::Equals</definition>
+        <argsstring>(const Expression &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether this expression will accept the same values as another. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>another expression </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the expressions are equivalent </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="211" column="8" bodyfile="iceberg/expression/predicate.cc" bodystart="409" bodyend="420"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundUnaryPredicate_1a39ebf5867377eb675f5292514b11af67" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BoundUnaryPredicate::BoundUnaryPredicate</definition>
+        <argsstring>(Expression::Operation op, std::shared_ptr&lt; BoundTerm &gt; term)</argsstring>
+        <name>BoundUnaryPredicate</name>
+        <qualifiedname>iceberg::BoundUnaryPredicate::BoundUnaryPredicate</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref> &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/predicate.h" line="214" column="3" bodyfile="iceberg/expression/predicate.cc" bodystart="381" bodyend="385"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> unary predicate (null, not-null, etc.). </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::Predicate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="2">
+        <label>iceberg::BoundPredicate</label>
+        <link refid="classiceberg_1_1BoundPredicate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::BoundUnaryPredicate</label>
+        <link refid="classiceberg_1_1BoundUnaryPredicate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Predicate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="2">
+        <label>iceberg::BoundPredicate</label>
+        <link refid="classiceberg_1_1BoundPredicate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::BoundUnaryPredicate</label>
+        <link refid="classiceberg_1_1BoundUnaryPredicate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/predicate.h" line="191" column="1" bodyfile="iceberg/expression/predicate.h" bodystart="191" bodyend="215"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BoundPredicate_1a471b083fd86a5f6f654e77d82c7433fa" prot="protected" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>BoundPredicate</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1a39ebf5867377eb675f5292514b11af67" prot="private" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>BoundUnaryPredicate</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1a3ad39a4f9541ec0eeb24611213faae43" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1BoundPredicate_1adaca3af8c2e8a95297b8e1bad62f68d2" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1Expression_1ab760f80ffc03ab40301be7d59c621a4a" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1BoundPredicate_1a9066e8e9c4285260800764816e7b278d" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1BoundPredicate_1a427b523d26ac49c0ff1b9c85a2a69cc4" prot="public" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1a8c70db8cf8110480995edb4852a6edf8" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1a498f79808f8215ce32630d24371d646c" prot="public" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1ac15e4e053e268ecb0a0e3d0297bd6ca8" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Predicate_1ae7cd54c4e3e6d62b81e5824d84d33381" prot="protected" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>operation_</name></member>
+      <member refid="classiceberg_1_1Predicate_1ae1f081b37983ae239d609238ed382f73" prot="protected" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1BoundPredicate_1aa3c404fbe4dc5a3f194c675d03cf50b7" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>reference</name></member>
+      <member refid="classiceberg_1_1Predicate_1acee9f864ef011a76e45d98f0d9bf42af" prot="public" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>term</name></member>
+      <member refid="classiceberg_1_1Predicate_1ab1f8f6820bbbbd1d14ea847cd492aa4a" prot="protected" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>term_</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1a2e69b6be58a346231451d5fd2f7a80bb" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>Test</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1a1db67dc9aede8616173aa3e332e0de2d" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Bound_1abc22c55a926f2041f458bdc8be7a18b5" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>~Bound</name></member>
+      <member refid="classiceberg_1_1BoundPredicate_1a26782bafef2943d8cfb7a221ebdf2050" prot="public" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>~BoundPredicate</name></member>
+      <member refid="classiceberg_1_1BoundUnaryPredicate_1a14a3e0a2f68b299c76da9ddb0c32e499" prot="public" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>~BoundUnaryPredicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Predicate_1a352e0d8ecbcf3d0a4fec9f5b0de0004d" prot="public" virt="non-virtual"><scope>iceberg::BoundUnaryPredicate</scope><name>~Predicate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

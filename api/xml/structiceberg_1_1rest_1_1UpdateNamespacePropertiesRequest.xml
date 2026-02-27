@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::UpdateNamespacePropertiesRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a909ca9a49f74f6b3e10b533f80f39084" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::rest::UpdateNamespacePropertiesRequest::removals</definition>
+        <argsstring></argsstring>
+        <name>removals</name>
+        <qualifiedname>iceberg::rest::UpdateNamespacePropertiesRequest::removals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="90" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1ac8da3405d31d81299566d655dd623811" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::UpdateNamespacePropertiesRequest::updates</definition>
+        <argsstring></argsstring>
+        <name>updates</name>
+        <qualifiedname>iceberg::rest::UpdateNamespacePropertiesRequest::updates</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="91" column="22" bodyfile="iceberg/catalog/rest/types.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a4afc187a43e3fddb56d616c157770d94" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::UpdateNamespacePropertiesRequest::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::UpdateNamespacePropertiesRequest::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" kindref="compound">UpdateNamespacePropertiesRequest</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="94" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="94" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1adf81593648afd38b23edc139ddda3d20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::UpdateNamespacePropertiesRequest::operator==</definition>
+        <argsstring>(const UpdateNamespacePropertiesRequest &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::UpdateNamespacePropertiesRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" kindref="compound">UpdateNamespacePropertiesRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="103" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Update or delete namespace properties request. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::UpdateNamespacePropertiesRequest</label>
+        <link refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>removals</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>updates</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="89" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="89" bodyend="104"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1adf81593648afd38b23edc139ddda3d20" prot="public" virt="non-virtual"><scope>iceberg::rest::UpdateNamespacePropertiesRequest</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a909ca9a49f74f6b3e10b533f80f39084" prot="public" virt="non-virtual"><scope>iceberg::rest::UpdateNamespacePropertiesRequest</scope><name>removals</name></member>
+      <member refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1ac8da3405d31d81299566d655dd623811" prot="public" virt="non-virtual"><scope>iceberg::rest::UpdateNamespacePropertiesRequest</scope><name>updates</name></member>
+      <member refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a4afc187a43e3fddb56d616c157770d94" prot="public" virt="non-virtual"><scope>iceberg::rest::UpdateNamespacePropertiesRequest</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

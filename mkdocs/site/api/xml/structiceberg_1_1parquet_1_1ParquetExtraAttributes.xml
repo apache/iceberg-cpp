@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1parquet_1_1ParquetExtraAttributes" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ParquetExtraAttributes</compoundname>
+    <basecompoundref refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes" prot="public" virt="non-virtual">iceberg::FieldProjection::ExtraAttributes</basecompoundref>
+    <includes refid="parquet__schema__util__internal_8h" local="no">parquet_schema_util_internal.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ParquetExtraAttributes_1af2a64f9eb7940faf284954c9030b4741" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::parquet::ParquetExtraAttributes::column_id</definition>
+        <argsstring></argsstring>
+        <name>column_id</name>
+        <qualifiedname>iceberg::parquet::ParquetExtraAttributes::column_id</qualifiedname>
+        <briefdescription>
+<para>The column id of projected Parquet column. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_schema_util_internal.h" line="37" column="17" bodyfile="iceberg/parquet/parquet_schema_util_internal.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1parquet_1_1ParquetExtraAttributes_1aaaa0cf47c952163e90d29e58f7e461b2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::ParquetExtraAttributes::ParquetExtraAttributes</definition>
+        <argsstring>(int32_t column_id)</argsstring>
+        <name>ParquetExtraAttributes</name>
+        <qualifiedname>iceberg::parquet::ParquetExtraAttributes::ParquetExtraAttributes</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>column_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_schema_util_internal.h" line="33" column="12" bodyfile="iceberg/parquet/parquet_schema_util_internal.h" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1parquet_1_1ParquetExtraAttributes_1a5a0985e1fa539b381bb78dc89df2914a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::ParquetExtraAttributes::~ParquetExtraAttributes</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~ParquetExtraAttributes</name>
+        <qualifiedname>iceberg::parquet::ParquetExtraAttributes::~ParquetExtraAttributes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_schema_util_internal.h" line="34" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Parquet specific attributes for the field. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FieldProjection::ExtraAttributes</label>
+        <link refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes"/>
+      </node>
+      <node id="1">
+        <label>iceberg::parquet::ParquetExtraAttributes</label>
+        <link refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FieldProjection::ExtraAttributes</label>
+        <link refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes"/>
+      </node>
+      <node id="1">
+        <label>iceberg::parquet::ParquetExtraAttributes</label>
+        <link refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/parquet/parquet_schema_util_internal.h" line="32" column="1" bodyfile="iceberg/parquet/parquet_schema_util_internal.h" bodystart="32" bodyend="38"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes_1af2a64f9eb7940faf284954c9030b4741" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetExtraAttributes</scope><name>column_id</name></member>
+      <member refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes_1aaaa0cf47c952163e90d29e58f7e461b2" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetExtraAttributes</scope><name>ParquetExtraAttributes</name></member>
+      <member refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes_1aaa49dea97f5e1ed214f44126a2167dde" prot="public" virt="virtual"><scope>iceberg::parquet::ParquetExtraAttributes</scope><name>~ExtraAttributes</name></member>
+      <member refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes_1a5a0985e1fa539b381bb78dc89df2914a" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetExtraAttributes</scope><name>~ParquetExtraAttributes</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1RemovePartitionStatistics" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::RemovePartitionStatistics</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1af79053734901c0df847bd07a1f94ca79" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::table::RemovePartitionStatistics::snapshot_id_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id_</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::snapshot_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="608" column="11" bodyfile="iceberg/table_update.h" bodystart="608" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1adb52e628c863e7ed1606b3ef24a06a62" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::RemovePartitionStatistics::RemovePartitionStatistics</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>RemovePartitionStatistics</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::RemovePartitionStatistics</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="593" column="12" bodyfile="iceberg/table_update.h" bodystart="593" bodyend="593"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1adfa70c78d3a6f2183fddb1f430d485e2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::table::RemovePartitionStatistics::snapshot_id</definition>
+        <argsstring>() const</argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="595" column="11" bodyfile="iceberg/table_update.h" bodystart="595" bodyend="595"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1aa0e4844cd770783c3fe3e1a57b475531" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::RemovePartitionStatistics::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="597" column="8" bodyfile="iceberg/table_update.cc" bodystart="547" bodyend="549"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1af39c46265dd3d727686b188326577afc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::RemovePartitionStatistics::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="599" column="8" bodyfile="iceberg/table_update.cc" bodystart="551" bodyend="553"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1a862ab067af2b596322f6173df873fbd2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::RemovePartitionStatistics::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="601" column="8" bodyfile="iceberg/table_update.h" bodystart="601" bodyend="601"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1a7cd66a7732044752547c2df5199f9a71" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::RemovePartitionStatistics::Equals</definition>
+        <argsstring>(const TableUpdate &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1afd0780e6106546f7462e8e66d62db1f2">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The update to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the updates are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="603" column="8" bodyfile="iceberg/table_update.cc" bodystart="555" bodyend="562"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemovePartitionStatistics_1a0fe72e791e2a3c14ab54d10afb9e6af1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableUpdate &gt; iceberg::table::RemovePartitionStatistics::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::RemovePartitionStatistics::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1affb4be490ac63849864bf8ed636363aa">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="605" column="19" bodyfile="iceberg/table_update.cc" bodystart="564" bodyend="566"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents removing partition statistics for a snapshot. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::RemovePartitionStatistics</label>
+        <link refid="classiceberg_1_1table_1_1RemovePartitionStatistics"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::RemovePartitionStatistics</label>
+        <link refid="classiceberg_1_1table_1_1RemovePartitionStatistics"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="591" column="1" bodyfile="iceberg/table_update.h" bodystart="591" bodyend="609"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1aa0e4844cd770783c3fe3e1a57b475531" prot="public" virt="virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1a0fe72e791e2a3c14ab54d10afb9e6af1" prot="public" virt="virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1a7cd66a7732044752547c2df5199f9a71" prot="public" virt="virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1af39c46265dd3d727686b188326577afc" prot="public" virt="virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1a862ab067af2b596322f6173df873fbd2" prot="public" virt="virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1adb52e628c863e7ed1606b3ef24a06a62" prot="public" virt="non-virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>RemovePartitionStatistics</name></member>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1adfa70c78d3a6f2183fddb1f430d485e2" prot="public" virt="non-virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>snapshot_id</name></member>
+      <member refid="classiceberg_1_1table_1_1RemovePartitionStatistics_1af79053734901c0df847bd07a1f94ca79" prot="private" virt="non-virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>snapshot_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::RemovePartitionStatistics</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TimeParts" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TimeParts</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TimeParts_1a07d495a36469dd37198595579016a349" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimeParts::hour</definition>
+        <argsstring></argsstring>
+        <name>hour</name>
+        <qualifiedname>iceberg::TimeParts::hour</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="36" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimeParts_1a10f7e6788d421769573c3aa0a21c3bb5" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimeParts::minute</definition>
+        <argsstring></argsstring>
+        <name>minute</name>
+        <qualifiedname>iceberg::TimeParts::minute</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="37" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimeParts_1a51b22406347fc38c9161f1e63dc13582" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimeParts::second</definition>
+        <argsstring></argsstring>
+        <name>second</name>
+        <qualifiedname>iceberg::TimeParts::second</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="38" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimeParts_1a0f07a72ab0d60f8335ee425c57989f74" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimeParts::microsecond</definition>
+        <argsstring></argsstring>
+        <name>microsecond</name>
+        <qualifiedname>iceberg::TimeParts::microsecond</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="39" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/temporal_test_helper.h" line="35" column="1" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="35" bodyend="40"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TimeParts_1a07d495a36469dd37198595579016a349" prot="public" virt="non-virtual"><scope>iceberg::TimeParts</scope><name>hour</name></member>
+      <member refid="structiceberg_1_1TimeParts_1a0f07a72ab0d60f8335ee425c57989f74" prot="public" virt="non-virtual"><scope>iceberg::TimeParts</scope><name>microsecond</name></member>
+      <member refid="structiceberg_1_1TimeParts_1a10f7e6788d421769573c3aa0a21c3bb5" prot="public" virt="non-virtual"><scope>iceberg::TimeParts</scope><name>minute</name></member>
+      <member refid="structiceberg_1_1TimeParts_1a51b22406347fc38c9161f1e63dc13582" prot="public" virt="non-virtual"><scope>iceberg::TimeParts</scope><name>second</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ResultMatcher" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ResultMatcher</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename MatcherT</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ResultMatcher_1acf16709bea61611cfff6b88d16589125" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ResultMatcher&lt; MatcherT &gt;::should_have_value_</definition>
+        <argsstring></argsstring>
+        <name>should_have_value_</name>
+        <qualifiedname>iceberg::ResultMatcher::should_have_value_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="196" column="8" bodyfile="iceberg/test/matchers.h" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ResultMatcher_1aa0839bf625555452d0db4f01cd83a9bf" prot="private" static="no" mutable="no">
+        <type>MatcherT</type>
+        <definition>MatcherT iceberg::ResultMatcher&lt; MatcherT &gt;::matcher_</definition>
+        <argsstring></argsstring>
+        <name>matcher_</name>
+        <qualifiedname>iceberg::ResultMatcher::matcher_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="197" column="12" bodyfile="iceberg/test/matchers.h" bodystart="197" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ResultMatcher_1a3834dac465e6b6a0632146e388591051" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ResultMatcher&lt; MatcherT &gt;::ResultMatcher</definition>
+        <argsstring>(bool should_have_value, MatcherT matcher)</argsstring>
+        <name>ResultMatcher</name>
+        <qualifiedname>iceberg::ResultMatcher::ResultMatcher</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>should_have_value</declname>
+        </param>
+        <param>
+          <type>MatcherT</type>
+          <declname>matcher</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="153" column="12" bodyfile="iceberg/test/matchers.h" bodystart="153" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResultMatcher_1a11c69cc064a8d47abb01eba25cd1e893" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool iceberg::ResultMatcher&lt; MatcherT &gt;::MatchAndExplain</definition>
+        <argsstring>(const T &amp;value, ::testing::MatchResultListener *result_listener) const</argsstring>
+        <name>MatchAndExplain</name>
+        <qualifiedname>iceberg::ResultMatcher::MatchAndExplain</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>::testing::MatchResultListener *</type>
+          <declname>result_listener</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="157" column="8" bodyfile="iceberg/test/matchers.h" bodystart="157" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResultMatcher_1a8c8df7aef0a44c4426053097e1900953" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ResultMatcher&lt; MatcherT &gt;::DescribeTo</definition>
+        <argsstring>(std::ostream *os) const</argsstring>
+        <name>DescribeTo</name>
+        <qualifiedname>iceberg::ResultMatcher::DescribeTo</qualifiedname>
+        <param>
+          <type>std::ostream *</type>
+          <declname>os</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="177" column="8" bodyfile="iceberg/test/matchers.h" bodystart="177" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResultMatcher_1a979a30eef6f006a6574490bb5aa82014" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ResultMatcher&lt; MatcherT &gt;::DescribeNegationTo</definition>
+        <argsstring>(std::ostream *os) const</argsstring>
+        <name>DescribeNegationTo</name>
+        <qualifiedname>iceberg::ResultMatcher::DescribeNegationTo</qualifiedname>
+        <param>
+          <type>std::ostream *</type>
+          <declname>os</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="186" column="8" bodyfile="iceberg/test/matchers.h" bodystart="186" bodyend="193"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/matchers.h" line="151" column="1" bodyfile="iceberg/test/matchers.h" bodystart="151" bodyend="198"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ResultMatcher_1a979a30eef6f006a6574490bb5aa82014" prot="public" virt="non-virtual"><scope>iceberg::ResultMatcher</scope><name>DescribeNegationTo</name></member>
+      <member refid="classiceberg_1_1ResultMatcher_1a8c8df7aef0a44c4426053097e1900953" prot="public" virt="non-virtual"><scope>iceberg::ResultMatcher</scope><name>DescribeTo</name></member>
+      <member refid="classiceberg_1_1ResultMatcher_1a11c69cc064a8d47abb01eba25cd1e893" prot="public" virt="non-virtual"><scope>iceberg::ResultMatcher</scope><name>MatchAndExplain</name></member>
+      <member refid="classiceberg_1_1ResultMatcher_1aa0839bf625555452d0db4f01cd83a9bf" prot="private" virt="non-virtual"><scope>iceberg::ResultMatcher</scope><name>matcher_</name></member>
+      <member refid="classiceberg_1_1ResultMatcher_1a3834dac465e6b6a0632146e388591051" prot="public" virt="non-virtual"><scope>iceberg::ResultMatcher</scope><name>ResultMatcher</name></member>
+      <member refid="classiceberg_1_1ResultMatcher_1acf16709bea61611cfff6b88d16589125" prot="private" virt="non-virtual"><scope>iceberg::ResultMatcher</scope><name>should_have_value_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

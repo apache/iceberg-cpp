@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1UnboundTerm" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::UnboundTerm</compoundname>
+    <basecompoundref refid="classiceberg_1_1Unbound" prot="public" virt="non-virtual">iceberg::Unbound&lt; B &gt;</basecompoundref>
+    <basecompoundref refid="classiceberg_1_1Term" prot="public" virt="non-virtual">iceberg::Term</basecompoundref>
+    <includes refid="term_8h" local="no">term.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename B</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1UnboundTerm_1a452fa3a99827b436edc28beb681e89bd" prot="public" static="no">
+        <type>B</type>
+        <definition>using iceberg::UnboundTerm&lt; B &gt;::BoundType =  B</definition>
+        <argsstring></argsstring>
+        <name>BoundType</name>
+        <qualifiedname>iceberg::UnboundTerm::BoundType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="58" column="3" bodyfile="iceberg/expression/term.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1UnboundTerm_1a7c94829ddcc3940ea31b8dd8b5008fdc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::UnboundTerm&lt; B &gt;::is_unbound</definition>
+        <argsstring>() const override</argsstring>
+        <name>is_unbound</name>
+        <qualifiedname>iceberg::UnboundTerm::is_unbound</qualifiedname>
+        <reimplements refid="classiceberg_1_1Term_1a14267bbe97519bec67cec9c4ca569090">is_unbound</reimplements>
+        <briefdescription>
+<para>Returns whether this term is unbound. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="60" column="8" bodyfile="iceberg/expression/term.h" bodystart="60" bodyend="60"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for unbound terms. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound type this term produces when binding is successful. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::Term</label>
+        <link refid="classiceberg_1_1Term"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Unbound&lt; B &gt;</label>
+        <link refid="classiceberg_1_1Unbound"/>
+      </node>
+      <node id="1">
+        <label>iceberg::UnboundTerm&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Term</label>
+        <link refid="classiceberg_1_1Term"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Unbound&lt; B &gt;</label>
+        <link refid="classiceberg_1_1Unbound"/>
+      </node>
+      <node id="1">
+        <label>iceberg::UnboundTerm&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/term.h" line="56" column="1" bodyfile="iceberg/expression/term.h" bodystart="56" bodyend="61"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Unbound_1a3af63f1670bd36266714c7cf3296fc83" prot="public" virt="pure-virtual"><scope>iceberg::UnboundTerm</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1Unbound_1a032a320b067d50a56cfe7e5e6ed986e9" prot="public" virt="non-virtual"><scope>iceberg::UnboundTerm</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1UnboundTerm_1a452fa3a99827b436edc28beb681e89bd" prot="public" virt="non-virtual"><scope>iceberg::UnboundTerm</scope><name>BoundType</name></member>
+      <member refid="classiceberg_1_1UnboundTerm_1a7c94829ddcc3940ea31b8dd8b5008fdc" prot="public" virt="virtual"><scope>iceberg::UnboundTerm</scope><name>is_unbound</name></member>
+      <member refid="classiceberg_1_1Term_1aafdab7cb8b14117f662d394450af6be8" prot="public" virt="non-virtual"><scope>iceberg::UnboundTerm</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1Term_1abc8368a414f930269b883a090869eb14" prot="public" virt="pure-virtual"><scope>iceberg::UnboundTerm</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1Unbound_1aba4992824a9033d7fa4e1c75bb2ed854" prot="public" virt="pure-virtual"><scope>iceberg::UnboundTerm</scope><name>reference</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386" prot="public" virt="pure-virtual"><scope>iceberg::UnboundTerm</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::UnboundTerm</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

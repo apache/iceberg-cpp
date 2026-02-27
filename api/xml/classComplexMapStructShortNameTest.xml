@@ -1,0 +1,338 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classComplexMapStructShortNameTest" kind="class" language="C++" prot="public">
+    <compoundname>ComplexMapStructShortNameTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a048511c0d9d70958a7412f27938a5ecf" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::Schema&gt; ComplexMapStructShortNameTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="464" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="464" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a39c8e033f6d1fea97a7577daf019bfed" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_inner_key_key_</definition>
+        <argsstring></argsstring>
+        <name>exp_inner_key_key_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_inner_key_key_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="465" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="465" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a91ed817f255e5992fc2104c78acee24c" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_inner_key_value_</definition>
+        <argsstring></argsstring>
+        <name>exp_inner_key_value_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_inner_key_value_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="466" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="466" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a75ef8a27650b6816d977c6a41fe11734" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_inner_value_k_</definition>
+        <argsstring></argsstring>
+        <name>exp_inner_value_k_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_inner_value_k_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="467" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="467" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1ae05809cda4793417a0426abf3e03daa1" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_inner_value_v_</definition>
+        <argsstring></argsstring>
+        <name>exp_inner_value_v_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_inner_value_v_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="468" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="468" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1aadfeddd1f19ce580f661f89fc4fdcf1e" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_key_struct_key_</definition>
+        <argsstring></argsstring>
+        <name>exp_key_struct_key_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_key_struct_key_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="469" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="469" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1ae26e7ad3666627dbaba71a869af59a46" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_key_struct_value_</definition>
+        <argsstring></argsstring>
+        <name>exp_key_struct_value_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_key_struct_value_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="470" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="470" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a77aecccb11b79b6c8fa3bf4fd0416b2a" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_value_struct_key_</definition>
+        <argsstring></argsstring>
+        <name>exp_value_struct_key_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_value_struct_key_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="471" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="471" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a708fe085878786fcba2da92c03438836" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_value_struct_value_</definition>
+        <argsstring></argsstring>
+        <name>exp_value_struct_value_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_value_struct_value_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="472" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="472" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a4415d1e1fb249617e9e14eb4c1011f37" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_map_key_</definition>
+        <argsstring></argsstring>
+        <name>exp_map_key_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_map_key_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="473" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="473" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1aea59dbda068122efbc5386e4911725b9" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_map_value_</definition>
+        <argsstring></argsstring>
+        <name>exp_map_value_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_map_value_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="474" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="474" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classComplexMapStructShortNameTest_1a262ce68d75125dd58480bd24b490cfb6" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; ComplexMapStructShortNameTest::exp_field_a_</definition>
+        <argsstring></argsstring>
+        <name>exp_field_a_</name>
+        <qualifiedname>ComplexMapStructShortNameTest::exp_field_a_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="475" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="475" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classComplexMapStructShortNameTest_1ad55ab2a4c6dcb612838d73aea6e27764" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void ComplexMapStructShortNameTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>ComplexMapStructShortNameTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="422" column="8" bodyfile="iceberg/test/schema_test.cc" bodystart="422" bodyend="462"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>ComplexMapStructShortNameTest</label>
+        <link refid="classComplexMapStructShortNameTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>ComplexMapStructShortNameTest</label>
+        <link refid="classComplexMapStructShortNameTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>exp_field_a_</edgelabel>
+          <edgelabel>exp_inner_key_key_</edgelabel>
+          <edgelabel>exp_inner_key_value_</edgelabel>
+          <edgelabel>exp_inner_value_k_</edgelabel>
+          <edgelabel>exp_inner_value_v_</edgelabel>
+          <edgelabel>exp_key_struct_key_</edgelabel>
+          <edgelabel>exp_key_struct_value_</edgelabel>
+          <edgelabel>exp_map_key_</edgelabel>
+          <edgelabel>exp_map_value_</edgelabel>
+          <edgelabel>exp_value_struct_key_</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>std::unique_ptr&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/schema_test.cc" line="420" column="1" bodyfile="iceberg/test/schema_test.cc" bodystart="420" bodyend="476"/>
+    <listofallmembers>
+      <member refid="classComplexMapStructShortNameTest_1a262ce68d75125dd58480bd24b490cfb6" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_field_a_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1a39c8e033f6d1fea97a7577daf019bfed" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_inner_key_key_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1a91ed817f255e5992fc2104c78acee24c" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_inner_key_value_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1a75ef8a27650b6816d977c6a41fe11734" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_inner_value_k_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1ae05809cda4793417a0426abf3e03daa1" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_inner_value_v_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1aadfeddd1f19ce580f661f89fc4fdcf1e" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_key_struct_key_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1ae26e7ad3666627dbaba71a869af59a46" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_key_struct_value_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1a4415d1e1fb249617e9e14eb4c1011f37" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_map_key_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1aea59dbda068122efbc5386e4911725b9" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_map_value_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1a77aecccb11b79b6c8fa3bf4fd0416b2a" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_value_struct_key_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1a708fe085878786fcba2da92c03438836" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>exp_value_struct_value_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1a048511c0d9d70958a7412f27938a5ecf" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>schema_</name></member>
+      <member refid="classComplexMapStructShortNameTest_1ad55ab2a4c6dcb612838d73aea6e27764" prot="protected" virt="non-virtual"><scope>ComplexMapStructShortNameTest</scope><name>SetUp</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

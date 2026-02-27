@@ -1,0 +1,644 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ExpireSnapshots" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ExpireSnapshots</compoundname>
+    <basecompoundref refid="classiceberg_1_1PendingUpdate" prot="public" virt="non-virtual">iceberg::PendingUpdate</basecompoundref>
+    <includes refid="expire__snapshots_8h" local="no">expire_snapshots.h</includes>
+    <innerclass refid="structiceberg_1_1ExpireSnapshots_1_1ApplyResult" prot="public">iceberg::ExpireSnapshots::ApplyResult</innerclass>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1ExpireSnapshots_1a1dc4a877c90930741e6dbd263be1879c" prot="private" static="no">
+        <type>std::unordered_map&lt; std::string, std::shared_ptr&lt; <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &gt; &gt;</type>
+        <definition>using iceberg::ExpireSnapshots::SnapshotToRef =  std::unordered_map&lt;std::string, std::shared_ptr&lt;SnapshotRef&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>SnapshotToRef</name>
+        <qualifiedname>iceberg::ExpireSnapshots::SnapshotToRef</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="148" column="3" bodyfile="iceberg/update/expire_snapshots.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1a12929718522c5fc4ecec9ef3a863f403" prot="private" static="no" mutable="no">
+        <type>const TimePointMs</type>
+        <definition>const TimePointMs iceberg::ExpireSnapshots::current_time_ms_</definition>
+        <argsstring></argsstring>
+        <name>current_time_ms_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::current_time_ms_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="163" column="21" bodyfile="iceberg/update/expire_snapshots.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1a725836797e2dd913fd5f4bc943bc9279" prot="private" static="no" mutable="no">
+        <type>const int64_t</type>
+        <definition>const int64_t iceberg::ExpireSnapshots::default_max_ref_age_ms_</definition>
+        <argsstring></argsstring>
+        <name>default_max_ref_age_ms_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::default_max_ref_age_ms_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="164" column="17" bodyfile="iceberg/update/expire_snapshots.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1a9736f3bf94ca6289963d6184ed8911f3" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::ExpireSnapshots::default_min_num_snapshots_</definition>
+        <argsstring></argsstring>
+        <name>default_min_num_snapshots_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::default_min_num_snapshots_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="165" column="11" bodyfile="iceberg/update/expire_snapshots.h" bodystart="165" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1a3f79438f4b5e97a7dbe8272939ca0b31" prot="private" static="no" mutable="no">
+        <type>TimePointMs</type>
+        <definition>TimePointMs iceberg::ExpireSnapshots::default_expire_older_than_</definition>
+        <argsstring></argsstring>
+        <name>default_expire_older_than_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::default_expire_older_than_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="166" column="15" bodyfile="iceberg/update/expire_snapshots.h" bodystart="166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1aff43062ca0d335fa96d16930fcb53f49" prot="private" static="no" mutable="no">
+        <type>std::function&lt; void(const std::string &amp;)&gt;</type>
+        <definition>std::function&lt;void(const std::string&amp;)&gt; iceberg::ExpireSnapshots::delete_func_</definition>
+        <argsstring></argsstring>
+        <name>delete_func_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::delete_func_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="167" column="17" bodyfile="iceberg/update/expire_snapshots.h" bodystart="167" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1ab0256cf4a737b1b40780f2603c0eb152" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::ExpireSnapshots::snapshot_ids_to_expire_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_ids_to_expire_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::snapshot_ids_to_expire_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="168" column="15" bodyfile="iceberg/update/expire_snapshots.h" bodystart="168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1a43c92ae5bb7d27415c50438b00602f16" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ExpireSnapshots::clean_expired_metadata_</definition>
+        <argsstring></argsstring>
+        <name>clean_expired_metadata_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::clean_expired_metadata_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="170" column="8" bodyfile="iceberg/update/expire_snapshots.h" bodystart="170" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ExpireSnapshots_1ae3b6529f897fdacdf93cfba54b1060e0" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ExpireSnapshots::specified_snapshot_id_</definition>
+        <argsstring></argsstring>
+        <name>specified_snapshot_id_</name>
+        <qualifiedname>iceberg::ExpireSnapshots::specified_snapshot_id_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="171" column="8" bodyfile="iceberg/update/expire_snapshots.h" bodystart="171" bodyend="171"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1a403860a08b5bd94ac4fde54162a77322" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; ExpireSnapshots &gt; &gt; iceberg::ExpireSnapshots::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ExpireSnapshots::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="66" column="17" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="40" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ac174ab782bc81f900e462f33547e33d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ExpireSnapshots::~ExpireSnapshots</definition>
+        <argsstring>() override</argsstring>
+        <name>~ExpireSnapshots</name>
+        <qualifiedname>iceberg::ExpireSnapshots::~ExpireSnapshots</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="69" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ae60e9a69a5b59c7be1b9e7d0daf4d9f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref> &amp;</type>
+        <definition>ExpireSnapshots &amp; iceberg::ExpireSnapshots::ExpireSnapshotId</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>ExpireSnapshotId</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ExpireSnapshotId</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Expires a specific <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> identified by id. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Long id of the snapshot to expire. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="82" column="19" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="66" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ae779f7539bad0be7740f3654f62c508c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref> &amp;</type>
+        <definition>ExpireSnapshots &amp; iceberg::ExpireSnapshots::ExpireOlderThan</definition>
+        <argsstring>(int64_t timestamp_millis)</argsstring>
+        <name>ExpireOlderThan</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ExpireOlderThan</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>timestamp_millis</declname>
+        </param>
+        <briefdescription>
+<para>Expires all snapshots older than the given timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>timestamp_millis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A long timestamp in milliseconds. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="88" column="19" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="72" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1a6fc54f5e8935259ce2818e739419e0b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref> &amp;</type>
+        <definition>ExpireSnapshots &amp; iceberg::ExpireSnapshots::RetainLast</definition>
+        <argsstring>(int num_snapshots)</argsstring>
+        <name>RetainLast</name>
+        <qualifiedname>iceberg::ExpireSnapshots::RetainLast</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>num_snapshots</declname>
+        </param>
+        <briefdescription>
+<para>Retains the most recent ancestors of the current snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If a snapshot would be expired because it is older than the expiration timestamp, but is one of the num_snapshots most recent ancestors of the current state, it will be retained. This will not cause snapshots explicitly identified by id from expiring.</para>
+<para>This may keep more than num_snapshots ancestors if snapshots are added concurrently. This may keep less than num_snapshots ancestors if the current table state does not have that many.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>num_snapshots</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of snapshots to retain. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="103" column="19" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="77" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ac8a596b7d2a874e545f685a2c0d80791" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref> &amp;</type>
+        <definition>ExpireSnapshots &amp; iceberg::ExpireSnapshots::DeleteWith</definition>
+        <argsstring>(std::function&lt; void(const std::string &amp;)&gt; delete_func)</argsstring>
+        <name>DeleteWith</name>
+        <qualifiedname>iceberg::ExpireSnapshots::DeleteWith</qualifiedname>
+        <param>
+          <type>std::function&lt; void(const std::string &amp;)&gt;</type>
+          <declname>delete_func</declname>
+        </param>
+        <briefdescription>
+<para>Passes an alternative delete implementation that will be used for manifests and data files. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Manifest files that are no longer used by valid snapshots will be deleted. Data files that were deleted by snapshots that are expired will be deleted.</para>
+<para>If this method is not called, unnecessary manifests and data files will still be deleted.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>delete_func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A function that will be called to delete manifests and data files </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="116" column="19" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="85" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1add0ad93d1d2547d0d85f9c68ad19dc0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref> &amp;</type>
+        <definition>ExpireSnapshots &amp; iceberg::ExpireSnapshots::CleanupLevel</definition>
+        <argsstring>(enum CleanupLevel level)</argsstring>
+        <name>CleanupLevel</name>
+        <qualifiedname>iceberg::ExpireSnapshots::CleanupLevel</qualifiedname>
+        <param>
+          <type>enum <ref refid="expire__snapshots_8h_1a729888894edcf57ffd01573cc3b73756" kindref="member">CleanupLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Configures the cleanup level for expired files. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method provides fine-grained control over which files are cleaned up during snapshot expiration.</para>
+<para>Consider <ref refid="expire__snapshots_8h_1a729888894edcf57ffd01573cc3b73756a0ac6c6f4af85e04150f997a3f441d8fc" kindref="member">CleanupLevel::kMetadataOnly</ref> when data files are shared across tables or when using procedures like add-files that may reference the same data files.</para>
+<para>Consider <ref refid="expire__snapshots_8h_1a729888894edcf57ffd01573cc3b73756a35c3ace1970663a16e5c65baa5941b13" kindref="member">CleanupLevel::kNone</ref> when data and metadata files may be more efficiently removed using a distributed framework through the actions API.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>level</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The cleanup level to use for expired snapshots. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="131" column="19" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="91" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ab8d397bfa19a5df6a9692e1fb62fe691" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref> &amp;</type>
+        <definition>ExpireSnapshots &amp; iceberg::ExpireSnapshots::CleanExpiredMetadata</definition>
+        <argsstring>(bool clean)</argsstring>
+        <name>CleanExpiredMetadata</name>
+        <qualifiedname>iceberg::ExpireSnapshots::CleanExpiredMetadata</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>clean</declname>
+        </param>
+        <briefdescription>
+<para>Enable cleaning up unused metadata, such as partition specs, schemas, etc. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>clean</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Remove unused partition specs, schemas, or other metadata when true. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="137" column="19" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="96" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ad2d859da01c54f38b741f3e97aef9b70" prot="public" static="no" const="yes" explicit="no" inline="yes" final="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::ExpireSnapshots::kind</definition>
+        <argsstring>() const final</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::ExpireSnapshots::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdate_1a33fba65ffa4a85fd7c5b9984cb892812">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this pending update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="139" column="8" bodyfile="iceberg/update/expire_snapshots.h" bodystart="139" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1aa468e7e75e1f854e6b61a7d71497bf83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1ExpireSnapshots_1_1ApplyResult" kindref="compound">ApplyResult</ref> &gt;</type>
+        <definition>Result&lt; ExpireSnapshots::ApplyResult &gt; iceberg::ExpireSnapshots::Apply</definition>
+        <argsstring>()</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::ExpireSnapshots::Apply</qualifiedname>
+        <briefdescription>
+<para>Apply the pending changes and return the results. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The results of changes </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="143" column="10" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="212" bodyend="290"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ac56e4a0f034888d168c4b6e94e765771" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ExpireSnapshots::ExpireSnapshots</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>ExpireSnapshots</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ExpireSnapshots</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="146" column="12" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="47" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1a9d875b0140815ca2e3088aaa5df2b467" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; SnapshotToRef &gt;</type>
+        <definition>Result&lt; ExpireSnapshots::SnapshotToRef &gt; iceberg::ExpireSnapshots::ComputeRetainedRefs</definition>
+        <argsstring>(const SnapshotToRef &amp;refs) const</argsstring>
+        <name>ComputeRetainedRefs</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ComputeRetainedRefs</qualifiedname>
+        <param>
+          <type>const SnapshotToRef &amp;</type>
+          <declname>refs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="150" column="10" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="180" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1aa0134a7b62385d7c8c65d6caafb86d60" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_set&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_set&lt; int64_t &gt; &gt; iceberg::ExpireSnapshots::ComputeBranchSnapshotsToRetain</definition>
+        <argsstring>(int64_t snapshot_id, TimePointMs expire_snapshot_older_than, int32_t min_snapshots_to_keep) const</argsstring>
+        <name>ComputeBranchSnapshotsToRetain</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ComputeBranchSnapshotsToRetain</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>TimePointMs</type>
+          <declname>expire_snapshot_older_than</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>min_snapshots_to_keep</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="152" column="10" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="101" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ac796979e6e515720fcb0a25916cfd550" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_set&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_set&lt; int64_t &gt; &gt; iceberg::ExpireSnapshots::ComputeAllBranchSnapshotIdsToRetain</definition>
+        <argsstring>(const SnapshotToRef &amp;refs) const</argsstring>
+        <name>ComputeAllBranchSnapshotIdsToRetain</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ComputeAllBranchSnapshotIdsToRetain</qualifiedname>
+        <param>
+          <type>const SnapshotToRef &amp;</type>
+          <declname>refs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="156" column="10" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="125" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpireSnapshots_1ad71e6a7557a265d426bf16a6f1fc4927" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_set&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_set&lt; int64_t &gt; &gt; iceberg::ExpireSnapshots::UnreferencedSnapshotIdsToRetain</definition>
+        <argsstring>(const SnapshotToRef &amp;refs) const</argsstring>
+        <name>UnreferencedSnapshotIdsToRetain</name>
+        <qualifiedname>iceberg::ExpireSnapshots::UnreferencedSnapshotIdsToRetain</qualifiedname>
+        <param>
+          <type>const SnapshotToRef &amp;</type>
+          <declname>refs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="159" column="10" bodyfile="iceberg/update/expire_snapshots.cc" bodystart="150" bodyend="178"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>API for removing old snapshots from a table. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This API accumulates snapshot deletions and commits the new list to the table. This API does not allow deleting the current snapshot.</para>
+<para>When committing, these changes will be applied to the latest table metadata. Commit conflicts will be resolved by applying the changes to the new latest metadata and reattempting the commit.</para>
+<para>Manifest files that are no longer used by valid snapshots will be deleted. Data files that were deleted by snapshots that are expired will be deleted. <ref refid="classiceberg_1_1ExpireSnapshots_1ac8a596b7d2a874e545f685a2c0d80791" kindref="member">DeleteWith()</ref> can be used to pass an alternative deletion method.</para>
+<para><ref refid="classiceberg_1_1ExpireSnapshots_1aa468e7e75e1f854e6b61a7d71497bf83" kindref="member">Apply()</ref> returns a list of the snapshots that will be removed. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ExpireSnapshots</label>
+        <link refid="classiceberg_1_1ExpireSnapshots"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ExpireSnapshots</label>
+        <link refid="classiceberg_1_1ExpireSnapshots"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>transaction_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Transaction</label>
+        <link refid="classiceberg_1_1Transaction"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Transaction &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::enable_shared_from_this&lt; Transaction &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/expire_snapshots.h" line="64" column="1" bodyfile="iceberg/update/expire_snapshots.h" bodystart="64" bodyend="172"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1aa468e7e75e1f854e6b61a7d71497bf83" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a93721051561748b1a29e75b7d4cbbd86" prot="protected" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>base</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a43c92ae5bb7d27415c50438b00602f16" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>clean_expired_metadata_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ab8d397bfa19a5df6a9692e1fb62fe691" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>CleanExpiredMetadata</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1add0ad93d1d2547d0d85f9c68ad19dc0f" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>CleanupLevel</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a4a5df6d83b7a4a3c4dac19a77945be71" prot="public" virt="virtual"><scope>iceberg::ExpireSnapshots</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ac796979e6e515720fcb0a25916cfd550" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ComputeAllBranchSnapshotIdsToRetain</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1aa0134a7b62385d7c8c65d6caafb86d60" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ComputeBranchSnapshotsToRetain</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a9d875b0140815ca2e3088aaa5df2b467" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ComputeRetainedRefs</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a12929718522c5fc4ecec9ef3a863f403" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>current_time_ms_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a3f79438f4b5e97a7dbe8272939ca0b31" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>default_expire_older_than_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a725836797e2dd913fd5f4bc943bc9279" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>default_max_ref_age_ms_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a9736f3bf94ca6289963d6184ed8911f3" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>default_min_num_snapshots_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1aff43062ca0d335fa96d16930fcb53f49" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>delete_func_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ac8a596b7d2a874e545f685a2c0d80791" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>DeleteWith</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ae779f7539bad0be7740f3654f62c508c" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ExpireOlderThan</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ae60e9a69a5b59c7be1b9e7d0daf4d9f3" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ExpireSnapshotId</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ac56e4a0f034888d168c4b6e94e765771" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>ExpireSnapshots</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a22441dbf2867204cb175300075e50db9" prot="public" virt="virtual"><scope>iceberg::ExpireSnapshots</scope><name>Finalize</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a5bac3f32c6a0790ba222399fed5c1944" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ad2d859da01c54f38b741f3e97aef9b70" prot="public" virt="virtual"><scope>iceberg::ExpireSnapshots</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a403860a08b5bd94ac4fde54162a77322" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::ExpireSnapshots</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::ExpireSnapshots</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ab758ff7780442894f3fb0a80d0db064f" prot="protected" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a6fc54f5e8935259ce2818e739419e0b1" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>RetainLast</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ab0256cf4a737b1b40780f2603c0eb152" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>snapshot_ids_to_expire_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1a1dc4a877c90930741e6dbd263be1879c" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>SnapshotToRef</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ae3b6529f897fdacdf93cfba54b1060e0" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>specified_snapshot_id_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac57921ff326abc60b8d9558aa7046d10" prot="protected" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>transaction_</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ad71e6a7557a265d426bf16a6f1fc4927" prot="private" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>UnreferencedSnapshotIdsToRetain</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::ExpireSnapshots</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ExpireSnapshots_1ac174ab782bc81f900e462f33547e33d7" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>~ExpireSnapshots</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ace0dfef0058a64109f51e2638429a9f2" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots</scope><name>~PendingUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

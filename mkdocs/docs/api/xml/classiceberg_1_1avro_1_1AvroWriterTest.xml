@@ -1,0 +1,369 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AvroWriterTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AvroWriterTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">testing::WithParamInterface&lt; bool &gt;</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroWriterTest_1afcb0a5ab8301a98e04f11bde094fbb90" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::avro::AvroWriterTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="729" column="19" bodyfile="iceberg/test/avro_test.cc" bodystart="729" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroWriterTest_1afd2e3fe50f0e611de9dab2803fa29209" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::AvroWriterTest::temp_avro_file_</definition>
+        <argsstring></argsstring>
+        <name>temp_avro_file_</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::temp_avro_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="730" column="15" bodyfile="iceberg/test/avro_test.cc" bodystart="730" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroWriterTest_1a2fe8cf0ddb89de29c9f9b9a82ce11080" prot="protected" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::avro::AvroWriterTest::skip_datum_</definition>
+        <argsstring></argsstring>
+        <name>skip_datum_</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::skip_datum_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="731" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="731" bodyend="731"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroWriterTest_1abc661ab1f2c7ea793e9739d5625724ee" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::avro::AvroWriterTest::write_schema_</definition>
+        <argsstring></argsstring>
+        <name>write_schema_</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::write_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="732" column="19" bodyfile="iceberg/test/avro_test.cc" bodystart="732" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroWriterTest_1a9f0c917897150e49a471dd5e82284cce" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Writer&gt; iceberg::avro::AvroWriterTest::writer_</definition>
+        <argsstring></argsstring>
+        <name>writer_</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::writer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="733" column="19" bodyfile="iceberg/test/avro_test.cc" bodystart="733" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriterTest_1a85bf9884eef675a9ab368f0d73e4f647" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::avro::AvroWriterTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="639" column="15" bodyfile="iceberg/test/avro_test.cc" bodystart="639" bodyend="639"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriterTest_1a5119302eafc0971b562ab28081b9bade" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroWriterTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="641" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="641" bodyend="645"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriterTest_1a2f80c7cf932b6fe6ace3ccb48431d441" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroWriterTest::WriteAvroFile</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, const std::string &amp;json_data, const std::unordered_map&lt; std::string, std::string &gt; &amp;extra_properties={})</argsstring>
+        <name>WriteAvroFile</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::WriteAvroFile</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>extra_properties</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="647" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="647" bodyend="685"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriterTest_1a7bcdbb9d69535ce659226fff67b3ce99" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroWriterTest::VerifyNextBatch</definition>
+        <argsstring>(Reader &amp;reader, std::string_view expected_json)</argsstring>
+        <name>VerifyNextBatch</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::VerifyNextBatch</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>expected_json</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="687" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="687" bodyend="707"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriterTest_1af969a879460b16ec6bad06fccae5e6e6" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroWriterTest::VerifyExhausted</definition>
+        <argsstring>(Reader &amp;reader)</argsstring>
+        <name>VerifyExhausted</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::VerifyExhausted</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="709" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="709" bodyend="713"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriterTest_1a1ba3cd3093e23ed7630ab0a973af6619" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroWriterTest::VerifyWrittenData</definition>
+        <argsstring>(const std::string &amp;expected_json)</argsstring>
+        <name>VerifyWrittenData</name>
+        <qualifiedname>iceberg::avro::AvroWriterTest::VerifyWrittenData</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>expected_json</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="715" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="715" bodyend="727"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::avro::AvroWriterTest</label>
+        <link refid="classiceberg_1_1avro_1_1AvroWriterTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>testing::WithParamInterface&lt; bool &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="18">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="17">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="5">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="11">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::Writer</label>
+        <link refid="classiceberg_1_1Writer"/>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AvroWriterTest</label>
+        <link refid="classiceberg_1_1avro_1_1AvroWriterTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>temp_avro_file_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>write_schema_</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>writer_</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="20">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::string_view</label>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>testing::WithParamInterface&lt; bool &gt;</label>
+      </node>
+      <node id="21">
+        <label>std::unique_ptr&lt; iceberg::Writer &gt;</label>
+        <childnode refid="22" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_test.cc" line="636" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="637" bodyend="734"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1afcb0a5ab8301a98e04f11bde094fbb90" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1a5119302eafc0971b562ab28081b9bade" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1a85bf9884eef675a9ab368f0d73e4f647" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1a2fe8cf0ddb89de29c9f9b9a82ce11080" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>skip_datum_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1afd2e3fe50f0e611de9dab2803fa29209" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>temp_avro_file_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1af969a879460b16ec6bad06fccae5e6e6" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>VerifyExhausted</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1a7bcdbb9d69535ce659226fff67b3ce99" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>VerifyNextBatch</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1a1ba3cd3093e23ed7630ab0a973af6619" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>VerifyWrittenData</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1abc661ab1f2c7ea793e9739d5625724ee" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>write_schema_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1a2f80c7cf932b6fe6ace3ccb48431d441" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>WriteAvroFile</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriterTest_1a9f0c917897150e49a471dd5e82284cce" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroWriterTest</scope><name>writer_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
