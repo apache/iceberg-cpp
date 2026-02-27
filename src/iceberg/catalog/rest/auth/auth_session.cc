@@ -21,6 +21,8 @@
 
 #include <utility>
 
+#include "iceberg/catalog/rest/auth/oauth2_util.h"
+
 namespace iceberg::rest::auth {
 
 namespace {
@@ -47,6 +49,14 @@ class DefaultAuthSession : public AuthSession {
 std::shared_ptr<AuthSession> AuthSession::MakeDefault(
     std::unordered_map<std::string, std::string> headers) {
   return std::make_shared<DefaultAuthSession>(std::move(headers));
+}
+
+std::shared_ptr<AuthSession> AuthSession::MakeOAuth2(
+    const OAuthTokenResponse& initial_token, const std::string& /*token_endpoint*/,
+    const std::string& /*client_id*/, const std::string& /*client_secret*/,
+    const std::string& /*scope*/, HttpClient& /*client*/) {
+  // TODO(lishuxu): Create OAuth2AuthSession with auto-refresh support.
+  return MakeDefault({{"Authorization", "Bearer " + initial_token.access_token}});
 }
 
 }  // namespace iceberg::rest::auth

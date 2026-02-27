@@ -60,6 +60,8 @@ struct AuthProperties {
   inline static const std::string kOAuth2TokenRefreshEnabled = "token-refresh-enabled";
   /// \brief Default OAuth2 scope for catalog operations.
   inline static const std::string kOAuth2DefaultScope = "catalog";
+  /// \brief Default OAuth2 token endpoint path (relative to catalog URI).
+  inline static constexpr std::string_view kOAuth2DefaultTokenPath = "v1/oauth/tokens";
 
   /// \brief Property key for SigV4 region.
   inline static const std::string kSigV4Region = "rest.auth.sigv4.region";
