@@ -869,4 +869,142 @@ TEST_F(PredicateTest, BoundSetPredicateTestSingleLiteral) {
   EXPECT_THAT(bound_literal->Test(Literal::Int(41)), HasValue(testing::Eq(false)));
 }
 
+TEST_F(PredicateTest, TruncateLiteralOptimizationExactWidth) {
+  // Test optimization: truncate(name, 5) == "Alice" should become name STARTS_WITH
+  // "Alice"
+  auto truncate_term = Expressions::Truncate("name", 5);
+  ICEBERG_ASSIGN_OR_THROW(auto equal_pred, UnboundPredicate<BoundTransform>::Make(
+                                               Expression::Operation::kEq, truncate_term,
+                                               Literal::String("Alice")));
+
+  ICEBERG_ASSIGN_OR_THROW(auto bound_pred,
+                          equal_pred->Bind(*schema_, /*case_sensitive=*/true));
+
+  // Should be optimized to STARTS_WITH operation
+  EXPECT_EQ(bound_pred->op(), Expression::Operation::kStartsWith);
+
+  // Verify it's a bound literal predicate on the reference (not the transform)
+  auto bound_literal = AssertAndCastToBoundPredicate(bound_pred);
+  EXPECT_THAT(bound_literal->Test(Literal::String("Alice")), HasValue(testing::Eq(true)));
+  EXPECT_THAT(bound_literal->Test(Literal::String("AliceX")),
+              HasValue(testing::Eq(true)));
+  EXPECT_THAT(bound_literal->Test(Literal::String("Alice123")),
+              HasValue(testing::Eq(true)));
+  EXPECT_THAT(bound_literal->Test(Literal::String("Bob")), HasValue(testing::Eq(false)));
+  EXPECT_THAT(bound_literal->Test(Literal::String("Alic")), HasValue(testing::Eq(false)));
+}
+
+TEST_F(PredicateTest, TruncateLiteralOptimizationShorterLiteral) {
+  // Test no optimization: truncate(name, 10) == "abc" should NOT be optimized
+  // because "abc" is shorter than width 10
+  auto truncate_term = Expressions::Truncate("name", 10);
+  ICEBERG_ASSIGN_OR_THROW(auto equal_pred, UnboundPredicate<BoundTransform>::Make(
+                                               Expression::Operation::kEq, truncate_term,
+                                               Literal::String("abc")));
+
+  ICEBERG_ASSIGN_OR_THROW(auto bound_pred,
+                          equal_pred->Bind(*schema_, /*case_sensitive=*/true));
+
+  // Should remain as EQUAL operation (not optimized to STARTS_WITH)
+  EXPECT_EQ(bound_pred->op(), Expression::Operation::kEq);
+}
+
+TEST_F(PredicateTest, TruncateLiteralOptimizationNullLiteral) {
+  // Test no optimization with null literal - skipped as null strings are handled
+  // differently Null values are tested through IS NULL predicates, not equality
+  // predicates
+  GTEST_SKIP() << "Null literal equality not supported for strings";
+}
+
+TEST_F(PredicateTest, TruncateLiteralOptimizationNonEqualityOperations) {
+  // Test that non-equality operations are not optimized
+  auto truncate_term = Expressions::Truncate("name", 5);
+
+  // NotEqual should not be optimized
+  ICEBERG_ASSIGN_OR_THROW(
+      auto not_equal_pred,
+      UnboundPredicate<BoundTransform>::Make(Expression::Operation::kNotEq, truncate_term,
+                                             Literal::String("Alice")));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_not_equal,
+                          not_equal_pred->Bind(*schema_, /*case_sensitive=*/true));
+  EXPECT_EQ(bound_not_equal->op(), Expression::Operation::kNotEq);
+
+  // LessThan should not be optimized
+  ICEBERG_ASSIGN_OR_THROW(auto lt_pred, UnboundPredicate<BoundTransform>::Make(
+                                            Expression::Operation::kLt, truncate_term,
+                                            Literal::String("Alice")));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_lt,
+                          lt_pred->Bind(*schema_, /*case_sensitive=*/true));
+  EXPECT_EQ(bound_lt->op(), Expression::Operation::kLt);
+
+  // GreaterThan should not be optimized
+  ICEBERG_ASSIGN_OR_THROW(auto gt_pred, UnboundPredicate<BoundTransform>::Make(
+                                            Expression::Operation::kGt, truncate_term,
+                                            Literal::String("Alice")));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_gt,
+                          gt_pred->Bind(*schema_, /*case_sensitive=*/true));
+  EXPECT_EQ(bound_gt->op(), Expression::Operation::kGt);
+}
+
+TEST_F(PredicateTest, TruncateLiteralOptimizationUTF8MultibyteCharacters) {
+  // Test optimization with UTF-8 multibyte characters (5 code points, not bytes)
+  auto truncate_term = Expressions::Truncate("name", 5);
+
+  // "你好世界!" is 5 UTF-8 code points
+  ICEBERG_ASSIGN_OR_THROW(auto equal_pred, UnboundPredicate<BoundTransform>::Make(
+                                               Expression::Operation::kEq, truncate_term,
+                                               Literal::String("你好世界!")));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_pred,
+                          equal_pred->Bind(*schema_, /*case_sensitive=*/true));
+
+  // Should be optimized to STARTS_WITH
+  EXPECT_EQ(bound_pred->op(), Expression::Operation::kStartsWith);
+
+  // Test with mixed ASCII and UTF-8: "你好世界x" is 5 code points (4 Chinese + 1 ASCII)
+  ICEBERG_ASSIGN_OR_THROW(auto mixed_pred, UnboundPredicate<BoundTransform>::Make(
+                                               Expression::Operation::kEq, truncate_term,
+                                               Literal::String("你好世界x")));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_mixed,
+                          mixed_pred->Bind(*schema_, /*case_sensitive=*/true));
+  EXPECT_EQ(bound_mixed->op(), Expression::Operation::kStartsWith);
+
+  // Test with 3 UTF-8 characters (shorter than width) - should NOT optimize
+  ICEBERG_ASSIGN_OR_THROW(
+      auto shorter_pred,
+      UnboundPredicate<BoundTransform>::Make(Expression::Operation::kEq, truncate_term,
+                                             Literal::String("你好世")));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_shorter,
+                          shorter_pred->Bind(*schema_, /*case_sensitive=*/true));
+  EXPECT_EQ(bound_shorter->op(), Expression::Operation::kEq);
+}
+
+TEST_F(PredicateTest, TruncateLiteralOptimizationEmptyString) {
+  // Test edge case: empty string with any width should not optimize
+  auto truncate_term = Expressions::Truncate("name", 5);
+  ICEBERG_ASSIGN_OR_THROW(auto equal_pred, UnboundPredicate<BoundTransform>::Make(
+                                               Expression::Operation::kEq, truncate_term,
+                                               Literal::String("")));
+
+  ICEBERG_ASSIGN_OR_THROW(auto bound_pred,
+                          equal_pred->Bind(*schema_, /*case_sensitive=*/true));
+
+  // Empty string is shorter than width, should not optimize
+  EXPECT_EQ(bound_pred->op(), Expression::Operation::kEq);
+}
+
+TEST_F(PredicateTest, TruncateLiteralOptimizationNonTruncateTransform) {
+  // Test that other transforms (e.g., bucket) are not optimized
+  // Bucket returns an integer, so we use an integer literal
+  auto bucket_term = Expressions::Bucket("id", 10);  // id is int64
+  ICEBERG_ASSIGN_OR_THROW(auto equal_pred,
+                          UnboundPredicate<BoundTransform>::Make(
+                              Expression::Operation::kEq, bucket_term, Literal::Int(5)));
+
+  ICEBERG_ASSIGN_OR_THROW(auto bound_pred,
+                          equal_pred->Bind(*schema_, /*case_sensitive=*/true));
+
+  // Should remain as EQUAL operation (bucket transform not optimized)
+  EXPECT_EQ(bound_pred->op(), Expression::Operation::kEq);
+}
+
 }  // namespace iceberg
