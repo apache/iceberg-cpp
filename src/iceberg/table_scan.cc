@@ -316,29 +316,6 @@ TableScanBuilder& TableScanBuilder::AsOfTime(int64_t timestamp_millis) {
   return UseSnapshot(snapshot_id);
 }
 
-TableScanBuilder& TableScanBuilder::FromSnapshot(
-    [[maybe_unused]] int64_t from_snapshot_id, [[maybe_unused]] bool inclusive) {
-  return AddError(NotImplemented("Incremental scan is not implemented"));
-}
-
-TableScanBuilder& TableScanBuilder::FromSnapshot([[maybe_unused]] const std::string& ref,
-                                                 [[maybe_unused]] bool inclusive) {
-  return AddError(NotImplemented("Incremental scan is not implemented"));
-}
-
-TableScanBuilder& TableScanBuilder::ToSnapshot([[maybe_unused]] int64_t to_snapshot_id) {
-  return AddError(NotImplemented("Incremental scan is not implemented"));
-}
-
-TableScanBuilder& TableScanBuilder::ToSnapshot([[maybe_unused]] const std::string& ref) {
-  return AddError(NotImplemented("Incremental scan is not implemented"));
-}
-
-TableScanBuilder& TableScanBuilder::UseBranch(const std::string& branch) {
-  context_.branch = branch;
-  return *this;
-}
-
 Result<std::reference_wrapper<const std::shared_ptr<Schema>>>
 TableScanBuilder::ResolveSnapshotSchema() {
   if (snapshot_schema_ == nullptr) {
@@ -355,17 +332,9 @@ TableScanBuilder::ResolveSnapshotSchema() {
   return snapshot_schema_;
 }
 
-bool TableScanBuilder::IsIncrementalScan() const {
-  return context_.from_snapshot_id.has_value() || context_.to_snapshot_id.has_value();
-}
-
-Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
+Result<std::unique_ptr<DataTableScan>> TableScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
-
-  if (IsIncrementalScan()) {
-    return NotImplemented("Incremental scan is not yet implemented");
-  }
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
   return DataTableScan::Make(metadata_, schema.get(), io_, std::move(context_));
@@ -466,12 +435,6 @@ Result<std::unique_ptr<DataTableScan>> DataTableScan::Make(
       std::move(metadata), std::move(schema), std::move(io), std::move(context)));
 }
 
-DataTableScan::DataTableScan(std::shared_ptr<TableMetadata> metadata,
-                             std::shared_ptr<Schema> schema, std::shared_ptr<FileIO> io,
-                             internal::TableScanContext context)
-    : TableScan(std::move(metadata), std::move(schema), std::move(io),
-                std::move(context)) {}
-
 Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() const {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
   if (!snapshot) {
@@ -499,6 +462,74 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
     manifest_group->IgnoreResiduals();
   }
   return manifest_group->PlanFiles();
+}
+
+template <typename ScanTaskType>
+Result<std::vector<std::shared_ptr<ScanTaskType>>>
+IncrementalScan<ScanTaskType>::PlanFiles() const {
+  return NotImplemented("IncrementalScan::PlanFiles is not implemented");
+}
+
+// IncrementalAppendScan implementation
+
+Result<std::unique_ptr<IncrementalAppendScan>> IncrementalAppendScan::Make(
+    [[maybe_unused]] std::shared_ptr<TableMetadata> metadata,
+    [[maybe_unused]] std::shared_ptr<Schema> schema,
+    [[maybe_unused]] std::shared_ptr<FileIO> io,
+    [[maybe_unused]] internal::TableScanContext context) {
+  return NotImplemented("IncrementalAppendScan is not implemented");
+}
+
+Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFiles(
+    std::optional<int64_t> from_snapshot_id_exclusive,
+    int64_t to_snapshot_id_inclusive) const {
+  return NotImplemented("IncrementalAppendScan::PlanFiles is not implemented");
+}
+
+// IncrementalChangelogScan implementation
+
+Result<std::unique_ptr<IncrementalChangelogScan>> IncrementalChangelogScan::Make(
+    [[maybe_unused]] std::shared_ptr<TableMetadata> metadata,
+    [[maybe_unused]] std::shared_ptr<Schema> schema,
+    [[maybe_unused]] std::shared_ptr<FileIO> io,
+    [[maybe_unused]] internal::TableScanContext context) {
+  return NotImplemented("IncrementalChangelogScan is not implemented");
+}
+
+Result<std::vector<std::shared_ptr<ChangelogScanTask>>>
+IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_exclusive,
+                                    int64_t to_snapshot_id_inclusive) const {
+  return NotImplemented("IncrementalChangelogScan::PlanFiles is not implemented");
+}
+
+// IncrementalAppendScanBuilder implementation
+
+Result<std::unique_ptr<IncrementalAppendScanBuilder>> IncrementalAppendScanBuilder::Make(
+    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io) {
+  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
+  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
+  return std::unique_ptr<IncrementalAppendScanBuilder>(
+      new IncrementalAppendScanBuilder(std::move(metadata), std::move(io)));
+}
+
+Result<std::unique_ptr<IncrementalAppendScan>> IncrementalAppendScanBuilder::Build() {
+  return NotImplemented("IncrementalAppendScanBuilder is not implemented");
+}
+
+// IncrementalChangelogScanBuilder implementation
+
+Result<std::unique_ptr<IncrementalChangelogScanBuilder>>
+IncrementalChangelogScanBuilder::Make(std::shared_ptr<TableMetadata> metadata,
+                                      std::shared_ptr<FileIO> io) {
+  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
+  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
+  return std::unique_ptr<IncrementalChangelogScanBuilder>(
+      new IncrementalChangelogScanBuilder(std::move(metadata), std::move(io)));
+}
+
+Result<std::unique_ptr<IncrementalChangelogScan>>
+IncrementalChangelogScanBuilder::Build() {
+  return NotImplemented("IncrementalChangelogScanBuilder is not implemented");
 }
 
 }  // namespace iceberg
