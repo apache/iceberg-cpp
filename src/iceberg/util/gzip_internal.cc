@@ -28,7 +28,7 @@
 
 namespace iceberg {
 
-class ZlibImpl {
+class GZipDecompressor::ZlibImpl {
  public:
   ZlibImpl() { memset(&stream_, 0, sizeof(stream_)); }
 

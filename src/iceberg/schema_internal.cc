@@ -24,6 +24,8 @@
 #include <optional>
 #include <string>
 
+#include <nanoarrow/nanoarrow.h>
+
 #include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"

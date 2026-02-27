@@ -18,6 +18,7 @@
  */
 
 #include <arrow/c/bridge.h>
+#include <arrow/c/helpers.h>
 #include <arrow/json/from_string.h>
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>

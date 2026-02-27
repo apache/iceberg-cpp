@@ -19,6 +19,7 @@
 
 #include <ranges>
 
+#include <arrow/array/builder_base.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <arrow/util/decimal.h>

@@ -23,6 +23,8 @@
 
 #include <arrow/array/builder_base.h>
 #include <arrow/c/bridge.h>
+#include <arrow/c/helpers.h>
+#include <arrow/filesystem/filesystem.h>
 #include <arrow/record_batch.h>
 #include <arrow/result.h>
 #include <avro/DataFile.hh>

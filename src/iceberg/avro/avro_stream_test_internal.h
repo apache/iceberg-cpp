@@ -20,26 +20,26 @@
 #pragma once
 
 #include <memory>
-#include <string>
 
-#include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
+#include "iceberg/iceberg_bundle_export.h"
 
-namespace iceberg {
+namespace arrow::fs {
+class LocalFileSystem;
+}
 
-class ICEBERG_EXPORT GZipDecompressor {
- public:
-  GZipDecompressor();
+namespace avro {
+class OutputStream;
+class SeekableInputStream;
+}  // namespace avro
 
-  ~GZipDecompressor();
+namespace iceberg::avro::test {
 
-  Status Init();
+ICEBERG_BUNDLE_EXPORT std::shared_ptr<::avro::SeekableInputStream> CreateInputStream(
+    const std::shared_ptr<::arrow::fs::LocalFileSystem>& local_fs,
+    const std::string& path, int64_t buffer_size);
 
-  Result<std::string> Decompress(const std::string& compressed_data);
+ICEBERG_BUNDLE_EXPORT std::shared_ptr<::avro::OutputStream> CreateOutputStream(
+    const std::shared_ptr<::arrow::fs::LocalFileSystem>& local_fs,
+    const std::string& path, int64_t buffer_size);
 
- private:
-  class ZlibImpl;
-  std::unique_ptr<ZlibImpl> zlib_impl_;
-};
-
-}  // namespace iceberg
+}  // namespace iceberg::avro::test
