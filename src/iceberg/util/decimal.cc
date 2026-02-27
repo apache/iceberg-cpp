@@ -30,8 +30,9 @@
 #include <climits>
 #include <cmath>
 #include <cstring>
+#include <iomanip>
 #include <limits>
-#include <ostream>
+#include <sstream>
 #include <utility>
 
 #include "iceberg/exception.h"
@@ -409,29 +410,21 @@ std::string Decimal::ToIntegerString() const {
     segments[num_segments++] = remainder;
   }
 
-  // Max 38 digits + sign = 39 characters. Use 48 for safety.
-  char buf[48];
-  char* curr = buf;
+  std::ostringstream oss;
   if (negative) {
-    *curr++ = '-';
+    oss << '-';
   }
 
   // First segment is formatted as-is.
-  auto [ptr, ec] = std::to_chars(curr, buf + sizeof(buf), segments[num_segments - 1]);
-  ICEBERG_DCHECK(ec == std::errc(), "std::to_chars failed in ToIntegerString");
-  curr = ptr;
+  oss << segments[num_segments - 1];
 
-  // Remaining segments are formatted with leading zeros to fill 9 digits.
+  // Remaining segments are formatted with leading zeros to fill 9 digits. e.g. 123 is
+  // formatted as "000000123"
   for (size_t i = num_segments - 1; i-- > 0;) {
-    uint32_t val = segments[i];
-    for (int j = 8; j >= 0; --j) {
-      curr[j] = static_cast<char>(val % 10 + '0');
-      val /= 10;
-    }
-    curr += 9;
+    oss << std::setw(9) << std::setfill('0') << segments[i];
   }
 
-  return std::string(buf, curr - buf);
+  return oss.str();
 }
 
 Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
