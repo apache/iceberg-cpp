@@ -57,6 +57,10 @@ class ICEBERG_EXPORT EqualityDeleteWriter : public FileWriter {
  public:
   ~EqualityDeleteWriter() override;
 
+  /// \brief Create a new EqualityDeleteWriter instance.
+  static Result<std::unique_ptr<EqualityDeleteWriter>> Make(
+      const EqualityDeleteWriterOptions& options);
+
   Status Write(ArrowArray* data) override;
   Result<int64_t> Length() const override;
   Status Close() override;
@@ -67,6 +71,8 @@ class ICEBERG_EXPORT EqualityDeleteWriter : public FileWriter {
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
+
+  explicit EqualityDeleteWriter(std::unique_ptr<Impl> impl);
 };
 
 }  // namespace iceberg
