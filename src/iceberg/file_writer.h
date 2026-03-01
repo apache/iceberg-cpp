@@ -25,6 +25,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
