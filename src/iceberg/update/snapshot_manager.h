@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -198,6 +199,7 @@ class ICEBERG_EXPORT SnapshotManager : public ErrorCollector {
   std::shared_ptr<Transaction> transaction_;
   const bool is_external_transaction_;
   std::shared_ptr<UpdateSnapshotReference> update_snap_refs_;
+  std::vector<std::shared_ptr<UpdateSnapshotReference>> committed_snap_refs_;
 };
 
 }  // namespace iceberg

@@ -130,6 +130,12 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   Status ApplyUpdateSortOrder(UpdateSortOrder& update);
   Status ApplyUpdateStatistics(UpdateStatistics& update);
 
+  /// \brief Perform a single commit attempt for UPDATE transactions
+  Result<std::shared_ptr<Table>> CommitOnce();
+
+  /// \brief Whether this transaction can retry after a commit conflict.
+  bool CanRetry() const;
+
  private:
   friend class PendingUpdate;
 
@@ -144,6 +150,8 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   bool last_update_committed_ = true;
   // Tracks if transaction has been committed to prevent double-commit
   bool committed_ = false;
+  // Guard flag to prevent auto_commit from recursing during re-apply in CommitOnce
+  bool applying_updates_ = false;
   // Keep track of all created pending updates. Use weak_ptr to avoid circular references.
   // This is useful to retry failed updates.
   std::vector<std::weak_ptr<PendingUpdate>> pending_updates_;

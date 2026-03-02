@@ -134,6 +134,8 @@ class ICEBERG_EXPORT UpdateSnapshotReference : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateSnapshotReference; }
 
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     /// References to set or update (name, ref pairs)
     std::vector<std::pair<std::string, std::shared_ptr<SnapshotRef>>> to_set;
