@@ -61,6 +61,20 @@ class ICEBERG_EXPORT TruncateUtils {
     return source;
   }
 
+  /// \brief Truncate a UTF-8 string to a specified number of code points for
+  /// use as an upper-bound value.
+  ///
+  /// When truncation is required, the returned value is the smallest UTF-8
+  /// string greater than the truncated prefix. When no truncation is needed
+  /// for the given width, the original string may be returned unchanged.
+  ///
+  /// \param source The input string to truncate.
+  /// \param L The maximum number of code points allowed in the output string.
+  /// \return A Result containing the original string (if no truncation is
+  /// needed), or the smallest string greater than the truncated prefix, or an
+  /// error if no such value exists or the input is invalid UTF-8.
+  static Result<std::string> TruncateUTF8Max(const std::string& source, size_t L);
+
   /// \brief Truncate an integer v, either int32_t or int64_t, to v - (v % W).
   ///
   /// The remainder, v % W, must be positive. For languages where % can produce negative
@@ -86,6 +100,19 @@ class ICEBERG_EXPORT TruncateUtils {
   /// - [Truncate Transform
   /// Details](https://iceberg.apache.org/spec/#truncate-transform-details)
   static Result<Literal> TruncateLiteral(const Literal& literal, int32_t width);
+
+  /// \brief Truncate a Literal to a specified width for use as an upper-bound value.
+  ///
+  /// When truncation is required, the returned value is the smallest Literal greater than
+  /// the truncated prefix. When no truncation is needed for the given width, the original
+  /// Literal may be returned unchanged.
+  ///
+  /// \param value The input Literal maximum value to truncate.
+  /// \param width The width to truncate to.
+  /// \return A Result containing either the original Literal (if no truncation is needed)
+  /// or the smallest Literal greater than the truncated prefix, or an error if no such
+  /// value exists or cannot be represented.
+  static Result<Literal> TruncateLiteralMax(const Literal& value, int32_t width);
 };
 
 }  // namespace iceberg
