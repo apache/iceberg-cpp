@@ -17,13 +17,11 @@
  * under the License.
  */
 
-#include <ranges>
 #include <string>
 #include <vector>
 
 #include <nlohmann/json.hpp>
 
-#include "iceberg/expression/binder.h"
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
@@ -33,6 +31,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/transform_util.h"
 
 namespace iceberg {
@@ -88,11 +87,26 @@ bool IsTransformTerm(const nlohmann::json& json) {
          json[kType].get<std::string>() == kTransform && json.contains(kTerm);
 }
 
-/// Template helper to create predicates from JSON with the appropriate term type
+/// Template helper to create predicates from JSON with the appropriate term type.
 template <typename B>
 Result<std::unique_ptr<UnboundPredicate>> PredicateFromJson(
     Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
-    const nlohmann::json& json) {
+    const nlohmann::json& json, const Schema* schema) {
+  // Bind the term against the schema so we can pass the resolved type to
+  // LiteralFromJson for type-aware parsing.
+  std::shared_ptr<B> bound_term;
+  if (schema != nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(bound_term, term->Bind(*schema, /*case_sensitive=*/false));
+  }
+
+  // Helper that selects type-aware or naive literal parsing.
+  auto parse_literal = [&](const nlohmann::json& val) -> Result<Literal> {
+    if (bound_term != nullptr) {
+      return LiteralFromJson(val, bound_term->type().get());
+    }
+    return LiteralFromJson(val);
+  };
+
   if (IsUnaryOperation(op)) {
     if (json.contains(kValue)) [[unlikely]] {
       return JsonParseError("Unary predicate has invalid 'value' field: {}",
@@ -115,7 +129,7 @@ Result<std::unique_ptr<UnboundPredicate>> PredicateFromJson(
           SafeDumpJson(json));
     }
     for (const auto& val : json[kValues]) {
-      ICEBERG_ASSIGN_OR_RAISE(auto lit, LiteralFromJson(val));
+      ICEBERG_ASSIGN_OR_RAISE(auto lit, parse_literal(val));
       literals.push_back(std::move(lit));
     }
     return UnboundPredicateImpl<B>::Make(op, std::move(term), std::move(literals));
@@ -127,7 +141,7 @@ Result<std::unique_ptr<UnboundPredicate>> PredicateFromJson(
         "Literal predicate requires 'value' and must not include 'values': {}",
         SafeDumpJson(json));
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto literal, LiteralFromJson(json[kValue]));
+  ICEBERG_ASSIGN_OR_RAISE(auto literal, parse_literal(json[kValue]));
   return UnboundPredicateImpl<B>::Make(op, std::move(term), std::move(literal));
 }
 }  // namespace
@@ -184,7 +198,7 @@ Result<Expression::Operation> OperationTypeFromJson(const nlohmann::json& json) 
   if (typeStr == kMin) return Expression::Operation::kMin;
   if (typeStr == kMax) return Expression::Operation::kMax;
 
-  return JsonParseError("Unknown expression type: {}", typeStr);
+  return JsonParseError("Unknown expression operation: '{}'", typeStr);
 }
 
 nlohmann::json ToJson(Expression::Operation op) {
@@ -192,10 +206,22 @@ nlohmann::json ToJson(Expression::Operation op) {
   std::ranges::transform(json, json.begin(), [](unsigned char c) -> char {
     return (c == '_') ? '-' : static_cast<char>(std::tolower(c));
   });
-  return nlohmann::json(std::move(json));
+  return json;
 }
 
-nlohmann::json ToJson(const NamedReference& ref) { return nlohmann::json(ref.name()); }
+nlohmann::json ToJson(const NamedReference& ref) { return ref.name(); }
+
+nlohmann::json ToJson(const UnboundTransform& transform) {
+  auto& mut = const_cast<UnboundTransform&>(transform);
+  return MakeTransformJson(transform.transform()->ToString(), mut.reference()->name());
+}
+
+nlohmann::json ToJson(const BoundReference& ref) { return ref.name(); }
+
+nlohmann::json ToJson(const BoundTransform& transform) {
+  auto& mut = const_cast<BoundTransform&>(transform);
+  return MakeTransformJson(transform.transform()->ToString(), mut.reference()->name());
+}
 
 Result<std::unique_ptr<NamedReference>> NamedReferenceFromJson(
     const nlohmann::json& json) {
@@ -209,28 +235,16 @@ Result<std::unique_ptr<NamedReference>> NamedReferenceFromJson(
   return NamedReference::Make(json.get<std::string>());
 }
 
-nlohmann::json ToJson(const UnboundTransform& transform) {
-  auto& mut = const_cast<UnboundTransform&>(transform);
-  return MakeTransformJson(transform.transform()->ToString(), mut.reference()->name());
-}
-
-nlohmann::json ToJson(const BoundReference& ref) { return nlohmann::json(ref.name()); }
-
-nlohmann::json ToJson(const BoundTransform& transform) {
-  auto& mut = const_cast<BoundTransform&>(transform);
-  return MakeTransformJson(transform.transform()->ToString(), mut.reference()->name());
-}
-
 Result<std::unique_ptr<UnboundTransform>> UnboundTransformFromJson(
     const nlohmann::json& json) {
-  if (IsTransformTerm(json)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto transform_str,
-                            GetJsonValue<std::string>(json, kTransform));
-    ICEBERG_ASSIGN_OR_RAISE(auto transform, TransformFromString(transform_str));
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReferenceFromJson(json[kTerm]));
-    return UnboundTransform::Make(std::move(ref), std::move(transform));
+  if (!IsTransformTerm(json)) {
+    return JsonParseError("Invalid unbound transform: {}", SafeDumpJson(json));
   }
-  return JsonParseError("Invalid unbound transform json: {}", SafeDumpJson(json));
+  ICEBERG_ASSIGN_OR_RAISE(auto transform_str,
+                          GetJsonValue<std::string>(json, kTransform));
+  ICEBERG_ASSIGN_OR_RAISE(auto transform, TransformFromString(transform_str));
+  ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReferenceFromJson(json[kTerm]));
+  return UnboundTransform::Make(std::move(ref), std::move(transform));
 }
 
 Result<nlohmann::json> ToJson(const Literal& literal) {
@@ -274,15 +288,20 @@ Result<nlohmann::json> ToJson(const Literal& literal) {
       }
       return nlohmann::json(std::move(hex));
     }
-    case TypeId::kDecimal: {
+    case TypeId::kDecimal:
       return nlohmann::json(literal.ToString());
-    }
     case TypeId::kUuid:
       return nlohmann::json(std::get<Uuid>(value).ToString());
     default:
       return NotSupported("Unsupported literal type for JSON serialization: {}",
                           literal.type()->ToString());
   }
+}
+
+Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* /*type*/) {
+  // TODO(gangwu): implement type-aware literal parsing equivalent to Java's
+  // SingleValueParser.fromJson(type, node).
+  return LiteralFromJson(json);
 }
 
 Result<Literal> LiteralFromJson(const nlohmann::json& json) {
@@ -304,38 +323,34 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json) {
     return Literal::Double(json.get<double>());
   }
   if (json.is_string()) {
-    // All strings are returned as String literals.
-    // Conversion to binary/date/time/etc. happens during binding
-    // when schema type information is available.
     return Literal::String(json.get<std::string>());
   }
-  return JsonParseError("Unsupported literal JSON type");
+  return JsonParseError("Unsupported literal JSON: {}", SafeDumpJson(json));
 }
 
 Result<nlohmann::json> ToJson(const Term& term) {
   switch (term.kind()) {
     case Term::Kind::kReference:
-      if (term.is_unbound())
+      if (term.is_unbound()) {
         return ToJson(internal::checked_cast<const NamedReference&>(term));
+      }
       return ToJson(internal::checked_cast<const BoundReference&>(term));
     case Term::Kind::kTransform:
-      if (term.is_unbound())
+      if (term.is_unbound()) {
         return ToJson(internal::checked_cast<const UnboundTransform&>(term));
+      }
       return ToJson(internal::checked_cast<const BoundTransform&>(term));
     default:
-      return NotSupported(
-          "Unsupported term kind for JSON serialization only reference and transform "
-          "terms are supported");
+      return NotSupported("Unsupported term for JSON serialization: {}", term.ToString());
   }
 }
 
 Result<nlohmann::json> ToJson(const UnboundPredicate& pred) {
   nlohmann::json json;
   json[kType] = ToJson(pred.op());
-
   ICEBERG_ASSIGN_OR_RAISE(json[kTerm], ToJson(pred.unbound_term()));
-  std::span<const Literal> literals = pred.literals();
 
+  std::span<const Literal> literals = pred.literals();
   if (IsSetOperation(pred.op())) {
     nlohmann::json values = nlohmann::json::array();
     for (const auto& lit : literals) {
@@ -344,8 +359,9 @@ Result<nlohmann::json> ToJson(const UnboundPredicate& pred) {
     }
     json[kValues] = std::move(values);
   } else if (!literals.empty()) {
-    ICEBERG_DCHECK(literals.size() == 1,
-                   "Expected exactly one literal for non-set predicate");
+    ICEBERG_CHECK(literals.size() == 1,
+                  "Expected exactly one literal for non-set predicate but got {}: {}",
+                  literals.size(), pred.ToString());
     ICEBERG_ASSIGN_OR_RAISE(json[kValue], ToJson(literals[0]));
   }
   return json;
@@ -372,22 +388,21 @@ Result<nlohmann::json> ToJson(const BoundPredicate& pred) {
 }
 
 Result<std::unique_ptr<UnboundPredicate>> UnboundPredicateFromJson(
-    const nlohmann::json& json) {
+    const nlohmann::json& json, const Schema* schema) {
   if (!json.contains(kType) || !json.contains(kTerm)) [[unlikely]] {
     return JsonParseError("Invalid predicate JSON: missing 'type' or 'term' field : {}",
                           SafeDumpJson(json));
   }
   ICEBERG_ASSIGN_OR_RAISE(auto op, OperationTypeFromJson(json[kType]));
-
   const auto& term_json = json[kTerm];
 
   if (IsTransformTerm(term_json)) {
     ICEBERG_ASSIGN_OR_RAISE(auto term, UnboundTransformFromJson(term_json));
-    return PredicateFromJson<BoundTransform>(op, std::move(term), json);
+    return PredicateFromJson<BoundTransform>(op, std::move(term), json, schema);
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto term, NamedReferenceFromJson(term_json));
-  return PredicateFromJson<BoundReference>(op, std::move(term), json);
+  return PredicateFromJson<BoundReference>(op, std::move(term), json, schema);
 }
 
 Result<std::shared_ptr<Expression>> ExpressionFromJson(const nlohmann::json& json,
@@ -399,18 +414,17 @@ Result<std::shared_ptr<Expression>> ExpressionFromJson(const nlohmann::json& jso
                : internal::checked_pointer_cast<Expression>(False::Instance());
   }
   if (json.is_string()) {
-    auto s = json.get<std::string>();
-    std::ranges::transform(s, s.begin(), [](unsigned char c) -> char {
-      return static_cast<char>(std::tolower(c));
-    });
-    if (s == kTrue) return internal::checked_pointer_cast<Expression>(True::Instance());
-    if (s == kFalse) return internal::checked_pointer_cast<Expression>(False::Instance());
+    auto s = StringUtils::ToLower(json.get<std::string>());
+    if (s == kTrue) return True::Instance();
+    if (s == kFalse) return False::Instance();
+    return JsonParseError("Unknown expression string constant: {}", s);
   }
 
   if (!json.is_object() || !json.contains(kType)) [[unlikely]] {
-    return JsonParseError("expression JSON must be an object with a 'type' field: {}",
+    return JsonParseError("Expression JSON must be an object with a 'type' field: {}",
                           SafeDumpJson(json));
   }
+
   if (json[kType].get<std::string>() == kLiteral) {
     if (!json.contains(kValue) || !json[kValue].is_boolean()) [[unlikely]] {
       return JsonParseError(
@@ -457,13 +471,8 @@ Result<std::shared_ptr<Expression>> ExpressionFromJson(const nlohmann::json& jso
       return NotSupported("Unsupported expression type for JSON deserialization: {}",
                           ToString(op));
     }
-    default: {
-      ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateFromJson(json));
-      if (schema != nullptr) {
-        return pred->Bind(*schema, false);
-      }
-      return pred;
-    }
+    default:
+      return UnboundPredicateFromJson(json, schema);
   }
 }
 
@@ -497,10 +506,12 @@ Result<nlohmann::json> ToJson(const Expression& expr) {
       return json;
     }
     default:
-      if (expr.is_unbound_predicate())
-        return ToJson(internal::checked_cast<const UnboundPredicate&>(expr));
-      if (expr.is_bound_predicate())
-        return ToJson(internal::checked_cast<const BoundPredicate&>(expr));
+      if (expr.is_unbound_predicate()) {
+        return ToJson(dynamic_cast<const UnboundPredicate&>(expr));
+      }
+      if (expr.is_bound_predicate()) {
+        return ToJson(dynamic_cast<const BoundPredicate&>(expr));
+      }
       return NotSupported("Unsupported expression type for JSON serialization");
   }
 }

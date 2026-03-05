@@ -46,12 +46,9 @@ ICEBERG_EXPORT nlohmann::json ToJson(Expression::Operation op);
 
 /// \brief Deserializes a JSON object into an Expression.
 ///
-/// When \p schema is nullptr the result is an unbound expression. When \p schema is
-/// provided the expression is bound against the schema before being returned.
-///
 /// \param json A JSON object representing an expression
 /// \param schema Optional schema used to bind field references and coerce literal
-///              types. When null, returns an unbound expression.
+///              types.
 /// \return A shared pointer to the deserialized Expression or an error
 ICEBERG_EXPORT Result<std::shared_ptr<Expression>> ExpressionFromJson(
     const nlohmann::json& json, const Schema* schema = nullptr);
@@ -100,6 +97,14 @@ ICEBERG_EXPORT Result<nlohmann::json> ToJson(const Literal& literal);
 /// \return The deserialized Literal or an error.
 ICEBERG_EXPORT Result<Literal> LiteralFromJson(const nlohmann::json& json);
 
+/// \brief Deserializes a JSON value into a Literal with optional type context.
+///
+/// \param json A JSON value representing a literal.
+/// \param type Optional target type used to guide parsing.
+/// \return The deserialized Literal or an error.
+ICEBERG_EXPORT Result<Literal> LiteralFromJson(const nlohmann::json& json,
+                                               const Type* type);
+
 /// \brief Serializes an UnboundPredicate into its JSON representation.
 ///
 /// \param pred The unbound predicate to serialize
@@ -118,9 +123,10 @@ ICEBERG_EXPORT Result<nlohmann::json> ToJson(const BoundPredicate& pred);
 /// \brief Deserializes a JSON object into an UnboundPredicate.
 ///
 /// \param json A JSON object representing an unbound predicate
+/// \param schema Optional schema used to resolve literal types.
 /// \return A pointer to the deserialized UnboundPredicate or an error
 ICEBERG_EXPORT Result<std::unique_ptr<UnboundPredicate>> UnboundPredicateFromJson(
-    const nlohmann::json& json);
+    const nlohmann::json& json, const Schema* schema = nullptr);
 
 /// \brief Serializes a Term into its JSON representation.
 ///

@@ -30,12 +30,9 @@
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
-#include "iceberg/expression/term.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/transform.h"
 #include "iceberg/type.h"
-#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -216,7 +213,7 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidExpressionParam{"NotBooleanOrObject", 42, "an object with a 'type'"},
         InvalidExpressionParam{"UnknownOperationType",
                                {{"type", "illegal"}, {"term", "col"}},
-                               "Unknown expression type"},
+                               "Unknown expression operation"},
         InvalidExpressionParam{
             "AndMissingLeft",
             {{"type", "and"}, {"right", {{"type", "is-null"}, {"term", "col"}}}},
@@ -407,68 +404,5 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<SetOpRoundTripParam>& info) {
       return info.param.name;
     });
-
-// -- Schema-aware ExpressionFromJson tests --
-class SchemaAwareExpressionFromJsonTest : public ::testing::Test {
- protected:
-  static void SetUpTestSuite() {
-    schema_ = std::make_shared<Schema>(
-        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64()),
-                                 SchemaField::MakeOptional(2, "name", string()),
-                                 SchemaField::MakeRequired(3, "age", int32()),
-                                 SchemaField::MakeOptional(4, "salary", float64())},
-        /*schema_id=*/0);
-  }
-  static std::shared_ptr<Schema> schema_;
-};
-
-std::shared_ptr<Schema> SchemaAwareExpressionFromJsonTest::schema_;
-
-TEST_F(SchemaAwareExpressionFromJsonTest, NullSchemaReturnsUnbound) {
-  nlohmann::json json = {{"type", "eq"}, {"term", "age"}, {"value", 25}};
-  ICEBERG_UNWRAP_OR_FAIL(auto expr, ExpressionFromJson(json));
-  EXPECT_TRUE(expr->is_unbound_predicate());
-}
-
-TEST_F(SchemaAwareExpressionFromJsonTest, WithSchemaReturnsBound) {
-  nlohmann::json json = {{"type", "eq"}, {"term", "age"}, {"value", 25}};
-  ICEBERG_UNWRAP_OR_FAIL(auto expr, ExpressionFromJson(json, schema_.get()));
-  EXPECT_TRUE(expr->is_bound_predicate());
-}
-
-TEST_F(SchemaAwareExpressionFromJsonTest, UnaryPredicateWithSchema) {
-  nlohmann::json json = {{"type", "is-null"}, {"term", "name"}};
-  ICEBERG_UNWRAP_OR_FAIL(auto expr, ExpressionFromJson(json, schema_.get()));
-  EXPECT_TRUE(expr->is_bound_predicate());
-  EXPECT_EQ(expr->op(), Expression::Operation::kIsNull);
-}
-
-TEST_F(SchemaAwareExpressionFromJsonTest, AndExpressionWithSchema) {
-  nlohmann::json json = {{"type", "and"},
-                         {"left", {{"type", "gt"}, {"term", "age"}, {"value", 18}}},
-                         {"right", {{"type", "lt"}, {"term", "age"}, {"value", 65}}}};
-  ICEBERG_UNWRAP_OR_FAIL(auto expr, ExpressionFromJson(json, schema_.get()));
-  EXPECT_EQ(expr->op(), Expression::Operation::kAnd);
-  const auto& and_expr = dynamic_cast<const And&>(*expr);
-  EXPECT_TRUE(and_expr.left()->is_bound_predicate());
-  EXPECT_TRUE(and_expr.right()->is_bound_predicate());
-}
-
-TEST_F(SchemaAwareExpressionFromJsonTest, NotExpressionWithSchema) {
-  nlohmann::json json = {{"type", "not"},
-                         {"child", {{"type", "is-null"}, {"term", "name"}}}};
-  ICEBERG_UNWRAP_OR_FAIL(auto expr, ExpressionFromJson(json, schema_.get()));
-  EXPECT_EQ(expr->op(), Expression::Operation::kNot);
-  const auto& not_expr = dynamic_cast<const Not&>(*expr);
-  EXPECT_TRUE(not_expr.child()->is_bound_predicate());
-}
-
-TEST_F(SchemaAwareExpressionFromJsonTest, BooleanConstantWithSchemaUnchanged) {
-  ICEBERG_UNWRAP_OR_FAIL(auto t, ExpressionFromJson(nlohmann::json(true), schema_.get()));
-  EXPECT_EQ(t->op(), Expression::Operation::kTrue);
-  ICEBERG_UNWRAP_OR_FAIL(auto f,
-                         ExpressionFromJson(nlohmann::json(false), schema_.get()));
-  EXPECT_EQ(f->op(), Expression::Operation::kFalse);
-}
 
 }  // namespace iceberg
