@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotSummaryBuilderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotSummaryBuilderTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilderTest_1a1ef7d5397413f8b796412dc053576ad9" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::SnapshotSummaryBuilderTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilderTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_summary_builder_test.cc" line="95" column="19" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilderTest_1abc25f0c420813bfde8f56057a2ee8cb3" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::SnapshotSummaryBuilderTest::spec_</definition>
+        <argsstring></argsstring>
+        <name>spec_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilderTest::spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_summary_builder_test.cc" line="96" column="19" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="96" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilderTest_1a0449fe8016ae60d01fcf0a5ca132feb5" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilderTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilderTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_summary_builder_test.cc" line="36" column="8" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="36" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilderTest_1aa8f5482898a64f540e12dd96011c0bd7" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref></type>
+        <definition>DataFile iceberg::SnapshotSummaryBuilderTest::CreateDataFile</definition>
+        <argsstring>(const std::string &amp;path, int64_t size, int64_t record_count)</argsstring>
+        <name>CreateDataFile</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilderTest::CreateDataFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_summary_builder_test.cc" line="47" column="12" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="47" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilderTest_1a384185ba08dc4f53965461b0e70fae2b" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref></type>
+        <definition>DataFile iceberg::SnapshotSummaryBuilderTest::CreatePosDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, int64_t size, int64_t record_count)</argsstring>
+        <name>CreatePosDeleteFile</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilderTest::CreatePosDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_summary_builder_test.cc" line="58" column="12" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="58" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilderTest_1a8700f9a68e925095741ce0c5edf7d32b" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref></type>
+        <definition>DataFile iceberg::SnapshotSummaryBuilderTest::CreateEqDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, int64_t size, int64_t record_count)</argsstring>
+        <name>CreateEqDeleteFile</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilderTest::CreateEqDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_summary_builder_test.cc" line="70" column="12" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="70" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilderTest_1a3d5289c81ca355e187d8079b43471bd8" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref></type>
+        <definition>DataFile iceberg::SnapshotSummaryBuilderTest::CreateDeletionVector</definition>
+        <argsstring>(const std::string &amp;path, int64_t size, int64_t record_count)</argsstring>
+        <name>CreateDeletionVector</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilderTest::CreateDeletionVector</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/snapshot_summary_builder_test.cc" line="83" column="12" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="83" bodyend="93"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SnapshotSummaryBuilderTest</label>
+        <link refid="classiceberg_1_1SnapshotSummaryBuilderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotSummaryBuilderTest</label>
+        <link refid="classiceberg_1_1SnapshotSummaryBuilderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>spec_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="16">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="17" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/snapshot_summary_builder_test.cc" line="34" column="1" bodyfile="iceberg/test/snapshot_summary_builder_test.cc" bodystart="34" bodyend="97"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilderTest_1aa8f5482898a64f540e12dd96011c0bd7" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilderTest</scope><name>CreateDataFile</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilderTest_1a3d5289c81ca355e187d8079b43471bd8" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilderTest</scope><name>CreateDeletionVector</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilderTest_1a8700f9a68e925095741ce0c5edf7d32b" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilderTest</scope><name>CreateEqDeleteFile</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilderTest_1a384185ba08dc4f53965461b0e70fae2b" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilderTest</scope><name>CreatePosDeleteFile</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilderTest_1a1ef7d5397413f8b796412dc053576ad9" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilderTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilderTest_1a0449fe8016ae60d01fcf0a5ca132feb5" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilderTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilderTest_1abc25f0c420813bfde8f56057a2ee8cb3" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilderTest</scope><name>spec_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

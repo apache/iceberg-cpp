@@ -1,0 +1,324 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TableMetadataUtil" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TableMetadataUtil</compoundname>
+    <includes refid="table__metadata_8h" local="no">table_metadata.h</includes>
+    <innerclass refid="structiceberg_1_1TableMetadataUtil_1_1Codec" prot="public">iceberg::TableMetadataUtil::Codec</innerclass>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1abb843dbd12997d229100f74924a9c8e1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TableMetadata &gt; &gt; iceberg::TableMetadataUtil::Read</definition>
+        <argsstring>(class FileIO &amp;io, const std::string &amp;location, std::optional&lt; size_t &gt; length=std::nullopt)</argsstring>
+        <name>Read</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Read</qualifiedname>
+        <param>
+          <type>class <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; size_t &gt;</type>
+          <declname>length</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Read the table metadata file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The file IO to use to read the table metadata. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>length</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The optional length of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The table metadata. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="536" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="458" bodyend="473"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1aeaf367eba6c09c9f811c2721eb40b350" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::TableMetadataUtil::Write</definition>
+        <argsstring>(FileIO &amp;io, const TableMetadata *base, const std::string &amp;base_metadata_location, TableMetadata &amp;metadata)</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Write</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>base_metadata_location</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+<para>Write a new metadata file to storage. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Serializes the table metadata to JSON and writes it to a new metadata file. If no location is specified in the metadata, generates a new file path based on the version number.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for writing files </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base metadata (can be null for new tables) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metadata to write, which will be updated with the new location </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The new metadata location </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="550" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="475" bodyend="483"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1a0f46fe1cb007221c62083601be5f3d8e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableMetadataUtil::DeleteRemovedMetadataFiles</definition>
+        <argsstring>(FileIO &amp;io, const TableMetadata *base, const TableMetadata &amp;metadata)</argsstring>
+        <name>DeleteRemovedMetadataFiles</name>
+        <qualifiedname>iceberg::TableMetadataUtil::DeleteRemovedMetadataFiles</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+<para>Delete removed metadata files based on retention policy. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Removes obsolete metadata files that are no longer referenced in the current metadata log, based on the metadata.delete-after-commit.enabled property.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for deleting files </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The previous metadata version </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The current metadata containing the updated log </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="563" column="15" bodyfile="iceberg/table_metadata.cc" bodystart="492" bodyend="509"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1a0fc746f383f30260753e3e5834fcf42a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::TableMetadataUtil::Write</definition>
+        <argsstring>(FileIO &amp;io, const std::string &amp;location, const TableMetadata &amp;metadata)</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Write</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+<para>Write the table metadata to a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The file IO to use to write the table metadata. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata to write. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="571" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="485" bodyend="490"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1aa02d2ad2fa90185e1a816431d00684ea" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TableMetadataUtil::ParseVersionFromLocation</definition>
+        <argsstring>(std::string_view metadata_location)</argsstring>
+        <name>ParseVersionFromLocation</name>
+        <qualifiedname>iceberg::TableMetadataUtil::ParseVersionFromLocation</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>metadata_location</declname>
+        </param>
+        <briefdescription>
+<para>Parse the version number from a metadata file location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Extracts the version number from a metadata file path which follows the format: vvvvv-uuid.metadata.json where vvvvv is the zero-padded version number.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metadata file location string </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The parsed version number, or -1 if parsing fails or the location doesn&apos;t contain a version </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="584" column="18" bodyfile="iceberg/table_metadata.cc" bodystart="511" bodyend="521"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1a59dc9207b2b361a89074a95b140a9b25" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::TableMetadataUtil::NewTableMetadataFilePath</definition>
+        <argsstring>(const TableMetadata &amp;metadata, int32_t version)</argsstring>
+        <name>NewTableMetadataFilePath</name>
+        <qualifiedname>iceberg::TableMetadataUtil::NewTableMetadataFilePath</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Generate a new metadata file path for a table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The version number for the new metadata file. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The generated metadata file path. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="591" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="523" bodyend="541"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utility class for table metadata. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/table_metadata.h" line="497" column="1" bodyfile="iceberg/table_metadata.h" bodystart="497" bodyend="593"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TableMetadataUtil_1a0f46fe1cb007221c62083601be5f3d8e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>DeleteRemovedMetadataFiles</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1a59dc9207b2b361a89074a95b140a9b25" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>NewTableMetadataFilePath</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1aa02d2ad2fa90185e1a816431d00684ea" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>ParseVersionFromLocation</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1abb843dbd12997d229100f74924a9c8e1" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>Read</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1aeaf367eba6c09c9f811c2721eb40b350" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>Write</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1a0fc746f383f30260753e3e5834fcf42a" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>Write</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

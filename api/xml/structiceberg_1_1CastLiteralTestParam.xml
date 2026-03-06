@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1CastLiteralTestParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::CastLiteralTestParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1CastLiteralTestParam_1a0ce4120303183b863fa44469e8f7e44a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::CastLiteralTestParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::CastLiteralTestParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="74" column="15" bodyfile="iceberg/test/literal_test.cc" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CastLiteralTestParam_1a49e8f1a6bff7a79d1589bfc5a14156e1" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::CastLiteralTestParam::source_literal</definition>
+        <argsstring></argsstring>
+        <name>source_literal</name>
+        <qualifiedname>iceberg::CastLiteralTestParam::source_literal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="75" column="11" bodyfile="iceberg/test/literal_test.cc" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CastLiteralTestParam_1a4fdaee5c545d6d8240b052ff06e7b29d" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PrimitiveType&gt; iceberg::CastLiteralTestParam::target_type</definition>
+        <argsstring></argsstring>
+        <name>target_type</name>
+        <qualifiedname>iceberg::CastLiteralTestParam::target_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="76" column="19" bodyfile="iceberg/test/literal_test.cc" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CastLiteralTestParam_1a664ad592e90fd6b91036d35ad0a94461" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>Literal iceberg::CastLiteralTestParam::expected_literal</definition>
+        <argsstring></argsstring>
+        <name>expected_literal</name>
+        <qualifiedname>iceberg::CastLiteralTestParam::expected_literal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/literal_test.cc" line="77" column="11" bodyfile="iceberg/test/literal_test.cc" bodystart="77" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::CastLiteralTestParam</label>
+        <link refid="structiceberg_1_1CastLiteralTestParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>expected_literal</edgelabel>
+          <edgelabel>source_literal</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>target_type</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="6">
+        <label>std::shared_ptr&lt; iceberg::PrimitiveType &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/literal_test.cc" line="73" column="1" bodyfile="iceberg/test/literal_test.cc" bodystart="73" bodyend="78"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1CastLiteralTestParam_1a664ad592e90fd6b91036d35ad0a94461" prot="public" virt="non-virtual"><scope>iceberg::CastLiteralTestParam</scope><name>expected_literal</name></member>
+      <member refid="structiceberg_1_1CastLiteralTestParam_1a49e8f1a6bff7a79d1589bfc5a14156e1" prot="public" virt="non-virtual"><scope>iceberg::CastLiteralTestParam</scope><name>source_literal</name></member>
+      <member refid="structiceberg_1_1CastLiteralTestParam_1a4fdaee5c545d6d8240b052ff06e7b29d" prot="public" virt="non-virtual"><scope>iceberg::CastLiteralTestParam</scope><name>target_type</name></member>
+      <member refid="structiceberg_1_1CastLiteralTestParam_1a0ce4120303183b863fa44469e8f7e44a" prot="public" virt="non-virtual"><scope>iceberg::CastLiteralTestParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="manifest__reader_8h" kind="file" language="C++">
+    <compoundname>manifest_reader.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includedby refid="delete__file__index_8cc" local="yes">iceberg/delete_file_index.cc</includedby>
+    <includedby refid="manifest__group_8cc" local="yes">iceberg/manifest/manifest_group.cc</includedby>
+    <includedby refid="manifest__reader_8cc" local="yes">iceberg/manifest/manifest_reader.cc</includedby>
+    <includedby refid="manifest__reader__internal_8h" local="yes">iceberg/manifest/manifest_reader_internal.h</includedby>
+    <includedby refid="manifest__util_8cc" local="yes">iceberg/manifest/manifest_util.cc</includedby>
+    <includedby refid="snapshot_8cc" local="yes">iceberg/snapshot.cc</includedby>
+    <includedby refid="delete__file__index__test_8cc" local="yes">iceberg/test/delete_file_index_test.cc</includedby>
+    <includedby refid="manifest__group__test_8cc" local="yes">iceberg/test/manifest_group_test.cc</includedby>
+    <includedby refid="manifest__list__versions__test_8cc" local="yes">iceberg/test/manifest_list_versions_test.cc</includedby>
+    <includedby refid="manifest__reader__stats__test_8cc" local="yes">iceberg/test/manifest_reader_stats_test.cc</includedby>
+    <includedby refid="manifest__reader__test_8cc" local="yes">iceberg/test/manifest_reader_test.cc</includedby>
+    <includedby refid="manifest__writer__versions__test_8cc" local="yes">iceberg/test/manifest_writer_versions_test.cc</includedby>
+    <includedby refid="table__scan__test_8cc" local="yes">iceberg/test/table_scan_test.cc</includedby>
+    <includedby refid="snapshot__update_8cc" local="yes">iceberg/update/snapshot_update.cc</includedby>
+    <incdepgraph>
+      <node id="8">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/manifest/manifest_reader.h</label>
+        <link refid="manifest__reader_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="10">
+        <label>expected</label>
+      </node>
+      <node id="11">
+        <label>format</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="4">
+        <label>optional</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>unordered_map</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/manifest/manifest_reader.h</label>
+        <link refid="manifest__reader_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/manifest/manifest_reader_internal.h</label>
+        <link refid="manifest__reader__internal_8h"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classiceberg_1_1ManifestReader" prot="public">iceberg::ManifestReader</innerclass>
+    <innerclass refid="classiceberg_1_1ManifestListReader" prot="public">iceberg::ManifestListReader</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Data reader interface for manifest files. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="classiceberg_1_1ManifestReader" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref><sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">~ManifestReader</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="classiceberg_1_1ManifestReader_1a068079494a5e9143005e42f60cb39bcc" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::vector&lt;ManifestEntry&gt;&gt;<sp/><ref refid="classiceberg_1_1ManifestReader_1a068079494a5e9143005e42f60cb39bcc" kindref="member">Entries</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="classiceberg_1_1ManifestReader_1ad33ef890dc38eb5640903cd4ec7ed961" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::vector&lt;ManifestEntry&gt;&gt;<sp/><ref refid="classiceberg_1_1ManifestReader_1ad33ef890dc38eb5640903cd4ec7ed961" kindref="member">LiveEntries</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55" refid="classiceberg_1_1ManifestReader_1a77c8f0b9f3498979e486794ab03e93ca" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref>&amp;<sp/><ref refid="classiceberg_1_1ManifestReader_1a77c8f0b9f3498979e486794ab03e93ca" kindref="member">Select</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;std::string&gt;&amp;<sp/>columns)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="classiceberg_1_1ManifestReader_1a8f8ef9b4119bd5337f810ea35b101bf5" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref>&amp;<sp/><ref refid="classiceberg_1_1ManifestReader_1a8f8ef9b4119bd5337f810ea35b101bf5" kindref="member">FilterPartitions</ref>(std::shared_ptr&lt;Expression&gt;<sp/>expr)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="classiceberg_1_1ManifestReader_1aaae76b985329c0bbd2b614515567cafa" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref>&amp;<sp/><ref refid="classiceberg_1_1ManifestReader_1aaae76b985329c0bbd2b614515567cafa" kindref="member">FilterPartitions</ref>(</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;class<sp/>PartitionSet&gt;<sp/>partition_set)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="classiceberg_1_1ManifestReader_1a55a0f0a0348dc51ddb1cb29a5e0e91d1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref>&amp;<sp/><ref refid="classiceberg_1_1ManifestReader_1a55a0f0a0348dc51ddb1cb29a5e0e91d1" kindref="member">FilterRows</ref>(std::shared_ptr&lt;Expression&gt;<sp/>expr)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classiceberg_1_1ManifestReader_1aab85a50e27e7d0809d4c5040ec1240c2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref>&amp;<sp/><ref refid="classiceberg_1_1ManifestReader_1aab85a50e27e7d0809d4c5040ec1240c2" kindref="member">CaseSensitive</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>case_sensitive)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="classiceberg_1_1ManifestReader_1ab21d9e39fb471ce55d424d8f142d790c" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref>&amp;<sp/><ref refid="classiceberg_1_1ManifestReader_1ab21d9e39fb471ce55d424d8f142d790c" kindref="member">TryDropStats</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ShouldDropStats(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;std::string&gt;&amp;<sp/>columns);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;ManifestReader&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref>&amp;<sp/>manifest,<sp/>std::shared_ptr&lt;FileIO&gt;<sp/>file_io,</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;Schema&gt;<sp/>schema,<sp/>std::shared_ptr&lt;PartitionSpec&gt;<sp/>spec);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;ManifestReader&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>manifest_location,<sp/>std::optional&lt;int64_t&gt;<sp/>manifest_length,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;FileIO&gt;<sp/>file_io,<sp/>std::shared_ptr&lt;Schema&gt;<sp/>schema,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;PartitionSpec&gt;<sp/>spec,</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::unique_ptr&lt;InheritableMetadata&gt;<sp/>inheritable_metadata,</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;int64_t&gt;<sp/>first_row_id<sp/>=<sp/>std::nullopt);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::vector&lt;std::string&gt;<sp/>WithStatsColumns(</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;std::string&gt;&amp;<sp/>columns);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117" refid="classiceberg_1_1ManifestListReader" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1ManifestListReader" kindref="compound">ManifestListReader</ref><sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ManifestListReader" kindref="compound">~ManifestListReader</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122" refid="classiceberg_1_1ManifestListReader_1aff738346c62b86ecddb6ce60cb315eeb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::vector&lt;ManifestFile&gt;&gt;<sp/><ref refid="classiceberg_1_1ManifestListReader_1aff738346c62b86ecddb6ce60cb315eeb" kindref="member">Files</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125" refid="classiceberg_1_1ManifestListReader_1a95229134617d077aed8736dd06e3e6a3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::unordered_map&lt;std::string,<sp/>std::string&gt;&gt;<sp/><ref refid="classiceberg_1_1ManifestListReader_1a95229134617d077aed8736dd06e3e6a3" kindref="member">Metadata</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;ManifestListReader&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>manifest_list_location,<sp/>std::shared_ptr&lt;FileIO&gt;<sp/>file_io);</highlight></codeline>
+<codeline lineno="133"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/manifest/manifest_reader.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1MetadataLogEntry" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::MetadataLogEntry</compoundname>
+    <includes refid="table__metadata_8h" local="no">table_metadata.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1MetadataLogEntry_1adcdd6b4238029a0c7147ce27961161e4" prot="public" static="no" mutable="no">
+        <type>TimePointMs</type>
+        <definition>TimePointMs iceberg::MetadataLogEntry::timestamp_ms</definition>
+        <argsstring></argsstring>
+        <name>timestamp_ms</name>
+        <qualifiedname>iceberg::MetadataLogEntry::timestamp_ms</qualifiedname>
+        <briefdescription>
+<para>The timestamp in milliseconds of the change. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="55" column="15" bodyfile="iceberg/table_metadata.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetadataLogEntry_1a16b2eb3d8ea815567a323becdab69bba" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::MetadataLogEntry::metadata_file</definition>
+        <argsstring></argsstring>
+        <name>metadata_file</name>
+        <qualifiedname>iceberg::MetadataLogEntry::metadata_file</qualifiedname>
+        <briefdescription>
+<para>Metadata file location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="57" column="15" bodyfile="iceberg/table_metadata.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1MetadataLogEntry_1a769465be470cf19f520d0aaf3a5a23b2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const MetadataLogEntry &amp;lhs, const MetadataLogEntry &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::MetadataLogEntry::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1MetadataLogEntry" kindref="compound">MetadataLogEntry</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1MetadataLogEntry" kindref="compound">MetadataLogEntry</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="59" column="15" bodyfile="iceberg/table_metadata.h" bodystart="59" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a metadata log entry. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::MetadataLogEntry</label>
+        <link refid="structiceberg_1_1MetadataLogEntry"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>metadata_file</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_metadata.h" line="53" column="1" bodyfile="iceberg/table_metadata.h" bodystart="53" bodyend="62"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1MetadataLogEntry_1a16b2eb3d8ea815567a323becdab69bba" prot="public" virt="non-virtual"><scope>iceberg::MetadataLogEntry</scope><name>metadata_file</name></member>
+      <member refid="structiceberg_1_1MetadataLogEntry_1a769465be470cf19f520d0aaf3a5a23b2" prot="public" virt="non-virtual"><scope>iceberg::MetadataLogEntry</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1MetadataLogEntry_1adcdd6b4238029a0c7147ce27961161e4" prot="public" virt="non-virtual"><scope>iceberg::MetadataLogEntry</scope><name>timestamp_ms</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

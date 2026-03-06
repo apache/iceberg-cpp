@@ -1,0 +1,346 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Uuid" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Uuid</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Uuid_1adf4ddddbb9e853f2c70053612707f402" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t iceberg::Uuid::kLength</definition>
+        <argsstring></argsstring>
+        <name>kLength</name>
+        <qualifiedname>iceberg::Uuid::kLength</qualifiedname>
+        <initializer>= 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="39" column="27" bodyfile="iceberg/util/uuid.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Uuid_1a7f3fbfb0f333e6336dfc22f1c77fae00" prot="private" static="no" mutable="no">
+        <type>std::array&lt; uint8_t, kLength &gt;</type>
+        <definition>std::array&lt;uint8_t, kLength&gt; iceberg::Uuid::data_</definition>
+        <argsstring></argsstring>
+        <name>data_</name>
+        <qualifiedname>iceberg::Uuid::data_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="85" column="14" bodyfile="iceberg/util/uuid.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1aaa7aa397804837b510c54b560d798ddb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Uuid::Uuid</definition>
+        <argsstring>()=delete</argsstring>
+        <name>Uuid</name>
+        <qualifiedname>iceberg::Uuid::Uuid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="38" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1abffcb42ca4a81410bfa77645d1321939" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Uuid::Uuid</definition>
+        <argsstring>(std::array&lt; uint8_t, kLength &gt; data)</argsstring>
+        <name>Uuid</name>
+        <qualifiedname>iceberg::Uuid::Uuid</qualifiedname>
+        <param>
+          <type>std::array&lt; uint8_t, kLength &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="41" column="12" bodyfile="iceberg/util/uuid.cc" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1ada159831eb6d5ec84bcd7e4ccf6f4219" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::span&lt; const uint8_t &gt;</type>
+        <definition>std::span&lt; const uint8_t &gt; iceberg::Uuid::bytes</definition>
+        <argsstring>() const</argsstring>
+        <name>bytes</name>
+        <qualifiedname>iceberg::Uuid::bytes</qualifiedname>
+        <briefdescription>
+<para>Get the raw bytes of the UUID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="66" column="13" bodyfile="iceberg/util/uuid.h" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1ab42b2c99ed63404a12dc22f9b5c54646" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint8_t</type>
+        <definition>uint8_t iceberg::Uuid::operator[]</definition>
+        <argsstring>(size_t index) const</argsstring>
+        <name>operator[]</name>
+        <qualifiedname>iceberg::Uuid::operator[]</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Access individual bytes of the UUID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index of the byte to access (0-15). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The byte at the specified index. </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classiceberg_1_1IcebergError" kindref="compound">IcebergError</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>if index is out of bounds. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="72" column="11" bodyfile="iceberg/util/uuid.cc" bodystart="206" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1a4985d4b1a1226e78aa0bc05cba49211b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Uuid::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Uuid::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Convert the UUID to a string in standard format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="75" column="15" bodyfile="iceberg/util/uuid.cc" bodystart="211" bodyend="218"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1a3abb2639274882c38680534e24420d33" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::Uuid::high_bits</definition>
+        <argsstring>() const</argsstring>
+        <name>high_bits</name>
+        <qualifiedname>iceberg::Uuid::high_bits</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="81" column="11" bodyfile="iceberg/util/uuid.cc" bodystart="220" bodyend="224"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1a739fdd416ca5278714ddcff6c597dc99" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::Uuid::low_bits</definition>
+        <argsstring>() const</argsstring>
+        <name>low_bits</name>
+        <qualifiedname>iceberg::Uuid::low_bits</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="82" column="11" bodyfile="iceberg/util/uuid.cc" bodystart="226" bodyend="230"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1ab59765f0cff4e0add1c675d749f01c88" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref></type>
+        <definition>Uuid iceberg::Uuid::GenerateV4</definition>
+        <argsstring>()</argsstring>
+        <name>GenerateV4</name>
+        <qualifiedname>iceberg::Uuid::GenerateV4</qualifiedname>
+        <briefdescription>
+<para>Generate a random UUID (version 4). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="44" column="15" bodyfile="iceberg/util/uuid.cc" bodystart="117" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1ad766f57ba19c37f96d55c90abf01ced5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref></type>
+        <definition>Uuid iceberg::Uuid::GenerateV7</definition>
+        <argsstring>()</argsstring>
+        <name>GenerateV7</name>
+        <qualifiedname>iceberg::Uuid::GenerateV7</qualifiedname>
+        <briefdescription>
+<para>Generate UUID version 7 per RFC 9562, with the current timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="47" column="15" bodyfile="iceberg/util/uuid.cc" bodystart="143" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1a3f3bd21269f14e6589825b895355b2b6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref></type>
+        <definition>Uuid iceberg::Uuid::GenerateV7</definition>
+        <argsstring>(uint64_t unix_ts_ms)</argsstring>
+        <name>GenerateV7</name>
+        <qualifiedname>iceberg::Uuid::GenerateV7</qualifiedname>
+        <param>
+          <type>uint64_t</type>
+          <declname>unix_ts_ms</declname>
+        </param>
+        <briefdescription>
+<para>Generate UUID version 7 per RFC 9562, with the given timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>UUID version 7 consists of a Unix timestamp in milliseconds (48 bits) and 74 random bits, excluding the required version and variant bits.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>unix_ts_ms</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of milliseconds since start of the UNIX epoch</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>unix_ts_ms cannot be negative per RFC. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="57" column="15" bodyfile="iceberg/util/uuid.cc" bodystart="153" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1a4058089f8fff9a9fcad38dac8731674f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref> &gt;</type>
+        <definition>Result&lt; Uuid &gt; iceberg::Uuid::FromString</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>FromString</name>
+        <qualifiedname>iceberg::Uuid::FromString</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Create a UUID from a string in standard format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="60" column="17" bodyfile="iceberg/util/uuid.cc" bodystart="186" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Uuid_1ac1b2a8703d0041b88cbcfa84e4a9a1a1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref> &gt;</type>
+        <definition>Result&lt; Uuid &gt; iceberg::Uuid::FromBytes</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; bytes)</argsstring>
+        <name>FromBytes</name>
+        <qualifiedname>iceberg::Uuid::FromBytes</qualifiedname>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>bytes</declname>
+        </param>
+        <briefdescription>
+<para>Create a UUID from a 16-byte array. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="63" column="17" bodyfile="iceberg/util/uuid.cc" bodystart="196" bodyend="204"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1Uuid_1afd3b6a27436301890a065e2ccd5a8def" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Uuid &amp;lhs, const Uuid &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Uuid::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Uuid" kindref="compound">Uuid</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/uuid.h" line="77" column="15" bodyfile="iceberg/util/uuid.h" bodystart="77" bodyend="79"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Uuid</label>
+        <link refid="classiceberg_1_1Uuid"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Uuid</label>
+        <link refid="classiceberg_1_1Uuid"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/uuid.h" line="36" column="1" bodyfile="iceberg/util/uuid.h" bodystart="36" bodyend="86"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Uuid_1ada159831eb6d5ec84bcd7e4ccf6f4219" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>bytes</name></member>
+      <member refid="classiceberg_1_1Uuid_1a7f3fbfb0f333e6336dfc22f1c77fae00" prot="private" virt="non-virtual"><scope>iceberg::Uuid</scope><name>data_</name></member>
+      <member refid="classiceberg_1_1Uuid_1ac1b2a8703d0041b88cbcfa84e4a9a1a1" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>FromBytes</name></member>
+      <member refid="classiceberg_1_1Uuid_1a4058089f8fff9a9fcad38dac8731674f" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>FromString</name></member>
+      <member refid="classiceberg_1_1Uuid_1ab59765f0cff4e0add1c675d749f01c88" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>GenerateV4</name></member>
+      <member refid="classiceberg_1_1Uuid_1ad766f57ba19c37f96d55c90abf01ced5" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>GenerateV7</name></member>
+      <member refid="classiceberg_1_1Uuid_1a3f3bd21269f14e6589825b895355b2b6" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>GenerateV7</name></member>
+      <member refid="classiceberg_1_1Uuid_1a3abb2639274882c38680534e24420d33" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>high_bits</name></member>
+      <member refid="classiceberg_1_1Uuid_1adf4ddddbb9e853f2c70053612707f402" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>kLength</name></member>
+      <member refid="classiceberg_1_1Uuid_1a739fdd416ca5278714ddcff6c597dc99" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>low_bits</name></member>
+      <member refid="classiceberg_1_1Uuid_1afd3b6a27436301890a065e2ccd5a8def" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1Uuid_1ab42b2c99ed63404a12dc22f9b5c54646" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>operator[]</name></member>
+      <member refid="classiceberg_1_1Uuid_1a4985d4b1a1226e78aa0bc05cba49211b" prot="public" virt="virtual"><scope>iceberg::Uuid</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Uuid_1aaa7aa397804837b510c54b560d798ddb" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>Uuid</name></member>
+      <member refid="classiceberg_1_1Uuid_1abffcb42ca4a81410bfa77645d1321939" prot="public" virt="non-virtual"><scope>iceberg::Uuid</scope><name>Uuid</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Uuid</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

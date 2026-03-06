@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ParquetReader::Impl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1af3c0b268ee1e461462b22587bf90cc25" prot="private" static="no" mutable="no">
+        <type>::arrow::MemoryPool *</type>
+        <definition>::arrow::MemoryPool* iceberg::parquet::ParquetReader::Impl::pool_</definition>
+        <argsstring></argsstring>
+        <name>pool_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::pool_</qualifiedname>
+        <initializer>= ::arrow::default_memory_pool()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="262" column="23" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="262" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1ad16d8b666b4c881b14021237df91a4a3" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1Split" kindref="compound">Split</ref> &gt;</type>
+        <definition>std::optional&lt;Split&gt; iceberg::parquet::ParquetReader::Impl::split_</definition>
+        <argsstring></argsstring>
+        <name>split_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::split_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="264" column="17" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="264" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1adf748ecc1d66ab9fd80e3598812c7933" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt;<ref refid="classiceberg_1_1Schema" kindref="compound">::iceberg::Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;::iceberg::Schema&gt; iceberg::parquet::ParquetReader::Impl::read_schema_</definition>
+        <argsstring></argsstring>
+        <name>read_schema_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::read_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="266" column="19" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="266" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1ad4b3aa25428110d4388a5f045a45b778" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref></type>
+        <definition>SchemaProjection iceberg::parquet::ParquetReader::Impl::projection_</definition>
+        <argsstring></argsstring>
+        <name>projection_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::projection_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="268" column="20" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="268" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1afe36e3f6c965ab8e428036396e78600f" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::io::RandomAccessFile &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::io::RandomAccessFile&gt; iceberg::parquet::ParquetReader::Impl::input_stream_</definition>
+        <argsstring></argsstring>
+        <name>input_stream_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::input_stream_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="270" column="19" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="270" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a33e0d89155581e94e851853125516071" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt;::parquet::arrow::FileReader &gt;</type>
+        <definition>std::unique_ptr&lt;::parquet::arrow::FileReader&gt; iceberg::parquet::ParquetReader::Impl::reader_</definition>
+        <argsstring></argsstring>
+        <name>reader_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="272" column="19" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="272" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a5cfaf9934c315a2683a4b837492badf1" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1arrow_1_1MetadataColumnContext" kindref="compound">arrow::MetadataColumnContext</ref></type>
+        <definition>arrow::MetadataColumnContext iceberg::parquet::ParquetReader::Impl::metadata_context_</definition>
+        <argsstring></argsstring>
+        <name>metadata_context_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::metadata_context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="274" column="32" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="274" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a0eeb43715a18f9973ef039506258fdd7" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="structiceberg_1_1parquet_1_1ReadContext" kindref="compound">ReadContext</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ReadContext&gt; iceberg::parquet::ParquetReader::Impl::context_</definition>
+        <argsstring></argsstring>
+        <name>context_</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="276" column="19" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="276" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1ae132433a8417f1316415b49665e6b44a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::parquet::ParquetReader::Impl::Open</definition>
+        <argsstring>(const ReaderOptions &amp;options)</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::Open</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ReaderOptions" kindref="compound">ReaderOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="115" column="10" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="115" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a186d9b5339a11c46b9d606ec39202a9a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; ArrowArray &gt; &gt; iceberg::parquet::ParquetReader::Impl::Next</definition>
+        <argsstring>()</argsstring>
+        <name>Next</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::Next</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="145" column="10" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="145" bodyend="164"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a815da010b032cba8143ac1e2b8d9da1e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::parquet::ParquetReader::Impl::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::Close</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="167" column="10" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="167" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a8e3439f88143d904162d74ed42228439" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &gt;</type>
+        <definition>Result&lt; ArrowSchema &gt; iceberg::parquet::ParquetReader::Impl::Schema</definition>
+        <argsstring>()</argsstring>
+        <name>Schema</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::Schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="183" column="10" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="183" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1add751ef59b505b3bb969749a0d5d1809" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::parquet::ParquetReader::Impl::Metadata</definition>
+        <argsstring>()</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::Metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="194" column="10" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="194" bodyend="213"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a1a5f6a452858bbdfe2e103384fb132a8" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::parquet::ParquetReader::Impl::InitReadContext</definition>
+        <argsstring>()</argsstring>
+        <name>InitReadContext</name>
+        <qualifiedname>iceberg::parquet::ParquetReader::Impl::InitReadContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_reader.cc" line="216" column="10" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="216" bodyend="258"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/parquet/parquet_reader.cc" line="112" column="1" bodyfile="iceberg/parquet/parquet_reader.cc" bodystart="112" bodyend="277"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a815da010b032cba8143ac1e2b8d9da1e" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a0eeb43715a18f9973ef039506258fdd7" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>context_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a1a5f6a452858bbdfe2e103384fb132a8" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>InitReadContext</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1afe36e3f6c965ab8e428036396e78600f" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>input_stream_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1add751ef59b505b3bb969749a0d5d1809" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a5cfaf9934c315a2683a4b837492badf1" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>metadata_context_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a186d9b5339a11c46b9d606ec39202a9a" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>Next</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1ae132433a8417f1316415b49665e6b44a" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1af3c0b268ee1e461462b22587bf90cc25" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>pool_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1ad4b3aa25428110d4388a5f045a45b778" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>projection_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1adf748ecc1d66ab9fd80e3598812c7933" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>read_schema_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a33e0d89155581e94e851853125516071" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>reader_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1a8e3439f88143d904162d74ed42228439" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>Schema</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReader_1_1Impl_1ad16d8b666b4c881b14021237df91a4a3" prot="private" virt="non-virtual"><scope>iceberg::parquet::ParquetReader::Impl</scope><name>split_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

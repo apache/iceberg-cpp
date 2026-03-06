@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1NoopAuthManager" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::NoopAuthManager</compoundname>
+    <basecompoundref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" prot="public" virt="non-virtual">iceberg::rest::auth::AuthManager</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1NoopAuthManager_1a07b5a91a122af316dfc2c5c9b3c56bb2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::NoopAuthManager::CatalogSession</definition>
+        <argsstring>(HttpClient &amp;client, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties) override</argsstring>
+        <name>CatalogSession</name>
+        <qualifiedname>iceberg::rest::auth::NoopAuthManager::CatalogSession</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a105441c178b9a8153e604433ad719563">CatalogSession</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>shared_client</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create the long-lived catalog session that acts as the parent session. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This session is used for all catalog-level operations (list namespaces, list tables, etc.) and serves as the parent session for contextual and table-specific sessions. It is owned by the catalog and reused throughout the catalog&apos;s lifetime.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>shared_client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client owned by the catalog and reused for auth calls. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> properties (client config + server defaults). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Session for catalog operations or an error if authentication cannot be set up. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_manager.cc" line="55" column="10" bodyfile="iceberg/catalog/rest/auth/auth_manager.cc" bodystart="55" bodyend="60"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Authentication manager that performs no authentication. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::rest::auth::AuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthManager"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::auth::NoopAuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1NoopAuthManager"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::rest::auth::AuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthManager"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::auth::NoopAuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1NoopAuthManager"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/auth/auth_manager.cc" line="53" column="1" bodyfile="iceberg/catalog/rest/auth/auth_manager.cc" bodystart="53" bodyend="61"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1NoopAuthManager_1a07b5a91a122af316dfc2c5c9b3c56bb2" prot="public" virt="virtual"><scope>iceberg::rest::auth::NoopAuthManager</scope><name>CatalogSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a617f8870e1eb865bc443f059bf12cf94" prot="public" virt="virtual"><scope>iceberg::rest::auth::NoopAuthManager</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a4179a49fc1addd0c0f1fd50239feb028" prot="public" virt="virtual"><scope>iceberg::rest::auth::NoopAuthManager</scope><name>ContextualSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a1f528489ce3e2a9a3a7463a40042cb95" prot="public" virt="virtual"><scope>iceberg::rest::auth::NoopAuthManager</scope><name>InitSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1ad495d10f88c41f093ac03bffb239fc29" prot="public" virt="virtual"><scope>iceberg::rest::auth::NoopAuthManager</scope><name>TableSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a96e6dd5ca93833cf9d39199a16b4e2eb" prot="public" virt="virtual"><scope>iceberg::rest::auth::NoopAuthManager</scope><name>~AuthManager</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdatePartitionStatistics_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::UpdatePartitionStatistics::ApplyResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1UpdatePartitionStatistics_1_1ApplyResult_1acd96a9d8dc4462cd3064ad3f35a0375a" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::pair&lt; int64_t, std::shared_ptr&lt; <ref refid="structiceberg_1_1PartitionStatisticsFile" kindref="compound">PartitionStatisticsFile</ref> &gt; &gt; &gt;</type>
+        <definition>std::vector&lt;std::pair&lt;int64_t, std::shared_ptr&lt;PartitionStatisticsFile&gt; &gt; &gt; iceberg::UpdatePartitionStatistics::ApplyResult::to_set</definition>
+        <argsstring></argsstring>
+        <name>to_set</name>
+        <qualifiedname>iceberg::UpdatePartitionStatistics::ApplyResult::to_set</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_statistics.h" line="67" column="17" bodyfile="iceberg/update/update_partition_statistics.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdatePartitionStatistics_1_1ApplyResult_1a446f25d9c59e885fb88cf208862a07c1" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::UpdatePartitionStatistics::ApplyResult::to_remove</definition>
+        <argsstring></argsstring>
+        <name>to_remove</name>
+        <qualifiedname>iceberg::UpdatePartitionStatistics::ApplyResult::to_remove</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_statistics.h" line="68" column="17" bodyfile="iceberg/update/update_partition_statistics.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::UpdatePartitionStatistics::ApplyResult</label>
+        <link refid="structiceberg_1_1UpdatePartitionStatistics_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>to_set</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>to_remove</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::pair&lt; int64_t, std::shared_ptr&lt; iceberg::PartitionStatisticsFile &gt; &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_partition_statistics.h" line="66" column="3" bodyfile="iceberg/update/update_partition_statistics.h" bodystart="66" bodyend="69"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdatePartitionStatistics_1_1ApplyResult_1a446f25d9c59e885fb88cf208862a07c1" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionStatistics::ApplyResult</scope><name>to_remove</name></member>
+      <member refid="structiceberg_1_1UpdatePartitionStatistics_1_1ApplyResult_1acd96a9d8dc4462cd3064ad3f35a0375a" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionStatistics::ApplyResult</scope><name>to_set</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,569 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InMemoryNamespace" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::InMemoryNamespace</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryNamespace_1af791d7518ab9db4cdf92f8d9cd2b6f27" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, <ref refid="classiceberg_1_1InMemoryNamespace" kindref="compound">InMemoryNamespace</ref> &gt;</type>
+        <definition>std::unordered_map&lt;std::string, InMemoryNamespace&gt; iceberg::InMemoryNamespace::children_</definition>
+        <argsstring></argsstring>
+        <name>children_</name>
+        <qualifiedname>iceberg::InMemoryNamespace::children_</qualifiedname>
+        <briefdescription>
+<para>Map of child namespace names to their corresponding namespace instances. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="158" column="22" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryNamespace_1aba8b8f2b533f37e044c0fa6e08f83901" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::InMemoryNamespace::properties_</definition>
+        <argsstring></argsstring>
+        <name>properties_</name>
+        <qualifiedname>iceberg::InMemoryNamespace::properties_</qualifiedname>
+        <briefdescription>
+<para>Key-value property map for this namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="161" column="22" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryNamespace_1a1b6c9be0a3c3cae491d03acc20eda684" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::InMemoryNamespace::table_metadata_locations_</definition>
+        <argsstring></argsstring>
+        <name>table_metadata_locations_</name>
+        <qualifiedname>iceberg::InMemoryNamespace::table_metadata_locations_</qualifiedname>
+        <briefdescription>
+<para>Mapping of table names to metadata file locations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="164" column="22" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="164" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1a04e65a38659c3e918034406e574b2bfc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::InMemoryNamespace::NamespaceExists</definition>
+        <argsstring>(const Namespace &amp;namespace_ident) const</argsstring>
+        <name>NamespaceExists</name>
+        <qualifiedname>iceberg::InMemoryNamespace::NamespaceExists</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>namespace_ident</declname>
+        </param>
+        <briefdescription>
+<para>Checks whether the given namespace exists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The namespace to check. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Result&lt;bool&gt; indicating whether the namespace exists. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="48" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="177" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1ab6ff8a2b343931f9fb2964909bfc52e3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; Namespace &gt; &gt; iceberg::InMemoryNamespace::ListNamespaces</definition>
+        <argsstring>(const Namespace &amp;parent_namespace_ident) const</argsstring>
+        <name>ListNamespaces</name>
+        <qualifiedname>iceberg::InMemoryNamespace::ListNamespaces</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>parent_namespace_ident</declname>
+        </param>
+        <briefdescription>
+<para>Lists immediate child namespaces under the given parent namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent_namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The parent namespace to list children for. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of child namespaces if found; error otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="54" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="188" bodyend="203"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1a4aaaa95223cc8186a93ff86d6c27c884" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InMemoryNamespace::CreateNamespace</definition>
+        <argsstring>(const Namespace &amp;namespace_ident, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>CreateNamespace</name>
+        <qualifiedname>iceberg::InMemoryNamespace::CreateNamespace</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>namespace_ident</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Creates a new namespace with the specified properties. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The namespace to create. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A map of key-value pairs to associate with the namespace. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the namespace is created; ErrorKind::kAlreadyExists if the namespace already exists. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="63" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="205" bodyend="228"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1a9525be99cf53d85507d826e33036f6c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InMemoryNamespace::DropNamespace</definition>
+        <argsstring>(const Namespace &amp;namespace_ident)</argsstring>
+        <name>DropNamespace</name>
+        <qualifiedname>iceberg::InMemoryNamespace::DropNamespace</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>namespace_ident</declname>
+        </param>
+        <briefdescription>
+<para>Deletes an existing namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The namespace to delete. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the namespace is deleted; ErrorKind::kNoSuchNamespace if the namespace does not exist; ErrorKind::kNotAllowed if the namespace is not empty. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="72" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="230" bodyend="254"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1a41d08709d98b711afa5aa89ecf92617b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::InMemoryNamespace::GetProperties</definition>
+        <argsstring>(const Namespace &amp;namespace_ident) const</argsstring>
+        <name>GetProperties</name>
+        <qualifiedname>iceberg::InMemoryNamespace::GetProperties</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>namespace_ident</declname>
+        </param>
+        <briefdescription>
+<para>Retrieves the properties of the specified namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The namespace whose properties are to be retrieved. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A map of property key-value pairs if the namespace exists; error otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="79" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="256" bodyend="261"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1a031484d8bdfd6d060a0b42afda63da8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InMemoryNamespace::UpdateNamespaceProperties</definition>
+        <argsstring>(const Namespace &amp;namespace_ident, const std::unordered_map&lt; std::string, std::string &gt; &amp;updates, const std::unordered_set&lt; std::string &gt; &amp;removals)</argsstring>
+        <name>UpdateNamespaceProperties</name>
+        <qualifiedname>iceberg::InMemoryNamespace::UpdateNamespaceProperties</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>namespace_ident</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>updates</declname>
+        </param>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>removals</declname>
+        </param>
+        <briefdescription>
+<para>Updates a namespace&apos;s properties by applying additions and removals. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The namespace to update. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Properties to add or overwrite. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>removals</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Property keys to remove. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the update is successful; ErrorKind::kNoSuchNamespace if the namespace does not exist; ErrorKind::kUnsupported if the operation is not supported. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="90" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="263" bodyend="276"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1ad6fd693f3910d519809f62d751c82683" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::string &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::string &gt; &gt; iceberg::InMemoryNamespace::ListTables</definition>
+        <argsstring>(const Namespace &amp;namespace_ident) const</argsstring>
+        <name>ListTables</name>
+        <qualifiedname>iceberg::InMemoryNamespace::ListTables</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>namespace_ident</declname>
+        </param>
+        <briefdescription>
+<para>Lists all table names under the specified namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The namespace to list tables from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of table names if successful; error otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="99" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="278" bodyend="292"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1a78f8e6508c88969dec781eff17185a35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InMemoryNamespace::RegisterTable</definition>
+        <argsstring>(const TableIdentifier &amp;table_ident, const std::string &amp;metadata_location)</argsstring>
+        <name>RegisterTable</name>
+        <qualifiedname>iceberg::InMemoryNamespace::RegisterTable</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>table_ident</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>metadata_location</declname>
+        </param>
+        <briefdescription>
+<para>Registers a table in the given namespace with a metadata location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The fully qualified identifier of the table. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The path to the table&apos;s metadata. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the table is registered; <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="107" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="294" bodyend="306"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1adc683e8a2a2ce1e6e9d14ebabf18b920" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InMemoryNamespace::UnregisterTable</definition>
+        <argsstring>(const TableIdentifier &amp;table_ident)</argsstring>
+        <name>UnregisterTable</name>
+        <qualifiedname>iceberg::InMemoryNamespace::UnregisterTable</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>table_ident</declname>
+        </param>
+        <briefdescription>
+<para>Unregisters a table from the specified namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The identifier of the table to unregister. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the table is removed; ErrorKind::kNoSuchTable if the table does not exist. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="115" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="308" bodyend="313"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1ab2353280e6b9f333a48ec9731f68907d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::InMemoryNamespace::TableExists</definition>
+        <argsstring>(const TableIdentifier &amp;table_ident) const</argsstring>
+        <name>TableExists</name>
+        <qualifiedname>iceberg::InMemoryNamespace::TableExists</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>table_ident</declname>
+        </param>
+        <briefdescription>
+<para>Checks if a table exists in the specified namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The identifier of the table to check. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Result&lt;bool&gt; indicating whether the table exists. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="121" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="315" bodyend="319"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1afb1f717ddc308b2188ac5103c17e4011" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::InMemoryNamespace::GetTableMetadataLocation</definition>
+        <argsstring>(const TableIdentifier &amp;table_ident) const</argsstring>
+        <name>GetTableMetadataLocation</name>
+        <qualifiedname>iceberg::InMemoryNamespace::GetTableMetadataLocation</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>table_ident</declname>
+        </param>
+        <briefdescription>
+<para>Gets the metadata location for the specified table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The identifier of the table. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The metadata location if the table exists; error otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="127" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="321" bodyend="330"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1a43693e0845669d8bdf463c219e10ba71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InMemoryNamespace::UpdateTableMetadataLocation</definition>
+        <argsstring>(const TableIdentifier &amp;table_ident, const std::string &amp;metadata_location)</argsstring>
+        <name>UpdateTableMetadataLocation</name>
+        <qualifiedname>iceberg::InMemoryNamespace::UpdateTableMetadataLocation</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>table_ident</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>metadata_location</declname>
+        </param>
+        <briefdescription>
+<para>Updates the metadata location for the specified table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The identifier of the table. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The new metadata location. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="133" column="10" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="332" bodyend="337"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1InMemoryNamespace_1abb635e79334f879464f5a2d0f9064814" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename NamespacePtr</type>
+          </param>
+        </templateparamlist>
+        <type>Result&lt; NamespacePtr &gt;</type>
+        <definition>static Result&lt; NamespacePtr &gt; iceberg::InMemoryNamespace::GetNamespaceImpl</definition>
+        <argsstring>(NamespacePtr root, const Namespace &amp;namespace_ident)</argsstring>
+        <name>GetNamespaceImpl</name>
+        <qualifiedname>iceberg::InMemoryNamespace::GetNamespaceImpl</qualifiedname>
+        <param>
+          <type>NamespacePtr</type>
+          <declname>root</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>namespace_ident</declname>
+        </param>
+        <briefdescription>
+<para>Internal utility for retrieving a namespace node pointer from the tree. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>NamespacePtr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the namespace node pointer. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>root</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The root namespace node. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>namespace_ident</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The fully qualified namespace to resolve. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pointer to the namespace node if it exists; error otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="143" column="17" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="143" bodyend="154"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A hierarchical namespace that manages namespaces and table metadata in-memory. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Each <ref refid="classiceberg_1_1InMemoryNamespace" kindref="compound">InMemoryNamespace</ref> represents a namespace level and can contain properties, tables, and child namespaces. This structure enables a tree-like representation of nested namespaces. </para>
+    </detaileddescription>
+    <location file="iceberg/catalog/memory/in_memory_catalog.cc" line="42" column="1" bodyfile="iceberg/catalog/memory/in_memory_catalog.cc" bodystart="42" bodyend="165"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1InMemoryNamespace_1af791d7518ab9db4cdf92f8d9cd2b6f27" prot="private" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>children_</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a4aaaa95223cc8186a93ff86d6c27c884" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>CreateNamespace</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a9525be99cf53d85507d826e33036f6c6" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>DropNamespace</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1abb635e79334f879464f5a2d0f9064814" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>GetNamespaceImpl</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a41d08709d98b711afa5aa89ecf92617b" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>GetProperties</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1afb1f717ddc308b2188ac5103c17e4011" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>GetTableMetadataLocation</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1ab6ff8a2b343931f9fb2964909bfc52e3" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>ListNamespaces</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1ad6fd693f3910d519809f62d751c82683" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>ListTables</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a04e65a38659c3e918034406e574b2bfc" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>NamespaceExists</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1aba8b8f2b533f37e044c0fa6e08f83901" prot="private" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>properties_</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a78f8e6508c88969dec781eff17185a35" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>RegisterTable</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a1b6c9be0a3c3cae491d03acc20eda684" prot="private" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>table_metadata_locations_</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1ab2353280e6b9f333a48ec9731f68907d" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>TableExists</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1adc683e8a2a2ce1e6e9d14ebabf18b920" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>UnregisterTable</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a031484d8bdfd6d060a0b42afda63da8e" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>UpdateNamespaceProperties</name></member>
+      <member refid="classiceberg_1_1InMemoryNamespace_1a43693e0845669d8bdf463c219e10ba71" prot="public" virt="non-virtual"><scope>iceberg::InMemoryNamespace</scope><name>UpdateTableMetadataLocation</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

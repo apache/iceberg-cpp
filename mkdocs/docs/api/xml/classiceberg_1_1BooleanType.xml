@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BooleanType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::BooleanType</compoundname>
+    <basecompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</basecompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1BooleanType_1ab2abb542c927cfa6009a289b6eb008a2" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr const TypeId iceberg::BooleanType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::BooleanType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kBoolean</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="218" column="33" bodyfile="iceberg/type.h" bodystart="218" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1BooleanType_1a94ba845c15e9a8a2cec561314be42965" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BooleanType::BooleanType</definition>
+        <argsstring>()=default</argsstring>
+        <name>BooleanType</name>
+        <qualifiedname>iceberg::BooleanType::BooleanType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="220" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BooleanType_1a8c97db4c459f66a9e11744fc26271e8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BooleanType::~BooleanType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~BooleanType</name>
+        <qualifiedname>iceberg::BooleanType::~BooleanType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="221" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BooleanType_1adbec6f047a5f16b7ff2d264a622c7289" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::BooleanType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::BooleanType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="223" column="10" bodyfile="iceberg/type.cc" bodystart="267" bodyend="267"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BooleanType_1a961751d7a337f396a3349b535135d818" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::BooleanType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::BooleanType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="224" column="15" bodyfile="iceberg/type.cc" bodystart="268" bodyend="268"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1BooleanType_1a4fad06eec8c8fc3b70c1dcebd75bdd16" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::BooleanType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::BooleanType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="227" column="8" bodyfile="iceberg/type.cc" bodystart="269" bodyend="269"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing a boolean (true or false). </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::BooleanType</label>
+        <link refid="classiceberg_1_1BooleanType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::BooleanType</label>
+        <link refid="classiceberg_1_1BooleanType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="216" column="1" bodyfile="iceberg/type.h" bodystart="216" bodyend="228"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BooleanType_1a94ba845c15e9a8a2cec561314be42965" prot="public" virt="non-virtual"><scope>iceberg::BooleanType</scope><name>BooleanType</name></member>
+      <member refid="classiceberg_1_1BooleanType_1a4fad06eec8c8fc3b70c1dcebd75bdd16" prot="protected" virt="virtual"><scope>iceberg::BooleanType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::BooleanType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::BooleanType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1BooleanType_1ab2abb542c927cfa6009a289b6eb008a2" prot="public" virt="non-virtual"><scope>iceberg::BooleanType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1BooleanType_1a961751d7a337f396a3349b535135d818" prot="public" virt="virtual"><scope>iceberg::BooleanType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1BooleanType_1adbec6f047a5f16b7ff2d264a622c7289" prot="public" virt="virtual"><scope>iceberg::BooleanType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1BooleanType_1a8c97db4c459f66a9e11744fc26271e8e" prot="public" virt="non-virtual"><scope>iceberg::BooleanType</scope><name>~BooleanType</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::BooleanType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::BooleanType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

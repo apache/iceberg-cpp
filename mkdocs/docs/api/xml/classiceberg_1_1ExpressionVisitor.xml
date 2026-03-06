@@ -1,0 +1,415 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ExpressionVisitor" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::ExpressionVisitor</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1BoundVisitor" prot="public" virt="non-virtual">iceberg::BoundVisitor&lt; bool &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1BoundVisitor" prot="public" virt="non-virtual">iceberg::BoundVisitor&lt; R &gt;</derivedcompoundref>
+    <includes refid="expression__visitor_8h" local="no">expression_visitor.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename R</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1ExpressionVisitor_1aa6183dc7a0878c6a335a9774ab319843" prot="private" static="no">
+        <type>std::conditional_t&lt; std::is_fundamental_v&lt; R &gt;, R, const R &amp; &gt;</type>
+        <definition>using iceberg::ExpressionVisitor&lt; R &gt;::ParamType =  std::conditional_t&lt;std::is_fundamental_v&lt;R&gt;, R, const R&amp;&gt;</definition>
+        <argsstring></argsstring>
+        <name>ParamType</name>
+        <qualifiedname>iceberg::ExpressionVisitor::ParamType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="50" column="3" bodyfile="iceberg/expression/expression_visitor.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1a94e8c3eb4910ab2e221163c19fda6492" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::ExpressionVisitor&lt; R &gt;::~ExpressionVisitor</definition>
+        <argsstring>()=default</argsstring>
+        <name>~ExpressionVisitor</name>
+        <qualifiedname>iceberg::ExpressionVisitor::~ExpressionVisitor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="53" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1aed1c555ca56ff0aaa898d31aa52f7287" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::AlwaysTrue</definition>
+        <argsstring>()=0</argsstring>
+        <name>AlwaysTrue</name>
+        <qualifiedname>iceberg::ExpressionVisitor::AlwaysTrue</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Binder_1af8d1d2ddf149cef0e8173ffb9ae74055">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IsBoundVisitor_1a4ab2c342d0d2cad5e3d2a9f1f5e2ad5d">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ReferenceVisitor_1a0b953832375a4d9fcecedde8ae2281a2">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a026b060af03d5b0cfbc42e918a755428">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a14854be3af651084f31423e2bb789e14">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1aecc6b3fd9c9e3c07b2d29e7e34c12b05">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ProjectionVisitor_1a12b390540c4d9d47cb7139dc2f10dba5">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1RewriteNot_1a635ded0f65bda60e21b886a466f638b0">AlwaysTrue</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1abdaaa0fa76a85c4163e8577246ab49b7">AlwaysTrue</reimplementedby>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1True" kindref="compound">True</ref> expression (always evaluates to true). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="56" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1aa6abb6e1020467e2ab3a2e17563990be" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::AlwaysFalse</definition>
+        <argsstring>()=0</argsstring>
+        <name>AlwaysFalse</name>
+        <qualifiedname>iceberg::ExpressionVisitor::AlwaysFalse</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Binder_1a6a30c797c8350b0c0278ea756d63f002">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IsBoundVisitor_1a449fe735fc3572a5c1dc5727a9dc3207">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ReferenceVisitor_1ae5b76e04dde78755ecc7396c4d302a76">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a739671993f08628d86a5c9a7bbfefbac">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a4297af9dc8e8bd189eb42b779856f478">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a6a891fbe55ee59d73b943b700b48c8ef">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ProjectionVisitor_1ae7d11559dc1b7c0e30499e29b0361df6">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1RewriteNot_1ac95479c41c803eb383cbc8c51de33746">AlwaysFalse</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1ac9ac869ac24a897027dc094a73fe3038">AlwaysFalse</reimplementedby>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1False" kindref="compound">False</ref> expression (always evaluates to false). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="59" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1a3785b1824deecc35b76c64ae6bb57f23" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::Not</definition>
+        <argsstring>(ParamType child_result)=0</argsstring>
+        <name>Not</name>
+        <qualifiedname>iceberg::ExpressionVisitor::Not</qualifiedname>
+        <param>
+          <type>ParamType</type>
+          <declname>child_result</declname>
+        </param>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>child_result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The result from visiting the child expression </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="63" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1a134636ef9aac1bbf8ade254e1c1c24d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::And</definition>
+        <argsstring>(ParamType left_result, ParamType right_result)=0</argsstring>
+        <name>And</name>
+        <qualifiedname>iceberg::ExpressionVisitor::And</qualifiedname>
+        <param>
+          <type>ParamType</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>ParamType</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+<para>Visit an <ref refid="classiceberg_1_1And" kindref="compound">And</ref> expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>left_result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The result from visiting the left child </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>right_result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The result from visiting the right child </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="68" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1aa21a66f372f1b32f94d8be2bb5643440" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::Or</definition>
+        <argsstring>(ParamType left_result, ParamType right_result)=0</argsstring>
+        <name>Or</name>
+        <qualifiedname>iceberg::ExpressionVisitor::Or</qualifiedname>
+        <param>
+          <type>ParamType</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>ParamType</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+<para>Visit an <ref refid="classiceberg_1_1Or" kindref="compound">Or</ref> expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>left_result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The result from visiting the left child </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>right_result</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The result from visiting the right child </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="73" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1ae15b69bbbd82d8c0b941cb4bc3324fc4" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred)=0</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::ExpressionVisitor::Predicate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Binder_1ae7d481f582b8e7fa6607fac9f2a27cef">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IsBoundVisitor_1a45cf2c8aa1415fc53ac0ef5f1914f660">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ReferenceVisitor_1ab00f6bdb46bcb2c2d70adf525bbda53d">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundVisitor_1ab39f8eaf365886cadbbd210584915f59">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundVisitor_1ab39f8eaf365886cadbbd210584915f59">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ProjectionVisitor_1a08546db937216d9cf99fb5083ef40882">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveProjectionVisitor_1af769acb4f336973c5262e8ffef847b56">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictProjectionVisitor_1ae7f92786657f8bfb123c16d19268e9de">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1RewriteNot_1a29cc8fef2aee7e5eb962d26ae7172977">Predicate</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit a bound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="77" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1a1c01ceb403a5c6e2706f9b197d729ead" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; UnboundPredicate &gt; &amp;pred)=0</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::ExpressionVisitor::Predicate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Binder_1abb5d59656387b1f7904466330fe5c33e">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IsBoundVisitor_1aec02c12cb37cf8b3245432baf347401e">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ReferenceVisitor_1ae9d28e70b081213b6613136be7d0ce3b">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundVisitor_1a28ebad2dc79a712dce34ed30e3614004">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundVisitor_1a28ebad2dc79a712dce34ed30e3614004">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ProjectionVisitor_1a4634a3ad39dca75df16008a82bc7a052">Predicate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1RewriteNot_1a487cc9b28c253a888a2521a59243f23b">Predicate</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit an unbound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="81" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1a4a7c83473af339c9c64cef5e9f3947ee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::Aggregate</definition>
+        <argsstring>(const std::shared_ptr&lt; BoundAggregate &gt; &amp;aggregate)</argsstring>
+        <name>Aggregate</name>
+        <qualifiedname>iceberg::ExpressionVisitor::Aggregate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Binder_1ad4a052ff22f9091c15a3da9d6211683b">Aggregate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IsBoundVisitor_1a7ffea60527ea9352da47d7d5ac335ab4">Aggregate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ReferenceVisitor_1ad36efac34ffffc2a12adc29f1c4fc2a9">Aggregate</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundAggregate" kindref="compound">BoundAggregate</ref> &gt; &amp;</type>
+          <declname>aggregate</declname>
+        </param>
+        <briefdescription>
+<para>Visit a bound aggregate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>aggregate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound aggregate to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="85" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="85" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitor_1a699e13e4420928256b3fb08a87674a9f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::ExpressionVisitor&lt; R &gt;::Aggregate</definition>
+        <argsstring>(const std::shared_ptr&lt; UnboundAggregate &gt; &amp;aggregate)</argsstring>
+        <name>Aggregate</name>
+        <qualifiedname>iceberg::ExpressionVisitor::Aggregate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Binder_1ac1d1c0d6c1f6c04e74c5f643d8d21438">Aggregate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1IsBoundVisitor_1a132e308d09a506375b395aa738df7315">Aggregate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ReferenceVisitor_1a38b63773662fdb9955e126bbe2596e3b">Aggregate</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundAggregate" kindref="compound">UnboundAggregate</ref> &gt; &amp;</type>
+          <declname>aggregate</declname>
+        </param>
+        <briefdescription>
+<para>Visit an unbound aggregate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>aggregate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound aggregate to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="93" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="93" bodyend="97"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base visitor for traversing expression trees. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This visitor traverses expression trees in postorder traversal and calls appropriate visitor methods for each node. Subclasses can override specific methods to implement custom behavior.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>R</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The return type produced by visitor methods </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::BoundVisitor&lt; bool &gt;</label>
+        <link refid="classiceberg_1_1BoundVisitor"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::BoundVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1BoundVisitor"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::EvalVisitor</label>
+        <link refid="classiceberg_1_1EvalVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ExpressionVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="4">
+        <label>iceberg::InclusiveMetricsVisitor</label>
+        <link refid="classiceberg_1_1InclusiveMetricsVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::ManifestEvalVisitor</label>
+        <link refid="classiceberg_1_1ManifestEvalVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::StrictMetricsVisitor</label>
+        <link refid="classiceberg_1_1StrictMetricsVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/expression/expression_visitor.h" line="49" column="1" bodyfile="iceberg/expression/expression_visitor.h" bodystart="49" bodyend="98"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a4a7c83473af339c9c64cef5e9f3947ee" prot="public" virt="virtual"><scope>iceberg::ExpressionVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a699e13e4420928256b3fb08a87674a9f" prot="public" virt="virtual"><scope>iceberg::ExpressionVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa6abb6e1020467e2ab3a2e17563990be" prot="public" virt="pure-virtual"><scope>iceberg::ExpressionVisitor</scope><name>AlwaysFalse</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aed1c555ca56ff0aaa898d31aa52f7287" prot="public" virt="pure-virtual"><scope>iceberg::ExpressionVisitor</scope><name>AlwaysTrue</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a134636ef9aac1bbf8ade254e1c1c24d6" prot="public" virt="pure-virtual"><scope>iceberg::ExpressionVisitor</scope><name>And</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a3785b1824deecc35b76c64ae6bb57f23" prot="public" virt="pure-virtual"><scope>iceberg::ExpressionVisitor</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa21a66f372f1b32f94d8be2bb5643440" prot="public" virt="pure-virtual"><scope>iceberg::ExpressionVisitor</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa6183dc7a0878c6a335a9774ab319843" prot="private" virt="non-virtual"><scope>iceberg::ExpressionVisitor</scope><name>ParamType</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1ae15b69bbbd82d8c0b941cb4bc3324fc4" prot="public" virt="pure-virtual"><scope>iceberg::ExpressionVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a1c01ceb403a5c6e2706f9b197d729ead" prot="public" virt="pure-virtual"><scope>iceberg::ExpressionVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a94e8c3eb4910ab2e221163c19fda6492" prot="public" virt="virtual"><scope>iceberg::ExpressionVisitor</scope><name>~ExpressionVisitor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

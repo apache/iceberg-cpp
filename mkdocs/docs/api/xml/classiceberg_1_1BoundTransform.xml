@@ -1,0 +1,385 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BoundTransform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::BoundTransform</compoundname>
+    <basecompoundref refid="classiceberg_1_1BoundTerm" prot="public" virt="non-virtual">iceberg::BoundTerm</basecompoundref>
+    <includes refid="term_8h" local="no">term.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1BoundTransform_1ab54b4ba6b4636f660019383bfc1118eb" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;BoundReference&gt; iceberg::BoundTransform::ref_</definition>
+        <argsstring></argsstring>
+        <name>ref_</name>
+        <qualifiedname>iceberg::BoundTransform::ref_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="237" column="19" bodyfile="iceberg/expression/term.h" bodystart="237" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1BoundTransform_1ab216c927eb57a05284bf5def47067621" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Transform&gt; iceberg::BoundTransform::transform_</definition>
+        <argsstring></argsstring>
+        <name>transform_</name>
+        <qualifiedname>iceberg::BoundTransform::transform_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="238" column="19" bodyfile="iceberg/expression/term.h" bodystart="238" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1BoundTransform_1addd6de028949f3a375d17368eb9f76d2" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;TransformFunction&gt; iceberg::BoundTransform::transform_func_</definition>
+        <argsstring></argsstring>
+        <name>transform_func_</name>
+        <qualifiedname>iceberg::BoundTransform::transform_func_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="239" column="19" bodyfile="iceberg/expression/term.h" bodystart="239" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1a13f1b54410b7930095ebd405d4bd9b46" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1BoundTransform" kindref="compound">BoundTransform</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; BoundTransform &gt; &gt; iceberg::BoundTransform::Make</definition>
+        <argsstring>(std::shared_ptr&lt; BoundReference &gt; ref, std::shared_ptr&lt; Transform &gt; transform, std::shared_ptr&lt; TransformFunction &gt; transform_func)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::BoundTransform::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &gt;</type>
+          <declname>ref</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+          <declname>transform</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt;</type>
+          <declname>transform_func</declname>
+        </param>
+        <briefdescription>
+<para>Create a bound transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound term to apply the transformation to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>transform</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The transform to apply </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>transform_func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound transform function to apply </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="210" column="17" bodyfile="iceberg/expression/term.cc" bodystart="154" bodyend="163"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1a545ba931fd97bb29a59e48ab07d30e1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BoundTransform::~BoundTransform</definition>
+        <argsstring>() override</argsstring>
+        <name>~BoundTransform</name>
+        <qualifiedname>iceberg::BoundTransform::~BoundTransform</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="214" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1a2c7919b54bcfb00c713461b2d186bd8f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::BoundTransform::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::BoundTransform::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="216" column="15" bodyfile="iceberg/expression/term.cc" bodystart="177" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1ac4b17a9029177774ea64164ad2c6e2ec" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::BoundTransform::Evaluate</definition>
+        <argsstring>(const StructLike &amp;data) const override</argsstring>
+        <name>Evaluate</name>
+        <qualifiedname>iceberg::BoundTransform::Evaluate</qualifiedname>
+        <reimplements refid="classiceberg_1_1Bound_1ae3accf6c583a065d2bb6b47cdcbac1c3">Evaluate</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Evaluate this expression against a row-based data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="218" column="10" bodyfile="iceberg/expression/term.cc" bodystart="181" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1a4de1b8587a665c1a7798ad7c74c8d0cd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; BoundReference &gt; iceberg::BoundTransform::reference</definition>
+        <argsstring>() override</argsstring>
+        <name>reference</name>
+        <qualifiedname>iceberg::BoundTransform::reference</qualifiedname>
+        <reimplements refid="classiceberg_1_1Bound_1a80f0b389e0244809527168fca111a0a6">reference</reimplements>
+        <briefdescription>
+<para>Returns the underlying bound reference for this term. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="220" column="19" bodyfile="iceberg/expression/term.h" bodystart="220" bodyend="220"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1a3df2176957c730e57d1675369add8a47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Type &gt; iceberg::BoundTransform::type</definition>
+        <argsstring>() const override</argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::BoundTransform::type</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundTerm_1a4a1cdc1d333514ba2d5cc25c044452d6">type</reimplements>
+        <briefdescription>
+<para>Returns the type produced by this term. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="222" column="19" bodyfile="iceberg/expression/term.cc" bodystart="192" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1ab309e6e81dd1c49d35955bee66cd590d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::BoundTransform::MayProduceNull</definition>
+        <argsstring>() const override</argsstring>
+        <name>MayProduceNull</name>
+        <qualifiedname>iceberg::BoundTransform::MayProduceNull</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundTerm_1abffaa202fd9200fcefc17dd3d1464748">MayProduceNull</reimplements>
+        <briefdescription>
+<para>Returns whether this term may produce null values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="224" column="8" bodyfile="iceberg/expression/term.cc" bodystart="186" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1aa639d4379735d306c14c2eb06e5ab47f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::BoundTransform::Equals</definition>
+        <argsstring>(const BoundTerm &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::BoundTransform::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundTerm_1a9f4726d7e71a9032408a7c6a196618a0">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether this term is equivalent to another. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Two terms are equivalent if they produce the same values when evaluated.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Another bound term to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the terms are equivalent, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="226" column="8" bodyfile="iceberg/expression/term.cc" bodystart="196" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1a537839ff520b8e5d2459c9db98565acb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Transform &gt; &amp; iceberg::BoundTransform::transform</definition>
+        <argsstring>() const</argsstring>
+        <name>transform</name>
+        <qualifiedname>iceberg::BoundTransform::transform</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="228" column="25" bodyfile="iceberg/expression/term.h" bodystart="228" bodyend="228"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1a292aa1addf1dcdf01595ee24418c1445" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::BoundTransform::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::BoundTransform::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1Term_1abc8368a414f930269b883a090869eb14">kind</reimplements>
+        <briefdescription>
+<para>Returns the kind of this term. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="230" column="8" bodyfile="iceberg/expression/term.h" bodystart="230" bodyend="230"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundTransform_1aa80234be662e05126062fe48791f9f47" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BoundTransform::BoundTransform</definition>
+        <argsstring>(std::shared_ptr&lt; BoundReference &gt; ref, std::shared_ptr&lt; Transform &gt; transform, std::shared_ptr&lt; TransformFunction &gt; transform_func)</argsstring>
+        <name>BoundTransform</name>
+        <qualifiedname>iceberg::BoundTransform::BoundTransform</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &gt;</type>
+          <declname>ref</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+          <declname>transform</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt;</type>
+          <declname>transform_func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/term.h" line="233" column="3" bodyfile="iceberg/expression/term.cc" bodystart="165" bodyend="173"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A bound transform expression. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="2">
+        <label>iceberg::BoundTerm</label>
+        <link refid="classiceberg_1_1BoundTerm"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::BoundTransform</label>
+        <link refid="classiceberg_1_1BoundTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Term</label>
+        <link refid="classiceberg_1_1Term"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="2">
+        <label>iceberg::BoundTerm</label>
+        <link refid="classiceberg_1_1BoundTerm"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::BoundTransform</label>
+        <link refid="classiceberg_1_1BoundTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Term</label>
+        <link refid="classiceberg_1_1Term"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/term.h" line="203" column="1" bodyfile="iceberg/expression/term.h" bodystart="203" bodyend="240"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BoundTransform_1aa80234be662e05126062fe48791f9f47" prot="private" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>BoundTransform</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1aa639d4379735d306c14c2eb06e5ab47f" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1ac4b17a9029177774ea64164ad2c6e2ec" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1BoundTerm_1a74959f3a65f7a8fcf9f11e0b23f05e58" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>is_unbound</name></member>
+      <member refid="classiceberg_1_1Term_1aafdab7cb8b14117f662d394450af6be8" prot="public" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1a292aa1addf1dcdf01595ee24418c1445" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1a13f1b54410b7930095ebd405d4bd9b46" prot="public" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1ab309e6e81dd1c49d35955bee66cd590d" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>MayProduceNull</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1ab54b4ba6b4636f660019383bfc1118eb" prot="private" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>ref_</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1a4de1b8587a665c1a7798ad7c74c8d0cd" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>reference</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1a2c7919b54bcfb00c713461b2d186bd8f" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1a537839ff520b8e5d2459c9db98565acb" prot="public" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>transform</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1ab216c927eb57a05284bf5def47067621" prot="private" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>transform_</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1addd6de028949f3a375d17368eb9f76d2" prot="private" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>transform_func_</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1a3df2176957c730e57d1675369add8a47" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>type</name></member>
+      <member refid="classiceberg_1_1Bound_1abc22c55a926f2041f458bdc8be7a18b5" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>~Bound</name></member>
+      <member refid="classiceberg_1_1BoundTerm_1a555341f87d72bd1c5ee553eec728f9ad" prot="public" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>~BoundTerm</name></member>
+      <member refid="classiceberg_1_1BoundTransform_1a545ba931fd97bb29a59e48ab07d30e1c" prot="public" virt="non-virtual"><scope>iceberg::BoundTransform</scope><name>~BoundTransform</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::BoundTransform</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

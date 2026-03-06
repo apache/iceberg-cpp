@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TaskContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TaskContext</compoundname>
+    <includes refid="manifest__group_8h" local="no">manifest_group.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TaskContext_1ad1b623fbbdface9560e3541ed9389159" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::TaskContext::spec</definition>
+        <argsstring></argsstring>
+        <name>spec</name>
+        <qualifiedname>iceberg::TaskContext::spec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="45" column="19" bodyfile="iceberg/manifest/manifest_group.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TaskContext_1a45e59240b77ebe8980daa8ac2dc17227" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1DeleteFileIndex" kindref="compound">DeleteFileIndex</ref> *</type>
+        <definition>DeleteFileIndex* iceberg::TaskContext::deletes</definition>
+        <argsstring></argsstring>
+        <name>deletes</name>
+        <qualifiedname>iceberg::TaskContext::deletes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="46" column="19" bodyfile="iceberg/manifest/manifest_group.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TaskContext_1acec86cb1ee5742274ad6710de9286177" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1ResidualEvaluator" kindref="compound">ResidualEvaluator</ref> *</type>
+        <definition>ResidualEvaluator* iceberg::TaskContext::residuals</definition>
+        <argsstring></argsstring>
+        <name>residuals</name>
+        <qualifiedname>iceberg::TaskContext::residuals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="47" column="21" bodyfile="iceberg/manifest/manifest_group.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TaskContext_1a89103c019e5c6c43039386b0d0e4c63c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::TaskContext::drop_stats</definition>
+        <argsstring></argsstring>
+        <name>drop_stats</name>
+        <qualifiedname>iceberg::TaskContext::drop_stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="48" column="8" bodyfile="iceberg/manifest/manifest_group.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TaskContext_1a497cce0bd4958f207a29114d59b82c5a" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::TaskContext::columns_to_keep_stats</definition>
+        <argsstring></argsstring>
+        <name>columns_to_keep_stats</name>
+        <qualifiedname>iceberg::TaskContext::columns_to_keep_stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="49" column="22" bodyfile="iceberg/manifest/manifest_group.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Context passed to task creation functions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="6">
+        <label>Builder public ErrorCollector</label>
+      </node>
+      <node id="5">
+        <label>iceberg::DeleteFileIndex</label>
+        <link refid="classiceberg_1_1DeleteFileIndex"/>
+        <childnode refid="6" relation="private-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::ResidualEvaluator</label>
+        <link refid="classiceberg_1_1ResidualEvaluator"/>
+        <childnode refid="8" relation="usage">
+          <edgelabel>expr_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TaskContext</label>
+        <link refid="structiceberg_1_1TaskContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>spec</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>deletes</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>residuals</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>columns_to_keep_stats</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Expression &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::unordered_set&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_group.h" line="43" column="1" bodyfile="iceberg/manifest/manifest_group.h" bodystart="43" bodyend="50"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TaskContext_1a497cce0bd4958f207a29114d59b82c5a" prot="public" virt="non-virtual"><scope>iceberg::TaskContext</scope><name>columns_to_keep_stats</name></member>
+      <member refid="structiceberg_1_1TaskContext_1a45e59240b77ebe8980daa8ac2dc17227" prot="public" virt="non-virtual"><scope>iceberg::TaskContext</scope><name>deletes</name></member>
+      <member refid="structiceberg_1_1TaskContext_1a89103c019e5c6c43039386b0d0e4c63c" prot="public" virt="non-virtual"><scope>iceberg::TaskContext</scope><name>drop_stats</name></member>
+      <member refid="structiceberg_1_1TaskContext_1acec86cb1ee5742274ad6710de9286177" prot="public" virt="non-virtual"><scope>iceberg::TaskContext</scope><name>residuals</name></member>
+      <member refid="structiceberg_1_1TaskContext_1ad1b623fbbdface9560e3541ed9389159" prot="public" virt="non-virtual"><scope>iceberg::TaskContext</scope><name>spec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

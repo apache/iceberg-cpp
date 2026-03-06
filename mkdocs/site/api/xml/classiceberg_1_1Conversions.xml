@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Conversions" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Conversions</compoundname>
+    <includes refid="conversions_8h" local="no">conversions.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Conversions_1a8de20a62eb750bfc83a55088613996e6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; uint8_t &gt; &gt; iceberg::Conversions::ToBytes</definition>
+        <argsstring>(const PrimitiveType &amp;type, const Literal::Value &amp;value)</argsstring>
+        <name>ToBytes</name>
+        <qualifiedname>iceberg::Conversions::ToBytes</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const Literal::Value &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Serializes a raw literal value into a byte vector according to its type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The primitive type of the value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The std::variant holding the raw literal value to serialize. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the serialized value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/conversions.h" line="41" column="17" bodyfile="iceberg/util/conversions.cc" bodystart="100" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Conversions_1a44ebc7b39cfcf1dba35c9d48b23a889a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; uint8_t &gt; &gt; iceberg::Conversions::ToBytes</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ToBytes</name>
+        <qualifiedname>iceberg::Conversions::ToBytes</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Serializes a complete <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> object into a byte vector. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>literal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> object to serialize. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the serialized value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/conversions.h" line="47" column="17" bodyfile="iceberg/util/conversions.cc" bodystart="127" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Conversions_1aa9bdacdadd2b5afb2fdb3ad1c878d70c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; Literal::Value &gt;</type>
+        <definition>Result&lt; Literal::Value &gt; iceberg::Conversions::FromBytes</definition>
+        <argsstring>(const PrimitiveType &amp;type, std::span&lt; const uint8_t &gt; data)</argsstring>
+        <name>FromBytes</name>
+        <qualifiedname>iceberg::Conversions::FromBytes</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Deserializes a span of bytes into a raw literal value based on the given type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The target primitive type to interpret the bytes as. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A std::span of bytes representing the serialized value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the deserialized value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/conversions.h" line="54" column="17" bodyfile="iceberg/util/conversions.cc" bodystart="142" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Conversions_1a2981ba4e136ce38f2932a80fde4ef08a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::Conversions::FromBytes</definition>
+        <argsstring>(std::shared_ptr&lt; PrimitiveType &gt; type, std::span&lt; const uint8_t &gt; data)</argsstring>
+        <name>FromBytes</name>
+        <qualifiedname>iceberg::Conversions::FromBytes</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Deserializes a span of bytes into a complete <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A shared pointer to the target primitive type. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A std::span of bytes representing the serialized value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the deserialized value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/conversions.h" line="61" column="17" bodyfile="iceberg/util/conversions.cc" bodystart="215" bodyend="223"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Conversion utilities for primitive types. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/conversions.h" line="35" column="1" bodyfile="iceberg/util/conversions.h" bodystart="35" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Conversions_1aa9bdacdadd2b5afb2fdb3ad1c878d70c" prot="public" virt="non-virtual"><scope>iceberg::Conversions</scope><name>FromBytes</name></member>
+      <member refid="classiceberg_1_1Conversions_1a2981ba4e136ce38f2932a80fde4ef08a" prot="public" virt="non-virtual"><scope>iceberg::Conversions</scope><name>FromBytes</name></member>
+      <member refid="classiceberg_1_1Conversions_1a8de20a62eb750bfc83a55088613996e6" prot="public" virt="non-virtual"><scope>iceberg::Conversions</scope><name>ToBytes</name></member>
+      <member refid="classiceberg_1_1Conversions_1a44ebc7b39cfcf1dba35c9d48b23a889a" prot="public" virt="non-virtual"><scope>iceberg::Conversions</scope><name>ToBytes</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
