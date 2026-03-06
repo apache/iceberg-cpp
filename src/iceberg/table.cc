@@ -82,6 +82,7 @@ Status Table::Refresh() {
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
   if (metadata_location_ != refreshed_table->metadata_file_location()) {
     metadata_ = std::move(refreshed_table->metadata_);
+    metadata_location_ = std::string(refreshed_table->metadata_file_location());
     io_ = std::move(refreshed_table->io_);
     metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
   }
