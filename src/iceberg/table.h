@@ -127,7 +127,15 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   ///
   /// Once a table scan builder is created, it can be refined to project columns and
   /// filter data.
-  virtual Result<std::unique_ptr<TableScanBuilder>> NewScan() const;
+  virtual Result<std::unique_ptr<DataTableScanBuilder>> NewScan() const;
+
+  /// \brief Create a new incremental append scan builder for this table
+  virtual Result<std::unique_ptr<IncrementalAppendScanBuilder>> NewIncrementalAppendScan()
+      const;
+
+  /// \brief Create a new incremental changelog scan builder for this table
+  virtual Result<std::unique_ptr<IncrementalChangelogScanBuilder>>
+  NewIncrementalChangelogScan() const;
 
   /// \brief Create a new Transaction to commit multiple table operations at once.
   virtual Result<std::shared_ptr<Transaction>> NewTransaction();
@@ -196,7 +204,7 @@ class ICEBERG_EXPORT StagedTable final : public Table {
 
   Status Refresh() override { return {}; }
 
-  Result<std::unique_ptr<TableScanBuilder>> NewScan() const override;
+  Result<std::unique_ptr<DataTableScanBuilder>> NewScan() const override;
 
  private:
   using Table::Table;

@@ -143,11 +143,22 @@ class ResidualEvaluator;
 class StrictMetricsEvaluator;
 
 /// \brief Scan.
+class ChangelogScanTask;
 class DataTableScan;
 class FileScanTask;
+template <typename ScanTaskType>
+class IncrementalScan;
+class IncrementalAppendScan;
+class IncrementalChangelogScan;
 class ScanTask;
 class TableScan;
+template <typename ScanType>
 class TableScanBuilder;
+
+// Type aliases for incremental scan builders
+using DataTableScanBuilder = TableScanBuilder<DataTableScan>;
+using IncrementalAppendScanBuilder = TableScanBuilder<IncrementalAppendScan>;
+using IncrementalChangelogScanBuilder = TableScanBuilder<IncrementalChangelogScan>;
 
 /// \brief Manifest.
 enum class ManifestContent;
