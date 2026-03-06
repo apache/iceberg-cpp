@@ -65,6 +65,7 @@ AuthManagerRegistry CreateDefaultRegistry() {
   return {
       {AuthProperties::kAuthTypeNone, MakeNoopAuthManager},
       {AuthProperties::kAuthTypeBasic, MakeBasicAuthManager},
+      {AuthProperties::kAuthTypeOAuth2, MakeOAuth2AuthManager},
   };
 }
 

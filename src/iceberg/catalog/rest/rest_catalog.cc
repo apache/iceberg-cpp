@@ -71,8 +71,19 @@ Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
                                         auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto config_path, paths.Config());
   HttpClient client(current_config.ExtractHeaders());
+
+  // Send the client's warehouse location to the service to keep in sync.
+  // This is needed for cases where the warehouse is configured client side, but may
+  // be used on the server side, like the Hive Metastore, where both client and service
+  // may have a warehouse location.
+  std::unordered_map<std::string, std::string> params;
+  std::string warehouse = current_config.Get(RestCatalogProperties::kWarehouse);
+  if (!warehouse.empty()) {
+    params[RestCatalogProperties::kWarehouse.key()] = std::move(warehouse);
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
-                          client.Get(config_path, /*params=*/{}, /*headers=*/{},
+                          client.Get(config_path, params, /*headers=*/{},
                                      *DefaultErrorHandler::Instance(), session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return CatalogConfigFromJson(json);

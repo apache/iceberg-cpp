@@ -40,5 +40,6 @@ namespace iceberg::rest::auth {
 
 class AuthManager;
 class AuthSession;
+struct OAuthTokenResponse;
 
 }  // namespace iceberg::rest::auth

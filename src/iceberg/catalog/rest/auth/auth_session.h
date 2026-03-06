@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/auth/auth_session.h
@@ -70,6 +71,27 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \return A new session that adds the given headers to requests.
   static std::shared_ptr<AuthSession> MakeDefault(
       std::unordered_map<std::string, std::string> headers);
+
+  /// \brief Create an OAuth2 session with automatic token refresh.
+  ///
+  /// This factory method creates a session that holds an access token and
+  /// optionally a refresh token. When Authenticate() is called and the token
+  /// is expired, it transparently refreshes the token before setting the
+  /// Authorization header.
+  ///
+  /// \param initial_token The initial token response from FetchToken().
+  /// \param token_endpoint Full URL of the OAuth2 token endpoint for refresh.
+  /// \param client_id OAuth2 client ID for refresh requests.
+  /// \param client_secret OAuth2 client secret for re-fetch if refresh fails.
+  /// \param scope OAuth2 scope for refresh requests.
+  /// \param client HTTP client for making refresh requests.
+  /// \return A new session that manages token lifecycle automatically.
+  static std::shared_ptr<AuthSession> MakeOAuth2(const OAuthTokenResponse& initial_token,
+                                                 const std::string& token_endpoint,
+                                                 const std::string& client_id,
+                                                 const std::string& client_secret,
+                                                 const std::string& scope,
+                                                 HttpClient& client);
 };
 
 }  // namespace iceberg::rest::auth

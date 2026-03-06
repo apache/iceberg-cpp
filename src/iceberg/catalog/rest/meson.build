@@ -19,6 +19,7 @@ iceberg_rest_sources = files(
     'auth/auth_manager.cc',
     'auth/auth_managers.cc',
     'auth/auth_session.cc',
+    'auth/oauth2_util.cc',
     'catalog_properties.cc',
     'endpoint.cc',
     'error_handlers.cc',
@@ -82,6 +83,7 @@ install_headers(
         'auth/auth_managers.h',
         'auth/auth_properties.h',
         'auth/auth_session.h',
+        'auth/oauth2_util.h',
     ],
     subdir: 'iceberg/catalog/rest/auth',
 )
