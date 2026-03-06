@@ -95,8 +95,25 @@ if(TARGET iceberg::arrow_static)
   endforeach()
 endif()
 
+if(TARGET iceberg::arrow_shared)
+  add_library(Arrow::arrow_shared ALIAS iceberg::arrow_shared)
+endif()
+
 if(TARGET iceberg::parquet_static)
   add_library(Parquet::parquet_static ALIAS iceberg::parquet_static)
+endif()
+
+if(TARGET iceberg::parquet_shared)
+  add_library(Parquet::parquet_shared ALIAS iceberg::parquet_shared)
+endif()
+
+if(TARGET iceberg::avrocpp_s)
+  add_library(avro-cpp::avrocpp_static ALIAS iceberg::avrocpp_s)
+  add_library(avro-cpp::avrocpp_s ALIAS iceberg::avrocpp_s)
+endif()
+
+if(TARGET iceberg::avrocpp)
+  add_library(avro-cpp::avrocpp ALIAS iceberg::avrocpp)
 endif()
 
 # Find required components

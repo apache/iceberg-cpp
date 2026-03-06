@@ -118,31 +118,28 @@ set(ICEBERG_SOURCES
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
+set(ICEBERG_SHARED_PRIVATE_BUILD_INTERFACE_LIBS)
 set(ICEBERG_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
-     nanoarrow::nanoarrow_static
+     nanoarrow::nanoarrow
      nlohmann_json::nlohmann_json
      roaring::roaring
      ZLIB::ZLIB)
 list(APPEND
-     ICEBERG_SHARED_BUILD_INTERFACE_LIBS
-     nanoarrow::nanoarrow_shared
+     ICEBERG_SHARED_PRIVATE_BUILD_INTERFACE_LIBS
+     nanoarrow::nanoarrow
      nlohmann_json::nlohmann_json
      roaring::roaring
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
-     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
-     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
-list(APPEND
-     ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_shared,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
-     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,nanoarrow::nanoarrow>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,nlohmann_json::nlohmann_json>"
+     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>"
+     ZLIB::ZLIB)
 
 add_iceberg_lib(iceberg
                 SOURCES
@@ -151,6 +148,8 @@ add_iceberg_lib(iceberg
                 ${ICEBERG_INCLUDES}
                 SHARED_LINK_LIBS
                 ${ICEBERG_SHARED_BUILD_INTERFACE_LIBS}
+                SHARED_PRIVATE_LINK_LIBS
+                ${ICEBERG_SHARED_PRIVATE_BUILD_INTERFACE_LIBS}
                 STATIC_LINK_LIBS
                 ${ICEBERG_STATIC_BUILD_INTERFACE_LIBS}
                 STATIC_INSTALL_INTERFACE_LIBS
@@ -159,6 +158,13 @@ add_iceberg_lib(iceberg
                 ${ICEBERG_SHARED_INSTALL_INTERFACE_LIBS}
                 OUTPUTS
                 ICEBERG_LIBRARIES)
+
+if(ICEBERG_BUILD_SHARED)
+  set_target_properties(iceberg_shared
+                        PROPERTIES C_VISIBILITY_PRESET hidden
+                                   CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN
+                                                                1)
+endif()
 
 iceberg_install_all_headers(iceberg)
 
@@ -191,44 +197,38 @@ if(ICEBERG_BUILD_BUNDLE)
   # Libraries to link with exported libiceberg_bundle.{so,a}.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)
   set(ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS)
+  set(ICEBERG_BUNDLE_SHARED_PRIVATE_BUILD_INTERFACE_LIBS)
   set(ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS)
   set(ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS)
 
   list(APPEND
        ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
-       "$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>"
-       "$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>"
-       "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>"
-  )
+       iceberg_static
+       Arrow::arrow_static
+       Parquet::parquet_static
+       avro-cpp::avrocpp_static)
   list(APPEND
        ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
-       "$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>"
-       "$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>"
-       "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>"
-  )
-
+       iceberg_shared
+       Arrow::arrow_shared
+       Parquet::parquet_shared
+       avro-cpp::avrocpp_shared)
+  list(APPEND ICEBERG_BUNDLE_SHARED_PRIVATE_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow)
   list(APPEND
        ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>>"
-       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>>"
-  )
-  list(APPEND
-       ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>>"
-       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
-  )
+       iceberg::iceberg_static
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,Arrow::arrow_static>"
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,Parquet::parquet_static>"
+       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,avro-cpp::avrocpp_static>")
+  list(APPEND ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS iceberg::iceberg_shared)
 
   add_iceberg_lib(iceberg_bundle
                   SOURCES
                   ${ICEBERG_BUNDLE_SOURCES}
                   SHARED_LINK_LIBS
                   ${ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS}
+                  SHARED_PRIVATE_LINK_LIBS
+                  ${ICEBERG_BUNDLE_SHARED_PRIVATE_BUILD_INTERFACE_LIBS}
                   STATIC_LINK_LIBS
                   ${ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS}
                   STATIC_INSTALL_INTERFACE_LIBS
