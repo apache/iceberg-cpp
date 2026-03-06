@@ -55,6 +55,10 @@ class ICEBERG_EXPORT PositionDeleteWriter : public FileWriter {
  public:
   ~PositionDeleteWriter() override;
 
+  /// \brief Create a new PositionDeleteWriter instance.
+  static Result<std::unique_ptr<PositionDeleteWriter>> Make(
+      const PositionDeleteWriterOptions& options);
+
   Status Write(ArrowArray* data) override;
   Status WriteDelete(std::string_view file_path, int64_t pos);
   Result<int64_t> Length() const override;
@@ -64,6 +68,8 @@ class ICEBERG_EXPORT PositionDeleteWriter : public FileWriter {
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
+
+  explicit PositionDeleteWriter(std::unique_ptr<Impl> impl);
 };
 
 }  // namespace iceberg
