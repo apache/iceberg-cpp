@@ -27,6 +27,7 @@
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -261,6 +262,140 @@ TEST_F(DataWriterTest, WriteMultipleBatches) {
   auto metadata_result = writer->Metadata();
   ASSERT_THAT(metadata_result, IsOk());
   const auto& data_file = metadata_result.value().data_files[0];
+  EXPECT_GT(data_file->file_size_in_bytes, 0);
+}
+
+class EqualityDeleteWriterTest : public DataWriterTest {
+ protected:
+  EqualityDeleteWriterOptions MakeDeleteOptions(
+      std::vector<int32_t> equality_field_ids = {1, 2},
+      std::optional<int32_t> sort_order_id = std::nullopt) {
+    return EqualityDeleteWriterOptions{
+        .path = "test_eq_deletes.parquet",
+        .schema = schema_,
+        .spec = partition_spec_,
+        .partition = PartitionValues{},
+        .format = FileFormatType::kParquet,
+        .io = file_io_,
+        .equality_field_ids = std::move(equality_field_ids),
+        .sort_order_id = sort_order_id,
+        .properties = {{"write.parquet.compression-codec", "uncompressed"}},
+    };
+  }
+
+  void WriteTestDataToEqualityWriter(EqualityDeleteWriter* writer) {
+    auto test_data = CreateTestData();
+    ArrowArray arrow_array;
+    ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+  }
+};
+
+TEST_F(EqualityDeleteWriterTest, WriteAndClose) {
+  auto writer_result = EqualityDeleteWriter::Make(MakeDeleteOptions());
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  WriteTestDataToEqualityWriter(writer.get());
+
+  auto length_result = writer->Length();
+  ASSERT_THAT(length_result, IsOk());
+  EXPECT_GT(length_result.value(), 0);
+
+  ASSERT_THAT(writer->Close(), IsOk());
+}
+
+TEST_F(EqualityDeleteWriterTest, MetadataAfterClose) {
+  auto writer_result = EqualityDeleteWriter::Make(MakeDeleteOptions());
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  WriteTestDataToEqualityWriter(writer.get());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  auto metadata_result = writer->Metadata();
+  ASSERT_THAT(metadata_result, IsOk());
+
+  const auto& write_result = metadata_result.value();
+  ASSERT_EQ(write_result.data_files.size(), 1);
+
+  const auto& data_file = write_result.data_files[0];
+  EXPECT_EQ(data_file->content, DataFile::Content::kEqualityDeletes);
+  EXPECT_EQ(data_file->file_path, "test_eq_deletes.parquet");
+  EXPECT_EQ(data_file->file_format, FileFormatType::kParquet);
+  EXPECT_GT(data_file->file_size_in_bytes, 0);
+
+  // Equality field ids must be set
+  ASSERT_EQ(data_file->equality_ids.size(), 2);
+  EXPECT_EQ(data_file->equality_ids[0], 1);
+  EXPECT_EQ(data_file->equality_ids[1], 2);
+}
+
+TEST_F(EqualityDeleteWriterTest, MetadataBeforeCloseReturnsError) {
+  auto writer_result = EqualityDeleteWriter::Make(MakeDeleteOptions());
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  auto metadata_result = writer->Metadata();
+  ASSERT_THAT(metadata_result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(metadata_result,
+              HasErrorMessage("Cannot get metadata before closing the writer"));
+}
+
+TEST_F(EqualityDeleteWriterTest, CloseIsIdempotent) {
+  auto writer_result = EqualityDeleteWriter::Make(MakeDeleteOptions());
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  WriteTestDataToEqualityWriter(writer.get());
+
+  ASSERT_THAT(writer->Close(), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+}
+
+TEST_F(EqualityDeleteWriterTest, SortOrderIdInMetadata) {
+  const int32_t sort_order_id = 7;
+  auto writer_result = EqualityDeleteWriter::Make(MakeDeleteOptions({1}, sort_order_id));
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  WriteTestDataToEqualityWriter(writer.get());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  auto metadata_result = writer->Metadata();
+  ASSERT_THAT(metadata_result, IsOk());
+  const auto& data_file = metadata_result.value().data_files[0];
+  ASSERT_TRUE(data_file->sort_order_id.has_value());
+  EXPECT_EQ(data_file->sort_order_id.value(), sort_order_id);
+}
+
+TEST_F(EqualityDeleteWriterTest, EqualityFieldIdsAccessor) {
+  std::vector<int32_t> field_ids = {1, 2, 3};
+  auto writer_result = EqualityDeleteWriter::Make(MakeDeleteOptions(field_ids));
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  auto ids = writer->equality_field_ids();
+  ASSERT_EQ(ids.size(), 3);
+  EXPECT_EQ(ids[0], 1);
+  EXPECT_EQ(ids[1], 2);
+  EXPECT_EQ(ids[2], 3);
+}
+
+TEST_F(EqualityDeleteWriterTest, WriteMultipleBatches) {
+  auto writer_result = EqualityDeleteWriter::Make(MakeDeleteOptions());
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  WriteTestDataToEqualityWriter(writer.get());
+  WriteTestDataToEqualityWriter(writer.get());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  auto metadata_result = writer->Metadata();
+  ASSERT_THAT(metadata_result, IsOk());
+  const auto& data_file = metadata_result.value().data_files[0];
+  EXPECT_EQ(data_file->content, DataFile::Content::kEqualityDeletes);
   EXPECT_GT(data_file->file_size_in_bytes, 0);
 }
 
