@@ -210,37 +210,14 @@ Result<ArrowArrayStream> FileScanTask::ToArrow(
   return MakeArrowArrayStream(std::move(reader));
 }
 
-// Template specialization for DataTableScan (default)
-template <>
-Result<std::unique_ptr<TableScanBuilder<DataTableScan>>>
-TableScanBuilder<DataTableScan>::Make(std::shared_ptr<TableMetadata> metadata,
-                                      std::shared_ptr<FileIO> io) {
+// Generic template implementation for Make
+template <typename ScanType>
+Result<std::unique_ptr<TableScanBuilder<ScanType>>> TableScanBuilder<ScanType>::Make(
+    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io) {
   ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<TableScanBuilder<DataTableScan>>(
-      new TableScanBuilder<DataTableScan>(std::move(metadata), std::move(io)));
-}
-
-// Template specialization for IncrementalAppendScan
-template <>
-Result<std::unique_ptr<TableScanBuilder<IncrementalAppendScan>>>
-TableScanBuilder<IncrementalAppendScan>::Make(std::shared_ptr<TableMetadata> metadata,
-                                              std::shared_ptr<FileIO> io) {
-  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<TableScanBuilder<IncrementalAppendScan>>(
-      new TableScanBuilder<IncrementalAppendScan>(std::move(metadata), std::move(io)));
-}
-
-// Template specialization for IncrementalChangelogScan
-template <>
-Result<std::unique_ptr<TableScanBuilder<IncrementalChangelogScan>>>
-TableScanBuilder<IncrementalChangelogScan>::Make(std::shared_ptr<TableMetadata> metadata,
-                                                 std::shared_ptr<FileIO> io) {
-  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<TableScanBuilder<IncrementalChangelogScan>>(
-      new TableScanBuilder<IncrementalChangelogScan>(std::move(metadata), std::move(io)));
+  return std::unique_ptr<TableScanBuilder<ScanType>>(
+      new TableScanBuilder<ScanType>(std::move(metadata), std::move(io)));
 }
 
 template <typename ScanType>
@@ -421,25 +398,13 @@ TableScanBuilder<ScanType>::ResolveSnapshotSchema() {
   return snapshot_schema_;
 }
 
-template <>
-Result<std::unique_ptr<DataTableScan>> TableScanBuilder<DataTableScan>::Build() {
+template <typename ScanType>
+Result<std::unique_ptr<ScanType>> TableScanBuilder<ScanType>::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
-  return DataTableScan::Make(metadata_, schema.get(), io_, std::move(context_));
-}
-
-template <>
-Result<std::unique_ptr<IncrementalAppendScan>>
-TableScanBuilder<IncrementalAppendScan>::Build() {
-  return NotImplemented("IncrementalAppendScanBuilder is not implemented");
-}
-
-template <>
-Result<std::unique_ptr<IncrementalChangelogScan>>
-TableScanBuilder<IncrementalChangelogScan>::Build() {
-  return NotImplemented("IncrementalChangelogScanBuilder is not implemented");
+  return ScanType::Make(metadata_, schema.get(), io_, std::move(context_));
 }
 
 // Explicit template instantiations
@@ -569,12 +534,6 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
     manifest_group->IgnoreResiduals();
   }
   return manifest_group->PlanFiles();
-}
-
-template <typename ScanTaskType>
-Result<std::vector<std::shared_ptr<ScanTaskType>>>
-IncrementalScan<ScanTaskType>::PlanFiles() const {
-  return NotImplemented("IncrementalScan::PlanFiles is not implemented");
 }
 
 // IncrementalAppendScan implementation

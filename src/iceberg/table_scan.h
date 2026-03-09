@@ -361,7 +361,9 @@ class ICEBERG_EXPORT IncrementalScan : public TableScan {
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles() const;
+  Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles() const {
+    return NotImplemented("IncrementalScan::PlanFiles is not implemented");
+  }
 
  protected:
   virtual Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles(
