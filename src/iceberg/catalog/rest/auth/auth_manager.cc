@@ -180,11 +180,12 @@ class OAuth2AuthManager : public AuthManager {
     const auto& credential = credential_it->second;
     auto colon_pos = credential.find(':');
     if (colon_pos == std::string::npos) {
-      return InvalidArgument(
-          "Invalid OAuth2 credential format: expected 'client_id:client_secret'");
+      // No colon: treat entire string as client_secret with empty client_id.
+      ctx.client_secret = credential;
+    } else {
+      ctx.client_id = credential.substr(0, colon_pos);
+      ctx.client_secret = credential.substr(colon_pos + 1);
     }
-    ctx.client_id = credential.substr(0, colon_pos);
-    ctx.client_secret = credential.substr(colon_pos + 1);
 
     auto uri_it = properties.find(AuthProperties::kOAuth2ServerUri);
     if (uri_it != properties.end() && !uri_it->second.empty()) {

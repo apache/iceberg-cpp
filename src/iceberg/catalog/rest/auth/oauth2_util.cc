@@ -63,6 +63,8 @@ Result<OAuthTokenResponse> OAuthTokenResponseFromJsonString(const std::string& j
                           GetJsonValue<std::string>(json, kAccessToken));
   ICEBERG_ASSIGN_OR_RAISE(response.token_type,
                           GetJsonValue<std::string>(json, kTokenType));
+  // TODO(lishuxu): When implementing auto-refresh, extract exp claim from JWT if
+  // expires_in is missing.
   ICEBERG_ASSIGN_OR_RAISE(response.expires_in,
                           GetJsonValueOrDefault<int64_t>(json, kExpiresIn, 0));
   ICEBERG_ASSIGN_OR_RAISE(response.refresh_token,
@@ -80,9 +82,11 @@ Result<OAuthTokenResponse> FetchToken(HttpClient& client,
                                       const std::string& scope, AuthSession& session) {
   std::unordered_map<std::string, std::string> form_data{
       {std::string(kGrantType), std::string(kClientCredentials)},
-      {std::string(kClientId), client_id},
       {std::string(kClientSecret), client_secret},
   };
+  if (!client_id.empty()) {
+    form_data.emplace(std::string(kClientId), client_id);
+  }
   if (!scope.empty()) {
     form_data.emplace(std::string(kScope), scope);
   }

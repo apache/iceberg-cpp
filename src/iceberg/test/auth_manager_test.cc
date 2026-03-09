@@ -251,10 +251,12 @@ TEST_F(AuthManagerTest, OAuth2MissingCredentials) {
 }
 
 // Verifies OAuth2 fails with invalid credential format
-TEST_F(AuthManagerTest, OAuth2InvalidCredentialFormat) {
+// Verifies credential without colon is treated as client_secret only
+TEST_F(AuthManagerTest, OAuth2CredentialWithoutColon) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kAuthType, "oauth2"},
-      {AuthProperties::kOAuth2Credential, "no-colon-separator"},
+      {AuthProperties::kOAuth2Credential, "secret-only"},
+      {AuthProperties::kOAuth2Token, "my-static-token"},
       {"uri", "http://localhost:8181"},
   };
 
@@ -262,8 +264,11 @@ TEST_F(AuthManagerTest, OAuth2InvalidCredentialFormat) {
   ASSERT_THAT(manager_result, IsOk());
 
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  EXPECT_THAT(session_result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(session_result, HasErrorMessage("client_id:client_secret"));
+  ASSERT_THAT(session_result, IsOk());
+
+  std::unordered_map<std::string, std::string> headers;
+  ASSERT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  EXPECT_EQ(headers["Authorization"], "Bearer my-static-token");
 }
 
 // Verifies OAuthTokenResponse JSON parsing
