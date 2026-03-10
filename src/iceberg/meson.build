@@ -80,6 +80,7 @@ iceberg_sources = files(
     'partition_field.cc',
     'partition_spec.cc',
     'partition_summary.cc',
+    'puffin/file_metadata.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
@@ -221,6 +222,7 @@ install_headers(
 subdir('catalog')
 subdir('expression')
 subdir('manifest')
+subdir('puffin')
 subdir('row')
 subdir('update')
 subdir('util')

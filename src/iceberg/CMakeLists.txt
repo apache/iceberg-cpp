@@ -62,6 +62,7 @@ set(ICEBERG_SOURCES
     partition_field.cc
     partition_spec.cc
     partition_summary.cc
+    puffin/file_metadata.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/partition_values.cc
@@ -166,6 +167,7 @@ add_subdirectory(catalog)
 add_subdirectory(data)
 add_subdirectory(expression)
 add_subdirectory(manifest)
+add_subdirectory(puffin)
 add_subdirectory(row)
 add_subdirectory(update)
 add_subdirectory(util)
