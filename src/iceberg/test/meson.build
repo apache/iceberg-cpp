@@ -49,6 +49,7 @@ iceberg_tests = {
         'sources': files(
             'location_provider_test.cc',
             'metrics_config_test.cc',
+            'metrics_reporter_test.cc',
             'snapshot_test.cc',
             'snapshot_util_test.cc',
             'table_metadata_builder_test.cc',

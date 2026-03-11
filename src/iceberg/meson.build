@@ -76,6 +76,7 @@ iceberg_sources = files(
     'manifest/v3_metadata.cc',
     'metadata_columns.cc',
     'metrics_config.cc',
+    'metrics_reporters.cc',
     'name_mapping.cc',
     'partition_field.cc',
     'partition_spec.cc',
