@@ -70,7 +70,7 @@ class PositionDeleteWriter::Impl {
     buffered_positions_.push_back(pos);
     referenced_paths_.emplace(file_path);
 
-    if (static_cast<int64_t>(buffered_paths_.size()) >= kFlushThreshold) {
+    if (static_cast<int64_t>(buffered_paths_.size()) >= options_.flush_threshold) {
       return FlushBuffer();
     }
     return {};
@@ -145,8 +145,6 @@ class PositionDeleteWriter::Impl {
   }
 
  private:
-  static constexpr int64_t kFlushThreshold = 1000;
-
   Impl(PositionDeleteWriterOptions options, std::shared_ptr<Schema> delete_schema,
        std::unique_ptr<Writer> writer)
       : options_(std::move(options)),

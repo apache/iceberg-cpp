@@ -268,7 +268,7 @@ TEST_F(DataWriterTest, WriteMultipleBatches) {
 
 class PositionDeleteWriterTest : public DataWriterTest {
  protected:
-  PositionDeleteWriterOptions MakeDeleteOptions() {
+  PositionDeleteWriterOptions MakeDeleteOptions(int64_t flush_threshold = 1000) {
     return PositionDeleteWriterOptions{
         .path = "test_deletes.parquet",
         .schema = schema_,
@@ -276,6 +276,7 @@ class PositionDeleteWriterTest : public DataWriterTest {
         .partition = PartitionValues{},
         .format = FileFormatType::kParquet,
         .io = file_io_,
+        .flush_threshold = flush_threshold,
         .properties = {{"write.parquet.compression-codec", "uncompressed"}},
     };
   }
@@ -391,6 +392,32 @@ TEST_F(PositionDeleteWriterTest, WriteBatchData) {
   auto metadata_result = writer->Metadata();
   ASSERT_THAT(metadata_result, IsOk());
 
+  const auto& data_file = metadata_result.value().data_files[0];
+  EXPECT_EQ(data_file->content, DataFile::Content::kPositionDeletes);
+  EXPECT_GT(data_file->file_size_in_bytes, 0);
+}
+
+TEST_F(PositionDeleteWriterTest, AutoFlushOnThreshold) {
+  // Use a small flush threshold to trigger automatic flush
+  const int64_t flush_threshold = 5;
+  auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions(flush_threshold));
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  // Write more deletes than the threshold to trigger auto-flush
+  for (int64_t i = 0; i < 12; ++i) {
+    ASSERT_THAT(writer->WriteDelete("data_file.parquet", i), IsOk());
+  }
+
+  // Length should be > 0 since auto-flush should have written data
+  auto length_result = writer->Length();
+  ASSERT_THAT(length_result, IsOk());
+  EXPECT_GT(length_result.value(), 0);
+
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  auto metadata_result = writer->Metadata();
+  ASSERT_THAT(metadata_result, IsOk());
   const auto& data_file = metadata_result.value().data_files[0];
   EXPECT_EQ(data_file->content, DataFile::Content::kPositionDeletes);
   EXPECT_GT(data_file->file_size_in_bytes, 0);
