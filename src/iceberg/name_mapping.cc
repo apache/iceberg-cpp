@@ -310,14 +310,14 @@ class CreateMappingVisitor {
  private:
   Status AddMappedField(std::vector<MappedField>& fields, const std::string& name,
                         const SchemaField& field) const {
-    auto visit_result =
-        VisitType(*field.type(), [this](const auto& type) { return this->Visit(type); });
-    ICEBERG_RETURN_UNEXPECTED(visit_result);
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto visit_result,
+        VisitType(*field.type(), [this](const auto& type) { return this->Visit(type); }));
 
     fields.emplace_back(MappedField{
         .names = {name},
         .field_id = field.field_id(),
-        .nested_mapping = std::move(visit_result.value()),
+        .nested_mapping = std::move(visit_result),
     });
     return {};
   }
@@ -332,22 +332,21 @@ class UpdateMappingVisitor {
       : updates_(updates), adds_(adds) {}
 
   Result<std::unique_ptr<MappedFields>> VisitMapping(const NameMapping& mapping) {
-    auto fields_result = VisitFields(mapping.AsMappedFields());
-    ICEBERG_RETURN_UNEXPECTED(fields_result);
-    return AddNewFields(std::move(*fields_result),
-                        -1 /* parent ID for top-level fields */);
+    ICEBERG_ASSIGN_OR_RAISE(auto fields_result, VisitFields(mapping.AsMappedFields()));
+    return AddNewFields(std::move(fields_result), kRootId);
   }
 
  private:
+  static constexpr int32_t kRootId = -1;
+
   Result<std::unique_ptr<MappedFields>> VisitFields(const MappedFields& fields) {
     // Recursively visit all fields
     std::vector<MappedField> field_results;
     field_results.reserve(fields.Size());
 
     for (const auto& field : fields.fields()) {
-      auto field_result = VisitField(field);
-      ICEBERG_RETURN_UNEXPECTED(field_result);
-      field_results.push_back(std::move(*field_result));
+      ICEBERG_ASSIGN_OR_RAISE(auto field_result, VisitField(field));
+      field_results.push_back(std::move(field_result));
     }
 
     // Build update assignments map for removing reassigned names
@@ -382,17 +381,13 @@ class UpdateMappingVisitor {
 
     std::unique_ptr<MappedFields> nested_mapping = nullptr;
     if (field.nested_mapping != nullptr) {
-      auto nested_result = VisitFields(*field.nested_mapping);
-      ICEBERG_RETURN_UNEXPECTED(nested_result);
-      nested_mapping = std::move(*nested_result);
+      ICEBERG_ASSIGN_OR_RAISE(nested_mapping, VisitFields(*field.nested_mapping));
     }
 
     // Add a new mapping for any new nested fields
     if (field.field_id.has_value()) {
-      auto nested_result =
-          AddNewFields(std::move(nested_mapping), field.field_id.value());
-      ICEBERG_RETURN_UNEXPECTED(nested_result);
-      nested_mapping = std::move(*nested_result);
+      ICEBERG_ASSIGN_OR_RAISE(nested_mapping, AddNewFields(std::move(nested_mapping),
+                                                           field.field_id.value()));
     }
 
     return MappedField{
@@ -420,15 +415,16 @@ class UpdateMappingVisitor {
     std::vector<MappedField> new_fields;
     CreateMappingVisitor create_visitor;
     for (const auto* field_to_add : fields_to_add) {
-      auto nested_result = VisitType(
-          *field_to_add->type(),
-          [&create_visitor](const auto& type) { return create_visitor.Visit(type); });
-      ICEBERG_RETURN_UNEXPECTED(nested_result);
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto nested_result,
+          VisitType(*field_to_add->type(), [&create_visitor](const auto& type) {
+            return create_visitor.Visit(type);
+          }));
 
       new_fields.emplace_back(MappedField{
           .names = {std::string(field_to_add->name())},
           .field_id = field_to_add->field_id(),
-          .nested_mapping = std::move(*nested_result),
+          .nested_mapping = std::move(nested_result),
       });
     }
 
@@ -480,12 +476,13 @@ class UpdateMappingVisitor {
 
 Result<std::unique_ptr<NameMapping>> CreateMapping(const Schema& schema) {
   CreateMappingVisitor visitor;
-  auto result = VisitType(
-      schema, [&visitor](const auto& type) -> Result<std::unique_ptr<MappedFields>> {
-        return visitor.Visit(type);
-      });
-  ICEBERG_RETURN_UNEXPECTED(result);
-  return NameMapping::Make(std::move(*result));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto result,
+      VisitType(schema,
+                [&visitor](const auto& type) -> Result<std::unique_ptr<MappedFields>> {
+                  return visitor.Visit(type);
+                }));
+  return NameMapping::Make(std::move(result));
 }
 
 Result<std::unique_ptr<NameMapping>> UpdateMapping(
@@ -493,9 +490,8 @@ Result<std::unique_ptr<NameMapping>> UpdateMapping(
     const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates,
     const std::multimap<int32_t, int32_t>& adds) {
   UpdateMappingVisitor visitor(updates, adds);
-  auto result = visitor.VisitMapping(mapping);
-  ICEBERG_RETURN_UNEXPECTED(result);
-  return NameMapping::Make(std::move(*result));
+  ICEBERG_ASSIGN_OR_RAISE(auto result, visitor.VisitMapping(mapping));
+  return NameMapping::Make(std::move(result));
 }
 
 }  // namespace iceberg
