@@ -33,69 +33,78 @@ constexpr uint32_t kUtf8MaxCodePoint = 0x10FFFF;
 constexpr uint32_t kUtf8MinSurrogate = 0xD800;
 constexpr uint32_t kUtf8MaxSurrogate = 0xDFFF;
 
-bool DecodeUtf8CodePoint(std::string_view source, uint32_t& code_point) {
-  const auto size = source.size();
+std::optional<uint32_t> DecodeUtf8CodePoint(std::string_view source) {
   if (source.empty()) {
-    return false;
+    return std::nullopt;
   }
 
   auto byte0 = static_cast<uint8_t>(source[0]);
+
+  // 1-byte sequence (ASCII): 0xxxxxxx
   if (byte0 < 0x80) {
-    code_point = byte0;
-    return true;
+    return byte0;
   }
 
+  const auto size = source.size();
+
+  // 2-byte sequence: 110xxxxx 10xxxxxx
   if ((byte0 & 0xE0) == 0xC0) {
-    if (source.size() < 2) {
-      return false;
+    if (size < 2) {
+      return std::nullopt;
     }
     auto byte1 = static_cast<uint8_t>(source[1]);
     if ((byte1 & 0xC0) != 0x80) {
-      return false;
+      return std::nullopt;
     }
-    code_point = ((byte0 & 0x1F) << 6) | (byte1 & 0x3F);
+    uint32_t code_point = ((byte0 & 0x1F) << 6) | (byte1 & 0x3F);
+    // Check for overlong encoding
     if (code_point < 0x80) {
-      return false;
+      return std::nullopt;
     }
-    return true;
+    return code_point;
   }
 
+  // 3-byte sequence: 1110xxxx 10xxxxxx 10xxxxxx
   if ((byte0 & 0xF0) == 0xE0) {
-    if (source.size() < 3) {
-      return false;
+    if (size < 3) {
+      return std::nullopt;
     }
     auto byte1 = static_cast<uint8_t>(source[1]);
     auto byte2 = static_cast<uint8_t>(source[2]);
     if ((byte1 & 0xC0) != 0x80 || (byte2 & 0xC0) != 0x80) {
-      return false;
+      return std::nullopt;
     }
-    code_point = ((byte0 & 0x0F) << 12) | ((byte1 & 0x3F) << 6) | (byte2 & 0x3F);
+    uint32_t code_point = ((byte0 & 0x0F) << 12) | ((byte1 & 0x3F) << 6) | (byte2 & 0x3F);
+    // Check for overlong encoding and surrogate pairs
     if (code_point < 0x800 ||
         (code_point >= kUtf8MinSurrogate && code_point <= kUtf8MaxSurrogate)) {
-      return false;
+      return std::nullopt;
     }
-    return true;
+    return code_point;
   }
 
+  // 4-byte sequence: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
   if ((byte0 & 0xF8) == 0xF0) {
-    if (source.size() < 4) {
-      return false;
+    if (size < 4) {
+      return std::nullopt;
     }
     auto byte1 = static_cast<uint8_t>(source[1]);
     auto byte2 = static_cast<uint8_t>(source[2]);
     auto byte3 = static_cast<uint8_t>(source[3]);
     if ((byte1 & 0xC0) != 0x80 || (byte2 & 0xC0) != 0x80 || (byte3 & 0xC0) != 0x80) {
-      return false;
+      return std::nullopt;
     }
-    code_point = ((byte0 & 0x07) << 18) | ((byte1 & 0x3F) << 12) | ((byte2 & 0x3F) << 6) |
-                 (byte3 & 0x3F);
+    uint32_t code_point = ((byte0 & 0x07) << 18) | ((byte1 & 0x3F) << 12) |
+                          ((byte2 & 0x3F) << 6) | (byte3 & 0x3F);
+    // Check for overlong encoding and valid Unicode range
     if (code_point < 0x10000 || code_point > kUtf8MaxCodePoint) {
-      return false;
+      return std::nullopt;
     }
-    return true;
+    return code_point;
   }
 
-  return false;
+  // Invalid UTF-8 start byte
+  return std::nullopt;
 }
 
 void AppendUtf8CodePoint(uint32_t code_point, std::string& target) {
@@ -117,9 +126,7 @@ void AppendUtf8CodePoint(uint32_t code_point, std::string& target) {
 }
 
 template <TypeId type_id>
-Literal TruncateLiteralImpl(const Literal& literal, int32_t width) {
-  std::unreachable();
-}
+Literal TruncateLiteralImpl(const Literal& literal, int32_t width) = delete;
 
 template <>
 Literal TruncateLiteralImpl<TypeId::kInt>(const Literal& literal, int32_t width) {
@@ -160,9 +167,7 @@ Literal TruncateLiteralImpl<TypeId::kBinary>(const Literal& literal, int32_t wid
 }
 
 template <TypeId type_id>
-Result<Literal> TruncateLiteralMaxImpl(const Literal& literal, int32_t width) {
-  std::unreachable();
-}
+Result<Literal> TruncateLiteralMaxImpl(const Literal& literal, int32_t width) = delete;
 
 template <>
 Result<Literal> TruncateLiteralMaxImpl<TypeId::kString>(const Literal& literal,
@@ -170,9 +175,6 @@ Result<Literal> TruncateLiteralMaxImpl<TypeId::kString>(const Literal& literal,
   const auto& str = std::get<std::string>(literal.value());
   ICEBERG_ASSIGN_OR_RAISE(std::string truncated,
                           TruncateUtils::TruncateUTF8Max(str, width));
-  if (truncated == str) {
-    return literal;
-  }
   return Literal::String(std::move(truncated));
 }
 
@@ -212,12 +214,12 @@ Result<std::string> TruncateUtils::TruncateUTF8Max(const std::string& source, si
       --cp_start;
     } while (cp_start > 0 && (static_cast<uint8_t>(truncated[cp_start]) & 0xC0) == 0x80);
 
-    uint32_t code_point = 0;
-    if (!DecodeUtf8CodePoint(
-            std::string_view(truncated.data() + cp_start, last_cp_start - cp_start),
-            code_point)) {
+    auto code_point_opt = DecodeUtf8CodePoint(
+        std::string_view(truncated.data() + cp_start, last_cp_start - cp_start));
+    if (!code_point_opt.has_value()) {
       return InvalidArgument("Invalid UTF-8 in string literal");
     }
+    uint32_t code_point = code_point_opt.value();
 
     // Try to increment the code point
     if (code_point < kUtf8MaxCodePoint) {
