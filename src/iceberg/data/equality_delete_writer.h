@@ -50,6 +50,7 @@ struct ICEBERG_EXPORT EqualityDeleteWriterOptions {
   std::vector<int32_t> equality_field_ids;
   std::optional<int32_t> sort_order_id;
   std::unordered_map<std::string, std::string> properties;
+  // TODO: add key_metadata for encryption
 };
 
 /// \brief Writer for Iceberg equality delete files.

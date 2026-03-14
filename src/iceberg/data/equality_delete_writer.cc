@@ -23,6 +23,7 @@
 
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -101,6 +102,8 @@ class EqualityDeleteWriter::Impl {
         .split_offsets = std::move(split_offsets),
         .equality_ids = options_.equality_field_ids,
         .sort_order_id = options_.sort_order_id,
+        .partition_spec_id =
+            options_.spec ? std::make_optional(options_.spec->spec_id()) : std::nullopt,
     });
 
     FileWriter::WriteResult result;
