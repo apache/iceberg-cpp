@@ -22,13 +22,13 @@
 namespace iceberg::internal {
 
 ArrowArrayGuard::~ArrowArrayGuard() {
-  if (array_ != nullptr) {
+  if (array_ != nullptr && array_->release != nullptr) {
     ArrowArrayRelease(array_);
   }
 }
 
 ArrowSchemaGuard::~ArrowSchemaGuard() {
-  if (schema_ != nullptr) {
+  if (schema_ != nullptr && schema_->release != nullptr) {
     ArrowSchemaRelease(schema_);
   }
 }

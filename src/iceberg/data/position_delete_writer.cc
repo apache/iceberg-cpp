@@ -26,6 +26,7 @@
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow/nanoarrow_status_internal.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
@@ -38,7 +39,8 @@ namespace iceberg {
 class PositionDeleteWriter::Impl {
  public:
   static Result<std::unique_ptr<Impl>> Make(PositionDeleteWriterOptions options) {
-    // Build the position delete schema with file_path and pos columns
+    // TODO: Support writing row data if options.row_schema is provided.
+    // The V2 spec allows position deletes to optionally include the deleted row.
     std::vector<SchemaField> fields;
     fields.push_back(MetadataColumns::kDeleteFilePath);
     fields.push_back(MetadataColumns::kDeleteFilePos);
@@ -61,6 +63,8 @@ class PositionDeleteWriter::Impl {
 
   Status Write(ArrowArray* data) {
     ICEBERG_DCHECK(writer_, "Writer not initialized");
+    // TODO: Extract file paths from ArrowArray to update referenced_paths_ so that
+    // Metadata() can correctly populate referenced_data_file for batch writes.
     return writer_->Write(data);
   }
 
@@ -100,6 +104,26 @@ class PositionDeleteWriter::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto metrics, writer_->metrics());
     ICEBERG_ASSIGN_OR_RAISE(auto length, writer_->length());
     auto split_offsets = writer_->split_offsets();
+
+    // Filter out metrics for delete metadata columns (file_path, pos) to avoid
+    // bloating the manifest, matching Java's PositionDeleteWriter behavior.
+    // Always remove field counts; also remove bounds when referencing multiple files.
+    const auto path_id = MetadataColumns::kDeleteFilePathColumnId;
+    const auto pos_id = MetadataColumns::kDeleteFilePosColumnId;
+
+    metrics.value_counts.erase(path_id);
+    metrics.value_counts.erase(pos_id);
+    metrics.null_value_counts.erase(path_id);
+    metrics.null_value_counts.erase(pos_id);
+    metrics.nan_value_counts.erase(path_id);
+    metrics.nan_value_counts.erase(pos_id);
+
+    if (referenced_paths_.size() > 1) {
+      metrics.lower_bounds.erase(path_id);
+      metrics.lower_bounds.erase(pos_id);
+      metrics.upper_bounds.erase(path_id);
+      metrics.upper_bounds.erase(pos_id);
+    }
 
     // Serialize literal bounds to binary format
     std::map<int32_t, std::vector<uint8_t>> lower_bounds_map;
@@ -154,11 +178,13 @@ class PositionDeleteWriter::Impl {
   Status FlushBuffer() {
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*delete_schema_, &arrow_schema));
+    internal::ArrowSchemaGuard schema_guard(&arrow_schema);
 
     ArrowArray array;
     ArrowError error;
     ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
         ArrowArrayInitFromSchema(&array, &arrow_schema, &error), error);
+    internal::ArrowArrayGuard array_guard(&array);
     ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayStartAppending(&array));
 
     for (size_t i = 0; i < buffered_paths_.size(); ++i) {
@@ -178,7 +204,6 @@ class PositionDeleteWriter::Impl {
 
     buffered_paths_.clear();
     buffered_positions_.clear();
-    arrow_schema.release(&arrow_schema);
     return {};
   }
 
