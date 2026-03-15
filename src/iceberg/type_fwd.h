@@ -142,20 +142,22 @@ class ManifestEvaluator;
 class ResidualEvaluator;
 class StrictMetricsEvaluator;
 
-/// \brief Scan.
+/// \brief Scan task.
 class ChangelogScanTask;
-class DataTableScan;
 class FileScanTask;
+class ScanTask;
+
+/// \brief Table scan
+class DataTableScan;
 template <typename ScanTaskType>
 class IncrementalScan;
 class IncrementalAppendScan;
 class IncrementalChangelogScan;
-class ScanTask;
 class TableScan;
+
+/// \brief Scan builder.
 template <typename ScanType>
 class TableScanBuilder;
-
-// Type aliases for incremental scan builders
 using DataTableScanBuilder = TableScanBuilder<DataTableScan>;
 using IncrementalAppendScanBuilder = TableScanBuilder<IncrementalAppendScan>;
 using IncrementalChangelogScanBuilder = TableScanBuilder<IncrementalChangelogScan>;

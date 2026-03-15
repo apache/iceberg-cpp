@@ -30,6 +30,7 @@
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
@@ -154,6 +155,8 @@ class PositionDeleteWriter::Impl {
         .split_offsets = std::move(split_offsets),
         .sort_order_id = std::nullopt,
         .referenced_data_file = std::move(referenced_data_file),
+        .partition_spec_id =
+            options_.spec ? std::make_optional(options_.spec->spec_id()) : std::nullopt,
     });
 
     FileWriter::WriteResult result;

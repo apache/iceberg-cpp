@@ -23,6 +23,7 @@
 
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -43,18 +44,11 @@ class DataWriter::Impl {
     return std::unique_ptr<Impl>(new Impl(std::move(options), std::move(writer)));
   }
 
-  Status Write(ArrowArray* data) {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
-    return writer_->Write(data);
-  }
+  Status Write(ArrowArray* data) { return writer_->Write(data); }
 
-  Result<int64_t> Length() const {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
-    return writer_->length();
-  }
+  Result<int64_t> Length() const { return writer_->length(); }
 
   Status Close() {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
     if (closed_) {
       // Idempotent: no-op if already closed
       return {};
@@ -100,6 +94,8 @@ class DataWriter::Impl {
         .upper_bounds = std::move(upper_bounds_map),
         .split_offsets = std::move(split_offsets),
         .sort_order_id = options_.sort_order_id,
+        .partition_spec_id =
+            options_.spec ? std::make_optional(options_.spec->spec_id()) : std::nullopt,
     });
 
     FileWriter::WriteResult result;

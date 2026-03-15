@@ -44,20 +44,12 @@ class EqualityDeleteWriter::Impl {
     return std::unique_ptr<Impl>(new Impl(std::move(options), std::move(writer)));
   }
 
-  Status Write(ArrowArray* data) {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
-    return writer_->Write(data);
-  }
+  Status Write(ArrowArray* data) { return writer_->Write(data); }
 
-  Result<int64_t> Length() const {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
-    return writer_->length();
-  }
+  Result<int64_t> Length() const { return writer_->length(); }
 
   Status Close() {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
     if (closed_) {
-      // Idempotent: no-op if already closed
       return {};
     }
     ICEBERG_RETURN_UNEXPECTED(writer_->Close());
@@ -84,6 +76,7 @@ class EqualityDeleteWriter::Impl {
       upper_bounds_map[col_id] = std::move(serialized);
     }
 
+    // TODO(anyone): add encryption key metadata for encrypted delete files
     auto data_file = std::make_shared<DataFile>(DataFile{
         .content = DataFile::Content::kEqualityDeletes,
         .file_path = options_.path,
