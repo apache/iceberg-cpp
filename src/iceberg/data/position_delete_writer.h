@@ -46,8 +46,7 @@ struct ICEBERG_EXPORT PositionDeleteWriterOptions {
   PartitionValues partition;
   FileFormatType format = FileFormatType::kParquet;
   std::shared_ptr<FileIO> io;
-  std::shared_ptr<Schema> row_schema;  // Optional row data schema
-  int64_t flush_threshold = 1000;      // Number of buffered deletes before auto-flush
+  int64_t flush_threshold = 1000;  // Number of buffered deletes before auto-flush
   std::unordered_map<std::string, std::string> properties;
 };
 

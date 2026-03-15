@@ -39,13 +39,10 @@ namespace iceberg {
 class PositionDeleteWriter::Impl {
  public:
   static Result<std::unique_ptr<Impl>> Make(PositionDeleteWriterOptions options) {
-    // TODO: Support writing row data if options.row_schema is provided.
-    // The V2 spec allows position deletes to optionally include the deleted row.
-    std::vector<SchemaField> fields;
-    fields.push_back(MetadataColumns::kDeleteFilePath);
-    fields.push_back(MetadataColumns::kDeleteFilePos);
-
-    auto delete_schema = std::make_shared<Schema>(std::move(fields));
+    auto delete_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+        MetadataColumns::kDeleteFilePath,
+        MetadataColumns::kDeleteFilePos,
+    });
 
     WriterOptions writer_options{
         .path = options.path,
@@ -62,31 +59,27 @@ class PositionDeleteWriter::Impl {
   }
 
   Status Write(ArrowArray* data) {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
-    // TODO: Extract file paths from ArrowArray to update referenced_paths_ so that
-    // Metadata() can correctly populate referenced_data_file for batch writes.
+    ICEBERG_PRECHECK(buffered_paths_.empty(),
+                     "Cannot write batch data when there are buffered deletes.");
+    // TODO(anyone): Extract file paths from ArrowArray to update referenced_paths_.
     return writer_->Write(data);
   }
 
   Status WriteDelete(std::string_view file_path, int64_t pos) {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
+    // TODO(anyone): check if the sort order of file_path and pos observes the spec.
     buffered_paths_.emplace_back(file_path);
     buffered_positions_.push_back(pos);
     referenced_paths_.emplace(file_path);
 
-    if (static_cast<int64_t>(buffered_paths_.size()) >= options_.flush_threshold) {
+    if (buffered_paths_.size() >= options_.flush_threshold) {
       return FlushBuffer();
     }
     return {};
   }
 
-  Result<int64_t> Length() const {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
-    return writer_->length();
-  }
+  Result<int64_t> Length() const { return writer_->length(); }
 
   Status Close() {
-    ICEBERG_DCHECK(writer_, "Writer not initialized");
     if (closed_) {
       return {};
     }
