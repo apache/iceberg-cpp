@@ -108,6 +108,7 @@ set(ICEBERG_SOURCES
     util/murmurhash3_internal.cc
     util/property_util.cc
     util/snapshot_util.cc
+    util/string_util.cc
     util/temporal_util.cc
     util/timepoint.cc
     util/transform_util.cc

@@ -187,7 +187,7 @@ Result<int64_t> TransformUtil::ParseTime(std::string_view str) {
 
   // check that hours, minutes, seconds are in valid ranges
   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 ||
-      seconds > 60) [[unlikely]] {
+      seconds > 59) [[unlikely]] {
     return InvalidArgument("Invalid time string: '{}'", str);
   }
 

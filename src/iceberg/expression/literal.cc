@@ -220,17 +220,24 @@ Result<Literal> LiteralCaster::CastFromString(
       return Literal::Binary(std::move(bytes));
     }
     case TypeId::kFixed: {
+      const auto& fixed_type = internal::checked_cast<const FixedType&>(*target_type);
+      if (str_val.size() != static_cast<size_t>(fixed_type.length()) * 2) {
+        return InvalidArgument("Cannot cast string to {}: expected {} hex chars, got {}",
+                               target_type->ToString(), fixed_type.length() * 2,
+                               str_val.size());
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto bytes, StringUtils::HexStringToBytes(str_val));
       return Literal::Fixed(std::move(bytes));
     }
     case TypeId::kDecimal: {
       const auto& dec_type = internal::checked_cast<const DecimalType&>(*target_type);
+      int32_t parsed_precision = 0;
       int32_t parsed_scale = 0;
-      ICEBERG_ASSIGN_OR_RAISE(auto dec,
-                              Decimal::FromString(str_val, nullptr, &parsed_scale));
-      if (parsed_scale != dec_type.scale()) {
-        return InvalidArgument("Cannot cast {} as a {} value: the scale doesn't match",
-                               str_val, target_type->ToString());
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto dec, Decimal::FromString(str_val, &parsed_precision, &parsed_scale));
+      if (parsed_precision > dec_type.precision() || parsed_scale != dec_type.scale()) {
+        return InvalidArgument("Cannot cast {} as a {} value", str_val,
+                               target_type->ToString());
       }
       return Literal::Decimal(dec.value(), dec_type.precision(), dec_type.scale());
     }

@@ -109,7 +109,9 @@ class ICEBERG_EXPORT TransformUtil {
 
   /// \brief Parses a time string into microseconds from midnight.
   ///
-  /// Accepts: "HH:mm", "HH:mm:ss", "HH:mm:ss.SSS", "HH:mm:ss.SSSSSS".
+  /// Accepts ISO-8601 local time formats: "HH:mm", "HH:mm:ss", or
+  /// "HH:mm:ss.f" where the fractional part can be 1-9 digits.
+  /// Digits beyond 6 (microsecond precision) are truncated.
   ///
   /// \param str The time string to parse.
   /// \return The number of microseconds from midnight, or an error.
@@ -117,7 +119,9 @@ class ICEBERG_EXPORT TransformUtil {
 
   /// \brief Parses a timestamp string into microseconds since epoch.
   ///
-  /// Accepts: "yyyy-MM-ddTHH:mm:ss", with optional fractional seconds (.SSS or .SSSSSS).
+  /// Accepts ISO-8601 local date-time formats: "yyyy-MM-ddTHH:mm",
+  /// "yyyy-MM-ddTHH:mm:ss", or "yyyy-MM-ddTHH:mm:ss.f" where the
+  /// fractional part can be 1-9 digits (truncated to microseconds).
   ///
   /// \param str The timestamp string to parse.
   /// \return The number of microseconds since epoch, or an error.
@@ -127,6 +131,7 @@ class ICEBERG_EXPORT TransformUtil {
   ///
   /// Accepts the same formats as ParseTimestamp, with a timezone suffix:
   /// "Z", "+HH:mm", or "-HH:mm". Non-UTC offsets are converted to UTC.
+  /// The seconds and fractional parts are optional (e.g. "yyyy-MM-ddTHH:mm+00:00").
   ///
   /// \param str The timestamp string to parse.
   /// \return The number of microseconds since epoch (UTC), or an error.

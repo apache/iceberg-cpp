@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -315,11 +316,18 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
       }
       return Literal::Boolean(json.get<bool>());
 
-    case TypeId::kInt:
+    case TypeId::kInt: {
       if (!json.is_number_integer()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as an int value", SafeDumpJson(json));
       }
-      return Literal::Int(json.get<int32_t>());
+      auto val = json.get<int64_t>();
+      if (val < std::numeric_limits<int32_t>::min() ||
+          val > std::numeric_limits<int32_t>::max()) [[unlikely]] {
+        return JsonParseError("Cannot parse {} as an int value: out of range",
+                              SafeDumpJson(json));
+      }
+      return Literal::Int(static_cast<int32_t>(val));
+    }
 
     case TypeId::kLong:
       if (!json.is_number_integer()) [[unlikely]] {
@@ -328,13 +336,13 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
       return Literal::Long(json.get<int64_t>());
 
     case TypeId::kFloat:
-      if (!json.is_number()) [[unlikely]] {
+      if (!json.is_number_float()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as a float value", SafeDumpJson(json));
       }
       return Literal::Float(json.get<float>());
 
     case TypeId::kDouble:
-      if (!json.is_number()) [[unlikely]] {
+      if (!json.is_number_float()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as a double value", SafeDumpJson(json));
       }
       return Literal::Double(json.get<double>());
@@ -418,12 +426,15 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
         return JsonParseError("Cannot parse {} as a decimal value", SafeDumpJson(json));
       }
       const auto& dec_type = internal::checked_cast<const DecimalType&>(*type);
+      int32_t parsed_precision = 0;
       int32_t parsed_scale = 0;
       ICEBERG_ASSIGN_OR_RAISE(
-          auto dec, Decimal::FromString(json.get<std::string>(), nullptr, &parsed_scale));
-      if (parsed_scale != dec_type.scale()) [[unlikely]] {
-        return JsonParseError("Cannot parse {} as a {} value: the scale doesn't match",
-                              SafeDumpJson(json), type->ToString());
+          auto dec,
+          Decimal::FromString(json.get<std::string>(), &parsed_precision, &parsed_scale));
+      if (parsed_precision > dec_type.precision() || parsed_scale != dec_type.scale())
+          [[unlikely]] {
+        return JsonParseError("Cannot parse {} as a {} value", SafeDumpJson(json),
+                              type->ToString());
       }
       return Literal::Decimal(dec.value(), dec_type.precision(), dec_type.scale());
     }

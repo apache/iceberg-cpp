@@ -32,7 +32,6 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -80,6 +79,10 @@ class ICEBERG_EXPORT StringUtils {
     T value = 0;
     auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
     if (ec == std::errc()) [[likely]] {
+      if (ptr != str.data() + str.size()) {
+        return InvalidArgument("Failed to parse {} from string '{}': trailing characters",
+                               typeid(T).name(), str);
+      }
       return value;
     }
     if (ec == std::errc::invalid_argument) {
@@ -95,25 +98,7 @@ class ICEBERG_EXPORT StringUtils {
 
   /// \brief Decode a hex string (upper or lower case) into bytes.
   /// Returns an error if the string has odd length or contains invalid hex characters.
-  static Result<std::vector<uint8_t>> HexStringToBytes(std::string_view hex) {
-    if (hex.size() % 2 != 0) [[unlikely]] {
-      return InvalidArgument("Hex string must have even length, got: {}", hex.size());
-    }
-    std::vector<uint8_t> bytes;
-    bytes.reserve(hex.size() / 2);
-    auto nibble = [](char c) -> Result<uint8_t> {
-      if (c >= '0' && c <= '9') return static_cast<uint8_t>(c - '0');
-      if (c >= 'a' && c <= 'f') return static_cast<uint8_t>(c - 'a' + 10);
-      if (c >= 'A' && c <= 'F') return static_cast<uint8_t>(c - 'A' + 10);
-      return InvalidArgument("Invalid hex character: '{}'", c);
-    };
-    for (size_t i = 0; i < hex.size(); i += 2) {
-      ICEBERG_ASSIGN_OR_RAISE(auto hi, nibble(hex[i]));
-      ICEBERG_ASSIGN_OR_RAISE(auto lo, nibble(hex[i + 1]));
-      bytes.push_back(static_cast<uint8_t>((hi << 4) | lo));
-    }
-    return bytes;
-  }
+  static Result<std::vector<uint8_t>> HexStringToBytes(std::string_view hex);
 
   template <typename T>
     requires std::is_floating_point_v<T> && (!FromChars<T>)
