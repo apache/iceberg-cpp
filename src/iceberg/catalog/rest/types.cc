@@ -19,6 +19,8 @@
 
 #include "iceberg/catalog/rest/types.h"
 
+#include <algorithm>
+
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
@@ -114,6 +116,23 @@ bool CommitTableResponse::operator==(const CommitTableResponse& other) const {
     return false;
   }
   return true;
+}
+
+Status OAuthTokenResponse::Validate() const {
+  if (access_token.empty()) {
+    return ValidationFailed("OAuth2 token response missing required 'access_token'");
+  }
+  if (token_type.empty()) {
+    return ValidationFailed("OAuth2 token response missing required 'token_type'");
+  }
+  // token_type must be "bearer" or "N_A" (case-insensitive).
+  std::string lower_type = token_type;
+  std::ranges::transform(lower_type, lower_type.begin(), ::tolower);
+  if (lower_type != "bearer" && lower_type != "n_a") {
+    return ValidationFailed(R"(Unsupported token type: {} (must be "bearer" or "N_A"))",
+                            token_type);
+  }
+  return {};
 }
 
 }  // namespace iceberg::rest

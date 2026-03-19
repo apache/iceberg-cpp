@@ -25,7 +25,6 @@
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
-#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/transform_util.h"
 
@@ -84,7 +83,8 @@ class BasicAuthManager : public AuthManager {
                      "Missing required property '{}'", AuthProperties::kBasicPassword);
     std::string credential = username_it->second + ":" + password_it->second;
     return AuthSession::MakeDefault(
-        {{"Authorization", "Basic " + TransformUtil::Base64Encode(credential)}});
+        {{std::string(kAuthorizationHeader),
+          "Basic " + TransformUtil::Base64Encode(credential)}});
   }
 };
 
@@ -95,29 +95,25 @@ Result<std::unique_ptr<AuthManager>> MakeBasicAuthManager(
 }
 
 /// \brief OAuth2 authentication manager.
-///
-/// Two-phase init: InitSession fetches and caches a token for the config request;
-/// CatalogSession reuses the cached token and enables refresh.
-class OAuth2AuthManager : public AuthManager {
+class OAuth2Manager : public AuthManager {
  public:
   Result<std::shared_ptr<AuthSession>> InitSession(
       HttpClient& init_client,
       const std::unordered_map<std::string, std::string>& properties) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto config, AuthProperties::FromProperties(properties));
+    // No token refresh during init (short-lived session).
+    config.Set(AuthProperties::kKeepRefreshed, false);
+
     // Credential takes priority: fetch a fresh token for the config request.
-    auto credential_it = properties.find(AuthProperties::kOAuth2Credential);
-    if (credential_it != properties.end() && !credential_it->second.empty()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto ctx, ParseOAuth2Context(properties));
-      auto noop_session = AuthSession::MakeDefault({});
+    if (!config.credential().empty()) {
+      auto init_session = AuthSession::MakeDefault(AuthHeaders(config.token()));
       ICEBERG_ASSIGN_OR_RAISE(init_token_response_,
-                              FetchToken(init_client, ctx.token_endpoint, ctx.client_id,
-                                         ctx.client_secret, ctx.scope, *noop_session));
-      return AuthSession::MakeDefault(
-          {{"Authorization", "Bearer " + init_token_response_->access_token}});
+                              FetchToken(init_client, *init_session, config));
+      return AuthSession::MakeDefault(AuthHeaders(init_token_response_->access_token));
     }
 
-    auto token_it = properties.find(AuthProperties::kOAuth2Token);
-    if (token_it != properties.end() && !token_it->second.empty()) {
-      return AuthSession::MakeDefault({{"Authorization", "Bearer " + token_it->second}});
+    if (!config.token().empty()) {
+      return AuthSession::MakeDefault(AuthHeaders(config.token()));
     }
 
     return AuthSession::MakeDefault({});
@@ -126,104 +122,48 @@ class OAuth2AuthManager : public AuthManager {
   Result<std::shared_ptr<AuthSession>> CatalogSession(
       HttpClient& client,
       const std::unordered_map<std::string, std::string>& properties) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto config, AuthProperties::FromProperties(properties));
+
+    // Reuse token from init phase.
     if (init_token_response_.has_value()) {
       auto token_response = std::move(*init_token_response_);
       init_token_response_.reset();
-      ICEBERG_ASSIGN_OR_RAISE(auto ctx, ParseOAuth2Context(properties));
-      return AuthSession::MakeOAuth2(token_response, ctx.token_endpoint, ctx.client_id,
-                                     ctx.client_secret, ctx.scope, client);
+      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
+                                     config.client_id(), config.client_secret(),
+                                     config.scope(), client);
     }
 
     // If token is provided, use it directly.
-    auto token_it = properties.find(AuthProperties::kOAuth2Token);
-    if (token_it != properties.end() && !token_it->second.empty()) {
-      return AuthSession::MakeDefault({{"Authorization", "Bearer " + token_it->second}});
+    if (!config.token().empty()) {
+      return AuthSession::MakeDefault(AuthHeaders(config.token()));
     }
 
     // Fetch a new token using client_credentials grant.
-    auto credential_it = properties.find(AuthProperties::kOAuth2Credential);
-    if (credential_it != properties.end() && !credential_it->second.empty()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto ctx, ParseOAuth2Context(properties));
-      auto noop_session = AuthSession::MakeDefault({});
+    if (!config.credential().empty()) {
+      auto base_session = AuthSession::MakeDefault(AuthHeaders(config.token()));
       OAuthTokenResponse token_response;
-      ICEBERG_ASSIGN_OR_RAISE(token_response,
-                              FetchToken(client, ctx.token_endpoint, ctx.client_id,
-                                         ctx.client_secret, ctx.scope, *noop_session));
-      return AuthSession::MakeOAuth2(token_response, ctx.token_endpoint, ctx.client_id,
-                                     ctx.client_secret, ctx.scope, client);
+      ICEBERG_ASSIGN_OR_RAISE(token_response, FetchToken(client, *base_session, config));
+      // TODO(lishuxu): should we directly pass config to the MakeOAuth2 call?
+      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
+                                     config.client_id(), config.client_secret(),
+                                     config.scope(), client);
     }
 
     return AuthSession::MakeDefault({});
   }
 
-  // TODO(lishuxu): Override TableSession() to support token exchange (RFC 8693).
-  // TODO(lishuxu): Override ContextualSession() to support per-context token exchange.
+  // TODO(lishuxu): Override TableSession() for token exchange (RFC 8693).
+  // TODO(lishuxu): Override ContextualSession() for per-context exchange.
 
  private:
-  struct OAuth2Context {
-    std::string client_id;
-    std::string client_secret;
-    std::string token_endpoint;
-    std::string scope;
-  };
-
-  /// \brief Parse credential, token endpoint, and scope from properties.
-  static Result<OAuth2Context> ParseOAuth2Context(
-      const std::unordered_map<std::string, std::string>& properties) {
-    OAuth2Context ctx;
-
-    auto credential_it = properties.find(AuthProperties::kOAuth2Credential);
-    if (credential_it == properties.end() || credential_it->second.empty()) {
-      return InvalidArgument("OAuth2 authentication requires '{}' property",
-                             AuthProperties::kOAuth2Credential);
-    }
-    const auto& credential = credential_it->second;
-    auto colon_pos = credential.find(':');
-    if (colon_pos == std::string::npos) {
-      // No colon: treat entire string as client_secret with empty client_id.
-      ctx.client_secret = credential;
-    } else {
-      ctx.client_id = credential.substr(0, colon_pos);
-      ctx.client_secret = credential.substr(colon_pos + 1);
-    }
-
-    auto uri_it = properties.find(AuthProperties::kOAuth2ServerUri);
-    if (uri_it != properties.end() && !uri_it->second.empty()) {
-      ctx.token_endpoint = uri_it->second;
-    } else {
-      // {uri}/v1/oauth/tokens.
-      auto catalog_uri_it = properties.find(RestCatalogProperties::kUri.key());
-      if (catalog_uri_it == properties.end() || catalog_uri_it->second.empty()) {
-        return InvalidArgument(
-            "OAuth2 authentication requires '{}' or '{}' property to determine "
-            "token endpoint",
-            AuthProperties::kOAuth2ServerUri, RestCatalogProperties::kUri.key());
-      }
-      std::string_view base = catalog_uri_it->second;
-      while (!base.empty() && base.back() == '/') {
-        base.remove_suffix(1);
-      }
-      ctx.token_endpoint =
-          std::string(base) + "/" + std::string(AuthProperties::kOAuth2DefaultTokenPath);
-    }
-
-    ctx.scope = AuthProperties::kOAuth2DefaultScope;
-    auto scope_it = properties.find(AuthProperties::kOAuth2Scope);
-    if (scope_it != properties.end() && !scope_it->second.empty()) {
-      ctx.scope = scope_it->second;
-    }
-
-    return ctx;
-  }
-
   /// Cached token from InitSession
   std::optional<OAuthTokenResponse> init_token_response_;
 };
 
-Result<std::unique_ptr<AuthManager>> MakeOAuth2AuthManager(
+Result<std::unique_ptr<AuthManager>> MakeOAuth2Manager(
     [[maybe_unused]] std::string_view name,
     [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
-  return std::make_unique<OAuth2AuthManager>();
+  return std::make_unique<OAuth2Manager>();
 }
 
 }  // namespace iceberg::rest::auth

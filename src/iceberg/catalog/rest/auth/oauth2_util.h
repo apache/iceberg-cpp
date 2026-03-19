@@ -19,11 +19,13 @@
 
 #pragma once
 
-#include <cstdint>
 #include <string>
+#include <string_view>
+#include <unordered_map>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/auth/oauth2_util.h
@@ -31,52 +33,24 @@
 
 namespace iceberg::rest::auth {
 
-/// \brief Response from an OAuth2 token endpoint.
-struct ICEBERG_REST_EXPORT OAuthTokenResponse {
-  std::string access_token;   // required
-  std::string token_type;     // required, typically "bearer"
-  int64_t expires_in = 0;     // optional, seconds until expiration
-  std::string refresh_token;  // optional
-  std::string scope;          // optional
-
-  /// \brief Validates the token response.
-  Status Validate() const;
-
-  bool operator==(const OAuthTokenResponse&) const = default;
-};
-
-/// \brief Parse an OAuthTokenResponse from a JSON string.
-///
-/// \param json_str The JSON string to parse.
-/// \return The parsed token response or an error.
-ICEBERG_REST_EXPORT Result<OAuthTokenResponse> OAuthTokenResponseFromJsonString(
-    const std::string& json_str);
+inline constexpr std::string_view kAuthorizationHeader = "Authorization";
+inline constexpr std::string_view kBearerPrefix = "Bearer ";
 
 /// \brief Fetch an OAuth2 token using the client_credentials grant type.
 ///
-/// Sends a POST request with form-encoded body to the token endpoint:
-///   grant_type=client_credentials&client_id=...&client_secret=...&scope=...
-///
 /// \param client HTTP client to use for the request.
-/// \param token_endpoint Full URL of the OAuth2 token endpoint.
-/// \param client_id OAuth2 client ID.
-/// \param client_secret OAuth2 client secret.
-/// \param scope OAuth2 scope to request.
-/// \param session Auth session for the request (typically a no-op session).
+/// \param session Auth session for the request headers.
+/// \param properties Auth configuration containing credential, scope,
+///        token endpoint, and optional OAuth params.
 /// \return The token response or an error.
 ICEBERG_REST_EXPORT Result<OAuthTokenResponse> FetchToken(
-    HttpClient& client, const std::string& token_endpoint, const std::string& client_id,
-    const std::string& client_secret, const std::string& scope, AuthSession& session);
+    HttpClient& client, AuthSession& session, const AuthProperties& properties);
 
-/// \brief Refresh an expired access token using a refresh_token grant.
-ICEBERG_REST_EXPORT Result<OAuthTokenResponse> RefreshToken(
-    HttpClient& client, const std::string& token_endpoint, const std::string& client_id,
-    const std::string& refresh_token, const std::string& scope, AuthSession& session);
-
-/// \brief Exchange a token for a scoped token using RFC 8693 Token Exchange.
-ICEBERG_REST_EXPORT Result<OAuthTokenResponse> ExchangeToken(
-    HttpClient& client, const std::string& token_endpoint,
-    const std::string& subject_token, const std::string& subject_token_type,
-    const std::string& scope, AuthSession& session);
+/// \brief Build auth headers from a token string.
+///
+/// \param token Bearer token string (may be empty).
+/// \return Headers map with Authorization header if token is non-empty.
+ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> AuthHeaders(
+    const std::string& token);
 
 }  // namespace iceberg::rest::auth

@@ -19,57 +19,88 @@
 
 #pragma once
 
+#include <cstdint>
+#include <optional>
 #include <string>
-#include <string_view>
+#include <unordered_map>
+
+#include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/result.h"
+#include "iceberg/util/config.h"
 
 /// \file iceberg/catalog/rest/auth/auth_properties.h
-/// \brief Property keys and constants for REST catalog authentication.
+/// \brief Property keys and configuration for REST catalog authentication.
 
 namespace iceberg::rest::auth {
 
-/// \brief Property keys and constants for authentication configuration.
-///
-/// This struct defines all the property keys used to configure authentication
-/// for the REST catalog. It follows the same naming conventions as Java Iceberg.
-struct AuthProperties {
-  /// \brief Property key for specifying the authentication type.
+/// \brief Authentication properties
+class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
+ public:
+  template <typename T>
+  using Entry = const ConfigBase<AuthProperties>::Entry<T>;
+
+  // ---- Authentication type constants (not Entry-based) ----
+
   inline static const std::string kAuthType = "rest.auth.type";
-  /// \brief Authentication type: no authentication.
   inline static const std::string kAuthTypeNone = "none";
-  /// \brief Authentication type: HTTP Basic authentication.
   inline static const std::string kAuthTypeBasic = "basic";
-  /// \brief Authentication type: OAuth2 authentication.
   inline static const std::string kAuthTypeOAuth2 = "oauth2";
-  /// \brief Authentication type: AWS SigV4 authentication.
   inline static const std::string kAuthTypeSigV4 = "sigv4";
 
-  /// \brief Property key for Basic auth username.
+  // ---- Basic auth entries ----
+
   inline static const std::string kBasicUsername = "rest.auth.basic.username";
-  /// \brief Property key for Basic auth password.
   inline static const std::string kBasicPassword = "rest.auth.basic.password";
 
-  /// \brief Property key for OAuth2 token (bearer token).
-  inline static const std::string kOAuth2Token = "token";
-  /// \brief Property key for OAuth2 credential (client_id:client_secret).
-  inline static const std::string kOAuth2Credential = "credential";
-  /// \brief Property key for OAuth2 scope.
-  inline static const std::string kOAuth2Scope = "scope";
-  /// \brief Property key for OAuth2 server URI.
-  inline static const std::string kOAuth2ServerUri = "oauth2-server-uri";
-  /// \brief Property key for enabling token refresh.
-  inline static const std::string kOAuth2TokenRefreshEnabled = "token-refresh-enabled";
-  /// \brief Default OAuth2 scope for catalog operations.
-  inline static const std::string kOAuth2DefaultScope = "catalog";
-  /// \brief Default OAuth2 token endpoint path (relative to catalog URI).
-  inline static constexpr std::string_view kOAuth2DefaultTokenPath = "v1/oauth/tokens";
+  // ---- SigV4 entries ----
 
-  /// \brief Property key for SigV4 region.
   inline static const std::string kSigV4Region = "rest.auth.sigv4.region";
-  /// \brief Property key for SigV4 service name.
   inline static const std::string kSigV4Service = "rest.auth.sigv4.service";
-  /// \brief Property key for SigV4 delegate auth type.
   inline static const std::string kSigV4DelegateAuthType =
       "rest.auth.sigv4.delegate-auth-type";
+
+  // ---- OAuth2 entries ----
+
+  inline static Entry<std::string> kToken{"token", ""};
+  inline static Entry<std::string> kCredential{"credential", ""};
+  inline static Entry<std::string> kScope{"scope", "catalog"};
+  inline static Entry<std::string> kOAuth2ServerUri{"oauth2-server-uri",
+                                                    "v1/oauth/tokens"};
+  inline static Entry<bool> kKeepRefreshed{"token-refresh-enabled", true};
+  inline static Entry<bool> kExchangeEnabled{"token-exchange-enabled", true};
+  inline static Entry<std::string> kAudience{"audience", ""};
+  inline static Entry<std::string> kResource{"resource", ""};
+
+  /// \brief Build an AuthProperties from a properties map.
+  static Result<AuthProperties> FromProperties(
+      const std::unordered_map<std::string, std::string>& properties);
+
+  /// \brief Get the bearer token.
+  std::string token() const { return Get(kToken); }
+  /// \brief Get the raw credential string.
+  std::string credential() const { return Get(kCredential); }
+  /// \brief Get the OAuth2 scope.
+  std::string scope() const { return Get(kScope); }
+  /// \brief Get the token endpoint URI.
+  std::string oauth2_server_uri() const { return Get(kOAuth2ServerUri); }
+  /// \brief Whether token refresh is enabled.
+  bool keep_refreshed() const { return Get(kKeepRefreshed); }
+  /// \brief Whether token exchange is enabled.
+  bool exchange_enabled() const { return Get(kExchangeEnabled); }
+
+  /// \brief Parsed client_id from credential (empty if no colon).
+  const std::string& client_id() const { return client_id_; }
+  /// \brief Parsed client_secret from credential.
+  const std::string& client_secret() const { return client_secret_; }
+
+  /// \brief Build optional OAuth params (audience, resource) from config.
+  std::unordered_map<std::string, std::string> optional_oauth_params() const;
+
+ private:
+  std::string client_id_;
+  std::string client_secret_;
+  std::string token_type_;
+  std::optional<int64_t> expires_at_millis_;
 };
 
 }  // namespace iceberg::rest::auth

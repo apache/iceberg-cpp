@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -276,6 +278,21 @@ struct ICEBERG_REST_EXPORT CommitTableResponse {
   }
 
   bool operator==(const CommitTableResponse& other) const;
+};
+
+/// \brief Response from an OAuth2 token endpoint.
+struct ICEBERG_REST_EXPORT OAuthTokenResponse {
+  std::string access_token;                // required
+  std::string token_type;                  // required, "bearer" or "N_A"
+  std::optional<int64_t> expires_in_secs;  // optional, seconds until expiration
+  std::string issued_token_type;           // optional, for token exchange
+  std::string refresh_token;               // optional
+  std::string scope;                       // optional
+
+  /// \brief Validates the token response.
+  Status Validate() const;
+
+  bool operator==(const OAuthTokenResponse&) const = default;
 };
 
 }  // namespace iceberg::rest

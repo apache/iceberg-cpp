@@ -22,10 +22,12 @@
 /// \file iceberg/catalog/rest/type_fwd.h
 /// Forward declarations and enum definitions for Iceberg REST API types.
 
+#include "iceberg/catalog/rest/auth/auth_properties.h"
 namespace iceberg::rest {
 
 struct ErrorResponse;
 struct LoadTableResult;
+struct OAuthTokenResponse;
 
 class Endpoint;
 class ErrorHandler;
@@ -39,7 +41,7 @@ class RestCatalogProperties;
 namespace iceberg::rest::auth {
 
 class AuthManager;
+class AuthProperties;
 class AuthSession;
-struct OAuthTokenResponse;
 
 }  // namespace iceberg::rest::auth

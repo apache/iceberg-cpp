@@ -20,6 +20,7 @@ add_subdirectory(auth)
 set(ICEBERG_REST_SOURCES
     auth/auth_manager.cc
     auth/auth_managers.cc
+    auth/auth_properties.cc
     auth/auth_session.cc
     auth/oauth2_util.cc
     catalog_properties.cc

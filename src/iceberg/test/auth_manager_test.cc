@@ -24,15 +24,28 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
 #include "iceberg/catalog/rest/http_client.h"
+#include "iceberg/catalog/rest/json_serde_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest::auth {
+
+namespace {
+
+/// Helper to parse OAuthTokenResponse from a JSON string.
+Result<OAuthTokenResponse> ParseTokenResponse(const std::string& str) {
+  ICEBERG_ASSIGN_OR_RAISE(auto json, iceberg::FromJsonString(str));
+  return iceberg::rest::FromJson<OAuthTokenResponse>(json);
+}
+
+}  // namespace
 
 class AuthManagerTest : public ::testing::Test {
  protected:
@@ -200,7 +213,7 @@ TEST_F(AuthManagerTest, RegisterCustomAuthManager) {
 TEST_F(AuthManagerTest, OAuth2StaticToken) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kAuthType, "oauth2"},
-      {AuthProperties::kOAuth2Token, "my-static-token"},
+      {AuthProperties::kToken.key(), "my-static-token"},
   };
 
   auto manager_result = AuthManagers::Load("test-catalog", properties);
@@ -217,7 +230,7 @@ TEST_F(AuthManagerTest, OAuth2StaticToken) {
 // Verifies OAuth2 type is inferred from token property
 TEST_F(AuthManagerTest, OAuth2InferredFromToken) {
   std::unordered_map<std::string, std::string> properties = {
-      {AuthProperties::kOAuth2Token, "inferred-token"},
+      {AuthProperties::kToken.key(), "inferred-token"},
   };
 
   auto manager_result = AuthManagers::Load("test-catalog", properties);
@@ -250,13 +263,13 @@ TEST_F(AuthManagerTest, OAuth2MissingCredentials) {
   EXPECT_EQ(headers.find("Authorization"), headers.end());
 }
 
-// Verifies OAuth2 fails with invalid credential format
-// Verifies credential without colon is treated as client_secret only
-TEST_F(AuthManagerTest, OAuth2CredentialWithoutColon) {
+// Verifies that when both token and credential are provided, token takes priority
+// in CatalogSession (without a prior InitSession call)
+TEST_F(AuthManagerTest, OAuth2TokenTakesPriorityOverCredential) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kAuthType, "oauth2"},
-      {AuthProperties::kOAuth2Credential, "secret-only"},
-      {AuthProperties::kOAuth2Token, "my-static-token"},
+      {AuthProperties::kCredential.key(), "secret-only"},
+      {AuthProperties::kToken.key(), "my-static-token"},
       {"uri", "http://localhost:8181"},
   };
 
@@ -277,15 +290,18 @@ TEST_F(AuthManagerTest, OAuthTokenResponseParsing) {
     "access_token": "test-access-token",
     "token_type": "bearer",
     "expires_in": 3600,
+    "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
     "refresh_token": "test-refresh-token",
     "scope": "catalog"
   })";
 
-  auto result = OAuthTokenResponseFromJsonString(json);
+  auto result = ParseTokenResponse(json);
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result->access_token, "test-access-token");
   EXPECT_EQ(result->token_type, "bearer");
-  EXPECT_EQ(result->expires_in, 3600);
+  ASSERT_TRUE(result->expires_in_secs.has_value());
+  EXPECT_EQ(result->expires_in_secs.value(), 3600);
+  EXPECT_EQ(result->issued_token_type, "urn:ietf:params:oauth:token-type:access_token");
   EXPECT_EQ(result->refresh_token, "test-refresh-token");
   EXPECT_EQ(result->scope, "catalog");
 }
@@ -297,13 +313,49 @@ TEST_F(AuthManagerTest, OAuthTokenResponseMinimal) {
     "token_type": "Bearer"
   })";
 
-  auto result = OAuthTokenResponseFromJsonString(json);
+  auto result = ParseTokenResponse(json);
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result->access_token, "token123");
   EXPECT_EQ(result->token_type, "Bearer");
-  EXPECT_EQ(result->expires_in, 0);
+  EXPECT_FALSE(result->expires_in_secs.has_value());
+  EXPECT_TRUE(result->issued_token_type.empty());
   EXPECT_TRUE(result->refresh_token.empty());
   EXPECT_TRUE(result->scope.empty());
+}
+
+// Verifies OAuthTokenResponse validation fails when access_token is missing
+TEST_F(AuthManagerTest, OAuthTokenResponseMissingAccessToken) {
+  std::string json = R"({"token_type": "bearer"})";
+  auto result = ParseTokenResponse(json);
+  EXPECT_THAT(result, ::testing::Not(IsOk()));
+}
+
+// Verifies OAuthTokenResponse validation fails when token_type is missing
+TEST_F(AuthManagerTest, OAuthTokenResponseMissingTokenType) {
+  std::string json = R"({"access_token": "token123"})";
+  auto result = ParseTokenResponse(json);
+  EXPECT_THAT(result, ::testing::Not(IsOk()));
+}
+
+// Verifies OAuthTokenResponse validation fails for unsupported token_type
+TEST_F(AuthManagerTest, OAuthTokenResponseUnsupportedTokenType) {
+  std::string json = R"({
+    "access_token": "token123",
+    "token_type": "mac"
+  })";
+  auto result = ParseTokenResponse(json);
+  EXPECT_THAT(result, ::testing::Not(IsOk()));
+}
+
+// Verifies OAuthTokenResponse accepts N_A token type
+TEST_F(AuthManagerTest, OAuthTokenResponseNATokenType) {
+  std::string json = R"({
+    "access_token": "token123",
+    "token_type": "N_A"
+  })";
+  auto result = ParseTokenResponse(json);
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->token_type, "N_A");
 }
 
 }  // namespace iceberg::rest::auth

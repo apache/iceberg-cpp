@@ -72,6 +72,12 @@ constexpr std::string_view kStack = "stack";
 constexpr std::string_view kError = "error";
 constexpr std::string_view kIdentifier = "identifier";
 constexpr std::string_view kRequirements = "requirements";
+constexpr std::string_view kAccessToken = "access_token";
+constexpr std::string_view kTokenType = "token_type";
+constexpr std::string_view kExpiresIn = "expires_in";
+constexpr std::string_view kIssuedTokenType = "issued_token_type";
+constexpr std::string_view kRefreshToken = "refresh_token";
+constexpr std::string_view kOAuthScope = "scope";
 
 }  // namespace
 
@@ -462,6 +468,44 @@ Result<CommitTableResponse> CommitTableResponseFromJson(const nlohmann::json& js
   return response;
 }
 
+nlohmann::json ToJson(const OAuthTokenResponse& response) {
+  nlohmann::json json;
+  json[kAccessToken] = response.access_token;
+  json[kTokenType] = response.token_type;
+  if (response.expires_in_secs.has_value()) {
+    json[kExpiresIn] = response.expires_in_secs.value();
+  }
+  if (!response.issued_token_type.empty()) {
+    json[kIssuedTokenType] = response.issued_token_type;
+  }
+  if (!response.scope.empty()) {
+    json[kOAuthScope] = response.scope;
+  }
+  return json;
+}
+
+Result<OAuthTokenResponse> OAuthTokenResponseFromJson(const nlohmann::json& json) {
+  OAuthTokenResponse response;
+  ICEBERG_ASSIGN_OR_RAISE(response.access_token,
+                          GetJsonValue<std::string>(json, kAccessToken));
+  ICEBERG_ASSIGN_OR_RAISE(response.token_type,
+                          GetJsonValue<std::string>(json, kTokenType));
+  // TODO(lishuxu): When implementing auto-refresh, extract exp claim
+  // from JWT if expires_in is missing.
+  if (json.contains(std::string(kExpiresIn))) {
+    ICEBERG_ASSIGN_OR_RAISE(auto val, GetJsonValue<int64_t>(json, kExpiresIn));
+    response.expires_in_secs = val;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(response.issued_token_type,
+                          GetJsonValueOrDefault<std::string>(json, kIssuedTokenType));
+  ICEBERG_ASSIGN_OR_RAISE(response.refresh_token,
+                          GetJsonValueOrDefault<std::string>(json, kRefreshToken));
+  ICEBERG_ASSIGN_OR_RAISE(response.scope,
+                          GetJsonValueOrDefault<std::string>(json, kOAuthScope));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
+  return response;
+}
+
 #define ICEBERG_DEFINE_FROM_JSON(Model)                       \
   template <>                                                 \
   Result<Model> FromJson<Model>(const nlohmann::json& json) { \
@@ -483,5 +527,6 @@ ICEBERG_DEFINE_FROM_JSON(RenameTableRequest)
 ICEBERG_DEFINE_FROM_JSON(CreateTableRequest)
 ICEBERG_DEFINE_FROM_JSON(CommitTableRequest)
 ICEBERG_DEFINE_FROM_JSON(CommitTableResponse)
+ICEBERG_DEFINE_FROM_JSON(OAuthTokenResponse)
 
 }  // namespace iceberg::rest

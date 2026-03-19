@@ -52,8 +52,8 @@ std::string InferAuthType(
   }
 
   // Infer from OAuth2 properties (credential or token)
-  bool has_credential = properties.contains(AuthProperties::kOAuth2Credential);
-  bool has_token = properties.contains(AuthProperties::kOAuth2Token);
+  bool has_credential = properties.contains(AuthProperties::kCredential.key());
+  bool has_token = properties.contains(AuthProperties::kToken.key());
   if (has_credential || has_token) {
     return AuthProperties::kAuthTypeOAuth2;
   }
@@ -65,7 +65,7 @@ AuthManagerRegistry CreateDefaultRegistry() {
   return {
       {AuthProperties::kAuthTypeNone, MakeNoopAuthManager},
       {AuthProperties::kAuthTypeBasic, MakeBasicAuthManager},
-      {AuthProperties::kAuthTypeOAuth2, MakeOAuth2AuthManager},
+      {AuthProperties::kAuthTypeOAuth2, MakeOAuth2Manager},
   };
 }
 

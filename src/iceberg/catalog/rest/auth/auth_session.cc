@@ -56,7 +56,8 @@ std::shared_ptr<AuthSession> AuthSession::MakeOAuth2(
     const std::string& /*client_id*/, const std::string& /*client_secret*/,
     const std::string& /*scope*/, HttpClient& /*client*/) {
   // TODO(lishuxu): Create OAuth2AuthSession with auto-refresh support.
-  return MakeDefault({{"Authorization", "Bearer " + initial_token.access_token}});
+  return MakeDefault({{std::string(kAuthorizationHeader),
+                       std::string(kBearerPrefix) + initial_token.access_token}});
 }
 
 }  // namespace iceberg::rest::auth
