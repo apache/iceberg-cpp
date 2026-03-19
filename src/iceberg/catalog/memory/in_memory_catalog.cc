@@ -418,8 +418,9 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::CreateTable(
   std::string base_location =
       location.empty() ? warehouse_location_ + "/" + identifier.ToString() : location;
 
-  ICEBERG_ASSIGN_OR_RAISE(auto table_metadata, TableMetadata::Make(*schema, *spec, *order,
-                                                                   location, properties));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto table_metadata,
+      TableMetadata::Make(*schema, *spec, *order, base_location, properties));
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto metadata_file_location,
