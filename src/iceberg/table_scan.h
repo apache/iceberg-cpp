@@ -133,17 +133,6 @@ struct TableScanContext {
 
   // Validate the context parameters to see if they have conflicts.
   [[nodiscard]] Status Validate() const;
-
-  /// \brief Returns true if this scan is a current lineage scan, which means it does not
-  /// specify from/to snapshot IDs.
-  bool IsScanCurrentLineage() const;
-
-  /// \brief Get the snapshot ID to scan up to (inclusive) based on the context.
-  Result<int64_t> ToSnapshotIdInclusive(const TableMetadata& metadata) const;
-
-  /// \brief Get the snapshot ID to scan from (exclusive) based on the context.
-  Result<std::optional<int64_t>> FromSnapshotIdExclusive(
-      const TableMetadata& metadata, int64_t to_snapshot_id_inclusive) const;
 };
 
 }  // namespace internal
@@ -383,25 +372,8 @@ class ICEBERG_EXPORT IncrementalScan : public TableScan {
   using TableScan::TableScan;
 };
 
-// Template method implementation (must be in header for MSVC)
-template <typename ScanTaskType>
-Result<std::vector<std::shared_ptr<ScanTaskType>>>
-IncrementalScan<ScanTaskType>::PlanFiles() const {
-  if (context_.IsScanCurrentLineage()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto current_snapshot, metadata_->Snapshot());
-    if (current_snapshot == nullptr) {
-      return std::vector<std::shared_ptr<ScanTaskType>>{};
-    }
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(int64_t to_snapshot_id_inclusive,
-                          context_.ToSnapshotIdInclusive(*metadata_));
-  ICEBERG_ASSIGN_OR_RAISE(
-      std::optional<int64_t> from_snapshot_id_exclusive,
-      context_.FromSnapshotIdExclusive(*metadata_, to_snapshot_id_inclusive));
-
-  return PlanFiles(from_snapshot_id_exclusive, to_snapshot_id_inclusive);
-}
+extern template class IncrementalScan<FileScanTask>;
+extern template class IncrementalScan<ChangelogScanTask>;
 
 /// \brief A scan that reads data files added between snapshots (incremental appends).
 class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask> {

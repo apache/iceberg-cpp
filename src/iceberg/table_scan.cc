@@ -171,14 +171,15 @@ Status TableScanContext::Validate() const {
   return {};
 }
 
-bool TableScanContext::IsScanCurrentLineage() const {
-  return !from_snapshot_id.has_value() && !to_snapshot_id.has_value();
+bool IsScanCurrentLineage(const TableScanContext& context) {
+  return !context.from_snapshot_id.has_value() && !context.to_snapshot_id.has_value();
 }
 
-Result<int64_t> TableScanContext::ToSnapshotIdInclusive(
-    const TableMetadata& metadata) const {
+Result<int64_t> ToSnapshotIdInclusive(const TableScanContext& context,
+                                      const TableMetadata& metadata) {
   // Get the branch's current snapshot ID if branch is set
   std::shared_ptr<Snapshot> branch_snapshot;
+  const std::string& branch = context.branch;
   if (!branch.empty()) {
     auto iter = metadata.refs.find(branch);
     ICEBERG_CHECK(iter != metadata.refs.end() && iter->second != nullptr,
@@ -187,8 +188,8 @@ Result<int64_t> TableScanContext::ToSnapshotIdInclusive(
                             metadata.SnapshotById(iter->second->snapshot_id));
   }
 
-  if (to_snapshot_id.has_value()) {
-    int64_t to_snapshot_id_value = to_snapshot_id.value();
+  if (context.to_snapshot_id.has_value()) {
+    int64_t to_snapshot_id_value = context.to_snapshot_id.value();
 
     if (branch_snapshot != nullptr) {
       // Validate `to_snapshot_id` is on the current branch
@@ -217,41 +218,41 @@ Result<int64_t> TableScanContext::ToSnapshotIdInclusive(
   return current_snapshot->snapshot_id;
 }
 
-Result<std::optional<int64_t>> TableScanContext::FromSnapshotIdExclusive(
-    const TableMetadata& metadata, int64_t to_snapshot_id_inclusive) const {
-  if (!from_snapshot_id.has_value()) {
+Result<std::optional<int64_t>> FromSnapshotIdExclusive(const TableScanContext& context,
+                                                       const TableMetadata& metadata,
+                                                       int64_t to_snapshot_id_inclusive) {
+  if (!context.from_snapshot_id.has_value()) {
     return std::nullopt;
   }
 
-  int64_t from_snapshot_id_value = from_snapshot_id.value();
+  int64_t from_snapshot_id = context.from_snapshot_id.value();
 
   // Validate `from_snapshot_id` is an ancestor of `to_snapshot_id_inclusive`
-  if (from_snapshot_id_inclusive) {
-    ICEBERG_ASSIGN_OR_RAISE(bool is_ancestor,
-                            SnapshotUtil::IsAncestorOf(metadata, to_snapshot_id_inclusive,
-                                                       from_snapshot_id_value));
+  if (context.from_snapshot_id_inclusive) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        bool is_ancestor,
+        SnapshotUtil::IsAncestorOf(metadata, to_snapshot_id_inclusive, from_snapshot_id));
     ICEBERG_CHECK(
         is_ancestor,
         "Starting snapshot (inclusive) {} is not an ancestor of end snapshot {}",
-        from_snapshot_id_value, to_snapshot_id_inclusive);
+        from_snapshot_id, to_snapshot_id_inclusive);
 
     // For inclusive behavior, return the parent snapshot ID (can be nullopt)
-    ICEBERG_ASSIGN_OR_RAISE(auto from_snapshot,
-                            metadata.SnapshotById(from_snapshot_id_value));
+    ICEBERG_ASSIGN_OR_RAISE(auto from_snapshot, metadata.SnapshotById(from_snapshot_id));
     return from_snapshot->parent_snapshot_id;
   }
 
   // Validate there is an ancestor of `to_snapshot_id_inclusive` where parent is
   // `from_snapshot_id`
-  ICEBERG_ASSIGN_OR_RAISE(bool is_parent_ancestor, SnapshotUtil::IsParentAncestorOf(
-                                                       metadata, to_snapshot_id_inclusive,
-                                                       from_snapshot_id_value));
+  ICEBERG_ASSIGN_OR_RAISE(bool is_parent_ancestor,
+                          SnapshotUtil::IsParentAncestorOf(
+                              metadata, to_snapshot_id_inclusive, from_snapshot_id));
   ICEBERG_CHECK(
       is_parent_ancestor,
       "Starting snapshot (exclusive) {} is not a parent ancestor of end snapshot {}",
-      from_snapshot_id_value, to_snapshot_id_inclusive);
+      from_snapshot_id, to_snapshot_id_inclusive);
 
-  return from_snapshot_id_value;
+  return from_snapshot_id;
 }
 
 }  // namespace internal
@@ -729,5 +730,30 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
                                     int64_t to_snapshot_id_inclusive) const {
   return NotImplemented("IncrementalChangelogScan::PlanFiles is not implemented");
 }
+
+// Explicit template implementations for IncrementalScan
+// This moves the template implementation from header to source file
+template <typename ScanTaskType>
+Result<std::vector<std::shared_ptr<ScanTaskType>>>
+IncrementalScan<ScanTaskType>::PlanFiles() const {
+  if (IsScanCurrentLineage(context_)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto current_snapshot, metadata_->Snapshot());
+    if (current_snapshot == nullptr) {
+      return std::vector<std::shared_ptr<ScanTaskType>>{};
+    }
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(int64_t to_snapshot_id_inclusive,
+                          internal::ToSnapshotIdInclusive(context_, *metadata_));
+  ICEBERG_ASSIGN_OR_RAISE(
+      std::optional<int64_t> from_snapshot_id_exclusive,
+      internal::FromSnapshotIdExclusive(context_, *metadata_, to_snapshot_id_inclusive));
+
+  return PlanFiles(from_snapshot_id_exclusive, to_snapshot_id_inclusive);
+}
+
+// Explicitly instantiate the templates
+template class IncrementalScan<FileScanTask>;
+template class IncrementalScan<ChangelogScanTask>;
 
 }  // namespace iceberg
