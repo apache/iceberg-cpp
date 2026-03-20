@@ -674,11 +674,11 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
                          std::inserter(snapshot_ids, snapshot_ids.end()),
                          [](const auto& snapshot) { return snapshot->snapshot_id; });
 
-  std::vector<ManifestFile> data_manifests;
+  std::unordered_set<ManifestFile> data_manifests;
   for (const auto& snapshot : append_snapshots) {
     SnapshotCache snapshot_cache(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DataManifests(io_));
-    std::ranges::copy_if(manifests, std::back_inserter(data_manifests),
+    std::ranges::copy_if(manifests, std::inserter(data_manifests, data_manifests.end()),
                          [&snapshot_ids](const ManifestFile& manifest) {
                            return snapshot_ids.contains(manifest.added_snapshot_id);
                          });
@@ -692,7 +692,9 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(data_manifests), {}));
+      ManifestGroup::Make(
+          io_, schema_, specs_by_id,
+          std::vector<ManifestFile>(data_manifests.begin(), data_manifests.end()), {}));
 
   manifest_group->CaseSensitive(context_.case_sensitive)
       .Select(ScanColumns())

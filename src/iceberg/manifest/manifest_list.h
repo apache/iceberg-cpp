@@ -272,3 +272,12 @@ ICEBERG_EXPORT inline constexpr Result<ManifestContent> ManifestContentFromStrin
 }
 
 }  // namespace iceberg
+
+namespace std {
+template <>
+struct std::hash<iceberg::ManifestFile> {
+  size_t operator()(const iceberg::ManifestFile& manifest_file) const {
+    return std::hash<std::string>{}(manifest_file.manifest_path);
+  }
+};
+}  // namespace std
