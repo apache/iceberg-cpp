@@ -356,13 +356,11 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
 /// \brief A base template class for incremental scans that read changes between
 /// snapshots, and return scan tasks of the specified type.
 template <typename ScanTaskType>
-class ICEBERG_EXPORT IncrementalScan : public TableScan {
+class IncrementalScan : public TableScan {
  public:
   ~IncrementalScan() override = default;
 
-  /// \brief Plans the scan tasks by resolving manifests and data files.
-  /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles() const;
+  virtual Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles() const = 0;
 
  protected:
   virtual Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles(
@@ -370,10 +368,12 @@ class ICEBERG_EXPORT IncrementalScan : public TableScan {
       int64_t to_snapshot_id_inclusive) const = 0;
 
   using TableScan::TableScan;
-};
 
-extern template class IncrementalScan<FileScanTask>;
-extern template class IncrementalScan<ChangelogScanTask>;
+  // Allow the free function ResolvePlanFiles to access protected members.
+  template <typename T>
+  friend Result<std::vector<std::shared_ptr<T>>> ResolvePlanFiles(
+      const IncrementalScan<T>& scan);
+};
 
 /// \brief A scan that reads data files added between snapshots (incremental appends).
 class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask> {
@@ -385,8 +385,7 @@ class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask
 
   ~IncrementalAppendScan() override = default;
 
-  // Bring the public PlanFiles() from base class into scope
-  using IncrementalScan<FileScanTask>::PlanFiles;
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
 
  protected:
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles(
@@ -407,8 +406,7 @@ class ICEBERG_EXPORT IncrementalChangelogScan
 
   ~IncrementalChangelogScan() override = default;
 
-  // Bring the public PlanFiles() from base class into scope
-  using IncrementalScan<ChangelogScanTask>::PlanFiles;
+  Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanFiles() const override;
 
  protected:
   Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanFiles(
