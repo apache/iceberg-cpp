@@ -40,7 +40,8 @@ void AssignUUID::ApplyTo(TableMetadataBuilder& builder) const {
   builder.AssignUUID(uuid_);
 }
 
-void AssignUUID::GenerateRequirements(TableUpdateContext& context) const {
+void AssignUUID::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // AssignUUID does not generate additional requirements.
 }
 
@@ -62,7 +63,8 @@ void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
   builder.UpgradeFormatVersion(format_version_);
 }
 
-void UpgradeFormatVersion::GenerateRequirements(TableUpdateContext& context) const {
+void UpgradeFormatVersion::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // UpgradeFormatVersion doesn't generate any requirements
 }
 
@@ -230,7 +232,8 @@ void AddSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
   builder.AddSortOrder(sort_order_);
 }
 
-void AddSortOrder::GenerateRequirements(TableUpdateContext& context) const {
+void AddSortOrder::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // AddSortOrder doesn't generate any requirements
 }
 
@@ -280,7 +283,8 @@ void AddSnapshot::ApplyTo(TableMetadataBuilder& builder) const {
   builder.AddSnapshot(snapshot_);
 }
 
-void AddSnapshot::GenerateRequirements(TableUpdateContext& context) const {
+void AddSnapshot::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // AddSnapshot doesn't generate any requirements
 }
 
@@ -308,7 +312,8 @@ void RemoveSnapshots::ApplyTo(TableMetadataBuilder& builder) const {
   builder.RemoveSnapshots(snapshot_ids_);
 }
 
-void RemoveSnapshots::GenerateRequirements(TableUpdateContext& context) const {
+void RemoveSnapshots::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // RemoveSnapshots doesn't generate any requirements
 }
 
@@ -330,7 +335,8 @@ void RemoveSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
   builder.RemoveRef(ref_name_);
 }
 
-void RemoveSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
+void RemoveSnapshotRef::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // RemoveSnapshotRef doesn't generate any requirements
 }
 
@@ -397,7 +403,8 @@ void SetProperties::ApplyTo(TableMetadataBuilder& builder) const {
   builder.SetProperties(updated_);
 }
 
-void SetProperties::GenerateRequirements(TableUpdateContext& context) const {
+void SetProperties::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // SetProperties doesn't generate any requirements
 }
 
@@ -419,7 +426,8 @@ void RemoveProperties::ApplyTo(TableMetadataBuilder& builder) const {
   builder.RemoveProperties(removed_);
 }
 
-void RemoveProperties::GenerateRequirements(TableUpdateContext& context) const {
+void RemoveProperties::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // RemoveProperties doesn't generate any requirements
 }
 
@@ -441,7 +449,8 @@ void SetLocation::ApplyTo(TableMetadataBuilder& builder) const {
   builder.SetLocation(location_);
 }
 
-void SetLocation::GenerateRequirements(TableUpdateContext& context) const {
+void SetLocation::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // SetLocation doesn't generate any requirements
 }
 
@@ -465,7 +474,8 @@ void SetStatistics::ApplyTo(TableMetadataBuilder& builder) const {
   builder.SetStatistics(statistics_file_);
 }
 
-void SetStatistics::GenerateRequirements(TableUpdateContext& context) const {
+void SetStatistics::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // SetStatistics doesn't generate any requirements
 }
 
@@ -493,7 +503,8 @@ void RemoveStatistics::ApplyTo(TableMetadataBuilder& builder) const {
   builder.RemoveStatistics(snapshot_id_);
 }
 
-void RemoveStatistics::GenerateRequirements(TableUpdateContext& context) const {
+void RemoveStatistics::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // RemoveStatistics doesn't generate any requirements
 }
 
@@ -519,7 +530,8 @@ void SetPartitionStatistics::ApplyTo(TableMetadataBuilder& builder) const {
   builder.SetPartitionStatistics(partition_statistics_file_);
 }
 
-void SetPartitionStatistics::GenerateRequirements(TableUpdateContext& context) const {
+void SetPartitionStatistics::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // SetPartitionStatistics doesn't generate any requirements
 }
 
@@ -548,7 +560,8 @@ void RemovePartitionStatistics::ApplyTo(TableMetadataBuilder& builder) const {
   builder.RemovePartitionStatistics(snapshot_id_);
 }
 
-void RemovePartitionStatistics::GenerateRequirements(TableUpdateContext& context) const {
+void RemovePartitionStatistics::GenerateRequirements(
+    [[maybe_unused]] TableUpdateContext& context) const {
   // RemovePartitionStatistics doesn't generate any requirements
 }
 

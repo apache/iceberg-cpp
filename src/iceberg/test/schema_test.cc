@@ -738,38 +738,44 @@ INSTANTIATE_TEST_SUITE_P(
                         .create_schema = []() { return BasicSchema(); },
                         .select_fields = {"*"},
                         .expected_schema = []() { return BasicSchema(); },
-                        .should_succeed = true},
+                        .should_succeed = true,
+                        .expected_error_message = ""},
 
         SelectTestParam{.test_name = "SelectSingleField",
                         .create_schema = []() { return BasicSchema(); },
                         .select_fields = {"name"},
                         .expected_schema = []() { return MakeSchema(Name()); },
-                        .should_succeed = true},
+                        .should_succeed = true,
+                        .expected_error_message = ""},
 
         SelectTestParam{
             .test_name = "SelectMultipleFields",
             .create_schema = []() { return BasicSchema(); },
             .select_fields = {"id", "name", "age"},
             .expected_schema = []() { return MakeSchema(Id(), Name(), Age()); },
-            .should_succeed = true},
+            .should_succeed = true,
+            .expected_error_message = ""},
 
         SelectTestParam{.test_name = "SelectNonExistentField",
                         .create_schema = []() { return BasicSchema(); },
                         .select_fields = {"nonexistent"},
                         .expected_schema = []() { return MakeSchema(); },
-                        .should_succeed = true},
+                        .should_succeed = true,
+                        .expected_error_message = ""},
 
         SelectTestParam{.test_name = "SelectCaseSensitive",
                         .create_schema = []() { return BasicSchema(); },
                         .select_fields = {"Name"},  // case-sensitive
                         .expected_schema = []() { return MakeSchema(); },
-                        .should_succeed = true},
+                        .should_succeed = true,
+                        .expected_error_message = ""},
 
         SelectTestParam{.test_name = "SelectCaseInsensitive",
                         .create_schema = []() { return BasicSchema(); },
                         .select_fields = {"Name"},  // case-insensitive
                         .expected_schema = []() { return MakeSchema(Name()); },
                         .should_succeed = true,
+                        .expected_error_message = "",
                         .case_sensitive = false}));
 
 INSTANTIATE_TEST_SUITE_P(
@@ -779,7 +785,8 @@ INSTANTIATE_TEST_SUITE_P(
                           .create_schema = []() { return AddressSchema(); },
                           .select_fields = {"id", "name"},
                           .expected_schema = []() { return MakeSchema(Id(), Name()); },
-                          .should_succeed = true},
+                          .should_succeed = true,
+                          .expected_error_message = ""},
 
                       SelectTestParam{.test_name = "SelectNestedField",
                                       .create_schema = []() { return AddressSchema(); },
@@ -792,7 +799,9 @@ INSTANTIATE_TEST_SUITE_P(
                                                 true};
                                             return MakeSchema(address_field);
                                           },
-                                      .should_succeed = true}));
+
+                                      .should_succeed = true,
+                                      .expected_error_message = ""}));
 
 INSTANTIATE_TEST_SUITE_P(
     SelectMultiLevelTestCases, SelectParamTest,
@@ -810,7 +819,8 @@ INSTANTIATE_TEST_SUITE_P(
                                   17, "user", std::move(user_type), true};
                               return MakeSchema(Id(), user_field);
                             },
-                        .should_succeed = true},
+                        .should_succeed = true,
+                        .expected_error_message = ""},
 
         SelectTestParam{.test_name = "SelectNestedFieldsAtDifferentLevels",
                         .create_schema = []() { return MultiLevelSchema(); },
@@ -831,7 +841,8 @@ INSTANTIATE_TEST_SUITE_P(
                                   26, "user", std::move(user_type), true};
                               return MakeSchema(user_field);
                             },
-                        .should_succeed = true},
+                        .should_succeed = true,
+                        .expected_error_message = ""},
 
         SelectTestParam{.test_name = "SelectListAndNestedFields",
                         .create_schema = []() { return ListSchema(); },
@@ -843,15 +854,16 @@ INSTANTIATE_TEST_SUITE_P(
                                   45, "user", std::move(user_type), true};
                               return MakeSchema(Id(), user_field);
                             },
-                        .should_succeed = true}));
+                        .should_succeed = true,
+                        .expected_error_message = ""}));
 
 struct ProjectTestParam {
   std::string test_name;
   std::function<std::unique_ptr<iceberg::Schema>()> create_schema;
   std::unordered_set<int32_t> selected_ids;
   std::function<std::unique_ptr<iceberg::Schema>()> expected_schema;
-  bool should_succeed;
-  std::string expected_error_message;
+  bool should_succeed = false;
+  std::string expected_error_message = "";
 };
 
 class ProjectParamTest : public ::testing::TestWithParam<ProjectTestParam> {};
@@ -1066,7 +1078,7 @@ TEST_F(SchemaThreadSafetyTest, ConcurrentFindFieldById) {
   std::vector<std::thread> threads;
 
   for (int i = 0; i < num_threads; ++i) {
-    threads.emplace_back([this, iterations_per_thread]() {
+    threads.emplace_back([this]() {
       for (int j = 0; j < iterations_per_thread; ++j) {
         ASSERT_THAT(schema_->FindFieldById(1), ::testing::Optional(*field1_));
         ASSERT_THAT(schema_->FindFieldById(999), ::testing::Optional(std::nullopt));
@@ -1085,7 +1097,7 @@ TEST_F(SchemaThreadSafetyTest, MixedConcurrentOperations) {
   std::vector<std::thread> threads;
 
   for (int i = 0; i < num_threads; ++i) {
-    threads.emplace_back([this, iterations_per_thread, i]() {
+    threads.emplace_back([this, i]() {
       for (int j = 0; j < iterations_per_thread; ++j) {
         if (i % 4 == 0) {
           ASSERT_THAT(schema_->FindFieldById(1), ::testing::Optional(*field1_));

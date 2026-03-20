@@ -508,14 +508,15 @@ Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) con
   return root_namespace_->TableExists(identifier);
 }
 
-Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
+Status InMemoryCatalog::DropTable(const TableIdentifier& identifier,
+                                  [[maybe_unused]] bool purge) {
   std::unique_lock lock(mutex_);
   // TODO(Guotao): Delete all metadata files if purge is true.
   return root_namespace_->UnregisterTable(identifier);
 }
 
-Status InMemoryCatalog::RenameTable(const TableIdentifier& from,
-                                    const TableIdentifier& to) {
+Status InMemoryCatalog::RenameTable([[maybe_unused]] const TableIdentifier& from,
+                                    [[maybe_unused]] const TableIdentifier& to) {
   std::unique_lock lock(mutex_);
   return NotImplemented("rename table");
 }

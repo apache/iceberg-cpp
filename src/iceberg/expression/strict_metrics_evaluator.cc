@@ -411,13 +411,13 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     return kRowsMightNotMatch;
   }
 
-  Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
-                          const Literal& lit) override {
+  Result<bool> StartsWith([[maybe_unused]] const std::shared_ptr<Bound>& expr,
+                          [[maybe_unused]] const Literal& lit) override {
     return kRowsMightNotMatch;
   }
 
-  Result<bool> NotStartsWith(const std::shared_ptr<Bound>& expr,
-                             const Literal& lit) override {
+  Result<bool> NotStartsWith([[maybe_unused]] const std::shared_ptr<Bound>& expr,
+                             [[maybe_unused]] const Literal& lit) override {
     // TODO(xiao.dong) Handle cases that definitely cannot match,
     // such as notStartsWith("x") when
     // the bounds are ["a", "b"].

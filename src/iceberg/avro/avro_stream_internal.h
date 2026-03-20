@@ -55,8 +55,8 @@ class AvroInputStream : public ::avro::SeekableInputStream {
 
  private:
   std::shared_ptr<::arrow::io::RandomAccessFile> input_stream_;
-  const int64_t buffer_size_;
-  std::vector<uint8_t> buffer_;
+  [[maybe_unused]] const int64_t buffer_size_;
+  [[maybe_unused]] std::vector<uint8_t> buffer_;
   size_t byte_count_ = 0;       // bytes read from the input stream
   size_t buffer_pos_ = 0;       // next position to read in the buffer
   size_t available_bytes_ = 0;  // bytes available in the buffer
@@ -91,7 +91,7 @@ class AvroOutputStream : public ::avro::OutputStream {
 
  private:
   std::shared_ptr<::arrow::io::OutputStream> output_stream_;
-  const int64_t buffer_size_;
+  [[maybe_unused]] const int64_t buffer_size_;
   std::vector<uint8_t> buffer_;
   size_t buffer_pos_ = 0;       // position in the buffer
   uint64_t flushed_bytes_ = 0;  // bytes flushed to the output stream

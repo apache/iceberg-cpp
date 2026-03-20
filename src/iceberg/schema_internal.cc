@@ -35,7 +35,8 @@ namespace {
 
 // Constants for Arrow schema metadata
 constexpr const char* kArrowExtensionName = "ARROW:extension:name";
-constexpr const char* kArrowExtensionMetadata = "ARROW:extension:metadata";
+[[maybe_unused]] constexpr const char* kArrowExtensionMetadata =
+    "ARROW:extension:metadata";
 constexpr const char* kArrowUuidExtensionName = "arrow.uuid";
 constexpr int32_t kUnknownFieldId = -1;
 

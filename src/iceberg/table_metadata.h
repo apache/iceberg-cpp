@@ -77,7 +77,7 @@ struct ICEBERG_EXPORT TableMetadata {
   static constexpr int64_t kInitialSequenceNumber = 0;
   static constexpr int64_t kInitialRowId = 0;
 
-  static inline const std::unordered_map<TypeId, int8_t> kMinFormatVersions = {};
+  static inline const std::unordered_map<TypeId, int8_t> kMinFormatVersions{};
 
   /// An integer version number for the format
   int8_t format_version;
@@ -127,8 +127,8 @@ struct ICEBERG_EXPORT TableMetadata {
   int64_t next_row_id;
 
   static Result<std::unique_ptr<TableMetadata>> Make(
-      const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
-      const iceberg::SortOrder& sort_order, const std::string& location,
+      const Schema& schema, const PartitionSpec& spec, const SortOrder& sort_order,
+      const std::string& location,
       const std::unordered_map<std::string, std::string>& properties,
       int format_version = kDefaultTableFormatVersion);
 
@@ -483,7 +483,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   explicit TableMetadataBuilder(const TableMetadata* base);
 
   /// Internal state members
-  struct Impl;
+  class Impl;
   std::unique_ptr<Impl> impl_;
 };
 

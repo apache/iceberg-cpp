@@ -44,7 +44,7 @@ class ProjectionVisitor : public ExpressionVisitor<std::shared_ptr<Expression>> 
   Result<std::shared_ptr<Expression>> AlwaysFalse() override { return False::Instance(); }
 
   Result<std::shared_ptr<Expression>> Not(
-      const std::shared_ptr<Expression>& child_result) override {
+      [[maybe_unused]] const std::shared_ptr<Expression>& child_result) override {
     return InvalidExpression("Project called on expression with a not");
   }
 
@@ -70,7 +70,7 @@ class ProjectionVisitor : public ExpressionVisitor<std::shared_ptr<Expression>> 
   }
 
   Result<std::shared_ptr<Expression>> Predicate(
-      const std::shared_ptr<BoundPredicate>& pred) override {
+      [[maybe_unused]] const std::shared_ptr<BoundPredicate>& pred) override {
     return InvalidExpression("Bound predicates are not supported in projections");
   }
 

@@ -134,7 +134,7 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(int32_t sort_id,
 
 std::unordered_set<std::string_view> SortOrder::OrderPreservingSortedColumns(
     const Schema& schema, const SortOrder& order) {
-  return order.fields() | std::views::filter([&schema](const SortField& field) {
+  return order.fields() | std::views::filter([](const SortField& field) {
            return field.transform()->PreservesOrder();
          }) |
          std::views::transform([&schema](const SortField& field) {

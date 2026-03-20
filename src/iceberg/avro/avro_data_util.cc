@@ -344,7 +344,7 @@ Status AppendPrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       const auto& fixed = avro_datum.value<::avro::GenericFixed>();
       const auto& fixed_type = internal::checked_cast<const FixedType&>(projected_type);
 
-      if (static_cast<size_t>(fixed.value().size()) != fixed_type.length()) {
+      if (std::cmp_not_equal(fixed.value().size(), fixed_type.length())) {
         return InvalidArgument("Expected Avro fixed[{}], got: {}", fixed_type.length(),
                                ToString(avro_node));
       }

@@ -160,7 +160,7 @@ Literal TruncateLiteralImpl<TypeId::kBinary>(const Literal& literal, int32_t wid
   // In contrast to strings, binary values do not have an assumed encoding and are
   // truncated to `width` bytes.
   const auto& data = std::get<std::vector<uint8_t>>(literal.value());
-  if (data.size() <= width) {
+  if (std::cmp_less_equal(data.size(), width)) {
     return literal;
   }
   return Literal::Binary(std::vector<uint8_t>(data.begin(), data.begin() + width));

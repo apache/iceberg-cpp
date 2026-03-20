@@ -217,7 +217,7 @@ function(resolve_avro_dependency)
     if(NOT TARGET avro-cpp::avrocpp_static)
       add_library(avro-cpp::avrocpp_static INTERFACE IMPORTED)
       target_link_libraries(avro-cpp::avrocpp_static INTERFACE avrocpp_s)
-      target_include_directories(avro-cpp::avrocpp_static
+      target_include_directories(avro-cpp::avrocpp_static SYSTEM
                                  INTERFACE ${avro-cpp_BINARY_DIR}
                                            ${avro-cpp_SOURCE_DIR}/lang/c++)
     endif()
@@ -225,6 +225,11 @@ function(resolve_avro_dependency)
     set(AVRO_VENDORED TRUE)
     set_target_properties(avrocpp_s PROPERTIES OUTPUT_NAME "iceberg_vendored_avrocpp")
     set_target_properties(avrocpp_s PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    get_target_property(_avro_iface_dirs avrocpp_s INTERFACE_INCLUDE_DIRECTORIES)
+    if(_avro_iface_dirs)
+      set_target_properties(avrocpp_s PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+                                                 "${_avro_iface_dirs}")
+    endif()
     install(TARGETS avrocpp_s
             EXPORT iceberg_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"

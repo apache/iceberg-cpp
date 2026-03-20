@@ -72,8 +72,29 @@ TEST(MetricsConfigTest, ForTable) {
 
   {
     // Default
-    auto metadata = std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
+    auto metadata =
+        std::make_shared<TableMetadata>(TableMetadata{.format_version = 2,
+                                                      .table_uuid = "",
+                                                      .location = "",
+                                                      .last_sequence_number = 0,
+                                                      .last_updated_ms = {},
+                                                      .last_column_id = 0,
+                                                      .schemas = {schema},
+                                                      .current_schema_id = 1,
+                                                      .partition_specs = {},
+                                                      .default_spec_id = 0,
+                                                      .last_partition_id = 0,
+                                                      .properties = {},
+                                                      .current_snapshot_id = 0,
+                                                      .snapshots = {},
+                                                      .snapshot_log = {},
+                                                      .metadata_log = {},
+                                                      .sort_orders = {},
+                                                      .default_sort_order_id = 0,
+                                                      .refs = {},
+                                                      .statistics = {},
+                                                      .partition_statistics = {},
+                                                      .next_row_id = 0});
     ICEBERG_UNWRAP_OR_FAIL(
         auto table, Table::Make(ident, metadata, "s3://bucket/meta.json", io, catalog));
 
@@ -94,10 +115,28 @@ TEST(MetricsConfigTest, ForTable) {
     // Custom metrics mode by set default metrics mode properties
     auto metadata = std::make_shared<TableMetadata>(
         TableMetadata{.format_version = 2,
+                      .table_uuid = "",
+                      .location = "",
+                      .last_sequence_number = 0,
+                      .last_updated_ms = {},
+                      .last_column_id = 0,
                       .schemas = {schema},
                       .current_schema_id = 1,
+                      .partition_specs = {},
+                      .default_spec_id = 0,
+                      .last_partition_id = 0,
                       .properties = TableProperties::FromMap(
-                          {{TableProperties::kDefaultWriteMetricsMode.key(), "full"}})});
+                          {{TableProperties::kDefaultWriteMetricsMode.key(), "full"}}),
+                      .current_snapshot_id = 0,
+                      .snapshots = {},
+                      .snapshot_log = {},
+                      .metadata_log = {},
+                      .sort_orders = {},
+                      .default_sort_order_id = 0,
+                      .refs = {},
+                      .statistics = {},
+                      .partition_statistics = {},
+                      .next_row_id = 0});
     ICEBERG_UNWRAP_OR_FAIL(
         auto table, Table::Make(ident, metadata, "s3://bucket/meta.json", io, catalog));
 
@@ -123,16 +162,31 @@ TEST(MetricsConfigTest, ForTable) {
 
     auto metadata = std::make_shared<TableMetadata>(TableMetadata{
         .format_version = 2,
+        .table_uuid = "",
+        .location = "",
+        .last_sequence_number = 0,
+        .last_updated_ms = {},
+        .last_column_id = 0,
         .schemas = {schema},
         .current_schema_id = 1,
+        .partition_specs = {},
+        .default_spec_id = 0,
+        .last_partition_id = 0,
         .properties = TableProperties::FromMap(
             {{TableProperties::kDefaultWriteMetricsMode.key(), "none"},
              {TableProperties::kMetricsMaxInferredColumnDefaults.key(), "2"},
              {std::string(TableProperties::kMetricModeColumnConfPrefix) + "name",
               "full"}}),
+        .current_snapshot_id = 0,
+        .snapshots = {},
+        .snapshot_log = {},
+        .metadata_log = {},
         .sort_orders = {sort_order},
         .default_sort_order_id = 1,
-    });
+        .refs = {},
+        .statistics = {},
+        .partition_statistics = {},
+        .next_row_id = 0});
 
     ICEBERG_UNWRAP_OR_FAIL(
         auto table, Table::Make(ident, metadata, "s3://bucket/meta.json", io, catalog));

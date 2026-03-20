@@ -116,7 +116,7 @@ TEST(AssignFreshIdVisitorTest, NestedSchema) {
                          AssignFreshIds(Schema::kInitialSchemaId, *schema, next_id));
 
   ASSERT_EQ(4, fresh_schema->fields().size());
-  for (int32_t i = 0; i < fresh_schema->fields().size(); ++i) {
+  for (size_t i = 0; i < fresh_schema->fields().size(); ++i) {
     EXPECT_EQ(i + 1, fresh_schema->fields()[i].field_id());
   }
 

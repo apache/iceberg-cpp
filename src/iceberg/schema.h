@@ -184,11 +184,13 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \return Error status if the schema is invalid.
   Status Validate(int32_t format_version) const;
 
-  friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
+  friend bool operator==(const Schema& lhs, const Schema& rhs) {
+    return lhs.EqualsSchema(rhs);
+  }
 
  private:
   /// \brief Compare two schemas for equality.
-  bool Equals(const Schema& other) const;
+  bool EqualsSchema(const Schema& other) const;
 
   const int32_t schema_id_;
   // Field IDs that uniquely identify rows in the table.

@@ -1137,8 +1137,22 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotRef) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = 0,
+                                          .timestamp_ms = {},
+                                          .manifest_list = "",
+                                          .summary = {},
+                                          .schema_id = std::nullopt}));
+  builder->AddSnapshot(
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = 0,
+                                          .timestamp_ms = {},
+                                          .manifest_list = "",
+                                          .summary = {},
+                                          .schema_id = std::nullopt}));
 
   // Add multiple refs
   ICEBERG_UNWRAP_OR_FAIL(auto ref1, SnapshotRef::MakeBranch(1));
@@ -1162,8 +1176,22 @@ TEST(TableMetadataBuilderTest, RemoveSnapshot) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = 0,
+                                          .timestamp_ms = {},
+                                          .manifest_list = "",
+                                          .summary = {},
+                                          .schema_id = std::nullopt}));
+  builder->AddSnapshot(
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = 0,
+                                          .timestamp_ms = {},
+                                          .manifest_list = "",
+                                          .summary = {},
+                                          .schema_id = std::nullopt}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);
@@ -1182,8 +1210,22 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotNotExist) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = 0,
+                                          .timestamp_ms = {},
+                                          .manifest_list = "",
+                                          .summary = {},
+                                          .schema_id = std::nullopt}));
+  builder->AddSnapshot(
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = 0,
+                                          .timestamp_ms = {},
+                                          .manifest_list = "",
+                                          .summary = {},
+                                          .schema_id = std::nullopt}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);

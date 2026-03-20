@@ -220,7 +220,8 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     return kRowsMightMatch;
   }
 
-  Result<bool> NotEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
+  Result<bool> NotEq([[maybe_unused]] const std::shared_ptr<Bound>& expr,
+                     [[maybe_unused]] const Literal& lit) override {
     // because the bounds are not necessarily a min or max value, this cannot be answered
     // using them. notEq(col, X) with (X, Y) doesn't guarantee that X is a value in col.
     return kRowsMightMatch;
@@ -267,8 +268,9 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     return kRowsMightMatch;
   }
 
-  Result<bool> NotIn(const std::shared_ptr<Bound>& expr,
-                     const BoundSetPredicate::LiteralSet& literal_set) override {
+  Result<bool> NotIn(
+      [[maybe_unused]] const std::shared_ptr<Bound>& expr,
+      [[maybe_unused]] const BoundSetPredicate::LiteralSet& literal_set) override {
     // because the bounds are not necessarily a min or max value, this cannot be answered
     // using them. notIn(col, {X, ...}) with (X, Y) doesn't guarantee that X is a value in
     // col.

@@ -33,7 +33,7 @@ namespace iceberg::parquet {
 
 namespace {
 
-constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
+[[maybe_unused]] constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 
 ::parquet::schema::NodePtr MakeInt32Node(const std::string& name, int field_id = -1,
                                          bool optional = true) {

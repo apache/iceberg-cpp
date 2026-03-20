@@ -152,8 +152,8 @@ ManifestGroup& ManifestGroup::ColumnsToKeepStats(std::unordered_set<int32_t> col
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   auto create_file_scan_tasks =
-      [this](std::vector<ManifestEntry>&& entries,
-             const TaskContext& ctx) -> Result<std::vector<std::shared_ptr<ScanTask>>> {
+      [](std::vector<ManifestEntry>&& entries,
+         const TaskContext& ctx) -> Result<std::vector<std::shared_ptr<ScanTask>>> {
     std::vector<std::shared_ptr<ScanTask>> tasks;
     tasks.reserve(entries.size());
 

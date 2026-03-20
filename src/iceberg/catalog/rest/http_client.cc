@@ -106,6 +106,7 @@ ErrorResponse BuildDefaultErrorResponse(const cpr::Response& response) {
       .type = std::string(kRestExceptionType),
       .message = !response.reason.empty() ? response.reason
                                           : GetStandardReasonPhrase(response.status_code),
+      .stack = {},
   };
 }
 

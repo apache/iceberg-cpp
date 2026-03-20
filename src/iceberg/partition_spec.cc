@@ -106,7 +106,7 @@ Result<std::string> PartitionSpec::PartitionPath(const PartitionValues& data) co
                    "Partition spec and data mismatch, expected field num {}, got {}",
                    fields_.size(), data.num_fields());
   std::stringstream ss;
-  for (int32_t i = 0; i < fields_.size(); ++i) {
+  for (size_t i = 0; i < fields_.size(); ++i) {
     ICEBERG_ASSIGN_OR_RAISE(auto value, data.ValueAt(i));
     if (i > 0) {
       ss << "/";
@@ -275,7 +275,8 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpec::Make(
 
 bool PartitionSpec::HasSequentialFieldIds(const PartitionSpec& spec) {
   for (size_t i = 0; i < spec.fields().size(); i += 1) {
-    if (spec.fields()[i].field_id() != PartitionSpec::kLegacyPartitionDataIdStart + i) {
+    if (std::cmp_not_equal(spec.fields()[i].field_id(),
+                           kLegacyPartitionDataIdStart + i)) {
       return false;
     }
   }

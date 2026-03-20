@@ -199,8 +199,8 @@ TEST(TransformResultTypeTest, NegativeCases) {
 struct TransformParam {
   std::string str;
   // The integer parameter associated with the transform.
-  int32_t param;
-  std::shared_ptr<Type> source_type;
+  int32_t param = 0;
+  std::shared_ptr<Type> source_type = nullptr;
   Literal source;
   Literal expected;
 };

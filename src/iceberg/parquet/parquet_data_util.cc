@@ -56,7 +56,7 @@ Result<std::shared_ptr<::arrow::Array>> MakeNullArray(
 Result<std::shared_ptr<::arrow::Array>> ProjectPrimitiveArray(
     const std::shared_ptr<::arrow::Array>& array,
     const std::shared_ptr<::arrow::DataType>& output_arrow_type,
-    ::arrow::MemoryPool* pool) {
+    [[maybe_unused]] ::arrow::MemoryPool* pool) {
   if (array->type()->Equals(output_arrow_type)) {
     return array;
   }
@@ -79,7 +79,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
         "Inconsistent number of fields ({}) and number of projections ({})",
         struct_type.fields().size(), projections.size());
   }
-  if (struct_type.fields().size() != output_struct_type->num_fields()) {
+  if (std::cmp_not_equal(struct_type.fields().size(), output_struct_type->num_fields())) {
     return InvalidSchema(
         "Inconsistent number of fields ({}) and number of output fields ({})",
         struct_type.fields().size(), output_struct_type->num_fields());

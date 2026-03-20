@@ -173,8 +173,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \param current_metadata Current table metadata to validate
   /// \param snapshot Ending snapshot on the lineage which is being validated
-  virtual Status Validate(const TableMetadata& current_metadata,
-                          const std::shared_ptr<Snapshot>& snapshot) {
+  virtual Status Validate([[maybe_unused]] const TableMetadata& current_metadata,
+                          [[maybe_unused]] const std::shared_ptr<Snapshot>& snapshot) {
     return {};
   };
 

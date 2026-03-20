@@ -51,7 +51,7 @@ struct ICEBERG_EXPORT MetricsMode {
   static MetricsMode Full();
 
   Kind kind;
-  std::variant<std::monostate, int32_t> length;
+  std::variant<std::monostate, int32_t> length = std::monostate{};
 };
 
 /// \brief Configuration for collecting column metrics for an Iceberg table.

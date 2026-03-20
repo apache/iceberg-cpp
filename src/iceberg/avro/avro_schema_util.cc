@@ -125,27 +125,32 @@ std::string ToString(const ::avro::LogicalType::Type& logical_type) {
   return ToString(::avro::LogicalType(logical_type));
 }
 
-Status ToAvroNodeVisitor::Visit(const BooleanType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const BooleanType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_BOOL);
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const IntType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const IntType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_INT);
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const LongType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const LongType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_LONG);
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const FloatType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const FloatType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_FLOAT);
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const DoubleType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const DoubleType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_DOUBLE);
   return {};
 }
@@ -164,19 +169,22 @@ Status ToAvroNodeVisitor::Visit(const DecimalType& type, ::avro::NodePtr* node) 
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const DateType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const DateType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_INT);
   (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::DATE});
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const TimeType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const TimeType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_LONG);
   (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::TIME_MICROS});
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const TimestampType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const TimestampType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_LONG);
   (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::TIMESTAMP_MICROS});
   ::avro::CustomAttributes attributes;
@@ -185,7 +193,8 @@ Status ToAvroNodeVisitor::Visit(const TimestampType& type, ::avro::NodePtr* node
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const TimestampTzType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const TimestampTzType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_LONG);
   (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::TIMESTAMP_MICROS});
   ::avro::CustomAttributes attributes;
@@ -194,12 +203,14 @@ Status ToAvroNodeVisitor::Visit(const TimestampTzType& type, ::avro::NodePtr* no
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const StringType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const StringType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_STRING);
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const UuidType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const UuidType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodeFixed>();
   (*node)->setName(::avro::Name("uuid_fixed"));
   (*node)->setFixedSize(16);
@@ -214,7 +225,8 @@ Status ToAvroNodeVisitor::Visit(const FixedType& type, ::avro::NodePtr* node) {
   return {};
 }
 
-Status ToAvroNodeVisitor::Visit(const BinaryType& type, ::avro::NodePtr* node) {
+Status ToAvroNodeVisitor::Visit([[maybe_unused]] const BinaryType& type,
+                                ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_BYTES);
   return {};
 }
@@ -573,8 +585,9 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
       break;
     case TypeId::kFixed:
       if (avro_node->type() == ::avro::AVRO_FIXED &&
-          avro_node->fixedSize() ==
-              internal::checked_cast<const FixedType&>(expected_type).length()) {
+          std::cmp_equal(
+              avro_node->fixedSize(),
+              internal::checked_cast<const FixedType&>(expected_type).length())) {
         return {};
       }
       break;

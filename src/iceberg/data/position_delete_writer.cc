@@ -49,6 +49,7 @@ class PositionDeleteWriter::Impl {
         .path = options.path,
         .schema = delete_schema,
         .io = options.io,
+        .metadata = {},
         .properties = WriterProperties::FromMap(options.properties),
     };
 
@@ -72,7 +73,7 @@ class PositionDeleteWriter::Impl {
     buffered_positions_.push_back(pos);
     referenced_paths_.emplace(file_path);
 
-    if (buffered_paths_.size() >= options_.flush_threshold) {
+    if (std::cmp_greater_equal(buffered_paths_.size(), options_.flush_threshold)) {
       return FlushBuffer();
     }
     return {};
@@ -152,9 +153,14 @@ class PositionDeleteWriter::Impl {
                              metrics.nan_value_counts.end()},
         .lower_bounds = std::move(lower_bounds_map),
         .upper_bounds = std::move(upper_bounds_map),
+        .key_metadata = {},
         .split_offsets = std::move(split_offsets),
-        .sort_order_id = std::nullopt,
+        .equality_ids = {},
+        .sort_order_id = {},
+        .first_row_id = std::nullopt,
         .referenced_data_file = std::move(referenced_data_file),
+        .content_offset = std::nullopt,
+        .content_size_in_bytes = std::nullopt,
         .partition_spec_id =
             options_.spec ? std::make_optional(options_.spec->spec_id()) : std::nullopt,
     });

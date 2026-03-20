@@ -53,7 +53,7 @@ SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction,
 
 SnapshotManager::~SnapshotManager() = default;
 
-SnapshotManager& SnapshotManager::Cherrypick(int64_t snapshot_id) {
+SnapshotManager& SnapshotManager::Cherrypick([[maybe_unused]] int64_t snapshot_id) {
   ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   // TODO(anyone): Implement cherrypick operation
   ICEBERG_BUILDER_CHECK(false, "Cherrypick operation not yet implemented");

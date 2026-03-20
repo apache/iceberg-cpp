@@ -46,11 +46,11 @@ namespace iceberg {
 
 namespace {
 
-constexpr int64_t kSequenceNumber = 34L;
+[[maybe_unused]] constexpr int64_t kSequenceNumber = 34L;
 constexpr int64_t kSnapshotId = 987134631982734L;
-constexpr std::string_view kPath =
+[[maybe_unused]] constexpr std::string_view kPath =
     "s3://bucket/table/category=cheesy/timestamp_hour=10/id_bucket=3/file.avro";
-constexpr FileFormatType kFormat = FileFormatType::kAvro;
+[[maybe_unused]] constexpr FileFormatType kFormat = FileFormatType::kAvro;
 constexpr int64_t kFirstRowId = 100L;
 constexpr int64_t kFileSizeCheckRowsDivisor = 250;
 constexpr int64_t kSmallFileSize = 10L;

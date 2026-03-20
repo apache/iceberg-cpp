@@ -110,7 +110,7 @@ Result<std::unordered_set<int64_t>> ExpireSnapshots::ComputeBranchSnapshotsToRet
 
   for (const auto& ancestor : snapshots) {
     ICEBERG_DCHECK(ancestor != nullptr, "Ancestor snapshot is null");
-    if (ids_to_retain.size() < min_snapshots_to_keep ||
+    if (std::cmp_less(ids_to_retain.size(), min_snapshots_to_keep) ||
         ancestor->timestamp_ms >= expire_snapshot_older_than) {
       ids_to_retain.insert(ancestor->snapshot_id);
     } else {
