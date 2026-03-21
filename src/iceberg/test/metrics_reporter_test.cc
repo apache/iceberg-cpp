@@ -19,9 +19,11 @@
 
 #include "iceberg/metrics_reporter.h"
 
+#include <chrono>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -33,7 +35,6 @@ namespace iceberg {
 class CollectingMetricsReporter : public MetricsReporter {
  public:
   static Result<std::unique_ptr<MetricsReporter>> Make(
-      [[maybe_unused]] std::string_view name,
       [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
     return std::make_unique<CollectingMetricsReporter>();
   }
@@ -48,17 +49,16 @@ class CollectingMetricsReporter : public MetricsReporter {
 
 TEST(CustomMetricsReporterTest, RegisterAndLoad) {
   // Register custom reporter
-  MetricsReporters::Register(
-      "collecting",
-      [](std::string_view name, const std::unordered_map<std::string, std::string>& props)
-          -> Result<std::unique_ptr<MetricsReporter>> {
-        return CollectingMetricsReporter::Make(name, props);
-      });
+  MetricsReporters::Register("collecting",
+                             [](const std::unordered_map<std::string, std::string>& props)
+                                 -> Result<std::unique_ptr<MetricsReporter>> {
+                               return CollectingMetricsReporter::Make(props);
+                             });
 
   // Load the custom reporter
   std::unordered_map<std::string, std::string> properties = {
-      {std::string(kMetricsReporterType), "collecting"}};
-  auto result = MetricsReporters::Load("test", properties);
+      {std::string(kMetricsReporterImpl), "collecting"}};
+  auto result = MetricsReporters::Load(properties);
 
   ASSERT_TRUE(result.has_value());
   ASSERT_NE(result.value(), nullptr);
@@ -74,22 +74,106 @@ TEST(CustomMetricsReporterTest, RegisterAndLoad) {
   EXPECT_EQ(GetReportType(reporter->reports()[0]), MetricsReportType::kScanReport);
 }
 
-TEST(CustomMetricsReporterTest, RegisterCaseInsensitive) {
-  // Register with uppercase
-  MetricsReporters::Register(
-      "UPPERCASE",
-      [](std::string_view, const std::unordered_map<std::string, std::string>&)
-          -> Result<std::unique_ptr<MetricsReporter>> {
-        return std::make_unique<CollectingMetricsReporter>();
-      });
+struct ReporterRegistrationParam {
+  std::string test_name;
+  std::string register_name;
+  std::string load_name;
+  bool expect_success;
+};
 
-  // Load with lowercase
-  std::unordered_map<std::string, std::string> properties = {
-      {std::string(kMetricsReporterType), "uppercase"}};
-  auto result = MetricsReporters::Load("test", properties);
+class ReporterRegistrationTest
+    : public ::testing::TestWithParam<ReporterRegistrationParam> {};
 
-  ASSERT_TRUE(result.has_value());
-  ASSERT_NE(result.value(), nullptr);
+TEST_P(ReporterRegistrationTest, LoadsRegisteredReporter) {
+  const auto& param = GetParam();
+  MetricsReporters::Register(param.register_name,
+                             [](const std::unordered_map<std::string, std::string>&)
+                                 -> Result<std::unique_ptr<MetricsReporter>> {
+                               return std::make_unique<CollectingMetricsReporter>();
+                             });
+
+  std::unordered_map<std::string, std::string> props = {
+      {std::string(kMetricsReporterImpl), param.load_name}};
+  auto result = MetricsReporters::Load(props);
+  EXPECT_EQ(result.has_value(), param.expect_success);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    MetricsReporterRegistration, ReporterRegistrationTest,
+    ::testing::Values(ReporterRegistrationParam{.test_name = "ExactMatch",
+                                                .register_name = "custom1",
+                                                .load_name = "custom1",
+                                                .expect_success = true},
+                      ReporterRegistrationParam{.test_name = "UpperToLower",
+                                                .register_name = "UPPER1",
+                                                .load_name = "upper1",
+                                                .expect_success = true},
+                      ReporterRegistrationParam{.test_name = "UnregisteredType",
+                                                .register_name = "registered1",
+                                                .load_name = "nonexistent1",
+                                                .expect_success = false}),
+    [](const auto& info) { return info.param.test_name; });
+
+struct VariantDispatchParam {
+  std::string test_name;
+  MetricsReport report;
+  MetricsReportType expected_type;
+};
+
+class VariantDispatchTest : public ::testing::TestWithParam<VariantDispatchParam> {};
+
+TEST_P(VariantDispatchTest, CorrectTypeDispatch) {
+  const auto& param = GetParam();
+  EXPECT_EQ(GetReportType(param.report), param.expected_type);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MetricsReportVariant, VariantDispatchTest,
+    ::testing::Values(
+        VariantDispatchParam{.test_name = "ScanReportDefault",
+                             .report = ScanReport{},
+                             .expected_type = MetricsReportType::kScanReport},
+        VariantDispatchParam{.test_name = "CommitReportDefault",
+                             .report = CommitReport{},
+                             .expected_type = MetricsReportType::kCommitReport}),
+    [](const auto& info) { return info.param.test_name; });
+
+struct CollectorParam {
+  std::string test_name;
+  MetricsReport report;
+  MetricsReportType expected_type;
+  std::string expected_table_name;
+};
+
+class CollectorTest : public ::testing::TestWithParam<CollectorParam> {};
+
+TEST_P(CollectorTest, CollectsAndPreservesReport) {
+  const auto& param = GetParam();
+  CollectingMetricsReporter reporter;
+  reporter.Report(param.report);
+
+  ASSERT_EQ(reporter.reports().size(), 1);
+  EXPECT_EQ(GetReportType(reporter.reports()[0]), param.expected_type);
+
+  std::visit([&](const auto& r) { EXPECT_EQ(r.table_name, param.expected_table_name); },
+             reporter.reports()[0]);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MetricsCollector, CollectorTest,
+    ::testing::Values(
+        CollectorParam{.test_name = "ScanWithFields",
+                       .report = ScanReport{.table_name = "db.t1",
+                                            .snapshot_id = 1,
+                                            .total_file_size_in_bytes = 99999},
+                       .expected_type = MetricsReportType::kScanReport,
+                       .expected_table_name = "db.t1"},
+        CollectorParam{.test_name = "CommitWithFields",
+                       .report = CommitReport{.table_name = "db.t2",
+                                              .snapshot_id = 2,
+                                              .operation = "append"},
+                       .expected_type = MetricsReportType::kCommitReport,
+                       .expected_table_name = "db.t2"}),
+    [](const auto& info) { return info.param.test_name; });
 
 }  // namespace iceberg

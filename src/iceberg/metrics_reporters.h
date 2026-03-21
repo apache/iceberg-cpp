@@ -34,22 +34,20 @@
 
 namespace iceberg {
 
-/// \brief Property key for configuring the metrics reporter type.
+/// \brief Property key for configuring the metrics reporter implementation.
 ///
-/// Set this property in table properties to specify which metrics reporter
+/// Set this property in catalog properties to specify which metrics reporter
 /// implementation to use. The value should match a registered reporter type.
-inline constexpr std::string_view kMetricsReporterType = "metrics.reporter.type";
+inline constexpr std::string_view kMetricsReporterImpl = "metrics-reporter-impl";
 
 /// \brief Property value for the noop metrics reporter.
 inline constexpr std::string_view kMetricsReporterTypeNoop = "noop";
 
 /// \brief Function type for creating MetricsReporter instances.
 ///
-/// \param name The name identifier for the reporter.
 /// \param properties Configuration properties for the reporter.
 /// \return A new MetricsReporter instance or an error.
 using MetricsReporterFactory = std::function<Result<std::unique_ptr<MetricsReporter>>(
-    std::string_view name,
     const std::unordered_map<std::string, std::string>& properties)>;
 
 /// \brief Factory class for creating and managing MetricsReporter instances.
@@ -61,15 +59,13 @@ class ICEBERG_EXPORT MetricsReporters {
  public:
   /// \brief Load a metrics reporter based on properties.
   ///
-  /// This method looks up the "metrics.reporter.type" property to determine
+  /// This method looks up the "metrics-reporter-impl" property to determine
   /// which reporter implementation to create. If not specified, returns a
   /// NoopMetricsReporter.
   ///
-  /// \param name Name identifier for the reporter.
   /// \param properties Configuration properties containing reporter type.
   /// \return A new MetricsReporter instance or an error.
   static Result<std::unique_ptr<MetricsReporter>> Load(
-      std::string_view name,
       const std::unordered_map<std::string, std::string>& properties);
 
   /// \brief Register a factory for a metrics reporter type.

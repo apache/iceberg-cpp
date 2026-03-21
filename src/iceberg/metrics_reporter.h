@@ -23,8 +23,10 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 
@@ -85,6 +87,25 @@ struct ICEBERG_EXPORT ScanReport {
 
   /// \brief Number of delete manifests that were skipped.
   int64_t skipped_delete_manifests = 0;
+
+  /// \brief Projected field IDs from the scan schema.
+  std::vector<int32_t> projected_field_ids;
+  /// \brief Projected field names from the scan schema.
+  std::vector<std::string> projected_field_names;
+  /// \brief Total size in bytes of all result data files.
+  int64_t total_file_size_in_bytes = 0;
+  /// \brief Total size in bytes of all result delete files.
+  int64_t total_delete_file_size_in_bytes = 0;
+  /// \brief Number of indexed delete files.
+  int64_t indexed_delete_files = 0;
+  /// \brief Number of equality delete files in the scan result.
+  int64_t equality_delete_files = 0;
+  /// \brief Number of positional delete files in the scan result.
+  int64_t positional_delete_files = 0;
+  /// \brief Number of deletion vectors in the scan result.
+  int64_t dvs = 0;
+  /// \brief Additional key-value metadata.
+  std::unordered_map<std::string, std::string> metadata;
 };
 
 /// \brief Report generated after a commit operation.
@@ -136,6 +157,47 @@ struct ICEBERG_EXPORT CommitReport {
 
   /// \brief Size in bytes of files removed.
   int64_t removed_files_size = 0;
+
+  /// \brief Total duration of the commit operation.
+  DurationMs total_duration{0};
+  /// \brief Total records after this commit.
+  int64_t total_records = 0;
+  /// \brief Total file size in bytes after this commit.
+  int64_t total_files_size = 0;
+  /// \brief Equality delete files added.
+  int64_t added_equality_delete_files = 0;
+  /// \brief Equality delete files removed.
+  int64_t removed_equality_delete_files = 0;
+  /// \brief Positional delete files added.
+  int64_t added_positional_delete_files = 0;
+  /// \brief Positional delete files removed.
+  int64_t removed_positional_delete_files = 0;
+  /// \brief Position delete records added.
+  int64_t added_positional_deletes = 0;
+  /// \brief Position delete records removed.
+  int64_t removed_positional_deletes = 0;
+  /// \brief Total position delete records.
+  int64_t total_positional_deletes = 0;
+  /// \brief Equality delete records added.
+  int64_t added_equality_deletes = 0;
+  /// \brief Equality delete records removed.
+  int64_t removed_equality_deletes = 0;
+  /// \brief Total equality delete records.
+  int64_t total_equality_deletes = 0;
+  /// \brief Deletion vectors added.
+  int64_t added_dvs = 0;
+  /// \brief Deletion vectors removed.
+  int64_t removed_dvs = 0;
+  /// \brief Manifests created in this commit.
+  int64_t manifests_created = 0;
+  /// \brief Manifests replaced in this commit.
+  int64_t manifests_replaced = 0;
+  /// \brief Manifests kept in this commit.
+  int64_t manifests_kept = 0;
+  /// \brief Manifest entries processed.
+  int64_t manifest_entries_processed = 0;
+  /// \brief Additional key-value metadata.
+  std::unordered_map<std::string, std::string> metadata;
 };
 
 /// \brief The type of a metrics report.

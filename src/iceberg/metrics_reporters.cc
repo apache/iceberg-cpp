@@ -41,7 +41,7 @@ const std::unordered_set<std::string>& DefaultReporterTypes() {
 /// \brief Infer the reporter type from properties.
 std::string InferReporterType(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto it = properties.find(std::string(kMetricsReporterType));
+  auto it = properties.find(std::string(kMetricsReporterImpl));
   if (it != properties.end() && !it->second.empty()) {
     return StringUtils::ToLower(it->second);
   }
@@ -56,7 +56,6 @@ std::string InferReporterType(
 class NoopMetricsReporter : public MetricsReporter {
  public:
   static Result<std::unique_ptr<MetricsReporter>> Make(
-      [[maybe_unused]] std::string_view name,
       [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
     return std::make_unique<NoopMetricsReporter>();
   }
@@ -69,9 +68,8 @@ class NoopMetricsReporter : public MetricsReporter {
 /// \brief Template helper to create factory functions for reporter types.
 template <typename T>
 MetricsReporterFactory MakeReporterFactory() {
-  return
-      [](std::string_view name, const std::unordered_map<std::string, std::string>& props)
-          -> Result<std::unique_ptr<MetricsReporter>> { return T::Make(name, props); };
+  return [](const std::unordered_map<std::string, std::string>& props)
+             -> Result<std::unique_ptr<MetricsReporter>> { return T::Make(props); };
 }
 
 /// \brief Create the default registry with built-in reporters.
@@ -95,7 +93,6 @@ void MetricsReporters::Register(std::string_view reporter_type,
 }
 
 Result<std::unique_ptr<MetricsReporter>> MetricsReporters::Load(
-    std::string_view name,
     const std::unordered_map<std::string, std::string>& properties) {
   std::string reporter_type = InferReporterType(properties);
 
@@ -109,7 +106,7 @@ Result<std::unique_ptr<MetricsReporter>> MetricsReporters::Load(
     return InvalidArgument("Unknown metrics reporter type: '{}'", reporter_type);
   }
 
-  return it->second(name, properties);
+  return it->second(properties);
 }
 
 }  // namespace iceberg

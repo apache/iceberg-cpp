@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
@@ -129,6 +130,8 @@ struct TableScanContext {
   std::optional<int64_t> to_snapshot_id;
   std::string branch{};
   std::optional<int64_t> min_rows_requested;
+  std::shared_ptr<MetricsReporter> reporter;
+  std::string table_name;
 
   // Validate the context parameters to see if they have conflicts.
   [[nodiscard]] Status Validate() const;
@@ -148,8 +151,12 @@ class ICEBERG_EXPORT TableScanBuilder : public ErrorCollector {
   /// \brief Constructs a TableScanBuilder for the given table.
   /// \param metadata Current table metadata.
   /// \param io FileIO instance for reading manifests files.
+  /// \param reporter Optional metrics reporter for scan metrics.
+  /// \param table_name Optional table name for metrics reporting.
   static Result<std::unique_ptr<TableScanBuilder<ScanType>>> Make(
-      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io);
+      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io,
+      std::shared_ptr<MetricsReporter> reporter = nullptr,
+      const std::string& table_name = {});
 
   /// \brief Update property that will override the table's behavior
   /// based on the incoming pair. Unknown properties will be ignored.
@@ -281,7 +288,9 @@ class ICEBERG_EXPORT TableScanBuilder : public ErrorCollector {
   Result<std::unique_ptr<ScanType>> Build();
 
  protected:
-  TableScanBuilder(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io);
+  TableScanBuilder(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io,
+                   std::shared_ptr<MetricsReporter> reporter,
+                   const std::string& table_name);
 
   // Return the schema bound to the specified snapshot.
   Result<std::reference_wrapper<const std::shared_ptr<Schema>>> ResolveSnapshotSchema();

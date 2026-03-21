@@ -21,6 +21,7 @@
 #pragma once
 
 #include <cstdint>
+#include <chrono>
 #include <memory>
 #include <optional>
 #include <string>
@@ -28,6 +29,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -137,6 +139,8 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   Status ApplyUpdateSnapshotReference(UpdateSnapshotReference& update);
   Status ApplyUpdateSortOrder(UpdateSortOrder& update);
   Status ApplyUpdateStatistics(UpdateStatistics& update);
+
+  void ReportCommitMetrics(DurationMs duration) const;
 
  private:
   friend class PendingUpdate;
