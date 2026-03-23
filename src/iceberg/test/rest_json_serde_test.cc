@@ -182,7 +182,7 @@ INSTANTIATE_TEST_SUITE_P(
         CreateNamespaceRequestParam{
             .test_name = "EmptyProperties",
             .expected_json_str = R"({"namespace":["accounting","tax"]})",
-            .model = {.namespace_ = Namespace{{"accounting", "tax"}}},
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}}, .properties = {}},
         },
         // Request with empty namespace
         CreateNamespaceRequestParam{
@@ -233,12 +233,14 @@ INSTANTIATE_TEST_SUITE_P(
         CreateNamespaceRequestDeserializeParam{
             .test_name = "NullProperties",
             .json_str = R"({"namespace":["accounting","tax"],"properties":null})",
-            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}},
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                               .properties = {}}},
         // Properties field is missing (should deserialize to empty map)
         CreateNamespaceRequestDeserializeParam{
             .test_name = "MissingProperties",
             .json_str = R"({"namespace":["accounting","tax"]})",
-            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                               .properties = {}}}),
     [](const ::testing::TestParamInfo<CreateNamespaceRequestDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -259,11 +261,12 @@ INSTANTIATE_TEST_SUITE_P(
         CreateNamespaceResponseParam{
             .test_name = "EmptyProperties",
             .expected_json_str = R"({"namespace":["accounting","tax"]})",
-            .model = {.namespace_ = Namespace{{"accounting", "tax"}}}},
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}}, .properties = {}}},
         // Response with empty namespace
-        CreateNamespaceResponseParam{.test_name = "EmptyNamespace",
-                                     .expected_json_str = R"({"namespace":[]})",
-                                     .model = {.namespace_ = Namespace{}}}),
+        CreateNamespaceResponseParam{
+            .test_name = "EmptyNamespace",
+            .expected_json_str = R"({"namespace":[]})",
+            .model = {.namespace_ = Namespace{}, .properties = {}}}),
     [](const ::testing::TestParamInfo<CreateNamespaceResponseParam>& info) {
       return info.param.test_name;
     });
@@ -277,12 +280,14 @@ INSTANTIATE_TEST_SUITE_P(
         CreateNamespaceResponseDeserializeParam{
             .test_name = "MissingProperties",
             .json_str = R"({"namespace":["accounting","tax"]})",
-            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}},
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                               .properties = {}}},
         // Properties field is null (should deserialize to empty map)
         CreateNamespaceResponseDeserializeParam{
             .test_name = "NullProperties",
             .json_str = R"({"namespace":["accounting","tax"],"properties":null})",
-            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                               .properties = {}}}),
     [](const ::testing::TestParamInfo<CreateNamespaceResponseDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -327,7 +332,7 @@ INSTANTIATE_TEST_SUITE_P(
         GetNamespaceResponseParam{
             .test_name = "EmptyProperties",
             .expected_json_str = R"({"namespace":["accounting","tax"]})",
-            .model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}}, .properties = {}}}),
     [](const ::testing::TestParamInfo<GetNamespaceResponseParam>& info) {
       return info.param.test_name;
     });
@@ -341,7 +346,8 @@ INSTANTIATE_TEST_SUITE_P(
         GetNamespaceResponseDeserializeParam{
             .test_name = "NullProperties",
             .json_str = R"({"namespace":["accounting","tax"],"properties":null})",
-            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                               .properties = {}}}),
     [](const ::testing::TestParamInfo<GetNamespaceResponseDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -384,7 +390,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Response with empty namespaces
         ListNamespacesResponseParam{.test_name = "EmptyNamespaces",
                                     .expected_json_str = R"({"namespaces":[]})",
-                                    .model = {.next_page_token = ""}},
+                                    .model = {.next_page_token = "", .namespaces = {}}},
         // Response with page token
         ListNamespacesResponseParam{
             .test_name = "WithPageToken",
@@ -430,12 +436,12 @@ INSTANTIATE_TEST_SUITE_P(
         UpdateNamespacePropertiesRequestParam{
             .test_name = "OnlyUpdates",
             .expected_json_str = R"({"updates":{"owner":"Hank"}})",
-            .model = {.updates = {{"owner", "Hank"}}}},
+            .model = {.removals = {}, .updates = {{"owner", "Hank"}}}},
         // Request with only removals
         UpdateNamespacePropertiesRequestParam{
             .test_name = "OnlyRemovals",
             .expected_json_str = R"({"removals":["foo","bar"]})",
-            .model = {.removals = {"foo", "bar"}}},
+            .model = {.removals = {"foo", "bar"}, .updates = {}}},
         // Request with all empty fields
         UpdateNamespacePropertiesRequestParam{
             .test_name = "AllEmpty", .expected_json_str = R"({})", .model = {}}),
@@ -453,17 +459,17 @@ INSTANTIATE_TEST_SUITE_P(
         UpdateNamespacePropertiesRequestDeserializeParam{
             .test_name = "NullRemovals",
             .json_str = R"({"removals":null,"updates":{"owner":"Hank"}})",
-            .expected_model = {.updates = {{"owner", "Hank"}}}},
+            .expected_model = {.removals = {}, .updates = {{"owner", "Hank"}}}},
         // Removals is missing (should deserialize to empty vector)
         UpdateNamespacePropertiesRequestDeserializeParam{
             .test_name = "MissingRemovals",
             .json_str = R"({"updates":{"owner":"Hank"}})",
-            .expected_model = {.updates = {{"owner", "Hank"}}}},
+            .expected_model = {.removals = {}, .updates = {{"owner", "Hank"}}}},
         // Updates is null (should deserialize to empty map)
         UpdateNamespacePropertiesRequestDeserializeParam{
             .test_name = "NullUpdates",
             .json_str = R"({"removals":["foo","bar"],"updates":null})",
-            .expected_model = {.removals = {"foo", "bar"}}},
+            .expected_model = {.removals = {"foo", "bar"}, .updates = {}}},
         // All fields missing (should deserialize to empty)
         UpdateNamespacePropertiesRequestDeserializeParam{
             .test_name = "AllMissing", .json_str = R"({})", .expected_model = {}}),
@@ -505,17 +511,17 @@ INSTANTIATE_TEST_SUITE_P(
         UpdateNamespacePropertiesResponseParam{
             .test_name = "OnlyUpdated",
             .expected_json_str = R"({"removed":[],"updated":["owner"]})",
-            .model = {.updated = {"owner"}}},
+            .model = {.updated = {"owner"}, .removed = {}, .missing = {}}},
         // Response with only removed field
         UpdateNamespacePropertiesResponseParam{
             .test_name = "OnlyRemoved",
             .expected_json_str = R"({"removed":["foo"],"updated":[]})",
-            .model = {.removed = {"foo"}}},
+            .model = {.updated = {}, .removed = {"foo"}, .missing = {}}},
         // Response with only missing field
         UpdateNamespacePropertiesResponseParam{
             .test_name = "OnlyMissing",
             .expected_json_str = R"({"removed":[],"updated":[],"missing":["bar"]})",
-            .model = {.missing = {"bar"}}},
+            .model = {.updated = {}, .removed = {}, .missing = {"bar"}}},
         // Response with all empty fields
         UpdateNamespacePropertiesResponseParam{
             .test_name = "AllEmpty",
@@ -535,7 +541,7 @@ INSTANTIATE_TEST_SUITE_P(
         UpdateNamespacePropertiesResponseDeserializeParam{
             .test_name = "MissingOptional",
             .json_str = R"({"updated":["owner"],"removed":[]})",
-            .expected_model = {.updated = {"owner"}}},
+            .expected_model = {.updated = {"owner"}, .removed = {}, .missing = {}}},
         // All fields are missing
         UpdateNamespacePropertiesResponseDeserializeParam{
             .test_name = "AllMissing", .json_str = R"({})", .expected_model = {}}),
@@ -585,7 +591,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Response with empty identifiers
         ListTablesResponseParam{.test_name = "EmptyIdentifiers",
                                 .expected_json_str = R"({"identifiers":[]})",
-                                .model = {.next_page_token = ""}},
+                                .model = {.next_page_token = "", .identifiers = {}}},
         // Response with page token
         ListTablesResponseParam{
             .test_name = "WithPageToken",
@@ -739,18 +745,21 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_json_str =
                 R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{"clients":"5"}})",
             .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
-                      .overrides = {{"clients", "5"}}}},
+                      .overrides = {{"clients", "5"}},
+                      .endpoints = {}}},
         // Only defaults
         CatalogConfigParam{
             .test_name = "OnlyDefaults",
             .expected_json_str =
                 R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{}})",
-            .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+            .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
+                      .overrides = {},
+                      .endpoints = {}}},
         // Only overrides
         CatalogConfigParam{
             .test_name = "OnlyOverrides",
             .expected_json_str = R"({"defaults":{},"overrides":{"clients":"5"}})",
-            .model = {.overrides = {{"clients", "5"}}}},
+            .model = {.defaults = {}, .overrides = {{"clients", "5"}}, .endpoints = {}}},
         // Both empty
         CatalogConfigParam{.test_name = "BothEmpty",
                            .expected_json_str = R"({"defaults":{},"overrides":{}})",
@@ -770,7 +779,9 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "OnlyEndpoints",
             .expected_json_str =
                 R"({"defaults":{},"overrides":{},"endpoints":["GET /v1/config"]})",
-            .model = {.endpoints = {*Endpoint::Make(HttpMethod::kGet, "/v1/config")}}}),
+            .model = {.defaults = {},
+                      .overrides = {},
+                      .endpoints = {*Endpoint::Make(HttpMethod::kGet, "/v1/config")}}}),
     [](const ::testing::TestParamInfo<CatalogConfigParam>& info) {
       return info.param.test_name;
     });
@@ -784,23 +795,30 @@ INSTANTIATE_TEST_SUITE_P(
         CatalogConfigDeserializeParam{
             .test_name = "MissingOverrides",
             .json_str = R"({"defaults":{"warehouse":"s3://bucket/warehouse"}})",
-            .expected_model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+            .expected_model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
+                               .overrides = {},
+                               .endpoints = {}}},
         // Null overrides field
         CatalogConfigDeserializeParam{
             .test_name = "NullOverrides",
             .json_str =
                 R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":null})",
-            .expected_model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+            .expected_model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
+                               .overrides = {},
+                               .endpoints = {}}},
         // Missing defaults field
-        CatalogConfigDeserializeParam{
-            .test_name = "MissingDefaults",
-            .json_str = R"({"overrides":{"clients":"5"}})",
-            .expected_model = {.overrides = {{"clients", "5"}}}},
+        CatalogConfigDeserializeParam{.test_name = "MissingDefaults",
+                                      .json_str = R"({"overrides":{"clients":"5"}})",
+                                      .expected_model = {.defaults = {},
+                                                         .overrides = {{"clients", "5"}},
+                                                         .endpoints = {}}},
         // Null defaults field
         CatalogConfigDeserializeParam{
             .test_name = "NullDefaults",
             .json_str = R"({"defaults":null,"overrides":{"clients":"5"}})",
-            .expected_model = {.overrides = {{"clients", "5"}}}},
+            .expected_model = {.defaults = {},
+                               .overrides = {{"clients", "5"}},
+                               .endpoints = {}}},
         // Empty JSON object
         CatalogConfigDeserializeParam{
             .test_name = "EmptyJson", .json_str = R"({})", .expected_model = {}},
@@ -865,7 +883,8 @@ INSTANTIATE_TEST_SUITE_P(
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
             .model = {.code = 404,
                       .type = "NoSuchNamespaceException",
-                      .message = "The given namespace does not exist"}},
+                      .message = "The given namespace does not exist",
+                      .stack = {}}},
         // Error with stack trace
         ErrorResponseParam{
             .test_name = "WithStack",
@@ -900,7 +919,8 @@ INSTANTIATE_TEST_SUITE_P(
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":null}})",
             .expected_model = {.code = 404,
                                .type = "NoSuchNamespaceException",
-                               .message = "The given namespace does not exist"}},
+                               .message = "The given namespace does not exist",
+                               .stack = {}}},
         // Stack field is missing (should deserialize to empty vector)
         ErrorResponseDeserializeParam{
             .test_name = "MissingStack",
@@ -908,7 +928,8 @@ INSTANTIATE_TEST_SUITE_P(
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
             .expected_model = {.code = 404,
                                .type = "NoSuchNamespaceException",
-                               .message = "The given namespace does not exist"}}),
+                               .message = "The given namespace does not exist",
+                               .stack = {}}}),
     [](const ::testing::TestParamInfo<ErrorResponseDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -958,7 +979,12 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "MinimalRequest",
             .expected_json_str =
                 R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]}})",
-            .model = {.name = "my_table", .schema = MakeSimpleSchema()}},
+            .model = {.name = "my_table",
+                      .location = "",
+                      .schema = MakeSimpleSchema(),
+                      .partition_spec = {},
+                      .write_order = {},
+                      .properties = {}}},
         // Request with location
         CreateTableRequestParam{
             .test_name = "WithLocation",
@@ -966,14 +992,20 @@ INSTANTIATE_TEST_SUITE_P(
                 R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"location":"s3://bucket/warehouse/my_table"})",
             .model = {.name = "my_table",
                       .location = "s3://bucket/warehouse/my_table",
-                      .schema = MakeSimpleSchema()}},
+                      .schema = MakeSimpleSchema(),
+                      .partition_spec = {},
+                      .write_order = {},
+                      .properties = {}}},
         // Request with properties
         CreateTableRequestParam{
             .test_name = "WithProperties",
             .expected_json_str =
                 R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"properties":{"owner":"alice","version":"1.0"}})",
             .model = {.name = "my_table",
+                      .location = "",
                       .schema = MakeSimpleSchema(),
+                      .partition_spec = {},
+                      .write_order = {},
                       .properties = {{"owner", "alice"}, {"version", "1.0"}}}},
         // Request with stage_create = true
         CreateTableRequestParam{
@@ -981,24 +1013,34 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_json_str =
                 R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"stage-create":true})",
             .model = {.name = "my_table",
+                      .location = "",
                       .schema = MakeSimpleSchema(),
-                      .stage_create = true}},
+                      .partition_spec = {},
+                      .write_order = {},
+                      .stage_create = true,
+                      .properties = {}}},
         // Request with partition_spec (unpartitioned)
         CreateTableRequestParam{
             .test_name = "WithUnpartitionedSpec",
             .expected_json_str =
                 R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"partition-spec":{"spec-id":0,"fields":[]}})",
             .model = {.name = "my_table",
+                      .location = "",
                       .schema = MakeSimpleSchema(),
-                      .partition_spec = PartitionSpec::Unpartitioned()}},
+                      .partition_spec = PartitionSpec::Unpartitioned(),
+                      .write_order = {},
+                      .properties = {}}},
         // Request with write_order (unsorted)
         CreateTableRequestParam{
             .test_name = "WithUnsortedOrder",
             .expected_json_str =
                 R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"write-order":{"order-id":0,"fields":[]}})",
             .model = {.name = "my_table",
+                      .location = "",
                       .schema = MakeSimpleSchema(),
-                      .write_order = SortOrder::Unsorted()}}),
+                      .partition_spec = {},
+                      .write_order = SortOrder::Unsorted(),
+                      .properties = {}}}),
     [](const ::testing::TestParamInfo<CreateTableRequestParam>& info) {
       return info.param.test_name;
     });
@@ -1014,28 +1056,42 @@ INSTANTIATE_TEST_SUITE_P(
             .json_str =
                 R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
             .expected_model = {.name = "my_table",
+                               .location = "",
                                .schema =
                                    std::make_shared<Schema>(std::vector<SchemaField>{
-                                       SchemaField(1, "id", int32(), false)})}},
+                                       SchemaField(1, "id", int32(), false)}),
+                               .partition_spec = {},
+                               .write_order = {},
+                               .stage_create = false,
+                               .properties = {}}},
         // stage-create field is missing (should default to false)
         CreateTableRequestDeserializeParam{
             .test_name = "MissingStageCreate",
             .json_str =
                 R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
             .expected_model = {.name = "my_table",
+                               .location = "",
                                .schema =
                                    std::make_shared<Schema>(std::vector<SchemaField>{
                                        SchemaField(1, "id", int32(), false)}),
-                               .stage_create = false}},
+                               .partition_spec = {},
+                               .write_order = {},
+                               .stage_create = false,
+                               .properties = {}}},
         // Properties field is missing (should deserialize to empty map)
         CreateTableRequestDeserializeParam{
             .test_name = "MissingProperties",
             .json_str =
                 R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
             .expected_model = {.name = "my_table",
+                               .location = "",
                                .schema =
                                    std::make_shared<Schema>(std::vector<SchemaField>{
-                                       SchemaField(1, "id", int32(), false)})}}),
+                                       SchemaField(1, "id", int32(), false)}),
+                               .partition_spec = {},
+                               .write_order = {},
+                               .stage_create = false,
+                               .properties = {}}}),
     [](const ::testing::TestParamInfo<CreateTableRequestDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -1084,20 +1140,24 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "MinimalMetadata",
             .expected_json_str =
                 R"({"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"}})",
-            .model = {.metadata = MakeSimpleTableMetadata()}},
+            .model = {.metadata_location = "",
+                      .metadata = MakeSimpleTableMetadata(),
+                      .config = {}}},
         // With metadata location
         LoadTableResultParam{
             .test_name = "WithMetadataLocation",
             .expected_json_str =
                 R"({"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"},"metadata-location":"s3://bucket/metadata/v1.json"})",
             .model = {.metadata_location = "s3://bucket/metadata/v1.json",
-                      .metadata = MakeSimpleTableMetadata()}},
+                      .metadata = MakeSimpleTableMetadata(),
+                      .config = {}}},
         // With config
         LoadTableResultParam{
             .test_name = "WithConfig",
             .expected_json_str =
                 R"({"config":{"warehouse":"s3://bucket/warehouse"},"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"}})",
-            .model = {.metadata = MakeSimpleTableMetadata(),
+            .model = {.metadata_location = "",
+                      .metadata = MakeSimpleTableMetadata(),
                       .config = {{"warehouse", "s3://bucket/warehouse"}}}},
         // With both metadata location and config
         LoadTableResultParam{
@@ -1122,20 +1182,24 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "MinimalMetadata",
             .json_str =
                 R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}}})",
-            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+            .expected_model = {.metadata_location = "",
+                               .metadata = MakeSimpleTableMetadata(),
+                               .config = {}}},
         // With metadata location
         LoadTableResultDeserializeParam{
             .test_name = "WithMetadataLocation",
             .json_str =
                 R"({"metadata-location":"s3://bucket/metadata/v1.json","metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}}})",
             .expected_model = {.metadata_location = "s3://bucket/metadata/v1.json",
-                               .metadata = MakeSimpleTableMetadata()}},
+                               .metadata = MakeSimpleTableMetadata(),
+                               .config = {}}},
         // With config
         LoadTableResultDeserializeParam{
             .test_name = "WithConfig",
             .json_str =
                 R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"config":{"warehouse":"s3://bucket/warehouse"}})",
-            .expected_model = {.metadata = MakeSimpleTableMetadata(),
+            .expected_model = {.metadata_location = "",
+                               .metadata = MakeSimpleTableMetadata(),
                                .config = {{"warehouse", "s3://bucket/warehouse"}}}}),
     [](const ::testing::TestParamInfo<LoadTableResultDeserializeParam>& info) {
       return info.param.test_name;
@@ -1202,7 +1266,8 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "WithoutIdentifier",
             .expected_json_str =
                 R"({"requirements":[{"type":"assert-table-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"},{"type":"assert-create"}],"updates":[{"action":"assign-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"},{"action":"set-current-schema","schema-id":23}]})",
-            .model = {.requirements = {std::make_shared<table::AssertUUID>(
+            .model = {.identifier = {},
+                      .requirements = {std::make_shared<table::AssertUUID>(
                                            "2cc52516-5e73-41f2-b139-545d41a4e151"),
                                        std::make_shared<table::AssertDoesNotExist>()},
                       .updates = {std::make_shared<table::AssignUUID>(
@@ -1213,7 +1278,9 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "EmptyRequirementsAndUpdates",
             .expected_json_str =
                 R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":[]})",
-            .model = {.identifier = TableIdentifier{Namespace{{"ns1"}}, "table1"}}}),
+            .model = {.identifier = TableIdentifier{Namespace{{"ns1"}}, "table1"},
+                      .requirements = {},
+                      .updates = {}}}),
     [](const ::testing::TestParamInfo<CommitTableRequestParam>& info) {
       return info.param.test_name;
     });

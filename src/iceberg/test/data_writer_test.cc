@@ -112,6 +112,7 @@ TEST_P(DataWriterFormatTest, CreateWithFormat) {
       .partition = PartitionValues{},
       .format = format,
       .io = file_io_,
+      .sort_order_id = std::nullopt,
       .properties =
           format == FileFormatType::kParquet
               ? std::unordered_map<std::string,
