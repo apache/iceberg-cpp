@@ -142,7 +142,7 @@ struct ICEBERG_EXPORT ManifestFile {
   std::vector<uint8_t> key_metadata;
   /// Field id: 520
   /// The starting _row_id to assign to rows added by ADDED data files
-  std::optional<int64_t> first_row_id = std::nullopt;
+  std::optional<int64_t> first_row_id;
 
   /// \brief Checks if this manifest file contains entries with ADDED status.
   bool has_added_files() const { return added_files_count.value_or(1) > 0; }

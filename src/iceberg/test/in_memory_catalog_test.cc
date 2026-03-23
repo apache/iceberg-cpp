@@ -160,13 +160,35 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
       .WillOnce(::testing::Return(
           Table::Make(table_ident,
                       std::make_shared<TableMetadata>(
-                          TableMetadata{.schemas = {schema},
+                          TableMetadata{.format_version = 0,
+                                        .table_uuid = "",
+                                        .location = "",
+                                        .last_sequence_number = 0,
+                                        .last_updated_ms = {},
+                                        .last_column_id = 0,
+                                        .schemas = {schema},
                                         .current_schema_id = 1,
+                                        .partition_specs = {},
+                                        .default_spec_id = 0,
+                                        .last_partition_id = 0,
+                                        .properties = {},
                                         .current_snapshot_id = 1,
-                                        .snapshots = {std::make_shared<Snapshot>(Snapshot{
-                                            .snapshot_id = 1,
-                                            .sequence_number = 1,
-                                        })}}),
+                                        .snapshots = {std::make_shared<Snapshot>(
+                                            Snapshot{.snapshot_id = 1,
+                                                     .parent_snapshot_id = std::nullopt,
+                                                     .sequence_number = 1,
+                                                     .timestamp_ms = {},
+                                                     .manifest_list = "",
+                                                     .summary = {},
+                                                     .schema_id = std::nullopt})},
+                                        .snapshot_log = {},
+                                        .metadata_log = {},
+                                        .sort_orders = {},
+                                        .default_sort_order_id = 0,
+                                        .refs = {},
+                                        .statistics = {},
+                                        .partition_statistics = {},
+                                        .next_row_id = 0}),
                       "s3://location/1.json", io, catalog)));
   auto load_table_result = catalog->LoadTable(table_ident);
   ASSERT_THAT(load_table_result, IsOk());
@@ -177,18 +199,44 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
   EXPECT_CALL(*catalog, LoadTable(::testing::_))
       .WillOnce(::testing::Return(
           Table::Make(table_ident,
-                      std::make_shared<TableMetadata>(
-                          TableMetadata{.schemas = {schema},
-                                        .current_schema_id = 1,
-                                        .current_snapshot_id = 2,
-                                        .snapshots = {std::make_shared<Snapshot>(Snapshot{
-                                                          .snapshot_id = 1,
-                                                          .sequence_number = 1,
-                                                      }),
-                                                      std::make_shared<Snapshot>(Snapshot{
-                                                          .snapshot_id = 2,
-                                                          .sequence_number = 2,
-                                                      })}}),
+                      std::make_shared<TableMetadata>(TableMetadata{
+                          .format_version = 0,
+                          .table_uuid = "",
+                          .location = "",
+                          .last_sequence_number = 0,
+                          .last_updated_ms = {},
+                          .last_column_id = 0,
+                          .schemas = {schema},
+                          .current_schema_id = 1,
+                          .partition_specs = {},
+                          .default_spec_id = 0,
+                          .last_partition_id = 0,
+                          .properties = {},
+                          .current_snapshot_id = 2,
+                          .snapshots = {std::make_shared<Snapshot>(
+                                            Snapshot{.snapshot_id = 1,
+                                                     .parent_snapshot_id = std::nullopt,
+                                                     .sequence_number = 1,
+                                                     .timestamp_ms = {},
+                                                     .manifest_list = "",
+                                                     .summary = {},
+                                                     .schema_id = std::nullopt}),
+                                        std::make_shared<Snapshot>(
+                                            Snapshot{.snapshot_id = 2,
+                                                     .parent_snapshot_id = std::nullopt,
+                                                     .sequence_number = 2,
+                                                     .timestamp_ms = {},
+                                                     .manifest_list = "",
+                                                     .summary = {},
+                                                     .schema_id = std::nullopt})},
+                          .snapshot_log = {},
+                          .metadata_log = {},
+                          .sort_orders = {},
+                          .default_sort_order_id = 0,
+                          .refs = {},
+                          .statistics = {},
+                          .partition_statistics = {},
+                          .next_row_id = 0}),
                       "s3://location/2.json", io, catalog)));
   auto refreshed_result = loaded_table->Refresh();
   ASSERT_THAT(refreshed_result, IsOk());
