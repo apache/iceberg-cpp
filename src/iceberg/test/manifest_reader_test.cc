@@ -131,7 +131,8 @@ class TestManifestReader : public testing::TestWithParam<int8_t> {
       std::optional<int64_t> content_offset = std::nullopt,
       std::optional<int64_t> content_size = std::nullopt) {
     return std::make_unique<DataFile>(
-        DataFile{.file_path = path,
+        DataFile{.content = content,
+                 .file_path = path,
                  .file_format = FileFormatType::kParquet,
                  .partition = partition,
                  .record_count = 1,

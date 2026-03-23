@@ -40,8 +40,8 @@ static std::string GetResourcePath(const std::string& file_name) {
 }
 
 /// \brief Read table metadata from a JSON file and return the Result directly
-static Result<std::unique_ptr<TableMetadata>> ReadTableMetadataFromResource(
-    const std::string& file_name) {
+[[maybe_unused]] static Result<std::unique_ptr<TableMetadata>>
+ReadTableMetadataFromResource(const std::string& file_name) {
   std::filesystem::path path{GetResourcePath(file_name)};
   if (!std::filesystem::exists(path)) {
     return InvalidArgument("File does not exist: {}", path.string());
