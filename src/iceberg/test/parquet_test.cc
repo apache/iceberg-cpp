@@ -153,6 +153,7 @@ class ParquetReaderTest : public ::testing::Test {
     ASSERT_TRUE(WriteArray(array, {.path = temp_parquet_file_,
                                    .schema = schema,
                                    .io = file_io_,
+                                   .metadata = {},
                                    .properties = std::move(writer_properties)}));
   }
 
@@ -417,7 +418,11 @@ TEST_F(ParquetReadWrite, EmptyStruct) {
   std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
   const std::string basePath = "base.parquet";
 
-  ASSERT_THAT(WriteArray(array, {.path = basePath, .schema = schema, .io = file_io}),
+  ASSERT_THAT(WriteArray(array, {.path = basePath,
+                                 .schema = schema,
+                                 .io = file_io,
+                                 .metadata = {},
+                                 .properties = {}}),
               IsError(ErrorKind::kNotImplemented));
 }
 

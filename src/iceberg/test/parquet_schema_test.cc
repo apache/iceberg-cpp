@@ -520,7 +520,7 @@ TEST(ParquetSchemaProjectionTest, ProjectPrimitiveType) {
   struct TestCase {
     std::shared_ptr<Type> iceberg_type;
     ::parquet::Type::type parquet_type;
-    std::shared_ptr<const ::parquet::LogicalType> parquet_logical_type;
+    std::shared_ptr<const ::parquet::LogicalType> parquet_logical_type = nullptr;
     int32_t primitive_length = -1;
   };
 
@@ -591,7 +591,7 @@ TEST(ParquetSchemaProjectionTest, UnsuportedProjection) {
   struct TestCase {
     std::shared_ptr<Type> iceberg_type;
     ::parquet::Type::type parquet_type;
-    std::shared_ptr<const ::parquet::LogicalType> parquet_logical_type;
+    std::shared_ptr<const ::parquet::LogicalType> parquet_logical_type = nullptr;
     int32_t primitive_length = -1;
   };
 
