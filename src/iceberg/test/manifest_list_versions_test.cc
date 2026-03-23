@@ -88,6 +88,8 @@ const static auto kDeleteManifest = ManifestFile{
     .added_rows_count = kAddedRows,
     .existing_rows_count = kExistingRows,
     .deleted_rows_count = kDeletedRows,
+    .partitions = {},
+    .key_metadata = {},
     .first_row_id = std::nullopt,
 };
 

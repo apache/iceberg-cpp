@@ -77,12 +77,21 @@ class TestManifestReaderStats : public testing::TestWithParam<int8_t> {
         .partition = PartitionValues({Literal::Int(0)}),
         .record_count = 3,
         .file_size_in_bytes = 10,
+        .column_sizes = {},
         .value_counts = kValueCounts,
         .null_value_counts = kNullValueCounts,
         .nan_value_counts = kNanValueCounts,
         .lower_bounds = kLowerBounds,
         .upper_bounds = kUpperBounds,
+        .key_metadata = {},
+        .split_offsets = {},
+        .equality_ids = {},
         .sort_order_id = 0,
+        .first_row_id = std::nullopt,
+        .referenced_data_file = std::nullopt,
+        .content_offset = std::nullopt,
+        .content_size_in_bytes = std::nullopt,
+        .partition_spec_id = std::nullopt,
     });
   }
 
