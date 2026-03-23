@@ -373,9 +373,14 @@ TEST_F(TestManifestListVersions, TestManifestsWithoutRowStats) {
   EXPECT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
 
   std::string manifest_list_path = CreateManifestListPath();
-  auto writer_result = WriterFactoryRegistry::Open(
-      FileFormatType::kAvro,
-      {.path = manifest_list_path, .schema = schema_without_stats, .io = file_io_});
+  auto writer_result = WriterFactoryRegistry::Open(FileFormatType::kAvro,
+                                                   {
+                                                       .path = manifest_list_path,
+                                                       .schema = schema_without_stats,
+                                                       .io = file_io_,
+                                                       .metadata = {},
+                                                       .properties = {},
+                                                   });
   EXPECT_THAT(writer_result, IsOk());
   auto writer = std::move(writer_result.value());
   EXPECT_THAT(writer->Write(&arrow_array), IsOk());

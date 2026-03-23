@@ -1551,7 +1551,8 @@ TEST_F(NameMappingAvroSchemaTest, MissingFieldIdError) {
   // Create a name mapping with missing field ID
   std::vector<MappedField> fields;
   fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
-  fields.emplace_back(MappedField{.names = {"name"}});  // Missing field_id
+  fields.emplace_back(
+      MappedField{.names = {"name"}, .field_id = std::nullopt});  // Missing field_id
   auto name_mapping = NameMapping::Make(std::move(fields));
 
   // Create a simple Avro record schema

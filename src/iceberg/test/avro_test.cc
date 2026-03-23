@@ -77,6 +77,8 @@ class AvroReaderTest : public ::testing::Test {
                                                                .path = temp_avro_file_,
                                                                .schema = schema,
                                                                .io = file_io_,
+                                                               .metadata = {},
+                                                               .properties = {},
                                                            });
     ASSERT_TRUE(writer_result.has_value());
     auto writer = std::move(writer_result.value());
@@ -132,10 +134,13 @@ class AvroReaderTest : public ::testing::Test {
     std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}, {"k2", "v2"}};
 
     auto writer_result =
-        WriterFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
-                                                            .schema = schema,
-                                                            .io = file_io_,
-                                                            .metadata = metadata});
+        WriterFactoryRegistry::Open(FileFormatType::kAvro, {
+                                                               .path = temp_avro_file_,
+                                                               .schema = schema,
+                                                               .io = file_io_,
+                                                               .metadata = metadata,
+                                                               .properties = {},
+                                                           });
     ASSERT_TRUE(writer_result.has_value());
     auto writer = std::move(writer_result.value());
     ASSERT_THAT(writer->Write(&arrow_array), IsOk());
@@ -421,10 +426,13 @@ TEST_F(AvroReaderTest, ProjectionSubsetAndReorder) {
 
   std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}};
   auto writer_result =
-      WriterFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
-                                                          .schema = write_schema,
-                                                          .io = file_io_,
-                                                          .metadata = metadata});
+      WriterFactoryRegistry::Open(FileFormatType::kAvro, {
+                                                             .path = temp_avro_file_,
+                                                             .schema = write_schema,
+                                                             .io = file_io_,
+                                                             .metadata = metadata,
+                                                             .properties = {},
+                                                         });
   ASSERT_TRUE(writer_result.has_value());
   auto writer = std::move(writer_result.value());
   ASSERT_THAT(writer->Write(&arrow_array), IsOk());
