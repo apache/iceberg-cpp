@@ -125,6 +125,9 @@ class ICEBERG_EXPORT UnboundPredicateImpl : public UnboundPredicate,
 
   ~UnboundPredicateImpl() override;
 
+  Operation op() const override { return BASE::op(); }
+  bool is_unbound_predicate() const override { return true; }
+
   std::shared_ptr<NamedReference> reference() override {
     return BASE::term()->reference();
   }
