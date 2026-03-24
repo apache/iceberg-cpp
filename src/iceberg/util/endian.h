@@ -22,6 +22,7 @@
 #include <bit>
 #include <concepts>
 #include <cstdint>
+#include <cstring>
 
 /// \file iceberg/util/endian.h
 /// \brief Endianness conversion utilities
@@ -92,6 +93,23 @@ constexpr T FromBigEndian(T value) {
   } else {
     return ByteSwap(value);
   }
+}
+
+/// \brief Write a value in little-endian format to a buffer.
+/// \note Caller must ensure output has at least sizeof(T) bytes available.
+template <EndianConvertible T>
+void WriteLittleEndian(T value, void* output) {
+  auto le = ToLittleEndian(value);
+  std::memcpy(output, &le, sizeof(le));
+}
+
+/// \brief Read a value in little-endian format from a buffer.
+/// \note Caller must ensure input has at least sizeof(T) bytes available.
+template <EndianConvertible T>
+T ReadLittleEndian(const void* input) {
+  T value;
+  std::memcpy(&value, input, sizeof(value));
+  return FromLittleEndian(value);
 }
 
 }  // namespace iceberg

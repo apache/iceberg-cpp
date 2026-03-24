@@ -84,4 +84,16 @@ TEST(EndianTest, ByteWiseValidation) {
   EXPECT_EQ(big_float_bytes, (std::array<uint8_t, 4>{0x40, 0x48, 0xF5, 0xC3}));
 }
 
+TEST(EndianTest, BufferReadWriteRoundTrip) {
+  std::array<uint8_t, 4> buf{};
+  WriteLittleEndian(int32_t{0x12345678}, buf.data());
+  EXPECT_EQ(ReadLittleEndian<int32_t>(buf.data()), 0x12345678);
+
+  WriteLittleEndian(int32_t{0}, buf.data());
+  EXPECT_EQ(ReadLittleEndian<int32_t>(buf.data()), 0);
+
+  WriteLittleEndian(int32_t{-1}, buf.data());
+  EXPECT_EQ(ReadLittleEndian<int32_t>(buf.data()), -1);
+}
+
 }  // namespace iceberg
