@@ -936,6 +936,44 @@ TEST_P(AvroWriterTest, MultipleAvroBlocks) {
   }
 }
 
+TEST_P(AvroWriterTest, Metrics) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>())});
+
+  std::string test_data = R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])";
+
+  // Write data but don't close yet
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  auto array = ::arrow::json::ArrayFromJSONString(arrow_schema, test_data).ValueOrDie();
+  struct ArrowArray arrow_array;
+  ASSERT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      writer_,
+      WriterFactoryRegistry::Open(
+          FileFormatType::kAvro,
+          {.path = temp_avro_file_, .schema = schema, .io = file_io_, .properties = {}}));
+  ASSERT_THAT(writer_->Write(&arrow_array), IsOk());
+
+  // Metrics should fail before close
+  ASSERT_THAT(writer_->metrics(), IsError(ErrorKind::kInvalid));
+
+  // After close, metrics should succeed
+  ASSERT_THAT(writer_->Close(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto metrics, writer_->metrics());
+  ASSERT_TRUE(metrics.row_count.has_value());
+  EXPECT_EQ(metrics.row_count.value(), 3);
+  EXPECT_TRUE(metrics.column_sizes.empty());
+  EXPECT_TRUE(metrics.value_counts.empty());
+  EXPECT_TRUE(metrics.null_value_counts.empty());
+  EXPECT_TRUE(metrics.nan_value_counts.empty());
+  EXPECT_TRUE(metrics.lower_bounds.empty());
+  EXPECT_TRUE(metrics.upper_bounds.empty());
+}
+
 // Instantiate parameterized tests for both direct encoder and GenericDatum paths
 INSTANTIATE_TEST_SUITE_P(DirectEncoderModes, AvroWriterTest,
                          ::testing::Values(true, false),

@@ -178,6 +178,7 @@ if(ICEBERG_BUILD_BUNDLE)
       avro/avro_data_util.cc
       avro/avro_direct_decoder.cc
       avro/avro_direct_encoder.cc
+      avro/avro_metrics.cc
       avro/avro_reader.cc
       avro/avro_writer.cc
       avro/avro_register.cc

@@ -33,9 +33,11 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
+#include "iceberg/avro/avro_metrics.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
+#include "iceberg/metrics_config.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
@@ -238,6 +240,7 @@ class AvroWriter::Impl {
       ICEBERG_RETURN_UNEXPECTED(backend_->WriteRow(*write_schema_, *result, i));
     }
 
+    num_records_ += result->length();
     return {};
   }
 
@@ -261,6 +264,14 @@ class AvroWriter::Impl {
     return current_pos;
   }
 
+  Result<Metrics> metrics() const {
+    if (!Closed()) {
+      return Invalid("AvroWriter is not closed");
+    }
+    return AvroMetrics::GetMetrics(*write_schema_, num_records_,
+                                   *MetricsConfig::Default());
+  }
+
  private:
   // The schema to write.
   std::shared_ptr<::iceberg::Schema> write_schema_;
@@ -272,6 +283,8 @@ class AvroWriter::Impl {
   ArrowSchema arrow_schema_;
   // Total length of the written Avro file.
   int64_t total_bytes_ = 0;
+  // Number of records written.
+  int64_t num_records_ = 0;
   // The write backend to write data.
   std::unique_ptr<AvroWriteBackend> backend_;
 };
@@ -292,13 +305,7 @@ Status AvroWriter::Close() {
   return {};
 }
 
-Result<Metrics> AvroWriter::metrics() {
-  if (impl_->Closed()) {
-    // TODO(xiao.dong) implement metrics
-    return {};
-  }
-  return Invalid("AvroWriter is not closed");
-}
+Result<Metrics> AvroWriter::metrics() { return impl_->metrics(); }
 
 Result<int64_t> AvroWriter::length() { return impl_->length(); }
 
