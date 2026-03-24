@@ -189,7 +189,9 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(parquet_test
                    USE_BUNDLE
                    SOURCES
+                   metrics_test_base.cc
                    parquet_data_test.cc
+                   parquet_metrics_test.cc
                    parquet_schema_test.cc
                    parquet_test.cc)
 
