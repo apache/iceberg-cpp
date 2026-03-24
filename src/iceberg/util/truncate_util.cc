@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 
 namespace iceberg {
@@ -290,6 +291,28 @@ Result<Literal> TruncateUtils::TruncateLiteralMax(const Literal& literal, int32_
     default:
       return NotSupported("Truncate max is not supported for type: {}",
                           literal.type()->ToString());
+  }
+}
+
+Result<Literal> TruncateUtils::TruncateLowerBound(const PrimitiveType& type,
+                                                  const Literal& value, int32_t length) {
+  switch (type.type_id()) {
+    case TypeId::kString:
+    case TypeId::kBinary:
+      return TruncateLiteral(value, length);
+    default:
+      return value;
+  }
+}
+
+Result<Literal> TruncateUtils::TruncateUpperBound(const PrimitiveType& type,
+                                                  const Literal& value, int32_t length) {
+  switch (type.type_id()) {
+    case TypeId::kString:
+    case TypeId::kBinary:
+      return TruncateLiteralMax(value, length);
+    default:
+      return value;
   }
 }
 
