@@ -227,9 +227,9 @@ Result<std::unordered_map<std::string, T>> FromJsonMap(
       return JsonParseError("Cannot parse '{}' from non-object: {}", key,
                             SafeDumpJson(map_json));
     }
-    for (const auto& [key, value] : map_json.items()) {
+    for (const auto& [map_key, value] : map_json.items()) {
       ICEBERG_ASSIGN_OR_RAISE(auto entry, from_json(value));
-      map[key] = std::move(entry);
+      map[map_key] = std::move(entry);
     }
   }
   return map;
