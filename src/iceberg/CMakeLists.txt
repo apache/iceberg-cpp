@@ -64,6 +64,8 @@ set(ICEBERG_SOURCES
     partition_spec.cc
     partition_summary.cc
     puffin/file_metadata.cc
+    puffin/puffin_format.cc
+    puffin/json_serde.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/partition_values.cc

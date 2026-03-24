@@ -82,6 +82,8 @@ iceberg_sources = files(
     'partition_spec.cc',
     'partition_summary.cc',
     'puffin/file_metadata.cc',
+    'puffin/json_serde.cc',
+    'puffin/puffin_format.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
