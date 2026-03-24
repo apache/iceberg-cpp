@@ -343,7 +343,7 @@ Literal Literal::Binary(std::vector<uint8_t> value) {
 }
 
 Literal Literal::Fixed(std::vector<uint8_t> value) {
-  const auto size = value.size();
+  const auto size = static_cast<int32_t>(value.size());
   return {Value{std::move(value)}, fixed(size)};
 }
 
