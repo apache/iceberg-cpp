@@ -497,7 +497,7 @@ TEST_F(RestCatalogIntegrationTest, MakeWithUnregisteredIoImplReturnsError) {
   auto config = RestCatalogProperties::default_properties();
   config.Set(RestCatalogProperties::kUri, CatalogUri())
       .Set(RestCatalogProperties::kName, std::string(kCatalogName))
-      .Set(RestCatalogProperties::kWarehouse, "/local/warehouse");
+      .Set(RestCatalogProperties::kWarehouse, std::string("/local/warehouse"));
   config.mutable_configs()[FileIOProperties::kImpl] = "com.nonexistent.FileIO";
 
   auto result = RestCatalog::Make(config);
@@ -519,7 +519,7 @@ TEST_F(RestCatalogIntegrationTest, MakeWithAutoDetectedLocalFileIO) {
   auto config = RestCatalogProperties::default_properties();
   config.Set(RestCatalogProperties::kUri, CatalogUri())
       .Set(RestCatalogProperties::kName, std::string(kCatalogName))
-      .Set(RestCatalogProperties::kWarehouse, "/local/warehouse");
+      .Set(RestCatalogProperties::kWarehouse, std::string("/local/warehouse"));
 
   auto catalog_result = RestCatalog::Make(config);
   ASSERT_THAT(catalog_result, IsOk());
@@ -541,7 +541,7 @@ TEST_F(RestCatalogIntegrationTest, MakeWithCustomIoImpl) {
   auto config = RestCatalogProperties::default_properties();
   config.Set(RestCatalogProperties::kUri, CatalogUri())
       .Set(RestCatalogProperties::kName, std::string(kCatalogName))
-      .Set(RestCatalogProperties::kWarehouse, "/any/warehouse");
+      .Set(RestCatalogProperties::kWarehouse, std::string("/any/warehouse"));
   config.mutable_configs()[FileIOProperties::kImpl] = custom_impl;
 
   auto catalog_result = RestCatalog::Make(config);

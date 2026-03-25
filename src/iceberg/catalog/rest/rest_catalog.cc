@@ -28,7 +28,6 @@
 
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
-#include "iceberg/file_io_registry.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/error_handlers.h"
@@ -37,6 +36,7 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/file_io_registry.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -198,7 +198,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
     impl_name = io_impl->second;
   } else {
     // Use default based on warehouse URI scheme
-    if (warehouse.rfind("s3://", 0) == 0) {
+    if (warehouse.starts_with("s3://")) {
       impl_name = FileIORegistry::kArrowS3FileIO;
     } else {
       impl_name = FileIORegistry::kArrowLocalFileIO;
