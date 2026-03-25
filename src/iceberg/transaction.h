@@ -138,6 +138,12 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   Status ApplyUpdateSortOrder(UpdateSortOrder& update);
   Status ApplyUpdateStatistics(UpdateStatistics& update);
 
+  /// \brief Perform a single commit attempt for UPDATE transactions
+  Result<std::shared_ptr<Table>> CommitOnce();
+
+  /// \brief Whether this transaction can retry after a commit conflict.
+  bool CanRetry() const;
+
  private:
   friend class PendingUpdate;
 

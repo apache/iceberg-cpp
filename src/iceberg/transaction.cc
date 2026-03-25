@@ -50,6 +50,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/retry_util.h"
 
 namespace iceberg {
 
@@ -346,22 +347,32 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
     return ctx_->table;
   }
 
-  std::vector<std::unique_ptr<TableRequirement>> requirements;
-  switch (ctx_->kind) {
-    case TransactionKind::kCreate: {
-      ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForCreateTable(updates));
-    } break;
-    case TransactionKind::kUpdate: {
-      ICEBERG_ASSIGN_OR_RAISE(
-          requirements,
-          TableRequirements::ForUpdateTable(*ctx_->metadata_builder->base(), updates));
+  Result<std::shared_ptr<Table>> commit_result;
+  if (!CanRetry()) {
+    std::vector<std::unique_ptr<TableRequirement>> requirements;
+    switch (ctx_->kind) {
+      case TransactionKind::kCreate: {
+        ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForCreateTable(updates));
+      } break;
+      case TransactionKind::kUpdate: {
+        ICEBERG_ASSIGN_OR_RAISE(
+            requirements,
+            TableRequirements::ForUpdateTable(*ctx_->metadata_builder->base(), updates));
+      } break;
+    }
+    commit_result =
+        ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements, updates);
+  } else {
+    const auto& props = ctx_->table->properties();
+    int32_t num_retries = props.Get(TableProperties::kCommitNumRetries);
+    int32_t min_wait_ms = props.Get(TableProperties::kCommitMinRetryWaitMs);
+    int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
+    int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
 
-    } break;
+    commit_result =
+        MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
+            .Run([this]() -> Result<std::shared_ptr<Table>> { return CommitOnce(); });
   }
-
-  // XXX: we should handle commit failure and retry here.
-  auto commit_result =
-      ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements, updates);
 
   for (const auto& update : pending_updates_) {
     std::ignore = update->Finalize(commit_result.has_value()
@@ -376,6 +387,43 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   ctx_->table = std::move(commit_result.value());
 
   return ctx_->table;
+}
+
+Result<std::shared_ptr<Table>> Transaction::CommitOnce() {
+  auto refresh_result = ctx_->table->Refresh();
+  if (!refresh_result.has_value()) {
+    return std::unexpected(refresh_result.error());
+  }
+
+  if (ctx_->metadata_builder->base() != ctx_->table->metadata().get()) {
+    ctx_->metadata_builder =
+        TableMetadataBuilder::BuildFrom(ctx_->table->metadata().get());
+    for (const auto& update : pending_updates_) {
+      auto commit_status = update->Commit();
+      if (!commit_status.has_value()) {
+        return std::unexpected(commit_status.error());
+      }
+    }
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto requirements, TableRequirements::ForUpdateTable(
+                                                 *ctx_->metadata_builder->base(),
+                                                 ctx_->metadata_builder->changes()));
+
+  return ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements,
+                                             ctx_->metadata_builder->changes());
+}
+
+bool Transaction::CanRetry() const {
+  if (ctx_->kind == TransactionKind::kCreate) {
+    return false;
+  }
+  for (const auto& update : pending_updates_) {
+    if (!update->IsRetryable()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 Result<std::shared_ptr<UpdatePartitionSpec>> Transaction::NewUpdatePartitionSpec() {
