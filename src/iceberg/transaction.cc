@@ -19,8 +19,8 @@
  */
 #include "iceberg/transaction.h"
 
-#include <format>
 #include <chrono>
+#include <format>
 #include <memory>
 #include <optional>
 
