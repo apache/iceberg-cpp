@@ -223,7 +223,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
 
   ICEBERG_RETURN_UNEXPECTED(PropertyUtil::ValidateCommitProperties(properties));
 
-  return TableMetadataBuilder::BuildFromEmpty(format_version)
+  return TableMetadataBuilder::BuildFromEmpty(static_cast<int8_t>(format_version))
       ->SetLocation(location)
       .SetCurrentSchema(std::move(fresh_schema), last_column_id)
       .SetDefaultPartitionSpec(std::move(fresh_spec))
@@ -1586,6 +1586,7 @@ TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(int32_t spec
 TableMetadataBuilder& TableMetadataBuilder::AddPartitionSpec(
     std::shared_ptr<PartitionSpec> spec) {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto _, impl_->AddPartitionSpec(*spec));
+  (void)_;
   return *this;
 }
 
@@ -1615,6 +1616,7 @@ TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(int32_t order_id
 TableMetadataBuilder& TableMetadataBuilder::AddSortOrder(
     std::shared_ptr<SortOrder> order) {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto _, impl_->AddSortOrder(*order));
+  (void)_;
   return *this;
 }
 
