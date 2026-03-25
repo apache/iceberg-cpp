@@ -35,6 +35,7 @@ class DataWriter::Impl {
         .path = options.path,
         .schema = options.schema,
         .io = options.io,
+        .metadata = {},
         .properties = WriterProperties::FromMap(options.properties),
     };
 
@@ -92,8 +93,14 @@ class DataWriter::Impl {
                              metrics.nan_value_counts.end()},
         .lower_bounds = std::move(lower_bounds_map),
         .upper_bounds = std::move(upper_bounds_map),
+        .key_metadata = {},
         .split_offsets = std::move(split_offsets),
+        .equality_ids = {},
         .sort_order_id = options_.sort_order_id,
+        .first_row_id = std::nullopt,
+        .referenced_data_file = std::nullopt,
+        .content_offset = std::nullopt,
+        .content_size_in_bytes = std::nullopt,
         .partition_spec_id =
             options_.spec ? std::make_optional(options_.spec->spec_id()) : std::nullopt,
     });

@@ -89,7 +89,8 @@ FastAppend& FastAppend::AppendManifest(const ManifestFile& manifest) {
 std::string FastAppend::operation() { return DataOperation::kAppend; }
 
 Result<std::vector<ManifestFile>> FastAppend::Apply(
-    const TableMetadata& metadata_to_update, const std::shared_ptr<Snapshot>& snapshot) {
+    [[maybe_unused]] const TableMetadata& metadata_to_update,
+    const std::shared_ptr<Snapshot>& snapshot) {
   std::vector<ManifestFile> manifests;
 
   ICEBERG_ASSIGN_OR_RAISE(auto new_written_manifests, WriteNewManifests());

@@ -121,7 +121,7 @@ class ApplyChangesVisitor {
   /// \brief Apply changes to a list type
   Result<std::shared_ptr<Type>> VisitList(const ListType& list_type,
                                           const std::shared_ptr<Type>& base_type,
-                                          int32_t parent_id) {
+                                          [[maybe_unused]] int32_t parent_id) {
     const auto& element = list_type.element();
 
     ICEBERG_ASSIGN_OR_RAISE(auto element_type_result,
@@ -145,7 +145,7 @@ class ApplyChangesVisitor {
   /// \brief Apply changes to a map type
   Result<std::shared_ptr<Type>> VisitMap(const MapType& map_type,
                                          const std::shared_ptr<Type>& base_type,
-                                         int32_t parent_id) {
+                                         [[maybe_unused]] int32_t parent_id) {
     const auto& key = map_type.key();
     const auto& value = map_type.value();
 
@@ -175,9 +175,9 @@ class ApplyChangesVisitor {
     return std::make_shared<MapType>(key, new_value);
   }
 
-  Result<std::shared_ptr<Type>> VisitPrimitive(const PrimitiveType& primitive_type,
-                                               const std::shared_ptr<Type>& base_type,
-                                               int32_t parent_id) {
+  Result<std::shared_ptr<Type>> VisitPrimitive(
+      [[maybe_unused]] const PrimitiveType& primitive_type,
+      const std::shared_ptr<Type>& base_type, [[maybe_unused]] int32_t parent_id) {
     return base_type;
   }
 
@@ -534,7 +534,8 @@ UpdateSchema& UpdateSchema::MoveAfter(std::string_view name,
   return MoveInternal(name, Move::After(field_id, after_id));
 }
 
-UpdateSchema& UpdateSchema::UnionByNameWith(std::shared_ptr<Schema> new_schema) {
+UpdateSchema& UpdateSchema::UnionByNameWith(
+    [[maybe_unused]] std::shared_ptr<Schema> new_schema) {
   // TODO(Guotao Yu): Implement UnionByNameWith
   AddError(NotImplemented("UpdateSchema::UnionByNameWith not implemented"));
   return *this;

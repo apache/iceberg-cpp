@@ -223,7 +223,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
 
   ICEBERG_RETURN_UNEXPECTED(PropertyUtil::ValidateCommitProperties(properties));
 
-  return TableMetadataBuilder::BuildFromEmpty(format_version)
+  return TableMetadataBuilder::BuildFromEmpty(static_cast<int8_t>(format_version))
       ->SetLocation(location)
       .SetCurrentSchema(std::move(fresh_schema), last_column_id)
       .SetDefaultPartitionSpec(std::move(fresh_spec))
@@ -472,7 +472,8 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
   return TableMetadataFromJson(json);
 }
 
-Result<std::string> TableMetadataUtil::Write(FileIO& io, const TableMetadata* base,
+Result<std::string> TableMetadataUtil::Write(FileIO& io,
+                                             [[maybe_unused]] const TableMetadata* base,
                                              const std::string& base_metadata_location,
                                              TableMetadata& metadata) {
   int32_t version = ParseVersionFromLocation(base_metadata_location);
@@ -559,7 +560,7 @@ class TableMetadataBuilder::Impl {
 
   // Constructor from existing metadata
   explicit Impl(const TableMetadata* base_metadata,
-                std::string base_metadata_location = "")
+                [[maybe_unused]] std::string base_metadata_location = "")
       : base_(base_metadata), metadata_(*base_metadata) {
     // Initialize index maps from base metadata
     for (const auto& schema : metadata_.schemas) {
@@ -1351,7 +1352,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
     metadata_.metadata_log.emplace_back(base_->last_updated_ms,
                                         previous_metadata_location_);
   }
-  if (metadata_.metadata_log.size() > max_metadata_log_size) {
+  if (std::cmp_greater(metadata_.metadata_log.size(), max_metadata_log_size)) {
     metadata_.metadata_log.erase(metadata_.metadata_log.begin(),
                                  metadata_.metadata_log.end() - max_metadata_log_size);
   }
@@ -1584,7 +1585,8 @@ TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(int32_t spec
 
 TableMetadataBuilder& TableMetadataBuilder::AddPartitionSpec(
     std::shared_ptr<PartitionSpec> spec) {
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto spec_id, impl_->AddPartitionSpec(*spec));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto _, impl_->AddPartitionSpec(*spec));
+  (void)_;
   return *this;
 }
 
@@ -1613,7 +1615,8 @@ TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(int32_t order_id
 
 TableMetadataBuilder& TableMetadataBuilder::AddSortOrder(
     std::shared_ptr<SortOrder> order) {
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto order_id, impl_->AddSortOrder(*order));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto _, impl_->AddSortOrder(*order));
+  (void)_;
   return *this;
 }
 
@@ -1647,7 +1650,7 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveRef(const std::string& name) {
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
-    const std::vector<std::shared_ptr<Snapshot>>& snapshots_to_remove) {
+    [[maybe_unused]] const std::vector<std::shared_ptr<Snapshot>>& snapshots_to_remove) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
@@ -1703,11 +1706,12 @@ TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view locatio
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddEncryptionKey(
-    std::shared_ptr<EncryptedKey> key) {
+    [[maybe_unused]] std::shared_ptr<EncryptedKey> key) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view key_id) {
+TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(
+    [[maybe_unused]] std::string_view key_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 

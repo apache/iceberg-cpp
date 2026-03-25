@@ -43,7 +43,7 @@ class ICEBERG_EXPORT ProjectionEvaluator {
   Result<std::shared_ptr<Expression>> Project(const std::shared_ptr<Expression>& expr);
 
  private:
-  friend class Projections;
+  friend struct Projections;
 
   /// \brief Create a ProjectionEvaluator.
   ///

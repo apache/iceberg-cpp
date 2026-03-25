@@ -29,7 +29,7 @@ namespace iceberg {
 
 struct HumanStringTestParam {
   std::string test_name;
-  std::shared_ptr<Type> source_type;
+  std::shared_ptr<Type> source_type = nullptr;
   Literal literal;
   std::vector<std::string> expecteds;
 };
@@ -41,7 +41,7 @@ class IdentityHumanStringTest : public ::testing::TestWithParam<HumanStringTestP
 
 TEST_P(IdentityHumanStringTest, ToHumanString) {
   const auto& param = GetParam();
-  for (int32_t i = 0; i < transforms_.size(); ++i) {
+  for (size_t i = 0; i < transforms_.size(); ++i) {
     EXPECT_THAT(transforms_[i]->ToHumanString(param.literal),
                 HasValue(::testing::Eq(param.expecteds[i])));
   }

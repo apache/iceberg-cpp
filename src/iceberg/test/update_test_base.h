@@ -46,7 +46,7 @@ class UpdateTestBase : public ::testing::Test {
   virtual std::string TableName() const { return "test_table"; }
 
   void SetUp() override {
-    table_ident_ = TableIdentifier{.name = TableName()};
+    table_ident_ = TableIdentifier{.ns = {}, .name = TableName()};
     table_location_ = "/warehouse/" + TableName();
 
     InitializeFileIO();

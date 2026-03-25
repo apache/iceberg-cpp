@@ -303,7 +303,7 @@ class CreateMappingVisitor {
   }
 
   template <typename T>
-  Result<std::unique_ptr<MappedFields>> Visit(const T& type) const {
+  Result<std::unique_ptr<MappedFields>> Visit([[maybe_unused]] const T& type) const {
     return nullptr;
   }
 
@@ -409,7 +409,7 @@ class UpdateMappingVisitor {
     }
 
     if (fields_to_add.empty()) {
-      return std::move(mapping);
+      return mapping;
     }
 
     std::vector<MappedField> new_fields;

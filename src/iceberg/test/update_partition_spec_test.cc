@@ -246,8 +246,9 @@ class UpdatePartitionSpecTest : public ::testing::TestWithParam<int8_t> {
     return update_result.value();
   }
 
-  const TableIdentifier partitioned_table_ident_{.name = "partitioned_table"};
-  const TableIdentifier unpartitioned_table_ident_{.name = "unpartitioned_table"};
+  const TableIdentifier partitioned_table_ident_{.ns = {}, .name = "partitioned_table"};
+  const TableIdentifier unpartitioned_table_ident_{.ns = {},
+                                                   .name = "unpartitioned_table"};
   const std::string partitioned_table_location_{"/warehouse/partitioned_table"};
   const std::string unpartitioned_table_location_{"/warehouse/unpartitioned_table"};
   std::shared_ptr<FileIO> file_io_;

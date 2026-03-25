@@ -77,46 +77,81 @@ class ManifestGroupTest : public testing::TestWithParam<int8_t> {
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path,
                                          const PartitionValues& partition,
                                          int32_t spec_id, int64_t record_count = 1) {
-    return std::make_shared<DataFile>(DataFile{
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = record_count,
-        .file_size_in_bytes = 10,
-        .sort_order_id = 0,
-        .partition_spec_id = spec_id,
-    });
+    return std::make_shared<DataFile>(DataFile{.file_path = path,
+                                               .file_format = FileFormatType::kParquet,
+                                               .partition = partition,
+                                               .record_count = record_count,
+                                               .file_size_in_bytes = 10,
+                                               .column_sizes = {},
+                                               .value_counts = {},
+                                               .null_value_counts = {},
+                                               .nan_value_counts = {},
+                                               .lower_bounds = {},
+                                               .upper_bounds = {},
+                                               .key_metadata = {},
+                                               .split_offsets = {},
+                                               .equality_ids = {},
+                                               .sort_order_id = 0,
+                                               .first_row_id = std::nullopt,
+                                               .referenced_data_file = std::nullopt,
+                                               .content_offset = std::nullopt,
+                                               .content_size_in_bytes = std::nullopt,
+                                               .partition_spec_id = spec_id});
   }
 
   std::shared_ptr<DataFile> MakePositionDeleteFile(
       const std::string& path, const PartitionValues& partition, int32_t spec_id,
       std::optional<std::string> referenced_file = std::nullopt) {
-    return std::make_shared<DataFile>(DataFile{
-        .content = DataFile::Content::kPositionDeletes,
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = 1,
-        .file_size_in_bytes = 10,
-        .referenced_data_file = referenced_file,
-        .partition_spec_id = spec_id,
-    });
+    return std::make_shared<DataFile>(
+        DataFile{.content = DataFile::Content::kPositionDeletes,
+                 .file_path = path,
+                 .file_format = FileFormatType::kParquet,
+                 .partition = partition,
+                 .record_count = 1,
+                 .file_size_in_bytes = 10,
+                 .column_sizes = {},
+                 .value_counts = {},
+                 .null_value_counts = {},
+                 .nan_value_counts = {},
+                 .lower_bounds = {},
+                 .upper_bounds = {},
+                 .key_metadata = {},
+                 .split_offsets = {},
+                 .equality_ids = {},
+                 .sort_order_id = 0,
+                 .first_row_id = std::nullopt,
+                 .referenced_data_file = referenced_file,
+                 .content_offset = std::nullopt,
+                 .content_size_in_bytes = std::nullopt,
+                 .partition_spec_id = spec_id});
   }
 
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
                                                    const PartitionValues& partition,
                                                    int32_t spec_id,
                                                    std::vector<int> equality_ids = {1}) {
-    return std::make_shared<DataFile>(DataFile{
-        .content = DataFile::Content::kEqualityDeletes,
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = 1,
-        .file_size_in_bytes = 10,
-        .equality_ids = std::move(equality_ids),
-        .partition_spec_id = spec_id,
-    });
+    return std::make_shared<DataFile>(
+        DataFile{.content = DataFile::Content::kEqualityDeletes,
+                 .file_path = path,
+                 .file_format = FileFormatType::kParquet,
+                 .partition = partition,
+                 .record_count = 1,
+                 .file_size_in_bytes = 10,
+                 .column_sizes = {},
+                 .value_counts = {},
+                 .null_value_counts = {},
+                 .nan_value_counts = {},
+                 .lower_bounds = {},
+                 .upper_bounds = {},
+                 .key_metadata = {},
+                 .split_offsets = {},
+                 .equality_ids = std::move(equality_ids),
+                 .sort_order_id = 0,
+                 .first_row_id = std::nullopt,
+                 .referenced_data_file = std::nullopt,
+                 .content_offset = std::nullopt,
+                 .content_size_in_bytes = std::nullopt,
+                 .partition_spec_id = spec_id});
   }
 
   ManifestEntry MakeEntry(ManifestStatus status, int64_t snapshot_id,

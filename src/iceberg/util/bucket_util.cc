@@ -29,7 +29,7 @@ namespace iceberg {
 
 namespace {
 template <TypeId type_id>
-int32_t HashLiteral(const Literal& literal) {
+int32_t HashLiteral([[maybe_unused]] const Literal& literal) {
   std::unreachable();
 }
 

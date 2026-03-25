@@ -118,9 +118,16 @@ TEST(MetadataSerdeTest, DeserializeV1Valid) {
       .partition_specs = {expected_spec},
       .default_spec_id = 0,
       .last_partition_id = 1000,
+      .properties = {},
       .current_snapshot_id = -1,
+      .snapshots = {},
+      .snapshot_log = {},
+      .metadata_log = {},
       .sort_orders = {SortOrder::Unsorted()},
       .default_sort_order_id = 0,
+      .refs = {},
+      .statistics = {},
+      .partition_statistics = {},
       .next_row_id = 0,
   };
 
@@ -169,10 +176,12 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
 
   auto expected_snapshot_1 = std::make_shared<Snapshot>(Snapshot{
       .snapshot_id = 3051729675574597004,
+      .parent_snapshot_id = std::nullopt,
       .sequence_number = 0,
       .timestamp_ms = TimePointMsFromUnixMs(1515100955770),
       .manifest_list = "s3://a/b/1.avro",
       .summary = {{"operation", "append"}},
+      .schema_id = std::nullopt,
   });
 
   auto expected_snapshot_2 = std::make_shared<Snapshot>(Snapshot{
@@ -197,6 +206,7 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
       .partition_specs = {expected_spec},
       .default_spec_id = 0,
       .last_partition_id = 1000,
+      .properties = {},
       .current_snapshot_id = 3055729675574597004,
       .snapshots = {expected_snapshot_1, expected_snapshot_2},
       .snapshot_log = {SnapshotLogEntry{
@@ -205,11 +215,14 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
                        SnapshotLogEntry{
                            .timestamp_ms = TimePointMsFromUnixMs(1555100955770),
                            .snapshot_id = 3055729675574597004}},
+      .metadata_log = {},
       .sort_orders = {expected_sort_order},
       .default_sort_order_id = 3,
       .refs = {{"main", std::make_shared<SnapshotRef>(
                             SnapshotRef{.snapshot_id = 3055729675574597004,
                                         .retention = SnapshotRef::Branch{}})}},
+      .statistics = {},
+      .partition_statistics = {},
       .next_row_id = 0,
   };
 
@@ -267,9 +280,16 @@ TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
       .partition_specs = {expected_spec},
       .default_spec_id = 0,
       .last_partition_id = 1000,
+      .properties = {},
       .current_snapshot_id = -1,
+      .snapshots = {},
+      .snapshot_log = {},
+      .metadata_log = {},
       .sort_orders = {expected_sort_order},
       .default_sort_order_id = 3,
+      .refs = {},
+      .statistics = {},
+      .partition_statistics = {},
       .next_row_id = 0,
   };
 
@@ -297,6 +317,7 @@ TEST(MetadataSerdeTest, DeserializeStatisticsFiles) {
 
   auto expected_snapshot = std::make_shared<Snapshot>(Snapshot{
       .snapshot_id = 3055729675574597004,
+      .parent_snapshot_id = std::nullopt,
       .sequence_number = 1,
       .timestamp_ms = TimePointMsFromUnixMs(1555100955770),
       .manifest_list = "s3://a/b/2.avro",
@@ -375,6 +396,7 @@ TEST(MetadataSerdeTest, DeserializePartitionStatisticsFiles) {
       .current_snapshot_id = 3055729675574597004,
       .snapshots = {std::make_shared<Snapshot>(Snapshot{
           .snapshot_id = 3055729675574597004,
+          .parent_snapshot_id = std::nullopt,
           .sequence_number = 1,
           .timestamp_ms = TimePointMsFromUnixMs(1555100955770),
           .manifest_list = "s3://a/b/2.avro",

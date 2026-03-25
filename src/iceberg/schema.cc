@@ -150,7 +150,7 @@ std::string Schema::ToString() const {
   return repr;
 }
 
-bool Schema::Equals(const Schema& other) const {
+bool Schema::EqualsSchema(const Schema& other) const {
   return schema_id_ == other.schema_id_ && fields_ == other.fields_ &&
          identifier_field_ids_ == other.identifier_field_ids_;
 }

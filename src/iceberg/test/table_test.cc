@@ -88,8 +88,28 @@ class TypedTableTest : public ::testing::Test {
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64()),
                                  SchemaField::MakeOptional(2, "name", string())},
         1);
-    metadata_ = std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
+    metadata_ = std::make_shared<TableMetadata>(TableMetadata{.format_version = 2,
+                                                              .table_uuid = "",
+                                                              .location = "",
+                                                              .last_sequence_number = 0,
+                                                              .last_updated_ms = {},
+                                                              .last_column_id = 0,
+                                                              .schemas = {schema},
+                                                              .current_schema_id = 1,
+                                                              .partition_specs = {},
+                                                              .default_spec_id = 0,
+                                                              .last_partition_id = 0,
+                                                              .properties = {},
+                                                              .current_snapshot_id = 0,
+                                                              .snapshots = {},
+                                                              .snapshot_log = {},
+                                                              .metadata_log = {},
+                                                              .sort_orders = {},
+                                                              .default_sort_order_id = 0,
+                                                              .refs = {},
+                                                              .statistics = {},
+                                                              .partition_statistics = {},
+                                                              .next_row_id = 0});
   }
 
   Result<std::shared_ptr<T>> MakeTable(const std::string& name) {

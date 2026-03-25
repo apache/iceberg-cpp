@@ -166,7 +166,8 @@ ManifestEntryAdapter::~ManifestEntryAdapter() {
 Status ManifestEntryAdapter::AppendPartitionValues(
     ArrowArray* array, const std::shared_ptr<StructType>& partition_type,
     const PartitionValues& partition_values) {
-  if (array->n_children != partition_type->fields().size()) [[unlikely]] {
+  if (std::cmp_not_equal(array->n_children, partition_type->fields().size()))
+      [[unlikely]] {
     return InvalidArrowData("Arrow array of partition does not match partition type.");
   }
   if (partition_values.num_fields() != partition_type->fields().size()) [[unlikely]] {

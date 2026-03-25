@@ -92,23 +92,23 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief The path to the file to read.
   std::string path;
   /// \brief The total length of the file.
-  std::optional<size_t> length;
+  std::optional<size_t> length = std::nullopt;
   /// \brief The split to read.
-  std::optional<Split> split;
+  std::optional<Split> split = std::nullopt;
   /// \brief FileIO instance to open the file. Reader implementations should down cast it
   /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
   /// `ArrowFileSystemFileIO` as the default implementation.
-  std::shared_ptr<class FileIO> io;
+  std::shared_ptr<FileIO> io = nullptr;
   /// \brief The projection schema to read from the file. This field is required.
-  std::shared_ptr<class Schema> projection;
+  std::shared_ptr<Schema> projection = nullptr;
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.
-  std::shared_ptr<class Expression> filter;
+  std::shared_ptr<Expression> filter = nullptr;
   /// \brief Name mapping for schema evolution compatibility. Used when reading files
   /// that may have different field names than the current schema.
-  std::shared_ptr<class NameMapping> name_mapping;
+  std::shared_ptr<NameMapping> name_mapping = nullptr;
   /// \brief Format-specific or implementation-specific properties.
-  ReaderProperties properties;
+  ReaderProperties properties{};
 };
 
 /// \brief Factory function to create a reader of a specific file format.

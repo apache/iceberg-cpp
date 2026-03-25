@@ -379,9 +379,12 @@ TEST(TableUpdateTest, SetSnapshotRefApplyUpdate) {
     // Add a snapshot that the ref will point to
     auto snapshot = std::make_shared<Snapshot>(
         Snapshot{.snapshot_id = 123456789,
+                 .parent_snapshot_id = std::nullopt,
                  .sequence_number = 1,
                  .timestamp_ms = TimePointMsFromUnixMs(1000000),
-                 .manifest_list = "s3://bucket/manifest-list.avro"});
+                 .manifest_list = "s3://bucket/manifest-list.avro",
+                 .summary = {},
+                 .schema_id = std::nullopt});
     builder->AddSnapshot(snapshot);
 
     // Apply SetSnapshotRef update for a branch
@@ -414,9 +417,12 @@ TEST(TableUpdateTest, SetSnapshotRefApplyUpdate) {
     // Add a snapshot that the ref will point to
     auto snapshot = std::make_shared<Snapshot>(
         Snapshot{.snapshot_id = 987654321,
+                 .parent_snapshot_id = std::nullopt,
                  .sequence_number = 1,
                  .timestamp_ms = TimePointMsFromUnixMs(2000000),
-                 .manifest_list = "s3://bucket/manifest-list.avro"});
+                 .manifest_list = "s3://bucket/manifest-list.avro",
+                 .summary = {},
+                 .schema_id = std::nullopt});
     builder->AddSnapshot(snapshot);
 
     // Apply SetSnapshotRef update for a tag

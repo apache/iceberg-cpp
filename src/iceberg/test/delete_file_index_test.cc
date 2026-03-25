@@ -87,46 +87,81 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path,
                                          const PartitionValues& partition,
                                          int32_t spec_id, int64_t record_count = 1) {
-    return std::make_shared<DataFile>(DataFile{
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = record_count,
-        .file_size_in_bytes = 10,
-        .sort_order_id = 0,
-        .partition_spec_id = spec_id,
-    });
+    return std::make_shared<DataFile>(DataFile{.file_path = path,
+                                               .file_format = FileFormatType::kParquet,
+                                               .partition = partition,
+                                               .record_count = record_count,
+                                               .file_size_in_bytes = 10,
+                                               .column_sizes = {},
+                                               .value_counts = {},
+                                               .null_value_counts = {},
+                                               .nan_value_counts = {},
+                                               .lower_bounds = {},
+                                               .upper_bounds = {},
+                                               .key_metadata = {},
+                                               .split_offsets = {},
+                                               .equality_ids = {},
+                                               .sort_order_id = 0,
+                                               .first_row_id = std::nullopt,
+                                               .referenced_data_file = std::nullopt,
+                                               .content_offset = std::nullopt,
+                                               .content_size_in_bytes = std::nullopt,
+                                               .partition_spec_id = spec_id});
   }
 
   std::shared_ptr<DataFile> MakePositionDeleteFile(
       const std::string& path, const PartitionValues& partition, int32_t spec_id,
       std::optional<std::string> referenced_file = std::nullopt) {
-    return std::make_shared<DataFile>(DataFile{
-        .content = DataFile::Content::kPositionDeletes,
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = 1,
-        .file_size_in_bytes = 10,
-        .referenced_data_file = referenced_file,
-        .partition_spec_id = spec_id,
-    });
+    return std::make_shared<DataFile>(
+        DataFile{.content = DataFile::Content::kPositionDeletes,
+                 .file_path = path,
+                 .file_format = FileFormatType::kParquet,
+                 .partition = partition,
+                 .record_count = 1,
+                 .file_size_in_bytes = 10,
+                 .column_sizes = {},
+                 .value_counts = {},
+                 .null_value_counts = {},
+                 .nan_value_counts = {},
+                 .lower_bounds = {},
+                 .upper_bounds = {},
+                 .key_metadata = {},
+                 .split_offsets = {},
+                 .equality_ids = {},
+                 .sort_order_id = 0,
+                 .first_row_id = std::nullopt,
+                 .referenced_data_file = referenced_file,
+                 .content_offset = std::nullopt,
+                 .content_size_in_bytes = std::nullopt,
+                 .partition_spec_id = spec_id});
   }
 
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
                                                    const PartitionValues& partition,
                                                    int32_t spec_id,
                                                    std::vector<int> equality_ids = {1}) {
-    return std::make_shared<DataFile>(DataFile{
-        .content = DataFile::Content::kEqualityDeletes,
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = 1,
-        .file_size_in_bytes = 10,
-        .equality_ids = std::move(equality_ids),
-        .partition_spec_id = spec_id,
-    });
+    return std::make_shared<DataFile>(
+        DataFile{.content = DataFile::Content::kEqualityDeletes,
+                 .file_path = path,
+                 .file_format = FileFormatType::kParquet,
+                 .partition = partition,
+                 .record_count = 1,
+                 .file_size_in_bytes = 10,
+                 .column_sizes = {},
+                 .value_counts = {},
+                 .null_value_counts = {},
+                 .nan_value_counts = {},
+                 .lower_bounds = {},
+                 .upper_bounds = {},
+                 .key_metadata = {},
+                 .split_offsets = {},
+                 .equality_ids = std::move(equality_ids),
+                 .sort_order_id = 0,
+                 .first_row_id = std::nullopt,
+                 .referenced_data_file = std::nullopt,
+                 .content_offset = std::nullopt,
+                 .content_size_in_bytes = std::nullopt,
+                 .partition_spec_id = spec_id});
   }
 
   std::shared_ptr<DataFile> MakeDV(const std::string& path,
@@ -134,18 +169,28 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
                                    const std::string& referenced_file,
                                    int64_t content_offset = 4L,
                                    int64_t content_size = 6L) {
-    return std::make_shared<DataFile>(DataFile{
-        .content = DataFile::Content::kPositionDeletes,
-        .file_path = path,
-        .file_format = FileFormatType::kPuffin,
-        .partition = partition,
-        .record_count = 1,
-        .file_size_in_bytes = 10,
-        .referenced_data_file = referenced_file,
-        .content_offset = content_offset,
-        .content_size_in_bytes = content_size,
-        .partition_spec_id = spec_id,
-    });
+    return std::make_shared<DataFile>(
+        DataFile{.content = DataFile::Content::kPositionDeletes,
+                 .file_path = path,
+                 .file_format = FileFormatType::kPuffin,
+                 .partition = partition,
+                 .record_count = 1,
+                 .file_size_in_bytes = 10,
+                 .column_sizes = {},
+                 .value_counts = {},
+                 .null_value_counts = {},
+                 .nan_value_counts = {},
+                 .lower_bounds = {},
+                 .upper_bounds = {},
+                 .key_metadata = {},
+                 .split_offsets = {},
+                 .equality_ids = {},
+                 .sort_order_id = 0,
+                 .first_row_id = std::nullopt,
+                 .referenced_data_file = referenced_file,
+                 .content_offset = content_offset,
+                 .content_size_in_bytes = content_size,
+                 .partition_spec_id = spec_id});
   }
 
   ManifestEntry MakeDeleteEntry(int64_t snapshot_id, int64_t sequence_number,
@@ -1081,8 +1126,15 @@ TEST_P(DeleteFileIndexTest, TestPositionDeleteDiscardMetrics) {
       .nan_value_counts = {{kDeleteFilePathFieldId, 0}, {kPositionFieldId, 0}},
       .lower_bounds = {{kDeleteFilePathFieldId, {0x01}}, {kPositionFieldId, {0x02}}},
       .upper_bounds = {{kDeleteFilePathFieldId, {0xFF}}, {kPositionFieldId, {0xFE}}},
-      .partition_spec_id = partitioned_spec_->spec_id(),
-  });
+      .key_metadata = {},
+      .split_offsets = {},
+      .equality_ids = {},
+      .sort_order_id = 0,
+      .first_row_id = std::nullopt,
+      .referenced_data_file = std::nullopt,
+      .content_offset = std::nullopt,
+      .content_size_in_bytes = std::nullopt,
+      .partition_spec_id = partitioned_spec_->spec_id()});
 
   std::vector<ManifestEntry> entries;
   entries.push_back(
@@ -1124,23 +1176,29 @@ TEST_P(DeleteFileIndexTest, TestEqualityDeleteDiscardMetrics) {
   auto partition_a = PartitionValues({Literal::Int(0)});
 
   // Create an equality delete file with full metrics
-  auto eq_delete = std::make_shared<DataFile>(DataFile{
-      .content = DataFile::Content::kEqualityDeletes,
-      .file_path = "/path/to/eq-delete-with-metrics.parquet",
-      .file_format = FileFormatType::kParquet,
-      .partition = partition_a,
-      .record_count = 50,
-      .file_size_in_bytes = 512,
-      // Add stats for multiple columns
-      .column_sizes = {{1, 100}, {2, 200}, {3, 300}},
-      .value_counts = {{1, 10}, {2, 20}, {3, 30}},
-      .null_value_counts = {{1, 1}, {2, 2}, {3, 3}},
-      .nan_value_counts = {{1, 0}, {2, 0}, {3, 0}},
-      .lower_bounds = {{1, {0x01}}, {2, {0x02}}, {3, {0x03}}},
-      .upper_bounds = {{1, {0xFF}}, {2, {0xFE}}, {3, {0xFD}}},
-      .equality_ids = {1},  // equality field IDs
-      .partition_spec_id = partitioned_spec_->spec_id(),
-  });
+  auto eq_delete = std::make_shared<DataFile>(
+      DataFile{.content = DataFile::Content::kEqualityDeletes,
+               .file_path = "/path/to/eq-delete-with-metrics.parquet",
+               .file_format = FileFormatType::kParquet,
+               .partition = partition_a,
+               .record_count = 50,
+               .file_size_in_bytes = 512,
+               // Add stats for multiple columns
+               .column_sizes = {{1, 100}, {2, 200}, {3, 300}},
+               .value_counts = {{1, 10}, {2, 20}, {3, 30}},
+               .null_value_counts = {{1, 1}, {2, 2}, {3, 3}},
+               .nan_value_counts = {{1, 0}, {2, 0}, {3, 0}},
+               .lower_bounds = {{1, {0x01}}, {2, {0x02}}, {3, {0x03}}},
+               .upper_bounds = {{1, {0xFF}}, {2, {0xFE}}, {3, {0xFD}}},
+               .key_metadata = {},
+               .split_offsets = {},
+               .equality_ids = {1},  // equality field IDs
+               .sort_order_id = 0,
+               .first_row_id = std::nullopt,
+               .referenced_data_file = std::nullopt,
+               .content_offset = std::nullopt,
+               .content_size_in_bytes = std::nullopt,
+               .partition_spec_id = partitioned_spec_->spec_id()});
 
   std::vector<ManifestEntry> entries;
   entries.push_back(

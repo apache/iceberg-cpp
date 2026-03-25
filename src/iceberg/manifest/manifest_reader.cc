@@ -182,7 +182,7 @@ void ParseIntegerVectorField(const ArrowArrayView* view, int64_t length,
 template <typename Container, typename Accessor, typename Transfer>
   requires std::ranges::forward_range<Container> &&
            requires(Accessor& a, Container& c, Transfer& t, const ArrowArrayView* v,
-                    int64_t key, int64_t offset) {
+                    int32_t key, int64_t offset) {
              std::invoke(a, *std::ranges::begin(c))[key] = std::invoke(t, v, offset);
            }
 Status ParseIntMapField(Transfer transfer, ArrowType value_type,
@@ -206,7 +206,7 @@ Status ParseIntMapField(Transfer transfer, ArrowType value_type,
     auto begin_offset = view->buffer_views[1].data.as_int32[row_idx];
     auto end_offset = view->buffer_views[1].data.as_int32[row_idx + 1];
     for (int32_t offset = begin_offset; offset < end_offset; offset++) {
-      auto key = ArrowArrayViewGetIntUnsafe(key_view, offset);
+      auto key = static_cast<int32_t>(ArrowArrayViewGetIntUnsafe(key_view, offset));
       std::invoke(accessor, *iter)[key] = std::invoke(transfer, value_view, offset);
     }
   }
@@ -288,13 +288,15 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* arrow_schema,
       ArrowArrayViewValidate(&view, NANOARROW_VALIDATION_LEVEL_FULL, &error), error);
 
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
-      &view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(), "manifest_list"));
+      &view, ArrowType::NANOARROW_TYPE_STRUCT,
+      static_cast<int64_t>(schema.fields().size()), "manifest_list"));
 
   std::vector<ManifestFile> manifest_files;
   manifest_files.resize(array->length);
 
   for (int64_t idx = 0; idx < array->n_children; idx++) {
-    ICEBERG_ASSIGN_OR_RAISE(auto field, schema.GetFieldByIndex(idx));
+    ICEBERG_ASSIGN_OR_RAISE(auto field,
+                            schema.GetFieldByIndex(static_cast<int32_t>(idx)));
     ICEBERG_CHECK(field.has_value(), "Invalid index {} for data file schema", idx);
 
     auto field_name = field->get().name();
@@ -397,7 +399,8 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
     } break;
     case ArrowType::NANOARROW_TYPE_INT32: {
       auto value = ArrowArrayViewGetIntUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Int(value));
+      manifest_entries[row_idx].data_file->partition.AddValue(
+          Literal::Int(static_cast<int32_t>(value)));
     } break;
     case ArrowType::NANOARROW_TYPE_INT64: {
       auto value = ArrowArrayViewGetIntUnsafe(view, row_idx);
@@ -405,7 +408,8 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
     } break;
     case ArrowType::NANOARROW_TYPE_FLOAT: {
       auto value = ArrowArrayViewGetDoubleUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Float(value));
+      manifest_entries[row_idx].data_file->partition.AddValue(
+          Literal::Float(static_cast<float>(value)));
     } break;
     case ArrowType::NANOARROW_TYPE_DOUBLE: {
       auto value = ArrowArrayViewGetDoubleUnsafe(view, row_idx);
@@ -432,12 +436,13 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
 Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
                      ArrowArrayView* view, std::optional<int64_t>& first_row_id,
                      std::vector<ManifestEntry>& manifest_entries) {
-  ICEBERG_RETURN_UNEXPECTED(
-      AssertViewTypeAndChildren(view, ArrowType::NANOARROW_TYPE_STRUCT,
-                                data_file_schema->fields().size(), "data_file"));
+  ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
+      view, ArrowType::NANOARROW_TYPE_STRUCT,
+      static_cast<int64_t>(data_file_schema->fields().size()), "data_file"));
 
   for (int64_t col_idx = 0; col_idx < view->n_children; ++col_idx) {
-    ICEBERG_ASSIGN_OR_RAISE(auto field, data_file_schema->GetFieldByIndex(col_idx));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto field, data_file_schema->GetFieldByIndex(static_cast<int32_t>(col_idx)));
     ICEBERG_CHECK(field.has_value(), "Invalid index {} for data file schema", col_idx);
     auto field_name = field->get().name();
     auto field_id = field->get().field_id();
@@ -600,7 +605,8 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
       ArrowArrayViewValidate(&view, NANOARROW_VALIDATION_LEVEL_FULL, &error), error);
 
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
-      &view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(), "manifest_entry"));
+      &view, ArrowType::NANOARROW_TYPE_STRUCT,
+      static_cast<int64_t>(schema.fields().size()), "manifest_entry"));
 
   std::vector<ManifestEntry> manifest_entries;
   manifest_entries.resize(array->length);
@@ -609,7 +615,8 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
   }
 
   for (int64_t col_idx = 0; col_idx < array->n_children; col_idx++) {
-    ICEBERG_ASSIGN_OR_RAISE(auto field, schema.GetFieldByIndex(col_idx));
+    ICEBERG_ASSIGN_OR_RAISE(auto field,
+                            schema.GetFieldByIndex(static_cast<int32_t>(col_idx)));
     ICEBERG_CHECK(field.has_value(), "Invalid column index {} for manifest entry schema",
                   col_idx);
 

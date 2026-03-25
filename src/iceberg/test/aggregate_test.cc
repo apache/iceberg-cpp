@@ -253,13 +253,24 @@ TEST(AggregateTest, AggregatesFromDataFileMetrics) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Int(5).Serialize());
   ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Int(50).Serialize());
-  DataFile file{
-      .record_count = 10,
-      .value_counts = {{1, 10}, {2, 10}},
-      .null_value_counts = {{1, 2}, {2, 0}},
-      .lower_bounds = {{2, lower}},
-      .upper_bounds = {{2, upper}},
-  };
+  DataFile file{.file_path = "",
+                .partition = {},
+                .record_count = 10,
+                .column_sizes = {},
+                .value_counts = {{1, 10}, {2, 10}},
+                .null_value_counts = {{1, 2}, {2, 0}},
+                .nan_value_counts = {},
+                .lower_bounds = {{2, lower}},
+                .upper_bounds = {{2, upper}},
+                .key_metadata = {},
+                .split_offsets = {},
+                .equality_ids = {},
+                .sort_order_id = std::nullopt,
+                .first_row_id = std::nullopt,
+                .referenced_data_file = std::nullopt,
+                .content_offset = std::nullopt,
+                .content_size_in_bytes = std::nullopt,
+                .partition_spec_id = std::nullopt};
 
   ASSERT_TRUE(evaluator->Update(file).has_value());
 
@@ -286,7 +297,24 @@ TEST(AggregateTest, AggregatesFromDataFileMissingMetricsReturnNull) {
       count_bound, count_null_bound, count_star_bound, max_bound, min_bound};
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
 
-  DataFile file{.record_count = -1};  // missing/invalid
+  DataFile file{.file_path = "",
+                .partition = {},
+                .record_count = -1,
+                .column_sizes = {},
+                .value_counts = {},
+                .null_value_counts = {},
+                .nan_value_counts = {},
+                .lower_bounds = {},
+                .upper_bounds = {},
+                .key_metadata = {},
+                .split_offsets = {},
+                .equality_ids = {},
+                .sort_order_id = std::nullopt,
+                .first_row_id = std::nullopt,
+                .referenced_data_file = std::nullopt,
+                .content_offset = std::nullopt,
+                .content_size_in_bytes = std::nullopt,
+                .partition_spec_id = std::nullopt};
 
   ASSERT_TRUE(evaluator->Update(file).has_value());
 
@@ -309,13 +337,24 @@ TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Int(5).Serialize());
   ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Int(23).Serialize());
-  DataFile file{
-      .record_count = 5,
-      .value_counts = {{1, 5}},
-      .null_value_counts = {{1, 0}},
-      .lower_bounds = {{1, lower}},
-      .upper_bounds = {{1, upper}},
-  };
+  DataFile file{.file_path = "",
+                .partition = {},
+                .record_count = 5,
+                .column_sizes = {},
+                .value_counts = {{1, 5}},
+                .null_value_counts = {{1, 0}},
+                .nan_value_counts = {},
+                .lower_bounds = {{1, lower}},
+                .upper_bounds = {{1, upper}},
+                .key_metadata = {},
+                .split_offsets = {},
+                .equality_ids = {},
+                .sort_order_id = std::nullopt,
+                .first_row_id = std::nullopt,
+                .referenced_data_file = std::nullopt,
+                .content_offset = std::nullopt,
+                .content_size_in_bytes = std::nullopt,
+                .partition_spec_id = std::nullopt};
 
   ASSERT_TRUE(evaluator->Update(file).has_value());
 
@@ -344,49 +383,105 @@ TEST(AggregateTest, DataFileAggregatorParity) {
   };
 
   auto [b1_lower, b1_upper] = make_bounds(1, 33, 2345);
-  DataFile file{
-      .file_path = "file.avro",
-      .record_count = 50,
-      .value_counts = {{1, 50}, {3, 50}, {4, 50}},
-      .null_value_counts = {{1, 10}, {3, 50}, {4, 10}},
-      .lower_bounds = std::move(b1_lower),
-      .upper_bounds = std::move(b1_upper),
-  };
+  DataFile file{.file_path = "file.avro",
+                .partition = {},
+                .record_count = 50,
+                .column_sizes = {},
+                .value_counts = {{1, 50}, {3, 50}, {4, 50}},
+                .null_value_counts = {{1, 10}, {3, 50}, {4, 10}},
+                .nan_value_counts = {},
+                .lower_bounds = std::move(b1_lower),
+                .upper_bounds = std::move(b1_upper),
+                .key_metadata = {},
+                .split_offsets = {},
+                .equality_ids = {},
+                .sort_order_id = std::nullopt,
+                .first_row_id = std::nullopt,
+                .referenced_data_file = std::nullopt,
+                .content_offset = std::nullopt,
+                .content_size_in_bytes = std::nullopt,
+                .partition_spec_id = std::nullopt};
 
   auto [b2_lower, b2_upper] = make_bounds(1, 33, 100);
-  DataFile missing_some_nulls_1{
-      .file_path = "file_2.avro",
-      .record_count = 20,
-      .value_counts = {{1, 20}, {3, 20}},
-      .null_value_counts = {{1, 0}, {3, 20}},
-      .lower_bounds = std::move(b2_lower),
-      .upper_bounds = std::move(b2_upper),
-  };
+  DataFile missing_some_nulls_1{.file_path = "file_2.avro",
+                                .partition = {},
+                                .record_count = 20,
+                                .column_sizes = {},
+                                .value_counts = {{1, 20}, {3, 20}},
+                                .null_value_counts = {{1, 0}, {3, 20}},
+                                .nan_value_counts = {},
+                                .lower_bounds = std::move(b2_lower),
+                                .upper_bounds = std::move(b2_upper),
+                                .key_metadata = {},
+                                .split_offsets = {},
+                                .equality_ids = {},
+                                .sort_order_id = std::nullopt,
+                                .first_row_id = std::nullopt,
+                                .referenced_data_file = std::nullopt,
+                                .content_offset = std::nullopt,
+                                .content_size_in_bytes = std::nullopt,
+                                .partition_spec_id = std::nullopt};
 
   auto [b3_lower, b3_upper] = make_bounds(1, -33, 3333);
-  DataFile missing_some_nulls_2{
-      .file_path = "file_3.avro",
-      .record_count = 20,
-      .value_counts = {{1, 20}, {3, 20}},
-      .null_value_counts = {{1, 20}, {3, 20}},
-      .lower_bounds = std::move(b3_lower),
-      .upper_bounds = std::move(b3_upper),
-  };
+  DataFile missing_some_nulls_2{.file_path = "file_3.avro",
+                                .partition = {},
+                                .record_count = 20,
+                                .column_sizes = {},
+                                .value_counts = {{1, 20}, {3, 20}},
+                                .null_value_counts = {{1, 20}, {3, 20}},
+                                .nan_value_counts = {},
+                                .lower_bounds = std::move(b3_lower),
+                                .upper_bounds = std::move(b3_upper),
+                                .key_metadata = {},
+                                .split_offsets = {},
+                                .equality_ids = {},
+                                .sort_order_id = std::nullopt,
+                                .first_row_id = std::nullopt,
+                                .referenced_data_file = std::nullopt,
+                                .content_offset = std::nullopt,
+                                .content_size_in_bytes = std::nullopt,
+                                .partition_spec_id = std::nullopt};
 
-  DataFile missing_some_stats{
-      .file_path = "file_missing_stats.avro",
-      .record_count = 20,
-      .value_counts = {{1, 20}, {4, 10}},
-  };
+  DataFile missing_some_stats{.file_path = "file_missing_stats.avro",
+                              .partition = {},
+                              .record_count = 20,
+                              .column_sizes = {},
+                              .value_counts = {{1, 20}, {4, 10}},
+                              .null_value_counts = {},
+                              .nan_value_counts = {},
+                              .lower_bounds = {},
+                              .upper_bounds = {},
+                              .key_metadata = {},
+                              .split_offsets = {},
+                              .equality_ids = {},
+                              .sort_order_id = std::nullopt,
+                              .first_row_id = std::nullopt,
+                              .referenced_data_file = std::nullopt,
+                              .content_offset = std::nullopt,
+                              .content_size_in_bytes = std::nullopt,
+                              .partition_spec_id = std::nullopt};
   auto [b4_lower, b4_upper] = make_bounds(1, -3, 1333);
   missing_some_stats.lower_bounds = std::move(b4_lower);
   missing_some_stats.upper_bounds = std::move(b4_upper);
 
-  DataFile missing_all_optional_stats{
-      .file_path = "file_null_stats.avro",
-      .record_count = 20,
-  };
-
+  DataFile missing_all_optional_stats{.file_path = "file_null_stats.avro",
+                                      .partition = {},
+                                      .record_count = 20,
+                                      .column_sizes = {},
+                                      .value_counts = {},
+                                      .null_value_counts = {},
+                                      .nan_value_counts = {},
+                                      .lower_bounds = {},
+                                      .upper_bounds = {},
+                                      .key_metadata = {},
+                                      .split_offsets = {},
+                                      .equality_ids = {},
+                                      .sort_order_id = std::nullopt,
+                                      .first_row_id = std::nullopt,
+                                      .referenced_data_file = std::nullopt,
+                                      .content_offset = std::nullopt,
+                                      .content_size_in_bytes = std::nullopt,
+                                      .partition_spec_id = std::nullopt};
   auto run_case = [&](const std::vector<std::shared_ptr<Expression>>& exprs,
                       const std::vector<DataFile>& files,
                       const std::vector<std::optional<Scalar>>& expected,

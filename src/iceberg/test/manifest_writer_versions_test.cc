@@ -373,7 +373,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
   void CheckRewrittenManifest(const ManifestFile& manifest,
                               int64_t expected_sequence_number,
-                              int64_t expected_min_sequence_number) {
+                              [[maybe_unused]] int64_t expected_min_sequence_number) {
     ASSERT_EQ(manifest.added_snapshot_id, kSnapshotId);
     ASSERT_EQ(manifest.sequence_number, expected_sequence_number);
     // TODO(zhjwpku): figure out why min_sequence_number check fails

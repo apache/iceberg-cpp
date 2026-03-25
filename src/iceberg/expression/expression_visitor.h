@@ -82,7 +82,8 @@ class ICEBERG_EXPORT ExpressionVisitor {
 
   /// \brief Visit a bound aggregate.
   /// \param aggregate The bound aggregate to visit.
-  virtual Result<R> Aggregate(const std::shared_ptr<BoundAggregate>& aggregate) {
+  virtual Result<R> Aggregate(
+      [[maybe_unused]] const std::shared_ptr<BoundAggregate>& aggregate) {
     ICEBERG_DCHECK(aggregate != nullptr, "Bound aggregate cannot be null");
     return NotSupported("Visitor {} does not support bound aggregate",
                         typeid(*this).name());
@@ -90,7 +91,8 @@ class ICEBERG_EXPORT ExpressionVisitor {
 
   /// \brief Visit an unbound aggregate.
   /// \param aggregate The unbound aggregate to visit.
-  virtual Result<R> Aggregate(const std::shared_ptr<UnboundAggregate>& aggregate) {
+  virtual Result<R> Aggregate(
+      [[maybe_unused]] const std::shared_ptr<UnboundAggregate>& aggregate) {
     ICEBERG_DCHECK(aggregate != nullptr, "Unbound aggregate cannot be null");
     return NotSupported("Visitor {} does not support unbound aggregate",
                         typeid(*this).name());
@@ -117,13 +119,13 @@ class ICEBERG_EXPORT BoundVisitor : public ExpressionVisitor<R> {
 
   /// \brief Visit an IS_NAN bound expression.
   /// \param expr The bound expression being tested
-  virtual Result<R> IsNaN(const std::shared_ptr<Bound>& expr) {
+  virtual Result<R> IsNaN([[maybe_unused]] const std::shared_ptr<Bound>& expr) {
     return NotSupported("IsNaN operation is not supported by this visitor");
   }
 
   /// \brief Visit a NOT_NAN bound expression.
   /// \param expr The bound expression being tested
-  virtual Result<R> NotNaN(const std::shared_ptr<Bound>& expr) {
+  virtual Result<R> NotNaN([[maybe_unused]] const std::shared_ptr<Bound>& expr) {
     return NotSupported("NotNaN operation is not supported by this visitor");
   }
 

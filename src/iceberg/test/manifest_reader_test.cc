@@ -68,14 +68,26 @@ class TestManifestReader : public testing::TestWithParam<int8_t> {
   std::unique_ptr<DataFile> MakeDataFile(const std::string& path,
                                          const PartitionValues& partition,
                                          int64_t record_count = 1) {
-    return std::make_unique<DataFile>(DataFile{
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = record_count,
-        .file_size_in_bytes = 10,
-        .sort_order_id = 0,
-    });
+    return std::make_unique<DataFile>(DataFile{.file_path = path,
+                                               .file_format = FileFormatType::kParquet,
+                                               .partition = partition,
+                                               .record_count = record_count,
+                                               .file_size_in_bytes = 10,
+                                               .column_sizes = {},
+                                               .value_counts = {},
+                                               .null_value_counts = {},
+                                               .nan_value_counts = {},
+                                               .lower_bounds = {},
+                                               .upper_bounds = {},
+                                               .key_metadata = {},
+                                               .split_offsets = {},
+                                               .equality_ids = {},
+                                               .sort_order_id = 0,
+                                               .first_row_id = std::nullopt,
+                                               .referenced_data_file = std::nullopt,
+                                               .content_offset = std::nullopt,
+                                               .content_size_in_bytes = std::nullopt,
+                                               .partition_spec_id = std::nullopt});
   }
 
   ManifestFile WriteManifest(int8_t format_version, std::optional<int64_t> snapshot_id,
@@ -118,20 +130,30 @@ class TestManifestReader : public testing::TestWithParam<int8_t> {
       std::optional<std::string> referenced_file = std::nullopt,
       std::optional<int64_t> content_offset = std::nullopt,
       std::optional<int64_t> content_size = std::nullopt) {
-    return std::make_unique<DataFile>(DataFile{
-        .content = content,
-        .file_path = path,
-        .file_format = FileFormatType::kParquet,
-        .partition = partition,
-        .record_count = 1,
-        .file_size_in_bytes = 10,
-        .equality_ids = (content == DataFile::Content::kEqualityDeletes)
-                            ? std::vector<int>{3}
-                            : std::vector<int>{},
-        .referenced_data_file = referenced_file,
-        .content_offset = content_offset,
-        .content_size_in_bytes = content_size,
-    });
+    return std::make_unique<DataFile>(
+        DataFile{.content = content,
+                 .file_path = path,
+                 .file_format = FileFormatType::kParquet,
+                 .partition = partition,
+                 .record_count = 1,
+                 .file_size_in_bytes = 10,
+                 .column_sizes = {},
+                 .value_counts = {},
+                 .null_value_counts = {},
+                 .nan_value_counts = {},
+                 .lower_bounds = {},
+                 .upper_bounds = {},
+                 .key_metadata = {},
+                 .split_offsets = {},
+                 .equality_ids = (content == DataFile::Content::kEqualityDeletes)
+                                     ? std::vector<int>{3}
+                                     : std::vector<int>{},
+                 .sort_order_id = 0,
+                 .first_row_id = std::nullopt,
+                 .referenced_data_file = referenced_file,
+                 .content_offset = content_offset,
+                 .content_size_in_bytes = content_size,
+                 .partition_spec_id = std::nullopt});
   }
 
   ManifestFile WriteDeleteManifest(int8_t format_version, int64_t snapshot_id,
@@ -357,21 +379,28 @@ TEST_P(TestManifestReader, TestDropStats) {
   auto version = GetParam();
 
   // Create a data file with full metrics
-  auto file_with_stats = std::make_unique<DataFile>(DataFile{
-      .file_path = "/path/to/data-with-stats.parquet",
-      .file_format = FileFormatType::kParquet,
-      .partition = PartitionValues({Literal::Int(0)}),
-      .record_count = 100,
-      .file_size_in_bytes = 1024,
-      // Add stats for multiple columns
-      .column_sizes = {{1, 100}, {2, 200}, {3, 300}},
-      .value_counts = {{1, 10}, {2, 20}, {3, 30}},
-      .null_value_counts = {{1, 1}, {2, 2}, {3, 3}},
-      .nan_value_counts = {{1, 0}, {2, 0}, {3, 0}},
-      .lower_bounds = {{1, {0x01}}, {2, {0x02}}, {3, {0x03}}},
-      .upper_bounds = {{1, {0xFF}}, {2, {0xFE}}, {3, {0xFD}}},
-      .sort_order_id = 0,
-  });
+  auto file_with_stats = std::make_unique<DataFile>(
+      DataFile{.file_path = "/path/to/data-with-stats.parquet",
+               .file_format = FileFormatType::kParquet,
+               .partition = PartitionValues({Literal::Int(0)}),
+               .record_count = 100,
+               .file_size_in_bytes = 1024,
+               // Add stats for multiple columns
+               .column_sizes = {{1, 100}, {2, 200}, {3, 300}},
+               .value_counts = {{1, 10}, {2, 20}, {3, 30}},
+               .null_value_counts = {{1, 1}, {2, 2}, {3, 3}},
+               .nan_value_counts = {{1, 0}, {2, 0}, {3, 0}},
+               .lower_bounds = {{1, {0x01}}, {2, {0x02}}, {3, {0x03}}},
+               .upper_bounds = {{1, {0xFF}}, {2, {0xFE}}, {3, {0xFD}}},
+               .key_metadata = {},
+               .split_offsets = {},
+               .equality_ids = {},
+               .sort_order_id = 0,
+               .first_row_id = std::nullopt,
+               .referenced_data_file = std::nullopt,
+               .content_offset = std::nullopt,
+               .content_size_in_bytes = std::nullopt,
+               .partition_spec_id = std::nullopt});
 
   auto entry = MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L,
                          std::move(file_with_stats));

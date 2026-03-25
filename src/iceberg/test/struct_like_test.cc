@@ -60,21 +60,22 @@ namespace iceberg {
   } while (0)
 
 TEST(ManifestFileStructLike, BasicFields) {
-  ManifestFile manifest_file{
-      .manifest_path = "/path/to/manifest.avro",
-      .manifest_length = 12345,
-      .partition_spec_id = 1,
-      .content = ManifestContent::kData,
-      .sequence_number = 100,
-      .min_sequence_number = 90,
-      .added_snapshot_id = 1001,
-      .added_files_count = 10,
-      .existing_files_count = 5,
-      .deleted_files_count = 2,
-      .added_rows_count = 1000,
-      .existing_rows_count = 500,
-      .deleted_rows_count = 20,
-  };
+  ManifestFile manifest_file{.manifest_path = "/path/to/manifest.avro",
+                             .manifest_length = 12345,
+                             .partition_spec_id = 1,
+                             .content = ManifestContent::kData,
+                             .sequence_number = 100,
+                             .min_sequence_number = 90,
+                             .added_snapshot_id = 1001,
+                             .added_files_count = 10,
+                             .existing_files_count = 5,
+                             .deleted_files_count = 2,
+                             .added_rows_count = 1000,
+                             .existing_rows_count = 500,
+                             .deleted_rows_count = 20,
+                             .partitions = {},
+                             .key_metadata = {},
+                             .first_row_id = std::nullopt};
 
   ManifestFileStructLike struct_like(manifest_file);
   EXPECT_EQ(struct_like.num_fields(), 16);
@@ -152,7 +153,9 @@ TEST(ManifestFileStructLike, WithPartitions) {
                      {.contains_null = false,
                       .contains_nan = std::nullopt,
                       .lower_bound = std::vector<uint8_t>{0x10, 0x20},
-                      .upper_bound = std::nullopt}}};
+                      .upper_bound = std::nullopt}},
+      .key_metadata = {},
+      .first_row_id = std::nullopt};
 
   ManifestFileStructLike struct_like(manifest_file);
 

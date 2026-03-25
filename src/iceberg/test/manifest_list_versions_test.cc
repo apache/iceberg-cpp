@@ -88,6 +88,8 @@ const static auto kDeleteManifest = ManifestFile{
     .added_rows_count = kAddedRows,
     .existing_rows_count = kExistingRows,
     .deleted_rows_count = kDeletedRows,
+    .partitions = {},
+    .key_metadata = {},
     .first_row_id = std::nullopt,
 };
 
@@ -373,9 +375,14 @@ TEST_F(TestManifestListVersions, TestManifestsWithoutRowStats) {
   EXPECT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
 
   std::string manifest_list_path = CreateManifestListPath();
-  auto writer_result = WriterFactoryRegistry::Open(
-      FileFormatType::kAvro,
-      {.path = manifest_list_path, .schema = schema_without_stats, .io = file_io_});
+  auto writer_result = WriterFactoryRegistry::Open(FileFormatType::kAvro,
+                                                   {
+                                                       .path = manifest_list_path,
+                                                       .schema = schema_without_stats,
+                                                       .io = file_io_,
+                                                       .metadata = {},
+                                                       .properties = {},
+                                                   });
   EXPECT_THAT(writer_result, IsOk());
   auto writer = std::move(writer_result.value());
   EXPECT_THAT(writer->Write(&arrow_array), IsOk());

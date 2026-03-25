@@ -349,7 +349,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::FromSnapshot(
 
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::FromSnapshot(
-    const std::string& ref, bool inclusive)
+    [[maybe_unused]] const std::string& ref, [[maybe_unused]] bool inclusive)
   requires IsIncrementalScan<ScanType>
 {
   AddError(NotImplemented("Incremental scan is not implemented"));
@@ -357,7 +357,8 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::FromSnapshot(
 }
 
 template <typename ScanType>
-TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ToSnapshot(int64_t to_snapshot_id)
+TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ToSnapshot(
+    [[maybe_unused]] int64_t to_snapshot_id)
   requires IsIncrementalScan<ScanType>
 {
   AddError(NotImplemented("Incremental scan is not implemented"));
@@ -365,7 +366,8 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ToSnapshot(int64_t to_sn
 }
 
 template <typename ScanType>
-TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ToSnapshot(const std::string& ref)
+TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ToSnapshot(
+    [[maybe_unused]] const std::string& ref)
   requires IsIncrementalScan<ScanType>
 {
   AddError(NotImplemented("Incremental scan is not implemented"));
@@ -547,8 +549,8 @@ Result<std::unique_ptr<IncrementalAppendScan>> IncrementalAppendScan::Make(
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFiles(
-    std::optional<int64_t> from_snapshot_id_exclusive,
-    int64_t to_snapshot_id_inclusive) const {
+    [[maybe_unused]] std::optional<int64_t> from_snapshot_id_exclusive,
+    [[maybe_unused]] int64_t to_snapshot_id_inclusive) const {
   return NotImplemented("IncrementalAppendScan::PlanFiles is not implemented");
 }
 
@@ -563,8 +565,9 @@ Result<std::unique_ptr<IncrementalChangelogScan>> IncrementalChangelogScan::Make
 }
 
 Result<std::vector<std::shared_ptr<ChangelogScanTask>>>
-IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_exclusive,
-                                    int64_t to_snapshot_id_inclusive) const {
+IncrementalChangelogScan::PlanFiles(
+    [[maybe_unused]] std::optional<int64_t> from_snapshot_id_exclusive,
+    [[maybe_unused]] int64_t to_snapshot_id_inclusive) const {
   return NotImplemented("IncrementalChangelogScan::PlanFiles is not implemented");
 }
 

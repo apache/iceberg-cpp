@@ -64,6 +64,8 @@ class MetadataIOTest : public TempFileTestBase {
                          .table_uuid = "1234567890",
                          .location = location_,
                          .last_sequence_number = 0,
+                         .last_updated_ms = {},
+                         .last_column_id = 0,
                          .schemas = {schema},
                          .current_schema_id = 1,
                          .partition_specs = {PartitionSpec::Unpartitioned()},
@@ -73,13 +75,19 @@ class MetadataIOTest : public TempFileTestBase {
                          .current_snapshot_id = 3051729675574597004,
                          .snapshots = {std::make_shared<Snapshot>(Snapshot{
                              .snapshot_id = 3051729675574597004,
+                             .parent_snapshot_id = std::nullopt,
                              .sequence_number = 0,
                              .timestamp_ms = TimePointMsFromUnixMs(1515100955770),
                              .manifest_list = "s3://a/b/1.avro",
                              .summary = {{"operation", "append"}},
-                         })},
+                             .schema_id = std::nullopt})},
+                         .snapshot_log = {},
+                         .metadata_log = {},
                          .sort_orders = {SortOrder::Unsorted()},
                          .default_sort_order_id = 0,
+                         .refs = {},
+                         .statistics = {},
+                         .partition_statistics = {},
                          .next_row_id = 0};
   }
 

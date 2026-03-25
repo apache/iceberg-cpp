@@ -538,7 +538,7 @@ TEST_F(StructTypeThreadSafetyTest, ConcurrentGetFieldById) {
   std::vector<std::thread> threads;
 
   for (int i = 0; i < num_threads; ++i) {
-    threads.emplace_back([this, iterations_per_thread]() {
+    threads.emplace_back([this]() {
       for (int j = 0; j < iterations_per_thread; ++j) {
         ASSERT_THAT(struct_type_->GetFieldById(1), ::testing::Optional(*field1_));
         ASSERT_THAT(struct_type_->GetFieldById(999), ::testing::Optional(std::nullopt));
@@ -557,7 +557,7 @@ TEST_F(StructTypeThreadSafetyTest, ConcurrentGetFieldByName) {
   std::vector<std::thread> threads;
 
   for (int i = 0; i < num_threads; ++i) {
-    threads.emplace_back([this, iterations_per_thread]() {
+    threads.emplace_back([this]() {
       for (int j = 0; j < iterations_per_thread; ++j) {
         ASSERT_THAT(struct_type_->GetFieldByName("id", true),
                     ::testing::Optional(*field1_));
@@ -580,7 +580,7 @@ TEST_F(StructTypeThreadSafetyTest, MixedConcurrentOperations) {
   std::vector<std::thread> threads;
 
   for (int i = 0; i < num_threads; ++i) {
-    threads.emplace_back([this, iterations_per_thread, i]() {
+    threads.emplace_back([this, i]() {
       for (int j = 0; j < iterations_per_thread; ++j) {
         if (i % 4 == 0) {
           ASSERT_THAT(struct_type_->GetFieldById(1), ::testing::Optional(*field1_));

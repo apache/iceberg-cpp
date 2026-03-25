@@ -36,7 +36,7 @@
 
 namespace iceberg {
 namespace {
-constexpr std::string_view kUnknownName = "unknown";
+[[maybe_unused]] constexpr std::string_view kUnknownName = "unknown";
 constexpr std::string_view kIdentityName = "identity";
 constexpr std::string_view kBucketName = "bucket";
 constexpr std::string_view kTruncateName = "truncate";

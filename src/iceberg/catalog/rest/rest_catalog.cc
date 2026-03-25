@@ -365,7 +365,11 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::UpdateTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
 
-  CommitTableRequest request{.identifier = identifier};
+  CommitTableRequest request{
+      .identifier = identifier,
+      .requirements = {},
+      .updates = {},
+  };
   request.requirements.reserve(requirements.size());
   for (const auto& req : requirements) {
     request.requirements.push_back(req->Clone());

@@ -60,7 +60,7 @@ inline constexpr int32_t MonthsSinceEpoch(const year_month_day& ymd) {
 }
 
 template <TypeId type_id>
-Result<Literal> ExtractYearImpl(const Literal& literal) {
+Result<Literal> ExtractYearImpl([[maybe_unused]] const Literal& literal) {
   std::unreachable();
 }
 
@@ -84,7 +84,7 @@ Result<Literal> ExtractYearImpl<TypeId::kTimestampTz>(const Literal& literal) {
 }
 
 template <TypeId type_id>
-Result<Literal> ExtractMonthImpl(const Literal& literal) {
+Result<Literal> ExtractMonthImpl([[maybe_unused]] const Literal& literal) {
   std::unreachable();
 }
 
@@ -108,7 +108,7 @@ Result<Literal> ExtractMonthImpl<TypeId::kTimestampTz>(const Literal& literal) {
 }
 
 template <TypeId type_id>
-Result<Literal> ExtractDayImpl(const Literal& literal) {
+Result<Literal> ExtractDayImpl([[maybe_unused]] const Literal& literal) {
   std::unreachable();
 }
 
@@ -129,7 +129,7 @@ Result<Literal> ExtractDayImpl<TypeId::kTimestampTz>(const Literal& literal) {
 }
 
 template <TypeId type_id>
-Result<Literal> ExtractHourImpl(const Literal& literal) {
+Result<Literal> ExtractHourImpl([[maybe_unused]] const Literal& literal) {
   std::unreachable();
 }
 

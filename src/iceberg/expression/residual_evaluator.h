@@ -65,7 +65,7 @@ class ICEBERG_EXPORT ResidualEvaluator {
                                                          const Schema& schema,
                                                          bool case_sensitive = true);
 
-  ~ResidualEvaluator();
+  virtual ~ResidualEvaluator();
 
   /// \brief Returns a residual expression for the given partition values.
   ///

@@ -81,6 +81,7 @@ bool CheckServiceReady(uint16_t port) {
       .sin_family = AF_INET,
       .sin_port = htons(port),
       .sin_addr = {.s_addr = htonl(INADDR_LOOPBACK)},
+      .sin_zero = {},
   };
   bool result =
       (connect(sock, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == 0);

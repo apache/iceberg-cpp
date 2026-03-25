@@ -49,8 +49,8 @@ class ICEBERG_EXPORT FileIO {
   /// the length to read, e.g. S3 `GetObject` has a Range parameter.
   /// \return The content of the file if the read succeeded, an error code if the read
   /// failed.
-  virtual Result<std::string> ReadFile(const std::string& file_location,
-                                       std::optional<size_t> length) {
+  virtual Result<std::string> ReadFile([[maybe_unused]] const std::string& file_location,
+                                       [[maybe_unused]] std::optional<size_t> length) {
     // We provide a default implementation to avoid Windows linker error LNK2019.
     return NotImplemented("ReadFile not implemented");
   }
@@ -62,7 +62,8 @@ class ICEBERG_EXPORT FileIO {
   /// \param overwrite If true, overwrite the file if it exists. If false, fail if the
   /// file exists.
   /// \return void if the write succeeded, an error code if the write failed.
-  virtual Status WriteFile(const std::string& file_location, std::string_view content) {
+  virtual Status WriteFile([[maybe_unused]] const std::string& file_location,
+                           [[maybe_unused]] std::string_view content) {
     return NotImplemented("WriteFile not implemented");
   }
 
@@ -70,7 +71,7 @@ class ICEBERG_EXPORT FileIO {
   ///
   /// \param file_location The location of the file to delete.
   /// \return void if the delete succeeded, an error code if the delete failed.
-  virtual Status DeleteFile(const std::string& file_location) {
+  virtual Status DeleteFile([[maybe_unused]] const std::string& file_location) {
     return NotImplemented("DeleteFile not implemented");
   }
 };

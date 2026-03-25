@@ -229,10 +229,11 @@ class ParquetReader::Impl {
       auto metadata = reader_->parquet_reader()->metadata();
       for (int i = 0; i < metadata->num_row_groups(); ++i) {
         auto row_group_offset = metadata->RowGroup(i)->file_offset();
-        if (row_group_offset >= split_->offset &&
-            row_group_offset < split_->offset + split_->length) {
+        if (std::cmp_greater_equal(row_group_offset, split_->offset) &&
+            std::cmp_less(row_group_offset, split_->offset + split_->length)) {
           row_group_indices.push_back(i);
-        } else if (row_group_offset >= split_->offset + split_->length) {
+        } else if (std::cmp_greater_equal(row_group_offset,
+                                          split_->offset + split_->length)) {
           break;
         } else {
           metadata_context_.next_file_pos += metadata->RowGroup(i)->num_rows();

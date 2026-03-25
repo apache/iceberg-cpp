@@ -79,28 +79,36 @@ class TableScanTest : public testing::TestWithParam<int8_t> {
                  .sequence_number = kSequenceNumber,
                  .timestamp_ms = kTimestampMs,
                  .manifest_list = "/tmp/metadata/snap-1000-1-manifest-list.avro",
+                 .summary = {},
                  .schema_id = schema_->schema_id()});
 
-    table_metadata_ = std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2,
-                      .table_uuid = "test-table-uuid",
-                      .location = "/tmp/table",
-                      .last_sequence_number = kSequenceNumber,
-                      .last_updated_ms = kTimestampMs,
-                      .last_column_id = 2,
-                      .schemas = {schema_},
-                      .current_schema_id = schema_->schema_id(),
-                      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-                      .default_spec_id = partitioned_spec_->spec_id(),
-                      .last_partition_id = 1000,
-                      .current_snapshot_id = kSnapshotId,
-                      .snapshots = {snapshot},
-                      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = kTimestampMs,
-                                                        .snapshot_id = kSnapshotId}},
-                      .default_sort_order_id = 0,
-                      .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
-                                            .snapshot_id = kSnapshotId,
-                                            .retention = SnapshotRef::Branch{}})}}});
+    table_metadata_ = std::make_shared<TableMetadata>(TableMetadata{
+        .format_version = 2,
+        .table_uuid = "test-table-uuid",
+        .location = "/tmp/table",
+        .last_sequence_number = kSequenceNumber,
+        .last_updated_ms = kTimestampMs,
+        .last_column_id = 2,
+        .schemas = {schema_},
+        .current_schema_id = schema_->schema_id(),
+        .partition_specs = {partitioned_spec_, unpartitioned_spec_},
+        .default_spec_id = partitioned_spec_->spec_id(),
+        .last_partition_id = 1000,
+        .properties = {},
+        .current_snapshot_id = kSnapshotId,
+        .snapshots = {snapshot},
+        .snapshot_log = {SnapshotLogEntry{.timestamp_ms = kTimestampMs,
+                                          .snapshot_id = kSnapshotId}},
+        .metadata_log = {},
+        .sort_orders = {},
+        .default_sort_order_id = 0,
+        .refs = {{"main",
+                  std::make_shared<SnapshotRef>(SnapshotRef{
+                      .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}},
+        .statistics = {},
+        .partition_statistics = {},
+        .next_row_id = 0,
+    });
   }
 
   std::shared_ptr<DataFile> MakePositionDeleteFile(
@@ -113,7 +121,20 @@ class TableScanTest : public testing::TestWithParam<int8_t> {
         .partition = partition,
         .record_count = 1,
         .file_size_in_bytes = 10,
+        .column_sizes = {},
+        .value_counts = {},
+        .null_value_counts = {},
+        .nan_value_counts = {},
+        .lower_bounds = {},
+        .upper_bounds = {},
+        .key_metadata = {},
+        .split_offsets = {},
+        .equality_ids = {},
+        .sort_order_id = std::nullopt,
+        .first_row_id = std::nullopt,
         .referenced_data_file = referenced_file,
+        .content_offset = std::nullopt,
+        .content_size_in_bytes = std::nullopt,
         .partition_spec_id = spec_id,
     });
   }
@@ -129,7 +150,20 @@ class TableScanTest : public testing::TestWithParam<int8_t> {
         .partition = partition,
         .record_count = 1,
         .file_size_in_bytes = 10,
+        .column_sizes = {},
+        .value_counts = {},
+        .null_value_counts = {},
+        .nan_value_counts = {},
+        .lower_bounds = {},
+        .upper_bounds = {},
+        .key_metadata = {},
+        .split_offsets = {},
         .equality_ids = std::move(equality_ids),
+        .sort_order_id = std::nullopt,
+        .first_row_id = std::nullopt,
+        .referenced_data_file = std::nullopt,
+        .content_offset = std::nullopt,
+        .content_size_in_bytes = std::nullopt,
         .partition_spec_id = spec_id,
     });
   }
@@ -151,7 +185,20 @@ class TableScanTest : public testing::TestWithParam<int8_t> {
         .partition = partition,
         .record_count = record_count,
         .file_size_in_bytes = 10,
+        .column_sizes = {},
+        .value_counts = {},
+        .null_value_counts = {},
+        .nan_value_counts = {},
+        .lower_bounds = {},
+        .upper_bounds = {},
+        .key_metadata = {},
+        .split_offsets = {},
+        .equality_ids = {},
         .sort_order_id = 0,
+        .first_row_id = std::nullopt,
+        .referenced_data_file = std::nullopt,
+        .content_offset = std::nullopt,
+        .content_size_in_bytes = std::nullopt,
         .partition_spec_id = spec_id,
     });
     // Set lower/upper bounds for field_id=1 ("id" column) if provided
@@ -351,13 +398,27 @@ TEST_P(TableScanTest, TableScanBuilderValidationErrors) {
 TEST_P(TableScanTest, DataTableScanPlanFilesEmpty) {
   auto empty_metadata = std::make_shared<TableMetadata>(
       TableMetadata{.format_version = 2,
+                    .table_uuid = "",
+                    .location = "",
+                    .last_sequence_number = 0,
+                    .last_updated_ms = {},
+                    .last_column_id = 0,
                     .schemas = {schema_},
                     .current_schema_id = schema_->schema_id(),
                     .partition_specs = {unpartitioned_spec_},
                     .default_spec_id = unpartitioned_spec_->spec_id(),
+                    .last_partition_id = 0,
+                    .properties = {},
                     .current_snapshot_id = -1,
                     .snapshots = {},
-                    .refs = {}});
+                    .snapshot_log = {},
+                    .metadata_log = {},
+                    .sort_orders = {},
+                    .default_sort_order_id = 0,
+                    .refs = {},
+                    .statistics = {},
+                    .partition_statistics = {},
+                    .next_row_id = 0});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          DataTableScanBuilder::Make(empty_metadata, file_io_));
@@ -407,15 +468,22 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
                     .partition_specs = {partitioned_spec_, unpartitioned_spec_},
                     .default_spec_id = partitioned_spec_->spec_id(),
                     .last_partition_id = 1000,
+                    .properties = {},
                     .current_snapshot_id = kSnapshotId,
                     .snapshots = {snapshot_with_manifest},
                     .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
                                                       .snapshot_id = kSnapshotId}},
+
+                    .metadata_log = {},
+                    .sort_orders = {},
                     .default_sort_order_id = 0,
                     .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
                                           .snapshot_id = kSnapshotId,
                                           .retention = SnapshotRef::Branch{},
-                                      })}}});
+                                      })}},
+                    .statistics = {},
+                    .partition_statistics = {},
+                    .next_row_id = 0});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          DataTableScanBuilder::Make(metadata_with_manifest, file_io_));
@@ -474,15 +542,21 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
                     .partition_specs = {partitioned_spec_, unpartitioned_spec_},
                     .default_spec_id = partitioned_spec_->spec_id(),
                     .last_partition_id = 1000,
+                    .properties = {},
                     .current_snapshot_id = 1000L,
                     .snapshots = {snapshot_with_manifests},
                     .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
                                                       .snapshot_id = 1000L}},
+                    .metadata_log = {},
+                    .sort_orders = {},
                     .default_sort_order_id = 0,
                     .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
                                           .snapshot_id = 1000L,
                                           .retention = SnapshotRef::Branch{},
-                                      })}}});
+                                      })}},
+                    .statistics = {},
+                    .partition_statistics = {},
+                    .next_row_id = 0});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          DataTableScanBuilder::Make(metadata_with_manifests, file_io_));
@@ -522,6 +596,7 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
                                                       .sequence_number = 1L,
                                                       .timestamp_ms = timestamp_ms,
                                                       .manifest_list = manifest_list_path,
+                                                      .summary = {},
                                                       .schema_id = schema_->schema_id()});
 
   auto metadata = std::make_shared<TableMetadata>(TableMetadata{
@@ -536,14 +611,20 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
       .partition_specs = {partitioned_spec_, unpartitioned_spec_},
       .default_spec_id = partitioned_spec_->spec_id(),
       .last_partition_id = 1000,
+      .properties = {},
       .current_snapshot_id = kSnapshotId,
       .snapshots = {snapshot},
       .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
                                         .snapshot_id = kSnapshotId}},
+      .metadata_log = {},
+      .sort_orders = {},
       .default_sort_order_id = 0,
       .refs = {{"main",
                 std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
+                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}},
+      .statistics = {},
+      .partition_statistics = {},
+      .next_row_id = 0});
 
   // Test 1: Filter matches only data1.parquet (id=25 is in range [1, 50])
   {
@@ -643,15 +724,21 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
                     .partition_specs = {partitioned_spec_, unpartitioned_spec_},
                     .default_spec_id = partitioned_spec_->spec_id(),
                     .last_partition_id = 1000,
+                    .properties = {},
                     .current_snapshot_id = kSnapshotId,
                     .snapshots = {snapshot_with_manifests},
                     .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
                                                       .snapshot_id = kSnapshotId}},
+                    .metadata_log = {},
+                    .sort_orders = {},
                     .default_sort_order_id = 0,
                     .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
                                           .snapshot_id = kSnapshotId,
                                           .retention = SnapshotRef::Branch{},
-                                      })}}});
+                                      })}},
+                    .statistics = {},
+                    .partition_statistics = {},
+                    .next_row_id = 0});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          DataTableScanBuilder::Make(metadata_with_manifests, file_io_));
@@ -684,6 +771,7 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
       .partition_specs = {unpartitioned_spec_},
       .default_spec_id = unpartitioned_spec_->spec_id(),
       .last_partition_id = 1000,
+      .properties = {},
       .current_snapshot_id = 1000L,
       .snapshots = {std::make_shared<Snapshot>(Snapshot{
           .snapshot_id = 1000L,
@@ -691,15 +779,21 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
           .sequence_number = 1L,
           .timestamp_ms = timestamp_ms,
           .manifest_list = "/tmp/metadata/snap-1000-1-manifest-list.avro",
+          .summary = {},
           .schema_id = schema->schema_id(),
       })},
       .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
                                         .snapshot_id = 1000L}},
+      .metadata_log = {},
+      .sort_orders = {},
       .default_sort_order_id = 0,
       .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
                             .snapshot_id = 1000L,
                             .retention = SnapshotRef::Branch{},
                         })}},
+      .statistics = {},
+      .partition_statistics = {},
+      .next_row_id = 0,
   });
 
   // Select "data" column, filter on "id" column

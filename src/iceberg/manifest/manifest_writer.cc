@@ -247,6 +247,7 @@ Result<ManifestFile> ManifestWriter::ToManifestFile() const {
       .existing_rows_count = existing_rows_count_,
       .deleted_rows_count = delete_rows_count_,
       .partitions = std::move(partitions),
+      .key_metadata = {},
       .first_row_id = first_row_id_,
   };
 }

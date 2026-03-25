@@ -82,22 +82,6 @@ std::shared_ptr<Type> CreateNestedStruct() {
   });
 }
 
-std::shared_ptr<Type> CreateListOfList() {
-  return std::make_shared<ListType>(SchemaField::MakeRequired(
-      /*field_id=*/401, "element",
-      std::make_shared<ListType>(SchemaField::MakeOptional(
-          /*field_id=*/402, "element", iceberg::float64()))));
-}
-
-std::shared_ptr<Type> CreateMapOfList() {
-  return std::make_shared<MapType>(
-      SchemaField::MakeRequired(/*field_id=*/501, "key", iceberg::string()),
-      SchemaField::MakeRequired(
-          /*field_id=*/502, "value",
-          std::make_shared<ListType>(SchemaField::MakeOptional(
-              /*field_id=*/503, "element", iceberg::int32()))));
-}
-
 }  // namespace
 
 TEST(SchemaUtilTest, ProjectIdenticalSchemas) {
