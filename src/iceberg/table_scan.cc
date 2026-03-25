@@ -225,8 +225,7 @@ Result<std::unique_ptr<TableScanBuilder<ScanType>>> TableScanBuilder<ScanType>::
 template <typename ScanType>
 TableScanBuilder<ScanType>::TableScanBuilder(
     std::shared_ptr<TableMetadata> table_metadata, std::shared_ptr<FileIO> file_io,
-                                   std::shared_ptr<MetricsReporter> reporter,
-                                   const std::string& table_name)
+    std::shared_ptr<MetricsReporter> reporter, const std::string& table_name)
     : metadata_(std::move(table_metadata)), io_(std::move(file_io)) {
   context_.reporter = std::move(reporter);
   context_.table_name = table_name;

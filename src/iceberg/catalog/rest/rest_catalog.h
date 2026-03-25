@@ -111,8 +111,7 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
               std::unordered_set<Endpoint> endpoints,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session,
-              std::shared_ptr<MetricsReporter> reporter,
-              SnapshotMode snapshot_mode);
+              std::shared_ptr<MetricsReporter> reporter, SnapshotMode snapshot_mode);
 
   Result<std::string> LoadTableInternal(const TableIdentifier& identifier) const;
 
@@ -132,7 +131,6 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
   std::shared_ptr<auth::AuthSession> catalog_session_;
   std::shared_ptr<MetricsReporter> reporter_;
   SnapshotMode snapshot_mode_;
-  
 };
 
 }  // namespace iceberg::rest
