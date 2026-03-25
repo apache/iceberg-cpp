@@ -19,15 +19,14 @@
 
 #include <cstdlib>
 #include <mutex>
-#include <string_view>
+#include <stdexcept>
 
 #include <arrow/filesystem/filesystem.h>
-#include <arrow/filesystem/localfs.h>
-#if __has_include(<arrow/filesystem/s3fs.h>)
-#include <arrow/filesystem/s3fs.h>
-#define ICEBERG_ARROW_HAS_S3 1
+#ifdef ICEBERG_S3_ENABLED
+#  include <arrow/filesystem/s3fs.h>
+#  define ICEBERG_ARROW_HAS_S3 1
 #else
-#define ICEBERG_ARROW_HAS_S3 0
+#  define ICEBERG_ARROW_HAS_S3 0
 #endif
 
 #include "iceberg/arrow/arrow_file_io.h"
@@ -40,8 +39,6 @@ namespace iceberg::arrow {
 
 namespace {
 
-bool IsS3Uri(std::string_view uri) { return uri.rfind("s3://", 0) == 0; }
-
 Status EnsureS3Initialized() {
 #if ICEBERG_ARROW_HAS_S3
   static std::once_flag init_flag;
@@ -49,14 +46,10 @@ Status EnsureS3Initialized() {
   std::call_once(init_flag, []() {
     ::arrow::fs::S3GlobalOptions options;
     init_status = ::arrow::fs::InitializeS3(options);
-    if (init_status.ok()) {
-      std::atexit([]() { (void)::arrow::fs::FinalizeS3(); });
-    }
   });
   if (!init_status.ok()) {
-    return std::unexpected<Error>{
-        {.kind = ::iceberg::arrow::ToErrorKind(init_status),
-         .message = init_status.ToString()}};
+    return std::unexpected(Error{.kind = ::iceberg::arrow::ToErrorKind(init_status),
+                                 .message = init_status.ToString()});
   }
   return {};
 #else
@@ -69,7 +62,7 @@ Status EnsureS3Initialized() {
 ///
 /// \param properties The configuration properties map.
 /// \return Configured S3Options.
-::arrow::fs::S3Options ConfigureS3Options(
+Result<::arrow::fs::S3Options> ConfigureS3Options(
     const std::unordered_map<std::string, std::string>& properties) {
   ::arrow::fs::S3Options options;
 
@@ -100,13 +93,22 @@ Status EnsureS3Initialized() {
   auto endpoint_it = properties.find(S3Properties::kEndpoint);
   if (endpoint_it != properties.end()) {
     options.endpoint_override = endpoint_it->second;
+  } else {
+    // Fall back to AWS standard environment variables for endpoint override
+    const char* s3_endpoint_env = std::getenv("AWS_ENDPOINT_URL_S3");
+    if (s3_endpoint_env != nullptr) {
+      options.endpoint_override = s3_endpoint_env;
+    } else {
+      const char* endpoint_env = std::getenv("AWS_ENDPOINT_URL");
+      if (endpoint_env != nullptr) {
+        options.endpoint_override = endpoint_env;
+      }
+    }
   }
 
-  // Configure path-style access (needed for MinIO)
   auto path_style_it = properties.find(S3Properties::kPathStyleAccess);
-  if (path_style_it != properties.end()) {
-    // Arrow's S3 path-style is controlled via endpoint scheme
-    // For path-style access, we need to ensure the endpoint is properly configured
+  if (path_style_it != properties.end() && path_style_it->second == "true") {
+    options.force_virtual_addressing = false;
   }
 
   // Configure SSL
@@ -118,117 +120,45 @@ Status EnsureS3Initialized() {
   // Configure timeouts
   auto connect_timeout_it = properties.find(S3Properties::kConnectTimeoutMs);
   if (connect_timeout_it != properties.end()) {
-    options.connect_timeout = std::stod(connect_timeout_it->second) / 1000.0;
+    try {
+      options.connect_timeout = std::stod(connect_timeout_it->second) / 1000.0;
+    } catch (const std::exception& e) {
+      return InvalidArgument("Invalid {}: '{}' ({})", S3Properties::kConnectTimeoutMs,
+                             connect_timeout_it->second, e.what());
+    }
   }
 
   auto socket_timeout_it = properties.find(S3Properties::kSocketTimeoutMs);
   if (socket_timeout_it != properties.end()) {
-    options.request_timeout = std::stod(socket_timeout_it->second) / 1000.0;
+    try {
+      options.request_timeout = std::stod(socket_timeout_it->second) / 1000.0;
+    } catch (const std::exception& e) {
+      return InvalidArgument("Invalid {}: '{}' ({})", S3Properties::kSocketTimeoutMs,
+                             socket_timeout_it->second, e.what());
+    }
   }
 
   return options;
 }
-
-/// \brief Create an S3 FileSystem with the given options.
-///
-/// \param options The S3Options to use.
-/// \return A shared_ptr to the S3FileSystem, or an error.
-Result<std::shared_ptr<::arrow::fs::FileSystem>> MakeS3FileSystem(
-    const ::arrow::fs::S3Options& options) {
-  ICEBERG_RETURN_UNEXPECTED(EnsureS3Initialized());
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto fs, ::arrow::fs::S3FileSystem::Make(options));
-  return fs;
-}
 #endif
-
-Result<std::shared_ptr<::arrow::fs::FileSystem>> ResolveFileSystemFromUri(
-    const std::string& uri, std::string* out_path) {
-  if (IsS3Uri(uri)) {
-    ICEBERG_RETURN_UNEXPECTED(EnsureS3Initialized());
-  }
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto fs, ::arrow::fs::FileSystemFromUri(uri, out_path));
-  return fs;
-}
-
-/// \brief ArrowUriFileIO resolves FileSystem from URI for each operation.
-///
-/// This implementation is thread-safe as it creates a new FileSystem instance
-/// for each operation. However, it may be less efficient than caching the
-/// FileSystem. S3 initialization is done once per process.
-class ArrowUriFileIO : public FileIO {
- public:
-  Result<std::string> ReadFile(const std::string& file_location,
-                               std::optional<size_t> length) override {
-    std::string path;
-    ICEBERG_ASSIGN_OR_RAISE(auto fs, ResolveFileSystemFromUri(file_location, &path));
-    ::arrow::fs::FileInfo file_info(path);
-    if (length.has_value()) {
-      file_info.set_size(length.value());
-    }
-    std::string content;
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file, fs->OpenInputFile(file_info));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file_size, file->GetSize());
-
-    content.resize(file_size);
-    size_t remain = file_size;
-    size_t offset = 0;
-    while (remain > 0) {
-      size_t read_length = std::min(remain, static_cast<size_t>(1024 * 1024));
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          auto read_bytes,
-          file->Read(read_length, reinterpret_cast<uint8_t*>(&content[offset])));
-      remain -= read_bytes;
-      offset += read_bytes;
-    }
-
-    return content;
-  }
-
-  Status WriteFile(const std::string& file_location,
-                   std::string_view content) override {
-    std::string path;
-    ICEBERG_ASSIGN_OR_RAISE(auto fs, ResolveFileSystemFromUri(file_location, &path));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file, fs->OpenOutputStream(path));
-    ICEBERG_ARROW_RETURN_NOT_OK(file->Write(content.data(), content.size()));
-    ICEBERG_ARROW_RETURN_NOT_OK(file->Flush());
-    ICEBERG_ARROW_RETURN_NOT_OK(file->Close());
-    return {};
-  }
-
-  Status DeleteFile(const std::string& file_location) override {
-    std::string path;
-    ICEBERG_ASSIGN_OR_RAISE(auto fs, ResolveFileSystemFromUri(file_location, &path));
-    ICEBERG_ARROW_RETURN_NOT_OK(fs->DeleteFile(path));
-    return {};
-  }
-};
 
 }  // namespace
 
 Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::string& uri,
     const std::unordered_map<std::string, std::string>& properties) {
-  if (!IsS3Uri(uri)) {
+  if (!uri.starts_with("s3://")) {
     return InvalidArgument("S3 URI must start with s3://");
   }
 #if !ICEBERG_ARROW_HAS_S3
   return NotImplemented("Arrow S3 support is not enabled");
 #else
-  // If properties are empty, use the simple URI-based resolution
-  if (properties.empty()) {
-    // Validate that S3 can be initialized and the URI is valid
-    std::string path;
-    ICEBERG_ASSIGN_OR_RAISE(auto fs, ResolveFileSystemFromUri(uri, &path));
-    (void)path;
-    (void)fs;
-    return std::make_unique<ArrowUriFileIO>();
-  }
+  ICEBERG_RETURN_UNEXPECTED(EnsureS3Initialized());
 
-  // Create S3FileSystem with explicit configuration
-  auto options = ConfigureS3Options(properties);
-  ICEBERG_ASSIGN_OR_RAISE(auto fs, MakeS3FileSystem(options));
+  // Configure S3 options from properties (uses default credentials if empty)
+  ICEBERG_ASSIGN_OR_RAISE(auto options, ConfigureS3Options(properties));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto fs, ::arrow::fs::S3FileSystem::Make(options));
 
-  // Return ArrowFileSystemFileIO with the configured S3 filesystem
   return std::make_unique<ArrowFileSystemFileIO>(std::move(fs));
 #endif
 }

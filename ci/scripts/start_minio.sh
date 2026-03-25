@@ -21,7 +21,7 @@ set -eux
 
 MINIO_ROOT_USER="${MINIO_ROOT_USER:-minio}"
 MINIO_ROOT_PASSWORD="${MINIO_ROOT_PASSWORD:-minio123}"
-MINIO_IMAGE="${MINIO_IMAGE:-minio/minio:RELEASE.2024-12-18T00-00-00Z}"
+MINIO_IMAGE="${MINIO_IMAGE:-minio/minio:latest}"
 MINIO_CONTAINER_NAME="${MINIO_CONTAINER_NAME:-iceberg-minio}"
 MINIO_PORT="${MINIO_PORT:-9000}"
 MINIO_CONSOLE_PORT="${MINIO_CONSOLE_PORT:-9001}"
@@ -64,7 +64,8 @@ start_minio_macos() {
   fi
 
   brew install minio
-  minio server /tmp/minio --console-address ":${MINIO_CONSOLE_PORT}" &
+  MINIO_ROOT_USER="${MINIO_ROOT_USER}" MINIO_ROOT_PASSWORD="${MINIO_ROOT_PASSWORD}" \
+    minio server /tmp/minio --console-address ":${MINIO_CONSOLE_PORT}" &
   wait_for_minio
 }
 
@@ -84,7 +85,13 @@ download_mc() {
       ;;
     Darwin*)
       MC_BIN="${mc_dir}/mc"
-      curl -sSL "https://dl.min.io/client/mc/release/darwin-amd64/mc" -o "${MC_BIN}"
+      local arch
+      arch="$(uname -m)"
+      if [ "${arch}" = "arm64" ]; then
+        curl -sSL "https://dl.min.io/client/mc/release/darwin-arm64/mc" -o "${MC_BIN}"
+      else
+        curl -sSL "https://dl.min.io/client/mc/release/darwin-amd64/mc" -o "${MC_BIN}"
+      fi
       chmod +x "${MC_BIN}"
       ;;
     MINGW*|MSYS*|CYGWIN*)
@@ -109,13 +116,27 @@ create_bucket() {
   "${MC_BIN}" mb --ignore-existing "local/${MINIO_BUCKET}"
 }
 
+start_minio_windows() {
+  local minio_dir="${RUNNER_TEMP:-/tmp}"
+  local minio_bin="${minio_dir}/minio.exe"
+  curl -sSL "https://dl.min.io/server/minio/release/windows-amd64/minio.exe" -o "${minio_bin}"
+  MINIO_ROOT_USER="${MINIO_ROOT_USER}" MINIO_ROOT_PASSWORD="${MINIO_ROOT_PASSWORD}" \
+    "${minio_bin}" server "${minio_dir}/minio-data" --console-address ":${MINIO_CONSOLE_PORT}" &
+  wait_for_minio
+}
+
 case "$(uname -s)" in
   Darwin*)
     if ! start_minio_docker; then
       start_minio_macos
     fi
     ;;
-  Linux*|MINGW*|MSYS*|CYGWIN*)
+  MINGW*|MSYS*|CYGWIN*)
+    if ! start_minio_docker; then
+      start_minio_windows
+    fi
+    ;;
+  Linux*)
     start_minio_docker
     ;;
   *)

@@ -244,6 +244,15 @@ if(ICEBERG_BUILD_BUNDLE)
                   OUTPUTS
                   ICEBERG_BUNDLE_LIBRARIES)
 
+  if(ICEBERG_S3)
+    foreach(target iceberg_bundle_static iceberg_bundle_shared)
+      if(TARGET ${target})
+        target_compile_definitions(${target}
+                                   PUBLIC "$<BUILD_INTERFACE:ICEBERG_S3_ENABLED=1>")
+      endif()
+    endforeach()
+  endif()
+
   add_subdirectory(arrow)
   add_subdirectory(avro)
   add_subdirectory(parquet)

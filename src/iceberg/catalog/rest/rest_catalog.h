@@ -60,7 +60,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
   /// property or the warehouse location URI scheme.
   ///
   /// FileIO selection logic:
-  /// 1. If "io-impl" property is set, use the specified implementation from FileIORegistry.
+  /// 1. If "io-impl" property is set, use the specified implementation from
+  /// FileIORegistry.
   /// 2. Otherwise, auto-detect based on warehouse URI:
   ///    - "s3://" -> ArrowS3FileIO
   ///    - Local path -> ArrowLocalFileIO

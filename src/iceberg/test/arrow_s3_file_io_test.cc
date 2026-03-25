@@ -18,28 +18,48 @@
  */
 
 #include <cstdlib>
+#include <iostream>
 #include <string>
 #include <unordered_map>
 
-#if __has_include(<arrow/filesystem/s3fs.h>)
-#include <arrow/filesystem/s3fs.h>
-#endif
 #include <gtest/gtest.h>
+
+#ifdef ICEBERG_S3_ENABLED
+#  include <arrow/filesystem/s3fs.h>
+#endif
 
 #include "iceberg/arrow/arrow_file_io.h"
 #include "iceberg/arrow/s3_properties.h"
 #include "iceberg/test/matchers.h"
 
-namespace iceberg::arrow {
-
-#if __has_include(<arrow/filesystem/s3fs.h>)
+#ifdef ICEBERG_S3_ENABLED
 namespace {
-class ArrowS3Environment final : public ::testing::Environment {
+
+/// \brief GTest environment that finalizes Arrow S3 after all tests complete.
+///
+/// Arrow's S3 initialization creates global state that must be cleaned up via
+/// FinalizeS3() before the process exits.  Without this, Arrow's static destructor
+/// detects the missing finalization and causes a non-zero exit (which fails under
+/// sanitizers).  GTest Environment::TearDown() runs after all tests but before
+/// static destructors, making it the safe place to finalize.
+class ArrowS3TestEnvironment : public ::testing::Environment {
  public:
-  void TearDown() override { (void)::arrow::fs::FinalizeS3(); }
+  void TearDown() override {
+    auto status = ::arrow::fs::FinalizeS3();
+    if (!status.ok()) {
+      std::cerr << "Warning: FinalizeS3 failed: " << status.ToString() << std::endl;
+    }
+  }
 };
+
+// Register before main() runs.  GTest takes ownership of the pointer.
+[[maybe_unused]] auto* const kS3Env =
+    ::testing::AddGlobalTestEnvironment(new ArrowS3TestEnvironment);
+
 }  // namespace
 #endif
+
+namespace iceberg::arrow {
 
 TEST(ArrowS3FileIOTest, RejectsNonS3Uri) {
   auto result = MakeS3FileIO("file:///tmp/not-s3");
@@ -47,7 +67,7 @@ TEST(ArrowS3FileIOTest, RejectsNonS3Uri) {
   EXPECT_THAT(result, HasErrorMessage("s3://"));
 }
 
-#if __has_include(<arrow/filesystem/s3fs.h>)
+#ifdef ICEBERG_S3_ENABLED
 TEST(ArrowS3FileIOTest, RequiresS3SupportAtBuildTime) {
   auto result = MakeS3FileIO("s3://bucket/path");
   if (!result.has_value()) {
@@ -216,11 +236,3 @@ TEST(ArrowS3FileIOTest, MakeS3FileIOWithTimeouts) {
 }
 
 }  // namespace iceberg::arrow
-
-#if __has_include(<arrow/filesystem/s3fs.h>)
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  ::testing::AddGlobalTestEnvironment(new iceberg::arrow::ArrowS3Environment());
-  return RUN_ALL_TESTS();
-}
-#endif
