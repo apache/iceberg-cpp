@@ -23,10 +23,13 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
@@ -195,11 +198,17 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   Status ReadManifestsForSnapshot(int64_t snapshot_id,
                                   std::unordered_set<std::string>& manifest_paths);
 
-  /// \brief Find data files to delete by reading entries from manifests being deleted,
-  /// then subtracting files still reachable from retained manifests.
-  Status FindDataFilesToDelete(const std::unordered_set<std::string>& manifests_to_delete,
-                               const std::unordered_set<std::string>& retained_manifests,
-                               std::unordered_set<std::string>& data_files_to_delete);
+  /// \brief Find data files to delete by reading live entries from manifests being
+  /// deleted, then subtracting files still reachable from retained manifests.
+  /// If a retained manifest cannot be read, returns an empty set to prevent
+  /// accidental data loss.
+  Result<std::unordered_set<std::string>> FindDataFilesToDelete(
+      const std::unordered_set<std::string>& manifests_to_delete,
+      const std::unordered_set<std::string>& retained_manifests);
+
+  /// \brief Create a ManifestReader for the given ManifestFile.
+  Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
+      const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io);
 
   /// \brief Delete a file, suppressing errors (best-effort).
   /// Uses the custom delete function if set, otherwise FileIO::DeleteFile.
@@ -218,6 +227,11 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
 
   /// Cached result from Apply(), used during Finalize() for file cleanup
   std::optional<ApplyResult> apply_result_;
+
+  /// Cache of manifest path -> ManifestFile, built during ReadManifestsForSnapshot
+  /// to avoid O(M*S) repeated I/O from re-reading manifest lists in
+  /// FindDataFilesToDelete.
+  std::unordered_map<std::string, ManifestFile> manifest_cache_;
 };
 
 }  // namespace iceberg
