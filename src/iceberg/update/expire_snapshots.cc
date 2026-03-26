@@ -331,6 +331,17 @@ void ExpireSnapshots::DeleteFilePath(const std::string& path) {
   }
 }
 
+Result<std::shared_ptr<ManifestReader>> ExpireSnapshots::MakeManifestReader(
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io) {
+  const TableMetadata& metadata = base();
+  auto schema_result = metadata.Schema();
+  if (!schema_result.has_value()) return std::unexpected<Error>(schema_result.error());
+  auto spec_result = metadata.PartitionSpecById(manifest.partition_spec_id);
+  if (!spec_result.has_value()) return std::unexpected<Error>(spec_result.error());
+  return ManifestReader::Make(manifest, file_io, schema_result.value(),
+                              spec_result.value());
+}
+
 Status ExpireSnapshots::ReadManifestsForSnapshot(
     int64_t snapshot_id, std::unordered_set<std::string>& manifest_paths) {
   const TableMetadata& metadata = base();
@@ -351,95 +362,73 @@ Status ExpireSnapshots::ReadManifestsForSnapshot(
 
   for (const auto& manifest : manifests_result.value()) {
     manifest_paths.insert(manifest.manifest_path);
+    // Cache manifest metadata for later use in FindDataFilesToDelete,
+    // avoiding O(M*S) repeated I/O from re-reading manifest lists.
+    manifest_cache_.emplace(manifest.manifest_path, manifest);
   }
 
   return {};
 }
 
-Status ExpireSnapshots::FindDataFilesToDelete(
+Result<std::unordered_set<std::string>> ExpireSnapshots::FindDataFilesToDelete(
     const std::unordered_set<std::string>& manifests_to_delete,
-    const std::unordered_set<std::string>& retained_manifests,
-    std::unordered_set<std::string>& data_files_to_delete) {
-  const TableMetadata& metadata = base();
+    const std::unordered_set<std::string>& retained_manifests) {
   auto file_io = ctx_->table->io();
+  std::unordered_set<std::string> data_files_to_delete;
 
-  // Step 1: Collect all file paths from manifests being deleted
-  for (const auto& manifest_path : manifests_to_delete) {
-    // Find the ManifestFile for this path by scanning expired snapshots
-    for (const auto& snapshot : metadata.snapshots) {
-      if (!snapshot) continue;
-      SnapshotCache snapshot_cache(snapshot.get());
-      auto manifests_result = snapshot_cache.Manifests(file_io);
-      if (!manifests_result.has_value()) continue;
+  // Step 1: Collect live file paths from manifests being deleted.
+  // Use LiveEntries() (ADDED/EXISTING only) to match Java's ManifestFiles.readPaths
+  // which delegates to liveEntries(). Using Entries() would include DELETED entries
+  // and could cause storage leaks.
+  for (const auto& [path, manifest] : manifest_cache_) {
+    if (!manifests_to_delete.contains(path)) continue;
 
-      for (const auto& manifest : manifests_result.value()) {
-        if (manifest.manifest_path != manifest_path) continue;
+    auto reader_result = MakeManifestReader(manifest, file_io);
+    if (!reader_result.has_value()) continue;
 
-        auto schema_result = metadata.Schema();
-        if (!schema_result.has_value()) continue;
-        auto spec_result = metadata.PartitionSpecById(manifest.partition_spec_id);
-        if (!spec_result.has_value()) continue;
+    auto entries_result = reader_result.value()->LiveEntries();
+    if (!entries_result.has_value()) continue;
 
-        auto reader_result = ManifestReader::Make(
-            manifest, file_io, schema_result.value(), spec_result.value());
-        if (!reader_result.has_value()) continue;
-
-        auto entries_result = reader_result.value()->Entries();
-        if (!entries_result.has_value()) continue;
-
-        for (const auto& entry : entries_result.value()) {
-          if (entry.data_file) {
-            data_files_to_delete.insert(entry.data_file->file_path);
-          }
-        }
-        goto next_manifest;  // Found and processed this manifest, move to next
+    for (const auto& entry : entries_result.value()) {
+      if (entry.data_file) {
+        data_files_to_delete.insert(entry.data_file->file_path);
       }
     }
-  next_manifest:;
   }
 
   if (data_files_to_delete.empty()) {
-    return {};
+    return data_files_to_delete;
   }
 
   // Step 2: Remove any files that are still referenced by retained manifests.
-  // This ensures we don't delete files that are shared across manifests.
+  // If reading a retained manifest fails, we must NOT delete its data files
+  // to avoid accidental data loss (matching Java's retry + throwFailureWhenFinished).
   for (const auto& manifest_path : retained_manifests) {
     if (data_files_to_delete.empty()) break;
 
-    for (const auto& snapshot : metadata.snapshots) {
-      if (!snapshot) continue;
-      SnapshotCache snapshot_cache(snapshot.get());
-      auto manifests_result = snapshot_cache.Manifests(file_io);
-      if (!manifests_result.has_value()) continue;
+    auto it = manifest_cache_.find(manifest_path);
+    if (it == manifest_cache_.end()) continue;
 
-      for (const auto& manifest : manifests_result.value()) {
-        if (manifest.manifest_path != manifest_path) continue;
+    auto reader_result = MakeManifestReader(it->second, file_io);
+    if (!reader_result.has_value()) {
+      // Cannot read a retained manifest — abort data file deletion to prevent
+      // accidental data loss. Java retries and throws on failure here.
+      return std::unordered_set<std::string>{};
+    }
 
-        auto schema_result = metadata.Schema();
-        if (!schema_result.has_value()) continue;
-        auto spec_result = metadata.PartitionSpecById(manifest.partition_spec_id);
-        if (!spec_result.has_value()) continue;
+    auto entries_result = reader_result.value()->LiveEntries();
+    if (!entries_result.has_value()) {
+      return std::unordered_set<std::string>{};
+    }
 
-        auto reader_result = ManifestReader::Make(
-            manifest, file_io, schema_result.value(), spec_result.value());
-        if (!reader_result.has_value()) continue;
-
-        auto entries_result = reader_result.value()->Entries();
-        if (!entries_result.has_value()) continue;
-
-        for (const auto& entry : entries_result.value()) {
-          if (entry.data_file) {
-            data_files_to_delete.erase(entry.data_file->file_path);
-          }
-        }
-        goto next_retained;
+    for (const auto& entry : entries_result.value()) {
+      if (entry.data_file) {
+        data_files_to_delete.erase(entry.data_file->file_path);
       }
     }
-  next_retained:;
   }
 
-  return {};
+  return data_files_to_delete;
 }
 
 Status ExpireSnapshots::CleanExpiredFiles(
@@ -483,13 +472,13 @@ Status ExpireSnapshots::CleanExpiredFiles(
   // Only read entries from manifests being deleted (not all expired manifests),
   // then subtract any files still reachable from retained manifests.
   if (cleanup_level_ == CleanupLevel::kAll && !manifests_to_delete.empty()) {
-    std::unordered_set<std::string> data_files_to_delete;
-    std::ignore = FindDataFilesToDelete(manifests_to_delete, retained_manifest_paths,
-                                        data_files_to_delete);
-
-    // TODO(shangxinli): Parallelize file deletion with a thread pool.
-    for (const auto& path : data_files_to_delete) {
-      DeleteFilePath(path);
+    auto data_files_result =
+        FindDataFilesToDelete(manifests_to_delete, retained_manifest_paths);
+    if (data_files_result.has_value()) {
+      // TODO(shangxinli): Parallelize file deletion with a thread pool.
+      for (const auto& path : data_files_result.value()) {
+        DeleteFilePath(path);
+      }
     }
   }
 
@@ -508,17 +497,31 @@ Status ExpireSnapshots::CleanExpiredFiles(
     }
   }
 
-  // Phase 6: Delete expired statistics files.
-  // Use set difference between before and after states (matching Java behavior).
-  // Since Finalize runs before table_ is updated, "after" is base() minus expired.
-  std::unordered_set<int64_t> retained_stats_snapshots(retained_snapshot_ids);
+  // Phase 6: Delete expired statistics files using path-based set difference.
+  // A statistics file should only be deleted if its path is not referenced by any
+  // retained snapshot, since the same file path could be shared across snapshots.
+  // Collect paths from retained snapshots, then delete any not in that set.
+  std::unordered_set<std::string> retained_stat_paths;
+  std::unordered_set<std::string> retained_part_stat_paths;
   for (const auto& stat_file : metadata.statistics) {
-    if (stat_file && !retained_stats_snapshots.contains(stat_file->snapshot_id)) {
+    if (stat_file && retained_snapshot_ids.contains(stat_file->snapshot_id)) {
+      retained_stat_paths.insert(stat_file->path);
+    }
+  }
+  for (const auto& part_stat : metadata.partition_statistics) {
+    if (part_stat && retained_snapshot_ids.contains(part_stat->snapshot_id)) {
+      retained_part_stat_paths.insert(part_stat->path);
+    }
+  }
+  for (const auto& stat_file : metadata.statistics) {
+    if (stat_file && expired_id_set.contains(stat_file->snapshot_id) &&
+        !retained_stat_paths.contains(stat_file->path)) {
       DeleteFilePath(stat_file->path);
     }
   }
   for (const auto& part_stat : metadata.partition_statistics) {
-    if (part_stat && !retained_stats_snapshots.contains(part_stat->snapshot_id)) {
+    if (part_stat && expired_id_set.contains(part_stat->snapshot_id) &&
+        !retained_part_stat_paths.contains(part_stat->path)) {
       DeleteFilePath(part_stat->path);
     }
   }
