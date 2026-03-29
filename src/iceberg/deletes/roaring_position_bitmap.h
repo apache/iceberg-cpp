@@ -65,6 +65,7 @@ class ICEBERG_EXPORT RoaringPositionBitmap {
   void Add(int64_t pos);
 
   /// \brief Sets a range of positions [pos_start, pos_end).
+  /// If pos_start >= pos_end, this method does nothing.
   /// \note Invalid positions are silently ignored
   void AddRange(int64_t pos_start, int64_t pos_end);
 

@@ -128,8 +128,71 @@ INSTANTIATE_TEST_SUITE_P(
                           .start = (int64_t{1} << 32) - 5,
                           .end = (int64_t{1} << 32) + 5,
                           .absent_positions = {0, (int64_t{1} << 32) + 5},
+                      },
+                      AddRangeParams{
+                          .name = "single_position",
+                          .start = 42,
+                          .end = 43,
+                          .absent_positions = {41, 43},
                       }),
     [](const ::testing::TestParamInfo<AddRangeParams>& info) { return info.param.name; });
+
+TEST(RoaringPositionBitmapTest, TestAddRangeLargeContiguous) {
+  RoaringPositionBitmap bitmap;
+  bitmap.AddRange(500, 200500);
+
+  ASSERT_EQ(bitmap.Cardinality(), 200000u);
+  ASSERT_TRUE(bitmap.Contains(500));
+  ASSERT_TRUE(bitmap.Contains(200499));
+  ASSERT_FALSE(bitmap.Contains(499));
+  ASSERT_FALSE(bitmap.Contains(200500));
+}
+
+TEST(RoaringPositionBitmapTest, TestAddRangeSpanningThreeKeys) {
+  RoaringPositionBitmap bitmap;
+
+  int64_t start = (int64_t{0} << 32) | int64_t{0xFFFFFFF0};
+  int64_t end = (int64_t{2} << 32) | int64_t{0x10};
+  bitmap.AddRange(start, end);
+
+  ASSERT_EQ(bitmap.Cardinality(), static_cast<size_t>(end - start));
+  ASSERT_TRUE(bitmap.Contains(start));
+  ASSERT_TRUE(bitmap.Contains(end - 1));
+  ASSERT_FALSE(bitmap.Contains(start - 1));
+  ASSERT_FALSE(bitmap.Contains(end));
+  ASSERT_TRUE(bitmap.Contains(int64_t{1} << 32));
+  // Verify a sample near the end of the middle key is also present
+  ASSERT_TRUE(bitmap.Contains((int64_t{1} << 32) | int64_t{0xFFFFFFF0}));
+}
+
+TEST(RoaringPositionBitmapTest, TestAddRangeInvalidNegativeStartIsNoOp) {
+  RoaringPositionBitmap bitmap;
+  bitmap.AddRange(-1, 10);
+  ASSERT_TRUE(bitmap.IsEmpty());
+  ASSERT_EQ(bitmap.Cardinality(), 0u);
+}
+
+TEST(RoaringPositionBitmapTest, TestAddRangeInvalidBeyondMaxPositionIsNoOp) {
+  RoaringPositionBitmap bitmap;
+  bitmap.AddRange(0, RoaringPositionBitmap::kMaxPosition + 2);
+  ASSERT_TRUE(bitmap.IsEmpty());
+  ASSERT_EQ(bitmap.Cardinality(), 0u);
+}
+
+TEST(RoaringPositionBitmapTest, TestAddRangeReversedIsNoOp) {
+  RoaringPositionBitmap bitmap;
+  bitmap.AddRange(100, 50);
+  ASSERT_TRUE(bitmap.IsEmpty());
+  ASSERT_EQ(bitmap.Cardinality(), 0u);
+}
+
+TEST(RoaringPositionBitmapTest, TestAddRangeEqualStartEndIsNoOp) {
+  RoaringPositionBitmap bitmap;
+  bitmap.AddRange(100, 100);
+  ASSERT_TRUE(bitmap.IsEmpty());
+  ASSERT_EQ(bitmap.Cardinality(), 0u);
+  ASSERT_FALSE(bitmap.Contains(100));
+}
 
 struct OrParams {
   const char* name;
