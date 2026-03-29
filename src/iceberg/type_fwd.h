@@ -240,6 +240,11 @@ class UpdateStatistics;
 class DeleteLoader;
 class PositionDeleteIndex;
 
+/// \brief Metadata tables.
+class HistoryTable;
+class MetadataTable;
+class SnapshotsTable;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
