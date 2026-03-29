@@ -461,7 +461,11 @@ TEST(RoaringPositionBitmapTest, TestIsEmpty) {
 
 TEST(RoaringPositionBitmapTest, TestOptimize) {
   RoaringPositionBitmap bitmap;
-  bitmap.AddRange(0, 10000);
+  // Use Add() instead of AddRange() because addRange() creates run-length
+  // encoded containers directly, leaving nothing for Optimize() to compress.
+  for (int64_t i = 0; i < 10000; ++i) {
+    bitmap.Add(i);
+  }
   size_t size_before = bitmap.SerializedSizeInBytes();
 
   bool changed = bitmap.Optimize();
