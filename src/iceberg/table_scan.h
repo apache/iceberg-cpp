@@ -102,14 +102,87 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   std::shared_ptr<Expression> residual_filter_;
 };
 
+enum class ChangelogOperation : uint8_t {
+  kInsert,
+  kDelete,
+  kUpdateBefore,
+  kUpdateAfter,
+};
+
 /// \brief A scan task for reading changelog entries between snapshots.
 class ICEBERG_EXPORT ChangelogScanTask : public ScanTask {
  public:
+  /// \brief Construct an AddedRowsScanTask.
+  ///
+  /// \param change_ordinal Position in the changelog order (0-based).
+  /// \param commit_snapshot_id The snapshot ID that committed this change.
+  /// \param data_file The data file containing the added rows.
+  /// \param delete_files Delete files that apply to this data file.
+  /// \param residual_filter Optional residual filter to apply after reading.
+  ChangelogScanTask(int32_t change_ordinal, int64_t commit_snapshot_id,
+                    std::shared_ptr<DataFile> data_file,
+                    std::vector<std::shared_ptr<DataFile>> delete_files = {},
+                    std::shared_ptr<Expression> residual_filter = nullptr)
+      : change_ordinal_(change_ordinal),
+        commit_snapshot_id_(commit_snapshot_id),
+        data_file_(std::move(data_file)),
+        delete_files_(std::move(delete_files)),
+        residual_filter_(std::move(residual_filter)) {}
+
   Kind kind() const override { return Kind::kChangelogScanTask; }
-  // TODO(): Return actual values once member fields are implemented
-  int64_t size_bytes() const override { return 0; }
-  int32_t files_count() const override { return 0; }
-  int64_t estimated_row_count() const override { return 0; }
+
+  int64_t size_bytes() const override;
+  int32_t files_count() const override;
+  int64_t estimated_row_count() const override;
+
+  virtual ChangelogOperation operation() const = 0;
+
+  /// \brief The position of this change in the changelog order (0-based).
+  virtual int32_t change_ordinal() const { return change_ordinal_; }
+
+  /// \brief The snapshot ID that committed this change.
+  virtual int64_t commit_snapshot_id() const { return commit_snapshot_id_; }
+
+  /// \brief The data file containing the added rows.
+  const std::shared_ptr<DataFile>& data_file() const { return data_file_; }
+
+  /// \brief Delete files that apply to this data file.
+  const std::vector<std::shared_ptr<DataFile>>& delete_files() const {
+    return delete_files_;
+  }
+
+  /// \brief Residual filter to apply after reading.
+  const std::shared_ptr<Expression>& residual_filter() const { return residual_filter_; }
+
+ protected:
+  int32_t change_ordinal_;
+  int64_t commit_snapshot_id_;
+  std::shared_ptr<DataFile> data_file_;
+  std::vector<std::shared_ptr<DataFile>> delete_files_;
+  std::shared_ptr<Expression> residual_filter_;
+};
+
+/// \brief A scan task for reading rows that were added between snapshots.
+///
+/// This task represents data files that were added to the table, along with any
+/// delete files that should be applied when reading the data.
+class ICEBERG_EXPORT AddedRowsScanTask : public ChangelogScanTask {
+ public:
+  using ChangelogScanTask::ChangelogScanTask;
+
+  ChangelogOperation operation() const override { return ChangelogOperation::kInsert; }
+};
+
+/// \brief A scan task for reading data files that were deleted between snapshots.
+///
+/// This task represents data files that were removed from the table. Unlike
+/// AddedRowsScanTask, delete files are not applicable here since the entire
+/// data file was deleted.
+class ICEBERG_EXPORT DeletedDataFileScanTask : public ChangelogScanTask {
+ public:
+  using ChangelogScanTask::ChangelogScanTask;
+
+  ChangelogOperation operation() const override { return ChangelogOperation::kDelete; }
 };
 
 namespace internal {
@@ -133,7 +206,23 @@ struct TableScanContext {
 
   // Validate the context parameters to see if they have conflicts.
   [[nodiscard]] Status Validate() const;
+
+  /// \brief Returns true if this scan is a current lineage scan, which means it does not
+  /// specify from/to snapshot IDs.
+  bool IsScanCurrentLineage() const;
+
+  /// \brief Get the snapshot ID to scan up to (inclusive) based on the context.
+  Result<int64_t> ToSnapshotIdInclusive(const TableMetadata& metadata) const;
+
+  /// \brief Get the snapshot ID to scan from (exclusive) based on the context.
+  Result<std::optional<int64_t>> FromSnapshotIdExclusive(
+      const TableMetadata& metadata, int64_t to_snapshot_id_inclusive) const;
 };
+
+// Internal validation functions for IncrementalScanBuilder
+Status CheckSnapshotValid(const TableMetadata& metadata, int64_t snapshot_id);
+Result<int64_t> CheckRefValid(const TableMetadata& metadata, const std::string& ref);
+Status CheckBranchValid(const TableMetadata& metadata, const std::string& branch);
 
 }  // namespace internal
 

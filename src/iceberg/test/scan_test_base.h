@@ -261,6 +261,87 @@ class ScanTestBase : public testing::TestWithParam<int8_t> {
     });
   }
 
+  /// \brief Create a delete snapshot with the given files.
+  std::shared_ptr<Snapshot> MakeDeleteSnapshot(
+      int8_t format_version, int64_t snapshot_id,
+      std::optional<int64_t> parent_snapshot_id, int64_t sequence_number,
+      const std::vector<std::string>& deleted_files) {
+    std::vector<std::pair<std::string, PartitionValues>> files_with_partitions;
+    for (const auto& path : deleted_files) {
+      files_with_partitions.emplace_back(path, PartitionValues(std::vector<Literal>{}));
+    }
+    return MakeDeleteSnapshot(format_version, snapshot_id, parent_snapshot_id,
+                              sequence_number, files_with_partitions);
+  }
+
+  /// \brief Create a delete snapshot with partition values for each file.
+  std::shared_ptr<Snapshot> MakeDeleteSnapshot(
+      int8_t format_version, int64_t snapshot_id,
+      std::optional<int64_t> parent_snapshot_id, int64_t sequence_number,
+      const std::vector<std::pair<std::string, PartitionValues>>& deleted_files) {
+    std::vector<ManifestEntry> entries;
+    entries.reserve(deleted_files.size());
+    for (const auto& [path, partition] : deleted_files) {
+      auto file = MakeDataFile(path, partition);
+      entries.push_back(
+          MakeEntry(ManifestStatus::kDeleted, snapshot_id, sequence_number, file));
+    }
+
+    auto manifest = WriteDataManifest(format_version, snapshot_id, std::move(entries));
+    int64_t parent_id = parent_snapshot_id.value_or(0L);
+    auto manifest_list = WriteManifestList(format_version, snapshot_id, parent_id,
+                                           sequence_number, {manifest});
+    TimePointMs timestamp_ms =
+        TimePointMsFromUnixMs(1609459200000L + sequence_number * 1000);
+    return std::make_shared<Snapshot>(Snapshot{
+        .snapshot_id = snapshot_id,
+        .parent_snapshot_id = parent_snapshot_id,
+        .sequence_number = sequence_number,
+        .timestamp_ms = timestamp_ms,
+        .manifest_list = manifest_list,
+        .summary = {{"operation", "delete"}},
+        .schema_id = schema_->schema_id(),
+    });
+  }
+
+  /// \brief Create an overwrite snapshot with added and deleted files.
+  std::shared_ptr<Snapshot> MakeOverwriteSnapshot(
+      int8_t format_version, int64_t snapshot_id,
+      std::optional<int64_t> parent_snapshot_id, int64_t sequence_number,
+      const std::vector<std::string>& added_file_paths,
+      const std::vector<std::string>& deleted_file_paths) {
+    std::vector<ManifestEntry> entries;
+    entries.reserve(added_file_paths.size() + deleted_file_paths.size());
+
+    for (const auto& path : added_file_paths) {
+      auto file = MakeDataFile(path);
+      entries.push_back(
+          MakeEntry(ManifestStatus::kAdded, snapshot_id, sequence_number, file));
+    }
+
+    for (const auto& path : deleted_file_paths) {
+      auto file = MakeDataFile(path);
+      entries.push_back(
+          MakeEntry(ManifestStatus::kDeleted, snapshot_id, sequence_number, file));
+    }
+
+    auto manifest = WriteDataManifest(format_version, snapshot_id, std::move(entries));
+    int64_t parent_id = parent_snapshot_id.value_or(0L);
+    auto manifest_list = WriteManifestList(format_version, snapshot_id, parent_id,
+                                           sequence_number, {manifest});
+    TimePointMs timestamp_ms =
+        TimePointMsFromUnixMs(1609459200000L + sequence_number * 1000);
+    return std::make_shared<Snapshot>(Snapshot{
+        .snapshot_id = snapshot_id,
+        .parent_snapshot_id = parent_snapshot_id,
+        .sequence_number = sequence_number,
+        .timestamp_ms = timestamp_ms,
+        .manifest_list = manifest_list,
+        .summary = {{"operation", "overwrite"}},
+        .schema_id = schema_->schema_id(),
+    });
+  }
+
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<PartitionSpec> partitioned_spec_;
