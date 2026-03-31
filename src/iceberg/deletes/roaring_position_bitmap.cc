@@ -141,20 +141,12 @@ void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {
   int32_t end_key = Key(pos_end - 1);
   impl_->AllocateBitmapsIfNeeded(end_key + 1);
 
-  if (start_key == end_key) {
-    uint64_t low_start = Pos32Bits(pos_start);
-    uint64_t low_end = static_cast<uint64_t>(Pos32Bits(pos_end - 1)) + 1;
-    impl_->bitmaps[start_key].addRange(low_start, low_end);
-  } else {
-    uint64_t first_low_start = Pos32Bits(pos_start);
-    impl_->bitmaps[start_key].addRange(first_low_start, uint64_t{1} << 32);
-
-    for (int32_t key = start_key + 1; key < end_key; ++key) {
-      impl_->bitmaps[key].addRange(uint64_t{0}, uint64_t{1} << 32);
-    }
-
-    uint64_t last_low_end = static_cast<uint64_t>(Pos32Bits(pos_end - 1)) + 1;
-    impl_->bitmaps[end_key].addRange(uint64_t{0}, last_low_end);
+  for (int32_t key = start_key; key <= end_key; ++key) {
+    uint64_t low_start = (key == start_key) ? Pos32Bits(pos_start) : uint64_t{0};
+    uint64_t low_end = (key == end_key)
+                            ? static_cast<uint64_t>(Pos32Bits(pos_end - 1)) + 1
+                            : (uint64_t{1} << 32);
+    impl_->bitmaps[key].addRange(low_start, low_end);
   }
 }
 
