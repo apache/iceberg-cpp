@@ -25,7 +25,6 @@
 #include <fstream>
 #include <random>
 #include <set>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -211,9 +210,10 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.name;
     });
 
-TEST(RoaringPositionBitmapTest, TestAddRangeReversedThrows) {
+TEST(RoaringPositionBitmapTest, TestAddRangeReversedIsNoOp) {
   RoaringPositionBitmap bitmap;
-  ASSERT_THROW(bitmap.AddRange(100, 50), std::invalid_argument);
+  bitmap.AddRange(100, 50);
+  ASSERT_TRUE(bitmap.IsEmpty());
 }
 
 struct OrParams {

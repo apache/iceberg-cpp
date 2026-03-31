@@ -67,8 +67,8 @@ class ICEBERG_EXPORT RoaringPositionBitmap {
   /// \brief Sets a range of positions [pos_start, pos_end).
   /// \param pos_start the start of the range (inclusive), clamped to 0
   /// \param pos_end the end of the range (exclusive), clamped to kMaxPosition + 1
-  /// \throws std::invalid_argument if pos_start > pos_end
-  /// \note If pos_start == pos_end, this method does nothing.
+  /// \note If pos_start > pos_end, the call is silently ignored.
+  ///       If pos_start == pos_end, this method does nothing.
   ///       Positions outside [0, kMaxPosition] are silently ignored.
   void AddRange(int64_t pos_start, int64_t pos_end);
 
