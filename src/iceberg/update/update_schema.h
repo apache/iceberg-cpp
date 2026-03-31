@@ -334,6 +334,8 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateSchema; }
 
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     std::shared_ptr<Schema> schema;
     int32_t new_last_column_id;

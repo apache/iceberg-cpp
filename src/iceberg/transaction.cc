@@ -346,32 +346,22 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
     return ctx_->table;
   }
 
-  Result<std::shared_ptr<Table>> commit_result;
-  if (!CanRetry()) {
-    std::vector<std::unique_ptr<TableRequirement>> requirements;
-    switch (ctx_->kind) {
-      case TransactionKind::kCreate: {
-        ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForCreateTable(updates));
-      } break;
-      case TransactionKind::kUpdate: {
-        ICEBERG_ASSIGN_OR_RAISE(
-            requirements,
-            TableRequirements::ForUpdateTable(*ctx_->metadata_builder->base(), updates));
-      } break;
-    }
-    commit_result =
-        ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements, updates);
-  } else {
-    const auto& props = ctx_->table->properties();
-    int32_t num_retries = props.Get(TableProperties::kCommitNumRetries);
-    int32_t min_wait_ms = props.Get(TableProperties::kCommitMinRetryWaitMs);
-    int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
-    int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
+  const auto& props = ctx_->table->properties();
+  int32_t num_retries =
+      CanRetry() ? static_cast<int32_t>(props.Get(TableProperties::kCommitNumRetries))
+                 : 0;
+  int32_t min_wait_ms = props.Get(TableProperties::kCommitMinRetryWaitMs);
+  int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
+  int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
 
-    commit_result =
-        MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
-            .Run([this]() -> Result<std::shared_ptr<Table>> { return CommitOnce(); });
-  }
+  bool is_first_attempt = true;
+  auto commit_result =
+      MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
+          .Run([this, &is_first_attempt]() -> Result<std::shared_ptr<Table>> {
+            auto result = CommitOnce(is_first_attempt);
+            is_first_attempt = false;
+            return result;
+          });
 
   Result<const TableMetadata*> finalize_result =
       commit_result.has_value()
@@ -391,26 +381,30 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   return ctx_->table;
 }
 
-Result<std::shared_ptr<Table>> Transaction::CommitOnce() {
-  auto refresh_result = ctx_->table->Refresh();
-  if (!refresh_result.has_value()) {
-    return std::unexpected(refresh_result.error());
-  }
+Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
+  std::vector<std::unique_ptr<TableRequirement>> requirements;
 
-  if (ctx_->metadata_builder->base() != ctx_->table->metadata().get()) {
-    ctx_->metadata_builder =
-        TableMetadataBuilder::BuildFrom(ctx_->table->metadata().get());
-    for (const auto& update : pending_updates_) {
-      auto commit_status = update->Commit();
-      if (!commit_status.has_value()) {
-        return std::unexpected(commit_status.error());
+  switch (ctx_->kind) {
+    case TransactionKind::kCreate: {
+      ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForCreateTable(
+                                                ctx_->metadata_builder->changes()));
+    } break;
+    case TransactionKind::kUpdate: {
+      if (!is_first_attempt) {
+        ICEBERG_RETURN_UNEXPECTED(ctx_->table->Refresh());
       }
-    }
+      if (ctx_->metadata_builder->base() != ctx_->table->metadata().get()) {
+        ctx_->metadata_builder =
+            TableMetadataBuilder::BuildFrom(ctx_->table->metadata().get());
+        for (const auto& update : pending_updates_) {
+          ICEBERG_RETURN_UNEXPECTED(Apply(*update));
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForUpdateTable(
+                                                *ctx_->metadata_builder->base(),
+                                                ctx_->metadata_builder->changes()));
+    } break;
   }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto requirements, TableRequirements::ForUpdateTable(
-                                                 *ctx_->metadata_builder->base(),
-                                                 ctx_->metadata_builder->changes()));
 
   return ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements,
                                              ctx_->metadata_builder->changes());

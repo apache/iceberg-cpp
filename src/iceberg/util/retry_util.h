@@ -21,7 +21,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <functional>
 #include <random>
 #include <thread>
 #include <vector>
@@ -51,26 +50,48 @@ class RetryRunner {
   explicit RetryRunner(RetryConfig config = {}) : config_(std::move(config)) {}
 
   /// \brief Specify error types that should trigger a retry.
+  ///
+  /// When set, only errors matching one of these kinds will be retried.
+  /// All other errors will stop retries immediately.
+  ///
+  /// \note OnlyRetryOn takes priority over StopRetryOn. If OnlyRetryOn is set,
+  /// StopRetryOn is ignored.
   RetryRunner& OnlyRetryOn(std::initializer_list<ErrorKind> error_kinds) {
     only_retry_on_ = std::vector<ErrorKind>(error_kinds);
     return *this;
   }
 
-  /// \brief Specify a single error type that should trigger a retry
+  /// \brief Specify a single error type that should trigger a retry.
+  ///
+  /// \note OnlyRetryOn takes priority over StopRetryOn. If OnlyRetryOn is set,
+  /// StopRetryOn is ignored.
   RetryRunner& OnlyRetryOn(ErrorKind error_kind) {
     only_retry_on_ = std::vector<ErrorKind>{error_kind};
     return *this;
   }
 
-  /// \brief Specify error types that should stop retries immediately
+  /// \brief Specify error types that should stop retries immediately.
+  ///
+  /// When set, errors matching one of these kinds will not be retried.
+  /// All other errors will be retried.
+  ///
+  /// \note OnlyRetryOn takes priority over StopRetryOn. If OnlyRetryOn is set,
+  /// StopRetryOn is ignored.
   RetryRunner& StopRetryOn(std::initializer_list<ErrorKind> error_kinds) {
     stop_retry_on_ = std::vector<ErrorKind>(error_kinds);
     return *this;
   }
 
   /// \brief Run a task that returns a Result<T>
+  ///
+  /// TODO: Replace attempt_counter with a metrics reporter once it is available.
   template <typename F, typename T = typename std::invoke_result_t<F>::value_type>
   Result<T> Run(F&& task, int32_t* attempt_counter = nullptr) {
+    if (config_.num_retries < 0) {
+      return InvalidArgument("num_retries must be non-negative, got {}",
+                             config_.num_retries);
+    }
+
     auto start_time = std::chrono::steady_clock::now();
     int32_t attempt = 0;
     int32_t max_attempts = config_.num_retries + 1;
@@ -103,7 +124,7 @@ class RetryRunner {
       }
 
       int32_t delay_ms = CalculateDelay(attempt);
-      Sleep(delay_ms);
+      std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
     }
   }
 
@@ -135,11 +156,6 @@ class RetryRunner {
     std::uniform_int_distribution<> dis(0, jitter_range - 1);
     delay_ms += dis(gen);
     return std::max(1, delay_ms);
-  }
-
-  /// \brief Sleep for the specified duration
-  void Sleep(int32_t ms) const {
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
   }
 
   RetryConfig config_;

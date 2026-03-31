@@ -218,8 +218,7 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
 }
 
 int64_t SnapshotUpdate::SnapshotId() {
-  while (!snapshot_id_.has_value() ||
-         base().SnapshotById(snapshot_id_.value()).has_value()) {
+  if (!snapshot_id_.has_value()) {
     snapshot_id_ = SnapshotUtil::GenerateSnapshotId(base());
   }
   return snapshot_id_.value();

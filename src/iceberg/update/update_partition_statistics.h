@@ -63,6 +63,8 @@ class ICEBERG_EXPORT UpdatePartitionStatistics : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdatePartitionStatistics; }
 
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     std::vector<std::pair<int64_t, std::shared_ptr<PartitionStatisticsFile>>> to_set;
     std::vector<int64_t> to_remove;
