@@ -184,20 +184,36 @@ TEST(RoaringPositionBitmapTest, TestAddRangeClampBeyondMaxPosition) {
   ASSERT_FALSE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition + 1));
 }
 
-TEST(RoaringPositionBitmapTest, TestAddRangeReversedIsNoOp) {
+struct AddRangeNoOpParams {
+  const char* name;
+  int64_t start;
+  int64_t end;
+};
+
+class RoaringPositionBitmapAddRangeNoOpTest
+    : public ::testing::TestWithParam<AddRangeNoOpParams> {};
+
+TEST_P(RoaringPositionBitmapAddRangeNoOpTest, IsNoOp) {
+  const auto& param = GetParam();
   RoaringPositionBitmap bitmap;
-  bitmap.AddRange(100, 50);
+  bitmap.AddRange(param.start, param.end);
   ASSERT_TRUE(bitmap.IsEmpty());
   ASSERT_EQ(bitmap.Cardinality(), 0u);
 }
 
-TEST(RoaringPositionBitmapTest, TestAddRangeEqualStartEndIsNoOp) {
-  RoaringPositionBitmap bitmap;
-  bitmap.AddRange(100, 100);
-  ASSERT_TRUE(bitmap.IsEmpty());
-  ASSERT_EQ(bitmap.Cardinality(), 0u);
-  ASSERT_FALSE(bitmap.Contains(100));
-}
+INSTANTIATE_TEST_SUITE_P(
+    AddRangeNoOpScenarios, RoaringPositionBitmapAddRangeNoOpTest,
+    ::testing::Values(AddRangeNoOpParams{.name = "reversed", .start = 100, .end = 50},
+                      AddRangeNoOpParams{.name = "equal", .start = 100, .end = 100},
+                      AddRangeNoOpParams{.name = "zero_length_at_zero",
+                                         .start = 0,
+                                         .end = 0},
+                      AddRangeNoOpParams{.name = "negative_both",
+                                         .start = -10,
+                                         .end = -5}),
+    [](const ::testing::TestParamInfo<AddRangeNoOpParams>& info) {
+      return info.param.name;
+    });
 
 struct OrParams {
   const char* name;
