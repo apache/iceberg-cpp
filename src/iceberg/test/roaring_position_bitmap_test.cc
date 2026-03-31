@@ -204,13 +204,10 @@ TEST_P(RoaringPositionBitmapAddRangeNoOpTest, IsNoOp) {
 
 INSTANTIATE_TEST_SUITE_P(
     AddRangeNoOpScenarios, RoaringPositionBitmapAddRangeNoOpTest,
-    ::testing::Values(AddRangeNoOpParams{.name = "equal", .start = 100, .end = 100},
-                      AddRangeNoOpParams{.name = "zero_length_at_zero",
-                                         .start = 0,
-                                         .end = 0},
-                      AddRangeNoOpParams{.name = "negative_both",
-                                         .start = -10,
-                                         .end = -5}),
+    ::testing::Values(
+        AddRangeNoOpParams{.name = "equal", .start = 100, .end = 100},
+        AddRangeNoOpParams{.name = "zero_length_at_zero", .start = 0, .end = 0},
+        AddRangeNoOpParams{.name = "negative_both", .start = -10, .end = -5}),
     [](const ::testing::TestParamInfo<AddRangeNoOpParams>& info) {
       return info.param.name;
     });
