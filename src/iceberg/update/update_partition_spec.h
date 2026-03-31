@@ -100,6 +100,8 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdatePartitionSpec; }
 
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     std::shared_ptr<PartitionSpec> spec;
     bool set_as_default;
