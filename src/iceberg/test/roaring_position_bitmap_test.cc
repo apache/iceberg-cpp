@@ -165,18 +165,23 @@ TEST(RoaringPositionBitmapTest, TestAddRangeSpanningThreeKeys) {
   ASSERT_TRUE(bitmap.Contains((int64_t{1} << 32) | int64_t{0xFFFFFFF0}));
 }
 
-TEST(RoaringPositionBitmapTest, TestAddRangeInvalidNegativeStartIsNoOp) {
+TEST(RoaringPositionBitmapTest, TestAddRangeClampNegativeStart) {
   RoaringPositionBitmap bitmap;
   bitmap.AddRange(-1, 10);
-  ASSERT_TRUE(bitmap.IsEmpty());
-  ASSERT_EQ(bitmap.Cardinality(), 0u);
+  ASSERT_EQ(bitmap.Cardinality(), 10u);
+  ASSERT_TRUE(bitmap.Contains(0));
+  ASSERT_TRUE(bitmap.Contains(9));
+  ASSERT_FALSE(bitmap.Contains(-1));
 }
 
-TEST(RoaringPositionBitmapTest, TestAddRangeInvalidBeyondMaxPositionIsNoOp) {
+TEST(RoaringPositionBitmapTest, TestAddRangeClampBeyondMaxPosition) {
   RoaringPositionBitmap bitmap;
-  bitmap.AddRange(0, RoaringPositionBitmap::kMaxPosition + 2);
-  ASSERT_TRUE(bitmap.IsEmpty());
-  ASSERT_EQ(bitmap.Cardinality(), 0u);
+  bitmap.AddRange(RoaringPositionBitmap::kMaxPosition - 1,
+                  RoaringPositionBitmap::kMaxPosition + 2);
+  ASSERT_EQ(bitmap.Cardinality(), 2u);
+  ASSERT_TRUE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition - 1));
+  ASSERT_TRUE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition));
+  ASSERT_FALSE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition + 1));
 }
 
 TEST(RoaringPositionBitmapTest, TestAddRangeReversedIsNoOp) {
