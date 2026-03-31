@@ -128,10 +128,7 @@ void RoaringPositionBitmap::Add(int64_t pos) {
 }
 
 void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {
-  if (pos_start >= pos_end) {
-    return;
-  }
-  if (pos_start < 0 || pos_end - 1 > kMaxPosition) {
+  if (pos_start >= pos_end || pos_start < 0 || pos_end - 1 > kMaxPosition) {
     return;
   }
 
