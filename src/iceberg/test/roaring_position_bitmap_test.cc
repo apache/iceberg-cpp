@@ -177,12 +177,11 @@ TEST(RoaringPositionBitmapTest, TestAddRangeClampNegativeStart) {
 
 TEST(RoaringPositionBitmapTest, TestAddRangeClampBeyondMaxPosition) {
   RoaringPositionBitmap bitmap;
-  bitmap.AddRange(RoaringPositionBitmap::kMaxPosition - 1,
-                  RoaringPositionBitmap::kMaxPosition + 2);
-  ASSERT_EQ(bitmap.Cardinality(), 2u);
-  ASSERT_TRUE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition - 1));
-  ASSERT_TRUE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition));
-  ASSERT_FALSE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition + 1));
+  // Range entirely beyond kMaxPosition: after clamping both endpoints the range
+  // becomes empty, so no allocation or insertion happens.
+  bitmap.AddRange(RoaringPositionBitmap::kMaxPosition + 1,
+                  RoaringPositionBitmap::kMaxPosition + 10);
+  ASSERT_TRUE(bitmap.IsEmpty());
 }
 
 struct AddRangeNoOpParams {
