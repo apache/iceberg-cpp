@@ -134,9 +134,6 @@ void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {
                                 std::to_string(pos_start) + ", " +
                                 std::to_string(pos_end) + ")");
   }
-  if (pos_start == pos_end) {
-    return;
-  }
   pos_start = std::max(pos_start, int64_t{0});
   pos_end = std::min(pos_end, kMaxPosition + 1);
   if (pos_start >= pos_end) {
