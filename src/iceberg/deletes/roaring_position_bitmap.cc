@@ -22,6 +22,7 @@
 #include <cstring>
 #include <exception>
 #include <limits>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -128,7 +129,12 @@ void RoaringPositionBitmap::Add(int64_t pos) {
 }
 
 void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {
-  if (pos_start >= pos_end) {
+  if (pos_start > pos_end) {
+    throw std::invalid_argument(
+        "AddRange requires pos_start <= pos_end, got [" + std::to_string(pos_start) +
+        ", " + std::to_string(pos_end) + ")");
+  }
+  if (pos_start == pos_end) {
     return;
   }
   pos_start = std::max(pos_start, int64_t{0});

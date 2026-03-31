@@ -25,6 +25,7 @@
 #include <fstream>
 #include <random>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -203,8 +204,7 @@ TEST_P(RoaringPositionBitmapAddRangeNoOpTest, IsNoOp) {
 
 INSTANTIATE_TEST_SUITE_P(
     AddRangeNoOpScenarios, RoaringPositionBitmapAddRangeNoOpTest,
-    ::testing::Values(AddRangeNoOpParams{.name = "reversed", .start = 100, .end = 50},
-                      AddRangeNoOpParams{.name = "equal", .start = 100, .end = 100},
+    ::testing::Values(AddRangeNoOpParams{.name = "equal", .start = 100, .end = 100},
                       AddRangeNoOpParams{.name = "zero_length_at_zero",
                                          .start = 0,
                                          .end = 0},
@@ -214,6 +214,11 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<AddRangeNoOpParams>& info) {
       return info.param.name;
     });
+
+TEST(RoaringPositionBitmapTest, TestAddRangeReversedThrows) {
+  RoaringPositionBitmap bitmap;
+  ASSERT_THROW(bitmap.AddRange(100, 50), std::invalid_argument);
+}
 
 struct OrParams {
   const char* name;
