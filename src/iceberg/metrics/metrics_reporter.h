@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string_view>
+#include <utility>
 #include <variant>
 
 #include "iceberg/iceberg_export.h"
