@@ -130,8 +130,6 @@ std::shared_ptr<MetricsReporter> MetricsReporters::Combine(
   if (!first) return second;
   if (!second || first.get() == second.get()) return first;
 
-  // Single-pass collection: insert into the set to flatten nested composites
-  // and deduplicate by shared_ptr identity simultaneously.
   std::unordered_set<std::shared_ptr<MetricsReporter>> reporters;
 
   auto collect = [&reporters](const std::shared_ptr<MetricsReporter>& r) {
