@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"

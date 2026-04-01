@@ -23,7 +23,7 @@
 
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
-#include "iceberg/metrics_reporters.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"

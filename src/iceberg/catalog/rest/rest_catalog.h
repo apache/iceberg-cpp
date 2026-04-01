@@ -28,7 +28,7 @@
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
-#include "iceberg/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/rest_catalog.h

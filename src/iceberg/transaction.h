@@ -29,7 +29,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -140,7 +140,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   Status ApplyUpdateSortOrder(UpdateSortOrder& update);
   Status ApplyUpdateStatistics(UpdateStatistics& update);
 
-  void ReportCommitMetrics(DurationMs duration) const;
+  void ReportCommitMetrics() const;
 
  private:
   friend class PendingUpdate;

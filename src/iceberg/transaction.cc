@@ -341,7 +341,6 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   ICEBERG_CHECK(!committed_, "Transaction already committed");
   ICEBERG_CHECK(last_update_committed_,
                 "Cannot commit transaction when previous update is not committed");
-  auto commit_start = std::chrono::steady_clock::now();
   const auto& updates = ctx_->metadata_builder->changes();
   if (updates.empty()) {
     committed_ = true;
@@ -376,9 +375,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   // Mark as committed and update table reference
   committed_ = true;
   ctx_->table = std::move(commit_result.value());
-  auto duration = std::chrono::duration_cast<DurationMs>(
-      std::chrono::steady_clock::now() - commit_start);
-  ReportCommitMetrics(duration);
+  ReportCommitMetrics();
   return ctx_->table;
 }
 
@@ -467,7 +464,7 @@ Result<std::shared_ptr<SnapshotManager>> Transaction::NewSnapshotManager() {
   return SnapshotManager::Make(shared_from_this());
 }
 
-void Transaction::ReportCommitMetrics(DurationMs duration) const {
+void Transaction::ReportCommitMetrics() const {
   const auto& reporter = ctx_->table->reporter();
   if (!reporter) return;
 
@@ -490,47 +487,44 @@ void Transaction::ReportCommitMetrics(DurationMs duration) const {
   report.table_name = ctx_->table->name().ToString();
   report.snapshot_id = snapshot->snapshot_id;
   report.sequence_number = snapshot->sequence_number;
-  report.total_duration = duration;
 
   // Operation from summary
   if (auto it = summary.find(SnapshotSummaryFields::kOperation); it != summary.end()) {
     report.operation = it->second;
   }
-  report.added_data_files = parse_int64(SnapshotSummaryFields::kAddedDataFiles);
-  report.removed_data_files = parse_int64(SnapshotSummaryFields::kDeletedDataFiles);
-  report.total_data_files = parse_int64(SnapshotSummaryFields::kTotalDataFiles);
-  report.added_delete_files = parse_int64(SnapshotSummaryFields::kAddedDeleteFiles);
-  report.removed_delete_files = parse_int64(SnapshotSummaryFields::kRemovedDeleteFiles);
-  report.total_delete_files = parse_int64(SnapshotSummaryFields::kTotalDeleteFiles);
-  report.added_records = parse_int64(SnapshotSummaryFields::kAddedRecords);
-  report.removed_records = parse_int64(SnapshotSummaryFields::kDeletedRecords);
-  report.added_files_size = parse_int64(SnapshotSummaryFields::kAddedFileSize);
-  report.removed_files_size = parse_int64(SnapshotSummaryFields::kRemovedFileSize);
-
-  // New fields parsed from snapshot summary
-  report.total_records = parse_int64(SnapshotSummaryFields::kTotalRecords);
-  report.total_files_size = parse_int64(SnapshotSummaryFields::kTotalFileSize);
-  report.added_equality_delete_files =
+  CommitMetrics& metric = report.commit_metrics;
+  metric.added_data_files = parse_int64(SnapshotSummaryFields::kAddedDataFiles);
+  metric.removed_data_files = parse_int64(SnapshotSummaryFields::kDeletedDataFiles);
+  metric.total_data_files = parse_int64(SnapshotSummaryFields::kTotalDataFiles);
+  metric.added_delete_files = parse_int64(SnapshotSummaryFields::kAddedDeleteFiles);
+  metric.removed_delete_files = parse_int64(SnapshotSummaryFields::kRemovedDeleteFiles);
+  metric.total_delete_files = parse_int64(SnapshotSummaryFields::kTotalDeleteFiles);
+  metric.added_records = parse_int64(SnapshotSummaryFields::kAddedRecords);
+  metric.removed_records = parse_int64(SnapshotSummaryFields::kDeletedRecords);
+  metric.added_files_size_bytes = parse_int64(SnapshotSummaryFields::kAddedFileSize);
+  metric.removed_files_size_bytes = parse_int64(SnapshotSummaryFields::kRemovedFileSize);
+  metric.total_records = parse_int64(SnapshotSummaryFields::kTotalRecords);
+  metric.total_files_size_bytes = parse_int64(SnapshotSummaryFields::kTotalFileSize);
+  metric.added_equality_delete_files =
       parse_int64(SnapshotSummaryFields::kAddedEqDeleteFiles);
-  report.removed_equality_delete_files =
+  metric.removed_equality_delete_files =
       parse_int64(SnapshotSummaryFields::kRemovedEqDeleteFiles);
-  report.added_positional_delete_files =
+  metric.added_positional_delete_files =
       parse_int64(SnapshotSummaryFields::kAddedPosDeleteFiles);
-  report.removed_positional_delete_files =
+  metric.removed_positional_delete_files =
       parse_int64(SnapshotSummaryFields::kRemovedPosDeleteFiles);
-  report.added_positional_deletes = parse_int64(SnapshotSummaryFields::kAddedPosDeletes);
-  report.removed_positional_deletes =
+  metric.added_positional_deletes = parse_int64(SnapshotSummaryFields::kAddedPosDeletes);
+  metric.removed_positional_deletes =
       parse_int64(SnapshotSummaryFields::kRemovedPosDeletes);
-  report.total_positional_deletes = parse_int64(SnapshotSummaryFields::kTotalPosDeletes);
-  report.added_equality_deletes = parse_int64(SnapshotSummaryFields::kAddedEqDeletes);
-  report.removed_equality_deletes = parse_int64(SnapshotSummaryFields::kRemovedEqDeletes);
-  report.total_equality_deletes = parse_int64(SnapshotSummaryFields::kTotalEqDeletes);
-  report.added_dvs = parse_int64(SnapshotSummaryFields::kAddedDVs);
-  report.removed_dvs = parse_int64(SnapshotSummaryFields::kRemovedDVs);
-  report.manifests_created = parse_int64(SnapshotSummaryFields::kManifestsCreated);
-  report.manifests_replaced = parse_int64(SnapshotSummaryFields::kManifestsReplaced);
-  report.manifests_kept = parse_int64(SnapshotSummaryFields::kManifestsKept);
-  report.manifest_entries_processed =
+  metric.total_positional_deletes = parse_int64(SnapshotSummaryFields::kTotalPosDeletes);
+  metric.added_equality_deletes = parse_int64(SnapshotSummaryFields::kAddedEqDeletes);
+  metric.removed_equality_deletes = parse_int64(SnapshotSummaryFields::kRemovedEqDeletes);
+  metric.total_equality_deletes = parse_int64(SnapshotSummaryFields::kTotalEqDeletes);
+  metric.added_dvs = parse_int64(SnapshotSummaryFields::kAddedDVs);
+  metric.removed_dvs = parse_int64(SnapshotSummaryFields::kRemovedDVs);
+  metric.created_manifest_count = parse_int64(SnapshotSummaryFields::kManifestsCreated);
+  metric.kept_manifest_count = parse_int64(SnapshotSummaryFields::kManifestsKept);
+  metric.processed_manifest_entries_count =
       parse_int64(SnapshotSummaryFields::kEntriesProcessed);
 
   reporter->Report(report);

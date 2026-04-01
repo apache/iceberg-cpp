@@ -22,7 +22,7 @@
 #include <shared_mutex>
 
 #include "iceberg/catalog.h"
-#include "iceberg/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporter.h"
 
 namespace iceberg {
 

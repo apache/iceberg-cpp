@@ -37,7 +37,7 @@
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
-#include "iceberg/metrics_reporters.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"

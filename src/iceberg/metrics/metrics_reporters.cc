@@ -17,8 +17,9 @@
  * under the License.
  */
 
-#include "iceberg/metrics_reporters.h"
+#include "iceberg/metrics/metrics_reporters.h"
 
+#include <iostream>
 #include <unordered_set>
 
 #include "iceberg/util/string_util.h"
@@ -27,10 +28,10 @@ namespace iceberg {
 
 namespace {
 
-/// \brief Registry type for MetricsReporter factories with heterogeneous lookup support.
+/// \brief Registry type for MetricsReporter factories.
 using MetricsReporterRegistry = std::unordered_map<std::string, MetricsReporterFactory>;
 
-/// \brief Get the set of known metrics reporter types.
+/// \brief Get the set of known built-in metrics reporter types.
 const std::unordered_set<std::string>& DefaultReporterTypes() {
   static const std::unordered_set<std::string> kReporterTypes = {
       std::string(kMetricsReporterTypeNoop),
@@ -45,14 +46,10 @@ std::string InferReporterType(
   if (it != properties.end() && !it->second.empty()) {
     return StringUtils::ToLower(it->second);
   }
-  // Default to noop reporter
   return std::string(kMetricsReporterTypeNoop);
 }
 
 /// \brief Metrics reporter that does nothing.
-///
-/// This is the default reporter used when no reporter is configured.
-/// It silently discards all reports.
 class NoopMetricsReporter : public MetricsReporter {
  public:
   static Result<std::unique_ptr<MetricsReporter>> Make(
@@ -60,32 +57,51 @@ class NoopMetricsReporter : public MetricsReporter {
     return std::make_unique<NoopMetricsReporter>();
   }
 
-  void Report([[maybe_unused]] const MetricsReport& report) override {
-    // Intentionally empty - noop implementation discards all reports
-  }
+  void Report([[maybe_unused]] const MetricsReport& report) override {}
 };
 
-/// \brief Template helper to create factory functions for reporter types.
 template <typename T>
 MetricsReporterFactory MakeReporterFactory() {
   return [](const std::unordered_map<std::string, std::string>& props)
              -> Result<std::unique_ptr<MetricsReporter>> { return T::Make(props); };
 }
 
-/// \brief Create the default registry with built-in reporters.
 MetricsReporterRegistry CreateDefaultRegistry() {
   return {
       {std::string(kMetricsReporterTypeNoop), MakeReporterFactory<NoopMetricsReporter>()},
   };
 }
 
-/// \brief Get the global registry of metrics reporter factories.
 MetricsReporterRegistry& GetRegistry() {
   static MetricsReporterRegistry registry = CreateDefaultRegistry();
   return registry;
 }
 
 }  // namespace
+
+// --- CompositeMetricsReporter ---
+
+CompositeMetricsReporter::CompositeMetricsReporter(
+    std::unordered_set<std::shared_ptr<MetricsReporter>> reporters)
+    : reporters_(std::move(reporters)) {}
+
+void CompositeMetricsReporter::Report(const MetricsReport& report) {
+  for (const auto& reporter : reporters_) {
+    try {
+      reporter->Report(report);
+    } catch (...) {
+      // Catch all exceptions to ensure one failing reporter doesn't prevent others from
+      // receiving the report.
+    }
+  }
+}
+
+const std::unordered_set<std::shared_ptr<MetricsReporter>>&
+CompositeMetricsReporter::Reporters() const {
+  return reporters_;
+}
+
+// --- MetricsReporters ---
 
 void MetricsReporters::Register(std::string_view reporter_type,
                                 MetricsReporterFactory factory) {
@@ -107,6 +123,31 @@ Result<std::unique_ptr<MetricsReporter>> MetricsReporters::Load(
   }
 
   return it->second(properties);
+}
+
+std::shared_ptr<MetricsReporter> MetricsReporters::Combine(
+    std::shared_ptr<MetricsReporter> first, std::shared_ptr<MetricsReporter> second) {
+  if (!first) return second;
+  if (!second || first.get() == second.get()) return first;
+
+  // Single-pass collection: insert into the set to flatten nested composites
+  // and deduplicate by shared_ptr identity simultaneously.
+  std::unordered_set<std::shared_ptr<MetricsReporter>> reporters;
+
+  auto collect = [&reporters](const std::shared_ptr<MetricsReporter>& r) {
+    if (auto* composite = dynamic_cast<CompositeMetricsReporter*>(r.get())) {
+      for (const auto& inner : composite->Reporters()) {
+        reporters.insert(inner);
+      }
+    } else {
+      reporters.insert(r);
+    }
+  };
+
+  collect(first);
+  collect(second);
+
+  return std::make_shared<CompositeMetricsReporter>(std::move(reporters));
 }
 
 }  // namespace iceberg

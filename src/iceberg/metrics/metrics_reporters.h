@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/metrics_reporters.h
+/// \file iceberg/metrics/metrics_reporters.h
 /// \brief Factory for creating MetricsReporter instances.
 
 #include <functional>
@@ -27,9 +27,10 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
@@ -49,6 +50,30 @@ inline constexpr std::string_view kMetricsReporterTypeNoop = "noop";
 /// \return A new MetricsReporter instance or an error.
 using MetricsReporterFactory = std::function<Result<std::unique_ptr<MetricsReporter>>(
     const std::unordered_map<std::string, std::string>& properties)>;
+
+/// \brief A MetricsReporter that delegates to multiple reporters.
+///
+/// Combines several reporters so that every report is delivered to each of them.
+/// Any exception thrown by an individual reporter is caught and written to stderr;
+/// the remaining reporters still receive the report.
+///
+/// Use MetricsReporters::Combine() to create instances — that helper flattens
+/// nested composites and deduplicates reporters by identity.
+class ICEBERG_EXPORT CompositeMetricsReporter : public MetricsReporter {
+ public:
+  explicit CompositeMetricsReporter(
+      std::unordered_set<std::shared_ptr<MetricsReporter>> reporters);
+
+  void Report(const MetricsReport& report) override;
+
+  /// \brief The reporters contained in this composite.
+  ///
+  /// Used by MetricsReporters::Combine() for flattening.
+  const std::unordered_set<std::shared_ptr<MetricsReporter>>& Reporters() const;
+
+ private:
+  std::unordered_set<std::shared_ptr<MetricsReporter>> reporters_;
+};
 
 /// \brief Factory class for creating and managing MetricsReporter instances.
 ///
@@ -76,6 +101,14 @@ class ICEBERG_EXPORT MetricsReporters {
   /// \param reporter_type Case-insensitive type identifier (e.g., "noop").
   /// \param factory Factory function that produces the reporter.
   static void Register(std::string_view reporter_type, MetricsReporterFactory factory);
+
+  /// \brief Combine two reporters into one.
+  ///
+  /// \param first  First reporter, may be nullptr.
+  /// \param second Second reporter, may be nullptr.
+  /// \return Combined reporter, or nullptr if both inputs are nullptr.
+  static std::shared_ptr<MetricsReporter> Combine(
+      std::shared_ptr<MetricsReporter> first, std::shared_ptr<MetricsReporter> second);
 };
 
 }  // namespace iceberg

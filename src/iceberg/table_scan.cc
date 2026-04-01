@@ -23,6 +23,7 @@
 #include <cstring>
 #include <iterator>
 
+#include "iceberg/constants.h"
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/file_reader.h"
@@ -547,46 +548,51 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   // Report scan metrics if a reporter is configured
   if (context_.reporter) {
     auto scan_end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<DurationMs>(scan_end - scan_start);
+    auto duration = std::chrono::duration_cast<DurationNs>(scan_end - scan_start);
 
     ScanReport report;
     report.table_name = context_.table_name;
     report.snapshot_id = snapshot->snapshot_id;
-    report.schema_id = schema_ ? schema_->schema_id() : -1;
+    report.schema_id = schema_ ? schema_->schema_id() : kInvalidSchemaId;
     if (context_.filter) {
-      report.filter = context_.filter->ToString();
+      report.filter = context_.filter;
     }
-    report.total_planning_duration = duration;
+    report.scan_metrics.total_planning_duration = duration;
 
     // Manifest counts from ManifestGroup counters
     const auto& counters = manifest_group->scan_counters();
-    report.total_data_manifests = static_cast<int64_t>(data_manifests.size());
-    report.total_delete_manifests = static_cast<int64_t>(delete_manifests.size());
-    report.scanned_data_manifests = counters.scanned_data_manifests;
-    report.skipped_data_manifests = counters.skipped_data_manifests;
-    report.scanned_delete_manifests = counters.scanned_delete_manifests;
-    report.skipped_delete_manifests = counters.skipped_delete_manifests;
-    report.skipped_data_files = counters.skipped_data_files;
-    report.skipped_delete_files = counters.skipped_delete_files;
+    report.scan_metrics.total_data_manifests =
+        static_cast<int64_t>(data_manifests.size());
+    report.scan_metrics.total_delete_manifests =
+        static_cast<int64_t>(delete_manifests.size());
+    report.scan_metrics.scanned_data_manifests = counters.scanned_data_manifests;
+    report.scan_metrics.skipped_data_manifests = counters.skipped_data_manifests;
+    report.scan_metrics.scanned_delete_manifests = counters.scanned_delete_manifests;
+    report.scan_metrics.skipped_delete_manifests = counters.skipped_delete_manifests;
+    report.scan_metrics.skipped_data_files = counters.skipped_data_files;
+    report.scan_metrics.skipped_delete_files = counters.skipped_delete_files;
 
     // Result counts and file sizes from tasks
-    report.result_data_files = static_cast<int64_t>(tasks.size());
+    report.scan_metrics.result_data_files = static_cast<int64_t>(tasks.size());
     for (const auto& task : tasks) {
-      report.total_file_size_in_bytes += task->data_file()->file_size_in_bytes;
+      report.scan_metrics.total_file_size_in_bytes +=
+          task->data_file()->file_size_in_bytes;
       for (const auto& del_file : task->delete_files()) {
-        report.total_delete_file_size_in_bytes += del_file->file_size_in_bytes;
+        report.scan_metrics.total_delete_file_size_in_bytes +=
+            del_file->file_size_in_bytes;
         switch (del_file->content) {
           case DataFile::Content::kEqualityDeletes:
-            report.equality_delete_files++;
+            report.scan_metrics.equality_delete_files++;
             break;
           case DataFile::Content::kPositionDeletes:
-            report.positional_delete_files++;
+            report.scan_metrics.positional_delete_files++;
             break;
           default:
             break;
         }
       }
-      report.result_delete_files += static_cast<int64_t>(task->delete_files().size());
+      report.scan_metrics.result_delete_files +=
+          static_cast<int64_t>(task->delete_files().size());
     }
 
     // Projected fields from resolved schema

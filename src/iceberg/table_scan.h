@@ -28,7 +28,7 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"

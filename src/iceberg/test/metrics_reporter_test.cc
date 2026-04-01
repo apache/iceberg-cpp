@@ -17,10 +17,11 @@
  * under the License.
  */
 
-#include "iceberg/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporter.h"
 
 #include <chrono>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -28,7 +29,7 @@
 
 #include <gtest/gtest.h>
 
-#include "iceberg/metrics_reporters.h"
+#include "iceberg/metrics/metrics_reporters.h"
 
 namespace iceberg {
 
@@ -162,12 +163,13 @@ TEST_P(CollectorTest, CollectsAndPreservesReport) {
 INSTANTIATE_TEST_SUITE_P(
     MetricsCollector, CollectorTest,
     ::testing::Values(
-        CollectorParam{.test_name = "ScanWithFields",
-                       .report = ScanReport{.table_name = "db.t1",
-                                            .snapshot_id = 1,
-                                            .total_file_size_in_bytes = 99999},
-                       .expected_type = MetricsReportType::kScanReport,
-                       .expected_table_name = "db.t1"},
+        CollectorParam{
+            .test_name = "ScanWithFields",
+            .report = ScanReport{.table_name = "db.t1",
+                                 .snapshot_id = 1,
+                                 .scan_metrics = {.total_file_size_in_bytes = 99999}},
+            .expected_type = MetricsReportType::kScanReport,
+            .expected_table_name = "db.t1"},
         CollectorParam{.test_name = "CommitWithFields",
                        .report = CommitReport{.table_name = "db.t2",
                                               .snapshot_id = 2,
@@ -175,5 +177,64 @@ INSTANTIATE_TEST_SUITE_P(
                        .expected_type = MetricsReportType::kCommitReport,
                        .expected_table_name = "db.t2"}),
     [](const auto& info) { return info.param.test_name; });
+
+// ---------------------------------------------------------------------------
+// CompositeMetricsReporter / MetricsReporters::Combine tests
+// ---------------------------------------------------------------------------
+
+class ThrowingMetricsReporter : public MetricsReporter {
+ public:
+  void Report([[maybe_unused]] const MetricsReport& report) override {
+    throw std::runtime_error("reporter failure");
+  }
+};
+
+TEST(CombineTest, FlattenNestedComposite) {
+  auto a = std::make_shared<CollectingMetricsReporter>();
+  auto b = std::make_shared<CollectingMetricsReporter>();
+  auto c = std::make_shared<CollectingMetricsReporter>();
+
+  auto ab = MetricsReporters::Combine(a, b);
+  auto abc = MetricsReporters::Combine(ab, c);
+
+  // Result must be a flat composite — not a composite-of-composites.
+  auto* composite = dynamic_cast<CompositeMetricsReporter*>(abc.get());
+  ASSERT_NE(composite, nullptr);
+  EXPECT_EQ(composite->Reporters().size(), 3u);
+  for (const auto& r : composite->Reporters()) {
+    EXPECT_EQ(dynamic_cast<CompositeMetricsReporter*>(r.get()), nullptr);
+  }
+
+  abc->Report(CommitReport{.table_name = "db.t2"});
+  EXPECT_EQ(a->reports().size(), 1u);
+  EXPECT_EQ(b->reports().size(), 1u);
+  EXPECT_EQ(c->reports().size(), 1u);
+}
+
+TEST(CombineTest, DeduplicateByIdentity) {
+  auto a = std::make_shared<CollectingMetricsReporter>();
+  auto b = std::make_shared<CollectingMetricsReporter>();
+
+  // ab already contains a and b; combining with b again must not add b twice.
+  auto ab = MetricsReporters::Combine(a, b);
+  auto result = MetricsReporters::Combine(ab, b);
+
+  auto* composite = dynamic_cast<CompositeMetricsReporter*>(result.get());
+  ASSERT_NE(composite, nullptr);
+  EXPECT_EQ(composite->Reporters().size(), 2u);
+
+  result->Report(ScanReport{});
+  EXPECT_EQ(a->reports().size(), 1u);
+  EXPECT_EQ(b->reports().size(), 1u);  // delivered once, not twice
+}
+
+TEST(CombineTest, ExceptionInOneReporterDoesNotBlockOthers) {
+  auto throwing = std::make_shared<ThrowingMetricsReporter>();
+  auto collecting = std::make_shared<CollectingMetricsReporter>();
+  auto combined = MetricsReporters::Combine(throwing, collecting);
+
+  EXPECT_NO_THROW(combined->Report(ScanReport{}));
+  EXPECT_EQ(collecting->reports().size(), 1u);
+}
 
 }  // namespace iceberg
