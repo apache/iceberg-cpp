@@ -44,6 +44,9 @@ set(ICEBERG_SOURCES
     expression/term.cc
     file_reader.cc
     file_writer.cc
+    inspect/history_table.cc
+    inspect/metadata_table_factory.cc
+    inspect/snapshots_table.cc
     inheritable_metadata.cc
     json_serde.cc
     location_provider.cc
@@ -59,6 +62,7 @@ set(ICEBERG_SOURCES
     manifest/v2_metadata.cc
     manifest/v3_metadata.cc
     metadata_columns.cc
+    inspect/metadata_table.cc
     metrics_config.cc
     name_mapping.cc
     partition_field.cc
