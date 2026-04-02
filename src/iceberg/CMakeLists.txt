@@ -173,6 +173,7 @@ add_subdirectory(puffin)
 add_subdirectory(row)
 add_subdirectory(update)
 add_subdirectory(util)
+add_subdirectory(metrics)
 
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES
