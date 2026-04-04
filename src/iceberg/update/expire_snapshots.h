@@ -22,6 +22,8 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -142,6 +144,16 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// \return The results of changes
   Result<ApplyResult> Apply();
 
+  /// \brief Finalize the expire snapshots update, cleaning up expired files.
+  ///
+  /// After a successful commit, this method deletes manifest files, manifest lists,
+  /// data files, and statistics files that are no longer referenced by any valid
+  /// snapshot. The cleanup behavior is controlled by the CleanupLevel setting.
+  ///
+  /// \param commit_error An optional error indicating whether the commit was successful
+  /// \return Status indicating success or failure
+  Status Finalize(std::optional<Error> commit_error) override;
+
  private:
   explicit ExpireSnapshots(std::shared_ptr<TransactionContext> ctx);
 
@@ -159,7 +171,6 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   Result<std::unordered_set<int64_t>> UnreferencedSnapshotIdsToRetain(
       const SnapshotToRef& refs) const;
 
- private:
   const TimePointMs current_time_ms_;
   const int64_t default_max_ref_age_ms_;
   int32_t default_min_num_snapshots_;
@@ -169,6 +180,9 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   enum CleanupLevel cleanup_level_ { CleanupLevel::kAll };
   bool clean_expired_metadata_{false};
   bool specified_snapshot_id_{false};
+
+  /// Cached result from Apply(), consumed by Finalize() and cleared after use.
+  std::optional<ApplyResult> apply_result_;
 };
 
 }  // namespace iceberg
