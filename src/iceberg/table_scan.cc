@@ -19,9 +19,11 @@
 
 #include "iceberg/table_scan.h"
 
+#include <chrono>
 #include <cstring>
 #include <iterator>
 
+#include "iceberg/constants.h"
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/file_reader.h"
@@ -297,17 +299,22 @@ Result<ArrowArrayStream> FileScanTask::ToArrow(
 // Generic template implementation for Make
 template <typename ScanType>
 Result<std::unique_ptr<TableScanBuilder<ScanType>>> TableScanBuilder<ScanType>::Make(
-    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io) {
+    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io,
+    std::shared_ptr<MetricsReporter> reporter, const std::string& table_name) {
   ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<TableScanBuilder<ScanType>>(
-      new TableScanBuilder<ScanType>(std::move(metadata), std::move(io)));
+  return std::unique_ptr<TableScanBuilder<ScanType>>(new TableScanBuilder<ScanType>(
+      std::move(metadata), std::move(io), std::move(reporter), table_name));
 }
 
 template <typename ScanType>
 TableScanBuilder<ScanType>::TableScanBuilder(
-    std::shared_ptr<TableMetadata> table_metadata, std::shared_ptr<FileIO> file_io)
-    : metadata_(std::move(table_metadata)), io_(std::move(file_io)) {}
+    std::shared_ptr<TableMetadata> table_metadata, std::shared_ptr<FileIO> file_io,
+    std::shared_ptr<MetricsReporter> reporter, const std::string& table_name)
+    : metadata_(std::move(table_metadata)), io_(std::move(file_io)) {
+  context_.reporter = std::move(reporter);
+  context_.table_name = table_name;
+}
 
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::Option(std::string key,
@@ -611,6 +618,8 @@ Result<std::unique_ptr<DataTableScan>> DataTableScan::Make(
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() const {
+  auto scan_start = std::chrono::steady_clock::now();
+
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
   if (!snapshot) {
     return std::vector<std::shared_ptr<FileScanTask>>{};
@@ -636,7 +645,75 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();
   }
-  return manifest_group->PlanFiles();
+
+  ICEBERG_ASSIGN_OR_RAISE(auto tasks, manifest_group->PlanFiles());
+
+  // Report scan metrics if a reporter is configured
+  if (context_.reporter) {
+    auto scan_end = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<DurationNs>(scan_end - scan_start);
+
+    ScanReport report;
+    report.table_name = context_.table_name;
+    report.snapshot_id = snapshot->snapshot_id;
+    report.schema_id = schema_ ? schema_->schema_id() : kInvalidSchemaId;
+    if (context_.filter) {
+      report.filter = context_.filter;
+    }
+    report.scan_metrics.total_planning_duration = duration;
+
+    // Manifest counts from ManifestGroup counters
+    const auto& counters = manifest_group->scan_counters();
+    report.scan_metrics.total_data_manifests =
+        static_cast<int64_t>(data_manifests.size());
+    report.scan_metrics.total_delete_manifests =
+        static_cast<int64_t>(delete_manifests.size());
+    report.scan_metrics.scanned_data_manifests = counters.scanned_data_manifests;
+    report.scan_metrics.skipped_data_manifests = counters.skipped_data_manifests;
+    report.scan_metrics.scanned_delete_manifests = counters.scanned_delete_manifests;
+    report.scan_metrics.skipped_delete_manifests = counters.skipped_delete_manifests;
+    report.scan_metrics.skipped_data_files = counters.skipped_data_files;
+    report.scan_metrics.skipped_delete_files = counters.skipped_delete_files;
+
+    // Result counts and file sizes from tasks
+    report.scan_metrics.result_data_files = static_cast<int64_t>(tasks.size());
+    for (const auto& task : tasks) {
+      report.scan_metrics.total_file_size_in_bytes +=
+          task->data_file()->file_size_in_bytes;
+      for (const auto& del_file : task->delete_files()) {
+        report.scan_metrics.total_delete_file_size_in_bytes +=
+            del_file->file_size_in_bytes;
+        switch (del_file->content) {
+          case DataFile::Content::kEqualityDeletes:
+            report.scan_metrics.equality_delete_files++;
+            break;
+          case DataFile::Content::kPositionDeletes:
+            report.scan_metrics.positional_delete_files++;
+            break;
+          default:
+            break;
+        }
+      }
+      report.scan_metrics.result_delete_files +=
+          static_cast<int64_t>(task->delete_files().size());
+    }
+
+    // Projected fields from resolved schema
+    auto proj_schema_result = ResolveProjectedSchema();
+    if (proj_schema_result.has_value()) {
+      const auto& proj_schema = proj_schema_result.value().get();
+      if (proj_schema) {
+        for (const auto& field : proj_schema->fields()) {
+          report.projected_field_ids.push_back(field.field_id());
+          report.projected_field_names.emplace_back(field.name());
+        }
+      }
+    }
+
+    context_.reporter->Report(report);
+  }
+
+  return tasks;
 }
 
 // Friend function template for IncrementalScan that implements the shared PlanFiles

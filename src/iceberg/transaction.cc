@@ -19,6 +19,7 @@
  */
 #include "iceberg/transaction.h"
 
+#include <chrono>
 #include <format>
 #include <memory>
 #include <optional>
@@ -50,6 +51,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -339,7 +341,6 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   ICEBERG_CHECK(!committed_, "Transaction already committed");
   ICEBERG_CHECK(last_update_committed_,
                 "Cannot commit transaction when previous update is not committed");
-
   const auto& updates = ctx_->metadata_builder->changes();
   if (updates.empty()) {
     committed_ = true;
@@ -374,7 +375,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   // Mark as committed and update table reference
   committed_ = true;
   ctx_->table = std::move(commit_result.value());
-
+  ReportCommitMetrics();
   return ctx_->table;
 }
 
@@ -461,6 +462,72 @@ Transaction::NewUpdateSnapshotReference() {
 Result<std::shared_ptr<SnapshotManager>> Transaction::NewSnapshotManager() {
   // SnapshotManager has its own commit logic, so it is not added to the pending updates.
   return SnapshotManager::Make(shared_from_this());
+}
+
+void Transaction::ReportCommitMetrics() const {
+  const auto& reporter = ctx_->table->reporter();
+  if (!reporter) return;
+
+  auto snapshot_result = ctx_->table->current_snapshot();
+  if (!snapshot_result.has_value() || !snapshot_result.value()) return;
+
+  const auto& snapshot = snapshot_result.value();
+  const auto& summary = snapshot->summary;
+
+  auto parse_int64 = [&summary](const std::string& key) -> int64_t {
+    auto it = summary.find(key);
+    if (it != summary.end()) {
+      auto res = StringUtils::ParseNumber<int64_t>(it->second);
+      return res.has_value() ? res.value() : 0;
+    }
+    return 0;
+  };
+
+  CommitReport report;
+  report.table_name = ctx_->table->name().ToString();
+  report.snapshot_id = snapshot->snapshot_id;
+  report.sequence_number = snapshot->sequence_number;
+
+  // Operation from summary
+  if (auto it = summary.find(SnapshotSummaryFields::kOperation); it != summary.end()) {
+    report.operation = it->second;
+  }
+  CommitMetrics& metric = report.commit_metrics;
+  metric.added_data_files = parse_int64(SnapshotSummaryFields::kAddedDataFiles);
+  metric.removed_data_files = parse_int64(SnapshotSummaryFields::kDeletedDataFiles);
+  metric.total_data_files = parse_int64(SnapshotSummaryFields::kTotalDataFiles);
+  metric.added_delete_files = parse_int64(SnapshotSummaryFields::kAddedDeleteFiles);
+  metric.removed_delete_files = parse_int64(SnapshotSummaryFields::kRemovedDeleteFiles);
+  metric.total_delete_files = parse_int64(SnapshotSummaryFields::kTotalDeleteFiles);
+  metric.added_records = parse_int64(SnapshotSummaryFields::kAddedRecords);
+  metric.removed_records = parse_int64(SnapshotSummaryFields::kDeletedRecords);
+  metric.added_files_size_bytes = parse_int64(SnapshotSummaryFields::kAddedFileSize);
+  metric.removed_files_size_bytes = parse_int64(SnapshotSummaryFields::kRemovedFileSize);
+  metric.total_records = parse_int64(SnapshotSummaryFields::kTotalRecords);
+  metric.total_files_size_bytes = parse_int64(SnapshotSummaryFields::kTotalFileSize);
+  metric.added_equality_delete_files =
+      parse_int64(SnapshotSummaryFields::kAddedEqDeleteFiles);
+  metric.removed_equality_delete_files =
+      parse_int64(SnapshotSummaryFields::kRemovedEqDeleteFiles);
+  metric.added_positional_delete_files =
+      parse_int64(SnapshotSummaryFields::kAddedPosDeleteFiles);
+  metric.removed_positional_delete_files =
+      parse_int64(SnapshotSummaryFields::kRemovedPosDeleteFiles);
+  metric.added_positional_deletes = parse_int64(SnapshotSummaryFields::kAddedPosDeletes);
+  metric.removed_positional_deletes =
+      parse_int64(SnapshotSummaryFields::kRemovedPosDeletes);
+  metric.total_positional_deletes = parse_int64(SnapshotSummaryFields::kTotalPosDeletes);
+  metric.added_equality_deletes = parse_int64(SnapshotSummaryFields::kAddedEqDeletes);
+  metric.removed_equality_deletes = parse_int64(SnapshotSummaryFields::kRemovedEqDeletes);
+  metric.total_equality_deletes = parse_int64(SnapshotSummaryFields::kTotalEqDeletes);
+  metric.added_dvs = parse_int64(SnapshotSummaryFields::kAddedDVs);
+  metric.removed_dvs = parse_int64(SnapshotSummaryFields::kRemovedDVs);
+  metric.created_manifest_count = parse_int64(SnapshotSummaryFields::kManifestsCreated);
+  metric.kept_manifest_count = parse_int64(SnapshotSummaryFields::kManifestsKept);
+  metric.processed_manifest_entries_count =
+      parse_int64(SnapshotSummaryFields::kEntriesProcessed);
+
+  reporter->Report(report);
 }
 
 }  // namespace iceberg

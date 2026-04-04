@@ -321,12 +321,14 @@ ManifestGroup::ReadEntries() {
     ICEBERG_ASSIGN_OR_RAISE(bool should_match, manifest_evaluator->Evaluate(manifest));
     if (!should_match) {
       // Skip this manifest because it doesn't match partition filter
+      scan_counters_.skipped_data_manifests++;
       continue;
     }
 
     if (ignore_deleted_) {
       // only scan manifests that have entries other than deletes
       if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+        scan_counters_.skipped_data_manifests++;
         continue;
       }
     }
@@ -334,9 +336,12 @@ ManifestGroup::ReadEntries() {
     if (ignore_existing_) {
       // only scan manifests that have entries other than existing
       if (!manifest.has_added_files() && !manifest.has_deleted_files()) {
+        scan_counters_.skipped_data_manifests++;
         continue;
       }
     }
+
+    scan_counters_.scanned_data_manifests++;
 
     // Read manifest entries
     ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
@@ -345,6 +350,7 @@ ManifestGroup::ReadEntries() {
 
     for (auto& entry : entries) {
       if (ignore_existing_ && entry.status == ManifestStatus::kExisting) {
+        scan_counters_.skipped_data_files++;
         continue;
       }
 
@@ -354,6 +360,7 @@ ManifestGroup::ReadEntries() {
       }
 
       if (!manifest_entry_predicate_(entry)) {
+        scan_counters_.skipped_data_files++;
         continue;
       }
 
