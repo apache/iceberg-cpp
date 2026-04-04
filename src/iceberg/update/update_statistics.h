@@ -62,6 +62,8 @@ class ICEBERG_EXPORT UpdateStatistics : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateStatistics; }
 
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     std::vector<std::pair<int64_t, std::shared_ptr<StatisticsFile>>> to_set;
     std::vector<int64_t> to_remove;

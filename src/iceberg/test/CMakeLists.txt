@@ -117,6 +117,7 @@ add_iceberg_test(util_test
                  location_util_test.cc
                  roaring_position_bitmap_test.cc
                  position_delete_index_test.cc
+                 retry_util_test.cc
                  string_util_test.cc
                  struct_like_set_test.cc
                  transform_util_test.cc
