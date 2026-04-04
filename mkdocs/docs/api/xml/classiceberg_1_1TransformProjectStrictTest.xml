@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TransformProjectStrictTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TransformProjectStrictTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TransformProjectStrictTest_1a9c95dbd2bbf91ecc9799ace6d001ea27" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TransformProjectStrictTest::int_schema_</definition>
+        <argsstring></argsstring>
+        <name>int_schema_</name>
+        <qualifiedname>iceberg::TransformProjectStrictTest::int_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="1707" column="19" bodyfile="iceberg/test/transform_test.cc" bodystart="1707" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TransformProjectStrictTest_1af7cf32489d559e9e0ed70b13d5a8fc14" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TransformProjectStrictTest::long_schema_</definition>
+        <argsstring></argsstring>
+        <name>long_schema_</name>
+        <qualifiedname>iceberg::TransformProjectStrictTest::long_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="1708" column="19" bodyfile="iceberg/test/transform_test.cc" bodystart="1708" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TransformProjectStrictTest_1af9aa5593b5779a30ea6d59af47e97770" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TransformProjectStrictTest::string_schema_</definition>
+        <argsstring></argsstring>
+        <name>string_schema_</name>
+        <qualifiedname>iceberg::TransformProjectStrictTest::string_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="1709" column="19" bodyfile="iceberg/test/transform_test.cc" bodystart="1709" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TransformProjectStrictTest_1aa345a682367b059cd06a25dc77763ed7" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TransformProjectStrictTest::date_schema_</definition>
+        <argsstring></argsstring>
+        <name>date_schema_</name>
+        <qualifiedname>iceberg::TransformProjectStrictTest::date_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="1710" column="19" bodyfile="iceberg/test/transform_test.cc" bodystart="1710" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TransformProjectStrictTest_1aac691312793c1ae39f3178ad006b79e3" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TransformProjectStrictTest::timestamp_schema_</definition>
+        <argsstring></argsstring>
+        <name>timestamp_schema_</name>
+        <qualifiedname>iceberg::TransformProjectStrictTest::timestamp_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="1711" column="19" bodyfile="iceberg/test/transform_test.cc" bodystart="1711" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TransformProjectStrictTest_1a040a78f25c15a095f8dfb66501d851e7" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TransformProjectStrictTest::decimal_schema_</definition>
+        <argsstring></argsstring>
+        <name>decimal_schema_</name>
+        <qualifiedname>iceberg::TransformProjectStrictTest::decimal_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="1712" column="19" bodyfile="iceberg/test/transform_test.cc" bodystart="1712" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1TransformProjectStrictTest_1ad80e0e98304fe97ebdcb828a8a24ffd7" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TransformProjectStrictTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::TransformProjectStrictTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_test.cc" line="1685" column="8" bodyfile="iceberg/test/transform_test.cc" bodystart="1685" bodyend="1705"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::TransformProjectStrictTest</label>
+        <link refid="classiceberg_1_1TransformProjectStrictTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TransformProjectStrictTest</label>
+        <link refid="classiceberg_1_1TransformProjectStrictTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>date_schema_</edgelabel>
+          <edgelabel>decimal_schema_</edgelabel>
+          <edgelabel>int_schema_</edgelabel>
+          <edgelabel>long_schema_</edgelabel>
+          <edgelabel>string_schema_</edgelabel>
+          <edgelabel>timestamp_schema_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/transform_test.cc" line="1683" column="1" bodyfile="iceberg/test/transform_test.cc" bodystart="1683" bodyend="1713"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TransformProjectStrictTest_1aa345a682367b059cd06a25dc77763ed7" prot="protected" virt="non-virtual"><scope>iceberg::TransformProjectStrictTest</scope><name>date_schema_</name></member>
+      <member refid="classiceberg_1_1TransformProjectStrictTest_1a040a78f25c15a095f8dfb66501d851e7" prot="protected" virt="non-virtual"><scope>iceberg::TransformProjectStrictTest</scope><name>decimal_schema_</name></member>
+      <member refid="classiceberg_1_1TransformProjectStrictTest_1a9c95dbd2bbf91ecc9799ace6d001ea27" prot="protected" virt="non-virtual"><scope>iceberg::TransformProjectStrictTest</scope><name>int_schema_</name></member>
+      <member refid="classiceberg_1_1TransformProjectStrictTest_1af7cf32489d559e9e0ed70b13d5a8fc14" prot="protected" virt="non-virtual"><scope>iceberg::TransformProjectStrictTest</scope><name>long_schema_</name></member>
+      <member refid="classiceberg_1_1TransformProjectStrictTest_1ad80e0e98304fe97ebdcb828a8a24ffd7" prot="protected" virt="non-virtual"><scope>iceberg::TransformProjectStrictTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1TransformProjectStrictTest_1af9aa5593b5779a30ea6d59af47e97770" prot="protected" virt="non-virtual"><scope>iceberg::TransformProjectStrictTest</scope><name>string_schema_</name></member>
+      <member refid="classiceberg_1_1TransformProjectStrictTest_1aac691312793c1ae39f3178ad006b79e3" prot="protected" virt="non-virtual"><scope>iceberg::TransformProjectStrictTest</scope><name>timestamp_schema_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

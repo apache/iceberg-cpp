@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ChangelogScanTask" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ChangelogScanTask</compoundname>
+    <basecompoundref refid="classiceberg_1_1ScanTask" prot="public" virt="non-virtual">iceberg::ScanTask</basecompoundref>
+    <includes refid="table__scan_8h" local="no">table_scan.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ChangelogScanTask_1ace10d0cf9753b1b3dbb0289071c2d155" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::ChangelogScanTask::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::ChangelogScanTask::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a3e223ab9964f78b6e99791567c82e1b6">kind</reimplements>
+        <briefdescription>
+<para>The kind of scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="108" column="8" bodyfile="iceberg/table_scan.h" bodystart="108" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ChangelogScanTask_1a0a3b4dd22854acb631e33271dd9a1250" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ChangelogScanTask::size_bytes</definition>
+        <argsstring>() const override</argsstring>
+        <name>size_bytes</name>
+        <qualifiedname>iceberg::ChangelogScanTask::size_bytes</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a196044bb4a1fc867fb9dbece6ae3f47c">size_bytes</reimplements>
+        <briefdescription>
+<para>The number of bytes that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="110" column="11" bodyfile="iceberg/table_scan.h" bodystart="110" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ChangelogScanTask_1af173a61632f2b88e4da007a0859100f4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::ChangelogScanTask::files_count</definition>
+        <argsstring>() const override</argsstring>
+        <name>files_count</name>
+        <qualifiedname>iceberg::ChangelogScanTask::files_count</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a014e83fb779a07601b71dd503871986b">files_count</reimplements>
+        <briefdescription>
+<para>The number of files that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="111" column="11" bodyfile="iceberg/table_scan.h" bodystart="111" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ChangelogScanTask_1a84246b65ec7e10024d3bdf159aea243f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ChangelogScanTask::estimated_row_count</definition>
+        <argsstring>() const override</argsstring>
+        <name>estimated_row_count</name>
+        <qualifiedname>iceberg::ChangelogScanTask::estimated_row_count</qualifiedname>
+        <reimplements refid="classiceberg_1_1ScanTask_1a1065f2e9db3b7d9d42f861bfca839232">estimated_row_count</reimplements>
+        <briefdescription>
+<para>The number of rows that should be read by this scan task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="112" column="11" bodyfile="iceberg/table_scan.h" bodystart="112" bodyend="112"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A scan task for reading changelog entries between snapshots. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ChangelogScanTask</label>
+        <link refid="classiceberg_1_1ChangelogScanTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ScanTask</label>
+        <link refid="classiceberg_1_1ScanTask"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ChangelogScanTask</label>
+        <link refid="classiceberg_1_1ChangelogScanTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ScanTask</label>
+        <link refid="classiceberg_1_1ScanTask"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_scan.h" line="106" column="1" bodyfile="iceberg/table_scan.h" bodystart="106" bodyend="113"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a84246b65ec7e10024d3bdf159aea243f" prot="public" virt="virtual"><scope>iceberg::ChangelogScanTask</scope><name>estimated_row_count</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1af173a61632f2b88e4da007a0859100f4" prot="public" virt="virtual"><scope>iceberg::ChangelogScanTask</scope><name>files_count</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1ace10d0cf9753b1b3dbb0289071c2d155" prot="public" virt="virtual"><scope>iceberg::ChangelogScanTask</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1ScanTask_1ab28bdbcb5d183627dfec1ef4d3321c1f" prot="public" virt="non-virtual"><scope>iceberg::ChangelogScanTask</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a0a3b4dd22854acb631e33271dd9a1250" prot="public" virt="virtual"><scope>iceberg::ChangelogScanTask</scope><name>size_bytes</name></member>
+      <member refid="classiceberg_1_1ScanTask_1abfdda64a7967dbfda4543c4a6cb085ec" prot="public" virt="virtual"><scope>iceberg::ChangelogScanTask</scope><name>~ScanTask</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,341 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1ResourcePaths" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::ResourcePaths</compoundname>
+    <includes refid="resource__paths_8h" local="no">resource_paths.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1ResourcePaths_1ae5eda4577158cef236c717fd07b40a1f" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::ResourcePaths::base_uri_</definition>
+        <argsstring></argsstring>
+        <name>base_uri_</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::base_uri_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="87" column="15" bodyfile="iceberg/catalog/rest/resource_paths.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1ResourcePaths_1a826d1c1e06f1f7a5c70bb342fc3a6528" prot="private" static="no" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::ResourcePaths::prefix_</definition>
+        <argsstring></argsstring>
+        <name>prefix_</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::prefix_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="88" column="21" bodyfile="iceberg/catalog/rest/resource_paths.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1acc530f5b0aa903bd4d5a313e0656b6d5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1ResourcePaths" kindref="compound">ResourcePaths</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ResourcePaths &gt; &gt; iceberg::rest::ResourcePaths::Make</definition>
+        <argsstring>(std::string base_uri, const std::string &amp;prefix)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>base_uri</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>prefix</declname>
+        </param>
+        <briefdescription>
+<para>Construct a <ref refid="classiceberg_1_1rest_1_1ResourcePaths" kindref="compound">ResourcePaths</ref> with base URI and optional prefix. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base_uri</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base URI of the REST catalog server (without trailing slash) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>prefix</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional prefix for REST API paths (default: empty) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A unique_ptr to <ref refid="classiceberg_1_1rest_1_1ResourcePaths" kindref="compound">ResourcePaths</ref> instance </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="43" column="17" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="30" bodyend="36"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1a39df95bafa305f14128069133c113f7c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Config</definition>
+        <argsstring>() const</argsstring>
+        <name>Config</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Config</qualifiedname>
+        <briefdescription>
+<para>Get the /v1/config endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="47" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="41" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1ad4a2bd02c91621b5b1a6dc7f1c2ac9c7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::OAuth2Tokens</definition>
+        <argsstring>() const</argsstring>
+        <name>OAuth2Tokens</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::OAuth2Tokens</qualifiedname>
+        <briefdescription>
+<para>Get the /v1/{prefix}/oauth/tokens endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="50" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="45" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1aa39571091f6c160e37b7ffb745b7a19e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Namespaces</definition>
+        <argsstring>() const</argsstring>
+        <name>Namespaces</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Namespaces</qualifiedname>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="53" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="49" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1a9de07c42e4a359b26936621d79e02438" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Namespace_</definition>
+        <argsstring>(const Namespace &amp;ns) const</argsstring>
+        <name>Namespace_</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Namespace_</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces/{namespace} endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="56" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="53" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1a6860f189910407001913b43fc2650a10" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::NamespaceProperties</definition>
+        <argsstring>(const Namespace &amp;ns) const</argsstring>
+        <name>NamespaceProperties</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::NamespaceProperties</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces/{namespace}/properties endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="59" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="58" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1abc1bef5477af775cab3c49e702121d43" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Tables</definition>
+        <argsstring>(const Namespace &amp;ns) const</argsstring>
+        <name>Tables</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Tables</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces/{namespace}/tables endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="62" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="64" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1a7421a4362ddca6d891b826034901b1dd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Table</definition>
+        <argsstring>(const TableIdentifier &amp;ident) const</argsstring>
+        <name>Table</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Table</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>ident</declname>
+        </param>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces/{namespace}/tables/{table} endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="65" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="70" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1aa20bb6f430cdbc094e3edc50ec7d13b1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Register</definition>
+        <argsstring>(const Namespace &amp;ns) const</argsstring>
+        <name>Register</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Register</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces/{namespace}/register endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="68" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="77" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1aed78c91b66b32a7f6a80af6f770cd09a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Rename</definition>
+        <argsstring>() const</argsstring>
+        <name>Rename</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Rename</qualifiedname>
+        <briefdescription>
+<para>Get the /v1/{prefix}/tables/rename endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="71" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="83" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1ad62b65db1296fa5d52427bfc2598966d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Metrics</definition>
+        <argsstring>(const TableIdentifier &amp;ident) const</argsstring>
+        <name>Metrics</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Metrics</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>ident</declname>
+        </param>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="75" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="87" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1a0b808b74d4bad41b9744d253a8ab6bf2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::Credentials</definition>
+        <argsstring>(const TableIdentifier &amp;ident) const</argsstring>
+        <name>Credentials</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::Credentials</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>ident</declname>
+        </param>
+        <briefdescription>
+<para>Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="79" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="94" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1af4ae8c278f7c9825c4024c8756c91fab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::rest::ResourcePaths::CommitTransaction</definition>
+        <argsstring>() const</argsstring>
+        <name>CommitTransaction</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::CommitTransaction</qualifiedname>
+        <briefdescription>
+<para>Get the /v1/{prefix}/transactions/commit endpoint path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="82" column="10" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="101" bodyend="103"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1ResourcePaths_1af71e977d7b21b890d48c7944bf64f751" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::ResourcePaths::ResourcePaths</definition>
+        <argsstring>(std::string base_uri, const std::string &amp;prefix)</argsstring>
+        <name>ResourcePaths</name>
+        <qualifiedname>iceberg::rest::ResourcePaths::ResourcePaths</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>base_uri</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>prefix</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/resource_paths.h" line="85" column="3" bodyfile="iceberg/catalog/rest/resource_paths.cc" bodystart="38" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Resource path builder for Iceberg REST catalog endpoints. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class constructs REST API endpoint URLs for various catalog operations. </para>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/resource_paths.h" line="37" column="1" bodyfile="iceberg/catalog/rest/resource_paths.h" bodystart="37" bodyend="89"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1ae5eda4577158cef236c717fd07b40a1f" prot="private" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>base_uri_</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1af4ae8c278f7c9825c4024c8756c91fab" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>CommitTransaction</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1a39df95bafa305f14128069133c113f7c" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Config</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1a0b808b74d4bad41b9744d253a8ab6bf2" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Credentials</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1acc530f5b0aa903bd4d5a313e0656b6d5" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1ad62b65db1296fa5d52427bfc2598966d" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Metrics</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1a9de07c42e4a359b26936621d79e02438" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Namespace_</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1a6860f189910407001913b43fc2650a10" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>NamespaceProperties</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1aa39571091f6c160e37b7ffb745b7a19e" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Namespaces</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1ad4a2bd02c91621b5b1a6dc7f1c2ac9c7" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>OAuth2Tokens</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1a826d1c1e06f1f7a5c70bb342fc3a6528" prot="private" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>prefix_</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1aa20bb6f430cdbc094e3edc50ec7d13b1" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Register</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1aed78c91b66b32a7f6a80af6f770cd09a" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Rename</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1af71e977d7b21b890d48c7944bf64f751" prot="private" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>ResourcePaths</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1a7421a4362ddca6d891b826034901b1dd" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Table</name></member>
+      <member refid="classiceberg_1_1rest_1_1ResourcePaths_1abc1bef5477af775cab3c49e702121d43" prot="public" virt="non-virtual"><scope>iceberg::rest::ResourcePaths</scope><name>Tables</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::UpdatePartitionSpec::ApplyResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult_1a81eccf79ba0713b68cdafcd319a38670" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::UpdatePartitionSpec::ApplyResult::spec</definition>
+        <argsstring></argsstring>
+        <name>spec</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::ApplyResult::spec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="104" column="21" bodyfile="iceberg/update/update_partition_spec.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult_1a97ce88738b5e854e201fa8fde6688ced" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::UpdatePartitionSpec::ApplyResult::set_as_default</definition>
+        <argsstring></argsstring>
+        <name>set_as_default</name>
+        <qualifiedname>iceberg::UpdatePartitionSpec::ApplyResult::set_as_default</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_partition_spec.h" line="105" column="10" bodyfile="iceberg/update/update_partition_spec.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdatePartitionSpec::ApplyResult</label>
+        <link refid="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>spec</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_partition_spec.h" line="103" column="3" bodyfile="iceberg/update/update_partition_spec.h" bodystart="103" bodyend="106"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult_1a97ce88738b5e854e201fa8fde6688ced" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec::ApplyResult</scope><name>set_as_default</name></member>
+      <member refid="structiceberg_1_1UpdatePartitionSpec_1_1ApplyResult_1a81eccf79ba0713b68cdafcd319a38670" prot="public" virt="non-virtual"><scope>iceberg::UpdatePartitionSpec::ApplyResult</scope><name>spec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1RoaringPositionBitmap_1_1Impl" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::RoaringPositionBitmap::Impl</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1RoaringPositionBitmap_1_1Impl_1a15b04793eee47246db02e87e2444eed9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; roaring::Roaring &gt;</type>
+        <definition>std::vector&lt;roaring::Roaring&gt; iceberg::RoaringPositionBitmap::Impl::bitmaps</definition>
+        <argsstring></argsstring>
+        <name>bitmaps</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Impl::bitmaps</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.cc" line="85" column="15" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="85" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1RoaringPositionBitmap_1_1Impl_1afacbb26c8e1bc542468d0dbb6eee8d96" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RoaringPositionBitmap::Impl::AllocateBitmapsIfNeeded</definition>
+        <argsstring>(int32_t required_length)</argsstring>
+        <name>AllocateBitmapsIfNeeded</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Impl::AllocateBitmapsIfNeeded</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>required_length</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.cc" line="87" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="87" bodyend="91"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::RoaringPositionBitmap::Impl</label>
+        <link refid="structiceberg_1_1RoaringPositionBitmap_1_1Impl"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>bitmaps</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; roaring::Roaring &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/deletes/roaring_position_bitmap.cc" line="84" column="1" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="84" bodyend="92"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1RoaringPositionBitmap_1_1Impl_1afacbb26c8e1bc542468d0dbb6eee8d96" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap::Impl</scope><name>AllocateBitmapsIfNeeded</name></member>
+      <member refid="structiceberg_1_1RoaringPositionBitmap_1_1Impl_1a15b04793eee47246db02e87e2444eed9" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap::Impl</scope><name>bitmaps</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

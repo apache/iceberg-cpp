@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1SnapshotModeValidCase" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::SnapshotModeValidCase</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1SnapshotModeValidCase_1a61d86cd245b9fac55c9815b0ebddc97a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::SnapshotModeValidCase::input</definition>
+        <argsstring></argsstring>
+        <name>input</name>
+        <qualifiedname>iceberg::rest::SnapshotModeValidCase::input</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_util_test.cc" line="161" column="15" bodyfile="iceberg/test/rest_util_test.cc" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1SnapshotModeValidCase_1a08f504f02e27a512afc8c3f4c843ff92" prot="public" static="no" mutable="no">
+        <type><ref refid="catalog__properties_8h_1a4b1b425749e158ca036428f5023a4f4b" kindref="member">SnapshotMode</ref></type>
+        <definition>SnapshotMode iceberg::rest::SnapshotModeValidCase::expected</definition>
+        <argsstring></argsstring>
+        <name>expected</name>
+        <qualifiedname>iceberg::rest::SnapshotModeValidCase::expected</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_util_test.cc" line="162" column="16" bodyfile="iceberg/test/rest_util_test.cc" bodystart="162" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::SnapshotModeValidCase</label>
+        <link refid="structiceberg_1_1rest_1_1SnapshotModeValidCase"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>input</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_util_test.cc" line="160" column="1" bodyfile="iceberg/test/rest_util_test.cc" bodystart="160" bodyend="163"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1SnapshotModeValidCase_1a08f504f02e27a512afc8c3f4c843ff92" prot="public" virt="non-virtual"><scope>iceberg::rest::SnapshotModeValidCase</scope><name>expected</name></member>
+      <member refid="structiceberg_1_1rest_1_1SnapshotModeValidCase_1a61d86cd245b9fac55c9815b0ebddc97a" prot="public" virt="non-virtual"><scope>iceberg::rest::SnapshotModeValidCase</scope><name>input</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

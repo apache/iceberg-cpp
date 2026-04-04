@@ -1,0 +1,635 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ScanTestBase" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ScanTestBase</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; int8_t &gt;</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1IncrementalAppendScanTest" prot="public" virt="non-virtual">iceberg::IncrementalAppendScanTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1TableScanTest" prot="public" virt="non-virtual">iceberg::TableScanTest</derivedcompoundref>
+    <includes refid="scan__test__base_8h" local="no">scan_test_base.h</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ScanTestBase_1ad0ae1af25cbfee26219ea1203e58213f" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::ScanTestBase::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::ScanTestBase::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="264" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="264" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanTestBase_1a141036d1db1d5606e5b10c7727929026" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ScanTestBase::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ScanTestBase::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="265" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="265" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanTestBase_1a2e8cb5d500aed6cbf94b0f8c1d3c8789" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::ScanTestBase::partitioned_spec_</definition>
+        <argsstring></argsstring>
+        <name>partitioned_spec_</name>
+        <qualifiedname>iceberg::ScanTestBase::partitioned_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="266" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="266" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanTestBase_1a5a46fcd0ba36ea941018c102faac1472" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::ScanTestBase::unpartitioned_spec_</definition>
+        <argsstring></argsstring>
+        <name>unpartitioned_spec_</name>
+        <qualifiedname>iceberg::ScanTestBase::unpartitioned_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="267" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="267" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ScanTestBase_1af9cbedb7f061174489735301221f86da" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int iceberg::ScanTestBase::manifest_counter_</definition>
+        <argsstring></argsstring>
+        <name>manifest_counter_</name>
+        <qualifiedname>iceberg::ScanTestBase::manifest_counter_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="270" column="7" bodyfile="iceberg/test/scan_test_base.h" bodystart="270" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanTestBase_1a5798d01b599639e0ae21a3435d525316" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int iceberg::ScanTestBase::manifest_list_counter_</definition>
+        <argsstring></argsstring>
+        <name>manifest_list_counter_</name>
+        <qualifiedname>iceberg::ScanTestBase::manifest_list_counter_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="271" column="7" bodyfile="iceberg/test/scan_test_base.h" bodystart="271" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ScanTestBase_1ac92abc10afb96cd5bdc15388722ccd50" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref></type>
+        <definition>constexpr PartitionValues iceberg::ScanTestBase::kEmptyPartition</definition>
+        <argsstring></argsstring>
+        <name>kEmptyPartition</name>
+        <qualifiedname>iceberg::ScanTestBase::kEmptyPartition</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="272" column="36" bodyfile="iceberg/test/scan_test_base.h" bodystart="272" bodyend="272"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a7d984b1850d6179f47086590adcd6ada" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ScanTestBase::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::ScanTestBase::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="55" column="8" bodyfile="iceberg/test/scan_test_base.h" bodystart="55" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a531a6f46b4e9244aec66f4f67303d5fd" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::ScanTestBase::MakeManifestPath</definition>
+        <argsstring>()</argsstring>
+        <name>MakeManifestPath</name>
+        <qualifiedname>iceberg::ScanTestBase::MakeManifestPath</qualifiedname>
+        <briefdescription>
+<para>Generate a unique manifest file path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="72" column="15" bodyfile="iceberg/test/scan_test_base.h" bodystart="72" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a62601933ba9acd4946bb8d8efc2f2438" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::ScanTestBase::MakeManifestListPath</definition>
+        <argsstring>()</argsstring>
+        <name>MakeManifestListPath</name>
+        <qualifiedname>iceberg::ScanTestBase::MakeManifestListPath</qualifiedname>
+        <briefdescription>
+<para>Generate a unique manifest list file path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="78" column="15" bodyfile="iceberg/test/scan_test_base.h" bodystart="78" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a65b6a03e0f275c05c23eb4dddc972dfd" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref></type>
+        <definition>ManifestEntry iceberg::ScanTestBase::MakeEntry</definition>
+        <argsstring>(ManifestStatus status, int64_t snapshot_id, int64_t sequence_number, std::shared_ptr&lt; DataFile &gt; file)</argsstring>
+        <name>MakeEntry</name>
+        <qualifiedname>iceberg::ScanTestBase::MakeEntry</qualifiedname>
+        <param>
+          <type>ManifestStatus</type>
+          <declname>status</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>sequence_number</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Create a manifest entry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="84" column="17" bodyfile="iceberg/test/scan_test_base.h" bodystart="84" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a915cde90b0e82ca35f82c5b2dc3a179a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ScanTestBase::WriteDataManifest</definition>
+        <argsstring>(int8_t format_version, int64_t snapshot_id, std::vector&lt; ManifestEntry &gt; entries, std::shared_ptr&lt; PartitionSpec &gt; spec=PartitionSpec::Unpartitioned())</argsstring>
+        <name>WriteDataManifest</name>
+        <qualifiedname>iceberg::ScanTestBase::WriteDataManifest</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt;</type>
+          <declname>entries</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+          <defval><ref refid="classiceberg_1_1PartitionSpec_1a2955a97e29cf0637fa5275b031b198dc" kindref="member">PartitionSpec::Unpartitioned</ref>()</defval>
+        </param>
+        <briefdescription>
+<para>Write a data manifest file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="96" column="16" bodyfile="iceberg/test/scan_test_base.h" bodystart="96" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a6cd158eb02042c5143d542164b36f5a8" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ScanTestBase::WriteDeleteManifest</definition>
+        <argsstring>(int8_t format_version, int64_t snapshot_id, std::vector&lt; ManifestEntry &gt; entries, std::shared_ptr&lt; PartitionSpec &gt; spec)</argsstring>
+        <name>WriteDeleteManifest</name>
+        <qualifiedname>iceberg::ScanTestBase::WriteDeleteManifest</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt;</type>
+          <declname>entries</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+<para>Write a delete manifest file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="119" column="16" bodyfile="iceberg/test/scan_test_base.h" bodystart="119" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1ab5bebd19b60592f04d7068259573e8a1" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::ScanTestBase::WriteManifestList</definition>
+        <argsstring>(int8_t format_version, int64_t snapshot_id, int64_t parent_snapshot_id, int64_t sequence_number, const std::vector&lt; ManifestFile &gt; &amp;manifests)</argsstring>
+        <name>WriteManifestList</name>
+        <qualifiedname>iceberg::ScanTestBase::WriteManifestList</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>parent_snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>sequence_number</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>manifests</declname>
+        </param>
+        <briefdescription>
+<para>Write a manifest list file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="141" column="15" bodyfile="iceberg/test/scan_test_base.h" bodystart="141" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a383202528f71a86960b82e773fe9ff8f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; TableMetadata &gt; iceberg::ScanTestBase::MakeTableMetadata</definition>
+        <argsstring>(const std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &amp;snapshots, int64_t current_snapshot_id, const std::unordered_map&lt; std::string, std::shared_ptr&lt; SnapshotRef &gt; &gt; &amp;refs={}, std::shared_ptr&lt; PartitionSpec &gt; default_spec=nullptr)</argsstring>
+        <name>MakeTableMetadata</name>
+        <qualifiedname>iceberg::ScanTestBase::MakeTableMetadata</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &amp;</type>
+          <declname>snapshots</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>current_snapshot_id</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::shared_ptr&lt; <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &gt; &gt; &amp;</type>
+          <declname>refs</declname>
+          <defval>{}</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>default_spec</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Create table metadata with the given snapshots. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="170" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="170" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a9c417159642f386980b313d2414385a6" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::ScanTestBase::MakeDataFile</definition>
+        <argsstring>(const std::string &amp;path, PartitionValues partition=PartitionValues(std::vector&lt; Literal &gt;{}), std::shared_ptr&lt; PartitionSpec &gt; spec=nullptr, int64_t record_count=1)</argsstring>
+        <name>MakeDataFile</name>
+        <qualifiedname>iceberg::ScanTestBase::MakeDataFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref></type>
+          <declname>partition</declname>
+          <defval><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>(std::vector&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;{})</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+          <defval>nullptr</defval>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Create a data file with optional partition values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="200" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="200" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a77335f2bfbfa69666114ac896c7ebacf" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Snapshot &gt; iceberg::ScanTestBase::MakeAppendSnapshot</definition>
+        <argsstring>(int8_t format_version, int64_t snapshot_id, std::optional&lt; int64_t &gt; parent_snapshot_id, int64_t sequence_number, const std::vector&lt; std::string &gt; &amp;added_files, std::shared_ptr&lt; PartitionSpec &gt; spec=nullptr)</argsstring>
+        <name>MakeAppendSnapshot</name>
+        <qualifiedname>iceberg::ScanTestBase::MakeAppendSnapshot</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>parent_snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>sequence_number</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>added_files</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Create an append snapshot with the given files (string paths). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="217" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="217" bodyend="229"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a7562f7ad766908b35b920a31c6cb5e92" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Snapshot &gt; iceberg::ScanTestBase::MakeAppendSnapshotWithPartitionValues</definition>
+        <argsstring>(int8_t format_version, int64_t snapshot_id, std::optional&lt; int64_t &gt; parent_snapshot_id, int64_t sequence_number, const std::vector&lt; std::pair&lt; std::string, PartitionValues &gt; &gt; &amp;added_files, std::shared_ptr&lt; PartitionSpec &gt; spec=nullptr)</argsstring>
+        <name>MakeAppendSnapshotWithPartitionValues</name>
+        <qualifiedname>iceberg::ScanTestBase::MakeAppendSnapshotWithPartitionValues</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>parent_snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>sequence_number</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::pair&lt; std::string, <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &gt; &gt; &amp;</type>
+          <declname>added_files</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Create an append snapshot with the given files (with partition values). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="232" column="19" bodyfile="iceberg/test/scan_test_base.h" bodystart="232" bodyend="262"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ScanTestBase_1a8a67d321ba16ace662003af87fc5300f" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>static std::vector&lt; std::string &gt; iceberg::ScanTestBase::GetPaths</definition>
+        <argsstring>(const std::vector&lt; std::shared_ptr&lt; FileScanTask &gt; &gt; &amp;tasks)</argsstring>
+        <name>GetPaths</name>
+        <qualifiedname>iceberg::ScanTestBase::GetPaths</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &gt; &gt; &amp;</type>
+          <declname>tasks</declname>
+        </param>
+        <briefdescription>
+<para>Extract file paths from scan tasks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/scan_test_base.h" line="161" column="22" bodyfile="iceberg/test/scan_test_base.h" bodystart="161" bodyend="167"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for scan-related tests providing common test utilities. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides common setup and helper functions for testing <ref refid="classiceberg_1_1TableScan" kindref="compound">TableScan</ref> and <ref refid="classiceberg_1_1IncrementalScan" kindref="compound">IncrementalScan</ref> implementations. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::IncrementalAppendScanTest</label>
+        <link refid="classiceberg_1_1IncrementalAppendScanTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ScanTestBase</label>
+        <link refid="classiceberg_1_1ScanTestBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::TableScanTest</label>
+        <link refid="classiceberg_1_1TableScanTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; int8_t &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="15">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="4">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="8">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ScanTestBase</label>
+        <link refid="classiceberg_1_1ScanTestBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>partitioned_spec_</edgelabel>
+          <edgelabel>unpartitioned_spec_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::string_view</label>
+        <childnode refid="17" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; int8_t &gt;</label>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/scan_test_base.h" line="53" column="1" bodyfile="iceberg/test/scan_test_base.h" bodystart="53" bodyend="273"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ScanTestBase_1ad0ae1af25cbfee26219ea1203e58213f" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a8a67d321ba16ace662003af87fc5300f" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>GetPaths</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1ac92abc10afb96cd5bdc15388722ccd50" prot="private" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>kEmptyPartition</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a77335f2bfbfa69666114ac896c7ebacf" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>MakeAppendSnapshot</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a7562f7ad766908b35b920a31c6cb5e92" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>MakeAppendSnapshotWithPartitionValues</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a9c417159642f386980b313d2414385a6" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>MakeDataFile</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a65b6a03e0f275c05c23eb4dddc972dfd" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>MakeEntry</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a62601933ba9acd4946bb8d8efc2f2438" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>MakeManifestListPath</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a531a6f46b4e9244aec66f4f67303d5fd" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>MakeManifestPath</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a383202528f71a86960b82e773fe9ff8f" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>MakeTableMetadata</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1af9cbedb7f061174489735301221f86da" prot="private" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>manifest_counter_</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a5798d01b599639e0ae21a3435d525316" prot="private" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>manifest_list_counter_</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a2e8cb5d500aed6cbf94b0f8c1d3c8789" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>partitioned_spec_</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a141036d1db1d5606e5b10c7727929026" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a7d984b1850d6179f47086590adcd6ada" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a5a46fcd0ba36ea941018c102faac1472" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>unpartitioned_spec_</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a915cde90b0e82ca35f82c5b2dc3a179a" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>WriteDataManifest</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1a6cd158eb02042c5143d542164b36f5a8" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>WriteDeleteManifest</name></member>
+      <member refid="classiceberg_1_1ScanTestBase_1ab5bebd19b60592f04d7068259573e8a1" prot="protected" virt="non-virtual"><scope>iceberg::ScanTestBase</scope><name>WriteManifestList</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

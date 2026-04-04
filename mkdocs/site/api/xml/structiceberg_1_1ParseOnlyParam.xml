@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ParseOnlyParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ParseOnlyParam</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762" prot="public" static="no" strong="no">
+        <type></type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::ParseOnlyParam::Kind</qualifiedname>
+        <enumvalue id="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a7d4fb0072cf6c0c90ce75499c935efad" prot="public">
+          <name>kDay</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a970091143688306617a4f4e68d0dbe24" prot="public">
+          <name>kTime</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a25e1a9ec938cc829fce7c9a83f108414" prot="public">
+          <name>kTimestamp</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a3f74220d52884e8b9c2bec301f3a09e9" prot="public">
+          <name>kTimestampTz</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="206" column="3" bodyfile="iceberg/test/transform_util_test.cc" bodystart="206" bodyend="206"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ParseOnlyParam_1aa27ec801a5f4c93b1b793267d8f2ef54" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ParseOnlyParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::ParseOnlyParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="203" column="15" bodyfile="iceberg/test/transform_util_test.cc" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseOnlyParam_1afab67f1d206c4f791dcefefa1c6d8c18" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ParseOnlyParam::str</definition>
+        <argsstring></argsstring>
+        <name>str</name>
+        <qualifiedname>iceberg::ParseOnlyParam::str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="204" column="15" bodyfile="iceberg/test/transform_util_test.cc" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseOnlyParam_1a46a26ead14ed5d0e4308c9243a573108" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ParseOnlyParam::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::ParseOnlyParam::value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="205" column="11" bodyfile="iceberg/test/transform_util_test.cc" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseOnlyParam_1a002741c32dd0d02715f0740c62922483" prot="public" static="no" mutable="no">
+        <type>enum iceberg::ParseOnlyParam::Kind</type>
+        <definition>enum iceberg::ParseOnlyParam::Kind iceberg::ParseOnlyParam::kind</definition>
+        <argsstring></argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::ParseOnlyParam::kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="206" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ParseOnlyParam</label>
+        <link refid="structiceberg_1_1ParseOnlyParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+          <edgelabel>str</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/transform_util_test.cc" line="202" column="1" bodyfile="iceberg/test/transform_util_test.cc" bodystart="202" bodyend="207"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a7d4fb0072cf6c0c90ce75499c935efad" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>kDay</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>Kind</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1a002741c32dd0d02715f0740c62922483" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>kind</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a970091143688306617a4f4e68d0dbe24" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>kTime</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a25e1a9ec938cc829fce7c9a83f108414" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>kTimestamp</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1afc4726b481970d87232a5907625ba762a3f74220d52884e8b9c2bec301f3a09e9" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>kTimestampTz</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1aa27ec801a5f4c93b1b793267d8f2ef54" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1afab67f1d206c4f791dcefefa1c6d8c18" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>str</name></member>
+      <member refid="structiceberg_1_1ParseOnlyParam_1a46a26ead14ed5d0e4308c9243a573108" prot="public" virt="non-virtual"><scope>iceberg::ParseOnlyParam</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

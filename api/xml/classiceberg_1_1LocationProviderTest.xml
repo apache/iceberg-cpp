@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1LocationProviderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::LocationProviderTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1LocationProviderTest_1aea2a49e1863b9821da1953dbc37bc9dc" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::LocationProviderTest::table_location_</definition>
+        <argsstring></argsstring>
+        <name>table_location_</name>
+        <qualifiedname>iceberg::LocationProviderTest::table_location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/location_provider_test.cc" line="54" column="15" bodyfile="iceberg/test/location_provider_test.cc" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1LocationProviderTest_1a17202d415fc36a9501a4595524e005e7" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref></type>
+        <definition>TableProperties iceberg::LocationProviderTest::properties_</definition>
+        <argsstring></argsstring>
+        <name>properties_</name>
+        <qualifiedname>iceberg::LocationProviderTest::properties_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/location_provider_test.cc" line="55" column="19" bodyfile="iceberg/test/location_provider_test.cc" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1LocationProviderTest_1a8e71387994d7a39e2161a538f06b45b6" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::LocationProviderTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::LocationProviderTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/location_provider_test.cc" line="52" column="8" bodyfile="iceberg/test/location_provider_test.cc" bodystart="52" bodyend="52"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::LocationProviderTest</label>
+        <link refid="classiceberg_1_1LocationProviderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>iceberg::ConfigBase&lt; TableProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::LocationProviderTest</label>
+        <link refid="classiceberg_1_1LocationProviderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>table_location_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>properties_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::TableProperties</label>
+        <link refid="classiceberg_1_1TableProperties"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>kDefaultNameMapping</edgelabel>
+          <edgelabel>kMetricModeColumnConfPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnEnabledPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnFppPrefix</edgelabel>
+          <edgelabel>kParquetColumnStatsEnabledPrefix</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="9">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::string_view</label>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="7">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/location_provider_test.cc" line="50" column="1" bodyfile="iceberg/test/location_provider_test.cc" bodystart="50" bodyend="56"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1LocationProviderTest_1a17202d415fc36a9501a4595524e005e7" prot="protected" virt="non-virtual"><scope>iceberg::LocationProviderTest</scope><name>properties_</name></member>
+      <member refid="classiceberg_1_1LocationProviderTest_1a8e71387994d7a39e2161a538f06b45b6" prot="protected" virt="non-virtual"><scope>iceberg::LocationProviderTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1LocationProviderTest_1aea2a49e1863b9821da1953dbc37bc9dc" prot="protected" virt="non-virtual"><scope>iceberg::LocationProviderTest</scope><name>table_location_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

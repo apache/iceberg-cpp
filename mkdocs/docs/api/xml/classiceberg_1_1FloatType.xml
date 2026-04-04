@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FloatType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FloatType</compoundname>
+    <basecompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</basecompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FloatType_1adf8478cd68e3046688c97055b5a928a4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr const TypeId iceberg::FloatType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::FloatType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kFloat</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="264" column="33" bodyfile="iceberg/type.h" bodystart="264" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FloatType_1aee0d2c5d691dbbc2e45914ee7a87a706" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FloatType::FloatType</definition>
+        <argsstring>()=default</argsstring>
+        <name>FloatType</name>
+        <qualifiedname>iceberg::FloatType::FloatType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="266" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FloatType_1a61e164a0fef1feaa1528a1aa00e8eaf1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FloatType::~FloatType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~FloatType</name>
+        <qualifiedname>iceberg::FloatType::~FloatType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="267" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FloatType_1a4cd5de17068a145e122dfef5cd570003" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::FloatType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::FloatType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="269" column="10" bodyfile="iceberg/type.cc" bodystart="279" bodyend="279"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FloatType_1acb679161dea7b2e9400b77bd9f8ace8e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::FloatType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::FloatType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="270" column="15" bodyfile="iceberg/type.cc" bodystart="280" bodyend="280"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1FloatType_1ad8d5c5dc96c6ea4b5e5e20a18145a72e" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::FloatType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::FloatType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="273" column="8" bodyfile="iceberg/type.cc" bodystart="281" bodyend="281"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing a 32-bit (single precision) IEEE-754 float. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::FloatType</label>
+        <link refid="classiceberg_1_1FloatType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::FloatType</label>
+        <link refid="classiceberg_1_1FloatType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="262" column="1" bodyfile="iceberg/type.h" bodystart="262" bodyend="274"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FloatType_1ad8d5c5dc96c6ea4b5e5e20a18145a72e" prot="protected" virt="virtual"><scope>iceberg::FloatType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1FloatType_1aee0d2c5d691dbbc2e45914ee7a87a706" prot="public" virt="non-virtual"><scope>iceberg::FloatType</scope><name>FloatType</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::FloatType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::FloatType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1FloatType_1adf8478cd68e3046688c97055b5a928a4" prot="public" virt="non-virtual"><scope>iceberg::FloatType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1FloatType_1acb679161dea7b2e9400b77bd9f8ace8e" prot="public" virt="virtual"><scope>iceberg::FloatType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1FloatType_1a4cd5de17068a145e122dfef5cd570003" prot="public" virt="virtual"><scope>iceberg::FloatType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1FloatType_1a61e164a0fef1feaa1528a1aa00e8eaf1" prot="public" virt="non-virtual"><scope>iceberg::FloatType</scope><name>~FloatType</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::FloatType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::FloatType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

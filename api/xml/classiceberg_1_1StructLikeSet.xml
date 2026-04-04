@@ -1,0 +1,277 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1StructLikeSet" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::StructLikeSet</compoundname>
+    <includes refid="struct__like__set_8h" local="no">struct_like_set.h</includes>
+    <innerclass refid="structiceberg_1_1StructLikeSet_1_1KeyEqual" prot="private">iceberg::StructLikeSet::KeyEqual</innerclass>
+    <innerclass refid="structiceberg_1_1StructLikeSet_1_1KeyHash" prot="private">iceberg::StructLikeSet::KeyHash</innerclass>
+    <templateparamlist>
+      <param>
+        <type>bool</type>
+        <declname>kValidate</declname>
+        <defname>kValidate</defname>
+        <defval>true</defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1StructLikeSet_1a5791434fb3ca58dd1970126816f50aca" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr size_t</type>
+        <definition>constexpr size_t iceberg::StructLikeSet&lt; kValidate &gt;::kDefaultArenaInitialSize</definition>
+        <argsstring></argsstring>
+        <name>kDefaultArenaInitialSize</name>
+        <qualifiedname>iceberg::StructLikeSet::kDefaultArenaInitialSize</qualifiedname>
+        <initializer>= 64 * 1024</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="50" column="27" bodyfile="iceberg/util/struct_like_set.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1StructLikeSet_1ac4243116bbe9a55df29c68c056230108" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;Type&gt; &gt; iceberg::StructLikeSet&lt; kValidate &gt;::field_types_</definition>
+        <argsstring></argsstring>
+        <name>field_types_</name>
+        <qualifiedname>iceberg::StructLikeSet::field_types_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="99" column="15" bodyfile="iceberg/util/struct_like_set.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StructLikeSet_1ae2a3c14f6211c6839440fbbc7a179982" prot="private" static="no" mutable="yes">
+        <type>std::pmr::monotonic_buffer_resource</type>
+        <definition>std::pmr::monotonic_buffer_resource iceberg::StructLikeSet&lt; kValidate &gt;::arena_</definition>
+        <argsstring></argsstring>
+        <name>arena_</name>
+        <qualifiedname>iceberg::StructLikeSet::arena_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="100" column="47" bodyfile="iceberg/util/struct_like_set.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StructLikeSet_1a102c5db177f4203ae8d32e4af7e9cc9f" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt;, KeyHash, KeyEqual &gt;</type>
+        <definition>std::unordered_set&lt;std::unique_ptr&lt;StructLike&gt;, KeyHash, KeyEqual&gt; iceberg::StructLikeSet&lt; kValidate &gt;::set_</definition>
+        <argsstring></argsstring>
+        <name>set_</name>
+        <qualifiedname>iceberg::StructLikeSet::set_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="101" column="22" bodyfile="iceberg/util/struct_like_set.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1a25fd83fa34daa37995af23e1fe2371d4" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::StructLikeSet&lt; kValidate &gt;::StructLikeSet</definition>
+        <argsstring>(const StructType &amp;type, size_t arena_initial_size=kDefaultArenaInitialSize)</argsstring>
+        <name>StructLikeSet</name>
+        <qualifiedname>iceberg::StructLikeSet::StructLikeSet</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>arena_initial_size</declname>
+          <defval>kDefaultArenaInitialSize</defval>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1StructLikeSet" kindref="compound">StructLikeSet</ref> for the given struct type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="53" column="12" bodyfile="iceberg/util/struct_like_set.cc" bodystart="470" bodyend="476"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1adc8e5ff8c0b281fc7b683ea3d4d2ddb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::StructLikeSet&lt; kValidate &gt;::~StructLikeSet</definition>
+        <argsstring>()</argsstring>
+        <name>~StructLikeSet</name>
+        <qualifiedname>iceberg::StructLikeSet::~StructLikeSet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="56" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1ab598fa01135056ebeb15a5be047fcb87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::StructLikeSet&lt; kValidate &gt;::Insert</definition>
+        <argsstring>(const StructLike &amp;row)</argsstring>
+        <name>Insert</name>
+        <qualifiedname>iceberg::StructLikeSet::Insert</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>row</declname>
+        </param>
+        <briefdescription>
+<para>Insert a row into the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="59" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="557" bodyend="567"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1aaef2732619e52c37d30fba696237240d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::StructLikeSet&lt; kValidate &gt;::Contains</definition>
+        <argsstring>(const StructLike &amp;row) const</argsstring>
+        <name>Contains</name>
+        <qualifiedname>iceberg::StructLikeSet::Contains</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>row</declname>
+        </param>
+        <briefdescription>
+<para>Check if the set contains a row. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="62" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="570" bodyend="575"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1a7622bd7edb38dce767596e0bb2b31d91" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StructLikeSet&lt; kValidate &gt;::IsEmpty</definition>
+        <argsstring>() const</argsstring>
+        <name>IsEmpty</name>
+        <qualifiedname>iceberg::StructLikeSet::IsEmpty</qualifiedname>
+        <briefdescription>
+<para>Check if the set is empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="65" column="8" bodyfile="iceberg/util/struct_like_set.cc" bodystart="578" bodyend="580"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1a660d7b87a08023c1520b8aefa5dc0ed7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::StructLikeSet&lt; kValidate &gt;::Size</definition>
+        <argsstring>() const</argsstring>
+        <name>Size</name>
+        <qualifiedname>iceberg::StructLikeSet::Size</qualifiedname>
+        <briefdescription>
+<para>Get the number of elements in the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="68" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="583" bodyend="585"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1a527a421570a985c7703b37dd80739b11" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; StructLike &gt; &gt; iceberg::StructLikeSet&lt; kValidate &gt;::MakeArenaRow</definition>
+        <argsstring>(const StructLike &amp;row) const</argsstring>
+        <name>MakeArenaRow</name>
+        <qualifiedname>iceberg::StructLikeSet::MakeArenaRow</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>row</declname>
+        </param>
+        <briefdescription>
+<para>Create an arena-owned deep copy of a <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> row. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="90" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="545" bodyend="554"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1a3fc9c80d946d349b1b2a492b53e1ac71" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::StructLikeSet&lt; kValidate &gt;::DeepCopyScalar</definition>
+        <argsstring>(const Scalar &amp;scalar) const</argsstring>
+        <name>DeepCopyScalar</name>
+        <qualifiedname>iceberg::StructLikeSet::DeepCopyScalar</qualifiedname>
+        <param>
+          <type>const <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &amp;</type>
+          <declname>scalar</declname>
+        </param>
+        <briefdescription>
+<para>Deep copy a scalar value, copying strings into arena and recursively materializing nested types. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="94" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="492" bodyend="542"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeSet_1aef28e35adb6004a480d007daf918b742" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::StructLikeSet&lt; kValidate &gt;::CopyToArena</definition>
+        <argsstring>(std::string_view src) const</argsstring>
+        <name>CopyToArena</name>
+        <qualifiedname>iceberg::StructLikeSet::CopyToArena</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>src</declname>
+        </param>
+        <briefdescription>
+<para>Copy string data into the arena and return a view into it. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="97" column="20" bodyfile="iceberg/util/struct_like_set.cc" bodystart="482" bodyend="489"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A set of <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> rows with type-aware hashing and equality. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>As <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> uses view semantics, this set makes deep copies of inserted rows into an internal arena to ensure ownership and lifetime safety. Lookups are transparent and do not require temporary allocation.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>kValidate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>When true (default), Insert and Contains validate that each row&apos;s scalar types match the schema passed to the constructor. Set to false only when the caller guarantees schema conformance and the validation overhead must be avoided. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="iceberg/util/struct_like_set.h" line="48" column="1" bodyfile="iceberg/util/struct_like_set.h" bodystart="48" bodyend="102"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1StructLikeSet_1ae2a3c14f6211c6839440fbbc7a179982" prot="private" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>arena_</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1aaef2732619e52c37d30fba696237240d" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>Contains</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1aef28e35adb6004a480d007daf918b742" prot="private" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>CopyToArena</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1a3fc9c80d946d349b1b2a492b53e1ac71" prot="private" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>DeepCopyScalar</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1ac4243116bbe9a55df29c68c056230108" prot="private" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>field_types_</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1ab598fa01135056ebeb15a5be047fcb87" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>Insert</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1a7622bd7edb38dce767596e0bb2b31d91" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>IsEmpty</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1a5791434fb3ca58dd1970126816f50aca" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>kDefaultArenaInitialSize</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1a527a421570a985c7703b37dd80739b11" prot="private" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>MakeArenaRow</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1a102c5db177f4203ae8d32e4af7e9cc9f" prot="private" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>set_</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1a660d7b87a08023c1520b8aefa5dc0ed7" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>Size</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1a25fd83fa34daa37995af23e1fe2371d4" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>StructLikeSet</name></member>
+      <member refid="classiceberg_1_1StructLikeSet_1adc8e5ff8c0b281fc7b683ea3d4d2ddb7" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet</scope><name>~StructLikeSet</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

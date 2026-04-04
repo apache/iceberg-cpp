@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="file__metadata_8h" kind="file" language="C++">
+    <compoundname>file_metadata.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includedby refid="file__metadata_8cc" local="yes">iceberg/puffin/file_metadata.cc</includedby>
+    <incdepgraph>
+      <node id="8">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/puffin/file_metadata.h</label>
+        <link refid="file__metadata_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="10">
+        <label>expected</label>
+      </node>
+      <node id="11">
+        <label>format</label>
+      </node>
+      <node id="3">
+        <label>optional</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>string_view</label>
+      </node>
+      <node id="6">
+        <label>unordered_map</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structiceberg_1_1puffin_1_1StandardBlobTypes" prot="public">iceberg::puffin::StandardBlobTypes</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1StandardPuffinProperties" prot="public">iceberg::puffin::StandardPuffinProperties</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1Blob" prot="public">iceberg::puffin::Blob</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1BlobMetadata" prot="public">iceberg::puffin::BlobMetadata</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1FileMetadata" prot="public">iceberg::puffin::FileMetadata</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1puffin">iceberg::puffin</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Data structures for Puffin files. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::puffin<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" refkind="member"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>kNone,</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>kLz4,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/>kZstd,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal">ICEBERG_EXPORT<sp/>std::string_view<sp/>CodecName(PuffinCompressionCodec<sp/>codec);</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal">ICEBERG_EXPORT<sp/>Result&lt;PuffinCompressionCodec&gt;<sp/>PuffinCompressionCodecFromName(</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string_view<sp/>codec_name);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal">ICEBERG_EXPORT<sp/>std::string<sp/>ToString(PuffinCompressionCodec<sp/>codec);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="structiceberg_1_1puffin_1_1StandardBlobTypes" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1puffin_1_1StandardBlobTypes" kindref="compound">StandardBlobTypes</ref><sp/>{</highlight></codeline>
+<codeline lineno="55" refid="structiceberg_1_1puffin_1_1StandardBlobTypes_1a56ddc41d0b314ceb80ba6f8da65c7d93" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1puffin_1_1StandardBlobTypes_1a56ddc41d0b314ceb80ba6f8da65c7d93" kindref="member">kApacheDatasketchesThetaV1</ref><sp/>=</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;apache-datasketches-theta-v1&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="structiceberg_1_1puffin_1_1StandardBlobTypes_1a6dc6f92f1eafdfa747657dcbd4abd394" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1puffin_1_1StandardBlobTypes_1a6dc6f92f1eafdfa747657dcbd4abd394" kindref="member">kDeletionVectorV1</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;deletion-vector-v1&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="structiceberg_1_1puffin_1_1StandardPuffinProperties" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1puffin_1_1StandardPuffinProperties" kindref="compound">StandardPuffinProperties</ref><sp/>{</highlight></codeline>
+<codeline lineno="66" refid="structiceberg_1_1puffin_1_1StandardPuffinProperties_1a9a1e50e04e551d463d667b5d3bc0bebf" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1puffin_1_1StandardPuffinProperties_1a9a1e50e04e551d463d667b5d3bc0bebf" kindref="member">kCreatedBy</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;created-by&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="structiceberg_1_1puffin_1_1Blob" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref><sp/>{</highlight></codeline>
+<codeline lineno="72" refid="structiceberg_1_1puffin_1_1Blob_1a4f7ca2a6cc93306a0a67890dadce3cea" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1puffin_1_1Blob_1a4f7ca2a6cc93306a0a67890dadce3cea" kindref="member">type</ref>;</highlight></codeline>
+<codeline lineno="74" refid="structiceberg_1_1puffin_1_1Blob_1a3b5f15d99ca2e7230fbb92d7f861c468" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;int32_t&gt;<sp/><ref refid="structiceberg_1_1puffin_1_1Blob_1a3b5f15d99ca2e7230fbb92d7f861c468" kindref="member">input_fields</ref>;</highlight></codeline>
+<codeline lineno="76" refid="structiceberg_1_1puffin_1_1Blob_1a2668a95631f8f420d56b0d5145f14096" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="structiceberg_1_1puffin_1_1Blob_1a2668a95631f8f420d56b0d5145f14096" kindref="member">snapshot_id</ref>;</highlight></codeline>
+<codeline lineno="78" refid="structiceberg_1_1puffin_1_1Blob_1ac79dc1a305b5e235f57ca2031f67a75e" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="structiceberg_1_1puffin_1_1Blob_1ac79dc1a305b5e235f57ca2031f67a75e" kindref="member">sequence_number</ref>;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/>data;</highlight></codeline>
+<codeline lineno="81" refid="structiceberg_1_1puffin_1_1Blob_1ac624cbd7745bef9a4df537f167b9435e" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;PuffinCompressionCodec&gt;<sp/><ref refid="structiceberg_1_1puffin_1_1Blob_1ac624cbd7745bef9a4df537f167b9435e" kindref="member">requested_compression</ref>;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref>&amp;<sp/>rhs)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal">ICEBERG_EXPORT<sp/>std::string<sp/>ToString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref>&amp;<sp/>blob);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90" refid="structiceberg_1_1puffin_1_1BlobMetadata" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref><sp/>{</highlight></codeline>
+<codeline lineno="92" refid="structiceberg_1_1puffin_1_1BlobMetadata_1a9ee2847def227ef7d66b4dad77c79abe" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata_1a9ee2847def227ef7d66b4dad77c79abe" kindref="member">type</ref>;</highlight></codeline>
+<codeline lineno="94" refid="structiceberg_1_1puffin_1_1BlobMetadata_1acb23b8e1304c1c8f1313b3e502d89d1d" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;int32_t&gt;<sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata_1acb23b8e1304c1c8f1313b3e502d89d1d" kindref="member">input_fields</ref>;</highlight></codeline>
+<codeline lineno="96" refid="structiceberg_1_1puffin_1_1BlobMetadata_1aba7ed7503bc6340693616ae2da1baeca" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata_1aba7ed7503bc6340693616ae2da1baeca" kindref="member">snapshot_id</ref>;</highlight></codeline>
+<codeline lineno="98" refid="structiceberg_1_1puffin_1_1BlobMetadata_1a2006c5efb416a6d939682999a7a1b29f" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata_1a2006c5efb416a6d939682999a7a1b29f" kindref="member">sequence_number</ref>;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>int64_t<sp/>offset;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>int64_t<sp/>length;</highlight></codeline>
+<codeline lineno="102" refid="structiceberg_1_1puffin_1_1BlobMetadata_1aa4c3cfd2e88e11f993a8295ad9f244c0" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata_1aa4c3cfd2e88e11f993a8295ad9f244c0" kindref="member">compression_codec</ref>;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref>&amp;<sp/>rhs)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal">ICEBERG_EXPORT<sp/>std::string<sp/>ToString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref>&amp;<sp/>blob_metadata);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111" refid="structiceberg_1_1puffin_1_1FileMetadata" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref><sp/>{</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>std::vector&lt;BlobMetadata&gt;<sp/>blobs;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref>&amp;<sp/>rhs)<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal">ICEBERG_EXPORT<sp/>std::string<sp/>ToString(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref>&amp;<sp/>file_metadata);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::puffin</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/puffin/file_metadata.h"/>
+  </compounddef>
+</doxygen>

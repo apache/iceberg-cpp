@@ -1,0 +1,437 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1RoaringPositionBitmap" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::RoaringPositionBitmap</compoundname>
+    <includes refid="roaring__position__bitmap_8h" local="no">roaring_position_bitmap.h</includes>
+    <innerclass refid="structiceberg_1_1RoaringPositionBitmap_1_1Impl" prot="public">iceberg::RoaringPositionBitmap::Impl</innerclass>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1RoaringPositionBitmap_1a96daf8d6091c3da17dd542ab0cb50b16" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::RoaringPositionBitmap::kMaxPosition</definition>
+        <argsstring></argsstring>
+        <name>kMaxPosition</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::kMaxPosition</qualifiedname>
+        <initializer>= 0x7FFFFFFE80000000LL</initializer>
+        <briefdescription>
+<para>Maximum supported position (aligned with the Java implementation). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="51" column="28" bodyfile="iceberg/deletes/roaring_position_bitmap.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1RoaringPositionBitmap_1aec75a6775444f1b803610fc7feb78eec" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="structiceberg_1_1RoaringPositionBitmap_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::RoaringPositionBitmap::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="110" column="19" bodyfile="iceberg/deletes/roaring_position_bitmap.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1aa9251a5b54ee87479932b5933102110b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</definition>
+        <argsstring>()</argsstring>
+        <name>RoaringPositionBitmap</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="53" column="3" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="94" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a287698a8a208a1f8eba9326d487d5dd7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RoaringPositionBitmap::~RoaringPositionBitmap</definition>
+        <argsstring>()</argsstring>
+        <name>~RoaringPositionBitmap</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::~RoaringPositionBitmap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="54" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a5416b9dc9d43495aa2310316ba4dfbfe" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</definition>
+        <argsstring>(RoaringPositionBitmap &amp;&amp;other) noexcept</argsstring>
+        <name>RoaringPositionBitmap</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="56" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a662b2f3ef56952a5e57a4e9c2c3ccff6" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &amp;</type>
+        <definition>RoaringPositionBitmap &amp; iceberg::RoaringPositionBitmap::operator=</definition>
+        <argsstring>(RoaringPositionBitmap &amp;&amp;other) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="57" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1aa5552b6f7ad81aed46bbf6559f67f6df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</definition>
+        <argsstring>(const RoaringPositionBitmap &amp;other)</argsstring>
+        <name>RoaringPositionBitmap</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="59" column="3" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="98" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a334670484321ea4ede0ea98f8692dd3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &amp;</type>
+        <definition>RoaringPositionBitmap &amp; iceberg::RoaringPositionBitmap::operator=</definition>
+        <argsstring>(const RoaringPositionBitmap &amp;other)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="60" column="25" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="102" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a1e70876825b49c748e7398ea67797ad2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RoaringPositionBitmap::Add</definition>
+        <argsstring>(int64_t pos)</argsstring>
+        <name>Add</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Add</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Sets a position in the bitmap. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the position (must be &gt;= 0 and &lt;= kMaxPosition) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>Invalid positions are silently ignored </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="65" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="120" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a72c60f02115ce8c0f6b0af77c924c788" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RoaringPositionBitmap::AddRange</definition>
+        <argsstring>(int64_t pos_start, int64_t pos_end)</argsstring>
+        <name>AddRange</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::AddRange</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>pos_start</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>pos_end</declname>
+        </param>
+        <briefdescription>
+<para>Sets a range of positions [pos_start, pos_end). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos_start</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the start of the range (inclusive), clamped to 0 </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pos_end</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the end of the range (exclusive), clamped to kMaxPosition + 1 </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>If pos_start &gt; pos_end, the call is silently ignored. If pos_start == pos_end, this method does nothing. Positions outside [0, kMaxPosition] are silently ignored. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="73" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="130" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a879bd5fa35237a9c7a02ebe6f9894aae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RoaringPositionBitmap::Contains</definition>
+        <argsstring>(int64_t pos) const</argsstring>
+        <name>Contains</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Contains</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Checks if a position is set in the bitmap. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the position to check </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the position is set, false otherwise (including invalid positions) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="78" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="150" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1ac2aaa7d0510ee162826bd6098b46d121" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RoaringPositionBitmap::IsEmpty</definition>
+        <argsstring>() const</argsstring>
+        <name>IsEmpty</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::IsEmpty</qualifiedname>
+        <briefdescription>
+<para>Returns true if the bitmap has no positions set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="81" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="159" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a603608e39b0124033af3c7a4378a69f4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::RoaringPositionBitmap::Cardinality</definition>
+        <argsstring>() const</argsstring>
+        <name>Cardinality</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Cardinality</qualifiedname>
+        <briefdescription>
+<para>Returns the number of set positions in the bitmap. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="84" column="10" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="161" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a6809de3aa2a29cdaf3101e5f527d0b69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RoaringPositionBitmap::Or</definition>
+        <argsstring>(const RoaringPositionBitmap &amp;other)</argsstring>
+        <name>Or</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Or</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Merges all positions from the other bitmap into this one (in-place union). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="88" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="169" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1af1c4887626f845e63b1f7a63abe8a212" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RoaringPositionBitmap::Optimize</definition>
+        <argsstring>()</argsstring>
+        <name>Optimize</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Optimize</qualifiedname>
+        <briefdescription>
+<para>Optimizes the bitmap by applying run-length encoding to containers where it is more space efficient than array or bitset representations. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if any container was changed </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="94" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="176" bodyend="182"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a18779d584375bed659ba2c38a1ee2bb4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RoaringPositionBitmap::ForEach</definition>
+        <argsstring>(const std::function&lt; void(int64_t)&gt; &amp;fn) const</argsstring>
+        <name>ForEach</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::ForEach</qualifiedname>
+        <param>
+          <type>const std::function&lt; void(int64_t)&gt; &amp;</type>
+          <declname>fn</declname>
+        </param>
+        <briefdescription>
+<para>Iterates over all set positions in ascending order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="97" column="8" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="184" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1affcf76ee2ea560cfeb18741c0cadb9d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::RoaringPositionBitmap::SerializedSizeInBytes</definition>
+        <argsstring>() const</argsstring>
+        <name>SerializedSizeInBytes</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::SerializedSizeInBytes</qualifiedname>
+        <briefdescription>
+<para>Returns the serialized size in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="100" column="10" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="192" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a5cbc934ea12bb261fbd5a689ed5d4509" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::RoaringPositionBitmap::Serialize</definition>
+        <argsstring>() const</argsstring>
+        <name>Serialize</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Serialize</qualifiedname>
+        <briefdescription>
+<para>Serializes using the portable format (little-endian). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="103" column="10" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="202" bodyend="220"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1a37cc9ce0eefa12dbeabb77edc6dd680b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref> &gt;</type>
+        <definition>Result&lt; RoaringPositionBitmap &gt; iceberg::RoaringPositionBitmap::Deserialize</definition>
+        <argsstring>(std::string_view bytes)</argsstring>
+        <name>Deserialize</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::Deserialize</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>bytes</declname>
+        </param>
+        <briefdescription>
+<para>Deserializes a bitmap from bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="106" column="17" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="222" bodyend="284"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1RoaringPositionBitmap_1adcd96257da3247a6fa3381b3bf712f65" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</definition>
+        <argsstring>(std::unique_ptr&lt; Impl &gt; impl)</argsstring>
+        <name>RoaringPositionBitmap</name>
+        <qualifiedname>iceberg::RoaringPositionBitmap::RoaringPositionBitmap</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="structiceberg_1_1RoaringPositionBitmap_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+          <declname>impl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/roaring_position_bitmap.h" line="112" column="12" bodyfile="iceberg/deletes/roaring_position_bitmap.cc" bodystart="117" bodyend="118"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A bitmap that supports positive 64-bit positions, optimized for cases where most positions fit in 32 bits. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Incoming 64-bit positions are divided into a 32-bit &quot;key&quot; using the most significant 4 bytes and a 32-bit position using the least significant 4 bytes. For each key, a 32-bit Roaring bitmap is maintained to store positions for that key. <simplesect kind="note"><para>This class is used to represent deletion vectors. The Puffin puffin reader/write handle adding the additional required framing (length prefix, magic, magic bytes, CRC-32) for <computeroutput>deletion-vector-v1</computeroutput> persistence. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="iceberg/deletes/roaring_position_bitmap.h" line="48" column="1" bodyfile="iceberg/deletes/roaring_position_bitmap.h" bodystart="48" bodyend="113"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a1e70876825b49c748e7398ea67797ad2" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>Add</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a72c60f02115ce8c0f6b0af77c924c788" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>AddRange</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a603608e39b0124033af3c7a4378a69f4" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>Cardinality</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a879bd5fa35237a9c7a02ebe6f9894aae" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>Contains</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a37cc9ce0eefa12dbeabb77edc6dd680b" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>Deserialize</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a18779d584375bed659ba2c38a1ee2bb4" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>ForEach</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1aec75a6775444f1b803610fc7feb78eec" prot="private" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1ac2aaa7d0510ee162826bd6098b46d121" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>IsEmpty</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a96daf8d6091c3da17dd542ab0cb50b16" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>kMaxPosition</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a662b2f3ef56952a5e57a4e9c2c3ccff6" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a334670484321ea4ede0ea98f8692dd3a" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1af1c4887626f845e63b1f7a63abe8a212" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>Optimize</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a6809de3aa2a29cdaf3101e5f527d0b69" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1aa9251a5b54ee87479932b5933102110b" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>RoaringPositionBitmap</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a5416b9dc9d43495aa2310316ba4dfbfe" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>RoaringPositionBitmap</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1aa5552b6f7ad81aed46bbf6559f67f6df" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>RoaringPositionBitmap</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1adcd96257da3247a6fa3381b3bf712f65" prot="private" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>RoaringPositionBitmap</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a5cbc934ea12bb261fbd5a689ed5d4509" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>Serialize</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1affcf76ee2ea560cfeb18741c0cadb9d6" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>SerializedSizeInBytes</name></member>
+      <member refid="classiceberg_1_1RoaringPositionBitmap_1a287698a8a208a1f8eba9326d487d5dd7" prot="public" virt="non-virtual"><scope>iceberg::RoaringPositionBitmap</scope><name>~RoaringPositionBitmap</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

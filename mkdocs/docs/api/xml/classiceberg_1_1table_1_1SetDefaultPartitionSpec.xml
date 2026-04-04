@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1SetDefaultPartitionSpec" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::SetDefaultPartitionSpec</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a58e86f368ccea88142888b218b92fcdb" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::SetDefaultPartitionSpec::spec_id_</definition>
+        <argsstring></argsstring>
+        <name>spec_id_</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::spec_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="239" column="11" bodyfile="iceberg/table_update.h" bodystart="239" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1aaeed4f860a4a4368fe1657a6ab14062d" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::SetDefaultPartitionSpec::SetDefaultPartitionSpec</definition>
+        <argsstring>(int32_t spec_id)</argsstring>
+        <name>SetDefaultPartitionSpec</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::SetDefaultPartitionSpec</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="224" column="12" bodyfile="iceberg/table_update.h" bodystart="224" bodyend="224"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a30a898965341a0b7d626f44488d2e15a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::SetDefaultPartitionSpec::spec_id</definition>
+        <argsstring>() const</argsstring>
+        <name>spec_id</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::spec_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="226" column="11" bodyfile="iceberg/table_update.h" bodystart="226" bodyend="226"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1aabc988b23a16183735c5a2d833f7c02c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetDefaultPartitionSpec::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="228" column="8" bodyfile="iceberg/table_update.cc" bodystart="161" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a2d5d15b30c7dc90254ae0b5fbc657f17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetDefaultPartitionSpec::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="230" column="8" bodyfile="iceberg/table_update.cc" bodystart="165" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a75a425c12cba09c02948e5db979ba7da" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::SetDefaultPartitionSpec::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="232" column="8" bodyfile="iceberg/table_update.h" bodystart="232" bodyend="232"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a9c3b6cd926a597a99afa685774af186b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::SetDefaultPartitionSpec::Equals</definition>
+        <argsstring>(const TableUpdate &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1afd0780e6106546f7462e8e66d62db1f2">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The update to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the updates are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="234" column="8" bodyfile="iceberg/table_update.cc" bodystart="169" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a4ad67a2da880662228e9752f2a0934cb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableUpdate &gt; iceberg::table::SetDefaultPartitionSpec::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::SetDefaultPartitionSpec::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1affb4be490ac63849864bf8ed636363aa">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="236" column="19" bodyfile="iceberg/table_update.cc" bodystart="177" bodyend="179"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents setting the default partition spec. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetDefaultPartitionSpec</label>
+        <link refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetDefaultPartitionSpec</label>
+        <link refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="222" column="1" bodyfile="iceberg/table_update.h" bodystart="222" bodyend="240"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1aabc988b23a16183735c5a2d833f7c02c" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a4ad67a2da880662228e9752f2a0934cb" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a9c3b6cd926a597a99afa685774af186b" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a2d5d15b30c7dc90254ae0b5fbc657f17" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a75a425c12cba09c02948e5db979ba7da" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1aaeed4f860a4a4368fe1657a6ab14062d" prot="public" virt="non-virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>SetDefaultPartitionSpec</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a30a898965341a0b7d626f44488d2e15a" prot="public" virt="non-virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>spec_id</name></member>
+      <member refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a58e86f368ccea88142888b218b92fcdb" prot="private" virt="non-virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>spec_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::SetDefaultPartitionSpec</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

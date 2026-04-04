@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1LiteralFromJsonTypedParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::LiteralFromJsonTypedParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1LiteralFromJsonTypedParam_1a18197758deb424b4899bad1a7fb15efd" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::LiteralFromJsonTypedParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::LiteralFromJsonTypedParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="413" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="413" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LiteralFromJsonTypedParam_1a2edc54171127d9083e20c31e7a1b7b1c" prot="public" static="no" mutable="no">
+        <type>nlohmann::json</type>
+        <definition>nlohmann::json iceberg::LiteralFromJsonTypedParam::json</definition>
+        <argsstring></argsstring>
+        <name>json</name>
+        <qualifiedname>iceberg::LiteralFromJsonTypedParam::json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="414" column="18" bodyfile="iceberg/test/expression_json_test.cc" bodystart="414" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LiteralFromJsonTypedParam_1aae14a5fc56bb76b8d46b155e2c8ecda4" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::LiteralFromJsonTypedParam::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::LiteralFromJsonTypedParam::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="415" column="19" bodyfile="iceberg/test/expression_json_test.cc" bodystart="415" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LiteralFromJsonTypedParam_1a4f8b62eb593b4a33a5957a00608a66fa" prot="public" static="no" mutable="no">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::LiteralFromJsonTypedParam::expected_type_id</definition>
+        <argsstring></argsstring>
+        <name>expected_type_id</name>
+        <qualifiedname>iceberg::LiteralFromJsonTypedParam::expected_type_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="416" column="10" bodyfile="iceberg/test/expression_json_test.cc" bodystart="416" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LiteralFromJsonTypedParam_1a444179b5ed78488121b95b5b04bb2600" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::string &gt;</type>
+        <definition>std::optional&lt;std::string&gt; iceberg::LiteralFromJsonTypedParam::expected_str</definition>
+        <argsstring></argsstring>
+        <name>expected_str</name>
+        <qualifiedname>iceberg::LiteralFromJsonTypedParam::expected_str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="417" column="17" bodyfile="iceberg/test/expression_json_test.cc" bodystart="417" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::LiteralFromJsonTypedParam</label>
+        <link refid="structiceberg_1_1LiteralFromJsonTypedParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="412" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="412" bodyend="418"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1LiteralFromJsonTypedParam_1a444179b5ed78488121b95b5b04bb2600" prot="public" virt="non-virtual"><scope>iceberg::LiteralFromJsonTypedParam</scope><name>expected_str</name></member>
+      <member refid="structiceberg_1_1LiteralFromJsonTypedParam_1a4f8b62eb593b4a33a5957a00608a66fa" prot="public" virt="non-virtual"><scope>iceberg::LiteralFromJsonTypedParam</scope><name>expected_type_id</name></member>
+      <member refid="structiceberg_1_1LiteralFromJsonTypedParam_1a2edc54171127d9083e20c31e7a1b7b1c" prot="public" virt="non-virtual"><scope>iceberg::LiteralFromJsonTypedParam</scope><name>json</name></member>
+      <member refid="structiceberg_1_1LiteralFromJsonTypedParam_1a18197758deb424b4899bad1a7fb15efd" prot="public" virt="non-virtual"><scope>iceberg::LiteralFromJsonTypedParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1LiteralFromJsonTypedParam_1aae14a5fc56bb76b8d46b155e2c8ecda4" prot="public" virt="non-virtual"><scope>iceberg::LiteralFromJsonTypedParam</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

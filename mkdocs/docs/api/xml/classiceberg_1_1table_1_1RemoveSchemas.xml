@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1RemoveSchemas" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::RemoveSchemas</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1RemoveSchemas_1adf0092af2af7e96eeb1d6087b8b4c508" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::table::RemoveSchemas::schema_ids_</definition>
+        <argsstring></argsstring>
+        <name>schema_ids_</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::schema_ids_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="283" column="22" bodyfile="iceberg/table_update.h" bodystart="283" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemoveSchemas_1ab9e33f106ac2b266610e7339934bd338" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::RemoveSchemas::RemoveSchemas</definition>
+        <argsstring>(std::unordered_set&lt; int32_t &gt; schema_ids)</argsstring>
+        <name>RemoveSchemas</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::RemoveSchemas</qualifiedname>
+        <param>
+          <type>std::unordered_set&lt; int32_t &gt;</type>
+          <declname>schema_ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="267" column="12" bodyfile="iceberg/table_update.h" bodystart="267" bodyend="268"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemoveSchemas_1a6294c626d931d26a67338ef43a4e710a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::unordered_set&lt; int32_t &gt; &amp;</type>
+        <definition>const std::unordered_set&lt; int32_t &gt; &amp; iceberg::table::RemoveSchemas::schema_ids</definition>
+        <argsstring>() const</argsstring>
+        <name>schema_ids</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::schema_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="270" column="28" bodyfile="iceberg/table_update.h" bodystart="270" bodyend="270"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemoveSchemas_1a47a4ad935a25d865080ebc5fd85748d9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::RemoveSchemas::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="272" column="8" bodyfile="iceberg/table_update.cc" bodystart="206" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemoveSchemas_1af1627aa61b4830323e6af195cc96f847" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::RemoveSchemas::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="274" column="8" bodyfile="iceberg/table_update.cc" bodystart="210" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemoveSchemas_1ad928e47a1a152f3c8c23e4734f644b98" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::RemoveSchemas::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="276" column="8" bodyfile="iceberg/table_update.h" bodystart="276" bodyend="276"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemoveSchemas_1a3b0d38205324c31cf7df1bc0bdf8972d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::RemoveSchemas::Equals</definition>
+        <argsstring>(const TableUpdate &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1afd0780e6106546f7462e8e66d62db1f2">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The update to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the updates are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="278" column="8" bodyfile="iceberg/table_update.cc" bodystart="215" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1RemoveSchemas_1ac091a87037659eb5d9e8c57c61814a99" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableUpdate &gt; iceberg::table::RemoveSchemas::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::RemoveSchemas::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1affb4be490ac63849864bf8ed636363aa">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="280" column="19" bodyfile="iceberg/table_update.cc" bodystart="223" bodyend="225"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents removing schemas from the table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::RemoveSchemas</label>
+        <link refid="classiceberg_1_1table_1_1RemoveSchemas"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::RemoveSchemas</label>
+        <link refid="classiceberg_1_1table_1_1RemoveSchemas"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="265" column="1" bodyfile="iceberg/table_update.h" bodystart="265" bodyend="284"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1a47a4ad935a25d865080ebc5fd85748d9" prot="public" virt="virtual"><scope>iceberg::table::RemoveSchemas</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1ac091a87037659eb5d9e8c57c61814a99" prot="public" virt="virtual"><scope>iceberg::table::RemoveSchemas</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1a3b0d38205324c31cf7df1bc0bdf8972d" prot="public" virt="virtual"><scope>iceberg::table::RemoveSchemas</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1af1627aa61b4830323e6af195cc96f847" prot="public" virt="virtual"><scope>iceberg::table::RemoveSchemas</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1ad928e47a1a152f3c8c23e4734f644b98" prot="public" virt="virtual"><scope>iceberg::table::RemoveSchemas</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::RemoveSchemas</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1ab9e33f106ac2b266610e7339934bd338" prot="public" virt="non-virtual"><scope>iceberg::table::RemoveSchemas</scope><name>RemoveSchemas</name></member>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1a6294c626d931d26a67338ef43a4e710a" prot="public" virt="non-virtual"><scope>iceberg::table::RemoveSchemas</scope><name>schema_ids</name></member>
+      <member refid="classiceberg_1_1table_1_1RemoveSchemas_1adf0092af2af7e96eeb1d6087b8b4c508" prot="private" virt="non-virtual"><scope>iceberg::table::RemoveSchemas</scope><name>schema_ids_</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::RemoveSchemas</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

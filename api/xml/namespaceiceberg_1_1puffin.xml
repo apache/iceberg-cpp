@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1puffin" kind="namespace" language="C++">
+    <compoundname>iceberg::puffin</compoundname>
+    <innerclass refid="structiceberg_1_1puffin_1_1Blob" prot="public">iceberg::puffin::Blob</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1BlobMetadata" prot="public">iceberg::puffin::BlobMetadata</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1FileMetadata" prot="public">iceberg::puffin::FileMetadata</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1StandardBlobTypes" prot="public">iceberg::puffin::StandardBlobTypes</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1StandardPuffinProperties" prot="public">iceberg::puffin::StandardPuffinProperties</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>PuffinCompressionCodec</name>
+        <qualifiedname>iceberg::puffin::PuffinCompressionCodec</qualifiedname>
+        <enumvalue id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cca35c3ace1970663a16e5c65baa5941b13" prot="public">
+          <name>kNone</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cca1e4f1a721e48e902f0f6f792841fc5da" prot="public">
+          <name>kLz4</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06ccaae6c9a6b443fe27d3385c2bafd7744c2" prot="public">
+          <name>kZstd</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Compression codecs supported by Puffin files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="38" column="1" bodyfile="iceberg/puffin/file_metadata.h" bodystart="38" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="file__metadata_8cc_1a02348b916cf40671c30c472479eedca6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>ICEBERG_EXPORT std::string_view iceberg::puffin::CodecName</definition>
+        <argsstring>(PuffinCompressionCodec codec)</argsstring>
+        <name>CodecName</name>
+        <qualifiedname>iceberg::puffin::CodecName</qualifiedname>
+        <param>
+          <type><ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+          <declname>codec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="34" column="18" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="34" bodyend="44" declfile="iceberg/puffin/file_metadata.h" declline="44" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1ad6d5f3117f14f7d586d1372227f739c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref> &gt;</type>
+        <definition>ICEBERG_EXPORT Result&lt; PuffinCompressionCodec &gt; iceberg::puffin::PuffinCompressionCodecFromName</definition>
+        <argsstring>(std::string_view codec_name)</argsstring>
+        <name>PuffinCompressionCodecFromName</name>
+        <qualifiedname>iceberg::puffin::PuffinCompressionCodecFromName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>codec_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="46" column="8" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="46" bodyend="58" declfile="iceberg/puffin/file_metadata.h" declline="46" declcolumn="23"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1a7b37207ae9584b5d74534edc056a9db2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(PuffinCompressionCodec codec)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type><ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+          <declname>codec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="60" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="60" bodyend="62" declfile="iceberg/puffin/file_metadata.h" declline="49" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1a027250093c4cb5d3c719c2961b0a43cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(const Blob &amp;blob)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref> &amp;</type>
+          <declname>blob</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="64" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="64" bodyend="80" declfile="iceberg/puffin/file_metadata.h" declline="87" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1a2f27f97d93f28c1b970a39c8593bf6a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(const BlobMetadata &amp;blob_metadata)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &amp;</type>
+          <declname>blob_metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="82" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="82" bodyend="99" declfile="iceberg/puffin/file_metadata.h" declline="108" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1a3ab7a774bf6f1e79273ccd26a2e82dee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(const FileMetadata &amp;file_metadata)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &amp;</type>
+          <declname>file_metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="101" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="101" bodyend="116" declfile="iceberg/puffin/file_metadata.h" declline="118" declcolumn="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/puffin/file_metadata.cc" line="27" column="1"/>
+  </compounddef>
+</doxygen>

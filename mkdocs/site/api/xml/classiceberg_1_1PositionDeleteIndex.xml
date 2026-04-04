@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PositionDeleteIndex" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PositionDeleteIndex</compoundname>
+    <includes refid="position__delete__index_8h" local="no">position_delete_index.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PositionDeleteIndex_1a97716c2500161702f0281a884344cc12" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1RoaringPositionBitmap" kindref="compound">RoaringPositionBitmap</ref></type>
+        <definition>RoaringPositionBitmap iceberg::PositionDeleteIndex::bitmap_</definition>
+        <argsstring></argsstring>
+        <name>bitmap_</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::bitmap_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="68" column="25" bodyfile="iceberg/deletes/position_delete_index.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1a9a4f384f307b70787b0bdc01fc5a29aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PositionDeleteIndex::PositionDeleteIndex</definition>
+        <argsstring>()=default</argsstring>
+        <name>PositionDeleteIndex</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::PositionDeleteIndex</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="40" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1ab1e0f370b44dd9858b164a756186c96f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PositionDeleteIndex::~PositionDeleteIndex</definition>
+        <argsstring>()=default</argsstring>
+        <name>~PositionDeleteIndex</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::~PositionDeleteIndex</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="41" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1a4078511b75595e77d8d47c8e85a8fcbd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::PositionDeleteIndex::Delete</definition>
+        <argsstring>(int64_t pos)</argsstring>
+        <name>Delete</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::Delete</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Mark a position as deleted. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The 0-based row position to delete </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="45" column="8" bodyfile="iceberg/deletes/position_delete_index.cc" bodystart="24" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1a5ff544576c6284abdc12ab91384a0c01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::PositionDeleteIndex::Delete</definition>
+        <argsstring>(int64_t pos_start, int64_t pos_end)</argsstring>
+        <name>Delete</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::Delete</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>pos_start</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>pos_end</declname>
+        </param>
+        <briefdescription>
+<para>Mark a range of positions as deleted [pos_start, pos_end). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos_start</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Start position (inclusive) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pos_end</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>End position (exclusive) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="50" column="8" bodyfile="iceberg/deletes/position_delete_index.cc" bodystart="26" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1a67bf98430cba048156adff4051099172" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PositionDeleteIndex::IsDeleted</definition>
+        <argsstring>(int64_t pos) const</argsstring>
+        <name>IsDeleted</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::IsDeleted</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Check if a position is deleted. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The 0-based row position to check </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the position is deleted, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="55" column="8" bodyfile="iceberg/deletes/position_delete_index.cc" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1a73ddcaffa882c13194514305a4dfa4fd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PositionDeleteIndex::IsEmpty</definition>
+        <argsstring>() const</argsstring>
+        <name>IsEmpty</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::IsEmpty</qualifiedname>
+        <briefdescription>
+<para>Check if the index is empty (no positions deleted). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="58" column="8" bodyfile="iceberg/deletes/position_delete_index.cc" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1a97cda60087c06b15ff255f5b706b60d3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::PositionDeleteIndex::Cardinality</definition>
+        <argsstring>() const</argsstring>
+        <name>Cardinality</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::Cardinality</qualifiedname>
+        <briefdescription>
+<para>Get the number of deleted positions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="61" column="11" bodyfile="iceberg/deletes/position_delete_index.cc" bodystart="34" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionDeleteIndex_1a5c2251ce5f2303e48ab3e624d806781b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::PositionDeleteIndex::Merge</definition>
+        <argsstring>(const PositionDeleteIndex &amp;other)</argsstring>
+        <name>Merge</name>
+        <qualifiedname>iceberg::PositionDeleteIndex::Merge</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Merge another index into this one. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The index to merge (union operation) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/position_delete_index.h" line="65" column="8" bodyfile="iceberg/deletes/position_delete_index.cc" bodystart="38" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Tracks deleted row positions using a bitmap. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides a domain-specific API for position deletes in Iceberg MOR (merge-on-read) tables. Positions are 0-based row indices within a data file. </para>
+    </detaileddescription>
+    <location file="iceberg/deletes/position_delete_index.h" line="38" column="1" bodyfile="iceberg/deletes/position_delete_index.h" bodystart="38" bodyend="69"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a97716c2500161702f0281a884344cc12" prot="private" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>bitmap_</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a97cda60087c06b15ff255f5b706b60d3" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>Cardinality</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a4078511b75595e77d8d47c8e85a8fcbd" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>Delete</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a5ff544576c6284abdc12ab91384a0c01" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>Delete</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a67bf98430cba048156adff4051099172" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>IsDeleted</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a73ddcaffa882c13194514305a4dfa4fd" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>IsEmpty</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a5c2251ce5f2303e48ab3e624d806781b" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>Merge</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1a9a4f384f307b70787b0bdc01fc5a29aa" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>PositionDeleteIndex</name></member>
+      <member refid="classiceberg_1_1PositionDeleteIndex_1ab1e0f370b44dd9858b164a756186c96f" prot="public" virt="non-virtual"><scope>iceberg::PositionDeleteIndex</scope><name>~PositionDeleteIndex</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

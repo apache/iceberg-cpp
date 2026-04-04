@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PartitionSummary" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PartitionSummary</compoundname>
+    <includes refid="partition__summary__internal_8h" local="no">partition_summary_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PartitionSummary_1a005886901fe2906ab2301b19abb73421" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classiceberg_1_1PartitionFieldStats" kindref="compound">PartitionFieldStats</ref> &gt;</type>
+        <definition>std::vector&lt;PartitionFieldStats&gt; iceberg::PartitionSummary::field_stats_</definition>
+        <argsstring></argsstring>
+        <name>field_stats_</name>
+        <qualifiedname>iceberg::PartitionSummary::field_stats_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="67" column="15" bodyfile="iceberg/partition_summary_internal.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PartitionSummary_1a1ce62dd2a7d5d6b294481b8a23a3f875" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionSummary::PartitionSummary</definition>
+        <argsstring>(std::vector&lt; PartitionFieldStats &gt; field_stats)</argsstring>
+        <name>PartitionSummary</name>
+        <qualifiedname>iceberg::PartitionSummary::PartitionSummary</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="classiceberg_1_1PartitionFieldStats" kindref="compound">PartitionFieldStats</ref> &gt;</type>
+          <declname>field_stats</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1PartitionSummary" kindref="compound">PartitionSummary</ref> with the given field stats. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="54" column="12" bodyfile="iceberg/partition_summary_internal.h" bodystart="54" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionSummary_1a9e162134b57e116e8c144115d4f27735" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionSummary::PartitionSummary</definition>
+        <argsstring>(const StructType &amp;partition_type)</argsstring>
+        <name>PartitionSummary</name>
+        <qualifiedname>iceberg::PartitionSummary::PartitionSummary</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <declname>partition_type</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1PartitionSummary" kindref="compound">PartitionSummary</ref> for the given partition type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="58" column="12" bodyfile="iceberg/partition_summary.cc" bodystart="71" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionSummary_1a5fa96fa767643a1c2930ba4894b2492d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PartitionSummary::Update</definition>
+        <argsstring>(const PartitionValues &amp;partition_values)</argsstring>
+        <name>Update</name>
+        <qualifiedname>iceberg::PartitionSummary::Update</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition_values</declname>
+        </param>
+        <briefdescription>
+<para>Update the partition summary with partition values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="61" column="10" bodyfile="iceberg/partition_summary.cc" bodystart="78" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionSummary_1a248912ab6ac61359bb0912216b6193e8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; PartitionFieldSummary &gt; &gt; iceberg::PartitionSummary::Summaries</definition>
+        <argsstring>() const</argsstring>
+        <name>Summaries</name>
+        <qualifiedname>iceberg::PartitionSummary::Summaries</qualifiedname>
+        <briefdescription>
+<para>Get the list of partition field summaries. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="64" column="10" bodyfile="iceberg/partition_summary.cc" bodystart="94" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Maintains statistics for each partition field and produces the partition field summaries. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/partition_summary_internal.h" line="51" column="1" bodyfile="iceberg/partition_summary_internal.h" bodystart="51" bodyend="68"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PartitionSummary_1a005886901fe2906ab2301b19abb73421" prot="private" virt="non-virtual"><scope>iceberg::PartitionSummary</scope><name>field_stats_</name></member>
+      <member refid="classiceberg_1_1PartitionSummary_1a1ce62dd2a7d5d6b294481b8a23a3f875" prot="public" virt="non-virtual"><scope>iceberg::PartitionSummary</scope><name>PartitionSummary</name></member>
+      <member refid="classiceberg_1_1PartitionSummary_1a9e162134b57e116e8c144115d4f27735" prot="public" virt="non-virtual"><scope>iceberg::PartitionSummary</scope><name>PartitionSummary</name></member>
+      <member refid="classiceberg_1_1PartitionSummary_1a248912ab6ac61359bb0912216b6193e8" prot="public" virt="non-virtual"><scope>iceberg::PartitionSummary</scope><name>Summaries</name></member>
+      <member refid="classiceberg_1_1PartitionSummary_1a5fa96fa767643a1c2930ba4894b2492d" prot="public" virt="non-virtual"><scope>iceberg::PartitionSummary</scope><name>Update</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
