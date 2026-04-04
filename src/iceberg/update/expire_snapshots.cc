@@ -49,7 +49,8 @@ Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
     const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
     const TableMetadata& metadata) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-  ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata.PartitionSpecById(manifest.partition_spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          metadata.PartitionSpecById(manifest.partition_spec_id));
   return ManifestReader::Make(manifest, file_io, std::move(schema), std::move(spec));
 }
 
@@ -98,8 +99,7 @@ class FileCleanupStrategy {
   /// if the same file path is shared across snapshots, it is only deleted when
   /// no retained snapshot references it.
   std::unordered_set<std::string> ExpiredStatisticsFilePaths(
-      const TableMetadata& metadata,
-      const std::unordered_set<int64_t>& expired_ids) {
+      const TableMetadata& metadata, const std::unordered_set<int64_t>& expired_ids) {
     std::unordered_set<std::string> retained_paths;
     for (const auto& stat : metadata.statistics) {
       if (stat && !expired_ids.contains(stat->snapshot_id)) {
@@ -568,9 +568,8 @@ Status ExpireSnapshots::Finalize(std::optional<Error> commit_error) {
     return {};
   }
 
-  std::unordered_set<int64_t> expired_ids(
-      apply_result_->snapshot_ids_to_remove.begin(),
-      apply_result_->snapshot_ids_to_remove.end());
+  std::unordered_set<int64_t> expired_ids(apply_result_->snapshot_ids_to_remove.begin(),
+                                          apply_result_->snapshot_ids_to_remove.end());
   apply_result_.reset();
 
   // File cleanup is best-effort: log and continue on individual file deletion failures
