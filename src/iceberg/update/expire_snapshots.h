@@ -28,8 +28,6 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest/manifest_list.h"
-#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
@@ -173,48 +171,6 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   Result<std::unordered_set<int64_t>> UnreferencedSnapshotIdsToRetain(
       const SnapshotToRef& refs) const;
 
-  /// \brief Clean up files no longer referenced after snapshot expiration.
-  ///
-  /// Implements the "reachable file cleanup" strategy from Java's ReachableFileCleanup:
-  /// 1. Collect manifests from expired and retained snapshots
-  /// 2. Prune manifests still referenced by retained snapshots
-  /// 3. Find data files only in manifests being deleted (if kAll)
-  /// 4. Remove data files still reachable from retained manifests
-  /// 5. Delete orphaned manifests, manifest lists, and statistics files
-  ///
-  /// All deletions are best-effort: failures are suppressed to avoid blocking
-  /// metadata updates (matching Java's suppressFailureWhenFinished behavior).
-  ///
-  /// Branch/tag awareness: retained_snapshot_ids includes all snapshots referenced
-  /// by any branch or tag, as computed by Apply(). This prevents deleting files
-  /// that are still reachable from any ref.
-  ///
-  /// TODO(shangxinli): Add multi-threaded file deletion support.
-  /// TODO(shangxinli): Add IncrementalFileCleanup strategy for linear ancestry.
-  Status CleanExpiredFiles(const std::vector<int64_t>& expired_snapshot_ids);
-
-  /// \brief Read manifest paths from a single snapshot.
-  /// Best-effort: returns OK even if the snapshot or its manifests can't be read.
-  Status ReadManifestsForSnapshot(int64_t snapshot_id,
-                                  std::unordered_set<std::string>& manifest_paths);
-
-  /// \brief Find data files to delete by reading live entries from manifests being
-  /// deleted, then subtracting files still reachable from retained manifests.
-  /// If a retained manifest cannot be read, returns an empty set to prevent
-  /// accidental data loss.
-  Result<std::unordered_set<std::string>> FindDataFilesToDelete(
-      const std::unordered_set<std::string>& manifests_to_delete,
-      const std::unordered_set<std::string>& retained_manifests);
-
-  /// \brief Create a ManifestReader for the given ManifestFile.
-  Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
-      const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io);
-
-  /// \brief Delete a file, suppressing errors (best-effort).
-  /// Uses the custom delete function if set, otherwise FileIO::DeleteFile.
-  void DeleteFilePath(const std::string& path);
-
- private:
   const TimePointMs current_time_ms_;
   const int64_t default_max_ref_age_ms_;
   int32_t default_min_num_snapshots_;
@@ -225,13 +181,8 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   bool clean_expired_metadata_{false};
   bool specified_snapshot_id_{false};
 
-  /// Cached result from Apply(), used during Finalize() for file cleanup
+  /// Cached result from Apply(), consumed by Finalize() and cleared after use.
   std::optional<ApplyResult> apply_result_;
-
-  /// Cache of manifest path -> ManifestFile, built during ReadManifestsForSnapshot
-  /// to avoid O(M*S) repeated I/O from re-reading manifest lists in
-  /// FindDataFilesToDelete.
-  std::unordered_map<std::string, ManifestFile> manifest_cache_;
 };
 
 }  // namespace iceberg
