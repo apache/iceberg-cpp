@@ -135,4 +135,85 @@ Status OAuthTokenResponse::Validate() const {
   return {};
 }
 
+Status PlanTableScanRequest::Validate() const {
+  if (snapshot_id.has_value()) {
+    if (start_snapshot_id.has_value() || end_snapshot_id.has_value()) {
+      return ValidationFailed(
+          "Invalid scan: cannot provide both snapshotId and startSnapshotId/endSnapshotId");
+    }
+  }
+  if (start_snapshot_id.has_value() || end_snapshot_id.has_value()) {
+    if (!start_snapshot_id.has_value() || !end_snapshot_id.has_value()) {
+      return ValidationFailed(
+          "Invalid incremental scan: startSnapshotId and endSnapshotId is required");
+    }
+  }
+  if (min_rows_required.has_value() && min_rows_required.value() < 0) {
+    return ValidationFailed("Invalid scan: minRowsRequested is negative");
+  }
+  return {};
+}
+
+Status PlanTableScanResponse::Validate() const {
+  if (plan_status.empty()) {
+    return ValidationFailed("Invalid response: plan status must be defined");
+  }
+  if (plan_status == "submitted" && plan_id.empty()) {
+    return ValidationFailed(
+        "Invalid response: plan id should be defined when status is 'submitted'");
+  }
+  if (plan_status == "cancelled") {
+    return ValidationFailed(
+        "Invalid response: 'cancelled' is not a valid status for planTableScan");
+  }
+  if (plan_status != "completed" && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+    return ValidationFailed(
+        "Invalid response: tasks can only be defined when status is 'completed'");
+  }
+  if (!plan_id.empty() && plan_status != "submitted" && plan_status != "completed") {
+    return ValidationFailed(
+        "Invalid response: plan id can only be defined when status is 'submitted' or 'completed'");
+  }
+  if (file_scan_tasks.empty() && !delete_files.empty()) {
+    return ValidationFailed(
+        "Invalid response: deleteFiles should only be returned with fileScanTasks that reference them");
+  }
+  return {};
+}
+
+Status FetchPlanningResultResponse::Validate() const {
+  if (plan_status.ToString() == "unknown") {
+    return ValidationFailed("Invalid status: null");
+  }
+  if (plan_status.ToString() != "completed" &&
+      (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+    return ValidationFailed(
+        "Invalid response: tasks can only be returned in a 'completed' status");
+  }
+  if (file_scan_tasks.empty() && !delete_files.empty()) {
+    return ValidationFailed(
+        "Invalid response: deleteFiles should only be returned with fileScanTasks that reference them");
+  }
+  return {};
+}
+
+Status FetchScanTasksRequest::Validate() const {
+  if (planTask.empty()) {
+    return ValidationFailed("Invalid planTask: null");
+  }
+  return {};
+}
+
+Status FetchScanTasksResponse::Validate() const {
+  if (file_scan_tasks.empty() && !delete_files.empty()) {
+    return ValidationFailed(
+        "Invalid response: deleteFiles should only be returned with fileScanTasks that reference them");
+  }
+  if (plan_tasks.empty() && file_scan_tasks.empty()) {
+    return ValidationFailed(
+        "Invalid response: planTasks and fileScanTask cannot both be null");
+  }
+  return {};
+}
+
 }  // namespace iceberg::rest
