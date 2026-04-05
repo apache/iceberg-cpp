@@ -298,12 +298,13 @@ struct ICEBERG_REST_EXPORT OAuthTokenResponse {
   bool operator==(const OAuthTokenResponse&) const = default;
 };
 
+/// \brief Request to initiate a server-side scan planning operation.
 struct ICEBERG_REST_EXPORT PlanTableScanRequest {
   std::optional<int64_t> snapshot_id;
   std::vector<std::string> select;
   std::shared_ptr<Expression> filter;
-  bool case_sensitive;
-  bool use_snapshot_schema;
+  bool case_sensitive = true;
+  bool use_snapshot_schema = false;
   std::optional<int64_t> start_snapshot_id;
   std::optional<int64_t> end_snapshot_id;
   std::vector<std::string> statsFields;
@@ -314,6 +315,8 @@ struct ICEBERG_REST_EXPORT PlanTableScanRequest {
   bool operator==(const PlanTableScanRequest&) const;
 };
 
+/// \brief Base response containing scan tasks and delete files returned by scan plan
+/// endpoints.
 struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
   std::vector<std::string> plan_tasks;
   std::vector<FileScanTask> file_scan_tasks;
@@ -325,6 +328,8 @@ struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
    bool operator==(const BaseScanTaskResponse&) const;
 };
 
+/// \brief Response from initiating a scan planning operation, including plan status and
+/// initial scan tasks.
 struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
   std::string plan_status;
   std::string plan_id;
@@ -335,6 +340,8 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
   bool operator==(const PlanTableScanResponse&) const;
 };
 
+/// \brief Response from polling an asynchronous scan plan, including current status and
+/// available scan tasks.
 struct ICEBERG_REST_EXPORT FetchPlanningResultResponse : BaseScanTaskResponse {
   PlanStatus plan_status;
   // TODO: Add credentials.
@@ -344,6 +351,7 @@ struct ICEBERG_REST_EXPORT FetchPlanningResultResponse : BaseScanTaskResponse {
   bool operator==(const FetchPlanningResultResponse&) const;
 };
 
+/// \brief Request to fetch the scan tasks for a given plan task token.
 struct ICEBERG_REST_EXPORT FetchScanTasksRequest {
   std::string planTask;
 
@@ -352,6 +360,7 @@ struct ICEBERG_REST_EXPORT FetchScanTasksRequest {
   bool operator==(const FetchScanTasksRequest&) const;
 };
 
+/// \brief Response containing the file scan tasks for a given plan task token.
 struct ICEBERG_REST_EXPORT FetchScanTasksResponse : BaseScanTaskResponse {
   Status Validate() const;
 

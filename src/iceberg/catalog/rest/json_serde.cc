@@ -563,22 +563,13 @@ Status BaseScanTaskResponseFromJson(
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
     const Schema& schema) {
   // 1. plan_tasks
-  ICEBERG_ASSIGN_OR_RAISE(auto plan_tasks,
-                          GetJsonValue<nlohmann::json>(json, kPlanTasks));
-  if (!plan_tasks.is_array()) {
-    return JsonParseError("Cannot parse plan tasks from non-array: {}",
-                          SafeDumpJson(plan_tasks));
-  }
   ICEBERG_ASSIGN_OR_RAISE(response->plan_tasks,
-                          GetTypedJsonValue<std::vector<std::string>>(plan_tasks));
+                          GetJsonValueOrDefault<std::vector<std::string>>(json, kPlanTasks));
 
   // 2. delete_files
   ICEBERG_ASSIGN_OR_RAISE(auto delete_files_json,
-                          GetJsonValue<nlohmann::json>(json, kDeleteFiles));
-  if (!delete_files_json.is_array()) {
-    return JsonParseError("Cannot parse delete files from non-array: {}",
-                          SafeDumpJson(delete_files_json));
-  }
+                          GetJsonValueOrDefault<nlohmann::json>(json, kDeleteFiles,
+                                                                nlohmann::json::array()));
   for (const auto& entry_json : delete_files_json) {
     ICEBERG_ASSIGN_OR_RAISE(auto delete_file,
                             DataFileFromJson(entry_json, partition_specs_by_id, schema));
@@ -587,7 +578,8 @@ Status BaseScanTaskResponseFromJson(
 
   // 3. file_scan_tasks
   ICEBERG_ASSIGN_OR_RAISE(auto file_scan_tasks_json,
-                          GetJsonValue<nlohmann::json>(json, kFileScanTasks));
+                          GetJsonValueOrDefault<nlohmann::json>(json, kFileScanTasks,
+                                                                nlohmann::json::array()));
   ICEBERG_ASSIGN_OR_RAISE(
       response->file_scan_tasks,
       FileScanTasksFromJson(file_scan_tasks_json, response->delete_files,
@@ -602,7 +594,8 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
   PlanTableScanResponse response;
   ICEBERG_ASSIGN_OR_RAISE(response.plan_status,
                           GetJsonValue<std::string>(json, kPlanStatus));
-  ICEBERG_ASSIGN_OR_RAISE(response.plan_id, GetJsonValue<std::string>(json, kPlanId));
+  ICEBERG_ASSIGN_OR_RAISE(response.plan_id,
+                          GetJsonValueOrDefault<std::string>(json, kPlanId));
   ICEBERG_RETURN_UNEXPECTED(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
