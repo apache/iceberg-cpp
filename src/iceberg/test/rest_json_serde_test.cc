@@ -26,6 +26,7 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/schema.h"
 #include "iceberg/result.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
@@ -1379,5 +1380,138 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<CommitTableResponseInvalidParam>& info) {
       return info.param.test_name;
     });
+
+// Helper: empty schema and specs for scan response tests that don't need partition parsing.
+static Schema EmptySchema() { return Schema({}, 0); }
+static std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> EmptySpecs() { return {}; }
+
+// --- PlanTableScanResponse ---
+
+TEST(PlanTableScanResponseFromJsonTest, SubmittedStatusMissingOptionalFields) {
+  // "submitted" response: only status and plan-id, no tasks
+  auto json = nlohmann::json::parse(
+      R"({"status":"submitted","plan-id":"abc-123"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, "submitted");
+  EXPECT_EQ(result->plan_id, "abc-123");
+  EXPECT_TRUE(result->plan_tasks.empty());
+  EXPECT_TRUE(result->file_scan_tasks.empty());
+  EXPECT_TRUE(result->delete_files.empty());
+}
+
+TEST(PlanTableScanResponseFromJsonTest, CompletedStatusWithPlanTasks) {
+  // "completed" response with plan-tasks but no file-scan-tasks
+  auto json = nlohmann::json::parse(
+      R"({"status":"completed","plan-id":"abc-123","plan-tasks":["task-1","task-2"],"delete-files":[],"file-scan-tasks":[]})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, "completed");
+  EXPECT_EQ(result->plan_id, "abc-123");
+  ASSERT_EQ(result->plan_tasks.size(), 2);
+  EXPECT_EQ(result->plan_tasks[0], "task-1");
+  EXPECT_EQ(result->plan_tasks[1], "task-2");
+}
+
+TEST(PlanTableScanResponseFromJsonTest, MissingRequiredStatus) {
+  auto json = nlohmann::json::parse(R"({"plan-id":"abc-123"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'status'"));
+}
+
+TEST(PlanTableScanResponseFromJsonTest, MissingPlanIdDefaultsToEmptyForFailedStatus) {
+  // plan-id is optional for non-submitted/completed statuses
+  auto json = nlohmann::json::parse(R"({"status":"failed"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_TRUE(result->plan_id.empty());
+}
+
+// --- FetchPlanningResultResponse ---
+
+TEST(FetchPlanningResultResponseFromJsonTest, SubmittedStatusNoTasks) {
+  auto json = nlohmann::json::parse(R"({"status":"submitted"})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status.ToString(), "submitted");
+  EXPECT_TRUE(result->plan_tasks.empty());
+  EXPECT_TRUE(result->file_scan_tasks.empty());
+  EXPECT_TRUE(result->delete_files.empty());
+}
+
+TEST(FetchPlanningResultResponseFromJsonTest, CompletedStatusWithPlanTasks) {
+  auto json = nlohmann::json::parse(
+      R"({"status":"completed","plan-tasks":["task-1"],"delete-files":[],"file-scan-tasks":[]})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status.ToString(), "completed");
+  ASSERT_EQ(result->plan_tasks.size(), 1);
+  EXPECT_EQ(result->plan_tasks[0], "task-1");
+}
+
+TEST(FetchPlanningResultResponseFromJsonTest, MissingRequiredStatus) {
+  auto json = nlohmann::json::parse(R"({})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'status'"));
+}
+
+// --- FetchScanTasksResponse ---
+
+TEST(FetchScanTasksResponseFromJsonTest, WithFileScanTasks) {
+  // One file scan task with a data file and one delete file referenced by index.
+  auto json = nlohmann::json::parse(R"({
+    "plan-tasks": [],
+    "delete-files": [
+      {
+        "content": "POSITION_DELETES",
+        "file-path": "s3://bucket/deletes/delete.parquet",
+        "file-format": "PARQUET",
+        "file-size-in-bytes": 512,
+        "record-count": 5
+      }
+    ],
+    "file-scan-tasks": [
+      {
+        "data-file": {
+          "content": "DATA",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "file-size-in-bytes": 12345,
+          "record-count": 100
+        },
+        "delete-file-references": [0]
+      }
+    ]
+  })");
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_TRUE(result->plan_tasks.empty());
+  ASSERT_EQ(result->delete_files.size(), 1);
+  ASSERT_EQ(result->file_scan_tasks.size(), 1);
+  EXPECT_EQ(result->file_scan_tasks[0].data_file()->file_path,
+            "s3://bucket/data/file.parquet");
+  ASSERT_EQ(result->file_scan_tasks[0].delete_files().size(), 1);
+  EXPECT_EQ(result->file_scan_tasks[0].delete_files()[0]->file_path,
+            "s3://bucket/deletes/delete.parquet");
+}
+
+TEST(FetchScanTasksResponseFromJsonTest, WithPlanTasksOnly) {
+  auto json = nlohmann::json::parse(
+      R"({"plan-tasks":["task-1","task-2"],"delete-files":[],"file-scan-tasks":[]})");
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result->plan_tasks.size(), 2);
+  EXPECT_EQ(result->plan_tasks[0], "task-1");
+  EXPECT_TRUE(result->file_scan_tasks.empty());
+}
+
+TEST(FetchScanTasksResponseFromJsonTest, AllFieldsMissing) {
+  // Both plan-tasks and file-scan-tasks absent → Validate() should fail
+  auto json = nlohmann::json::parse(R"({})");
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(ErrorKind::kValidationFailed));
+}
 
 }  // namespace iceberg::rest

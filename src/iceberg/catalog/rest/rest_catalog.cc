@@ -512,15 +512,17 @@ Result<PlanTableScanResponse> RestCatalog::PlanTableScan(
   request.select = context.selected_columns;
   request.filter = context.filter;
   request.case_sensitive = context.case_sensitive;
-  request.use_snapshot_schema = false;  // TODO
+  request.use_snapshot_schema = false;
   if (context.from_snapshot_id.has_value() && context.to_snapshot_id.has_value()) {
     request.start_snapshot_id = context.from_snapshot_id.value();
     request.end_snapshot_id = context.to_snapshot_id.value();
+    request.use_snapshot_schema = true;
   }
   if (context.min_rows_requested.has_value()) {
     request.min_rows_required = context.min_rows_requested.value();
   }
 
+  ICEBERG_RETURN_UNEXPECTED(request.Validate());
   ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
   ICEBERG_ASSIGN_OR_RAISE(
@@ -566,6 +568,7 @@ Result<FetchScanTasksResponse> RestCatalog::FetchScanTasks(
   ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, table.specs());
 
   FetchScanTasksRequest request{.planTask = plan_task};
+  ICEBERG_RETURN_UNEXPECTED(request.Validate());
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
