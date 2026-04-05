@@ -28,9 +28,12 @@
 
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/expression/expression.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/macros.h"
 
@@ -293,6 +296,66 @@ struct ICEBERG_REST_EXPORT OAuthTokenResponse {
   Status Validate() const;
 
   bool operator==(const OAuthTokenResponse&) const = default;
+};
+
+struct ICEBERG_REST_EXPORT PlanTableScanRequest {
+  std::optional<int64_t> snapshot_id;
+  std::vector<std::string> select;
+  std::shared_ptr<Expression> filter;
+  bool case_sensitive;
+  bool use_snapshot_schema;
+  std::optional<int64_t> start_snapshot_id;
+  std::optional<int64_t> end_snapshot_id;
+  std::vector<std::string> statsFields;
+  std::optional<int64_t> min_rows_required;
+
+  Status Validate() const;
+
+  bool operator==(const PlanTableScanRequest&) const;
+};
+
+struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
+  std::vector<std::string> plan_tasks;
+  std::vector<FileScanTask> file_scan_tasks;
+  std::vector<DataFile> delete_files; 
+  // std::unordered_map<std::string, PartitionSpec> specsById;
+
+  Status Validate() const { return {}; };
+
+   bool operator==(const BaseScanTaskResponse&) const;
+};
+
+struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
+  std::string plan_status;
+  std::string plan_id;
+  // TODO: Add credentials.
+
+  Status Validate() const;
+
+  bool operator==(const PlanTableScanResponse&) const;
+};
+
+struct ICEBERG_REST_EXPORT FetchPlanningResultResponse : BaseScanTaskResponse {
+  PlanStatus plan_status;
+  // TODO: Add credentials.
+
+  Status Validate() const;
+
+  bool operator==(const FetchPlanningResultResponse&) const;
+};
+
+struct ICEBERG_REST_EXPORT FetchScanTasksRequest {
+  std::string planTask;
+
+  Status Validate() const;
+
+  bool operator==(const FetchScanTasksRequest&) const;
+};
+
+struct ICEBERG_REST_EXPORT FetchScanTasksResponse : BaseScanTaskResponse {
+  Status Validate() const;
+
+  bool operator==(const FetchScanTasksResponse&) const;
 };
 
 }  // namespace iceberg::rest

@@ -40,6 +40,7 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
@@ -446,6 +447,95 @@ TEST_F(RestCatalogIntegrationTest, StageCreateTable) {
   ICEBERG_UNWRAP_OR_FAIL(auto after, catalog->TableExists(table_id));
   EXPECT_TRUE(after);
   EXPECT_EQ(committed->metadata()->properties.configs().at("key1"), "value1");
+}
+
+// -- Scan plan operations --
+
+TEST_F(RestCatalogIntegrationTest, PlanTableScan) {
+  Namespace ns{.levels = {"test_plan_table_scan"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "scan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto response, catalog->PlanTableScan(*table, context));
+  // Empty table: no file scan tasks returned
+  EXPECT_TRUE(response.file_scan_tasks.empty());
+}
+
+TEST_F(RestCatalogIntegrationTest, PlanTableScanWithContext) {
+  Namespace ns{.levels = {"test_plan_scan_context"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "context_scan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  context.selected_columns = {"id", "data"};
+  context.case_sensitive = true;
+  ICEBERG_UNWRAP_OR_FAIL(auto response, catalog->PlanTableScan(*table, context));
+  EXPECT_TRUE(response.file_scan_tasks.empty());
+}
+
+TEST_F(RestCatalogIntegrationTest, FetchPlanningResult) {
+  Namespace ns{.levels = {"test_fetch_planning_result"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "fetch_plan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto plan_response, catalog->PlanTableScan(*table, context));
+
+  if (!plan_response.plan_id.empty()) {
+    // Async plan: fetch the result using the returned plan_id
+    ICEBERG_UNWRAP_OR_FAIL(auto fetch_response,
+                           catalog->FetchPlanningResult(*table, plan_response.plan_id));
+    EXPECT_TRUE(fetch_response.file_scan_tasks.empty());
+  } else {
+    // Synchronous plan: file_scan_tasks already returned; verify nonexistent plan_id errors
+    EXPECT_FALSE(catalog->FetchPlanningResult(*table, "nonexistent-plan-id").has_value());
+  }
+}
+
+TEST_F(RestCatalogIntegrationTest, CancelPlanning) {
+  Namespace ns{.levels = {"test_cancel_planning"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "cancel_plan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto plan_response, catalog->PlanTableScan(*table, context));
+
+  if (!plan_response.plan_id.empty()) {
+    // Async plan: cancel it
+    ASSERT_THAT(catalog->CancelPlanning(*table, plan_response.plan_id), IsOk());
+  } else {
+    // Synchronous plan: verify cancelling a nonexistent plan_id returns an error
+    EXPECT_FALSE(catalog->CancelPlanning(*table, "nonexistent-plan-id").has_value());
+  }
+}
+
+TEST_F(RestCatalogIntegrationTest, FetchScanTasks) {
+  Namespace ns{.levels = {"test_fetch_scan_tasks"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "fetch_tasks_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto plan_response, catalog->PlanTableScan(*table, context));
+
+  if (!plan_response.plan_tasks.empty()) {
+    // Use the first plan task token to fetch scan tasks
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto tasks_response,
+        catalog->FetchScanTasks(*table, plan_response.plan_tasks[0]));
+    EXPECT_TRUE(tasks_response.file_scan_tasks.empty());
+  }
+  // If synchronous plan (no plan_tasks), file_scan_tasks are already in plan_response
 }
 
 // -- Snapshot loading mode --

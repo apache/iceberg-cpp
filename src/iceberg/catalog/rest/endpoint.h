@@ -128,6 +128,23 @@ class ICEBERG_REST_EXPORT Endpoint {
     return {HttpMethod::kPost, "/v1/{prefix}/transactions/commit"};
   }
 
+  // Scan planning endpoints
+  static Endpoint PlanTableScan() {
+    return {HttpMethod::kPost, "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan"};
+  }
+
+  static Endpoint FetchPlanningResult() {
+    return {HttpMethod::kGet, "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}"};
+  }
+
+  static Endpoint CancelPlanning() {
+    return {HttpMethod::kDelete, "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}"};
+  }
+
+  static Endpoint FetchScanTasks() {
+    return {HttpMethod::kPost, "/v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks"};
+  }
+
  private:
   Endpoint(HttpMethod method, std::string_view path) : method_(method), path_(path) {}
 
