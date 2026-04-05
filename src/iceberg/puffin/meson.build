@@ -15,4 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-install_headers(['file_metadata.h'], subdir: 'iceberg/puffin')
+install_headers(['file_metadata.h', 'puffin_format.h'], subdir: 'iceberg/puffin')

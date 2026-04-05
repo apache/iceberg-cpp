@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -107,6 +108,10 @@ struct ICEBERG_EXPORT BlobMetadata {
 
 ICEBERG_EXPORT std::string ToString(const BlobMetadata& blob_metadata);
 
+inline std::ostream& operator<<(std::ostream& os, const BlobMetadata& b) {
+  return os << ToString(b);
+}
+
 /// \brief Metadata about a Puffin file.
 struct ICEBERG_EXPORT FileMetadata {
   std::vector<BlobMetadata> blobs;
@@ -116,5 +121,9 @@ struct ICEBERG_EXPORT FileMetadata {
 };
 
 ICEBERG_EXPORT std::string ToString(const FileMetadata& file_metadata);
+
+inline std::ostream& operator<<(std::ostream& os, const FileMetadata& m) {
+  return os << ToString(m);
+}
 
 }  // namespace iceberg::puffin
