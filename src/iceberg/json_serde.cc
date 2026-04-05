@@ -253,35 +253,6 @@ constexpr std::string_view kReferencedDataFile = "referenced-data-file";
 constexpr std::string_view kContentOffset = "content-offset";
 constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
 
-// Decode a base64-encoded string to raw bytes.
-std::vector<uint8_t> Base64Decode(std::string_view encoded) {
-  static const std::array<int, 256> kDecodeTable = [] {
-    std::array<int, 256> table;
-    table.fill(-1);
-    for (int i = 0; i < 26; i++) table[static_cast<unsigned char>('A') + i] = i;
-    for (int i = 0; i < 26; i++) table[static_cast<unsigned char>('a') + i] = 26 + i;
-    for (int i = 0; i < 10; i++) table[static_cast<unsigned char>('0') + i] = 52 + i;
-    table[static_cast<unsigned char>('+')] = 62;
-    table[static_cast<unsigned char>('/')] = 63;
-    return table;
-  }();
-
-  std::vector<uint8_t> decoded;
-  decoded.reserve(encoded.size() * 3 / 4);
-  int val = 0, bits = -8;
-  for (unsigned char c : encoded) {
-    if (c == '=') break;
-    const int d = kDecodeTable[c];
-    if (d == -1) continue;
-    val = (val << 6) + d;
-    bits += 6;
-    if (bits >= 0) {
-      decoded.push_back(static_cast<uint8_t>((val >> bits) & 0xFF));
-      bits -= 8;
-    }
-  }
-  return decoded;
-}
 
 }  // namespace
 
@@ -1866,21 +1837,20 @@ Result<DataFile> DataFileFromJson(
   ICEBERG_RETURN_UNEXPECTED(parse_int_map(kNullValueCounts, df.null_value_counts));
   ICEBERG_RETURN_UNEXPECTED(parse_int_map(kNanValueCounts, df.nan_value_counts));
 
-  // Parse BinaryMap: {"keys": [int, ...], "values": [base64string, ...]}
+  // Parse BinaryMap: {"keys": [int, ...], "values": [base64 binary, ...]}
   auto parse_binary_map = [&](std::string_view key,
                               std::map<int32_t, std::vector<uint8_t>>& target) -> Status {
     if (!json.contains(key) || json.at(key).is_null()) return {};
     ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
     ICEBERG_ASSIGN_OR_RAISE(auto keys,
-                            GetTypedJsonValue<std::vector<int32_t>>(map_json.at("keys")));
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto values,
-        GetTypedJsonValue<std::vector<std::string>>(map_json.at("values")));
+                            GetJsonValue<std::vector<int32_t>>(map_json, "keys"));
+    ICEBERG_ASSIGN_OR_RAISE(auto values,
+                            GetJsonValue<std::vector<std::vector<uint8_t>>>(map_json, "values"));
     if (keys.size() != values.size()) {
       return JsonParseError("'{}' binary map keys and values have different lengths", key);
     }
     for (size_t i = 0; i < keys.size(); ++i) {
-      target[keys[i]] = Base64Decode(values[i]);
+      target[keys[i]] = values[i];
     }
     return {};
   };
@@ -1889,9 +1859,8 @@ Result<DataFile> DataFileFromJson(
   ICEBERG_RETURN_UNEXPECTED(parse_binary_map(kUpperBounds, df.upper_bounds));
 
   if (json.contains(kKeyMetadata) && !json.at(kKeyMetadata).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto key_meta_str,
-                            GetJsonValue<std::string>(json, kKeyMetadata));
-    df.key_metadata = Base64Decode(key_meta_str);
+    ICEBERG_ASSIGN_OR_RAISE(df.key_metadata,
+                            GetJsonValue<std::vector<uint8_t>>(json, kKeyMetadata));
   }
   if (json.contains(kSplitOffsets) && !json.at(kSplitOffsets).is_null()) {
     ICEBERG_ASSIGN_OR_RAISE(df.split_offsets,

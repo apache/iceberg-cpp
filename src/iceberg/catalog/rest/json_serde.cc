@@ -605,6 +605,7 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
   ICEBERG_ASSIGN_OR_RAISE(response.plan_id, GetJsonValue<std::string>(json, kPlanId));
   ICEBERG_RETURN_UNEXPECTED(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
 
@@ -618,6 +619,7 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
   response.plan_status = PlanStatus(PlanStatus::FromString(status_str));
   ICEBERG_RETURN_UNEXPECTED(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
 
@@ -628,6 +630,7 @@ Result<FetchScanTasksResponse> FetchScanTasksResponseFromJson(
   FetchScanTasksResponse response;
   ICEBERG_RETURN_UNEXPECTED(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
 
