@@ -25,12 +25,16 @@
 
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/file_format.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 
@@ -1379,5 +1383,460 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<CommitTableResponseInvalidParam>& info) {
       return info.param.test_name;
     });
+
+// Helper: empty schema and specs for scan response tests that don't need partition
+// parsing.
+static Schema EmptySchema() { return Schema({}, 0); }
+static std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> EmptySpecs() {
+  return {};
+}
+
+// --- PlanTableScanResponse ---
+
+TEST(PlanTableScanResponseFromJsonTest, SubmittedStatusMissingOptionalFields) {
+  // "submitted" response: only status and plan-id, no tasks
+  auto json = nlohmann::json::parse(R"({"status":"submitted","plan-id":"abc-123"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, PlanStatus::kSubmitted);
+  EXPECT_EQ(result->plan_id, "abc-123");
+  EXPECT_TRUE(result->plan_tasks.empty());
+  EXPECT_TRUE(result->file_scan_tasks.empty());
+  EXPECT_TRUE(result->delete_files.empty());
+}
+
+TEST(PlanTableScanResponseFromJsonTest, CompletedStatusWithPlanTasks) {
+  // "completed" response with plan-tasks but no file-scan-tasks
+  auto json = nlohmann::json::parse(
+      R"({"status":"completed","plan-id":"abc-123","plan-tasks":["task-1","task-2"],"delete-files":[],"file-scan-tasks":[]})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, PlanStatus::kCompleted);
+  EXPECT_EQ(result->plan_id, "abc-123");
+  ASSERT_EQ(result->plan_tasks.size(), 2);
+  EXPECT_EQ(result->plan_tasks[0], "task-1");
+  EXPECT_EQ(result->plan_tasks[1], "task-2");
+}
+
+TEST(PlanTableScanResponseFromJsonTest, MissingRequiredStatus) {
+  auto json = nlohmann::json::parse(R"({"plan-id":"abc-123"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'status'"));
+}
+
+TEST(PlanTableScanResponseFromJsonTest, MissingPlanIdDefaultsToEmptyForFailedStatus) {
+  // plan-id is optional for non-submitted/completed statuses
+  auto json = nlohmann::json::parse(R"({"status":"failed"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_TRUE(result->plan_id.empty());
+}
+
+// --- FetchPlanningResultResponse ---
+
+TEST(FetchPlanningResultResponseFromJsonTest, SubmittedStatusNoTasks) {
+  auto json = nlohmann::json::parse(R"({"status":"submitted"})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, PlanStatus::kSubmitted);
+  EXPECT_TRUE(result->plan_tasks.empty());
+  EXPECT_TRUE(result->file_scan_tasks.empty());
+  EXPECT_TRUE(result->delete_files.empty());
+}
+
+TEST(FetchPlanningResultResponseFromJsonTest, CompletedStatusWithPlanTasks) {
+  auto json = nlohmann::json::parse(
+      R"({"status":"completed","plan-tasks":["task-1"],"delete-files":[],"file-scan-tasks":[]})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, PlanStatus::kCompleted);
+  ASSERT_EQ(result->plan_tasks.size(), 1);
+  EXPECT_EQ(result->plan_tasks[0], "task-1");
+}
+
+TEST(FetchPlanningResultResponseFromJsonTest, MissingRequiredStatus) {
+  auto json = nlohmann::json::parse(R"({})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'status'"));
+}
+
+// --- FetchScanTasksResponse ---
+
+TEST(FetchScanTasksResponseFromJsonTest, WithFileScanTasks) {
+  // One file scan task with a data file and one delete file referenced by index.
+  auto json = nlohmann::json::parse(R"({
+    "plan-tasks": [],
+    "delete-files": [
+      {
+        "content": "position_deletes",
+        "file-path": "s3://bucket/deletes/delete.parquet",
+        "file-format": "PARQUET",
+        "file-size-in-bytes": 512,
+        "record-count": 5
+      }
+    ],
+    "file-scan-tasks": [
+      {
+        "data-file": {
+          "content": "data",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "file-size-in-bytes": 12345,
+          "record-count": 100
+        },
+        "delete-file-references": [0]
+      }
+    ]
+  })");
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_TRUE(result->plan_tasks.empty());
+  ASSERT_EQ(result->delete_files.size(), 1);
+  ASSERT_EQ(result->file_scan_tasks.size(), 1);
+  EXPECT_EQ(result->file_scan_tasks[0]->data_file()->file_path,
+            "s3://bucket/data/file.parquet");
+  ASSERT_EQ(result->file_scan_tasks[0]->delete_files().size(), 1);
+  EXPECT_EQ(result->file_scan_tasks[0]->delete_files()[0]->file_path,
+            "s3://bucket/deletes/delete.parquet");
+}
+
+TEST(FetchScanTasksResponseFromJsonTest, WithPlanTasksOnly) {
+  auto json = nlohmann::json::parse(
+      R"({"plan-tasks":["task-1","task-2"],"delete-files":[],"file-scan-tasks":[]})");
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result->plan_tasks.size(), 2);
+  EXPECT_EQ(result->plan_tasks[0], "task-1");
+  EXPECT_TRUE(result->file_scan_tasks.empty());
+}
+
+TEST(FetchScanTasksResponseFromJsonTest, AllFieldsMissing) {
+  // Both plan-tasks and file-scan-tasks absent → Validate() should fail
+  auto json = nlohmann::json::parse(R"({})");
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(ErrorKind::kValidationFailed));
+}
+
+// --- DataFileFromJson ---
+
+TEST(DataFileFromJsonTest, RequiredFieldsOnly) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.parquet",
+    "file-format": "PARQUET",
+    "file-size-in-bytes": 12345,
+    "record-count": 100
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.content, DataFile::Content::kData);
+  EXPECT_EQ(df.file_path, "s3://bucket/data/file.parquet");
+  EXPECT_EQ(df.file_format, FileFormatType::kParquet);
+  EXPECT_EQ(df.file_size_in_bytes, 12345);
+  EXPECT_EQ(df.record_count, 100);
+  EXPECT_TRUE(df.column_sizes.empty());
+  EXPECT_FALSE(df.sort_order_id.has_value());
+  EXPECT_FALSE(df.partition_spec_id.has_value());
+}
+
+TEST(DataFileFromJsonTest, LowercaseFormat) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.avro",
+    "file-format": "avro",
+    "file-size-in-bytes": 500,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value().content, DataFile::Content::kData);
+  EXPECT_EQ(result.value().file_format, FileFormatType::kAvro);
+}
+
+TEST(DataFileFromJsonTest, WithOptionalFields) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.parquet",
+    "file-format": "PARQUET",
+    "spec-id": 1,
+    "file-size-in-bytes": 12345,
+    "record-count": 100,
+    "column-sizes": {"keys": [1, 2], "values": [1000, 2000]},
+    "value-counts": {"keys": [1, 2], "values": [100, 100]},
+    "null-value-counts": {"keys": [1], "values": [0]},
+    "nan-value-counts": {"keys": [2], "values": [5]},
+    "split-offsets": [0, 4096],
+    "sort-order-id": 0
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.partition_spec_id, 1);
+  ASSERT_EQ(df.column_sizes.size(), 2U);
+  EXPECT_EQ(df.column_sizes.at(1), 1000);
+  EXPECT_EQ(df.column_sizes.at(2), 2000);
+  ASSERT_EQ(df.value_counts.size(), 2U);
+  EXPECT_EQ(df.value_counts.at(1), 100);
+  ASSERT_EQ(df.null_value_counts.size(), 1U);
+  EXPECT_EQ(df.null_value_counts.at(1), 0);
+  ASSERT_EQ(df.nan_value_counts.size(), 1U);
+  EXPECT_EQ(df.nan_value_counts.at(2), 5);
+  ASSERT_EQ(df.split_offsets.size(), 2U);
+  EXPECT_EQ(df.split_offsets[0], 0);
+  EXPECT_EQ(df.split_offsets[1], 4096);
+  EXPECT_EQ(df.sort_order_id, 0);
+}
+
+TEST(DataFileFromJsonTest, EqualityDeleteFile) {
+  auto json = R"({
+    "content": "equality_deletes",
+    "file-path": "s3://bucket/deletes/eq_delete.parquet",
+    "file-format": "PARQUET",
+    "file-size-in-bytes": 5000,
+    "record-count": 50,
+    "equality-ids": [1, 2]
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.content, DataFile::Content::kEqualityDeletes);
+  ASSERT_EQ(df.equality_ids.size(), 2U);
+  EXPECT_EQ(df.equality_ids[0], 1);
+  EXPECT_EQ(df.equality_ids[1], 2);
+}
+
+TEST(DataFileFromJsonTest, PositionDeleteFileWithReferencedDataFile) {
+  auto json = R"({
+    "content": "position_deletes",
+    "file-path": "s3://bucket/deletes/pos_delete.parquet",
+    "file-format": "PARQUET",
+    "file-size-in-bytes": 3000,
+    "record-count": 20,
+    "referenced-data-file": "s3://bucket/data/file.parquet"
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.content, DataFile::Content::kPositionDeletes);
+  ASSERT_TRUE(df.referenced_data_file.has_value());
+  EXPECT_EQ(df.referenced_data_file.value(), "s3://bucket/data/file.parquet");
+}
+
+TEST(DataFileFromJsonTest, InvalidContentType) {
+  auto json = R"({
+    "content": "UNKNOWN",
+    "file-path": "s3://bucket/file.parquet",
+    "file-format": "PARQUET",
+    "file-size-in-bytes": 100,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Unknown data file content"));
+}
+
+TEST(DataFileFromJsonTest, MissingRequiredField) {
+  auto json = R"({
+    "content": "data",
+    "file-format": "PARQUET",
+    "file-size-in-bytes": 100,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+}
+
+TEST(DataFileFromJsonTest, NotAnObject) {
+  auto result = DataFileFromJson(nlohmann::json::array(), {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("DataFile must be a JSON object"));
+}
+
+// --- FileScanTasksFromJson ---
+
+TEST(FileScanTasksFromJsonTest, EmptyArray) {
+  auto result = FileScanTasksFromJson(nlohmann::json::array(), {}, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  EXPECT_TRUE(result.value().empty());
+}
+
+TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    }
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result.value().size(), 1U);
+  const auto& task = result.value()[0];
+  ASSERT_NE(task->data_file(), nullptr);
+  EXPECT_EQ(task->data_file()->file_path, "s3://bucket/data/file.parquet");
+  EXPECT_TRUE(task->delete_files().empty());
+  EXPECT_EQ(task->residual_filter(), nullptr);
+}
+
+TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
+  DataFile delete_file;
+  delete_file.content = DataFile::Content::kPositionDeletes;
+  delete_file.file_path = "s3://bucket/deletes/pos_delete.parquet";
+  delete_file.file_format = FileFormatType::kParquet;
+  delete_file.file_size_in_bytes = 1000;
+  delete_file.record_count = 5;
+
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "delete-file-references": [0]
+  }])"_json;
+
+  auto result =
+      FileScanTasksFromJson(json, {std::make_shared<DataFile>(delete_file)}, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result.value().size(), 1U);
+  const auto& task = result.value()[0];
+  ASSERT_EQ(task->delete_files().size(), 1U);
+  EXPECT_EQ(task->delete_files()[0]->file_path, "s3://bucket/deletes/pos_delete.parquet");
+}
+
+TEST(FileScanTasksFromJsonTest, DeleteFileReferenceOutOfRange) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "file-size-in-bytes": 100,
+      "record-count": 10
+    },
+    "delete-file-references": [5]
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("out of range"));
+}
+
+TEST(FileScanTasksFromJsonTest, NotAnArray) {
+  auto result = FileScanTasksFromJson(nlohmann::json::object(), {}, {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("non-array"));
+}
+
+// --- Roundtrip tests ---
+
+TEST(DataFileRoundtripTest, RequiredFieldsOnly) {
+  DataFile df;
+  df.content = DataFile::Content::kData;
+  df.file_path = "s3://bucket/data/file.parquet";
+  df.file_format = FileFormatType::kParquet;
+  df.file_size_in_bytes = 12345;
+  df.record_count = 100;
+
+  auto json = ToJson(df);
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value(), df);
+}
+
+TEST(DataFileRoundtripTest, WithOptionalFields) {
+  DataFile df;
+  df.content = DataFile::Content::kPositionDeletes;
+  df.file_path = "s3://bucket/deletes/pos.parquet";
+  df.file_format = FileFormatType::kParquet;
+  df.file_size_in_bytes = 5000;
+  df.record_count = 50;
+  df.partition_spec_id = 1;
+  df.column_sizes = {{1, 1000}, {2, 2000}};
+  df.value_counts = {{1, 100}, {2, 100}};
+  df.null_value_counts = {{1, 0}};
+  df.nan_value_counts = {{2, 5}};
+  df.split_offsets = {0, 4096};
+  df.sort_order_id = 0;
+  df.referenced_data_file = "s3://bucket/data/file.parquet";
+
+  auto json = ToJson(df);
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value(), df);
+}
+
+TEST(FetchScanTasksResponseRoundtripTest, WithFileScanTasksAndDeleteFiles) {
+  auto json = nlohmann::json::parse(R"({
+    "plan-tasks": [],
+    "delete-files": [
+      {
+        "content": "position_deletes",
+        "file-path": "s3://bucket/deletes/delete.parquet",
+        "file-format": "PARQUET",
+        "file-size-in-bytes": 512,
+        "record-count": 5
+      }
+    ],
+    "file-scan-tasks": [
+      {
+        "data-file": {
+          "content": "data",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "file-size-in-bytes": 12345,
+          "record-count": 100
+        },
+        "delete-file-references": [0]
+      }
+    ]
+  })");
+
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  auto roundtrip_json = ToJson(*result);
+  auto result2 = FetchScanTasksResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
+
+TEST(PlanTableScanResponseRoundtripTest, SubmittedStatus) {
+  auto json = nlohmann::json::parse(R"({"status": "submitted", "plan-id": "abc-123"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  auto roundtrip_json = ToJson(*result);
+  auto result2 = PlanTableScanResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
+
+TEST(FetchPlanningResultResponseRoundtripTest, CompletedWithPlanTasks) {
+  auto json =
+      nlohmann::json::parse(R"({"status": "completed", "plan-tasks": ["task-1", "task-2"]})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  auto roundtrip_json = ToJson(*result);
+  auto result2 =
+      FetchPlanningResultResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
 
 }  // namespace iceberg::rest

@@ -795,4 +795,22 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
          std::ranges::to<std::vector>();
 }
 
+std::string_view ToString(PlanStatus status) {
+  switch (status) {
+    case PlanStatus::kSubmitted: return "submitted";
+    case PlanStatus::kCompleted: return "completed";
+    case PlanStatus::kCancelled: return "cancelled";
+    case PlanStatus::kFailed: return "failed";
+  }
+  return "unknown";
+}
+
+Result<PlanStatus> PlanStatusFromString(std::string_view status_str) {
+  if (status_str == "submitted") return PlanStatus::kSubmitted;
+  if (status_str == "completed") return PlanStatus::kCompleted;
+  if (status_str == "cancelled") return PlanStatus::kCancelled;
+  if (status_str == "failed") return PlanStatus::kFailed;
+  return JsonParseError("Unknown plan status: {}", status_str);
+}
+
 }  // namespace iceberg

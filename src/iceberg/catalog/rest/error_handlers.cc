@@ -30,6 +30,9 @@ namespace {
 constexpr std::string_view kIllegalArgumentException = "IllegalArgumentException";
 constexpr std::string_view kNoSuchNamespaceException = "NoSuchNamespaceException";
 constexpr std::string_view kNamespaceNotEmptyException = "NamespaceNotEmptyException";
+constexpr std::string_view kNoSuchTableException = "NoSuchTableException";
+constexpr std::string_view kNoSuchPlanIdException = "NoSuchPlanIdException";
+constexpr std::string_view kNoSuchPlanTaskException = "NoSuchPlanTaskException";
 
 }  // namespace
 
@@ -178,6 +181,54 @@ Status ViewCommitErrorHandler::Accept(const ErrorResponse& error) const {
     case 503:
     case 504:
       return CommitStateUnknown("Service failed: {}: {}", error.code, error.message);
+  }
+
+  return DefaultErrorHandler::Accept(error);
+}
+
+const std::shared_ptr<PlanErrorHandler>& PlanErrorHandler::Instance() {
+  static const std::shared_ptr<PlanErrorHandler> instance{new PlanErrorHandler()};
+  return instance;
+}
+
+Status PlanErrorHandler::Accept(const ErrorResponse& error) const {
+  switch (error.code) {
+    case 404:
+      if (error.type == kNoSuchNamespaceException) {
+        return NoSuchNamespace(error.message);
+      }
+      if (error.type == kNoSuchTableException) {
+        return NoSuchTable(error.message);
+      }
+      if (error.type == kNoSuchPlanIdException) {
+        return NoSuchPlanId(error.message);
+      }
+      return NotFound(error.message);
+    case 406:
+      return NotSupported(error.message);
+  }
+
+  return DefaultErrorHandler::Accept(error);
+}
+
+const std::shared_ptr<PlanTaskErrorHandler>& PlanTaskErrorHandler::Instance() {
+  static const std::shared_ptr<PlanTaskErrorHandler> instance{new PlanTaskErrorHandler()};
+  return instance;
+}
+
+Status PlanTaskErrorHandler::Accept(const ErrorResponse& error) const {
+  switch (error.code) {
+    case 404:
+      if (error.type == kNoSuchNamespaceException) {
+        return NoSuchNamespace(error.message);
+      }
+      if (error.type == kNoSuchTableException) {
+        return NoSuchTable(error.message);
+      }
+      if (error.type == kNoSuchPlanTaskException) {
+        return NoSuchPlanTask(error.message);
+      }
+      return NotFound(error.message);
   }
 
   return DefaultErrorHandler::Accept(error);

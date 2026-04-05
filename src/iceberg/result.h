@@ -50,6 +50,8 @@ enum class ErrorKind {
   kJsonParseError,
   kNamespaceNotEmpty,
   kNoSuchNamespace,
+  kNoSuchPlanId,
+  kNoSuchPlanTask,
   kNoSuchTable,
   kNoSuchView,
   kNotAllowed,
@@ -113,6 +115,8 @@ DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
 DEFINE_ERROR_FUNCTION(NamespaceNotEmpty)
 DEFINE_ERROR_FUNCTION(NoSuchNamespace)
+DEFINE_ERROR_FUNCTION(NoSuchPlanId)
+DEFINE_ERROR_FUNCTION(NoSuchPlanTask)
 DEFINE_ERROR_FUNCTION(NoSuchTable)
 DEFINE_ERROR_FUNCTION(NoSuchView)
 DEFINE_ERROR_FUNCTION(NotAllowed)
