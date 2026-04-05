@@ -25,13 +25,23 @@
 #include "iceberg/arrow/arrow_file_io.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg::arrow {
+
+Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
+  if (file_location.find("://") != std::string::npos) {
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto path, arrow_fs_->PathFromUri(file_location));
+    return path;
+  }
+  return file_location;
+}
 
 /// \brief Read the content of the file at the given location.
 Result<std::string> ArrowFileSystemFileIO::ReadFile(const std::string& file_location,
                                                     std::optional<size_t> length) {
-  ::arrow::fs::FileInfo file_info(file_location);
+  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
+  ::arrow::fs::FileInfo file_info(path);
   if (length.has_value()) {
     file_info.set_size(length.value());
   }
@@ -47,6 +57,10 @@ Result<std::string> ArrowFileSystemFileIO::ReadFile(const std::string& file_loca
     ICEBERG_ARROW_ASSIGN_OR_RETURN(
         auto read_bytes,
         file->Read(read_length, reinterpret_cast<uint8_t*>(&content[offset])));
+    if (read_bytes == 0) {
+      return IOError("Unexpected EOF reading {}: got {} of {} bytes", file_location,
+                     offset, file_size);
+    }
     remain -= read_bytes;
     offset += read_bytes;
   }
@@ -57,7 +71,8 @@ Result<std::string> ArrowFileSystemFileIO::ReadFile(const std::string& file_loca
 /// \brief Write the given content to the file at the given location.
 Status ArrowFileSystemFileIO::WriteFile(const std::string& file_location,
                                         std::string_view content) {
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file, arrow_fs_->OpenOutputStream(file_location));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file, arrow_fs_->OpenOutputStream(path));
   ICEBERG_ARROW_RETURN_NOT_OK(file->Write(content.data(), content.size()));
   ICEBERG_ARROW_RETURN_NOT_OK(file->Flush());
   ICEBERG_ARROW_RETURN_NOT_OK(file->Close());
@@ -66,7 +81,8 @@ Status ArrowFileSystemFileIO::WriteFile(const std::string& file_location,
 
 /// \brief Delete a file at the given location.
 Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
-  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(file_location));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
+  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(path));
   return {};
 }
 

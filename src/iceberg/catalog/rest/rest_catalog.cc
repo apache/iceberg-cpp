@@ -36,6 +36,7 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/file_io_registry.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -172,6 +173,40 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
       new RestCatalog(std::move(final_config), std::move(file_io), std::move(client),
                       std::move(paths), std::move(endpoints), std::move(auth_manager),
                       std::move(catalog_session), snapshot_mode));
+}
+
+Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
+    const RestCatalogProperties& config) {
+  // Get warehouse location to determine the appropriate FileIO type
+  auto warehouse = config.Get(RestCatalogProperties::kWarehouse);
+  if (warehouse.empty()) {
+    return InvalidArgument(
+        "Warehouse location is required when FileIO is not explicitly provided. "
+        "Set the 'warehouse' property to an S3 URI (s3://...) or local path.");
+  }
+
+  // Check for user-specified io-impl property
+  auto io_impl = config.configs().find(FileIOProperties::kImpl);
+  std::string impl_name;
+
+  if (io_impl != config.configs().end() && !io_impl->second.empty()) {
+    // User specified a custom io-impl
+    impl_name = io_impl->second;
+  } else {
+    // Use default based on warehouse URI scheme
+    if (warehouse.starts_with("s3://")) {
+      impl_name = FileIORegistry::kArrowS3FileIO;
+    } else {
+      impl_name = FileIORegistry::kArrowLocalFileIO;
+    }
+  }
+
+  // Load FileIO from registry
+  ICEBERG_ASSIGN_OR_RAISE(auto file_io,
+                          FileIORegistry::Load(impl_name, warehouse, config.configs()));
+
+  // Call the main Make method with the created FileIO
+  return Make(config, std::move(file_io));
 }
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,

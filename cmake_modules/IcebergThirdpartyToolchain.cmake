@@ -102,6 +102,7 @@ function(resolve_arrow_dependency)
   # Work around undefined symbol: arrow::ipc::ReadSchema(arrow::io::InputStream*, arrow::ipc::DictionaryMemo*)
   set(ARROW_IPC ON)
   set(ARROW_FILESYSTEM ON)
+  set(ARROW_S3 ${ICEBERG_S3})
   set(ARROW_JSON ON)
   set(ARROW_PARQUET ON)
   set(ARROW_SIMD_LEVEL "NONE")
@@ -163,6 +164,13 @@ function(resolve_arrow_dependency)
                           IMPORTED_LOCATION)
       install(FILES ${arrow_bundled_dependencies_location}
               DESTINATION ${ICEBERG_INSTALL_LIBDIR})
+    endif()
+
+    # Arrow's exported static target interface may reference system libraries
+    # (e.g. OpenSSL, CURL, ZLIB) that consumers need to find.
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ZLIB)
+    if(ARROW_S3)
+      list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL CURL)
     endif()
   else()
     set(ARROW_VENDORED FALSE)
