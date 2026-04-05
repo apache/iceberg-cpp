@@ -118,6 +118,52 @@ bool CommitTableResponse::operator==(const CommitTableResponse& other) const {
   return true;
 }
 
+bool PlanTableScanRequest::operator==(const PlanTableScanRequest& other) const {
+  return snapshot_id == other.snapshot_id && select == other.select &&
+         filter == other.filter && case_sensitive == other.case_sensitive &&
+         use_snapshot_schema == other.use_snapshot_schema &&
+         start_snapshot_id == other.start_snapshot_id &&
+         end_snapshot_id == other.end_snapshot_id && statsFields == other.statsFields &&
+         min_rows_required == other.min_rows_required;
+}
+
+bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
+  if (plan_tasks != other.plan_tasks) return false;
+  if (delete_files != other.delete_files) return false;
+  if (file_scan_tasks.size() != other.file_scan_tasks.size()) return false;
+  for (size_t i = 0; i < file_scan_tasks.size(); ++i) {
+    const auto& a = file_scan_tasks[i];
+    const auto& b = other.file_scan_tasks[i];
+    if (!a.data_file() != !b.data_file()) return false;
+    if (a.data_file() && *a.data_file() != *b.data_file()) return false;
+    if (a.delete_files().size() != b.delete_files().size()) return false;
+    for (size_t j = 0; j < a.delete_files().size(); ++j) {
+      if (!a.delete_files()[j] != !b.delete_files()[j]) return false;
+      if (a.delete_files()[j] && *a.delete_files()[j] != *b.delete_files()[j]) return false;
+    }
+    if (a.residual_filter() != b.residual_filter()) return false;
+  }
+  return true;
+}
+
+bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const {
+  return BaseScanTaskResponse::operator==(other) && plan_status == other.plan_status &&
+         plan_id == other.plan_id;
+}
+
+bool FetchPlanningResultResponse::operator==(const FetchPlanningResultResponse& other) const {
+  return BaseScanTaskResponse::operator==(other) &&
+         plan_status.ToString() == other.plan_status.ToString();
+}
+
+bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const {
+  return planTask == other.planTask;
+}
+
+bool FetchScanTasksResponse::operator==(const FetchScanTasksResponse& other) const {
+  return BaseScanTaskResponse::operator==(other);
+}
+
 Status OAuthTokenResponse::Validate() const {
   if (access_token.empty()) {
     return ValidationFailed("OAuth2 token response missing required 'access_token'");
