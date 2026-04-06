@@ -560,16 +560,18 @@ nlohmann::json ToJson(const FetchScanTasksRequest& request) {
 
 Status BaseScanTaskResponseFromJson(
     const nlohmann::json& json, BaseScanTaskResponse* response,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
     const Schema& schema) {
   // 1. plan_tasks
-  ICEBERG_ASSIGN_OR_RAISE(response->plan_tasks,
-                          GetJsonValueOrDefault<std::vector<std::string>>(json, kPlanTasks));
+  ICEBERG_ASSIGN_OR_RAISE(
+      response->plan_tasks,
+      GetJsonValueOrDefault<std::vector<std::string>>(json, kPlanTasks));
 
   // 2. delete_files
-  ICEBERG_ASSIGN_OR_RAISE(auto delete_files_json,
-                          GetJsonValueOrDefault<nlohmann::json>(json, kDeleteFiles,
-                                                                nlohmann::json::array()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto delete_files_json,
+      GetJsonValueOrDefault<nlohmann::json>(json, kDeleteFiles, nlohmann::json::array()));
   for (const auto& entry_json : delete_files_json) {
     ICEBERG_ASSIGN_OR_RAISE(auto delete_file,
                             DataFileFromJson(entry_json, partition_specs_by_id, schema));
@@ -589,7 +591,8 @@ Status BaseScanTaskResponseFromJson(
 
 Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
     const Schema& schema) {
   PlanTableScanResponse response;
   ICEBERG_ASSIGN_OR_RAISE(response.plan_status,
@@ -604,11 +607,11 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
 
 Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
     const Schema& schema) {
   FetchPlanningResultResponse response;
-  ICEBERG_ASSIGN_OR_RAISE(auto status_str,
-                          GetJsonValue<std::string>(json, kPlanStatus));
+  ICEBERG_ASSIGN_OR_RAISE(auto status_str, GetJsonValue<std::string>(json, kPlanStatus));
   response.plan_status = PlanStatus(PlanStatus::FromString(status_str));
   ICEBERG_RETURN_UNEXPECTED(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
@@ -618,7 +621,8 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
 
 Result<FetchScanTasksResponse> FetchScanTasksResponseFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
     const Schema& schema) {
   FetchScanTasksResponse response;
   ICEBERG_RETURN_UNEXPECTED(

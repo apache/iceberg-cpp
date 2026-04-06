@@ -320,12 +320,12 @@ struct ICEBERG_REST_EXPORT PlanTableScanRequest {
 struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
   std::vector<std::string> plan_tasks;
   std::vector<FileScanTask> file_scan_tasks;
-  std::vector<DataFile> delete_files; 
+  std::vector<DataFile> delete_files;
   // std::unordered_map<std::string, PartitionSpec> specsById;
 
   Status Validate() const { return {}; };
 
-   bool operator==(const BaseScanTaskResponse&) const;
+  bool operator==(const BaseScanTaskResponse&) const;
 };
 
 /// \brief Response from initiating a scan planning operation, including plan status and

@@ -253,7 +253,6 @@ constexpr std::string_view kReferencedDataFile = "referenced-data-file";
 constexpr std::string_view kContentOffset = "content-offset";
 constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
 
-
 }  // namespace
 
 nlohmann::json ToJson(const SortField& sort_field) {
@@ -1803,8 +1802,7 @@ Result<DataFile> DataFileFromJson(
     }
     for (size_t pos = 0; pos < fields.size(); ++pos) {
       ICEBERG_ASSIGN_OR_RAISE(
-          auto literal,
-          LiteralFromJson(partition_vals[pos], fields[pos].type().get()));
+          auto literal, LiteralFromJson(partition_vals[pos], fields[pos].type().get()));
       literals.push_back(std::move(literal));
     }
     df.partition = PartitionValues(std::move(literals));
@@ -1844,10 +1842,11 @@ Result<DataFile> DataFileFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
     ICEBERG_ASSIGN_OR_RAISE(auto keys,
                             GetJsonValue<std::vector<int32_t>>(map_json, "keys"));
-    ICEBERG_ASSIGN_OR_RAISE(auto values,
-                            GetJsonValue<std::vector<std::vector<uint8_t>>>(map_json, "values"));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto values, GetJsonValue<std::vector<std::vector<uint8_t>>>(map_json, "values"));
     if (keys.size() != values.size()) {
-      return JsonParseError("'{}' binary map keys and values have different lengths", key);
+      return JsonParseError("'{}' binary map keys and values have different lengths",
+                            key);
     }
     for (size_t i = 0; i < keys.size(); ++i) {
       target[keys[i]] = values[i];
@@ -1871,8 +1870,7 @@ Result<DataFile> DataFileFromJson(
                             GetJsonValue<std::vector<int32_t>>(json, kEqualityIds));
   }
   if (json.contains(kSortOrderId) && !json.at(kSortOrderId).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(df.sort_order_id,
-                            GetJsonValue<int32_t>(json, kSortOrderId));
+    ICEBERG_ASSIGN_OR_RAISE(df.sort_order_id, GetJsonValue<int32_t>(json, kSortOrderId));
   }
   if (json.contains(kFirstRowId) && !json.at(kFirstRowId).is_null()) {
     ICEBERG_ASSIGN_OR_RAISE(df.first_row_id, GetJsonValue<int64_t>(json, kFirstRowId));
@@ -1916,9 +1914,8 @@ Result<std::vector<FileScanTask>> FileScanTasksFromJson(
     std::vector<std::shared_ptr<DataFile>> task_delete_files;
     if (task_json.contains(kDeleteFileReferences) &&
         !task_json.at(kDeleteFileReferences).is_null()) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto refs,
-          GetJsonValue<std::vector<int32_t>>(task_json, kDeleteFileReferences));
+      ICEBERG_ASSIGN_OR_RAISE(auto refs, GetJsonValue<std::vector<int32_t>>(
+                                             task_json, kDeleteFileReferences));
       for (int32_t ref : refs) {
         if (ref < 0 || static_cast<size_t>(ref) >= delete_files.size()) {
           return JsonParseError(
@@ -1930,8 +1927,7 @@ Result<std::vector<FileScanTask>> FileScanTasksFromJson(
     }
 
     std::shared_ptr<Expression> residual_filter;
-    if (task_json.contains(kResidualFilter) &&
-        !task_json.at(kResidualFilter).is_null()) {
+    if (task_json.contains(kResidualFilter) && !task_json.at(kResidualFilter).is_null()) {
       ICEBERG_ASSIGN_OR_RAISE(auto filter_json,
                               GetJsonValue<nlohmann::json>(task_json, kResidualFilter));
       ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
