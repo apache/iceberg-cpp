@@ -611,8 +611,8 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
         partition_specs_by_id,
     const Schema& schema) {
   FetchPlanningResultResponse response;
-  ICEBERG_ASSIGN_OR_RAISE(auto status_str, GetJsonValue<std::string>(json, kPlanStatus));
-  response.plan_status = PlanStatus(PlanStatus::FromString(status_str));
+  ICEBERG_ASSIGN_OR_RAISE(response.plan_status,
+                          GetJsonValue<std::string>(json, kPlanStatus));
   ICEBERG_RETURN_UNEXPECTED(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());

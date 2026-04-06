@@ -779,7 +779,7 @@ TEST(TableRequirementJsonTest, TableRequirementUnknownType) {
 
 TEST(DataFileFromJsonTest, RequiredFieldsOnly) {
   auto json = R"({
-    "content": "DATA",
+    "content": "data",
     "file-path": "s3://bucket/data/file.parquet",
     "file-format": "PARQUET",
     "file-size-in-bytes": 12345,
@@ -799,8 +799,7 @@ TEST(DataFileFromJsonTest, RequiredFieldsOnly) {
   EXPECT_FALSE(df.partition_spec_id.has_value());
 }
 
-TEST(DataFileFromJsonTest, LowercaseContentAndFormat) {
-  // The REST API sends uppercase, but we should handle lowercase too.
+TEST(DataFileFromJsonTest, LowercaseFormat) {
   auto json = R"({
     "content": "data",
     "file-path": "s3://bucket/data/file.avro",
@@ -817,7 +816,7 @@ TEST(DataFileFromJsonTest, LowercaseContentAndFormat) {
 
 TEST(DataFileFromJsonTest, WithOptionalFields) {
   auto json = R"({
-    "content": "DATA",
+    "content": "data",
     "file-path": "s3://bucket/data/file.parquet",
     "file-format": "PARQUET",
     "spec-id": 1,
@@ -852,7 +851,7 @@ TEST(DataFileFromJsonTest, WithOptionalFields) {
 
 TEST(DataFileFromJsonTest, EqualityDeleteFile) {
   auto json = R"({
-    "content": "EQUALITY_DELETES",
+    "content": "equality_deletes",
     "file-path": "s3://bucket/deletes/eq_delete.parquet",
     "file-format": "PARQUET",
     "file-size-in-bytes": 5000,
@@ -871,7 +870,7 @@ TEST(DataFileFromJsonTest, EqualityDeleteFile) {
 
 TEST(DataFileFromJsonTest, PositionDeleteFileWithReferencedDataFile) {
   auto json = R"({
-    "content": "POSITION_DELETES",
+    "content": "position_deletes",
     "file-path": "s3://bucket/deletes/pos_delete.parquet",
     "file-format": "PARQUET",
     "file-size-in-bytes": 3000,
@@ -904,7 +903,7 @@ TEST(DataFileFromJsonTest, InvalidContentType) {
 TEST(DataFileFromJsonTest, MissingRequiredField) {
   // Missing "file-path"
   auto json = R"({
-    "content": "DATA",
+    "content": "data",
     "file-format": "PARQUET",
     "file-size-in-bytes": 100,
     "record-count": 10
@@ -931,7 +930,7 @@ TEST(FileScanTasksFromJsonTest, EmptyArray) {
 TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   auto json = R"([{
     "data-file": {
-      "content": "DATA",
+      "content": "data",
       "file-path": "s3://bucket/data/file.parquet",
       "file-format": "PARQUET",
       "file-size-in-bytes": 12345,
@@ -959,7 +958,7 @@ TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
 
   auto json = R"([{
     "data-file": {
-      "content": "DATA",
+      "content": "data",
       "file-path": "s3://bucket/data/file.parquet",
       "file-format": "PARQUET",
       "file-size-in-bytes": 12345,
@@ -973,14 +972,13 @@ TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
   ASSERT_EQ(result.value().size(), 1U);
   const auto& task = result.value()[0];
   ASSERT_EQ(task.delete_files().size(), 1U);
-  EXPECT_EQ(task.delete_files()[0]->file_path,
-            "s3://bucket/deletes/pos_delete.parquet");
+  EXPECT_EQ(task.delete_files()[0]->file_path, "s3://bucket/deletes/pos_delete.parquet");
 }
 
 TEST(FileScanTasksFromJsonTest, DeleteFileReferenceOutOfRange) {
   auto json = R"([{
     "data-file": {
-      "content": "DATA",
+      "content": "data",
       "file-path": "s3://bucket/data/file.parquet",
       "file-format": "PARQUET",
       "file-size-in-bytes": 100,

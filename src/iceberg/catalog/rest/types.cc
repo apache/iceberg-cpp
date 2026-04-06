@@ -154,8 +154,7 @@ bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const
 
 bool FetchPlanningResultResponse::operator==(
     const FetchPlanningResultResponse& other) const {
-  return BaseScanTaskResponse::operator==(other) &&
-         plan_status.ToString() == other.plan_status.ToString();
+  return BaseScanTaskResponse::operator==(other) && plan_status == other.plan_status;
 }
 
 bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const {
@@ -233,11 +232,10 @@ Status PlanTableScanResponse::Validate() const {
 }
 
 Status FetchPlanningResultResponse::Validate() const {
-  if (plan_status.ToString() == "unknown") {
+  if (plan_status.empty()) {
     return ValidationFailed("Invalid status: null");
   }
-  if (plan_status.ToString() != "completed" &&
-      (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+  if (plan_status != "completed" && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
     return ValidationFailed(
         "Invalid response: tasks can only be returned in a 'completed' status");
   }

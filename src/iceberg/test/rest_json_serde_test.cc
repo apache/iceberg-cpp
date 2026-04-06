@@ -1467,7 +1467,7 @@ TEST(FetchScanTasksResponseFromJsonTest, WithFileScanTasks) {
     "plan-tasks": [],
     "delete-files": [
       {
-        "content": "POSITION_DELETES",
+        "content": "position_deletes",
         "file-path": "s3://bucket/deletes/delete.parquet",
         "file-format": "PARQUET",
         "file-size-in-bytes": 512,
@@ -1477,7 +1477,7 @@ TEST(FetchScanTasksResponseFromJsonTest, WithFileScanTasks) {
     "file-scan-tasks": [
       {
         "data-file": {
-          "content": "DATA",
+          "content": "data",
           "file-path": "s3://bucket/data/file.parquet",
           "file-format": "PARQUET",
           "file-size-in-bytes": 12345,

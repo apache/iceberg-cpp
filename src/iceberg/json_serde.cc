@@ -1761,12 +1761,11 @@ Result<DataFile> DataFileFromJson(
   DataFile df;
 
   ICEBERG_ASSIGN_OR_RAISE(auto content_str, GetJsonValue<std::string>(json, kContent));
-  const auto upper_content = StringUtils::ToUpper(content_str);
-  if (upper_content == "DATA") {
+  if (content_str == ToString(DataFile::Content::kData)) {
     df.content = DataFile::Content::kData;
-  } else if (upper_content == "POSITION_DELETES") {
+  } else if (content_str == ToString(DataFile::Content::kPositionDeletes)) {
     df.content = DataFile::Content::kPositionDeletes;
-  } else if (upper_content == "EQUALITY_DELETES") {
+  } else if (content_str == ToString(DataFile::Content::kEqualityDeletes)) {
     df.content = DataFile::Content::kEqualityDeletes;
   } else {
     return JsonParseError("Unknown data file content: {}", content_str);
@@ -1835,7 +1834,7 @@ Result<DataFile> DataFileFromJson(
   ICEBERG_RETURN_UNEXPECTED(parse_int_map(kNullValueCounts, df.null_value_counts));
   ICEBERG_RETURN_UNEXPECTED(parse_int_map(kNanValueCounts, df.nan_value_counts));
 
-  // Parse BinaryMap: {"keys": [int, ...], "values": [base64 binary, ...]}
+  // Parse BinaryMap: {"keys": [int, ...], "values": [...]}
   auto parse_binary_map = [&](std::string_view key,
                               std::map<int32_t, std::vector<uint8_t>>& target) -> Status {
     if (!json.contains(key) || json.at(key).is_null()) return {};

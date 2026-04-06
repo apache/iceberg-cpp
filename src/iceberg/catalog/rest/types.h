@@ -343,7 +343,7 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
 /// \brief Response from polling an asynchronous scan plan, including current status and
 /// available scan tasks.
 struct ICEBERG_REST_EXPORT FetchPlanningResultResponse : BaseScanTaskResponse {
-  PlanStatus plan_status;
+  std::string plan_status;
   // TODO: Add credentials.
 
   Status Validate() const;
