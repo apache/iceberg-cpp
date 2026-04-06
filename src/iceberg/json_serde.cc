@@ -1814,7 +1814,9 @@ Result<DataFile> DataFileFromJson(
   // Parse CountMap: {"keys": [int, ...], "values": [long, ...]}
   auto parse_int_map = [&](std::string_view key,
                            std::map<int32_t, int64_t>& target) -> Status {
-    if (!json.contains(key) || json.at(key).is_null()) return {};
+    if (!json.contains(key) || json.at(key).is_null()) {
+      return {};
+    }
     ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
     ICEBERG_ASSIGN_OR_RAISE(auto keys,
                             GetTypedJsonValue<std::vector<int32_t>>(map_json.at("keys")));
@@ -1837,7 +1839,9 @@ Result<DataFile> DataFileFromJson(
   // Parse BinaryMap: {"keys": [int, ...], "values": [...]}
   auto parse_binary_map = [&](std::string_view key,
                               std::map<int32_t, std::vector<uint8_t>>& target) -> Status {
-    if (!json.contains(key) || json.at(key).is_null()) return {};
+    if (!json.contains(key) || json.at(key).is_null()) {
+      return {};
+    }
     ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
     ICEBERG_ASSIGN_OR_RAISE(auto keys,
                             GetJsonValue<std::vector<int32_t>>(map_json, "keys"));

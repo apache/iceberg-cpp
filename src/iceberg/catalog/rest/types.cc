@@ -128,21 +128,38 @@ bool PlanTableScanRequest::operator==(const PlanTableScanRequest& other) const {
 }
 
 bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
-  if (plan_tasks != other.plan_tasks) return false;
-  if (delete_files != other.delete_files) return false;
-  if (file_scan_tasks.size() != other.file_scan_tasks.size()) return false;
+  if (plan_tasks != other.plan_tasks) {
+    return false;
+  }
+  if (delete_files != other.delete_files) {
+    return false;
+  }
+  if (file_scan_tasks.size() != other.file_scan_tasks.size()) {
+    return false;
+  }
   for (size_t i = 0; i < file_scan_tasks.size(); ++i) {
     const auto& a = file_scan_tasks[i];
     const auto& b = other.file_scan_tasks[i];
-    if (!a.data_file() != !b.data_file()) return false;
-    if (a.data_file() && *a.data_file() != *b.data_file()) return false;
-    if (a.delete_files().size() != b.delete_files().size()) return false;
-    for (size_t j = 0; j < a.delete_files().size(); ++j) {
-      if (!a.delete_files()[j] != !b.delete_files()[j]) return false;
-      if (a.delete_files()[j] && *a.delete_files()[j] != *b.delete_files()[j])
-        return false;
+    if (!a.data_file() != !b.data_file()) {
+      return false;
     }
-    if (a.residual_filter() != b.residual_filter()) return false;
+    if (a.data_file() && *a.data_file() != *b.data_file()) {
+      return false;
+    }
+    if (a.delete_files().size() != b.delete_files().size()) {
+      return false;
+    }
+    for (size_t j = 0; j < a.delete_files().size(); ++j) {
+      if (!a.delete_files()[j] != !b.delete_files()[j]) {
+        return false;
+      }
+      if (a.delete_files()[j] && *a.delete_files()[j] != *b.delete_files()[j]) {
+        return false;
+      }
+    }
+    if (a.residual_filter() != b.residual_filter()) {
+      return false;
+    }
   }
   return true;
 }
