@@ -134,15 +134,18 @@ class ICEBERG_REST_EXPORT Endpoint {
   }
 
   static Endpoint FetchPlanningResult() {
-    return {HttpMethod::kGet, "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}"};
+    return {HttpMethod::kGet,
+            "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}"};
   }
 
   static Endpoint CancelPlanning() {
-    return {HttpMethod::kDelete, "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}"};
+    return {HttpMethod::kDelete,
+            "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}"};
   }
 
   static Endpoint FetchScanTasks() {
-    return {HttpMethod::kPost, "/v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks"};
+    return {HttpMethod::kPost,
+            "/v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks"};
   }
 
  private:

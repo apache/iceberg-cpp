@@ -264,11 +264,11 @@ TEST(EndpointTest, FromStringInvalid) {
 TEST(EndpointTest, StringRoundTrip) {
   // Create various endpoints and verify they survive string round-trip
   std::vector<Endpoint> endpoints = {
-      Endpoint::ListNamespaces(),     Endpoint::GetNamespaceProperties(),
-      Endpoint::CreateNamespace(),    Endpoint::LoadTable(),
-      Endpoint::CreateTable(),        Endpoint::DeleteTable(),
-      Endpoint::PlanTableScan(),      Endpoint::FetchPlanningResult(),
-      Endpoint::CancelPlanning(),     Endpoint::FetchScanTasks(),
+      Endpoint::ListNamespaces(),  Endpoint::GetNamespaceProperties(),
+      Endpoint::CreateNamespace(), Endpoint::LoadTable(),
+      Endpoint::CreateTable(),     Endpoint::DeleteTable(),
+      Endpoint::PlanTableScan(),   Endpoint::FetchPlanningResult(),
+      Endpoint::CancelPlanning(),  Endpoint::FetchScanTasks(),
   };
 
   for (const auto& original : endpoints) {

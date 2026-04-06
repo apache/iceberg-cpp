@@ -68,17 +68,21 @@ ICEBERG_DECLARE_JSON_SERDE(OAuthTokenResponse)
 
 ICEBERG_REST_EXPORT Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
     const Schema& schema);
 
-ICEBERG_REST_EXPORT Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
+ICEBERG_REST_EXPORT Result<FetchPlanningResultResponse>
+FetchPlanningResultResponseFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
     const Schema& schema);
 
 ICEBERG_REST_EXPORT Result<FetchScanTasksResponse> FetchScanTasksResponseFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_specs_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
     const Schema& schema);
 
 ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const PlanTableScanRequest& request);
