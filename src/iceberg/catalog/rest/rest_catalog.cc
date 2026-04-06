@@ -527,8 +527,8 @@ Result<PlanTableScanResponse> RestCatalog::PlanTableScan(
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, /*headers=*/{},
-                    *ScanPlanErrorHandler::Instance(), *catalog_session_));
+      client_->Post(path, json_request, /*headers=*/{}, *ScanPlanErrorHandler::Instance(),
+                    *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return PlanTableScanResponseFromJson(json, specs_ref.get(), *schema_ptr);
@@ -543,8 +543,8 @@ Result<FetchPlanningResultResponse> RestCatalog::FetchPlanningResult(
 
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Get(path, /*params=*/{}, /*headers=*/{},
-                   *ScanPlanErrorHandler::Instance(), *catalog_session_));
+      client_->Get(path, /*params=*/{}, /*headers=*/{}, *ScanPlanErrorHandler::Instance(),
+                   *catalog_session_));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return FetchPlanningResultResponseFromJson(json, specs_ref.get(), *schema_ptr);
 }
@@ -560,8 +560,8 @@ Status RestCatalog::CancelPlanning(const Table& table, const std::string& plan_i
   return {};
 }
 
-Result<FetchScanTasksResponse> RestCatalog::FetchScanTasks(
-    const Table& table, const std::string& plan_task) {
+Result<FetchScanTasksResponse> RestCatalog::FetchScanTasks(const Table& table,
+                                                           const std::string& plan_task) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::FetchScanTasks());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->ScanTask(table.name()));
   ICEBERG_ASSIGN_OR_RAISE(auto schema_ptr, table.schema());
@@ -572,8 +572,8 @@ Result<FetchScanTasksResponse> RestCatalog::FetchScanTasks(
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, /*headers=*/{},
-                    *ScanPlanErrorHandler::Instance(), *catalog_session_));
+      client_->Post(path, json_request, /*headers=*/{}, *ScanPlanErrorHandler::Instance(),
+                    *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return FetchScanTasksResponseFromJson(json, specs_ref.get(), *schema_ptr);

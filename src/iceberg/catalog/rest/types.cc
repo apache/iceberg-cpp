@@ -139,7 +139,8 @@ bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
     if (a.delete_files().size() != b.delete_files().size()) return false;
     for (size_t j = 0; j < a.delete_files().size(); ++j) {
       if (!a.delete_files()[j] != !b.delete_files()[j]) return false;
-      if (a.delete_files()[j] && *a.delete_files()[j] != *b.delete_files()[j]) return false;
+      if (a.delete_files()[j] && *a.delete_files()[j] != *b.delete_files()[j])
+        return false;
     }
     if (a.residual_filter() != b.residual_filter()) return false;
   }
@@ -151,7 +152,8 @@ bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const
          plan_id == other.plan_id;
 }
 
-bool FetchPlanningResultResponse::operator==(const FetchPlanningResultResponse& other) const {
+bool FetchPlanningResultResponse::operator==(
+    const FetchPlanningResultResponse& other) const {
   return BaseScanTaskResponse::operator==(other) &&
          plan_status.ToString() == other.plan_status.ToString();
 }
@@ -185,7 +187,8 @@ Status PlanTableScanRequest::Validate() const {
   if (snapshot_id.has_value()) {
     if (start_snapshot_id.has_value() || end_snapshot_id.has_value()) {
       return ValidationFailed(
-          "Invalid scan: cannot provide both snapshotId and startSnapshotId/endSnapshotId");
+          "Invalid scan: cannot provide both snapshotId and "
+          "startSnapshotId/endSnapshotId");
     }
   }
   if (start_snapshot_id.has_value() || end_snapshot_id.has_value()) {
@@ -218,11 +221,13 @@ Status PlanTableScanResponse::Validate() const {
   }
   if (!plan_id.empty() && plan_status != "submitted" && plan_status != "completed") {
     return ValidationFailed(
-        "Invalid response: plan id can only be defined when status is 'submitted' or 'completed'");
+        "Invalid response: plan id can only be defined when status is 'submitted' or "
+        "'completed'");
   }
   if (file_scan_tasks.empty() && !delete_files.empty()) {
     return ValidationFailed(
-        "Invalid response: deleteFiles should only be returned with fileScanTasks that reference them");
+        "Invalid response: deleteFiles should only be returned with fileScanTasks that "
+        "reference them");
   }
   return {};
 }
@@ -238,7 +243,8 @@ Status FetchPlanningResultResponse::Validate() const {
   }
   if (file_scan_tasks.empty() && !delete_files.empty()) {
     return ValidationFailed(
-        "Invalid response: deleteFiles should only be returned with fileScanTasks that reference them");
+        "Invalid response: deleteFiles should only be returned with fileScanTasks that "
+        "reference them");
   }
   return {};
 }
@@ -253,7 +259,8 @@ Status FetchScanTasksRequest::Validate() const {
 Status FetchScanTasksResponse::Validate() const {
   if (file_scan_tasks.empty() && !delete_files.empty()) {
     return ValidationFailed(
-        "Invalid response: deleteFiles should only be returned with fileScanTasks that reference them");
+        "Invalid response: deleteFiles should only be returned with fileScanTasks that "
+        "reference them");
   }
   if (plan_tasks.empty() && file_scan_tasks.empty()) {
     return ValidationFailed(

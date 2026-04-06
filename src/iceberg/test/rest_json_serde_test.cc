@@ -26,8 +26,8 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/partition_spec.h"
-#include "iceberg/schema.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
@@ -1381,16 +1381,18 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
-// Helper: empty schema and specs for scan response tests that don't need partition parsing.
+// Helper: empty schema and specs for scan response tests that don't need partition
+// parsing.
 static Schema EmptySchema() { return Schema({}, 0); }
-static std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> EmptySpecs() { return {}; }
+static std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> EmptySpecs() {
+  return {};
+}
 
 // --- PlanTableScanResponse ---
 
 TEST(PlanTableScanResponseFromJsonTest, SubmittedStatusMissingOptionalFields) {
   // "submitted" response: only status and plan-id, no tasks
-  auto json = nlohmann::json::parse(
-      R"({"status":"submitted","plan-id":"abc-123"})");
+  auto json = nlohmann::json::parse(R"({"status":"submitted","plan-id":"abc-123"})");
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result->plan_status, "submitted");
