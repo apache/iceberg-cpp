@@ -81,6 +81,19 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   /// \brief Get the /v1/{prefix}/transactions/commit endpoint path.
   Result<std::string> CommitTransaction() const;
 
+  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan endpoint
+  /// path.
+  Result<std::string> ScanPlan(const TableIdentifier& ident) const;
+
+  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan_id}
+  /// endpoint path.
+  Result<std::string> ScanPlan(const TableIdentifier& ident,
+                               const std::string& plan_id) const;
+
+  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks endpoint
+  /// path.
+  Result<std::string> ScanTask(const TableIdentifier& ident) const;
+
  private:
   ResourcePaths(std::string base_uri, const std::string& prefix);
 

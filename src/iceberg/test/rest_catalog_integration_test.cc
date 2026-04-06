@@ -46,6 +46,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
@@ -446,6 +447,83 @@ TEST_F(RestCatalogIntegrationTest, StageCreateTable) {
   ICEBERG_UNWRAP_OR_FAIL(auto after, catalog->TableExists(table_id));
   EXPECT_TRUE(after);
   EXPECT_EQ(committed->metadata()->properties.configs().at("key1"), "value1");
+}
+
+// -- Scan plan operations --
+
+TEST_F(RestCatalogIntegrationTest, PlanTableScan) {
+  Namespace ns{.levels = {"test_plan_table_scan"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "scan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto response, catalog->PlanTableScan(*table, context));
+  // Empty table: no file scan tasks returned
+  EXPECT_TRUE(response.file_scan_tasks.empty());
+}
+
+TEST_F(RestCatalogIntegrationTest, PlanTableScanWithContext) {
+  Namespace ns{.levels = {"test_plan_scan_context"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "context_scan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  context.selected_columns = {"id", "data"};
+  context.case_sensitive = true;
+  ICEBERG_UNWRAP_OR_FAIL(auto response, catalog->PlanTableScan(*table, context));
+  EXPECT_TRUE(response.file_scan_tasks.empty());
+}
+
+TEST_F(RestCatalogIntegrationTest, FetchPlanningResult) {
+  Namespace ns{.levels = {"test_fetch_planning_result"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "fetch_plan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto plan_response, catalog->PlanTableScan(*table, context));
+
+  // NOTE: apache/iceberg-rest-fixture always responds synchronously (status="completed")
+  // with a non-empty plan_id (e.g. "sync-<uuid>"). Sync plans are immediately discarded
+  // server-side. Async paths are covered by unit tests.
+  EXPECT_FALSE(plan_response.plan_id.empty());
+}
+
+TEST_F(RestCatalogIntegrationTest, CancelPlanning) {
+  Namespace ns{.levels = {"test_cancel_planning"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "cancel_plan_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto plan_response, catalog->PlanTableScan(*table, context));
+
+  // NOTE: apache/iceberg-rest-fixture always responds synchronously — sync plan_id is
+  // accepted for cancellation (idempotent). Async paths are covered by unit tests.
+  ASSERT_FALSE(plan_response.plan_id.empty());
+  ASSERT_THAT(catalog->CancelPlanning(*table, plan_response.plan_id), IsOk());
+}
+
+TEST_F(RestCatalogIntegrationTest, FetchScanTasks) {
+  Namespace ns{.levels = {"test_fetch_scan_tasks"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+  TableIdentifier table_id{.ns = ns, .name = "fetch_tasks_table"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+
+  internal::TableScanContext context;
+  ICEBERG_UNWRAP_OR_FAIL(auto plan_response, catalog->PlanTableScan(*table, context));
+
+  // NOTE: apache/iceberg-rest-fixture always responds synchronously — plan_tasks is
+  // always empty. FetchScanTasks is only relevant for async plans; async paths are
+  // covered by unit tests.
+  EXPECT_TRUE(plan_response.plan_tasks.empty());
 }
 
 // -- Snapshot loading mode --
