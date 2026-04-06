@@ -26,8 +26,10 @@
 
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_requirement.h"
@@ -78,6 +80,21 @@ constexpr std::string_view kExpiresIn = "expires_in";
 constexpr std::string_view kIssuedTokenType = "issued_token_type";
 constexpr std::string_view kRefreshToken = "refresh_token";
 constexpr std::string_view kOAuthScope = "scope";
+constexpr std::string_view kPlanStatus = "status";
+constexpr std::string_view kPlanId = "plan-id";
+constexpr std::string_view kPlanTasks = "plan-tasks";
+constexpr std::string_view kFileScanTasks = "file-scan-tasks";
+constexpr std::string_view kDeleteFiles = "delete-files";
+constexpr std::string_view kSnapshotId = "snapshot-id";
+constexpr std::string_view kSelect = "select";
+constexpr std::string_view kFilter = "filter";
+constexpr std::string_view kCaseSensitive = "case-sensitive";
+constexpr std::string_view kUseSnapshotSchema = "use-snapshot-schema";
+constexpr std::string_view kStartSnapshotId = "start-snapshot-id";
+constexpr std::string_view kEndSnapshotId = "end-snapshot-id";
+constexpr std::string_view kStatsFields = "stats-fields";
+constexpr std::string_view kMinRowsRequired = "min-rows-required";
+constexpr std::string_view kPlanTask = "plan-task";
 
 }  // namespace
 
@@ -502,6 +519,114 @@ Result<OAuthTokenResponse> OAuthTokenResponseFromJson(const nlohmann::json& json
                           GetJsonValueOrDefault<std::string>(json, kRefreshToken));
   ICEBERG_ASSIGN_OR_RAISE(response.scope,
                           GetJsonValueOrDefault<std::string>(json, kOAuthScope));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
+  return response;
+}
+
+Result<nlohmann::json> ToJson(const PlanTableScanRequest& request) {
+  nlohmann::json json;
+  if (request.snapshot_id.has_value()) {
+    json[kSnapshotId] = request.snapshot_id.value();
+  }
+  if (!request.select.empty()) {
+    json[kSelect] = request.select;
+  }
+  if (request.filter) {
+    ICEBERG_ASSIGN_OR_RAISE(auto filter_json, iceberg::ToJson(*request.filter));
+    json[kFilter] = std::move(filter_json);
+  }
+  json[kCaseSensitive] = request.case_sensitive;
+  json[kUseSnapshotSchema] = request.use_snapshot_schema;
+  if (request.start_snapshot_id.has_value()) {
+    json[kStartSnapshotId] = request.start_snapshot_id.value();
+  }
+  if (request.end_snapshot_id.has_value()) {
+    json[kEndSnapshotId] = request.end_snapshot_id.value();
+  }
+  if (!request.statsFields.empty()) {
+    json[kStatsFields] = request.statsFields;
+  }
+  if (request.min_rows_required.has_value()) {
+    json[kMinRowsRequired] = request.min_rows_required.value();
+  }
+  return json;
+}
+
+nlohmann::json ToJson(const FetchScanTasksRequest& request) {
+  nlohmann::json json;
+  json[kPlanTask] = request.planTask;
+  return json;
+}
+
+Status BaseScanTaskResponseFromJson(
+    const nlohmann::json& json, BaseScanTaskResponse* response,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema) {
+  // 1. plan_tasks
+  ICEBERG_ASSIGN_OR_RAISE(
+      response->plan_tasks,
+      GetJsonValueOrDefault<std::vector<std::string>>(json, kPlanTasks));
+
+  // 2. delete_files
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto delete_files_json,
+      GetJsonValueOrDefault<nlohmann::json>(json, kDeleteFiles, nlohmann::json::array()));
+  for (const auto& entry_json : delete_files_json) {
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_file,
+                            DataFileFromJson(entry_json, partition_specs_by_id, schema));
+    response->delete_files.push_back(std::move(delete_file));
+  }
+
+  // 3. file_scan_tasks
+  ICEBERG_ASSIGN_OR_RAISE(auto file_scan_tasks_json,
+                          GetJsonValueOrDefault<nlohmann::json>(json, kFileScanTasks,
+                                                                nlohmann::json::array()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      response->file_scan_tasks,
+      FileScanTasksFromJson(file_scan_tasks_json, response->delete_files,
+                            partition_specs_by_id, schema));
+  return {};
+}
+
+Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema) {
+  PlanTableScanResponse response;
+  ICEBERG_ASSIGN_OR_RAISE(response.plan_status,
+                          GetJsonValue<std::string>(json, kPlanStatus));
+  ICEBERG_ASSIGN_OR_RAISE(response.plan_id,
+                          GetJsonValueOrDefault<std::string>(json, kPlanId));
+  ICEBERG_RETURN_UNEXPECTED(
+      BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
+  return response;
+}
+
+Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema) {
+  FetchPlanningResultResponse response;
+  ICEBERG_ASSIGN_OR_RAISE(response.plan_status,
+                          GetJsonValue<std::string>(json, kPlanStatus));
+  ICEBERG_RETURN_UNEXPECTED(
+      BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
+  return response;
+}
+
+Result<FetchScanTasksResponse> FetchScanTasksResponseFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema) {
+  FetchScanTasksResponse response;
+  ICEBERG_RETURN_UNEXPECTED(
+      BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }

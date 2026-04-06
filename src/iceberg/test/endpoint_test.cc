@@ -145,6 +145,31 @@ TEST(EndpointTest, TransactionEndpoints) {
   EXPECT_EQ(commit_transaction.path(), "/v1/{prefix}/transactions/commit");
 }
 
+// Test predefined scan planning endpoints
+TEST(EndpointTest, ScanPlanEndpoints) {
+  auto plan_table_scan = Endpoint::PlanTableScan();
+  EXPECT_EQ(plan_table_scan.method(), HttpMethod::kPost);
+  EXPECT_EQ(plan_table_scan.path(),
+            "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan");
+  EXPECT_EQ(plan_table_scan.ToString(),
+            "POST /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan");
+
+  auto fetch_planning_result = Endpoint::FetchPlanningResult();
+  EXPECT_EQ(fetch_planning_result.method(), HttpMethod::kGet);
+  EXPECT_EQ(fetch_planning_result.path(),
+            "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}");
+
+  auto cancel_planning = Endpoint::CancelPlanning();
+  EXPECT_EQ(cancel_planning.method(), HttpMethod::kDelete);
+  EXPECT_EQ(cancel_planning.path(),
+            "/v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{plan-id}");
+
+  auto fetch_scan_tasks = Endpoint::FetchScanTasks();
+  EXPECT_EQ(fetch_scan_tasks.method(), HttpMethod::kPost);
+  EXPECT_EQ(fetch_scan_tasks.path(),
+            "/v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks");
+}
+
 // Test endpoint equality
 TEST(EndpointTest, Equality) {
   auto endpoint1 = Endpoint::Make(HttpMethod::kGet, "/path");
@@ -242,6 +267,8 @@ TEST(EndpointTest, StringRoundTrip) {
       Endpoint::ListNamespaces(),  Endpoint::GetNamespaceProperties(),
       Endpoint::CreateNamespace(), Endpoint::LoadTable(),
       Endpoint::CreateTable(),     Endpoint::DeleteTable(),
+      Endpoint::PlanTableScan(),   Endpoint::FetchPlanningResult(),
+      Endpoint::CancelPlanning(),  Endpoint::FetchScanTasks(),
   };
 
   for (const auto& original : endpoints) {
