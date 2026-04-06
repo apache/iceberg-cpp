@@ -109,8 +109,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
   Result<FetchPlanningResultResponse> FetchPlanningResult(
       const Table& table, const std::string& plan_id) override;
   Status CancelPlanning(const Table& table, const std::string& plan_id) override;
-  Result<FetchScanTasksResponse> FetchScanTasks(
-      const Table& table, const std::string& plan_task) override;
+  Result<FetchScanTasksResponse> FetchScanTasks(const Table& table,
+                                                const std::string& plan_task) override;
 
  private:
   RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,

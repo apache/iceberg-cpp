@@ -424,8 +424,10 @@ ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJso
 /// Binary fields (lower-bounds, upper-bounds, key-metadata) are base64-encoded.
 ///
 /// \param json The JSON object representing a `DataFile`.
-/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition parsing.
-/// \param schema The table schema, used with partitionSpecById to resolve partition types.
+/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition
+/// parsing.
+/// \param schema The table schema, used with partitionSpecById to resolve partition
+/// types.
 /// \return A `DataFile` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<DataFile> DataFileFromJson(const nlohmann::json& json);
 
@@ -440,8 +442,10 @@ ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
 ///
 /// \param json The JSON array of file scan task objects.
 /// \param delete_files Delete files indexed by the tasks' delete-file-references.
-/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition parsing.
-/// \param schema The table schema, used with partitionSpecById to resolve partition types.
+/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition
+/// parsing.
+/// \param schema The table schema, used with partitionSpecById to resolve partition
+/// types.
 /// \return A vector of `FileScanTask` objects or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::vector<FileScanTask>> FileScanTasksFromJson(
     const nlohmann::json& json, const std::vector<DataFile>& delete_files,

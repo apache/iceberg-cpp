@@ -187,8 +187,7 @@ Status ViewCommitErrorHandler::Accept(const ErrorResponse& error) const {
 }
 
 const std::shared_ptr<ScanPlanErrorHandler>& ScanPlanErrorHandler::Instance() {
-  static const std::shared_ptr<ScanPlanErrorHandler> instance{
-      new ScanPlanErrorHandler()};
+  static const std::shared_ptr<ScanPlanErrorHandler> instance{new ScanPlanErrorHandler()};
   return instance;
 }
 
@@ -214,6 +213,5 @@ Status ScanPlanErrorHandler::Accept(const ErrorResponse& error) const {
 
   return DefaultErrorHandler::Accept(error);
 }
-
 
 }  // namespace iceberg::rest
