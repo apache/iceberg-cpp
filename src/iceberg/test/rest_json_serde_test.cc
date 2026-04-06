@@ -1436,7 +1436,7 @@ TEST(FetchPlanningResultResponseFromJsonTest, SubmittedStatusNoTasks) {
   auto json = nlohmann::json::parse(R"({"status":"submitted"})");
   auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->plan_status.ToString(), "submitted");
+  EXPECT_EQ(result->plan_status, "submitted");
   EXPECT_TRUE(result->plan_tasks.empty());
   EXPECT_TRUE(result->file_scan_tasks.empty());
   EXPECT_TRUE(result->delete_files.empty());
@@ -1447,7 +1447,7 @@ TEST(FetchPlanningResultResponseFromJsonTest, CompletedStatusWithPlanTasks) {
       R"({"status":"completed","plan-tasks":["task-1"],"delete-files":[],"file-scan-tasks":[]})");
   auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->plan_status.ToString(), "completed");
+  EXPECT_EQ(result->plan_status, "completed");
   ASSERT_EQ(result->plan_tasks.size(), 1);
   EXPECT_EQ(result->plan_tasks[0], "task-1");
 }
