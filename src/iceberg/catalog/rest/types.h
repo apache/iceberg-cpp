@@ -333,7 +333,7 @@ struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
 struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
   std::string plan_status;
   std::string plan_id;
-  // TODO: Add credentials.
+  // TODO(sandeepg): Add credentials.
 
   Status Validate() const;
 
@@ -344,7 +344,7 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
 /// available scan tasks.
 struct ICEBERG_REST_EXPORT FetchPlanningResultResponse : BaseScanTaskResponse {
   std::string plan_status;
-  // TODO: Add credentials.
+  // TODO(sandeepg): Add credentials.
 
   Status Validate() const;
 
