@@ -34,47 +34,6 @@
 
 namespace iceberg {
 
-class ICEBERG_EXPORT PlanStatus {
- public:
-  enum class Status {
-    kCompleted,
-    kSubmitted,
-    kCancelled,
-    kFailed,
-    kUnknown
-  };
-
-  PlanStatus() : status_(Status::kUnknown) {}
-  explicit PlanStatus(Status status) : status_(status) {}
-
-  static Status FromString(std::string_view status_str) {
-    if (status_str == "completed") {
-      return Status::kCompleted;
-    } else if (status_str == "submitted") {
-      return Status::kSubmitted;
-    } else if (status_str == "cancelled") {
-      return Status::kCancelled;
-    } else if (status_str == "failed") {
-      return Status::kFailed;
-    }
-    return Status::kUnknown;
-  }
-
-  const std::string ToString() const {
-    switch (status_) {
-      case Status::kCompleted: return "completed";
-      case Status::kSubmitted: return "submitted";
-      case Status::kCancelled: return "cancelled";
-      case Status::kFailed: return "failed";
-      default: return "unknown";
-    }
-  }
-
- private:
-  Status status_;
-
-};
-
 /// \brief An abstract scan task.
 class ICEBERG_EXPORT ScanTask {
  public:
