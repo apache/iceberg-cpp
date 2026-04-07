@@ -26,27 +26,23 @@
 
 namespace iceberg::arrow {
 
-void RegisterFileIO() {
+void RegisterLocalFileIO() {
   static std::once_flag flag;
   std::call_once(flag, []() {
-    // Register Arrow local filesystem FileIO
     FileIORegistry::Register(
-        FileIORegistry::kArrowLocalFileIO,
-        [](const std::string& /*warehouse*/,
-           const std::unordered_map<std::string, std::string>& /*properties*/)
-            -> Result<std::shared_ptr<FileIO>> {
-          return std::shared_ptr<FileIO>(MakeLocalFileIO());
-        });
+        std::string(FileIORegistry::kArrowLocalFileIO),
+        [](const std::unordered_map<std::string, std::string>& /*properties*/)
+            -> Result<std::unique_ptr<FileIO>> { return MakeLocalFileIO(); });
+  });
+}
 
-    // Register Arrow S3 FileIO
+void RegisterS3FileIO() {
+  static std::once_flag flag;
+  std::call_once(flag, []() {
     FileIORegistry::Register(
-        FileIORegistry::kArrowS3FileIO,
-        [](const std::string& warehouse,
-           const std::unordered_map<std::string, std::string>& properties)
-            -> Result<std::shared_ptr<FileIO>> {
-          ICEBERG_ASSIGN_OR_RAISE(auto file_io, MakeS3FileIO(warehouse, properties));
-          return std::shared_ptr<FileIO>(std::move(file_io));
-        });
+        std::string(FileIORegistry::kArrowS3FileIO),
+        [](const std::unordered_map<std::string, std::string>& properties)
+            -> Result<std::unique_ptr<FileIO>> { return MakeS3FileIO(properties); });
   });
 }
 

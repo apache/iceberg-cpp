@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <string>
+#include <string_view>
 
 namespace iceberg::arrow {
 
@@ -29,24 +29,26 @@ namespace iceberg::arrow {
 /// via the Arrow filesystem integration, following the Iceberg spec for
 /// S3 configuration properties.
 struct S3Properties {
+  /// S3 URI scheme
+  static constexpr std::string_view kS3Schema = "s3";
   /// AWS access key ID
-  static constexpr const char* kAccessKeyId = "s3.access-key-id";
+  static constexpr std::string_view kAccessKeyId = "s3.access-key-id";
   /// AWS secret access key
-  static constexpr const char* kSecretAccessKey = "s3.secret-access-key";
+  static constexpr std::string_view kSecretAccessKey = "s3.secret-access-key";
   /// AWS session token (for temporary credentials)
-  static constexpr const char* kSessionToken = "s3.session-token";
+  static constexpr std::string_view kSessionToken = "s3.session-token";
   /// AWS region
-  static constexpr const char* kRegion = "s3.region";
+  static constexpr std::string_view kRegion = "s3.region";
   /// Custom endpoint override (for MinIO, LocalStack, etc.)
-  static constexpr const char* kEndpoint = "s3.endpoint";
+  static constexpr std::string_view kEndpoint = "s3.endpoint";
   /// Whether to use path-style access (needed for MinIO)
-  static constexpr const char* kPathStyleAccess = "s3.path-style-access";
+  static constexpr std::string_view kPathStyleAccess = "s3.path-style-access";
   /// Whether SSL is enabled
-  static constexpr const char* kSslEnabled = "s3.ssl.enabled";
+  static constexpr std::string_view kSslEnabled = "s3.ssl.enabled";
   /// Connection timeout in milliseconds
-  static constexpr const char* kConnectTimeoutMs = "s3.connect-timeout-ms";
+  static constexpr std::string_view kConnectTimeoutMs = "s3.connect-timeout-ms";
   /// Socket timeout in milliseconds
-  static constexpr const char* kSocketTimeoutMs = "s3.socket-timeout-ms";
+  static constexpr std::string_view kSocketTimeoutMs = "s3.socket-timeout-ms";
 };
 
 }  // namespace iceberg::arrow

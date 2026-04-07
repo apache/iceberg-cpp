@@ -21,8 +21,8 @@
 
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "iceberg/file_io.h"
@@ -39,64 +39,35 @@ namespace iceberg {
 class ICEBERG_EXPORT FileIORegistry {
  public:
   /// Well-known implementation names
-  static constexpr const char* kArrowLocalFileIO = "org.apache.iceberg.arrow.ArrowFileIO";
-  static constexpr const char* kArrowS3FileIO = "org.apache.iceberg.arrow.ArrowS3FileIO";
+  static constexpr std::string_view kArrowLocalFileIO = "local";
+  static constexpr std::string_view kArrowS3FileIO = "s3";
 
   /// Factory function type for creating FileIO instances.
-  using Factory = std::function<Result<std::shared_ptr<FileIO>>(
-      const std::string& warehouse,
+  using Factory = std::function<Result<std::unique_ptr<FileIO>>(
       const std::unordered_map<std::string, std::string>& properties)>;
 
   /// \brief Register a FileIO factory under the given name.
   ///
-  /// \param name The implementation name (e.g., "org.apache.iceberg.arrow.ArrowFileIO")
+  /// \param name The implementation name (e.g., "local", "s3")
   /// \param factory The factory function that creates the FileIO instance.
-  static void Register(const std::string& name, Factory factory) {
-    std::lock_guard lock(Mutex());
-    Registry()[name] = std::move(factory);
-  }
+  static void Register(const std::string& name, Factory factory);
 
   /// \brief Load a FileIO implementation by name.
   ///
   /// \param name The implementation name to look up.
-  /// \param warehouse The warehouse location URI.
   /// \param properties Configuration properties to pass to the factory.
-  /// \return A shared_ptr to the FileIO instance, or an error if not found.
-  static Result<std::shared_ptr<FileIO>> Load(
-      const std::string& name, const std::string& warehouse,
-      const std::unordered_map<std::string, std::string>& properties) {
-    Factory factory;
-    {
-      std::lock_guard lock(Mutex());
-      auto it = Registry().find(name);
-      if (it == Registry().end()) {
-        return std::unexpected<Error>(
-            {.kind = ErrorKind::kNotFound,
-             .message = "FileIO implementation not found: " + name});
-      }
-      factory = it->second;
-    }
-    // Invoke factory outside the lock to avoid blocking other Register/Load
-    // calls and to prevent deadlocks if the factory calls back into the registry.
-    return factory(warehouse, properties);
-  }
-
- private:
-  static std::unordered_map<std::string, Factory>& Registry() {
-    static std::unordered_map<std::string, Factory> registry;
-    return registry;
-  }
-
-  static std::mutex& Mutex() {
-    static std::mutex mutex;
-    return mutex;
-  }
+  /// \return A unique_ptr to the FileIO instance, or an error if not found.
+  static Result<std::unique_ptr<FileIO>> Load(
+      const std::string& name,
+      const std::unordered_map<std::string, std::string>& properties);
 };
 
 /// \brief Property keys for FileIO configuration.
 struct FileIOProperties {
-  /// The FileIO implementation class name (e.g., "org.apache.iceberg.arrow.ArrowFileIO")
-  static constexpr const char* kImpl = "io-impl";
+  /// The FileIO implementation class name (e.g., "local", "s3")
+  // TODO: add mapping from Java io-impl class names (e.g.,
+  // "org.apache.iceberg.aws.s3.S3FileIO") to the simple keys used here.
+  static constexpr std::string_view kImpl = "io-impl";
 };
 
 }  // namespace iceberg
