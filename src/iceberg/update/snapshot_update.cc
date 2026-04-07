@@ -226,6 +226,18 @@ int64_t SnapshotUpdate::SnapshotId() {
 
 Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+
+  if (staged_snapshot_ != nullptr) {
+    for (const auto& manifest_list : manifest_lists_) {
+      std::ignore = DeleteFile(manifest_list);
+    }
+    manifest_lists_.clear();
+    CleanUncommitted(std::unordered_set<std::string>{});
+
+    staged_snapshot_ = nullptr;
+    summary_.Clear();
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(auto parent_snapshot,
                           SnapshotUtil::OptionalLatestSnapshot(base(), target_branch_));
 
