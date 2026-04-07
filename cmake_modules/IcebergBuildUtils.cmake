@@ -152,10 +152,6 @@ function(add_iceberg_lib LIB_NAME)
 
     string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
     target_compile_definitions(${LIB_NAME}_shared PRIVATE ${VISIBILITY_NAME}_EXPORTING)
-    set_target_properties(${LIB_NAME}_shared
-                          PROPERTIES C_VISIBILITY_PRESET hidden CXX_VISIBILITY_PRESET
-                                                                hidden
-                                     VISIBILITY_INLINES_HIDDEN 1)
 
     if(MSVC_TOOLCHAIN)
       target_compile_options(${LIB_NAME}_shared PRIVATE /bigobj)

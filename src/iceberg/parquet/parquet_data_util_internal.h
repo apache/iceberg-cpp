@@ -22,6 +22,7 @@
 #include <arrow/type_fwd.h>
 
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/schema_util.h"
 
 namespace iceberg::parquet {
@@ -35,7 +36,7 @@ namespace iceberg::parquet {
 /// \param metadata_context The metadata column context for populating _file and _pos.
 /// \param pool The arrow memory pool.
 /// \return The converted record batch.
-Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
+ICEBERG_BUNDLE_EXPORT Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
     std::shared_ptr<::arrow::RecordBatch> record_batch,
     const std::shared_ptr<::arrow::Schema>& output_arrow_schema,
     const Schema& projected_schema, const SchemaProjection& projection,
