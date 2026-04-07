@@ -46,36 +46,25 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
   RestCatalog(RestCatalog&&) = delete;
   RestCatalog& operator=(RestCatalog&&) = delete;
 
-  /// \brief Create a RestCatalog instance
+  /// \brief Create a RestCatalog instance.
   ///
-  /// \param config the configuration for the RestCatalog
-  /// \param file_io the FileIO instance to use for table operations
-  /// \return a shared_ptr to RestCatalog instance
-  static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
-                                                   std::shared_ptr<FileIO> file_io);
-
-  /// \brief Create a RestCatalog instance with auto-detected FileIO.
-  ///
-  /// This overload automatically creates an appropriate FileIO based on the "io-impl"
-  /// property or the warehouse location URI scheme.
-  ///
-  /// FileIO selection logic:
-  /// 1. If "io-impl" property is set, use the specified implementation from
-  /// FileIORegistry.
-  /// 2. Otherwise, auto-detect based on warehouse URI:
-  ///    - "s3://" -> ArrowS3FileIO
-  ///    - Local path -> ArrowLocalFileIO
+  /// FileIO is resolved in this order:
+  /// 1. If config.GetFileIO() is set, use it directly.
+  /// 2. If the "io-impl" property is set, load from FileIORegistry.
+  /// 3. Otherwise, auto-detect based on warehouse URI scheme:
+  ///    - "s3://..." -> "s3" (ArrowS3FileIO)
+  ///    - anything else -> "local" (ArrowLocalFileIO)
   ///
   /// Users can register custom FileIO implementations via FileIORegistry::Register():
   /// \code
-  /// FileIORegistry::Register("com.mycompany.MyFileIO",
-  ///     [](const std::string& warehouse, const auto& props) {
-  ///         return std::make_shared<MyFileIO>(warehouse, props);
+  /// FileIORegistry::Register("myfs",
+  ///     [](const auto& props) -> Result<std::unique_ptr<FileIO>> {
+  ///         return std::make_unique<MyFileIO>(props);
   ///     });
   /// \endcode
   ///
   /// \param config the configuration for the RestCatalog, including warehouse location
-  ///        and optional "io-impl" property
+  ///        and optional "io-impl" property or pre-configured FileIO
   /// \return a shared_ptr to RestCatalog instance, or an error if FileIO creation fails
   static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config);
 

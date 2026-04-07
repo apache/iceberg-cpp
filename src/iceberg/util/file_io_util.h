@@ -19,17 +19,30 @@
 
 #pragma once
 
-/// \file iceberg/arrow/file_io_register.h
-/// \brief Provide functions to register Arrow FileIO implementations.
+#include <memory>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
-#include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/file_io.h"
+#include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
-namespace iceberg::arrow {
+namespace iceberg {
 
-/// \brief Register the Arrow local filesystem FileIO into the FileIORegistry.
-ICEBERG_BUNDLE_EXPORT void RegisterLocalFileIO();
+class ICEBERG_EXPORT FileIOUtil {
+ public:
+  /// \brief Detect FileIO registry key from URI scheme.
+  ///
+  /// Returns "s3" for "s3://..." URIs, "local" otherwise.
+  static std::string DetectFileIOName(std::string_view uri);
 
-/// \brief Register the Arrow S3 FileIO into the FileIORegistry.
-ICEBERG_BUNDLE_EXPORT void RegisterS3FileIO();
+  /// \brief Create a FileIO instance based on properties.
+  ///
+  /// Checks the "io-impl" property first; if not set, falls back to
+  /// detecting the scheme from the "warehouse" property.
+  static Result<std::unique_ptr<FileIO>> CreateFileIO(
+      const std::unordered_map<std::string, std::string>& properties);
+};
 
-}  // namespace iceberg::arrow
+}  // namespace iceberg

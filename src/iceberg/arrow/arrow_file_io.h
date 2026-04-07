@@ -38,13 +38,16 @@ ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeLocalFileIO();
 /// This function initializes the S3 subsystem if not already initialized (thread-safe).
 /// The S3 initialization is done once per process using std::call_once.
 ///
-/// \param uri An S3 URI (must start with "s3://") used to validate the scheme.
-/// \param properties Optional configuration properties for S3 access. See S3Properties
+/// \param properties Configuration properties for S3 access. See S3Properties
 ///        for available keys (credentials, region, endpoint, timeouts, etc.).
-/// \return A FileIO instance for S3 operations, or an error if S3 is not supported
-///         or the URI is invalid.
+/// \return A FileIO instance for S3 operations, or an error if S3 is not supported.
 ICEBERG_BUNDLE_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIO(
-    const std::string& uri,
     const std::unordered_map<std::string, std::string>& properties = {});
+
+/// \brief Finalize (clean up) the Arrow S3 subsystem.
+///
+/// Must be called before process exit if S3 was initialized, otherwise Arrow's
+/// static destructors may cause a non-zero exit.
+ICEBERG_BUNDLE_EXPORT Status FinalizeS3();
 
 }  // namespace iceberg::arrow

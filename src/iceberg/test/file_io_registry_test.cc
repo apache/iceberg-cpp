@@ -21,6 +21,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/file_io_util.h"
 
 namespace iceberg {
 
@@ -48,11 +49,10 @@ TEST(FileIoRegistryTest, RegisterAndLoad) {
   const std::string impl_name = "com.test.MockFileIO";
   FileIORegistry::Register(
       impl_name,
-      [](const std::string& /*warehouse*/,
-         const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::shared_ptr<FileIO>> { return std::make_shared<MockFileIO>(); });
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
 
-  auto result = FileIORegistry::Load(impl_name, "/test/warehouse", {});
+  auto result = FileIORegistry::Load(impl_name, {});
   ASSERT_THAT(result, IsOk());
   EXPECT_NE(result.value(), nullptr);
 
@@ -63,7 +63,7 @@ TEST(FileIoRegistryTest, RegisterAndLoad) {
 }
 
 TEST(FileIoRegistryTest, LoadNonExistentReturnsError) {
-  auto result = FileIORegistry::Load("com.nonexistent.FileIO", "/test/warehouse", {});
+  auto result = FileIORegistry::Load("com.nonexistent.FileIO", {});
   EXPECT_THAT(result, IsError(ErrorKind::kNotFound));
   EXPECT_THAT(result, HasErrorMessage("FileIO implementation not found"));
 }
@@ -74,46 +74,126 @@ TEST(FileIoRegistryTest, OverrideExistingRegistration) {
   // Register first implementation
   FileIORegistry::Register(
       impl_name,
-      [](const std::string& /*warehouse*/,
-         const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::shared_ptr<FileIO>> { return std::make_shared<MockFileIO>(); });
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
 
   // Override with a different factory
   FileIORegistry::Register(
       impl_name,
-      [](const std::string& /*warehouse*/,
-         const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::shared_ptr<FileIO>> { return std::make_shared<MockFileIO>(); });
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
 
   // Should still work (the override replaces the original)
-  auto result = FileIORegistry::Load(impl_name, "/test/warehouse", {});
+  auto result = FileIORegistry::Load(impl_name, {});
   ASSERT_THAT(result, IsOk());
   EXPECT_NE(result.value(), nullptr);
 }
 
-TEST(FileIoRegistryTest, FactoryReceivesWarehouseAndProperties) {
+TEST(FileIoRegistryTest, FactoryReceivesProperties) {
   const std::string impl_name = "com.test.PropCheckFileIO";
-  std::string captured_warehouse;
   std::unordered_map<std::string, std::string> captured_properties;
 
   FileIORegistry::Register(
       impl_name,
-      [&captured_warehouse, &captured_properties](
-          const std::string& warehouse,
+      [&captured_properties](
           const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::shared_ptr<FileIO>> {
-        captured_warehouse = warehouse;
+          -> Result<std::unique_ptr<FileIO>> {
         captured_properties = properties;
-        return std::make_shared<MockFileIO>();
+        return std::make_unique<MockFileIO>();
       });
 
   std::unordered_map<std::string, std::string> props = {{"key1", "val1"},
                                                         {"key2", "val2"}};
-  auto result = FileIORegistry::Load(impl_name, "s3://my-bucket/warehouse", props);
+  auto result = FileIORegistry::Load(impl_name, props);
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(captured_warehouse, "s3://my-bucket/warehouse");
   EXPECT_EQ(captured_properties.at("key1"), "val1");
   EXPECT_EQ(captured_properties.at("key2"), "val2");
+}
+
+TEST(FileIOUtilTest, DetectFileIONameFromScheme) {
+  EXPECT_EQ(FileIOUtil::DetectFileIOName("s3://bucket/path"),
+            FileIORegistry::kArrowS3FileIO);
+  EXPECT_EQ(FileIOUtil::DetectFileIOName("/tmp/warehouse"),
+            FileIORegistry::kArrowLocalFileIO);
+  EXPECT_EQ(FileIOUtil::DetectFileIOName("file:///tmp/warehouse"),
+            FileIORegistry::kArrowLocalFileIO);
+}
+
+TEST(FileIOUtilTest, CreateFileIOMissingImpl) {
+  auto result = FileIOUtil::CreateFileIO({});
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(FileIOUtilTest, CreateFileIORejectsIncompatibleWarehouse) {
+  // Register a mock "s3" factory so the registry lookup would succeed
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowS3FileIO),
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+
+  // io-impl=s3 with a local warehouse path should fail-fast
+  std::unordered_map<std::string, std::string> props = {
+      {"io-impl", "s3"},
+      {"warehouse", "/tmp/warehouse"},
+  };
+  auto result = FileIOUtil::CreateFileIO(props);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("incompatible"));
+}
+
+TEST(FileIOUtilTest, CreateFileIOAllowsCompatibleWarehouse) {
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowS3FileIO),
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+
+  // io-impl=s3 with an s3:// warehouse should succeed
+  std::unordered_map<std::string, std::string> props = {
+      {"io-impl", "s3"},
+      {"warehouse", "s3://my-bucket/warehouse"},
+  };
+  auto result = FileIOUtil::CreateFileIO(props);
+  ASSERT_THAT(result, IsOk());
+}
+
+TEST(FileIOUtilTest, CreateFileIOPassesThroughCustomImpl) {
+  const std::string custom_impl = "com.mycompany.CustomFileIO";
+  FileIORegistry::Register(
+      custom_impl,
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+
+  // Custom io-impl with a local warehouse should NOT be rejected
+  std::unordered_map<std::string, std::string> props = {
+      {"io-impl", custom_impl},
+      {"warehouse", "/tmp/warehouse"},
+  };
+  auto result = FileIOUtil::CreateFileIO(props);
+  ASSERT_THAT(result, IsOk());
+}
+
+TEST(FileIOUtilTest, CreateFileIOUnregisteredCustomImplReturnsNotFound) {
+  // Unregistered custom io-impl should get NotFound, not InvalidArgument
+  std::unordered_map<std::string, std::string> props = {
+      {"io-impl", "com.nonexistent.FileIO"},
+      {"warehouse", "/tmp/warehouse"},
+  };
+  auto result = FileIOUtil::CreateFileIO(props);
+  EXPECT_THAT(result, IsError(ErrorKind::kNotFound));
+}
+
+TEST(FileIOUtilTest, CreateFileIOSkipsCheckWhenWarehouseAbsent) {
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowLocalFileIO),
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+
+  // No warehouse property — should just go through to the factory
+  std::unordered_map<std::string, std::string> props = {
+      {"io-impl", "local"},
+  };
+  auto result = FileIOUtil::CreateFileIO(props);
+  ASSERT_THAT(result, IsOk());
 }
 
 }  // namespace iceberg

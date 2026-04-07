@@ -19,10 +19,12 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/file_io.h"
 #include "iceberg/result.h"
 #include "iceberg/util/config.h"
 
@@ -75,6 +77,16 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   ///         "REFS", or an error if the value is invalid. Parsing is
   ///         case-insensitive to match Java behavior.
   Result<SnapshotMode> SnapshotLoadingMode() const;
+
+  /// \brief Set a custom FileIO instance. If not set, FileIO will be
+  /// auto-detected from warehouse URI scheme or "io-impl" property.
+  void SetFileIO(std::shared_ptr<FileIO> file_io);
+
+  /// \brief Get the configured FileIO instance (may be nullptr).
+  const std::shared_ptr<FileIO>& GetFileIO() const;
+
+ private:
+  std::shared_ptr<FileIO> file_io_;
 };
 
 }  // namespace iceberg::rest

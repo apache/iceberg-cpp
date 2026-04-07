@@ -131,6 +131,7 @@ iceberg_sources = files(
     'util/content_file_util.cc',
     'util/conversions.cc',
     'util/decimal.cc',
+    'util/file_io_util.cc',
     'util/gzip_internal.cc',
     'util/murmurhash3_internal.cc',
     'util/property_util.cc',
@@ -149,8 +150,8 @@ iceberg_sources = files(
 # CRoaring does not export symbols, so on Windows it must
 # be used as a static lib
 croaring_needs_static = (
-    get_option('default_library') == 'static' or
-    host_machine.system() == 'windows'
+    get_option('default_library') == 'static'
+    or host_machine.system() == 'windows'
 )
 croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')

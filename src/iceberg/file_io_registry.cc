@@ -17,5 +17,47 @@
 
 #include "iceberg/file_io_registry.h"
 
-// FileIORegistry is header-only (all methods are inline/static).
-// This translation unit ensures the header compiles cleanly.
+#include <mutex>
+
+namespace iceberg {
+
+namespace {
+
+std::mutex& RegistryMutex() {
+  static std::mutex mutex;
+  return mutex;
+}
+
+auto& RegistryMap() {
+  static std::unordered_map<std::string, FileIORegistry::Factory> registry;
+  return registry;
+}
+
+}  // namespace
+
+void FileIORegistry::Register(const std::string& name, Factory factory) {
+  std::lock_guard lock(RegistryMutex());
+  RegistryMap()[name] = std::move(factory);
+}
+
+Result<std::unique_ptr<FileIO>> FileIORegistry::Load(
+    const std::string& name,
+    const std::unordered_map<std::string, std::string>& properties) {
+  Factory factory;
+  {
+    std::lock_guard lock(RegistryMutex());
+    auto it = RegistryMap().find(name);
+    if (it == RegistryMap().end()) {
+      return std::unexpected<Error>(
+          {.kind = ErrorKind::kNotFound,
+           .message = "FileIO implementation not found: " + name});
+    }
+    factory = it->second;
+  }
+  // Invoke factory outside the lock to avoid blocking other
+  // Register/Load calls and to prevent deadlocks if the factory
+  // calls back into the registry.
+  return factory(properties);
+}
+
+}  // namespace iceberg
