@@ -130,7 +130,8 @@ class RestCatalogIntegrationTest : public ::testing::Test {
     for (const auto& [k, v] : extra) {
       config.mutable_configs()[k] = v;
     }
-    return RestCatalog::Make(config, std::make_shared<test::StdFileIO>());
+    config.SetFileIO(std::make_shared<test::StdFileIO>());
+    return RestCatalog::Make(config);
   }
 
   /// Create a catalog configured with a specific snapshot loading mode.
@@ -498,7 +499,8 @@ TEST_F(RestCatalogIntegrationTest, MakeWithUnregisteredIoImplReturnsError) {
   config.Set(RestCatalogProperties::kUri, CatalogUri())
       .Set(RestCatalogProperties::kName, std::string(kCatalogName))
       .Set(RestCatalogProperties::kWarehouse, std::string("/local/warehouse"));
-  config.mutable_configs()[FileIOProperties::kImpl] = "com.nonexistent.FileIO";
+  config.mutable_configs()[std::string(FileIOProperties::kImpl)] =
+      "com.nonexistent.FileIO";
 
   auto result = RestCatalog::Make(config);
 
@@ -509,11 +511,10 @@ TEST_F(RestCatalogIntegrationTest, MakeWithUnregisteredIoImplReturnsError) {
 
 TEST_F(RestCatalogIntegrationTest, MakeWithAutoDetectedLocalFileIO) {
   FileIORegistry::Register(
-      FileIORegistry::kArrowLocalFileIO,
-      [](const std::string& /*warehouse*/,
-         const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::shared_ptr<FileIO>> {
-        return std::make_shared<test::StdFileIO>();
+      std::string(FileIORegistry::kArrowLocalFileIO),
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<test::StdFileIO>();
       });
 
   auto config = RestCatalogProperties::default_properties();
@@ -532,17 +533,16 @@ TEST_F(RestCatalogIntegrationTest, MakeWithCustomIoImpl) {
   const std::string custom_impl = "com.mycompany.CustomFileIO";
   FileIORegistry::Register(
       custom_impl,
-      [](const std::string& /*warehouse*/,
-         const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::shared_ptr<FileIO>> {
-        return std::make_shared<test::StdFileIO>();
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<test::StdFileIO>();
       });
 
   auto config = RestCatalogProperties::default_properties();
   config.Set(RestCatalogProperties::kUri, CatalogUri())
       .Set(RestCatalogProperties::kName, std::string(kCatalogName))
       .Set(RestCatalogProperties::kWarehouse, std::string("/any/warehouse"));
-  config.mutable_configs()[FileIOProperties::kImpl] = custom_impl;
+  config.mutable_configs()[std::string(FileIOProperties::kImpl)] = custom_impl;
 
   auto catalog_result = RestCatalog::Make(config);
   ASSERT_THAT(catalog_result, IsOk());

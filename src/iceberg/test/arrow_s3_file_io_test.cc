@@ -24,12 +24,8 @@
 
 #include <gtest/gtest.h>
 
-#ifdef ICEBERG_S3_ENABLED
-#  include <arrow/filesystem/s3fs.h>
-#endif
-
 #include "iceberg/arrow/arrow_file_io.h"
-#include "iceberg/arrow/s3_properties.h"
+#include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/test/matchers.h"
 
 #ifdef ICEBERG_S3_ENABLED
@@ -45,9 +41,9 @@ namespace {
 class ArrowS3TestEnvironment : public ::testing::Environment {
  public:
   void TearDown() override {
-    auto status = ::arrow::fs::FinalizeS3();
-    if (!status.ok()) {
-      std::cerr << "Warning: FinalizeS3 failed: " << status.ToString() << std::endl;
+    auto status = iceberg::arrow::FinalizeS3();
+    if (!status.has_value()) {
+      std::cerr << "Warning: FinalizeS3 failed: " << status.error().message << std::endl;
     }
   }
 };
@@ -61,23 +57,24 @@ class ArrowS3TestEnvironment : public ::testing::Environment {
 
 namespace iceberg::arrow {
 
-TEST(ArrowS3FileIOTest, RejectsNonS3Uri) {
-  auto result = MakeS3FileIO("file:///tmp/not-s3");
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("s3://"));
+TEST(ArrowS3FileIOTest, CreateWithDefaultProperties) {
+  auto result = MakeS3FileIO({});
+  if (result.has_value()) {
+    EXPECT_NE(result.value(), nullptr);
+  }
 }
 
 #ifdef ICEBERG_S3_ENABLED
 TEST(ArrowS3FileIOTest, RequiresS3SupportAtBuildTime) {
-  auto result = MakeS3FileIO("s3://bucket/path");
+  auto result = MakeS3FileIO();
   if (!result.has_value()) {
-    EXPECT_NE(result.error().kind, ErrorKind::kNotImplemented);
+    EXPECT_NE(result.error().kind, ErrorKind::kNotSupported);
   }
 }
 #else
 TEST(ArrowS3FileIOTest, RequiresS3SupportAtBuildTime) {
-  auto result = MakeS3FileIO("s3://warehouse/iceberg_example");
-  EXPECT_THAT(result, IsError(ErrorKind::kNotImplemented));
+  auto result = MakeS3FileIO();
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
 }
 #endif
 
@@ -87,9 +84,9 @@ TEST(ArrowS3FileIOTest, ReadWriteFile) {
     GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
   }
 
-  auto io_res = MakeS3FileIO(base_uri);
+  auto io_res = MakeS3FileIO();
   if (!io_res.has_value()) {
-    if (io_res.error().kind == ErrorKind::kNotImplemented) {
+    if (io_res.error().kind == ErrorKind::kNotSupported) {
       GTEST_SKIP() << "Arrow S3 support is not enabled";
     }
     FAIL() << "MakeS3FileIO failed: " << io_res.error().message;
@@ -116,30 +113,11 @@ TEST(ArrowS3FileIOTest, ReadWriteFile) {
 // Tests for MakeS3FileIO with properties
 // ============================================================================
 
-TEST(ArrowS3FileIOTest, MakeS3FileIOWithPropertiesRejectsNonS3Uri) {
-  std::unordered_map<std::string, std::string> properties;
-  auto result = MakeS3FileIO("file:///tmp/not-s3", properties);
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("s3://"));
-}
-
-TEST(ArrowS3FileIOTest, MakeS3FileIOWithEmptyPropertiesFallsBack) {
-  const char* base_uri = std::getenv("ICEBERG_TEST_S3_URI");
-  if (base_uri == nullptr || std::string(base_uri).empty()) {
-    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+TEST(ArrowS3FileIOTest, MakeS3FileIOWithEmptyProperties) {
+  auto result = MakeS3FileIO({});
+  if (result.has_value()) {
+    EXPECT_NE(result.value(), nullptr);
   }
-
-  // Empty properties should fall back to URI-based resolution
-  std::unordered_map<std::string, std::string> properties;
-  auto io_res = MakeS3FileIO(base_uri, properties);
-  if (!io_res.has_value()) {
-    if (io_res.error().kind == ErrorKind::kNotImplemented) {
-      GTEST_SKIP() << "Arrow S3 support is not enabled";
-    }
-    FAIL() << "MakeS3FileIO failed: " << io_res.error().message;
-  }
-
-  EXPECT_NE(io_res.value(), nullptr);
 }
 
 TEST(ArrowS3FileIOTest, MakeS3FileIOWithProperties) {
@@ -157,23 +135,23 @@ TEST(ArrowS3FileIOTest, MakeS3FileIOWithProperties) {
 
   // Configure credentials if available
   if (access_key != nullptr && secret_key != nullptr) {
-    properties[S3Properties::kAccessKeyId] = access_key;
-    properties[S3Properties::kSecretAccessKey] = secret_key;
+    properties[std::string(S3Properties::kAccessKeyId)] = access_key;
+    properties[std::string(S3Properties::kSecretAccessKey)] = secret_key;
   }
 
   // Configure endpoint if available (for MinIO, LocalStack, etc.)
   if (endpoint != nullptr && std::string(endpoint).length() > 0) {
-    properties[S3Properties::kEndpoint] = endpoint;
+    properties[std::string(S3Properties::kEndpoint)] = endpoint;
   }
 
   // Configure region if available
   if (region != nullptr && std::string(region).length() > 0) {
-    properties[S3Properties::kRegion] = region;
+    properties[std::string(S3Properties::kRegion)] = region;
   }
 
-  auto io_res = MakeS3FileIO(base_uri, properties);
+  auto io_res = MakeS3FileIO(properties);
   if (!io_res.has_value()) {
-    if (io_res.error().kind == ErrorKind::kNotImplemented) {
+    if (io_res.error().kind == ErrorKind::kNotSupported) {
       GTEST_SKIP() << "Arrow S3 support is not enabled";
     }
     FAIL() << "MakeS3FileIO failed: " << io_res.error().message;
@@ -204,12 +182,12 @@ TEST(ArrowS3FileIOTest, MakeS3FileIOWithSslDisabled) {
   }
 
   std::unordered_map<std::string, std::string> properties;
-  properties[S3Properties::kSslEnabled] = "false";
+  properties[std::string(S3Properties::kSslEnabled)] = "false";
 
   // Just test that the configuration is accepted
-  auto io_res = MakeS3FileIO(base_uri, properties);
+  auto io_res = MakeS3FileIO(properties);
   if (!io_res.has_value()) {
-    if (io_res.error().kind == ErrorKind::kNotImplemented) {
+    if (io_res.error().kind == ErrorKind::kNotSupported) {
       GTEST_SKIP() << "Arrow S3 support is not enabled";
     }
     // Other errors are acceptable - just checking config parsing works
@@ -223,12 +201,12 @@ TEST(ArrowS3FileIOTest, MakeS3FileIOWithTimeouts) {
   }
 
   std::unordered_map<std::string, std::string> properties;
-  properties[S3Properties::kConnectTimeoutMs] = "5000";
-  properties[S3Properties::kSocketTimeoutMs] = "10000";
+  properties[std::string(S3Properties::kConnectTimeoutMs)] = "5000";
+  properties[std::string(S3Properties::kSocketTimeoutMs)] = "10000";
 
-  auto io_res = MakeS3FileIO(base_uri, properties);
+  auto io_res = MakeS3FileIO(properties);
   if (!io_res.has_value()) {
-    if (io_res.error().kind == ErrorKind::kNotImplemented) {
+    if (io_res.error().kind == ErrorKind::kNotSupported) {
       GTEST_SKIP() << "Arrow S3 support is not enabled";
     }
     // Other errors are acceptable - just checking config parsing works

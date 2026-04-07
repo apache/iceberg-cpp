@@ -61,4 +61,12 @@ Result<SnapshotMode> RestCatalogProperties::SnapshotLoadingMode() const {
   }
 }
 
+void RestCatalogProperties::SetFileIO(std::shared_ptr<FileIO> file_io) {
+  file_io_ = std::move(file_io);
+}
+
+const std::shared_ptr<FileIO>& RestCatalogProperties::GetFileIO() const {
+  return file_io_;
+}
+
 }  // namespace iceberg::rest
