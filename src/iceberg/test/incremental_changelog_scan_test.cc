@@ -34,9 +34,22 @@ namespace iceberg {
 
 namespace {
 
+const std::string& TaskFilePath(const std::shared_ptr<ChangelogScanTask>& task) {
+  if (auto added = std::dynamic_pointer_cast<AddedRowsScanTask>(task)) {
+    return added->data_file()->file_path;
+  }
+  if (auto deleted = std::dynamic_pointer_cast<DeletedDataFileScanTask>(task)) {
+    return deleted->data_file()->file_path;
+  }
+
+  static const std::string empty_path;
+  return empty_path;
+}
+
 /// \brief Sort changelog scan tasks for deterministic ordering.
 /// Sorts by change_ordinal, then by operation type name, then by file path.
-void SortTasks(std::vector<std::shared_ptr<ChangelogScanTask>>& tasks) {
+template <typename TaskType>
+void SortTasks(std::vector<std::shared_ptr<TaskType>>& tasks) {
   std::ranges::sort(tasks, [](const auto& t1, const auto& t2) {
     if (t1->change_ordinal() != t2->change_ordinal()) {
       return t1->change_ordinal() < t2->change_ordinal();
@@ -45,7 +58,8 @@ void SortTasks(std::vector<std::shared_ptr<ChangelogScanTask>>& tasks) {
       return static_cast<uint8_t>(t1->operation()) <
              static_cast<uint8_t>(t2->operation());
     }
-    return t1->data_file()->file_path < t2->data_file()->file_path;
+    return TaskFilePath(std::static_pointer_cast<ChangelogScanTask>(t1)) <
+           TaskFilePath(std::static_pointer_cast<ChangelogScanTask>(t2));
   });
 }
 
@@ -94,8 +108,10 @@ TEST_P(IncrementalChangelogScanTest, DataFilters) {
   EXPECT_EQ(t1->change_ordinal(), 1);
   EXPECT_EQ(t1->commit_snapshot_id(), 2000L);
   EXPECT_EQ(t1->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t1->data_file()->file_path, "/path/to/file_b.parquet");
-  EXPECT_TRUE(t1->delete_files().empty());
+  auto insert_t1 = std::dynamic_pointer_cast<AddedRowsScanTask>(t1);
+  ASSERT_NE(insert_t1, nullptr);
+  EXPECT_EQ(insert_t1->data_file()->file_path, "/path/to/file_b.parquet");
+  EXPECT_TRUE(insert_t1->delete_files().empty());
 }
 
 TEST_P(IncrementalChangelogScanTest, Overwrites) {
@@ -130,16 +146,20 @@ TEST_P(IncrementalChangelogScanTest, Overwrites) {
   EXPECT_EQ(t1->change_ordinal(), 0);
   EXPECT_EQ(t1->commit_snapshot_id(), 2000L);
   EXPECT_EQ(t1->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t1->data_file()->file_path, "/path/to/file_a2.parquet");
-  EXPECT_TRUE(t1->delete_files().empty());
+  auto insert_t1 = std::dynamic_pointer_cast<AddedRowsScanTask>(t1);
+  ASSERT_NE(insert_t1, nullptr);
+  EXPECT_EQ(insert_t1->data_file()->file_path, "/path/to/file_a2.parquet");
+  EXPECT_TRUE(insert_t1->delete_files().empty());
 
   // Second task: deleted file (DELETE operation)
   auto t2 = tasks[1];
   EXPECT_EQ(t2->change_ordinal(), 0);
   EXPECT_EQ(t2->commit_snapshot_id(), 2000L);
   EXPECT_EQ(t2->operation(), ChangelogOperation::kDelete);
-  EXPECT_EQ(t2->data_file()->file_path, "/path/to/file_a.parquet");
-  EXPECT_TRUE(t2->delete_files().empty());
+  auto delete_t2 = std::dynamic_pointer_cast<DeletedDataFileScanTask>(t2);
+  ASSERT_NE(delete_t2, nullptr);
+  EXPECT_EQ(delete_t2->data_file()->file_path, "/path/to/file_a.parquet");
+  EXPECT_TRUE(delete_t2->existing_deletes().empty());
 }
 
 TEST_P(IncrementalChangelogScanTest, DuplicatedManifests) {
@@ -190,10 +210,14 @@ TEST_P(IncrementalChangelogScanTest, DuplicatedManifests) {
   ASSERT_EQ(tasks.size(), 2);
   SortTasks(tasks);
 
-  EXPECT_EQ(tasks[0]->data_file()->file_path, "/path/to/file_a.parquet");
+  auto insert_t1 = std::dynamic_pointer_cast<AddedRowsScanTask>(tasks[0]);
+  ASSERT_NE(insert_t1, nullptr);
+  EXPECT_EQ(insert_t1->data_file()->file_path, "/path/to/file_a.parquet");
   EXPECT_EQ(tasks[0]->commit_snapshot_id(), 1000L);
 
-  EXPECT_EQ(tasks[1]->data_file()->file_path, "/path/to/file_b.parquet");
+  auto insert_t2 = std::dynamic_pointer_cast<AddedRowsScanTask>(tasks[1]);
+  ASSERT_NE(insert_t2, nullptr);
+  EXPECT_EQ(insert_t2->data_file()->file_path, "/path/to/file_b.parquet");
   EXPECT_EQ(tasks[1]->commit_snapshot_id(), 2000L);
 }
 
@@ -225,8 +249,10 @@ TEST_P(IncrementalChangelogScanTest, FileDeletes) {
   EXPECT_EQ(t1->change_ordinal(), 0);
   EXPECT_EQ(t1->commit_snapshot_id(), 2000L);
   EXPECT_EQ(t1->operation(), ChangelogOperation::kDelete);
-  EXPECT_EQ(t1->data_file()->file_path, "/path/to/file_a.parquet");
-  EXPECT_TRUE(t1->delete_files().empty());
+  auto delete_t1 = std::dynamic_pointer_cast<DeletedDataFileScanTask>(t1);
+  ASSERT_NE(delete_t1, nullptr);
+  EXPECT_EQ(delete_t1->data_file()->file_path, "/path/to/file_a.parquet");
+  EXPECT_TRUE(delete_t1->existing_deletes().empty());
 }
 
 TEST_P(IncrementalChangelogScanTest, ExistingEntriesInNewDataManifestsAreIgnored) {
@@ -278,8 +304,10 @@ TEST_P(IncrementalChangelogScanTest, ExistingEntriesInNewDataManifestsAreIgnored
   EXPECT_EQ(t1->change_ordinal(), 0);
   EXPECT_EQ(t1->commit_snapshot_id(), 3000L);
   EXPECT_EQ(t1->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t1->data_file()->file_path, "/path/to/file_c.parquet");
-  EXPECT_TRUE(t1->delete_files().empty());
+  auto insert_t1 = std::dynamic_pointer_cast<AddedRowsScanTask>(t1);
+  ASSERT_NE(insert_t1, nullptr);
+  EXPECT_EQ(insert_t1->data_file()->file_path, "/path/to/file_c.parquet");
+  EXPECT_TRUE(insert_t1->delete_files().empty());
 }
 
 TEST_P(IncrementalChangelogScanTest, DataFileRewrites) {
@@ -330,13 +358,17 @@ TEST_P(IncrementalChangelogScanTest, DataFileRewrites) {
   EXPECT_EQ(t1->change_ordinal(), 0);
   EXPECT_EQ(t1->commit_snapshot_id(), 1000L);
   EXPECT_EQ(t1->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t1->data_file()->file_path, "/path/to/file_a.parquet");
+  auto insert_t1 = std::dynamic_pointer_cast<AddedRowsScanTask>(t1);
+  ASSERT_NE(insert_t1, nullptr);
+  EXPECT_EQ(insert_t1->data_file()->file_path, "/path/to/file_a.parquet");
 
   auto t2 = tasks[1];
   EXPECT_EQ(t2->change_ordinal(), 1);
   EXPECT_EQ(t2->commit_snapshot_id(), 2000L);
   EXPECT_EQ(t2->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t2->data_file()->file_path, "/path/to/file_b.parquet");
+  auto insert_t2 = std::dynamic_pointer_cast<AddedRowsScanTask>(t2);
+  ASSERT_NE(insert_t2, nullptr);
+  EXPECT_EQ(insert_t2->data_file()->file_path, "/path/to/file_b.parquet");
 }
 
 TEST_P(IncrementalChangelogScanTest, ManifestRewritesAreIgnored) {
@@ -393,19 +425,25 @@ TEST_P(IncrementalChangelogScanTest, ManifestRewritesAreIgnored) {
   EXPECT_EQ(t1->change_ordinal(), 0);
   EXPECT_EQ(t1->commit_snapshot_id(), 1000L);
   EXPECT_EQ(t1->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t1->data_file()->file_path, "/path/to/file_a.parquet");
+  auto insert_t1 = std::dynamic_pointer_cast<AddedRowsScanTask>(t1);
+  ASSERT_NE(insert_t1, nullptr);
+  EXPECT_EQ(insert_t1->data_file()->file_path, "/path/to/file_a.parquet");
 
   auto t2 = tasks[1];
   EXPECT_EQ(t2->change_ordinal(), 1);
   EXPECT_EQ(t2->commit_snapshot_id(), 2000L);
   EXPECT_EQ(t2->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t2->data_file()->file_path, "/path/to/file_b.parquet");
+  auto insert_t2 = std::dynamic_pointer_cast<AddedRowsScanTask>(t2);
+  ASSERT_NE(insert_t2, nullptr);
+  EXPECT_EQ(insert_t2->data_file()->file_path, "/path/to/file_b.parquet");
 
   auto t3 = tasks[2];
   EXPECT_EQ(t3->change_ordinal(), 2);
   EXPECT_EQ(t3->commit_snapshot_id(), 4000L);
   EXPECT_EQ(t3->operation(), ChangelogOperation::kInsert);
-  EXPECT_EQ(t3->data_file()->file_path, "/path/to/file_c.parquet");
+  auto insert_t3 = std::dynamic_pointer_cast<AddedRowsScanTask>(t3);
+  ASSERT_NE(insert_t3, nullptr);
+  EXPECT_EQ(insert_t3->data_file()->file_path, "/path/to/file_c.parquet");
 }
 
 TEST_P(IncrementalChangelogScanTest, DeleteFilesAreNotSupported) {
