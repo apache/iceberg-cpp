@@ -301,8 +301,10 @@ Result<ArrowArrayStream> FileScanTask::ToArrow(
 int64_t ChangelogScanTask::size_bytes() const {
   int64_t total_size = data_file_->file_size_in_bytes;
   for (const auto& delete_file : delete_files_) {
+    ICEBERG_DCHECK(delete_file->content_size_in_bytes.has_value(),
+                   "Delete file content size must be available");
     total_size +=
-        (delete_file->IsDeletionVector() ? delete_file->content_size_in_bytes.value_or(0)
+        (delete_file->IsDeletionVector() ? delete_file->content_size_in_bytes.value()
                                          : delete_file->file_size_in_bytes);
   }
   return total_size;
@@ -811,10 +813,9 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
 
   std::unordered_set<int64_t> snapshot_ids;
   std::unordered_map<int64_t, int32_t> snapshot_ordinals;
-  int32_t ordinal = 0;
   for (const auto& snapshot : changelog_snapshots) {
     snapshot_ids.insert(snapshot.first->snapshot_id);
-    snapshot_ordinals[snapshot.first->snapshot_id] = ordinal++;
+    snapshot_ordinals.try_emplace(snapshot.first->snapshot_id, snapshot_ordinals.size());
   }
 
   std::vector<ManifestFile> data_manifests;
@@ -837,7 +838,8 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(data_manifests), {}));
+      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(data_manifests),
+                          /*delete_manifests=*/{}));
 
   manifest_group->CaseSensitive(context_.case_sensitive)
       .Select(ScanColumns())
@@ -861,15 +863,14 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
     tasks.reserve(entries.size());
 
     for (auto& entry : entries) {
-      if (!entry.snapshot_id.has_value() || entry.data_file == nullptr) {
-        continue;
-      }
+      ICEBERG_PRECHECK(entry.snapshot_id.has_value() && entry.data_file,
+                       "Invalid manifest entry with missing snapshot id or data file");
 
       int64_t commit_snapshot_id = entry.snapshot_id.value();
       auto ordinal_it = snapshot_ordinals.find(commit_snapshot_id);
-      if (ordinal_it == snapshot_ordinals.end()) {
-        continue;
-      }
+      ICEBERG_PRECHECK(ordinal_it != snapshot_ordinals.end(),
+                       "Invalid manifest entry with missing snapshot ordinal");
+
       int32_t change_ordinal = ordinal_it->second;
 
       if (ctx.drop_stats) {
