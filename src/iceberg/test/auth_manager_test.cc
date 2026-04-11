@@ -64,7 +64,7 @@ TEST_F(AuthManagerTest, LoadNoopAuthManagerExplicit) {
   ASSERT_THAT(session_result, IsOk());
 
   std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  EXPECT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
   EXPECT_TRUE(headers.empty());
 }
 
@@ -108,7 +108,7 @@ TEST_F(AuthManagerTest, LoadBasicAuthManager) {
   ASSERT_THAT(session_result, IsOk());
 
   std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  EXPECT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
   // base64("admin:secret") == "YWRtaW46c2VjcmV0"
   EXPECT_EQ(headers["Authorization"], "Basic YWRtaW46c2VjcmV0");
 }
@@ -127,7 +127,7 @@ TEST_F(AuthManagerTest, BasicAuthTypeCaseInsensitive) {
     ASSERT_THAT(session_result, IsOk()) << "Failed for auth type: " << auth_type;
 
     std::unordered_map<std::string, std::string> headers;
-    EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+    EXPECT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
     // base64("user:pass") == "dXNlcjpwYXNz"
     EXPECT_EQ(headers["Authorization"], "Basic dXNlcjpwYXNz");
   }
@@ -173,7 +173,7 @@ TEST_F(AuthManagerTest, BasicAuthSpecialCharacters) {
   ASSERT_THAT(session_result, IsOk());
 
   std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  EXPECT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
   // base64("user@domain.com:p@ss:w0rd!") == "dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE="
   EXPECT_EQ(headers["Authorization"], "Basic dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE=");
 }
@@ -205,7 +205,7 @@ TEST_F(AuthManagerTest, RegisterCustomAuthManager) {
   ASSERT_THAT(session_result, IsOk());
 
   std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  EXPECT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
   EXPECT_EQ(headers["X-Custom-Auth"], "custom-value");
 }
 
@@ -223,7 +223,7 @@ TEST_F(AuthManagerTest, OAuth2StaticToken) {
   ASSERT_THAT(session_result, IsOk());
 
   std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  EXPECT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
   EXPECT_EQ(headers["Authorization"], "Bearer my-static-token");
 }
 
@@ -240,7 +240,7 @@ TEST_F(AuthManagerTest, OAuth2InferredFromToken) {
   ASSERT_THAT(session_result, IsOk());
 
   std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  EXPECT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
   EXPECT_EQ(headers["Authorization"], "Bearer inferred-token");
 }
 
@@ -259,7 +259,7 @@ TEST_F(AuthManagerTest, OAuth2MissingCredentials) {
 
   // Session should have no auth headers
   std::unordered_map<std::string, std::string> headers;
-  ASSERT_TRUE(session_result.value()->Authenticate(headers).has_value());
+  ASSERT_TRUE(session_result.value()->Authenticate(headers, {}).has_value());
   EXPECT_EQ(headers.find("Authorization"), headers.end());
 }
 
@@ -280,7 +280,7 @@ TEST_F(AuthManagerTest, OAuth2TokenTakesPriorityOverCredential) {
   ASSERT_THAT(session_result, IsOk());
 
   std::unordered_map<std::string, std::string> headers;
-  ASSERT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  ASSERT_THAT(session_result.value()->Authenticate(headers, {}), IsOk());
   EXPECT_EQ(headers["Authorization"], "Bearer my-static-token");
 }
 

@@ -59,6 +59,20 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   inline static const std::string kSigV4DelegateAuthType =
       "rest.auth.sigv4.delegate-auth-type";
 
+  // ---- SigV4 AWS credential entries ----
+
+  /// AWS region for SigV4 signing.
+  inline static const std::string kSigV4SigningRegion = "rest.signing-region";
+  /// AWS service name for SigV4 signing.
+  inline static const std::string kSigV4SigningName = "rest.signing-name";
+  inline static const std::string kSigV4SigningNameDefault = "execute-api";
+  /// Static access key ID for SigV4 signing.
+  inline static const std::string kSigV4AccessKeyId = "rest.access-key-id";
+  /// Static secret access key for SigV4 signing.
+  inline static const std::string kSigV4SecretAccessKey = "rest.secret-access-key";
+  /// Optional session token for SigV4 signing.
+  inline static const std::string kSigV4SessionToken = "rest.session-token";
+
   // ---- OAuth2 entries ----
 
   inline static Entry<std::string> kToken{"token", ""};
