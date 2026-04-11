@@ -22,6 +22,9 @@
 #include <unordered_set>
 
 #include "iceberg/catalog/rest/auth/auth_manager_internal.h"
+#ifdef ICEBERG_BUILD_SIGV4
+#  include "iceberg/catalog/rest/auth/sigv4_auth_manager.h"
+#endif
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/util/string_util.h"
 
@@ -62,11 +65,15 @@ std::string InferAuthType(
 }
 
 AuthManagerRegistry CreateDefaultRegistry() {
-  return {
+  AuthManagerRegistry registry = {
       {AuthProperties::kAuthTypeNone, MakeNoopAuthManager},
       {AuthProperties::kAuthTypeBasic, MakeBasicAuthManager},
       {AuthProperties::kAuthTypeOAuth2, MakeOAuth2Manager},
   };
+#ifdef ICEBERG_BUILD_SIGV4
+  registry[AuthProperties::kAuthTypeSigV4] = MakeSigV4AuthManager;
+#endif
+  return registry;
 }
 
 // Get the global registry of auth manager factories.
@@ -97,5 +104,29 @@ Result<std::unique_ptr<AuthManager>> AuthManagers::Load(
 
   return it->second(name, properties);
 }
+
+#ifdef ICEBERG_BUILD_SIGV4
+Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
+    std::string_view name,
+    const std::unordered_map<std::string, std::string>& properties) {
+  // Determine the delegate auth type. Default to OAuth2 if not specified.
+  std::string delegate_type = AuthProperties::kAuthTypeOAuth2;
+  auto it = properties.find(AuthProperties::kSigV4DelegateAuthType);
+  if (it != properties.end() && !it->second.empty()) {
+    delegate_type = StringUtils::ToLower(it->second);
+  }
+
+  // Prevent circular delegation (sigv4 -> sigv4 -> ...).
+  ICEBERG_PRECHECK(delegate_type != AuthProperties::kAuthTypeSigV4,
+                   "Cannot delegate a SigV4 auth manager to another SigV4 auth manager");
+
+  // Load the delegate auth manager.
+  auto delegate_props = properties;
+  delegate_props[AuthProperties::kAuthType] = delegate_type;
+
+  ICEBERG_ASSIGN_OR_RAISE(auto delegate, AuthManagers::Load(name, delegate_props));
+  return std::make_unique<SigV4AuthManager>(std::move(delegate));
+}
+#endif
 
 }  // namespace iceberg::rest::auth

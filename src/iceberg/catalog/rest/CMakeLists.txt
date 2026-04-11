@@ -33,6 +33,10 @@ set(ICEBERG_REST_SOURCES
     rest_util.cc
     types.cc)
 
+if(ICEBERG_BUILD_SIGV4)
+  list(APPEND ICEBERG_REST_SOURCES auth/sigv4_auth_manager.cc)
+endif()
+
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS)
@@ -51,6 +55,13 @@ list(APPEND
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
      "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>")
 
+if(ICEBERG_BUILD_SIGV4)
+  list(APPEND ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS aws-cpp-sdk-core)
+  list(APPEND ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS aws-cpp-sdk-core)
+  list(APPEND ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS aws-cpp-sdk-core)
+  list(APPEND ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS aws-cpp-sdk-core)
+endif()
+
 add_iceberg_lib(iceberg_rest
                 SOURCES
                 ${ICEBERG_REST_SOURCES}
@@ -62,5 +73,13 @@ add_iceberg_lib(iceberg_rest
                 ${ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS}
                 SHARED_INSTALL_INTERFACE_LIBS
                 ${ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS})
+
+if(ICEBERG_BUILD_SIGV4)
+  foreach(LIB iceberg_rest_static iceberg_rest_shared)
+    if(TARGET ${LIB})
+      target_compile_definitions(${LIB} PUBLIC ICEBERG_BUILD_SIGV4)
+    endif()
+  endforeach()
+endif()
 
 iceberg_install_all_headers(iceberg/catalog/rest)
