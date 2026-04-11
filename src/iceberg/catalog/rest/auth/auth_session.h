@@ -23,6 +23,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -31,6 +32,13 @@
 /// \brief Authentication session interface for REST catalog.
 
 namespace iceberg::rest::auth {
+
+/// \brief Context about the HTTP request being authenticated.
+struct ICEBERG_REST_EXPORT HTTPRequestContext {
+  HttpMethod method = HttpMethod::kGet;
+  std::string url;
+  std::string body;
+};
 
 /// \brief An authentication session that can authenticate outgoing HTTP requests.
 class ICEBERG_REST_EXPORT AuthSession {
@@ -50,7 +58,8 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///         - NotAuthorized: Not authenticated (401)
   ///         - IOError: Network or connection errors when reaching auth server
   ///         - RestError: HTTP errors from authentication service
-  virtual Status Authenticate(std::unordered_map<std::string, std::string>& headers) = 0;
+  virtual Status Authenticate(std::unordered_map<std::string, std::string>& headers,
+                              const HTTPRequestContext& request_context) = 0;
 
   /// \brief Close the session and release any resources.
   ///

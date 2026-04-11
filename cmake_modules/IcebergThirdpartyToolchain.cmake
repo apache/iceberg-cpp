@@ -531,3 +531,21 @@ endif()
 if(ICEBERG_BUILD_REST)
   resolve_cpr_dependency()
 endif()
+
+# ----------------------------------------------------------------------
+# AWS SDK for C++
+
+function(resolve_aws_sdk_dependency)
+  find_package(AWSSDK REQUIRED COMPONENTS core)
+  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES AWSSDK)
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+endfunction()
+
+if(ICEBERG_BUILD_SIGV4)
+  if(NOT ICEBERG_BUILD_REST)
+    message(FATAL_ERROR "ICEBERG_BUILD_SIGV4 requires ICEBERG_BUILD_REST to be ON")
+  endif()
+  resolve_aws_sdk_dependency()
+endif()
