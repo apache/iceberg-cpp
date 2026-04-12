@@ -49,28 +49,6 @@ int64_t ToPosition(int32_t key, uint32_t pos32) {
   return (int64_t{key} << 32) | int64_t{pos32};
 }
 
-void WriteLE64(char* buf, int64_t value) {
-  auto le = ToLittleEndian(static_cast<uint64_t>(value));
-  std::memcpy(buf, &le, sizeof(le));
-}
-
-void WriteLE32(char* buf, int32_t value) {
-  auto le = ToLittleEndian(static_cast<uint32_t>(value));
-  std::memcpy(buf, &le, sizeof(le));
-}
-
-int64_t ReadLE64(const char* buf) {
-  uint64_t v;
-  std::memcpy(&v, buf, sizeof(v));
-  return static_cast<int64_t>(FromLittleEndian(v));
-}
-
-int32_t ReadLE32(const char* buf) {
-  uint32_t v;
-  std::memcpy(&v, buf, sizeof(v));
-  return static_cast<int32_t>(FromLittleEndian(v));
-}
-
 Status ValidatePosition(int64_t pos) {
   if (pos < 0 || pos > RoaringPositionBitmap::kMaxPosition) {
     return InvalidArgument("Bitmap supports positions that are >= 0 and <= {}: {}",
@@ -205,12 +183,12 @@ Result<std::string> RoaringPositionBitmap::Serialize() const {
   char* buf = result.data();
 
   // Write bitmap count (array length including empties)
-  WriteLE64(buf, static_cast<int64_t>(impl_->bitmaps.size()));
+  WriteLittleEndian(static_cast<int64_t>(impl_->bitmaps.size()), buf);
   buf += kBitmapCountSizeBytes;
 
   // Write each bitmap with its key
   for (int32_t key = 0; std::cmp_less(key, impl_->bitmaps.size()); ++key) {
-    WriteLE32(buf, key);
+    WriteLittleEndian(key, buf);
     buf += kBitmapKeySizeBytes;
     size_t written = impl_->bitmaps[key].write(buf, /*portable=*/true);
     buf += written;
@@ -226,7 +204,7 @@ Result<RoaringPositionBitmap> RoaringPositionBitmap::Deserialize(std::string_vie
   ICEBERG_PRECHECK(remaining >= kBitmapCountSizeBytes,
                    "Buffer too small for bitmap count: {} bytes", remaining);
 
-  int64_t bitmap_count = ReadLE64(buf);
+  auto bitmap_count = ReadLittleEndian<int64_t>(buf);
   buf += kBitmapCountSizeBytes;
   remaining -= kBitmapCountSizeBytes;
 
@@ -242,7 +220,7 @@ Result<RoaringPositionBitmap> RoaringPositionBitmap::Deserialize(std::string_vie
     ICEBERG_PRECHECK(remaining >= kBitmapKeySizeBytes,
                      "Buffer too small for bitmap key: {} bytes", remaining);
 
-    int32_t key = ReadLE32(buf);
+    auto key = ReadLittleEndian<int32_t>(buf);
     buf += kBitmapKeySizeBytes;
     remaining -= kBitmapKeySizeBytes;
 
