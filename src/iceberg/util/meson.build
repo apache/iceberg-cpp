@@ -21,6 +21,7 @@ install_headers(
         'checked_cast.h',
         'config.h',
         'content_file_util.h',
+        'file_io_util.h',
         'conversions.h',
         'data_file_set.h',
         'decimal.h',

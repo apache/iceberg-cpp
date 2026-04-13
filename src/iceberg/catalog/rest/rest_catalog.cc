@@ -36,6 +36,7 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/file_io_registry.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -45,6 +46,7 @@
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
+#include "iceberg/util/file_io_util.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -121,10 +123,27 @@ Result<bool> CaptureNoSuchNamespace(const auto& status) {
 RestCatalog::~RestCatalog() = default;
 
 Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
-    const RestCatalogProperties& config, std::shared_ptr<FileIO> file_io) {
+    const RestCatalogProperties& config) {
   ICEBERG_ASSIGN_OR_RAISE(auto uri, config.Uri());
+
+  // Resolve FileIO: from config, or auto-detect from properties/URI
+  std::shared_ptr<FileIO> file_io = config.GetFileIO();
   if (!file_io) {
-    return InvalidArgument("FileIO is required to create RestCatalog");
+    auto properties = config.configs();
+    // If io-impl is not set or empty, auto-detect from warehouse URI scheme
+    auto io_impl_it = properties.find(std::string(FileIOProperties::kImpl));
+    if (io_impl_it == properties.end() || io_impl_it->second.empty()) {
+      auto warehouse = config.Get(RestCatalogProperties::kWarehouse);
+      if (warehouse.empty()) {
+        return InvalidArgument(
+            "Warehouse location is required when FileIO is not explicitly provided. "
+            "Set the 'warehouse' property or call SetFileIO().");
+      }
+      properties[std::string(FileIOProperties::kImpl)] =
+          FileIOUtil::DetectFileIOName(warehouse);
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto created_io, FileIOUtil::CreateFileIO(properties));
+    file_io = std::shared_ptr<FileIO>(std::move(created_io));
   }
 
   std::string catalog_name = config.Get(RestCatalogProperties::kName);

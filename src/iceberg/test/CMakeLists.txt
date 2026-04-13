@@ -113,6 +113,7 @@ add_iceberg_test(util_test
                  data_file_set_test.cc
                  decimal_test.cc
                  endian_test.cc
+                 file_io_registry_test.cc
                  formatter_test.cc
                  location_util_test.cc
                  roaring_position_bitmap_test.cc
@@ -144,6 +145,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    gzip_decompress_test.cc
                    metadata_io_test.cc
                    struct_like_test.cc)
+
+  add_iceberg_test(file_io_test USE_BUNDLE SOURCES arrow_s3_file_io_test.cc)
 
   add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
 

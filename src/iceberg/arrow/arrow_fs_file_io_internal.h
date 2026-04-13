@@ -56,6 +56,9 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
   const std::shared_ptr<::arrow::fs::FileSystem>& fs() const { return arrow_fs_; }
 
  private:
+  /// \brief Resolve a file location to a filesystem path.
+  Result<std::string> ResolvePath(const std::string& file_location);
+
   std::shared_ptr<::arrow::fs::FileSystem> arrow_fs_;
 };
 
