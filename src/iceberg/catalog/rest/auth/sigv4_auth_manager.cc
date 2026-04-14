@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/auth/sigv4_auth_manager.h"
 
 #include <cstdlib>
+#include <mutex>
 #include <sstream>
 
 #include <aws/core/Aws.h>
@@ -107,13 +108,15 @@ class RestSigV4Signer : public Aws::Client::AWSAuthV4Signer {
 SigV4AuthSession::SigV4AuthSession(
     std::shared_ptr<AuthSession> delegate, std::string signing_region,
     std::string signing_name,
-    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider)
+    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider,
+    std::unordered_map<std::string, std::string> effective_properties)
     : delegate_(std::move(delegate)),
       signing_region_(std::move(signing_region)),
       signing_name_(std::move(signing_name)),
       credentials_provider_(std::move(credentials_provider)),
       signer_(std::make_unique<RestSigV4Signer>(
-          credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {}
+          credentials_provider_, signing_name_.c_str(), signing_region_.c_str())),
+      effective_properties_(std::move(effective_properties)) {}
 
 SigV4AuthSession::~SigV4AuthSession() = default;
 
@@ -121,7 +124,6 @@ Result<HTTPRequest> SigV4AuthSession::Authenticate(const HTTPRequest& request) {
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_request, delegate_->Authenticate(request));
   const auto& original_headers = delegate_request.headers;
 
-  // Relocate any delegate-set Authorization so SigV4 takes precedence.
   std::unordered_map<std::string, std::string> signing_headers;
   for (const auto& [name, value] : original_headers) {
     if (StringUtils::EqualsIgnoreCase(name, "Authorization")) {
@@ -138,8 +140,8 @@ Result<HTTPRequest> SigV4AuthSession::Authenticate(const HTTPRequest& request) {
     aws_request->SetHeaderValue(Aws::String(name.c_str()), Aws::String(value.c_str()));
   }
 
-  // Empty body uses hex EMPTY_BODY_SHA256 (Java workaround for the signer
-  // producing an invalid checksum on empty bodies); non-empty uses Base64.
+  // Empty body: hex EMPTY_BODY_SHA256 (Java parity workaround for the signer
+  // computing an invalid checksum on empty bodies). Non-empty: Base64.
   if (delegate_request.body.empty()) {
     aws_request->SetHeaderValue("x-amz-content-sha256", Aws::String(kEmptyBodySha256));
   } else {
@@ -152,12 +154,14 @@ Result<HTTPRequest> SigV4AuthSession::Authenticate(const HTTPRequest& request) {
                                 Aws::Utils::HashingUtils::Base64Encode(sha256));
   }
 
-  if (!signer_->SignRequest(*aws_request)) {
-    return std::unexpected<Error>(
-        Error{ErrorKind::kAuthenticationFailed, "SigV4 signing failed"});
+  {
+    std::lock_guard<std::mutex> lock(signing_mutex_);
+    if (!signer_->SignRequest(*aws_request)) {
+      return std::unexpected<Error>(
+          Error{ErrorKind::kAuthenticationFailed, "SigV4 signing failed"});
+    }
   }
 
-  // Fill headers with the signed set, relocating any conflicting originals.
   HTTPRequest signed_request{.method = delegate_request.method,
                              .url = std::move(delegate_request.url),
                              .headers = {},
@@ -200,7 +204,6 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
     HttpClient& shared_client,
     const std::unordered_map<std::string, std::string>& properties) {
   AwsSdkGuard::EnsureInitialized();
-  catalog_properties_ = properties;
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session,
                           delegate_->CatalogSession(shared_client, properties));
   return WrapSession(std::move(delegate_session), properties);
@@ -214,8 +217,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session, delegate_->ContextualSession(
                                                      context, sigv4_parent->delegate()));
 
-  auto merged = MergeProperties(catalog_properties_, context);
-  return WrapSession(std::move(delegate_session), merged);
+  auto merged = MergeProperties(sigv4_parent->effective_properties(), context);
+  return WrapSession(std::move(delegate_session), std::move(merged));
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
@@ -228,8 +231,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
       auto delegate_session,
       delegate_->TableSession(table, properties, sigv4_parent->delegate()));
 
-  auto merged = MergeProperties(catalog_properties_, properties);
-  return WrapSession(std::move(delegate_session), merged);
+  auto merged = MergeProperties(sigv4_parent->effective_properties(), properties);
+  return WrapSession(std::move(delegate_session), std::move(merged));
 }
 
 Status SigV4AuthManager::Close() { return delegate_->Close(); }
@@ -285,13 +288,13 @@ std::string SigV4AuthManager::ResolveSigningName(
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
     std::shared_ptr<AuthSession> delegate_session,
-    const std::unordered_map<std::string, std::string>& properties) {
+    std::unordered_map<std::string, std::string> properties) {
   auto region = ResolveSigningRegion(properties);
   auto service = ResolveSigningName(properties);
   ICEBERG_ASSIGN_OR_RAISE(auto credentials, MakeCredentialsProvider(properties));
-  return std::make_shared<SigV4AuthSession>(std::move(delegate_session),
-                                            std::move(region), std::move(service),
-                                            std::move(credentials));
+  return std::make_shared<SigV4AuthSession>(
+      std::move(delegate_session), std::move(region), std::move(service),
+      std::move(credentials), std::move(properties));
 }
 
 Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(

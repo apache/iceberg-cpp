@@ -340,8 +340,9 @@ TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
   auto credentials =
       std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(Aws::Auth::AWSCredentials(
           "AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"));
-  auto session = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
-                                                    credentials);
+  auto session = std::make_shared<SigV4AuthSession>(
+      delegate, "us-east-1", "execute-api", credentials,
+      std::unordered_map<std::string, std::string>{});
 
   HTTPRequest request{.method = HttpMethod::kGet, .url = "http://localhost:8080/path"};
   auto auth_result = session->Authenticate(request);
@@ -369,8 +370,9 @@ TEST_F(SigV4AuthTest, SessionCloseDelegatesToInner) {
   auto delegate = AuthSession::MakeDefault({});
   auto credentials = std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(
       Aws::Auth::AWSCredentials("id", "secret"));
-  auto session = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
-                                                    credentials);
+  auto session = std::make_shared<SigV4AuthSession>(
+      delegate, "us-east-1", "execute-api", credentials,
+      std::unordered_map<std::string, std::string>{});
 
   // Close should succeed without error
   EXPECT_THAT(session->Close(), IsOk());
@@ -488,6 +490,37 @@ TEST_F(SigV4AuthTest, TableSessionOverridesProperties) {
 
   EXPECT_TRUE(auth_it->second.find("ap-southeast-1") != std::string::npos)
       << "Expected ap-southeast-1 in Authorization, got: " << auth_it->second;
+}
+
+TEST_F(SigV4AuthTest, TableSessionInheritsContextualOverrides) {
+  auto properties = MakeSigV4Properties();
+  properties[AuthProperties::kSigV4SigningRegion] = "us-west-2";
+
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+
+  auto catalog_session = manager_result.value()->CatalogSession(client_, properties);
+  ASSERT_THAT(catalog_session, IsOk());
+
+  auto ctx_session = manager_result.value()->ContextualSession(
+      {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}}, catalog_session.value());
+  ASSERT_THAT(ctx_session, IsOk());
+
+  iceberg::TableIdentifier table_id{iceberg::Namespace{{"db1"}}, "table1"};
+  auto table_session = manager_result.value()->TableSession(table_id, /*properties=*/{},
+                                                            ctx_session.value());
+  ASSERT_THAT(table_session, IsOk());
+
+  HTTPRequest request{.method = HttpMethod::kGet,
+                      .url = "https://example.com/v1/db1/tables/table1"};
+  auto auth_result = table_session.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+
+  auto auth_it = auth_result.value().headers.find("authorization");
+  ASSERT_NE(auth_it, auth_result.value().headers.end());
+  EXPECT_TRUE(auth_it->second.find("eu-west-1") != std::string::npos)
+      << "Table session should inherit eu-west-1 from contextual parent, got: "
+      << auth_it->second;
 }
 
 // Java: close (TestRESTSigV4AuthManager)
