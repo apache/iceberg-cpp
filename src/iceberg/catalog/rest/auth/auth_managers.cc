@@ -118,7 +118,9 @@ Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
 
   // Prevent circular delegation (sigv4 -> sigv4 -> ...).
   ICEBERG_PRECHECK(delegate_type != AuthProperties::kAuthTypeSigV4,
-                   "Cannot delegate a SigV4 auth manager to another SigV4 auth manager");
+                   "Cannot delegate a SigV4 auth manager to another SigV4 auth "
+                   "manager (delegate_type='{}')",
+                   delegate_type);
 
   // Load the delegate auth manager.
   auto delegate_props = properties;
