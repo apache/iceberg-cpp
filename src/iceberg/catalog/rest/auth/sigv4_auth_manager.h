@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -47,8 +48,8 @@ namespace iceberg::rest::auth {
 ///
 /// See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html
 ///
-/// Thread safety: Authenticate() is NOT thread-safe. Each session should be used
-/// from a single thread, or callers must synchronize externally.
+/// Thread safety: Authenticate() is thread-safe; concurrent signing calls are
+/// serialized by an internal mutex.
 class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
  public:
   /// SHA-256 hash of empty string, used for requests with no body.
@@ -61,7 +62,8 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   SigV4AuthSession(
       std::shared_ptr<AuthSession> delegate, std::string signing_region,
       std::string signing_name,
-      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider);
+      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider,
+      std::unordered_map<std::string, std::string> effective_properties);
 
   ~SigV4AuthSession() override;
 
@@ -71,20 +73,27 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
 
   const std::shared_ptr<AuthSession>& delegate() const { return delegate_; }
 
+  /// Merged properties this session was built from. Child sessions inherit
+  /// from this (not the catalog's) so contextual overrides propagate into
+  /// table sessions.
+  const std::unordered_map<std::string, std::string>& effective_properties() const {
+    return effective_properties_;
+  }
+
  private:
   std::shared_ptr<AuthSession> delegate_;
   std::string signing_region_;
   std::string signing_name_;
   std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider_;
   std::unique_ptr<Aws::Client::AWSAuthV4Signer> signer_;
+  std::unordered_map<std::string, std::string> effective_properties_;
+  // AWSAuthV4Signer::SignRequest mutates shared signer state.
+  mutable std::mutex signing_mutex_;
 };
 
 /// \brief An AuthManager that produces SigV4AuthSession instances.
 ///
 /// Wraps a delegate AuthManager to handle double authentication (e.g., OAuth2 + SigV4).
-///
-/// Thread safety: CatalogSession() must be called before ContextualSession() or
-/// TableSession(). Concurrent calls are NOT safe — callers must synchronize externally.
 class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
  public:
   explicit SigV4AuthManager(std::unique_ptr<AuthManager> delegate);
@@ -118,10 +127,9 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
       const std::unordered_map<std::string, std::string>& properties);
   Result<std::shared_ptr<AuthSession>> WrapSession(
       std::shared_ptr<AuthSession> delegate_session,
-      const std::unordered_map<std::string, std::string>& properties);
+      std::unordered_map<std::string, std::string> properties);
 
   std::unique_ptr<AuthManager> delegate_;
-  std::unordered_map<std::string, std::string> catalog_properties_;
 };
 
 }  // namespace iceberg::rest::auth

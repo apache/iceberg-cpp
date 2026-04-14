@@ -81,21 +81,8 @@ std::unordered_map<std::string, std::string> MergeHeaders(
   return merged;
 }
 
-/// \brief Authenticate the request and return the final cpr::Header.
-Result<cpr::Header> AuthenticateRequest(const auth::HTTPRequest& request,
-                                        auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(auto authenticated, session.Authenticate(request));
-  return cpr::Header(authenticated.headers.begin(), authenticated.headers.end());
-}
-
-/// \brief Converts a map of string key-value pairs to cpr::Parameters.
-cpr::Parameters GetParameters(
-    const std::unordered_map<std::string, std::string>& params) {
-  cpr::Parameters cpr_params;
-  for (const auto& [key, val] : params) {
-    cpr_params.Add({key, val});
-  }
-  return cpr_params;
+cpr::Header ToCprHeader(const auth::HTTPRequest& request) {
+  return cpr::Header(request.headers.begin(), request.headers.end());
 }
 
 /// \brief Append URL-encoded query parameters to a URL, sorted by key.
@@ -175,14 +162,13 @@ Result<HttpResponse> HttpClient::Get(
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(
-      auto all_headers,
-      AuthenticateRequest({.method = HttpMethod::kGet,
-                           .url = AppendQueryString(path, params),
-                           .headers = MergeHeaders(default_headers_, headers),
-                           .body = ""},
-                          session));
-  cpr::Response response =
-      cpr::Get(cpr::Url{path}, GetParameters(params), all_headers, *connection_pool_);
+      auto authenticated,
+      session.Authenticate({.method = HttpMethod::kGet,
+                            .url = AppendQueryString(path, params),
+                            .headers = MergeHeaders(default_headers_, headers),
+                            .body = ""}));
+  cpr::Response response = cpr::Get(cpr::Url{authenticated.url},
+                                    ToCprHeader(authenticated), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -195,14 +181,14 @@ Result<HttpResponse> HttpClient::Post(
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(
-      auto all_headers,
-      AuthenticateRequest({.method = HttpMethod::kPost,
-                           .url = path,
-                           .headers = MergeHeaders(default_headers_, headers),
-                           .body = body},
-                          session));
+      auto authenticated,
+      session.Authenticate({.method = HttpMethod::kPost,
+                            .url = path,
+                            .headers = MergeHeaders(default_headers_, headers),
+                            .body = body}));
   cpr::Response response =
-      cpr::Post(cpr::Url{path}, cpr::Body{body}, all_headers, *connection_pool_);
+      cpr::Post(cpr::Url{authenticated.url}, cpr::Body{authenticated.body},
+                ToCprHeader(authenticated), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -222,19 +208,18 @@ Result<HttpResponse> HttpClient::PostForm(
   for (const auto& [key, val] : form_data) {
     pair_list.emplace_back(key, val);
   }
-  // Use cpr's own encoding as the signing body to ensure consistency with the
-  // actual payload sent over the wire.
-  cpr::Payload payload(pair_list.begin(), pair_list.end());
-  std::string encoded_body = payload.GetContent();
+  // Sign the exact bytes cpr will put on the wire.
+  std::string encoded_body =
+      cpr::Payload(pair_list.begin(), pair_list.end()).GetContent();
   ICEBERG_ASSIGN_OR_RAISE(
-      auto all_headers,
-      AuthenticateRequest({.method = HttpMethod::kPost,
-                           .url = path,
-                           .headers = MergeHeaders(default_headers_, form_headers),
-                           .body = encoded_body},
-                          session));
+      auto authenticated,
+      session.Authenticate({.method = HttpMethod::kPost,
+                            .url = path,
+                            .headers = MergeHeaders(default_headers_, form_headers),
+                            .body = std::move(encoded_body)}));
   cpr::Response response =
-      cpr::Post(cpr::Url{path}, std::move(payload), all_headers, *connection_pool_);
+      cpr::Post(cpr::Url{authenticated.url}, cpr::Body{authenticated.body},
+                ToCprHeader(authenticated), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -246,13 +231,13 @@ Result<HttpResponse> HttpClient::Head(
     const std::string& path, const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(
-      auto all_headers,
-      AuthenticateRequest({.method = HttpMethod::kHead,
-                           .url = path,
-                           .headers = MergeHeaders(default_headers_, headers),
-                           .body = ""},
-                          session));
-  cpr::Response response = cpr::Head(cpr::Url{path}, all_headers, *connection_pool_);
+      auto authenticated,
+      session.Authenticate({.method = HttpMethod::kHead,
+                            .url = path,
+                            .headers = MergeHeaders(default_headers_, headers),
+                            .body = ""}));
+  cpr::Response response = cpr::Head(cpr::Url{authenticated.url},
+                                     ToCprHeader(authenticated), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -265,14 +250,13 @@ Result<HttpResponse> HttpClient::Delete(
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(
-      auto all_headers,
-      AuthenticateRequest({.method = HttpMethod::kDelete,
-                           .url = AppendQueryString(path, params),
-                           .headers = MergeHeaders(default_headers_, headers),
-                           .body = ""},
-                          session));
-  cpr::Response response =
-      cpr::Delete(cpr::Url{path}, GetParameters(params), all_headers, *connection_pool_);
+      auto authenticated,
+      session.Authenticate({.method = HttpMethod::kDelete,
+                            .url = AppendQueryString(path, params),
+                            .headers = MergeHeaders(default_headers_, headers),
+                            .body = ""}));
+  cpr::Response response = cpr::Delete(cpr::Url{authenticated.url},
+                                       ToCprHeader(authenticated), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
