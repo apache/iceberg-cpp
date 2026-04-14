@@ -65,8 +65,7 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
 
   ~SigV4AuthSession() override;
 
-  Status Authenticate(std::unordered_map<std::string, std::string>& headers,
-                      const HTTPRequestContext& request_context) override;
+  Result<HTTPRequest> Authenticate(const HTTPRequest& request) override;
 
   Status Close() override;
 
