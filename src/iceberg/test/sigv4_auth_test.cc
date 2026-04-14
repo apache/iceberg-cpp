@@ -82,12 +82,13 @@ TEST_F(SigV4AuthTest, AuthenticateAddsAuthorizationHeader) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "https://example.com/v1/config", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_TRUE(headers["authorization"].starts_with("AWS4-HMAC-SHA256"));
+  EXPECT_TRUE(headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
   EXPECT_NE(headers.find("x-amz-date"), headers.end());
 }
 
@@ -99,14 +100,16 @@ TEST_F(SigV4AuthTest, AuthenticateWithPostBody) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  headers["Content-Type"] = "application/json";
-  HTTPRequestContext ctx{HttpMethod::kPost, "https://example.com/v1/namespaces",
-                         R"({"namespace":["ns1"]})"};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kPost,
+                      .url = "https://example.com/v1/namespaces",
+                      .headers = {{"Content-Type", "application/json"}},
+                      .body = R"({"namespace":["ns1"]})"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_TRUE(headers["authorization"].starts_with("AWS4-HMAC-SHA256"));
+  EXPECT_TRUE(headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
 }
 
 TEST_F(SigV4AuthTest, DelegateAuthorizationHeaderRelocated) {
@@ -120,14 +123,15 @@ TEST_F(SigV4AuthTest, DelegateAuthorizationHeaderRelocated) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "https://example.com/v1/config", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_TRUE(headers["authorization"].starts_with("AWS4-HMAC-SHA256"));
+  EXPECT_TRUE(headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
   EXPECT_NE(headers.find("original-authorization"), headers.end());
-  EXPECT_EQ(headers["original-authorization"], "Bearer my-oauth-token");
+  EXPECT_EQ(headers.at("original-authorization"), "Bearer my-oauth-token");
 }
 
 TEST_F(SigV4AuthTest, AuthenticateWithSessionToken) {
@@ -140,13 +144,14 @@ TEST_F(SigV4AuthTest, AuthenticateWithSessionToken) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "https://example.com/v1/config", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   EXPECT_NE(headers.find("authorization"), headers.end());
   EXPECT_NE(headers.find("x-amz-security-token"), headers.end());
-  EXPECT_EQ(headers["x-amz-security-token"], "FwoGZXIvYXdzEBYaDHqa0");
+  EXPECT_EQ(headers.at("x-amz-security-token"), "FwoGZXIvYXdzEBYaDHqa0");
 }
 
 TEST_F(SigV4AuthTest, CustomSigningNameAndRegion) {
@@ -160,9 +165,10 @@ TEST_F(SigV4AuthTest, CustomSigningNameAndRegion) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "https://example.com/v1/config", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   auto auth_it = headers.find("authorization");
   ASSERT_NE(auth_it, headers.end());
@@ -187,9 +193,10 @@ TEST_F(SigV4AuthTest, DelegateDefaultsToOAuth2NoAuth) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "https://example.com/v1/config", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   EXPECT_EQ(headers.find("original-authorization"), headers.end());
 }
@@ -208,11 +215,12 @@ TEST_F(SigV4AuthTest, TableSessionInheritsProperties) {
                                                             catalog_session.value());
   ASSERT_THAT(table_session, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "https://example.com/v1/ns1/tables/table1",
-                         ""};
-  ASSERT_THAT(table_session.value()->Authenticate(headers, ctx), IsOk());
-  EXPECT_NE(headers.find("authorization"), headers.end());
+  HTTPRequest request{.method = HttpMethod::kGet,
+                      .url = "https://example.com/v1/ns1/tables/table1"};
+  auto auth_result = table_session.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_NE(auth_result.value().headers.find("authorization"),
+            auth_result.value().headers.end());
 }
 
 // ---------- Tests ported from Java TestRESTSigV4AuthSession ----------
@@ -226,13 +234,15 @@ TEST_F(SigV4AuthTest, AuthenticateWithoutBodyDetailedHeaders) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  headers["Content-Type"] = "application/json";
-  HTTPRequestContext ctx{HttpMethod::kGet, "http://localhost:8080/path", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet,
+                      .url = "http://localhost:8080/path",
+                      .headers = {{"Content-Type", "application/json"}}};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   // Original header preserved
-  EXPECT_EQ(headers["content-type"], "application/json");
+  EXPECT_EQ(headers.at("content-type"), "application/json");
 
   // Host header generated by the signer
   EXPECT_NE(headers.find("host"), headers.end());
@@ -248,7 +258,7 @@ TEST_F(SigV4AuthTest, AuthenticateWithoutBodyDetailedHeaders) {
   EXPECT_TRUE(auth_it->second.find("x-amz-date") != std::string::npos);
 
   // Empty body SHA256 hash
-  EXPECT_EQ(headers["x-amz-content-sha256"], SigV4AuthSession::kEmptyBodySha256);
+  EXPECT_EQ(headers.at("x-amz-content-sha256"), SigV4AuthSession::kEmptyBodySha256);
 
   // X-Amz-Date present
   EXPECT_NE(headers.find("x-amz-date"), headers.end());
@@ -263,11 +273,13 @@ TEST_F(SigV4AuthTest, AuthenticateWithBodyDetailedHeaders) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  headers["Content-Type"] = "application/json";
-  std::string body = R"({"namespace":["ns1"]})";
-  HTTPRequestContext ctx{HttpMethod::kPost, "http://localhost:8080/path", body};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kPost,
+                      .url = "http://localhost:8080/path",
+                      .headers = {{"Content-Type", "application/json"}},
+                      .body = R"({"namespace":["ns1"]})"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   // SigV4 Authorization header
   auto auth_it = headers.find("authorization");
@@ -295,10 +307,12 @@ TEST_F(SigV4AuthTest, ConflictingAuthorizationHeaderIncludedInSignedHeaders) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  headers["Content-Type"] = "application/json";
-  HTTPRequestContext ctx{HttpMethod::kGet, "http://localhost:8080/path", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet,
+                      .url = "http://localhost:8080/path",
+                      .headers = {{"Content-Type", "application/json"}}};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   // SigV4 Authorization header
   auto auth_it = headers.find("authorization");
@@ -329,12 +343,13 @@ TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
   auto session = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
                                                     credentials);
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "http://localhost:8080/path", ""};
-  ASSERT_THAT(session->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "http://localhost:8080/path"};
+  auto auth_result = session->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   // The real x-amz-content-sha256 should be the empty body hash (signer overwrites fake)
-  EXPECT_EQ(headers["x-amz-content-sha256"], SigV4AuthSession::kEmptyBodySha256);
+  EXPECT_EQ(headers.at("x-amz-content-sha256"), SigV4AuthSession::kEmptyBodySha256);
 
   // The fake values should be relocated since the signer produced different values
   auto orig_sha_it = headers.find("Original-x-amz-content-sha256");
@@ -380,13 +395,12 @@ TEST_F(SigV4AuthTest, CreateCustomDelegateNone) {
   ASSERT_THAT(session_result, IsOk());
 
   // Authenticate should work with noop delegate
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext ctx{HttpMethod::kGet, "https://example.com/v1/config", ""};
-  ASSERT_THAT(session_result.value()->Authenticate(headers, ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   EXPECT_NE(headers.find("authorization"), headers.end());
-
-  EXPECT_EQ(headers.find("original-authorization"), headers.end());
   EXPECT_EQ(headers.find("original-authorization"), headers.end());
 }
 
@@ -428,9 +442,10 @@ TEST_F(SigV4AuthTest, ContextualSessionOverridesProperties) {
       manager_result.value()->ContextualSession(context, catalog_session.value());
   ASSERT_THAT(ctx_session, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext req_ctx{HttpMethod::kGet, "https://example.com/v1/config", ""};
-  ASSERT_THAT(ctx_session.value()->Authenticate(headers, req_ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = ctx_session.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   auto auth_it = headers.find("authorization");
   ASSERT_NE(auth_it, headers.end());
@@ -462,10 +477,11 @@ TEST_F(SigV4AuthTest, TableSessionOverridesProperties) {
                                                             catalog_session.value());
   ASSERT_THAT(table_session, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  HTTPRequestContext req_ctx{HttpMethod::kGet, "https://example.com/v1/db1/tables/table1",
-                             ""};
-  ASSERT_THAT(table_session.value()->Authenticate(headers, req_ctx), IsOk());
+  HTTPRequest request{.method = HttpMethod::kGet,
+                      .url = "https://example.com/v1/db1/tables/table1"};
+  auto auth_result = table_session.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  const auto& headers = auth_result.value().headers;
 
   auto auth_it = headers.find("authorization");
   ASSERT_NE(auth_it, headers.end());

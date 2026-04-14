@@ -63,9 +63,9 @@ TEST_F(AuthManagerTest, LoadNoopAuthManagerExplicit) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
-  EXPECT_TRUE(headers.empty());
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_TRUE(auth_result.value().headers.empty());
 }
 
 // Verifies that NoopAuthManager is inferred when no auth properties are set
@@ -107,10 +107,10 @@ TEST_F(AuthManagerTest, LoadBasicAuthManager) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
   // base64("admin:secret") == "YWRtaW46c2VjcmV0"
-  EXPECT_EQ(headers["Authorization"], "Basic YWRtaW46c2VjcmV0");
+  EXPECT_EQ(auth_result.value().headers["Authorization"], "Basic YWRtaW46c2VjcmV0");
 }
 
 // Verifies BasicAuthManager is case-insensitive for auth type
@@ -126,10 +126,10 @@ TEST_F(AuthManagerTest, BasicAuthTypeCaseInsensitive) {
     auto session_result = manager_result.value()->CatalogSession(client_, properties);
     ASSERT_THAT(session_result, IsOk()) << "Failed for auth type: " << auth_type;
 
-    std::unordered_map<std::string, std::string> headers;
-    EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+    auto auth_result = session_result.value()->Authenticate({});
+    ASSERT_THAT(auth_result, IsOk()) << "Failed for auth type: " << auth_type;
     // base64("user:pass") == "dXNlcjpwYXNz"
-    EXPECT_EQ(headers["Authorization"], "Basic dXNlcjpwYXNz");
+    EXPECT_EQ(auth_result.value().headers["Authorization"], "Basic dXNlcjpwYXNz");
   }
 }
 
@@ -172,10 +172,11 @@ TEST_F(AuthManagerTest, BasicAuthSpecialCharacters) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
   // base64("user@domain.com:p@ss:w0rd!") == "dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE="
-  EXPECT_EQ(headers["Authorization"], "Basic dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE=");
+  EXPECT_EQ(auth_result.value().headers["Authorization"],
+            "Basic dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE=");
 }
 
 // Verifies custom auth manager registration
@@ -204,9 +205,9 @@ TEST_F(AuthManagerTest, RegisterCustomAuthManager) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
-  EXPECT_EQ(headers["X-Custom-Auth"], "custom-value");
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_EQ(auth_result.value().headers["X-Custom-Auth"], "custom-value");
 }
 
 // Verifies OAuth2 with static token
@@ -222,9 +223,9 @@ TEST_F(AuthManagerTest, OAuth2StaticToken) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
-  EXPECT_EQ(headers["Authorization"], "Bearer my-static-token");
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_EQ(auth_result.value().headers["Authorization"], "Bearer my-static-token");
 }
 
 // Verifies OAuth2 type is inferred from token property
@@ -239,9 +240,9 @@ TEST_F(AuthManagerTest, OAuth2InferredFromToken) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  EXPECT_THAT(session_result.value()->Authenticate(headers), IsOk());
-  EXPECT_EQ(headers["Authorization"], "Bearer inferred-token");
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_EQ(auth_result.value().headers["Authorization"], "Bearer inferred-token");
 }
 
 // Verifies OAuth2 returns unauthenticated session when neither token nor credential is
@@ -258,9 +259,10 @@ TEST_F(AuthManagerTest, OAuth2MissingCredentials) {
   ASSERT_THAT(session_result, IsOk());
 
   // Session should have no auth headers
-  std::unordered_map<std::string, std::string> headers;
-  ASSERT_TRUE(session_result.value()->Authenticate(headers).has_value());
-  EXPECT_EQ(headers.find("Authorization"), headers.end());
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_TRUE(auth_result.has_value());
+  EXPECT_EQ(auth_result.value().headers.find("Authorization"),
+            auth_result.value().headers.end());
 }
 
 // Verifies that when both token and credential are provided, token takes priority
@@ -279,9 +281,9 @@ TEST_F(AuthManagerTest, OAuth2TokenTakesPriorityOverCredential) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  std::unordered_map<std::string, std::string> headers;
-  ASSERT_THAT(session_result.value()->Authenticate(headers), IsOk());
-  EXPECT_EQ(headers["Authorization"], "Bearer my-static-token");
+  auto auth_result = session_result.value()->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_EQ(auth_result.value().headers["Authorization"], "Bearer my-static-token");
 }
 
 // Verifies OAuthTokenResponse JSON parsing

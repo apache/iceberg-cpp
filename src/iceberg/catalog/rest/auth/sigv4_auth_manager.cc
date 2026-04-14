@@ -82,9 +82,8 @@ std::unordered_map<std::string, std::string> MergeProperties(
   return merged;
 }
 
-/// SigV4 signer reproducing Java RESTSigV4AuthSession's
-/// SignerChecksumParams(SHA256, X_AMZ_CONTENT_SHA256) output: canonical
-/// headers carry Base64(SHA256(body)), canonical request trailer uses hex.
+/// Matches Java RESTSigV4AuthSession: canonical headers carry
+/// Base64(SHA256(body)), canonical request trailer uses hex.
 class RestSigV4Signer : public Aws::Client::AWSAuthV4Signer {
  public:
   RestSigV4Signer(const std::shared_ptr<Aws::Auth::AWSCredentialsProvider>& creds,
@@ -92,11 +91,9 @@ class RestSigV4Signer : public Aws::Client::AWSAuthV4Signer {
       : Aws::Client::AWSAuthV4Signer(creds, service_name, region,
                                      PayloadSigningPolicy::Always,
                                      /*urlEscapePath=*/false) {
-    // AWSAuthV4Signer normally overwrites x-amz-content-sha256 with the hex
-    // body hash right before canonicalization, which would clobber the Base64
-    // value the caller pre-sets. Clearing this flag skips that overwrite so
-    // canonical headers see the caller's Base64, while ComputePayloadHash
-    // still feeds hex into the canonical request trailer.
+    // Skip the signer's hex overwrite of x-amz-content-sha256 so canonical
+    // headers see the caller's Base64; ComputePayloadHash still feeds hex
+    // into the canonical request trailer.
     m_includeSha256HashHeader = false;
   }
 };
@@ -118,15 +115,13 @@ SigV4AuthSession::SigV4AuthSession(
 
 SigV4AuthSession::~SigV4AuthSession() = default;
 
-Status SigV4AuthSession::Authenticate(
-    std::unordered_map<std::string, std::string>& headers,
-    const HTTPRequestContext& request_context) {
-  ICEBERG_RETURN_UNEXPECTED(delegate_->Authenticate(headers, request_context));
-  auto original_headers = headers;
+Result<HTTPRequest> SigV4AuthSession::Authenticate(const HTTPRequest& request) {
+  ICEBERG_ASSIGN_OR_RAISE(auto delegate_request, delegate_->Authenticate(request));
+  const auto& original_headers = delegate_request.headers;
 
   // Relocate any delegate-set Authorization so SigV4 takes precedence.
   std::unordered_map<std::string, std::string> signing_headers;
-  for (const auto& [name, value] : headers) {
+  for (const auto& [name, value] : original_headers) {
     if (StringUtils::EqualsIgnoreCase(name, "Authorization")) {
       signing_headers[std::string(kRelocatedHeaderPrefix) + name] = value;
     } else {
@@ -134,25 +129,23 @@ Status SigV4AuthSession::Authenticate(
     }
   }
 
-  Aws::Http::URI aws_uri(request_context.url.c_str());
+  Aws::Http::URI aws_uri(delegate_request.url.c_str());
   auto aws_request = std::make_shared<Aws::Http::Standard::StandardHttpRequest>(
-      aws_uri, ToAwsMethod(request_context.method));
+      aws_uri, ToAwsMethod(delegate_request.method));
   for (const auto& [name, value] : signing_headers) {
     aws_request->SetHeaderValue(Aws::String(name.c_str()), Aws::String(value.c_str()));
   }
 
   // Empty body uses hex EMPTY_BODY_SHA256 (Java workaround for the signer
-  // producing an invalid checksum for empty bodies); non-empty body uses
-  // Base64(SHA256(body)). See RestSigV4Signer doc for why this value survives
-  // signing to land in the canonical headers unchanged.
-  if (request_context.body.empty()) {
+  // producing an invalid checksum on empty bodies); non-empty uses Base64.
+  if (delegate_request.body.empty()) {
     aws_request->SetHeaderValue("x-amz-content-sha256", Aws::String(kEmptyBodySha256));
   } else {
     auto body_stream =
-        Aws::MakeShared<std::stringstream>("SigV4Body", request_context.body);
+        Aws::MakeShared<std::stringstream>("SigV4Body", delegate_request.body);
     aws_request->AddContentBody(body_stream);
     auto sha256 = Aws::Utils::HashingUtils::CalculateSHA256(
-        Aws::String(request_context.body.data(), request_context.body.size()));
+        Aws::String(delegate_request.body.data(), delegate_request.body.size()));
     aws_request->SetHeaderValue("x-amz-content-sha256",
                                 Aws::Utils::HashingUtils::Base64Encode(sha256));
   }
@@ -162,21 +155,25 @@ Status SigV4AuthSession::Authenticate(
         Error{ErrorKind::kAuthenticationFailed, "SigV4 signing failed"});
   }
 
-  // Merge signed headers back; relocate any original value that conflicts.
-  headers.clear();
+  // Fill headers with the signed set, relocating any conflicting originals.
+  HTTPRequest signed_request{.method = delegate_request.method,
+                             .url = std::move(delegate_request.url),
+                             .headers = {},
+                             .body = std::move(delegate_request.body)};
   for (const auto& [aws_name, aws_value] : aws_request->GetHeaders()) {
     std::string name(aws_name.c_str(), aws_name.size());
     std::string value(aws_value.c_str(), aws_value.size());
     for (const auto& [orig_name, orig_value] : original_headers) {
       if (StringUtils::EqualsIgnoreCase(orig_name, name) && orig_value != value) {
-        headers[std::string(kRelocatedHeaderPrefix) + orig_name] = orig_value;
+        signed_request.headers[std::string(kRelocatedHeaderPrefix) + orig_name] =
+            orig_value;
         break;
       }
     }
-    headers[std::move(name)] = std::move(value);
+    signed_request.headers[std::move(name)] = std::move(value);
   }
 
-  return {};
+  return signed_request;
 }
 
 Status SigV4AuthSession::Close() { return delegate_->Close(); }
@@ -243,7 +240,6 @@ SigV4AuthManager::MakeCredentialsProvider(
   bool has_ak = access_key_it != properties.end() && !access_key_it->second.empty();
   bool has_sk = secret_key_it != properties.end() && !secret_key_it->second.empty();
 
-  // Reject partial credentials — providing only one of AK/SK is a misconfiguration.
   ICEBERG_PRECHECK(
       has_ak == has_sk, "Both '{}' and '{}' must be set together, or neither",
       AuthProperties::kSigV4AccessKeyId, AuthProperties::kSigV4SecretAccessKey);
@@ -263,13 +259,9 @@ SigV4AuthManager::MakeCredentialsProvider(
 
 std::string SigV4AuthManager::ResolveSigningRegion(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto it = properties.find(AuthProperties::kSigV4SigningRegion);
-  if (it != properties.end() && !it->second.empty()) {
+  if (auto it = properties.find(AuthProperties::kSigV4SigningRegion);
+      it != properties.end() && !it->second.empty()) {
     return it->second;
-  }
-  auto legacy_it = properties.find(AuthProperties::kSigV4Region);
-  if (legacy_it != properties.end() && !legacy_it->second.empty()) {
-    return legacy_it->second;
   }
   if (const char* env = std::getenv("AWS_REGION")) {
     return std::string(env);
@@ -282,13 +274,9 @@ std::string SigV4AuthManager::ResolveSigningRegion(
 
 std::string SigV4AuthManager::ResolveSigningName(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto it = properties.find(AuthProperties::kSigV4SigningName);
-  if (it != properties.end() && !it->second.empty()) {
+  if (auto it = properties.find(AuthProperties::kSigV4SigningName);
+      it != properties.end() && !it->second.empty()) {
     return it->second;
-  }
-  auto legacy_it = properties.find(AuthProperties::kSigV4Service);
-  if (legacy_it != properties.end() && !legacy_it->second.empty()) {
-    return legacy_it->second;
   }
   return AuthProperties::kSigV4SigningNameDefault;
 }
