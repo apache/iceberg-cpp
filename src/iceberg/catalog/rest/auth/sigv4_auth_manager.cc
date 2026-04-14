@@ -31,6 +31,7 @@
 
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -207,8 +208,7 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
     const std::unordered_map<std::string, std::string>& context,
     std::shared_ptr<AuthSession> parent) {
-  auto* sigv4_parent = dynamic_cast<SigV4AuthSession*>(parent.get());
-  ICEBERG_PRECHECK(sigv4_parent != nullptr, "Parent session is not SigV4");
+  auto sigv4_parent = internal::checked_pointer_cast<SigV4AuthSession>(std::move(parent));
 
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session, delegate_->ContextualSession(
                                                      context, sigv4_parent->delegate()));
@@ -221,8 +221,7 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
     const TableIdentifier& table,
     const std::unordered_map<std::string, std::string>& properties,
     std::shared_ptr<AuthSession> parent) {
-  auto* sigv4_parent = dynamic_cast<SigV4AuthSession*>(parent.get());
-  ICEBERG_PRECHECK(sigv4_parent != nullptr, "Parent session is not SigV4");
+  auto sigv4_parent = internal::checked_pointer_cast<SigV4AuthSession>(std::move(parent));
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto delegate_session,
@@ -248,15 +247,12 @@ SigV4AuthManager::MakeCredentialsProvider(
       AuthProperties::kSigV4AccessKeyId, AuthProperties::kSigV4SecretAccessKey);
 
   if (has_ak) {
-    auto session_token_it = properties.find(AuthProperties::kSigV4SessionToken);
-    if (session_token_it != properties.end() && !session_token_it->second.empty()) {
-      Aws::Auth::AWSCredentials credentials(access_key_it->second.c_str(),
-                                            secret_key_it->second.c_str(),
-                                            session_token_it->second.c_str());
-      return std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(credentials);
-    }
     Aws::Auth::AWSCredentials credentials(access_key_it->second.c_str(),
                                           secret_key_it->second.c_str());
+    auto session_token_it = properties.find(AuthProperties::kSigV4SessionToken);
+    if (session_token_it != properties.end() && !session_token_it->second.empty()) {
+      credentials.SetSessionToken(session_token_it->second.c_str());
+    }
     return std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(credentials);
   }
 

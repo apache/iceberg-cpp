@@ -77,7 +77,6 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   std::string signing_region_;
   std::string signing_name_;
   std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider_;
-  /// Shared signer instance, matching Java's single Aws4Signer per manager.
   std::unique_ptr<Aws::Client::AWSAuthV4Signer> signer_;
 };
 
