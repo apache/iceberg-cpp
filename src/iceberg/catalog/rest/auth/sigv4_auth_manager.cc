@@ -82,6 +82,25 @@ std::unordered_map<std::string, std::string> MergeProperties(
   return merged;
 }
 
+/// SigV4 signer reproducing Java RESTSigV4AuthSession's
+/// SignerChecksumParams(SHA256, X_AMZ_CONTENT_SHA256) output: canonical
+/// headers carry Base64(SHA256(body)), canonical request trailer uses hex.
+class RestSigV4Signer : public Aws::Client::AWSAuthV4Signer {
+ public:
+  RestSigV4Signer(const std::shared_ptr<Aws::Auth::AWSCredentialsProvider>& creds,
+                  const char* service_name, const Aws::String& region)
+      : Aws::Client::AWSAuthV4Signer(creds, service_name, region,
+                                     PayloadSigningPolicy::Always,
+                                     /*urlEscapePath=*/false) {
+    // AWSAuthV4Signer normally overwrites x-amz-content-sha256 with the hex
+    // body hash right before canonicalization, which would clobber the Base64
+    // value the caller pre-sets. Clearing this flag skips that overwrite so
+    // canonical headers see the caller's Base64, while ComputePayloadHash
+    // still feeds hex into the canonical request trailer.
+    m_includeSha256HashHeader = false;
+  }
+};
+
 }  // namespace
 
 // ---- SigV4AuthSession ----
@@ -94,22 +113,18 @@ SigV4AuthSession::SigV4AuthSession(
       signing_region_(std::move(signing_region)),
       signing_name_(std::move(signing_name)),
       credentials_provider_(std::move(credentials_provider)),
-      signer_(std::make_unique<Aws::Client::AWSAuthV4Signer>(
-          credentials_provider_, signing_name_.c_str(), signing_region_.c_str(),
-          Aws::Client::AWSAuthV4Signer::PayloadSigningPolicy::Always,
-          /*urlEscapePath=*/false)) {}
+      signer_(std::make_unique<RestSigV4Signer>(
+          credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {}
 
 SigV4AuthSession::~SigV4AuthSession() = default;
 
 Status SigV4AuthSession::Authenticate(
     std::unordered_map<std::string, std::string>& headers,
     const HTTPRequestContext& request_context) {
-  // 1. Delegate authenticates first (e.g., adds OAuth2 Bearer token).
   ICEBERG_RETURN_UNEXPECTED(delegate_->Authenticate(headers, request_context));
-
   auto original_headers = headers;
 
-  // 2. Relocate Authorization header (case-insensitive) so SigV4 takes precedence.
+  // Relocate any delegate-set Authorization so SigV4 takes precedence.
   std::unordered_map<std::string, std::string> signing_headers;
   for (const auto& [name, value] : headers) {
     if (StringUtils::EqualsIgnoreCase(name, "Authorization")) {
@@ -119,59 +134,46 @@ Status SigV4AuthSession::Authenticate(
     }
   }
 
-  // 3. Build AWS SDK request.
   Aws::Http::URI aws_uri(request_context.url.c_str());
   auto aws_request = std::make_shared<Aws::Http::Standard::StandardHttpRequest>(
       aws_uri, ToAwsMethod(request_context.method));
-
   for (const auto& [name, value] : signing_headers) {
     aws_request->SetHeaderValue(Aws::String(name.c_str()), Aws::String(value.c_str()));
   }
 
-  // 4. Set body content hash (matching Java's RESTSigV4AuthSession).
-  // Empty body: set EMPTY_BODY_SHA256 explicitly (Java line 118-121 workaround).
-  // Non-empty body: set body stream; the signer (PayloadSigningPolicy::Always)
-  // computes the real hex hash. Step 7 converts hex to Base64 after signing.
+  // Empty body uses hex EMPTY_BODY_SHA256 (Java workaround for the signer
+  // producing an invalid checksum for empty bodies); non-empty body uses
+  // Base64(SHA256(body)). See RestSigV4Signer doc for why this value survives
+  // signing to land in the canonical headers unchanged.
   if (request_context.body.empty()) {
     aws_request->SetHeaderValue("x-amz-content-sha256", Aws::String(kEmptyBodySha256));
   } else {
     auto body_stream =
         Aws::MakeShared<std::stringstream>("SigV4Body", request_context.body);
     aws_request->AddContentBody(body_stream);
+    auto sha256 = Aws::Utils::HashingUtils::CalculateSHA256(
+        Aws::String(request_context.body.data(), request_context.body.size()));
+    aws_request->SetHeaderValue("x-amz-content-sha256",
+                                Aws::Utils::HashingUtils::Base64Encode(sha256));
   }
 
-  // 5. Sign.
   if (!signer_->SignRequest(*aws_request)) {
     return std::unexpected<Error>(
         Error{ErrorKind::kAuthenticationFailed, "SigV4 signing failed"});
   }
 
-  // 6. Extract signed headers, relocating conflicts with originals.
+  // Merge signed headers back; relocate any original value that conflicts.
   headers.clear();
-  auto signed_headers = aws_request->GetHeaders();
-  for (auto it = signed_headers.begin(); it != signed_headers.end(); ++it) {
-    std::string name_str(it->first.c_str(), it->first.size());
-    std::string value_str(it->second.c_str(), it->second.size());
-
+  for (const auto& [aws_name, aws_value] : aws_request->GetHeaders()) {
+    std::string name(aws_name.c_str(), aws_name.size());
+    std::string value(aws_value.c_str(), aws_value.size());
     for (const auto& [orig_name, orig_value] : original_headers) {
-      if (StringUtils::EqualsIgnoreCase(orig_name, name_str) && orig_value != value_str) {
+      if (StringUtils::EqualsIgnoreCase(orig_name, name) && orig_value != value) {
         headers[std::string(kRelocatedHeaderPrefix) + orig_name] = orig_value;
         break;
       }
     }
-
-    headers[name_str] = value_str;
-  }
-
-  // 7. Convert body hash from hex to Base64 (matching Java's SignerChecksumParams
-  // output). Only convert if the value is a valid hex SHA256 (64 hex chars).
-  if (!request_context.body.empty()) {
-    auto it = headers.find("x-amz-content-sha256");
-    if (it != headers.end() && it->second.size() == 64 &&
-        it->second != std::string(kEmptyBodySha256)) {
-      auto decoded = Aws::Utils::HashingUtils::HexDecode(Aws::String(it->second.c_str()));
-      it->second = std::string(Aws::Utils::HashingUtils::Base64Encode(decoded).c_str());
-    }
+    headers[std::move(name)] = std::move(value);
   }
 
   return {};
