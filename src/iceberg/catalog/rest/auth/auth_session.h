@@ -61,6 +61,11 @@ class ICEBERG_REST_EXPORT AuthSession {
   virtual Status Authenticate(std::unordered_map<std::string, std::string>& headers,
                               const HTTPRequestContext& request_context) = 0;
 
+  /// \brief Convenience overload for callers that don't need a request context.
+  Status Authenticate(std::unordered_map<std::string, std::string>& headers) {
+    return Authenticate(headers, HTTPRequestContext{});
+  }
+
   /// \brief Close the session and release any resources.
   ///
   /// This method is called when the session is no longer needed. For stateful
