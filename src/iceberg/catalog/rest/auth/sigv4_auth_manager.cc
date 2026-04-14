@@ -29,6 +29,8 @@
 #include <aws/core/http/standard/StandardHttpRequest.h>
 #include <aws/core/utils/HashingUtils.h>
 
+#include "iceberg/catalog/rest/auth/auth_manager_internal.h"
+#include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/util/checked_cast.h"
@@ -290,6 +292,28 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
   return std::make_shared<SigV4AuthSession>(std::move(delegate_session),
                                             std::move(region), std::move(service),
                                             std::move(credentials));
+}
+
+Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
+    std::string_view name,
+    const std::unordered_map<std::string, std::string>& properties) {
+  // Default to OAuth2 when delegate type is not specified.
+  std::string delegate_type = AuthProperties::kAuthTypeOAuth2;
+  if (auto it = properties.find(AuthProperties::kSigV4DelegateAuthType);
+      it != properties.end() && !it->second.empty()) {
+    delegate_type = StringUtils::ToLower(it->second);
+  }
+
+  // Prevent circular delegation (sigv4 -> sigv4 -> ...).
+  ICEBERG_PRECHECK(delegate_type != AuthProperties::kAuthTypeSigV4,
+                   "Cannot delegate a SigV4 auth manager to another SigV4 auth "
+                   "manager (delegate_type='{}')",
+                   delegate_type);
+
+  auto delegate_props = properties;
+  delegate_props[AuthProperties::kAuthType] = delegate_type;
+  ICEBERG_ASSIGN_OR_RAISE(auto delegate, AuthManagers::Load(name, delegate_props));
+  return std::make_unique<SigV4AuthManager>(std::move(delegate));
 }
 
 }  // namespace iceberg::rest::auth
