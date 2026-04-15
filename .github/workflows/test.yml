@@ -133,14 +133,14 @@ jobs:
           SCCACHE_GHA_ENABLED: "true"
         run: |
           $ErrorActionPreference = "Stop"
-          cmd /c "call \"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat\" x64 && bash -lc \"ci/scripts/build_iceberg.sh `$(pwd) OFF ON\""
+          cmd /c "call `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat`" x64 && bash -lc `"ci/scripts/build_iceberg.sh `$(pwd) OFF ON`""
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           sccache --show-stats
       - name: Build Example
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          cmd /c "call \"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat\" x64 && bash -lc \"ci/scripts/build_example.sh `$(pwd)/example\""
+          cmd /c "call `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat`" x64 && bash -lc `"ci/scripts/build_example.sh `$(pwd)/example`""
   meson:
     name: Meson - ${{ matrix.title }}
     runs-on: ${{ matrix.runs-on }}
