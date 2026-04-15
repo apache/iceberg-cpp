@@ -209,7 +209,7 @@ TEST_F(SigV4AuthTest, TableSessionInheritsProperties) {
   auto catalog_session = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(catalog_session, IsOk());
 
-  iceberg::TableIdentifier table_id{iceberg::Namespace{{"ns1"}}, "table1"};
+  iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"ns1"}}, .name = "table1"};
   std::unordered_map<std::string, std::string> table_props;
   auto table_session = manager_result.value()->TableSession(table_id, table_props,
                                                             catalog_session.value());
@@ -474,7 +474,7 @@ TEST_F(SigV4AuthTest, TableSessionOverridesProperties) {
       {AuthProperties::kSigV4SigningRegion, "ap-southeast-1"},
   };
 
-  iceberg::TableIdentifier table_id{iceberg::Namespace{{"db1"}}, "table1"};
+  iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"db1"}}, .name = "table1"};
   auto table_session = manager_result.value()->TableSession(table_id, table_props,
                                                             catalog_session.value());
   ASSERT_THAT(table_session, IsOk());
@@ -506,7 +506,7 @@ TEST_F(SigV4AuthTest, TableSessionInheritsContextualOverrides) {
       {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}}, catalog_session.value());
   ASSERT_THAT(ctx_session, IsOk());
 
-  iceberg::TableIdentifier table_id{iceberg::Namespace{{"db1"}}, "table1"};
+  iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"db1"}}, .name = "table1"};
   auto table_session = manager_result.value()->TableSession(table_id, /*properties=*/{},
                                                             ctx_session.value());
   ASSERT_THAT(table_session, IsOk());

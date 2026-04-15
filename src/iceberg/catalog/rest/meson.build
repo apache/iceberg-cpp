@@ -98,7 +98,4 @@ iceberg_rest_auth_headers = [
 if aws_sdk_core_dep.found()
     iceberg_rest_auth_headers += ['auth/sigv4_auth_manager.h']
 endif
-install_headers(
-    iceberg_rest_auth_headers,
-    subdir: 'iceberg/catalog/rest/auth',
-)
+install_headers(iceberg_rest_auth_headers, subdir: 'iceberg/catalog/rest/auth')
