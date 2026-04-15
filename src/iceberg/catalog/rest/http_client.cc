@@ -86,7 +86,7 @@ cpr::Header ToCprHeader(const auth::HTTPRequest& request) {
 }
 
 /// \brief Append URL-encoded query parameters to a URL, sorted by key.
-std::string AppendQueryString(
+Result<std::string> AppendQueryString(
     const std::string& base_url,
     const std::unordered_map<std::string, std::string>& params) {
   if (params.empty()) return base_url;
@@ -95,9 +95,9 @@ std::string AppendQueryString(
   bool first = true;
   for (const auto& [k, v] : sorted) {
     if (!first) url += "&";
-    auto ek = EncodeString(k);
-    auto ev = EncodeString(v);
-    url += (ek ? *ek : k) + "=" + (ev ? *ev : v);
+    ICEBERG_ASSIGN_OR_RAISE(auto ek, EncodeString(k));
+    ICEBERG_ASSIGN_OR_RAISE(auto ev, EncodeString(v));
+    url += ek + "=" + ev;
     first = false;
   }
   return url;
@@ -161,10 +161,11 @@ Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto url, AppendQueryString(path, params));
   ICEBERG_ASSIGN_OR_RAISE(
       auto authenticated,
       session.Authenticate({.method = HttpMethod::kGet,
-                            .url = AppendQueryString(path, params),
+                            .url = std::move(url),
                             .headers = MergeHeaders(default_headers_, headers),
                             .body = ""}));
   cpr::Response response = cpr::Get(cpr::Url{authenticated.url},
@@ -249,10 +250,11 @@ Result<HttpResponse> HttpClient::Delete(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
+  ICEBERG_ASSIGN_OR_RAISE(auto url, AppendQueryString(path, params));
   ICEBERG_ASSIGN_OR_RAISE(
       auto authenticated,
       session.Authenticate({.method = HttpMethod::kDelete,
-                            .url = AppendQueryString(path, params),
+                            .url = std::move(url),
                             .headers = MergeHeaders(default_headers_, headers),
                             .body = ""}));
   cpr::Response response = cpr::Delete(cpr::Url{authenticated.url},
