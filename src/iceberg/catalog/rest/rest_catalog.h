@@ -95,6 +95,10 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
 
   Result<std::shared_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
 
+  /// \brief Like LoadTable() but returns the raw LoadTableResult with any vended
+  /// `storage-credentials`, without binding a FileIO.
+  Result<LoadTableResult> LoadTableResultFor(const TableIdentifier& identifier);
+
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,
       const std::string& metadata_file_location) override;

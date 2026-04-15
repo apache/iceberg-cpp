@@ -71,6 +71,8 @@ constexpr std::string_view kSource = "source";
 constexpr std::string_view kDestination = "destination";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kConfig = "config";
+constexpr std::string_view kStorageCredentials = "storage-credentials";
+constexpr std::string_view kPrefix = "prefix";
 constexpr std::string_view kIdentifiers = "identifiers";
 constexpr std::string_view kOverrides = "overrides";
 constexpr std::string_view kDefaults = "defaults";
@@ -695,6 +697,17 @@ nlohmann::json ToJson(const LoadTableResult& result) {
   SetOptionalStringField(json, kMetadataLocation, result.metadata_location);
   json[kMetadata] = ToJson(*result.metadata);
   SetContainerField(json, kConfig, result.config);
+  if (!result.storage_credentials.empty()) {
+    nlohmann::json creds = nlohmann::json::array();
+    for (const auto& cred : result.storage_credentials) {
+      nlohmann::json entry;
+      entry[kPrefix] = cred.prefix;
+      // config is required, so always write it (matches Java).
+      entry[kConfig] = cred.config;
+      creds.push_back(std::move(entry));
+    }
+    json[kStorageCredentials] = std::move(creds);
+  }
   return json;
 }
 
@@ -707,6 +720,27 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(result.metadata, TableMetadataFromJson(metadata_json));
   ICEBERG_ASSIGN_OR_RAISE(result.config,
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
+  if (auto it = json.find(kStorageCredentials); it != json.end() && !it->is_null()) {
+    if (!it->is_array()) {
+      return JsonParseError("Cannot parse storage credentials from non-array: {}",
+                            SafeDumpJson(*it));
+    }
+    for (const auto& entry : *it) {
+      StorageCredential cred;
+      ICEBERG_ASSIGN_OR_RAISE(cred.prefix, GetJsonValue<std::string>(entry, kPrefix));
+      ICEBERG_ASSIGN_OR_RAISE(cred.config,
+                              GetJsonValue<decltype(cred.config)>(entry, kConfig));
+      // prefix and config are required by the REST spec; non-empty matches the
+      // Java reference implementation (Credential.validate()).
+      if (cred.prefix.empty()) {
+        return JsonParseError("Invalid storage credential: prefix must be non-empty");
+      }
+      if (cred.config.empty()) {
+        return JsonParseError("Invalid storage credential: config must be non-empty");
+      }
+      result.storage_credentials.push_back(std::move(cred));
+    }
+  }
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
 }
