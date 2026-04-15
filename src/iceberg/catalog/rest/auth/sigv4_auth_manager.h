@@ -20,7 +20,6 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -48,8 +47,8 @@ namespace iceberg::rest::auth {
 ///
 /// See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html
 ///
-/// Thread safety: Authenticate() is thread-safe; concurrent signing calls are
-/// serialized by an internal mutex.
+/// Thread safety: Authenticate() is thread-safe as long as the delegate
+/// session is.
 class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
  public:
   /// SHA-256 hash of empty string, used for requests with no body.
@@ -87,8 +86,6 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider_;
   std::unique_ptr<Aws::Client::AWSAuthV4Signer> signer_;
   std::unordered_map<std::string, std::string> effective_properties_;
-  // AWSAuthV4Signer::SignRequest mutates shared signer state.
-  mutable std::mutex signing_mutex_;
 };
 
 /// \brief An AuthManager that produces SigV4AuthSession instances.

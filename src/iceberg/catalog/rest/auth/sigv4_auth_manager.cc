@@ -20,7 +20,6 @@
 #include "iceberg/catalog/rest/auth/sigv4_auth_manager.h"
 
 #include <cstdlib>
-#include <mutex>
 #include <sstream>
 
 #include <aws/core/Aws.h>
@@ -154,12 +153,9 @@ Result<HTTPRequest> SigV4AuthSession::Authenticate(const HTTPRequest& request) {
                                 Aws::Utils::HashingUtils::Base64Encode(sha256));
   }
 
-  {
-    std::lock_guard<std::mutex> lock(signing_mutex_);
-    if (!signer_->SignRequest(*aws_request)) {
-      return std::unexpected<Error>(
-          Error{ErrorKind::kAuthenticationFailed, "SigV4 signing failed"});
-    }
+  if (!signer_->SignRequest(*aws_request)) {
+    return std::unexpected<Error>(Error{.kind = ErrorKind::kAuthenticationFailed,
+                                        .message = "SigV4 signing failed"});
   }
 
   HTTPRequest signed_request{.method = delegate_request.method,
@@ -269,10 +265,10 @@ std::string SigV4AuthManager::ResolveSigningRegion(
     return it->second;
   }
   if (const char* env = std::getenv("AWS_REGION")) {
-    return std::string(env);
+    return {env};
   }
   if (const char* env = std::getenv("AWS_DEFAULT_REGION")) {
-    return std::string(env);
+    return {env};
   }
   return "us-east-1";
 }
