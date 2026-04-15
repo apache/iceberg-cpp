@@ -22,6 +22,7 @@
 #include <shared_mutex>
 
 #include "iceberg/catalog.h"
+#include "iceberg/metrics/metrics_reporter.h"
 
 namespace iceberg {
 
@@ -105,6 +106,7 @@ class ICEBERG_EXPORT InMemoryCatalog
   std::shared_ptr<FileIO> file_io_;
   std::string warehouse_location_;
   std::unique_ptr<class InMemoryNamespace> root_namespace_;
+  std::shared_ptr<MetricsReporter> reporter_;
   mutable std::shared_mutex mutex_;
 };
 
