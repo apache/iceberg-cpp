@@ -119,7 +119,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install dependencies
-        shell: cmd
+        shell: pwsh
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
       - name: Setup sccache
@@ -128,19 +128,19 @@ jobs:
         shell: bash
         run: bash ci/scripts/start_minio.sh
       - name: Build Iceberg
-        shell: cmd
+        shell: pwsh
         env:
           SCCACHE_GHA_ENABLED: "true"
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-          bash -c "ci/scripts/build_iceberg.sh $(pwd) OFF ON"
-          if %errorlevel% neq 0 exit /b %errorlevel%
+          $ErrorActionPreference = "Stop"
+          cmd /c "call \"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat\" x64 && bash -lc \"ci/scripts/build_iceberg.sh `$(pwd) OFF ON\""
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           sccache --show-stats
       - name: Build Example
-        shell: cmd
+        shell: pwsh
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-          bash -c "ci/scripts/build_example.sh $(pwd)/example"
+          $ErrorActionPreference = "Stop"
+          cmd /c "call \"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat\" x64 && bash -lc \"ci/scripts/build_example.sh `$(pwd)/example\""
   meson:
     name: Meson - ${{ matrix.title }}
     runs-on: ${{ matrix.runs-on }}
