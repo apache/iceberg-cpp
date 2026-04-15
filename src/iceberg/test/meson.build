@@ -116,6 +116,14 @@ if get_option('rest').enabled()
             'dependencies': [iceberg_rest_dep],
         },
     }
+    if aws_sdk_core_dep.found()
+        iceberg_tests += {
+            'sigv4_auth_test': {
+                'sources': files('sigv4_auth_test.cc'),
+                'dependencies': [iceberg_rest_dep, aws_sdk_core_dep],
+            },
+        }
+    endif
     if get_option('rest_integration_test').enabled()
         if host_machine.system() == 'windows'
             warning('Cannot build rest integration test on Windows, skipping.')

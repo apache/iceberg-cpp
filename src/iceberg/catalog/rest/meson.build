@@ -40,16 +40,26 @@ cpr_needs_static = (
 cpr_dep = dependency('cpr', static: cpr_needs_static)
 
 iceberg_rest_build_deps = [iceberg_dep, cpr_dep]
+iceberg_rest_compile_defs = []
+
+sigv4_opt = get_option('sigv4')
+aws_sdk_core_dep = dependency('aws-cpp-sdk-core', required: sigv4_opt)
+if aws_sdk_core_dep.found()
+    iceberg_rest_sources += files('auth/sigv4_auth_manager.cc')
+    iceberg_rest_build_deps += aws_sdk_core_dep
+    iceberg_rest_compile_defs += '-DICEBERG_BUILD_SIGV4'
+endif
+
 iceberg_rest_lib = library(
     'iceberg_rest',
     sources: iceberg_rest_sources,
     dependencies: iceberg_rest_build_deps,
     gnu_symbol_visibility: 'hidden',
-    cpp_shared_args: ['-DICEBERG_REST_EXPORTING'],
-    cpp_static_args: ['-DICEBERG_REST_STATIC'],
+    cpp_shared_args: ['-DICEBERG_REST_EXPORTING'] + iceberg_rest_compile_defs,
+    cpp_static_args: ['-DICEBERG_REST_STATIC'] + iceberg_rest_compile_defs,
 )
 
-iceberg_rest_compile_args = []
+iceberg_rest_compile_args = iceberg_rest_compile_defs
 if get_option('default_library') == 'static'
     iceberg_rest_compile_args += ['-DICEBERG_REST_STATIC']
 endif
@@ -78,13 +88,14 @@ install_headers(
     subdir: 'iceberg/catalog/rest',
 )
 
-install_headers(
-    [
-        'auth/auth_manager.h',
-        'auth/auth_managers.h',
-        'auth/auth_properties.h',
-        'auth/auth_session.h',
-        'auth/oauth2_util.h',
-    ],
-    subdir: 'iceberg/catalog/rest/auth',
-)
+iceberg_rest_auth_headers = [
+    'auth/auth_manager.h',
+    'auth/auth_managers.h',
+    'auth/auth_properties.h',
+    'auth/auth_session.h',
+    'auth/oauth2_util.h',
+]
+if aws_sdk_core_dep.found()
+    iceberg_rest_auth_headers += ['auth/sigv4_auth_manager.h']
+endif
+install_headers(iceberg_rest_auth_headers, subdir: 'iceberg/catalog/rest/auth')

@@ -54,10 +54,14 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
 
   // ---- SigV4 entries ----
 
-  inline static const std::string kSigV4Region = "rest.auth.sigv4.region";
-  inline static const std::string kSigV4Service = "rest.auth.sigv4.service";
   inline static const std::string kSigV4DelegateAuthType =
       "rest.auth.sigv4.delegate-auth-type";
+  inline static const std::string kSigV4SigningRegion = "rest.signing-region";
+  inline static const std::string kSigV4SigningName = "rest.signing-name";
+  inline static const std::string kSigV4SigningNameDefault = "execute-api";
+  inline static const std::string kSigV4AccessKeyId = "rest.access-key-id";
+  inline static const std::string kSigV4SecretAccessKey = "rest.secret-access-key";
+  inline static const std::string kSigV4SessionToken = "rest.session-token";
 
   // ---- OAuth2 entries ----
 

@@ -37,14 +37,26 @@ jobs:
         uses: actions/checkout@v6
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev ninja-build
+      - name: Cache vcpkg packages
+        uses: actions/cache@v4
+        id: vcpkg-cache
+        with:
+          path: /usr/local/share/vcpkg/installed
+          key: vcpkg-x64-linux-aws-sdk-cpp-core-${{ hashFiles('.github/workflows/cpp-linter.yml') }}
+      - name: Install AWS SDK via vcpkg
+        if: steps.vcpkg-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: vcpkg install aws-sdk-cpp[core]:x64-linux
       - name: Run build
         env:
           CC: gcc-14
           CXX: g++-14
         run: |
           mkdir build && cd build
-          cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DICEBERG_BUILD_SIGV4=ON \
+            -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build .
       - uses: cpp-linter/cpp-linter-action@0f6d1b8d7e38b584cbee606eb23d850c217d54f8
         id: linter
