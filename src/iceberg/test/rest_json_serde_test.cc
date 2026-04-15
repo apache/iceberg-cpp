@@ -82,6 +82,11 @@ static std::shared_ptr<TableMetadata> MakeSimpleTableMetadata() {
   });
 }
 
+std::string LoadTableJsonWithCredentials(std::string_view storage_credentials) {
+  return std::string(R"({"storage-credentials":)") + std::string(storage_credentials) +
+         R"(,"metadata":{"format-version":2,"table-uuid":"test","location":"s3://test","last-sequence-number":0,"last-column-id":1,"last-updated-ms":0,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0}})";
+}
+
 // Test parameter structure for roundtrip tests
 template <typename Model>
 struct JsonRoundTripParam {
@@ -1116,7 +1121,17 @@ INSTANTIATE_TEST_SUITE_P(
             .model = {.metadata_location = "s3://bucket/metadata/v1.json",
                       .metadata = MakeSimpleTableMetadata(),
                       .config = {{"warehouse", "s3://bucket/warehouse"},
-                                 {"foo", "bar"}}}}),
+                                 {"foo", "bar"}}}},
+        LoadTableResultParam{
+            .test_name = "WithStorageCredentials",
+            .expected_json_str =
+                R"({"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"},"storage-credentials":[{"config":{"s3.access-key-id":"AKIAtest","s3.region":"us-east-1","s3.secret-access-key":"secret"},"prefix":"s3"}]})",
+            .model =
+                {.metadata = MakeSimpleTableMetadata(),
+                 .storage_credentials = {{.prefix = "s3",
+                                          .config = {{"s3.access-key-id", "AKIAtest"},
+                                                     {"s3.secret-access-key", "secret"},
+                                                     {"s3.region", "us-east-1"}}}}}}),
     [](const ::testing::TestParamInfo<LoadTableResultParam>& info) {
       return info.param.test_name;
     });
@@ -1145,7 +1160,18 @@ INSTANTIATE_TEST_SUITE_P(
             .json_str =
                 R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"config":{"warehouse":"s3://bucket/warehouse"}})",
             .expected_model = {.metadata = MakeSimpleTableMetadata(),
-                               .config = {{"warehouse", "s3://bucket/warehouse"}}}}),
+                               .config = {{"warehouse", "s3://bucket/warehouse"}}}},
+        LoadTableResultDeserializeParam{
+            .test_name = "WithStorageCredentials",
+            .json_str =
+                R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"storage-credentials":[{"prefix":"s3","config":{"s3.access-key-id":"AKIAtest","s3.secret-access-key":"secret","s3.session-token":"token","s3.region":"us-east-1"}}]})",
+            .expected_model =
+                {.metadata = MakeSimpleTableMetadata(),
+                 .storage_credentials = {{.prefix = "s3",
+                                          .config = {{"s3.access-key-id", "AKIAtest"},
+                                                     {"s3.secret-access-key", "secret"},
+                                                     {"s3.session-token", "token"},
+                                                     {"s3.region", "us-east-1"}}}}}}),
     [](const ::testing::TestParamInfo<LoadTableResultDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -1184,7 +1210,28 @@ INSTANTIATE_TEST_SUITE_P(
         LoadTableResultInvalidParam{
             .test_name = "InvalidMetadataContent",
             .invalid_json_str = R"({"metadata":{"format-version":"invalid"}})",
-            .expected_error_message = "type must be number, but is string"}),
+            .expected_error_message = "type must be number, but is string"},
+        LoadTableResultInvalidParam{
+            .test_name = "StorageCredentialsNotArray",
+            .invalid_json_str = LoadTableJsonWithCredentials(R"("oops")"),
+            .expected_error_message = "Cannot parse storage credentials from non-array"},
+        LoadTableResultInvalidParam{
+            .test_name = "StorageCredentialMissingPrefix",
+            .invalid_json_str = LoadTableJsonWithCredentials(R"([{"config":{"k":"v"}}])"),
+            .expected_error_message = "Missing 'prefix'"},
+        LoadTableResultInvalidParam{
+            .test_name = "StorageCredentialMissingConfig",
+            .invalid_json_str = LoadTableJsonWithCredentials(R"([{"prefix":"s3"}])"),
+            .expected_error_message = "Missing 'config'"},
+        LoadTableResultInvalidParam{.test_name = "StorageCredentialEmptyPrefix",
+                                    .invalid_json_str = LoadTableJsonWithCredentials(
+                                        R"([{"prefix":"","config":{"k":"v"}}])"),
+                                    .expected_error_message = "prefix must be non-empty"},
+        LoadTableResultInvalidParam{
+            .test_name = "StorageCredentialEmptyConfig",
+            .invalid_json_str =
+                LoadTableJsonWithCredentials(R"([{"prefix":"s3","config":{}}])"),
+            .expected_error_message = "config must be non-empty"}),
     [](const ::testing::TestParamInfo<LoadTableResultInvalidParam>& info) {
       return info.param.test_name;
     });
