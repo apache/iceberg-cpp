@@ -48,7 +48,7 @@ jobs:
           mkdir build && cd build
           cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           cmake --build .
-      - uses: cpp-linter/cpp-linter-action@0f6d1b8d7e38b584cbee606eb23d850c217d54f8
+      - uses: cpp-linter/cpp-linter-action@0f6d1b8d7e38b584cbee606eb23d850c217d54f8 # v2.15.1
         id: linter
         continue-on-error: true
         env:
