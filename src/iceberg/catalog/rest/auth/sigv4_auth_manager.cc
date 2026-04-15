@@ -19,13 +19,13 @@
 
 #include "iceberg/catalog/rest/auth/sigv4_auth_manager.h"
 
-#include <cstdlib>
 #include <sstream>
 
 #include <aws/core/Aws.h>
 #include <aws/core/auth/AWSAuthSigner.h>
 #include <aws/core/auth/AWSCredentialsProvider.h>
 #include <aws/core/auth/AWSCredentialsProviderChain.h>
+#include <aws/core/client/ClientConfiguration.h>
 #include <aws/core/http/standard/StandardHttpRequest.h>
 #include <aws/core/utils/HashingUtils.h>
 
@@ -33,7 +33,6 @@
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -208,7 +207,9 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
     const std::unordered_map<std::string, std::string>& context,
     std::shared_ptr<AuthSession> parent) {
-  auto sigv4_parent = internal::checked_pointer_cast<SigV4AuthSession>(std::move(parent));
+  auto sigv4_parent = std::dynamic_pointer_cast<SigV4AuthSession>(std::move(parent));
+  ICEBERG_PRECHECK(sigv4_parent != nullptr,
+                   "SigV4AuthManager parent must be a SigV4AuthSession");
 
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session, delegate_->ContextualSession(
                                                      context, sigv4_parent->delegate()));
@@ -221,7 +222,9 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
     const TableIdentifier& table,
     const std::unordered_map<std::string, std::string>& properties,
     std::shared_ptr<AuthSession> parent) {
-  auto sigv4_parent = internal::checked_pointer_cast<SigV4AuthSession>(std::move(parent));
+  auto sigv4_parent = std::dynamic_pointer_cast<SigV4AuthSession>(std::move(parent));
+  ICEBERG_PRECHECK(sigv4_parent != nullptr,
+                   "SigV4AuthManager parent must be a SigV4AuthSession");
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto delegate_session,
@@ -233,6 +236,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
 
 Status SigV4AuthManager::Close() { return delegate_->Close(); }
 
+// TODO(sigv4): support loading a custom AWSCredentialsProvider via a class
+// name property, matching Java's AwsProperties.restCredentialsProvider().
 Result<std::shared_ptr<Aws::Auth::AWSCredentialsProvider>>
 SigV4AuthManager::MakeCredentialsProvider(
     const std::unordered_map<std::string, std::string>& properties) {
@@ -264,13 +269,10 @@ std::string SigV4AuthManager::ResolveSigningRegion(
       it != properties.end() && !it->second.empty()) {
     return it->second;
   }
-  if (const char* env = std::getenv("AWS_REGION")) {
-    return {env};
-  }
-  if (const char* env = std::getenv("AWS_DEFAULT_REGION")) {
-    return {env};
-  }
-  return "us-east-1";
+  // Delegates the full resolution chain (AWS_DEFAULT_REGION / AWS_REGION env,
+  // ~/.aws/config profile, EC2/ECS IMDS, fallback us-east-1) to the AWS SDK.
+  // Set AWS_EC2_METADATA_DISABLED=true to skip IMDS on non-EC2 hosts.
+  return {Aws::Client::ClientConfiguration().region.c_str()};
 }
 
 std::string SigV4AuthManager::ResolveSigningName(
