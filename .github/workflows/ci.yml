@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  ICEBERG_HOME: /tmp/iceberg
+
+jobs:
+  build:
+    name: ${{ matrix.compiler }} / Ubuntu 24.04
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: gcc-14
+            cc: gcc-14
+            cxx: g++-14
+          - compiler: clang-18
+            cc: clang-18
+            cxx: clang++-18
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev ninja-build
+      - name: Build and test
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: ci/scripts/build_iceberg.sh $(pwd) ON
