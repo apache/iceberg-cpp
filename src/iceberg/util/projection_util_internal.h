@@ -351,10 +351,9 @@ class ProjectionUtil {
           }
         }
         if (has_negative_value) {
-          auto values =
+          auto values = std::ranges::to<std::vector>(
               std::views::transform(value_set,
-                                    [](int32_t value) { return Literal::Int(value); }) |
-              std::ranges::to<std::vector>();
+                                    [](int32_t value) { return Literal::Int(value); }));
           return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kIn,
                                                             std::move(projected->term()),
                                                             std::move(values));
@@ -455,10 +454,9 @@ class ProjectionUtil {
           }
         }
         if (has_negative_value) {
-          auto values =
+          auto values = std::ranges::to<std::vector>(
               std::views::transform(value_set,
-                                    [](int32_t value) { return Literal::Int(value); }) |
-              std::ranges::to<std::vector>();
+                                    [](int32_t value) { return Literal::Int(value); }));
           return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kNotIn,
                                                             std::move(projected->term()),
                                                             std::move(values));

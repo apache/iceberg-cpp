@@ -104,7 +104,7 @@ TEST(TableMetadataTest, Make) {
       auto metadata, TableMetadata::Make(*Schema, *spec, *order, "s3://bucket/test", {}));
   // Check schema fields
   ASSERT_EQ(1, metadata->schemas.size());
-  auto fields = metadata->schemas[0]->fields() | std::ranges::to<std::vector>();
+  auto fields = std::ranges::to<std::vector>(metadata->schemas[0]->fields());
   ASSERT_EQ(3, fields.size());
   EXPECT_EQ(1, fields[0].field_id());
   EXPECT_EQ("id", fields[0].name());
@@ -120,7 +120,7 @@ TEST(TableMetadataTest, Make) {
   ASSERT_EQ(1, metadata->partition_specs.size());
   EXPECT_EQ(PartitionSpec::kInitialSpecId, metadata->partition_specs[0]->spec_id());
   auto spec_fields =
-      metadata->partition_specs[0]->fields() | std::ranges::to<std::vector>();
+      std::ranges::to<std::vector>(metadata->partition_specs[0]->fields());
   ASSERT_EQ(1, spec_fields.size());
   EXPECT_EQ(PartitionSpec::kInvalidPartitionFieldId + 1, spec_fields[0].field_id());
   EXPECT_EQ(2, spec_fields[0].source_id());
@@ -129,7 +129,7 @@ TEST(TableMetadataTest, Make) {
   // Check sort order
   ASSERT_EQ(1, metadata->sort_orders.size());
   EXPECT_EQ(SortOrder::kInitialSortOrderId, metadata->sort_orders[0]->order_id());
-  auto order_fields = metadata->sort_orders[0]->fields() | std::ranges::to<std::vector>();
+  auto order_fields = std::ranges::to<std::vector>(metadata->sort_orders[0]->fields());
   ASSERT_EQ(1, order_fields.size());
   EXPECT_EQ(3, order_fields[0].source_id());
   EXPECT_EQ(SortDirection::kAscending, order_fields[0].direction());

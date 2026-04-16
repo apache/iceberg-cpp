@@ -377,34 +377,34 @@ Result<TableMetadataCache::SnapshotsMapRef> TableMetadataCache::GetSnapshotsById
 
 Result<TableMetadataCache::SchemasMap> TableMetadataCache::InitSchemasMap(
     const TableMetadata* metadata) {
-  return metadata->schemas | std::views::transform([](const auto& schema) {
-           return std::make_pair(schema->schema_id(), schema);
-         }) |
-         std::ranges::to<SchemasMap>();
+  return std::ranges::to<SchemasMap>(
+      metadata->schemas | std::views::transform([](const auto& schema) {
+        return std::make_pair(schema->schema_id(), schema);
+      }));
 }
 
 Result<TableMetadataCache::PartitionSpecsMap> TableMetadataCache::InitPartitionSpecsMap(
     const TableMetadata* metadata) {
-  return metadata->partition_specs | std::views::transform([](const auto& spec) {
-           return std::make_pair(spec->spec_id(), spec);
-         }) |
-         std::ranges::to<PartitionSpecsMap>();
+  return std::ranges::to<PartitionSpecsMap>(
+      metadata->partition_specs | std::views::transform([](const auto& spec) {
+        return std::make_pair(spec->spec_id(), spec);
+      }));
 }
 
 Result<TableMetadataCache::SortOrdersMap> TableMetadataCache::InitSortOrdersMap(
     const TableMetadata* metadata) {
-  return metadata->sort_orders | std::views::transform([](const auto& order) {
-           return std::make_pair(order->order_id(), order);
-         }) |
-         std::ranges::to<SortOrdersMap>();
+  return std::ranges::to<SortOrdersMap>(
+      metadata->sort_orders | std::views::transform([](const auto& order) {
+        return std::make_pair(order->order_id(), order);
+      }));
 }
 
 Result<TableMetadataCache::SnapshotsMap> TableMetadataCache::InitSnapshotMap(
     const TableMetadata* metadata) {
-  return metadata->snapshots | std::views::transform([](const auto& snapshot) {
-           return std::make_pair(snapshot->snapshot_id, snapshot);
-         }) |
-         std::ranges::to<SnapshotsMap>();
+  return std::ranges::to<SnapshotsMap>(
+      metadata->snapshots | std::views::transform([](const auto& snapshot) {
+        return std::make_pair(snapshot->snapshot_id, snapshot);
+      }));
 }
 
 Result<MetadataFileCodecType> TableMetadataUtil::Codec::FromString(
@@ -499,7 +499,7 @@ void TableMetadataUtil::DeleteRemovedMetadataFiles(FileIO& io, const TableMetada
       metadata.properties.Get(TableProperties::kMetadataDeleteAfterCommitEnabled);
   if (delete_after_commit) {
     auto current_files =
-        metadata.metadata_log | std::ranges::to<std::unordered_set<MetadataLogEntry>>();
+        std::ranges::to<std::unordered_set<MetadataLogEntry>>(metadata.metadata_log);
     std::ranges::for_each(
         base->metadata_log | std::views::filter([&current_files](const auto& entry) {
           return !current_files.contains(entry);
@@ -862,7 +862,7 @@ Result<int32_t> TableMetadataBuilder::Impl::AddPartitionSpec(const PartitionSpec
 
   ICEBERG_ASSIGN_OR_RAISE(
       std::shared_ptr<PartitionSpec> new_spec,
-      PartitionSpec::Make(new_spec_id, spec.fields() | std::ranges::to<std::vector>()));
+      PartitionSpec::Make(new_spec_id, std::ranges::to<std::vector>(spec.fields())));
   metadata_.last_partition_id =
       std::max(metadata_.last_partition_id, new_spec->last_assigned_field_id());
   metadata_.partition_specs.push_back(new_spec);
@@ -933,7 +933,7 @@ Status TableMetadataBuilder::Impl::SetCurrentSchema(int32_t schema_id) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto updated_spec,
         PartitionSpec::Make(partition_spec->spec_id(),
-                            partition_spec->fields() | std::ranges::to<std::vector>()));
+                            std::ranges::to<std::vector>(partition_spec->fields())));
 
     ICEBERG_RETURN_UNEXPECTED(
         PartitionSpec::ValidatePartitionName(*schema, *updated_spec));
@@ -953,7 +953,7 @@ Status TableMetadataBuilder::Impl::SetCurrentSchema(int32_t schema_id) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto updated_order,
         SortOrder::Make(sort_order->order_id(),
-                        sort_order->fields() | std::ranges::to<std::vector>()));
+                        std::ranges::to<std::vector>(sort_order->fields())));
     updated_orders.push_back(std::move(updated_order));
   }
   metadata_.sort_orders = std::move(updated_orders);
@@ -983,10 +983,10 @@ Status TableMetadataBuilder::Impl::RemoveSchemas(
                    "Cannot remove current schema: {}", current_schema_id);
 
   if (!schema_ids.empty()) {
-    metadata_.schemas = metadata_.schemas | std::views::filter([&](const auto& schema) {
-                          return !schema_ids.contains(schema->schema_id());
-                        }) |
-                        std::ranges::to<std::vector<std::shared_ptr<Schema>>>();
+    metadata_.schemas = std::ranges::to<std::vector<std::shared_ptr<Schema>>>(
+        metadata_.schemas | std::views::filter([&](const auto& schema) {
+          return !schema_ids.contains(schema->schema_id());
+        }));
     changes_.push_back(std::make_unique<table::RemoveSchemas>(schema_ids));
   }
 
@@ -1023,7 +1023,7 @@ Result<int32_t> TableMetadataBuilder::Impl::AddSchema(const Schema& schema,
   metadata_.last_column_id = new_last_column_id;
 
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<Schema> new_schema,
-                          Schema::Make(schema.fields() | std::ranges::to<std::vector>(),
+                          Schema::Make(std::ranges::to<std::vector>(schema.fields()),
                                        new_schema_id, schema.IdentifierFieldIds()))
 
   if (!schema_found) {
@@ -1479,10 +1479,10 @@ Status TableMetadataBuilder::Impl::RemovePartitionSpecs(
                    "Cannot remove the default partition spec");
 
   metadata_.partition_specs =
-      metadata_.partition_specs | std::views::filter([&](const auto& spec) {
-        return !spec_ids_to_remove.contains(spec->spec_id());
-      }) |
-      std::ranges::to<std::vector<std::shared_ptr<PartitionSpec>>>();
+      std::ranges::to<std::vector<std::shared_ptr<PartitionSpec>>>(
+          metadata_.partition_specs | std::views::filter([&](const auto& spec) {
+            return !spec_ids_to_remove.contains(spec->spec_id());
+          }));
   changes_.push_back(std::make_unique<table::RemovePartitionSpecs>(spec_ids));
 
   return {};
