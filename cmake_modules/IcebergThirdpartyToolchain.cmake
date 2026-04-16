@@ -167,8 +167,13 @@ function(resolve_arrow_dependency)
   else()
     set(ARROW_VENDORED FALSE)
     find_package(Arrow CONFIG REQUIRED)
-    find_package(Parquet CONFIG REQUIRED)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow Parquet)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow)
+    # Parquet may be bundled as a component of Arrow (e.g. Conan's arrow recipe).
+    # Only do a separate find_package if Arrow didn't already provide the target.
+    if(NOT TARGET Parquet::parquet_static AND NOT TARGET Parquet::parquet_shared)
+      find_package(Parquet CONFIG REQUIRED)
+    endif()
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Parquet)
   endif()
 
   set(ICEBERG_SYSTEM_DEPENDENCIES
