@@ -123,7 +123,7 @@ jobs:
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
       - name: Setup sccache
-        uses: mozilla-actions/sccache-action@7d986dd989559c6ecdb630a3fd2557667be217ad # v0.0.9 # zizmor: ignore[cache-poisoning] -- only used for build caching, no artifacts published
+        uses: mozilla-actions/sccache-action@7d986dd989559c6ecdb630a3fd2557667be217ad # v0.0.9
       - name: Start MinIO
         shell: bash
         run: bash ci/scripts/start_minio.sh
