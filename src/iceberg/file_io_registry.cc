@@ -18,26 +18,28 @@
 #include "iceberg/file_io_registry.h"
 
 #include <mutex>
+#include <utility>
 
 namespace iceberg {
 
 namespace {
 
-std::mutex& RegistryMutex() {
-  static std::mutex mutex;
-  return mutex;
-}
+struct RegistryState {
+  std::mutex mutex;
+  std::unordered_map<std::string, FileIORegistry::Factory> registry;
+};
 
-auto& RegistryMap() {
-  static std::unordered_map<std::string, FileIORegistry::Factory> registry;
-  return registry;
+RegistryState& State() {
+  static RegistryState state;
+  return state;
 }
 
 }  // namespace
 
 void FileIORegistry::Register(const std::string& name, Factory factory) {
-  std::lock_guard lock(RegistryMutex());
-  RegistryMap()[name] = std::move(factory);
+  auto& state = State();
+  std::lock_guard lock(state.mutex);
+  state.registry[name] = std::move(factory);
 }
 
 Result<std::unique_ptr<FileIO>> FileIORegistry::Load(
@@ -45,18 +47,14 @@ Result<std::unique_ptr<FileIO>> FileIORegistry::Load(
     const std::unordered_map<std::string, std::string>& properties) {
   Factory factory;
   {
-    std::lock_guard lock(RegistryMutex());
-    auto it = RegistryMap().find(name);
-    if (it == RegistryMap().end()) {
-      return std::unexpected<Error>(
-          {.kind = ErrorKind::kNotFound,
-           .message = "FileIO implementation not found: " + name});
+    auto& state = State();
+    std::lock_guard lock(state.mutex);
+    auto it = state.registry.find(name);
+    if (it == state.registry.end()) {
+      return NotFound("FileIO implementation not found: {}", name);
     }
     factory = it->second;
   }
-  // Invoke factory outside the lock to avoid blocking other
-  // Register/Load calls and to prevent deadlocks if the factory
-  // calls back into the registry.
   return factory(properties);
 }
 

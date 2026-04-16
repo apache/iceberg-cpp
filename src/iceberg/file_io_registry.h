@@ -38,9 +38,8 @@ namespace iceberg {
 /// at runtime based on configuration properties like "io-impl".
 class ICEBERG_EXPORT FileIORegistry {
  public:
-  /// Well-known implementation names
-  static constexpr std::string_view kArrowLocalFileIO = "local";
-  static constexpr std::string_view kArrowS3FileIO = "s3";
+  static constexpr std::string_view kArrowLocalFileIO = "arrow-fs-local";
+  static constexpr std::string_view kArrowS3FileIO = "arrow-fs-s3";
 
   /// Factory function type for creating FileIO instances.
   using Factory = std::function<Result<std::unique_ptr<FileIO>>(
@@ -60,14 +59,6 @@ class ICEBERG_EXPORT FileIORegistry {
   static Result<std::unique_ptr<FileIO>> Load(
       const std::string& name,
       const std::unordered_map<std::string, std::string>& properties);
-};
-
-/// \brief Property keys for FileIO configuration.
-struct FileIOProperties {
-  /// The FileIO implementation class name (e.g., "local", "s3")
-  // TODO: add mapping from Java io-impl class names (e.g.,
-  // "org.apache.iceberg.aws.s3.S3FileIO") to the simple keys used here.
-  static constexpr std::string_view kImpl = "io-impl";
 };
 
 }  // namespace iceberg

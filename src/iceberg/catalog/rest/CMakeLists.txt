@@ -30,6 +30,7 @@ set(ICEBERG_REST_SOURCES
     json_serde.cc
     resource_paths.cc
     rest_catalog.cc
+    rest_file_io.cc
     rest_util.cc
     types.cc)
 

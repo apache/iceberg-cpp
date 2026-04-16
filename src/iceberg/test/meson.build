@@ -110,6 +110,7 @@ if get_option('rest').enabled()
             'sources': files(
                 'auth_manager_test.cc',
                 'endpoint_test.cc',
+                'rest_file_io_test.cc',
                 'rest_json_serde_test.cc',
                 'rest_util_test.cc',
             ),

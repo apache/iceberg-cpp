@@ -18,32 +18,44 @@
 #include "iceberg/arrow/file_io_register.h"
 
 #include <mutex>
+#include <string>
 
 #include "iceberg/arrow/arrow_file_io.h"
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/file_io_registry.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg::arrow {
 
+namespace {
+
 void RegisterLocalFileIO() {
-  static std::once_flag flag;
-  std::call_once(flag, []() {
-    FileIORegistry::Register(
-        std::string(FileIORegistry::kArrowLocalFileIO),
-        [](const std::unordered_map<std::string, std::string>& /*properties*/)
-            -> Result<std::unique_ptr<FileIO>> { return MakeLocalFileIO(); });
-  });
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowLocalFileIO),
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return MakeLocalFileIO(); });
 }
 
 void RegisterS3FileIO() {
+#if ICEBERG_S3_ENABLED
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowS3FileIO),
+      [](const std::unordered_map<std::string, std::string>& properties)
+          -> Result<std::unique_ptr<FileIO>> { return MakeS3FileIO(properties); });
+#endif
+}
+
+}  // namespace
+
+void EnsureArrowFileIOsRegistered() {
   static std::once_flag flag;
   std::call_once(flag, []() {
-    FileIORegistry::Register(
-        std::string(FileIORegistry::kArrowS3FileIO),
-        [](const std::unordered_map<std::string, std::string>& properties)
-            -> Result<std::unique_ptr<FileIO>> { return MakeS3FileIO(properties); });
+    RegisterLocalFileIO();
+    RegisterS3FileIO();
   });
 }
+
+[[maybe_unused]] const bool kArrowFileIOsRegistered = []() {
+  EnsureArrowFileIOsRegistered();
+  return true;
+}();
 
 }  // namespace iceberg::arrow

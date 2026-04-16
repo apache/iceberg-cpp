@@ -34,9 +34,9 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
+#include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
-#include "iceberg/file_io_registry.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -46,7 +46,6 @@
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
-#include "iceberg/util/file_io_util.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -126,26 +125,6 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
     const RestCatalogProperties& config) {
   ICEBERG_ASSIGN_OR_RAISE(auto uri, config.Uri());
 
-  // Resolve FileIO: from config, or auto-detect from properties/URI
-  std::shared_ptr<FileIO> file_io = config.GetFileIO();
-  if (!file_io) {
-    auto properties = config.configs();
-    // If io-impl is not set or empty, auto-detect from warehouse URI scheme
-    auto io_impl_it = properties.find(std::string(FileIOProperties::kImpl));
-    if (io_impl_it == properties.end() || io_impl_it->second.empty()) {
-      auto warehouse = config.Get(RestCatalogProperties::kWarehouse);
-      if (warehouse.empty()) {
-        return InvalidArgument(
-            "Warehouse location is required when FileIO is not explicitly provided. "
-            "Set the 'warehouse' property or call SetFileIO().");
-      }
-      properties[std::string(FileIOProperties::kImpl)] =
-          FileIOUtil::DetectFileIOName(warehouse);
-    }
-    ICEBERG_ASSIGN_OR_RAISE(auto created_io, FileIOUtil::CreateFileIO(properties));
-    file_io = std::shared_ptr<FileIO>(std::move(created_io));
-  }
-
   std::string catalog_name = config.Get(RestCatalogProperties::kName);
   ICEBERG_ASSIGN_OR_RAISE(auto auth_manager,
                           auth::AuthManagers::Load(catalog_name, config.configs()));
@@ -190,6 +169,9 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
                           auth_manager->CatalogSession(*client, final_config.configs()));
+
+  // Create FileIO with the final configuration
+  ICEBERG_ASSIGN_OR_RAISE(auto file_io, MakeCatalogFileIO(final_config));
 
   return std::shared_ptr<RestCatalog>(
       new RestCatalog(std::move(final_config), std::move(file_io), std::move(client),
@@ -492,6 +474,7 @@ Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& ide
   ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  /// FIXME: support per-table FileIO creation
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());

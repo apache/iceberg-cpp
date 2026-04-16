@@ -35,6 +35,11 @@ wait_for_minio() {
     fi
     sleep 1
   done
+  echo "MinIO did not become ready after 30 seconds." >&2
+  echo "Endpoint: ${MINIO_ENDPOINT}" >&2
+  if command -v docker >/dev/null 2>&1; then
+    docker logs "${MINIO_CONTAINER_NAME}" 2>&1 || true
+  fi
   return 1
 }
 
