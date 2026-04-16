@@ -27,13 +27,16 @@ jobs:
           - compiler: gcc-14
             cc: gcc-14
             cxx: g++-14
-          - compiler: clang-18
-            cc: clang-18
-            cxx: clang++-18
+          - compiler: clang-21
+            cc: clang-21
+            cxx: clang++-21
     steps:
       - uses: actions/checkout@v6
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev ninja-build
+      - name: Install clang-21
+        if: matrix.compiler == 'clang-21'
+        run: curl -s https://apt.llvm.org/llvm.sh | sudo bash -s -- 21
       - name: Build and test
         env:
           CC: ${{ matrix.cc }}
