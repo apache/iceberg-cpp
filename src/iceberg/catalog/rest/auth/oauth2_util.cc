@@ -74,4 +74,28 @@ Result<OAuthTokenResponse> FetchToken(HttpClient& client, AuthSession& session,
   return token_response;
 }
 
+Result<OAuthTokenResponse> RefreshToken(HttpClient& client, AuthSession& session,
+                                        const std::string& token_endpoint,
+                                        const std::string& client_id,
+                                        const std::string& refresh_token,
+                                        const std::string& scope) {
+  std::unordered_map<std::string, std::string> form_data{
+      {std::string(kGrantType), "refresh_token"},
+      {"refresh_token", refresh_token},
+      {std::string(kClientId), client_id},
+  };
+  if (!scope.empty()) {
+    form_data.emplace(std::string(kScope), scope);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto response,
+                          client.PostForm(token_endpoint, form_data, /*headers=*/{},
+                                          *DefaultErrorHandler::Instance(), session));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+  ICEBERG_ASSIGN_OR_RAISE(auto token_response, FromJson<OAuthTokenResponse>(json));
+  ICEBERG_RETURN_UNEXPECTED(token_response.Validate());
+  return token_response;
+}
+
 }  // namespace iceberg::rest::auth

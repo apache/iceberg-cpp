@@ -46,6 +46,20 @@ inline constexpr std::string_view kBearerPrefix = "Bearer ";
 ICEBERG_REST_EXPORT Result<OAuthTokenResponse> FetchToken(
     HttpClient& client, AuthSession& session, const AuthProperties& properties);
 
+/// \brief Refresh an expired access token using a refresh_token grant.
+///
+/// \param client HTTP client to use for the request.
+/// \param session Auth session for the request headers.
+/// \param token_endpoint Full URL of the OAuth2 token endpoint.
+/// \param client_id OAuth2 client ID.
+/// \param refresh_token The refresh token to use.
+/// \param scope OAuth2 scope to request.
+/// \return The refreshed token response or an error.
+ICEBERG_REST_EXPORT Result<OAuthTokenResponse> RefreshToken(
+    HttpClient& client, AuthSession& session, const std::string& token_endpoint,
+    const std::string& client_id, const std::string& refresh_token,
+    const std::string& scope);
+
 /// \brief Build auth headers from a token string.
 ///
 /// \param token Bearer token string (may be empty).

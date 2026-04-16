@@ -70,6 +70,8 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   inline static Entry<bool> kExchangeEnabled{"token-exchange-enabled", true};
   inline static Entry<std::string> kAudience{"audience", ""};
   inline static Entry<std::string> kResource{"resource", ""};
+  inline static Entry<int64_t> kExpiryMarginSeconds{"oauth2.token-refresh-margin-seconds",
+                                                    300};
 
   /// \brief Build an AuthProperties from a properties map.
   static Result<AuthProperties> FromProperties(
@@ -87,6 +89,8 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   bool keep_refreshed() const { return Get(kKeepRefreshed); }
   /// \brief Whether token exchange is enabled.
   bool exchange_enabled() const { return Get(kExchangeEnabled); }
+  /// \brief Token expiry safety margin in seconds.
+  int64_t expiry_margin_seconds() const { return Get(kExpiryMarginSeconds); }
 
   /// \brief Parsed client_id from credential (empty if no colon).
   const std::string& client_id() const { return client_id_; }

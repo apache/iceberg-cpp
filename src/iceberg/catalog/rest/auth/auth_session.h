@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -86,12 +87,10 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \param scope OAuth2 scope for refresh requests.
   /// \param client HTTP client for making refresh requests.
   /// \return A new session that manages token lifecycle automatically.
-  static std::shared_ptr<AuthSession> MakeOAuth2(const OAuthTokenResponse& initial_token,
-                                                 const std::string& token_endpoint,
-                                                 const std::string& client_id,
-                                                 const std::string& client_secret,
-                                                 const std::string& scope,
-                                                 HttpClient& client);
+  static std::shared_ptr<AuthSession> MakeOAuth2(
+      const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
+      const std::string& client_id, const std::string& client_secret,
+      const std::string& scope, HttpClient& client, int64_t expiry_margin_seconds = 300);
 };
 
 }  // namespace iceberg::rest::auth

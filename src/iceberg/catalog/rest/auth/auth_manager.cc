@@ -128,9 +128,9 @@ class OAuth2Manager : public AuthManager {
     if (init_token_response_.has_value()) {
       auto token_response = std::move(*init_token_response_);
       init_token_response_.reset();
-      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                     config.client_id(), config.client_secret(),
-                                     config.scope(), client);
+      return AuthSession::MakeOAuth2(
+          token_response, config.oauth2_server_uri(), config.client_id(),
+          config.client_secret(), config.scope(), client, config.expiry_margin_seconds());
     }
 
     // If token is provided, use it directly.
@@ -143,10 +143,9 @@ class OAuth2Manager : public AuthManager {
       auto base_session = AuthSession::MakeDefault(AuthHeaders(config.token()));
       OAuthTokenResponse token_response;
       ICEBERG_ASSIGN_OR_RAISE(token_response, FetchToken(client, *base_session, config));
-      // TODO(lishuxu): should we directly pass config to the MakeOAuth2 call?
-      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                     config.client_id(), config.client_secret(),
-                                     config.scope(), client);
+      return AuthSession::MakeOAuth2(
+          token_response, config.oauth2_server_uri(), config.client_id(),
+          config.client_secret(), config.scope(), client, config.expiry_margin_seconds());
     }
 
     return AuthSession::MakeDefault({});
