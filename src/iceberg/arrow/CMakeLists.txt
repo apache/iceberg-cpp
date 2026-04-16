@@ -16,3 +16,6 @@
 # under the License.
 
 iceberg_install_all_headers(iceberg/arrow)
+
+# Also install internal header needed by consumers wrapping arrow::fs::FileSystem as iceberg FileIO.
+install(FILES arrow_fs_file_io_internal.h DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}/iceberg/arrow")
