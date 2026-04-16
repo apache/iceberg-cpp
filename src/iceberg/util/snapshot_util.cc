@@ -291,8 +291,7 @@ Result<std::vector<int64_t>> SnapshotUtil::ToIds(
   return std::ranges::to<std::vector<int64_t>>(
       snapshots |
       std::views::filter([](const auto& snapshot) { return snapshot != nullptr; }) |
-      std::views::transform(
-          [](const auto& snapshot) { return snapshot->snapshot_id; }));
+      std::views::transform([](const auto& snapshot) { return snapshot->snapshot_id; }));
 }
 
 Result<std::shared_ptr<Snapshot>> SnapshotUtil::SnapshotAfter(const Table& table,

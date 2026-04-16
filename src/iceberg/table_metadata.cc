@@ -377,10 +377,10 @@ Result<TableMetadataCache::SnapshotsMapRef> TableMetadataCache::GetSnapshotsById
 
 Result<TableMetadataCache::SchemasMap> TableMetadataCache::InitSchemasMap(
     const TableMetadata* metadata) {
-  return std::ranges::to<SchemasMap>(
-      metadata->schemas | std::views::transform([](const auto& schema) {
-        return std::make_pair(schema->schema_id(), schema);
-      }));
+  return std::ranges::to<SchemasMap>(metadata->schemas |
+                                     std::views::transform([](const auto& schema) {
+                                       return std::make_pair(schema->schema_id(), schema);
+                                     }));
 }
 
 Result<TableMetadataCache::PartitionSpecsMap> TableMetadataCache::InitPartitionSpecsMap(
@@ -393,10 +393,10 @@ Result<TableMetadataCache::PartitionSpecsMap> TableMetadataCache::InitPartitionS
 
 Result<TableMetadataCache::SortOrdersMap> TableMetadataCache::InitSortOrdersMap(
     const TableMetadata* metadata) {
-  return std::ranges::to<SortOrdersMap>(
-      metadata->sort_orders | std::views::transform([](const auto& order) {
-        return std::make_pair(order->order_id(), order);
-      }));
+  return std::ranges::to<SortOrdersMap>(metadata->sort_orders |
+                                        std::views::transform([](const auto& order) {
+                                          return std::make_pair(order->order_id(), order);
+                                        }));
 }
 
 Result<TableMetadataCache::SnapshotsMap> TableMetadataCache::InitSnapshotMap(

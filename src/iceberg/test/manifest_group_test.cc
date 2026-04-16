@@ -216,17 +216,15 @@ class ManifestGroupTest : public testing::TestWithParam<int8_t> {
   static std::vector<std::string> GetPaths(
       const std::vector<std::shared_ptr<FileScanTask>>& tasks) {
     return std::ranges::to<std::vector<std::string>>(
-        tasks | std::views::transform([](const auto& task) {
-          return task->data_file()->file_path;
-        }));
+        tasks | std::views::transform(
+                    [](const auto& task) { return task->data_file()->file_path; }));
   }
 
   static std::vector<std::string> GetEntryPaths(
       const std::vector<ManifestEntry>& entries) {
     return std::ranges::to<std::vector<std::string>>(
-        entries | std::views::transform([](const auto& entry) {
-          return entry.data_file->file_path;
-        }));
+        entries | std::views::transform(
+                      [](const auto& entry) { return entry.data_file->file_path; }));
   }
 
   std::shared_ptr<FileIO> file_io_;

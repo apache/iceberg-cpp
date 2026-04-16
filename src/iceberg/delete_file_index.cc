@@ -244,8 +244,7 @@ Result<std::vector<std::shared_ptr<DataFile>>> EqualityDeletes::Filter(
 std::vector<std::shared_ptr<DataFile>> EqualityDeletes::ReferencedDeleteFiles() {
   IndexIfNeeded();
   return std::ranges::to<std::vector<std::shared_ptr<DataFile>>>(
-      files_ |
-      std::views::transform([](const auto& f) { return f.wrapped.data_file; }));
+      files_ | std::views::transform([](const auto& f) { return f.wrapped.data_file; }));
 }
 
 void EqualityDeletes::IndexIfNeeded() {

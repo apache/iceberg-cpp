@@ -312,9 +312,8 @@ Status SnapshotUpdate::Finalize(std::optional<Error> commit_error) {
     auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, cached_snapshot.Manifests(ctx_->table->io()));
     CleanUncommitted(std::ranges::to<std::unordered_set<std::string>>(
-        manifests | std::views::transform([](const auto& manifest) {
-          return manifest.manifest_path;
-        })));
+        manifests | std::views::transform(
+                        [](const auto& manifest) { return manifest.manifest_path; })));
   }
 
   // Also clean up unused manifest lists created by multiple attempts

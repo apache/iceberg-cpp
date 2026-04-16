@@ -119,8 +119,7 @@ TEST(TableMetadataTest, Make) {
   // Check partition spec
   ASSERT_EQ(1, metadata->partition_specs.size());
   EXPECT_EQ(PartitionSpec::kInitialSpecId, metadata->partition_specs[0]->spec_id());
-  auto spec_fields =
-      std::ranges::to<std::vector>(metadata->partition_specs[0]->fields());
+  auto spec_fields = std::ranges::to<std::vector>(metadata->partition_specs[0]->fields());
   ASSERT_EQ(1, spec_fields.size());
   EXPECT_EQ(PartitionSpec::kInvalidPartitionFieldId + 1, spec_fields[0].field_id());
   EXPECT_EQ(2, spec_fields[0].source_id());

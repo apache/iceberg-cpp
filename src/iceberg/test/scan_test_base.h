@@ -161,9 +161,8 @@ class ScanTestBase : public testing::TestWithParam<int8_t> {
   static std::vector<std::string> GetPaths(
       const std::vector<std::shared_ptr<FileScanTask>>& tasks) {
     return std::ranges::to<std::vector<std::string>>(
-        tasks | std::views::transform([](const auto& task) {
-          return task->data_file()->file_path;
-        }));
+        tasks | std::views::transform(
+                    [](const auto& task) { return task->data_file()->file_path; }));
   }
 
   /// \brief Create table metadata with the given snapshots.

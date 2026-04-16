@@ -229,8 +229,8 @@ Result<HttpResponse> HttpClient::Head(
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
                           BuildHeaders(headers, default_headers_, session));
-  cpr::Response response =
-      cpr::Head(cpr::Url{path}, all_headers, BuildSslOptions(ssl_config_), *connection_pool_);
+  cpr::Response response = cpr::Head(cpr::Url{path}, all_headers,
+                                     BuildSslOptions(ssl_config_), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -244,9 +244,8 @@ Result<HttpResponse> HttpClient::Delete(
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
                           BuildHeaders(headers, default_headers_, session));
-  cpr::Response response =
-      cpr::Delete(cpr::Url{path}, GetParameters(params), all_headers,
-                  BuildSslOptions(ssl_config_), *connection_pool_);
+  cpr::Response response = cpr::Delete(cpr::Url{path}, GetParameters(params), all_headers,
+                                       BuildSslOptions(ssl_config_), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
