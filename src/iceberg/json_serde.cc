@@ -209,6 +209,10 @@ constexpr std::string_view kSnapshotIds = "snapshot-ids";
 constexpr std::string_view kRefName = "ref-name";
 constexpr std::string_view kUpdates = "updates";
 constexpr std::string_view kRemovals = "removals";
+// The Iceberg REST spec uses "ref" (not "ref-name") for the
+// assert-ref-snapshot-id requirement.  "ref-name" is correct only for
+// table-update actions (set-snapshot-ref, remove-snapshot-ref).
+constexpr std::string_view kRef = "ref";
 
 // TableRequirement type constants
 constexpr std::string_view kRequirementAssertDoesNotExist = "assert-create";
@@ -1491,7 +1495,7 @@ nlohmann::json ToJson(const TableRequirement& requirement) {
       const auto& r =
           internal::checked_cast<const table::AssertRefSnapshotID&>(requirement);
       json[kType] = kRequirementAssertRefSnapshotID;
-      json[kRefName] = r.ref_name();
+      json[kRef] = r.ref_name();
       if (r.snapshot_id().has_value()) {
         json[kSnapshotId] = r.snapshot_id().value();
       } else {
@@ -1688,7 +1692,7 @@ Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
     return std::make_unique<table::AssertUUID>(std::move(uuid));
   }
   if (type == kRequirementAssertRefSnapshotID) {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref_name, GetJsonValue<std::string>(json, kRefName));
+    ICEBERG_ASSIGN_OR_RAISE(auto ref_name, GetJsonValue<std::string>(json, kRef));
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id_opt,
                             GetJsonValueOptional<int64_t>(json, kSnapshotId));
     return std::make_unique<table::AssertRefSnapshotID>(std::move(ref_name),

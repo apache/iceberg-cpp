@@ -167,8 +167,13 @@ function(resolve_arrow_dependency)
   else()
     set(ARROW_VENDORED FALSE)
     find_package(Arrow CONFIG REQUIRED)
-    find_package(Parquet CONFIG REQUIRED)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow Parquet)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow)
+    # Parquet may be bundled as a component of Arrow (e.g. Conan's arrow recipe).
+    # Only do a separate find_package if Arrow didn't already provide the target.
+    if(NOT TARGET Parquet::parquet_static AND NOT TARGET Parquet::parquet_shared)
+      find_package(Parquet CONFIG REQUIRED)
+    endif()
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Parquet)
   endif()
 
   set(ICEBERG_SYSTEM_DEPENDENCIES
@@ -176,6 +181,42 @@ function(resolve_arrow_dependency)
       PARENT_SCOPE)
   set(ARROW_VENDORED
       ${ARROW_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+# ----------------------------------------------------------------------
+# fmt (required by Apache Avro)
+#
+# We fetch fmt explicitly before avro-cpp to ensure a compatible version.
+# Avro-cpp bundles fmt 10.2.1 which has consteval bugs with newer compilers.
+
+function(resolve_fmt_dependency)
+  prepare_fetchcontent()
+
+  set(FMT_INSTALL OFF)
+
+  fetchcontent_declare(fmt
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+                       GIT_TAG 12.1.0
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       fmt
+                       CONFIG)
+  fetchcontent_makeavailable(fmt)
+
+  if(fmt_SOURCE_DIR)
+    set(FMT_VENDORED TRUE)
+  else()
+    set(FMT_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES fmt)
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(FMT_VENDORED
+      ${FMT_VENDORED}
       PARENT_SCOPE)
 endfunction()
 
@@ -524,6 +565,7 @@ resolve_nlohmann_json_dependency()
 
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
+  resolve_fmt_dependency()
   resolve_avro_dependency()
   resolve_zstd_dependency()
 endif()

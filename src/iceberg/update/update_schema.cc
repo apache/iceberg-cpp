@@ -542,7 +542,7 @@ UpdateSchema& UpdateSchema::UnionByNameWith(std::shared_ptr<Schema> new_schema) 
 
 UpdateSchema& UpdateSchema::SetIdentifierFields(
     const std::span<std::string_view>& names) {
-  identifier_field_names_ = names | std::ranges::to<std::vector<std::string>>();
+  identifier_field_names_ = std::ranges::to<std::vector<std::string>>(names);
   return *this;
 }
 
@@ -589,7 +589,7 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
     fresh_identifier_ids.push_back(field_opt->get().field_id());
   }
 
-  auto new_fields = temp_schema->fields() | std::ranges::to<std::vector<SchemaField>>();
+  auto new_fields = std::ranges::to<std::vector<SchemaField>>(temp_schema->fields());
   ICEBERG_ASSIGN_OR_RAISE(
       auto new_schema,
       Schema::Make(std::move(new_fields), schema_->schema_id(), fresh_identifier_ids));

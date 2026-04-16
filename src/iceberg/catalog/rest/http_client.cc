@@ -81,6 +81,22 @@ Result<cpr::Header> BuildHeaders(
   return cpr::Header(headers.begin(), headers.end());
 }
 
+cpr::SslOptions BuildSslOptions(const SslConfig& config) {
+  cpr::SslOptions opts;
+  opts.verify_host = config.verify;
+  opts.verify_peer = config.verify;
+  if (!config.ca_info.empty()) {
+    opts.ca_info = config.ca_info;
+  }
+  if (!config.ca_path.empty()) {
+    opts.ca_path = config.ca_path;
+  }
+  if (!config.crl_file.empty()) {
+    opts.crl_file = config.crl_file;
+  }
+  return opts;
+}
+
 /// \brief Converts a map of string key-value pairs to cpr::Parameters.
 cpr::Parameters GetParameters(
     const std::unordered_map<std::string, std::string>& params) {
@@ -101,11 +117,18 @@ bool IsSuccessful(int32_t status_code) {
 
 /// \brief Builds a default ErrorResponse when the response body cannot be parsed.
 ErrorResponse BuildDefaultErrorResponse(const cpr::Response& response) {
+  std::string message;
+  if (response.error) {
+    message = response.error.message;
+  } else if (!response.reason.empty()) {
+    message = response.reason;
+  } else {
+    message = GetStandardReasonPhrase(response.status_code);
+  }
   return {
       .code = static_cast<uint32_t>(response.status_code),
       .type = std::string(kRestExceptionType),
-      .message = !response.reason.empty() ? response.reason
-                                          : GetStandardReasonPhrase(response.status_code),
+      .message = std::move(message),
   };
 }
 
@@ -133,8 +156,10 @@ Status HandleFailureResponse(const cpr::Response& response,
 
 }  // namespace
 
-HttpClient::HttpClient(std::unordered_map<std::string, std::string> default_headers)
+HttpClient::HttpClient(std::unordered_map<std::string, std::string> default_headers,
+                       SslConfig ssl_config)
     : default_headers_{std::move(default_headers)},
+      ssl_config_{std::move(ssl_config)},
       connection_pool_{std::make_unique<cpr::ConnectionPool>()} {
   // Set default Content-Type for all requests (including GET/HEAD/DELETE).
   // Many systems require that content type is set regardless and will fail,
@@ -151,8 +176,8 @@ Result<HttpResponse> HttpClient::Get(
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
                           BuildHeaders(headers, default_headers_, session));
-  cpr::Response response =
-      cpr::Get(cpr::Url{path}, GetParameters(params), all_headers, *connection_pool_);
+  cpr::Response response = cpr::Get(cpr::Url{path}, GetParameters(params), all_headers,
+                                    BuildSslOptions(ssl_config_), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -166,8 +191,8 @@ Result<HttpResponse> HttpClient::Post(
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
                           BuildHeaders(headers, default_headers_, session));
-  cpr::Response response =
-      cpr::Post(cpr::Url{path}, cpr::Body{body}, all_headers, *connection_pool_);
+  cpr::Response response = cpr::Post(cpr::Url{path}, cpr::Body{body}, all_headers,
+                                     BuildSslOptions(ssl_config_), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -191,7 +216,7 @@ Result<HttpResponse> HttpClient::PostForm(
   }
   cpr::Response response =
       cpr::Post(cpr::Url{path}, cpr::Payload(pair_list.begin(), pair_list.end()),
-                all_headers, *connection_pool_);
+                all_headers, BuildSslOptions(ssl_config_), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -204,7 +229,8 @@ Result<HttpResponse> HttpClient::Head(
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
                           BuildHeaders(headers, default_headers_, session));
-  cpr::Response response = cpr::Head(cpr::Url{path}, all_headers, *connection_pool_);
+  cpr::Response response = cpr::Head(cpr::Url{path}, all_headers,
+                                     BuildSslOptions(ssl_config_), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
@@ -218,8 +244,8 @@ Result<HttpResponse> HttpClient::Delete(
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto all_headers,
                           BuildHeaders(headers, default_headers_, session));
-  cpr::Response response =
-      cpr::Delete(cpr::Url{path}, GetParameters(params), all_headers, *connection_pool_);
+  cpr::Response response = cpr::Delete(cpr::Url{path}, GetParameters(params), all_headers,
+                                       BuildSslOptions(ssl_config_), *connection_pool_);
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;

@@ -41,13 +41,17 @@ concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 class ICEBERG_EXPORT StringUtils {
  public:
   static std::string ToLower(std::string_view str) {
-    return str | std::ranges::views::transform([](char c) { return std::tolower(c); }) |
-           std::ranges::to<std::string>();
+    std::string result(str);
+    std::ranges::transform(result, result.begin(),
+                           [](unsigned char c) { return std::tolower(c); });
+    return result;
   }
 
   static std::string ToUpper(std::string_view str) {
-    return str | std::ranges::views::transform([](char c) { return std::toupper(c); }) |
-           std::ranges::to<std::string>();
+    std::string result(str);
+    std::ranges::transform(result, result.begin(),
+                           [](unsigned char c) { return std::toupper(c); });
+    return result;
   }
 
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {

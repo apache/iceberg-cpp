@@ -288,11 +288,10 @@ Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
 
 Result<std::vector<int64_t>> SnapshotUtil::ToIds(
     const std::vector<std::shared_ptr<Snapshot>>& snapshots) {
-  return snapshots |
-         std::views::filter([](const auto& snapshot) { return snapshot != nullptr; }) |
-         std::views::transform(
-             [](const auto& snapshot) { return snapshot->snapshot_id; }) |
-         std::ranges::to<std::vector<int64_t>>();
+  return std::ranges::to<std::vector<int64_t>>(
+      snapshots |
+      std::views::filter([](const auto& snapshot) { return snapshot != nullptr; }) |
+      std::views::transform([](const auto& snapshot) { return snapshot->snapshot_id; }));
 }
 
 Result<std::shared_ptr<Snapshot>> SnapshotUtil::SnapshotAfter(const Table& table,

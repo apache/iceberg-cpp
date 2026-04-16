@@ -67,10 +67,19 @@ class ICEBERG_REST_EXPORT HttpResponse {
   std::unique_ptr<Impl> impl_;
 };
 
+/// \brief SSL/TLS configuration for the HTTP client.
+struct ICEBERG_REST_EXPORT SslConfig {
+  bool verify = true;
+  std::string ca_info;
+  std::string ca_path;
+  std::string crl_file;
+};
+
 /// \brief HTTP client for making requests to Iceberg REST Catalog API.
 class ICEBERG_REST_EXPORT HttpClient {
  public:
-  explicit HttpClient(std::unordered_map<std::string, std::string> default_headers = {});
+  explicit HttpClient(std::unordered_map<std::string, std::string> default_headers = {},
+                      SslConfig ssl_config = {});
   ~HttpClient();
 
   HttpClient(const HttpClient&) = delete;
@@ -112,6 +121,7 @@ class ICEBERG_REST_EXPORT HttpClient {
 
  private:
   std::unordered_map<std::string, std::string> default_headers_;
+  SslConfig ssl_config_;
   std::unique_ptr<cpr::ConnectionPool> connection_pool_;
 };
 

@@ -65,12 +65,30 @@ std::unordered_set<Endpoint> GetDefaultEndpoints() {
   };
 }
 
+SslConfig ExtractSslConfig(const std::unordered_map<std::string, std::string>& props) {
+  SslConfig ssl;
+  if (auto it = props.find("ssl.verify"); it != props.end()) {
+    ssl.verify = (it->second != "false");
+  }
+  if (auto it = props.find("ssl.ca-info"); it != props.end()) {
+    ssl.ca_info = it->second;
+  }
+  if (auto it = props.find("ssl.ca-path"); it != props.end()) {
+    ssl.ca_path = it->second;
+  }
+  if (auto it = props.find("ssl.crl-file"); it != props.end()) {
+    ssl.crl_file = it->second;
+  }
+  return ssl;
+}
+
 /// \brief Fetch server configuration from the REST catalog server.
 Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
                                         const RestCatalogProperties& current_config,
                                         auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto config_path, paths.Config());
-  HttpClient client(current_config.ExtractHeaders());
+  HttpClient client(current_config.ExtractHeaders(),
+                    ExtractSslConfig(current_config.configs()));
 
   // Send the client's warehouse location to the service to keep in sync.
   // This is needed for cases where the warehouse is configured client side, but may
@@ -137,7 +155,8 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
                           config.Get(RestCatalogProperties::kNamespaceSeparator)));
 
   // Create init session for fetching server configuration
-  HttpClient init_client(config.ExtractHeaders());
+  auto ssl = ExtractSslConfig(config.configs());
+  HttpClient init_client(config.ExtractHeaders(), ssl);
   ICEBERG_ASSIGN_OR_RAISE(auto init_session,
                           auth_manager->InitSession(init_client, config.configs()));
   ICEBERG_ASSIGN_OR_RAISE(auto server_config,
@@ -168,7 +187,8 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   // Get snapshot loading mode
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, final_config.SnapshotLoadingMode());
 
-  auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders());
+  auto final_ssl = ExtractSslConfig(final_config.configs());
+  auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders(), final_ssl);
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
                           auth_manager->CatalogSession(*client, final_config.configs()));
 

@@ -212,9 +212,8 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
   // Helper to extract paths from delete files for comparison
   static std::vector<std::string> GetPaths(
       const std::vector<std::shared_ptr<DataFile>>& files) {
-    return std::ranges::transform_view(files,
-                                       [](const auto& f) { return f->file_path; }) |
-           std::ranges::to<std::vector<std::string>>();
+    return std::ranges::to<std::vector<std::string>>(
+        std::ranges::transform_view(files, [](const auto& f) { return f->file_path; }));
   }
 };
 

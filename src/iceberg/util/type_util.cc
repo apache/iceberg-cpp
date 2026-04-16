@@ -357,10 +357,9 @@ std::shared_ptr<Type> AssignFreshIdVisitor::Visit(
 }
 
 std::shared_ptr<StructType> AssignFreshIdVisitor::Visit(const StructType& type) const {
-  auto fresh_ids =
+  auto fresh_ids = std::ranges::to<std::vector<int32_t>>(
       type.fields() |
-      std::views::transform([&](const auto& /* unused */) { return next_id_(); }) |
-      std::ranges::to<std::vector<int32_t>>();
+      std::views::transform([&](const auto& /* unused */) { return next_id_(); }));
   std::vector<SchemaField> fresh_fields;
   for (size_t i = 0; i < type.fields().size(); ++i) {
     const auto& field = type.fields()[i];
@@ -402,7 +401,7 @@ Result<std::shared_ptr<Schema>> AssignFreshIds(int32_t schema_id, const Schema& 
   auto fresh_type = AssignFreshIdVisitor(std::move(next_id))
                         .Visit(internal::checked_cast<const StructType&>(schema));
   std::vector<SchemaField> fields =
-      fresh_type->fields() | std::ranges::to<std::vector<SchemaField>>();
+      std::ranges::to<std::vector<SchemaField>>(fresh_type->fields());
   ICEBERG_ASSIGN_OR_RAISE(auto identifier_field_names, schema.IdentifierFieldNames());
   return Schema::Make(std::move(fields), schema_id, identifier_field_names);
 }

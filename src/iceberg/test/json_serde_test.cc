@@ -681,7 +681,7 @@ TEST(TableRequirementJsonTest, TableRequirementAssertUUID) {
 TEST(TableRequirementJsonTest, TableRequirementAssertRefSnapshotID) {
   table::AssertRefSnapshotID req("main", 123456789);
   nlohmann::json expected =
-      R"({"type":"assert-ref-snapshot-id","ref-name":"main","snapshot-id":123456789})"_json;
+      R"({"type":"assert-ref-snapshot-id","ref":"main","snapshot-id":123456789})"_json;
 
   EXPECT_EQ(ToJson(req), expected);
   auto parsed = TableRequirementFromJson(expected);
@@ -693,7 +693,7 @@ TEST(TableRequirementJsonTest, TableRequirementAssertRefSnapshotID) {
 TEST(TableRequirementJsonTest, TableRequirementAssertRefSnapshotIDWithNull) {
   table::AssertRefSnapshotID req("main", std::nullopt);
   nlohmann::json expected =
-      R"({"type":"assert-ref-snapshot-id","ref-name":"main","snapshot-id":null})"_json;
+      R"({"type":"assert-ref-snapshot-id","ref":"main","snapshot-id":null})"_json;
 
   EXPECT_EQ(ToJson(req), expected);
   auto parsed = TableRequirementFromJson(expected);

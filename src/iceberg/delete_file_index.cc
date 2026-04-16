@@ -182,15 +182,15 @@ std::vector<std::shared_ptr<DataFile>> PositionDeletes::Filter(int64_t seq) {
   if (iter == seqs_.end()) {
     return {};
   }
-  return files_ | std::views::drop(iter - seqs_.begin()) |
-         std::views::transform(&ManifestEntry::data_file) |
-         std::ranges::to<std::vector<std::shared_ptr<DataFile>>>();
+  return std::ranges::to<std::vector<std::shared_ptr<DataFile>>>(
+      files_ | std::views::drop(iter - seqs_.begin()) |
+      std::views::transform(&ManifestEntry::data_file));
 }
 
 std::vector<std::shared_ptr<DataFile>> PositionDeletes::ReferencedDeleteFiles() {
   IndexIfNeeded();
-  return files_ | std::views::transform(&ManifestEntry::data_file) |
-         std::ranges::to<std::vector<std::shared_ptr<DataFile>>>();
+  return std::ranges::to<std::vector<std::shared_ptr<DataFile>>>(
+      files_ | std::views::transform(&ManifestEntry::data_file));
 }
 
 void PositionDeletes::IndexIfNeeded() {
@@ -202,9 +202,9 @@ void PositionDeletes::IndexIfNeeded() {
   std::ranges::sort(files_, std::ranges::less{}, &ManifestEntry::sequence_number);
 
   // Build sequence number array for binary search
-  seqs_ = files_ |
-          std::views::transform([](const auto& e) { return e.sequence_number.value(); }) |
-          std::ranges::to<std::vector<int64_t>>();
+  seqs_ = std::ranges::to<std::vector<int64_t>>(
+      files_ |
+      std::views::transform([](const auto& e) { return e.sequence_number.value(); }));
 
   indexed_ = true;
 }
@@ -243,9 +243,8 @@ Result<std::vector<std::shared_ptr<DataFile>>> EqualityDeletes::Filter(
 
 std::vector<std::shared_ptr<DataFile>> EqualityDeletes::ReferencedDeleteFiles() {
   IndexIfNeeded();
-  return files_ |
-         std::views::transform([](const auto& f) { return f.wrapped.data_file; }) |
-         std::ranges::to<std::vector<std::shared_ptr<DataFile>>>();
+  return std::ranges::to<std::vector<std::shared_ptr<DataFile>>>(
+      files_ | std::views::transform([](const auto& f) { return f.wrapped.data_file; }));
 }
 
 void EqualityDeletes::IndexIfNeeded() {
@@ -258,8 +257,8 @@ void EqualityDeletes::IndexIfNeeded() {
                     &EqualityDeleteFile::apply_sequence_number);
 
   // Build sequence number array for binary search
-  seqs_ = files_ | std::views::transform(&EqualityDeleteFile::apply_sequence_number) |
-          std::ranges::to<std::vector<int64_t>>();
+  seqs_ = std::ranges::to<std::vector<int64_t>>(
+      files_ | std::views::transform(&EqualityDeleteFile::apply_sequence_number));
 
   indexed_ = true;
 }
