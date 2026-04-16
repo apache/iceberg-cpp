@@ -1,0 +1,1476 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableMetadataBuilder" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TableMetadataBuilder</compoundname>
+    <basecompoundref refid="classiceberg_1_1ErrorCollector" prot="public" virt="non-virtual">iceberg::ErrorCollector</basecompoundref>
+    <includes refid="table__metadata_8h" local="no">table_metadata.h</includes>
+    <innerclass refid="classiceberg_1_1TableMetadataBuilder_1_1Impl" prot="public">iceberg::TableMetadataBuilder::Impl</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TableMetadataBuilder_1a4bc861d8f6fce3743e6ec363627e3fc7" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableMetadataBuilder_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::TableMetadataBuilder::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="487" column="19" bodyfile="iceberg/table_metadata.h" bodystart="487" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1abdcb399788fb9ddce9a41999fe140caf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableMetadataBuilder &gt; iceberg::TableMetadataBuilder::BuildFromEmpty</definition>
+        <argsstring>(int8_t format_version=TableMetadata::kDefaultTableFormatVersion)</argsstring>
+        <name>BuildFromEmpty</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::BuildFromEmpty</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+          <defval>TableMetadata::kDefaultTableFormatVersion</defval>
+        </param>
+        <briefdescription>
+<para>Create a builder for a new table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>format_version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The format version for the table </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> instance </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="226" column="26" bodyfile="iceberg/table_metadata.cc" bodystart="1504" bodyend="1508"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a1b6f7b6b04c59ef83bc2005ad07af88a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableMetadataBuilder &gt; iceberg::TableMetadataBuilder::BuildFrom</definition>
+        <argsstring>(const TableMetadata *base)</argsstring>
+        <name>BuildFrom</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::BuildFrom</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Create a builder from existing table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to build from </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> instance initialized with base metadata </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="234" column="26" bodyfile="iceberg/table_metadata.cc" bodystart="1510" bodyend="1513"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a84bd9f7b41d818ae85d89bfc8b0ed6ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::ApplyChangesForCreate</definition>
+        <argsstring>(const TableMetadata &amp;base)</argsstring>
+        <name>ApplyChangesForCreate</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::ApplyChangesForCreate</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Apply changes required to create this table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata to build from </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="240" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1515" bodyend="1521"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a4336323275e1e8c86ab873d4136555cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetMetadataLocation</definition>
+        <argsstring>(std::string_view metadata_location)</argsstring>
+        <name>SetMetadataLocation</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetMetadataLocation</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>metadata_location</declname>
+        </param>
+        <briefdescription>
+<para>Set the metadata location of the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The new metadata location </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="246" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1523" bodyend="1527"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1ae06f33a4f31f38aa8d0c90b689c06226" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetPreviousMetadataLocation</definition>
+        <argsstring>(std::string_view previous_metadata_location)</argsstring>
+        <name>SetPreviousMetadataLocation</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetPreviousMetadataLocation</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>previous_metadata_location</declname>
+        </param>
+        <briefdescription>
+<para>Set the previous metadata location of the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>previous_metadata_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The previous metadata location </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="252" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1529" bodyend="1533"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1aa0510b34e9ff4a54812a0537f17c8426" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::AssignUUID</definition>
+        <argsstring>()</argsstring>
+        <name>AssignUUID</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::AssignUUID</qualifiedname>
+        <briefdescription>
+<para>Assign a UUID to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If no UUID is provided, a random UUID will be generated. <simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="259" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1535" bodyend="1541"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a9c2013c6014312e173e34f4efbdcfa28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::AssignUUID</definition>
+        <argsstring>(std::string_view uuid)</argsstring>
+        <name>AssignUUID</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::AssignUUID</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>uuid</declname>
+        </param>
+        <briefdescription>
+<para>Assign a specific UUID to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>uuid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The UUID string to assign </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="265" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1543" bodyend="1546"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1ac035c8ba028e276800710040cf5f55ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::UpgradeFormatVersion</definition>
+        <argsstring>(int8_t new_format_version)</argsstring>
+        <name>UpgradeFormatVersion</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::UpgradeFormatVersion</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>new_format_version</declname>
+        </param>
+        <briefdescription>
+<para>Upgrade the format version of the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>new_format_version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The new format version (must be &gt;= current version) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="271" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1548" bodyend="1552"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1aef56d2861a9a6ab9e02b75c946155a76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetCurrentSchema</definition>
+        <argsstring>(const std::shared_ptr&lt; Schema &gt; &amp;schema, int32_t new_last_column_id)</argsstring>
+        <name>SetCurrentSchema</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetCurrentSchema</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>new_last_column_id</declname>
+        </param>
+        <briefdescription>
+<para>Set the current schema for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to set as current </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>new_last_column_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The highest column ID in the schema </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="278" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1554" bodyend="1559"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a74e6ba90190392a96696ba8fd96f20b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetCurrentSchema</definition>
+        <argsstring>(int32_t schema_id)</argsstring>
+        <name>SetCurrentSchema</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetCurrentSchema</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>schema_id</declname>
+        </param>
+        <briefdescription>
+<para>Set the current schema by schema ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the schema to set as current </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="285" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1561" bodyend="1564"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a6abbbfb6f02c3a02e63f93cbdb4b163f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::AddSchema</definition>
+        <argsstring>(const std::shared_ptr&lt; Schema &gt; &amp;schema)</argsstring>
+        <name>AddSchema</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::AddSchema</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Add a schema to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to add </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="291" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1566" bodyend="1572"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1adb2ce5cc09228b534b15f56865333c54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetDefaultPartitionSpec</definition>
+        <argsstring>(std::shared_ptr&lt; PartitionSpec &gt; spec)</argsstring>
+        <name>SetDefaultPartitionSpec</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetDefaultPartitionSpec</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+<para>Set the default partition spec for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec to set as default </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="297" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1574" bodyend="1578"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1aab7542603f3e82a814a7f6a784cb1803" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetDefaultPartitionSpec</definition>
+        <argsstring>(int32_t spec_id)</argsstring>
+        <name>SetDefaultPartitionSpec</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetDefaultPartitionSpec</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <briefdescription>
+<para>Set the default partition spec by spec ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the partition spec to set as default </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="303" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1580" bodyend="1583"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a227634ea788fdd1641f383c2d825e76e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::AddPartitionSpec</definition>
+        <argsstring>(std::shared_ptr&lt; PartitionSpec &gt; spec)</argsstring>
+        <name>AddPartitionSpec</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::AddPartitionSpec</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+<para>Add a partition spec to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec to add </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="309" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1585" bodyend="1589"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a035fa990a43aa929e651518882ed36aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemovePartitionSpecs</definition>
+        <argsstring>(const std::vector&lt; int32_t &gt; &amp;spec_ids)</argsstring>
+        <name>RemovePartitionSpecs</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemovePartitionSpecs</qualifiedname>
+        <param>
+          <type>const std::vector&lt; int32_t &gt; &amp;</type>
+          <declname>spec_ids</declname>
+        </param>
+        <briefdescription>
+<para>Remove partition specs from the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec_ids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The IDs of partition specs to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="315" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1591" bodyend="1595"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a6f44795ced26c8b4300258bec69a3465" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemoveSchemas</definition>
+        <argsstring>(const std::unordered_set&lt; int32_t &gt; &amp;schema_ids)</argsstring>
+        <name>RemoveSchemas</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemoveSchemas</qualifiedname>
+        <param>
+          <type>const std::unordered_set&lt; int32_t &gt; &amp;</type>
+          <declname>schema_ids</declname>
+        </param>
+        <briefdescription>
+<para>Remove schemas from the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema_ids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The IDs of schemas to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="321" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1597" bodyend="1601"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a07bb90141f3868cfbed799520fd081e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetDefaultSortOrder</definition>
+        <argsstring>(std::shared_ptr&lt; SortOrder &gt; order)</argsstring>
+        <name>SetDefaultSortOrder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetDefaultSortOrder</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt;</type>
+          <declname>order</declname>
+        </param>
+        <briefdescription>
+<para>Set the default sort order for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>order</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The sort order to set as default </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="327" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1603" bodyend="1607"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1ab6bcc9e3b419033472e64ca1e969f1b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetDefaultSortOrder</definition>
+        <argsstring>(int32_t order_id)</argsstring>
+        <name>SetDefaultSortOrder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetDefaultSortOrder</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>order_id</declname>
+        </param>
+        <briefdescription>
+<para>Set the default sort order by order ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>order_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the sort order to set as default </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="333" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1609" bodyend="1612"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a4b9acb7a1473a3f331e50f7ba041eb7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::AddSortOrder</definition>
+        <argsstring>(std::shared_ptr&lt; SortOrder &gt; order)</argsstring>
+        <name>AddSortOrder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::AddSortOrder</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt;</type>
+          <declname>order</declname>
+        </param>
+        <briefdescription>
+<para>Add a sort order to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>order</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The sort order to add </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="339" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1614" bodyend="1618"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1ac19b8a84f02b1b4683938ff92746e761" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::AddSnapshot</definition>
+        <argsstring>(std::shared_ptr&lt; Snapshot &gt; snapshot)</argsstring>
+        <name>AddSnapshot</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::AddSnapshot</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+<para>Add a snapshot to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot to add </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="345" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1620" bodyend="1624"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1af56c1718292c5e4f4581010a3f08c801" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetBranchSnapshot</definition>
+        <argsstring>(int64_t snapshot_id, const std::string &amp;branch)</argsstring>
+        <name>SetBranchSnapshot</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetBranchSnapshot</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>branch</declname>
+        </param>
+        <briefdescription>
+<para>Set a branch to point to a specific snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID the branch should reference </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>branch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the branch </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="352" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1626" bodyend="1630"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a899affa7cce104e7667cc7bd8d3cd26f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetBranchSnapshot</definition>
+        <argsstring>(std::shared_ptr&lt; Snapshot &gt; snapshot, const std::string &amp;branch)</argsstring>
+        <name>SetBranchSnapshot</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetBranchSnapshot</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+          <declname>snapshot</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>branch</declname>
+        </param>
+        <briefdescription>
+<para>Set a branch to point to a specific snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot the branch should reference </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>branch</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the branch </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="359" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1632" bodyend="1636"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a94af24378f87cecf4ba332d587c01502" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetRef</definition>
+        <argsstring>(const std::string &amp;name, std::shared_ptr&lt; SnapshotRef &gt; ref)</argsstring>
+        <name>SetRef</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetRef</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &gt;</type>
+          <declname>ref</declname>
+        </param>
+        <briefdescription>
+<para>Set a snapshot reference. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the reference </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ref</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot reference to set </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="367" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1638" bodyend="1642"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a080b813aef3a63a03cdd40c8ec53514f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemoveRef</definition>
+        <argsstring>(const std::string &amp;name)</argsstring>
+        <name>RemoveRef</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemoveRef</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Remove a snapshot reference. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the reference to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="373" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1644" bodyend="1647"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a258416851d60432b2866dcb67a78e7e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemoveSnapshots</definition>
+        <argsstring>(const std::vector&lt; std::shared_ptr&lt; Snapshot &gt; &gt; &amp;snapshots_to_remove)</argsstring>
+        <name>RemoveSnapshots</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemoveSnapshots</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &gt; &amp;</type>
+          <declname>snapshots_to_remove</declname>
+        </param>
+        <briefdescription>
+<para>Remove snapshots from the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshots_to_remove</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshots to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="379" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1649" bodyend="1652"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1ab5eaf9033c4360e96f28720179d45e86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemoveSnapshots</definition>
+        <argsstring>(const std::vector&lt; int64_t &gt; &amp;snapshot_ids)</argsstring>
+        <name>RemoveSnapshots</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemoveSnapshots</qualifiedname>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>snapshot_ids</declname>
+        </param>
+        <briefdescription>
+<para>Remove snapshots from the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_ids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The IDs of snapshots to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="386" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1654" bodyend="1658"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a566aab8dbe36f07c6649edc8c550b798" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SuppressHistoricalSnapshots</definition>
+        <argsstring>()</argsstring>
+        <name>SuppressHistoricalSnapshots</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SuppressHistoricalSnapshots</qualifiedname>
+        <briefdescription>
+<para>Suppresses snapshots that are historical, removing the metadata for lazy snapshot loading. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Note that the snapshots are not considered removed from metadata and no RemoveSnapshot changes are created. A snapshot is historical if no ref directly references its ID. <simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="395" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1660" bodyend="1662"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a2afd6a215aaceace2c2ad4a11b546933" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetStatistics</definition>
+        <argsstring>(std::shared_ptr&lt; StatisticsFile &gt; statistics_file)</argsstring>
+        <name>SetStatistics</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetStatistics</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1StatisticsFile" kindref="compound">StatisticsFile</ref> &gt;</type>
+          <declname>statistics_file</declname>
+        </param>
+        <briefdescription>
+<para>Set table statistics. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>statistics_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The statistics file to set </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="401" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1664" bodyend="1668"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a88359bf37276ab0ea24277f9920c3e3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemoveStatistics</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>RemoveStatistics</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemoveStatistics</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Remove table statistics by snapshot ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID whose statistics to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="407" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1670" bodyend="1673"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a595167eece0d361a788b4e4a8a024944" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetPartitionStatistics</definition>
+        <argsstring>(const std::shared_ptr&lt; PartitionStatisticsFile &gt; &amp;partition_statistics_file)</argsstring>
+        <name>SetPartitionStatistics</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetPartitionStatistics</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1PartitionStatisticsFile" kindref="compound">PartitionStatisticsFile</ref> &gt; &amp;</type>
+          <declname>partition_statistics_file</declname>
+        </param>
+        <briefdescription>
+<para>Set partition statistics. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>partition_statistics_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition statistics file to set </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="413" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1675" bodyend="1680"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a1e35fab7c77218ab6fe897706231ab3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemovePartitionStatistics</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>RemovePartitionStatistics</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemovePartitionStatistics</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Remove partition statistics by snapshot ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID whose partition statistics to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="420" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1682" bodyend="1686"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a9374215cd500900e05b1d398f12d7f25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetProperties</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;updated)</argsstring>
+        <name>SetProperties</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetProperties</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>updated</declname>
+        </param>
+        <briefdescription>
+<para>Set table properties. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>updated</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Map of properties to set or update </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="426" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1688" bodyend="1692"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1abe5d138dd9bffd6bb0998f1b3afe8b13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemoveProperties</definition>
+        <argsstring>(const std::unordered_set&lt; std::string &gt; &amp;removed)</argsstring>
+        <name>RemoveProperties</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemoveProperties</qualifiedname>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>removed</declname>
+        </param>
+        <briefdescription>
+<para>Remove table properties. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>removed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Set of property keys to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="433" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1694" bodyend="1698"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a4fc189560d9035bb578904e56ad7e5ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::SetLocation</definition>
+        <argsstring>(std::string_view location)</argsstring>
+        <name>SetLocation</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::SetLocation</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Set the table location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table base location </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="439" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1700" bodyend="1703"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a6a2a223857b53fa66773acde937ba30c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::AddEncryptionKey</definition>
+        <argsstring>(std::shared_ptr&lt; EncryptedKey &gt; key)</argsstring>
+        <name>AddEncryptionKey</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::AddEncryptionKey</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; EncryptedKey &gt;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Add an encryption key to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The encryption key to add </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="445" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1705" bodyend="1708"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a5ddcfa6934a8aa63fe287616deec711f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::RemoveEncryptionKey</definition>
+        <argsstring>(std::string_view key_id)</argsstring>
+        <name>RemoveEncryptionKey</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::RemoveEncryptionKey</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>key_id</declname>
+        </param>
+        <briefdescription>
+<para>Remove an encryption key from the table by key ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The ID of the encryption key to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this builder for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="451" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="1710" bodyend="1712"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a0b1be21e7f17b7a81e60eddffc5e1149" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TableMetadata &gt; &gt; iceberg::TableMetadataBuilder::Build</definition>
+        <argsstring>()</argsstring>
+        <name>Build</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Build</qualifiedname>
+        <briefdescription>
+<para>Build the <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A Result containing the constructed <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="456" column="10" bodyfile="iceberg/table_metadata.cc" bodystart="1714" bodyend="1718"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a9ee53b99b05fea005f0cab0f36990686" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt; &amp;</type>
+        <definition>const std::vector&lt; std::unique_ptr&lt; TableUpdate &gt; &gt; &amp; iceberg::TableMetadataBuilder::changes</definition>
+        <argsstring>() const</argsstring>
+        <name>changes</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::changes</qualifiedname>
+        <briefdescription>
+<para>Returns the changes made to the table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="459" column="21" bodyfile="iceberg/table_metadata.cc" bodystart="1720" bodyend="1722"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a5e0a5e1ef40f0f16506a0c876b0b8e71" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+        <definition>const TableMetadata * iceberg::TableMetadataBuilder::base</definition>
+        <argsstring>() const</argsstring>
+        <name>base</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::base</qualifiedname>
+        <briefdescription>
+<para>Returns the base metadata without any changes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="462" column="23" bodyfile="iceberg/table_metadata.cc" bodystart="1724" bodyend="1724"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1ad4abb366d7b44900c8c397d7470b8a1e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+        <definition>const TableMetadata &amp; iceberg::TableMetadataBuilder::current</definition>
+        <argsstring>() const</argsstring>
+        <name>current</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::current</qualifiedname>
+        <briefdescription>
+<para>Returns the current metadata with staged changes applied. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="465" column="23" bodyfile="iceberg/table_metadata.cc" bodystart="1726" bodyend="1726"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a01116a784408673fe0132d4c7e3cba86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataBuilder::~TableMetadataBuilder</definition>
+        <argsstring>() override</argsstring>
+        <name>~TableMetadataBuilder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::~TableMetadataBuilder</qualifiedname>
+        <briefdescription>
+<para>Destructor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="468" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a9d9b090d52bf2f8e3678f7ad2745d6d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataBuilder::TableMetadataBuilder</definition>
+        <argsstring>(const TableMetadataBuilder &amp;)=delete</argsstring>
+        <name>TableMetadataBuilder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::TableMetadataBuilder</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="471" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a0b74d8f0b9fd91a9588ea2b50f54c891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::operator=</definition>
+        <argsstring>(const TableMetadataBuilder &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="472" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1aa642901c34bea19f1bded846f29be3e0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataBuilder::TableMetadataBuilder</definition>
+        <argsstring>(TableMetadataBuilder &amp;&amp;) noexcept</argsstring>
+        <name>TableMetadataBuilder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::TableMetadataBuilder</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="475" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1a575f673c07b84c00f9401f2010921cbc" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+        <definition>TableMetadataBuilder &amp; iceberg::TableMetadataBuilder::operator=</definition>
+        <argsstring>(TableMetadataBuilder &amp;&amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="476" column="24"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1ace783c461cf0ed9b00d50fe90462a2e2" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataBuilder::TableMetadataBuilder</definition>
+        <argsstring>(int8_t format_version)</argsstring>
+        <name>TableMetadataBuilder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::TableMetadataBuilder</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <briefdescription>
+<para>Private constructor for building from empty state. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="480" column="12" bodyfile="iceberg/table_metadata.cc" bodystart="1491" bodyend="1492"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableMetadataBuilder_1aaf4d26da82911c8bed92859e5288ca73" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataBuilder::TableMetadataBuilder</definition>
+        <argsstring>(const TableMetadata *base)</argsstring>
+        <name>TableMetadataBuilder</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::TableMetadataBuilder</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Private constructor for building from existing metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="483" column="12" bodyfile="iceberg/table_metadata.cc" bodystart="1494" bodyend="1495"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Builder class for constructing <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> objects. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This builder provides a fluent interface for creating and modifying table metadata. It supports both creating new tables and building from existing metadata.</para>
+<para>Each modification method generates a corresponding <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> that is tracked in a changes list. This allows the builder to maintain a complete history of all modifications made to the table metadata, which is important for tracking table evolution and for serialization purposes.</para>
+<para>If a modification violates Iceberg table constraints (e.g., setting a current schema ID that does not exist), an error will be recorded and returned when <ref refid="classiceberg_1_1TableMetadataBuilder_1a0b1be21e7f17b7a81e60eddffc5e1149" kindref="member">Build()</ref> is called. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="1">
+        <label>iceberg::TableMetadataBuilder</label>
+        <link refid="classiceberg_1_1TableMetadataBuilder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableMetadataBuilder</label>
+        <link refid="classiceberg_1_1TableMetadataBuilder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_metadata.h" line="220" column="1" bodyfile="iceberg/table_metadata.h" bodystart="220" bodyend="488"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a6a2a223857b53fa66773acde937ba30c" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddEncryptionKey</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a227634ea788fdd1641f383c2d825e76e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddPartitionSpec</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a6abbbfb6f02c3a02e63f93cbdb4b163f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddSchema</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1ac19b8a84f02b1b4683938ff92746e761" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddSnapshot</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a4b9acb7a1473a3f331e50f7ba041eb7c" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AddSortOrder</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a84bd9f7b41d818ae85d89bfc8b0ed6ae" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>ApplyChangesForCreate</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1aa0510b34e9ff4a54812a0537f17c8426" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AssignUUID</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a9c2013c6014312e173e34f4efbdcfa28" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>AssignUUID</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a5e0a5e1ef40f0f16506a0c876b0b8e71" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>base</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a0b1be21e7f17b7a81e60eddffc5e1149" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>Build</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a1b6f7b6b04c59ef83bc2005ad07af88a" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>BuildFrom</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1abdcb399788fb9ddce9a41999fe140caf" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>BuildFromEmpty</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a9ee53b99b05fea005f0cab0f36990686" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>changes</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1ad4abb366d7b44900c8c397d7470b8a1e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>current</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a4bc861d8f6fce3743e6ec363627e3fc7" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a0b74d8f0b9fd91a9588ea2b50f54c891" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a575f673c07b84c00f9401f2010921cbc" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::TableMetadataBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::TableMetadataBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a5ddcfa6934a8aa63fe287616deec711f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemoveEncryptionKey</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a035fa990a43aa929e651518882ed36aa" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemovePartitionSpecs</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a1e35fab7c77218ab6fe897706231ab3e" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemovePartitionStatistics</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1abe5d138dd9bffd6bb0998f1b3afe8b13" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemoveProperties</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a080b813aef3a63a03cdd40c8ec53514f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemoveRef</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a6f44795ced26c8b4300258bec69a3465" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemoveSchemas</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a258416851d60432b2866dcb67a78e7e2" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemoveSnapshots</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1ab5eaf9033c4360e96f28720179d45e86" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemoveSnapshots</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a88359bf37276ab0ea24277f9920c3e3f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>RemoveStatistics</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1af56c1718292c5e4f4581010a3f08c801" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetBranchSnapshot</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a899affa7cce104e7667cc7bd8d3cd26f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetBranchSnapshot</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1aef56d2861a9a6ab9e02b75c946155a76" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetCurrentSchema</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a74e6ba90190392a96696ba8fd96f20b9" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetCurrentSchema</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1adb2ce5cc09228b534b15f56865333c54" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetDefaultPartitionSpec</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1aab7542603f3e82a814a7f6a784cb1803" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetDefaultPartitionSpec</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a07bb90141f3868cfbed799520fd081e8" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetDefaultSortOrder</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1ab6bcc9e3b419033472e64ca1e969f1b9" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetDefaultSortOrder</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a4fc189560d9035bb578904e56ad7e5ac" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetLocation</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a4336323275e1e8c86ab873d4136555cc" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetMetadataLocation</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a595167eece0d361a788b4e4a8a024944" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetPartitionStatistics</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1ae06f33a4f31f38aa8d0c90b689c06226" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetPreviousMetadataLocation</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a9374215cd500900e05b1d398f12d7f25" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetProperties</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a94af24378f87cecf4ba332d587c01502" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetRef</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a2afd6a215aaceace2c2ad4a11b546933" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SetStatistics</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a566aab8dbe36f07c6649edc8c550b798" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>SuppressHistoricalSnapshots</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a9d9b090d52bf2f8e3678f7ad2745d6d4" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>TableMetadataBuilder</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1aa642901c34bea19f1bded846f29be3e0" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>TableMetadataBuilder</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1ace783c461cf0ed9b00d50fe90462a2e2" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>TableMetadataBuilder</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1aaf4d26da82911c8bed92859e5288ca73" prot="private" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>TableMetadataBuilder</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1ac035c8ba028e276800710040cf5f55ad" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>UpgradeFormatVersion</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::TableMetadataBuilder</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1TableMetadataBuilder_1a01116a784408673fe0132d4c7e3cba86" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder</scope><name>~TableMetadataBuilder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

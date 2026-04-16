@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1puffin_1_1BlobMetadataJsonParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::puffin::BlobMetadataJsonParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1BlobMetadataJsonParam_1ac1ddad89f2c81e16714fe9aa9f87d9bd" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::puffin::BlobMetadataJsonParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::puffin::BlobMetadataJsonParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="34" column="15" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1BlobMetadataJsonParam_1ae8f389be857c321abcf88f37870ef859" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref></type>
+        <definition>BlobMetadata iceberg::puffin::BlobMetadataJsonParam::blob</definition>
+        <argsstring></argsstring>
+        <name>blob</name>
+        <qualifiedname>iceberg::puffin::BlobMetadataJsonParam::blob</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="35" column="16" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1BlobMetadataJsonParam_1a4ebb432d4b73346c169c80213ce99595" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::puffin::BlobMetadataJsonParam::expected_json</definition>
+        <argsstring></argsstring>
+        <name>expected_json</name>
+        <qualifiedname>iceberg::puffin::BlobMetadataJsonParam::expected_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="36" column="15" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="36" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::puffin::BlobMetadata</label>
+        <link refid="structiceberg_1_1puffin_1_1BlobMetadata"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>compression_codec</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>input_fields</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::puffin::BlobMetadataJsonParam</label>
+        <link refid="structiceberg_1_1puffin_1_1BlobMetadataJsonParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_json</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>blob</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/puffin_json_test.cc" line="33" column="1" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="33" bodyend="37"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1puffin_1_1BlobMetadataJsonParam_1ae8f389be857c321abcf88f37870ef859" prot="public" virt="non-virtual"><scope>iceberg::puffin::BlobMetadataJsonParam</scope><name>blob</name></member>
+      <member refid="structiceberg_1_1puffin_1_1BlobMetadataJsonParam_1a4ebb432d4b73346c169c80213ce99595" prot="public" virt="non-virtual"><scope>iceberg::puffin::BlobMetadataJsonParam</scope><name>expected_json</name></member>
+      <member refid="structiceberg_1_1puffin_1_1BlobMetadataJsonParam_1ac1ddad89f2c81e16714fe9aa9f87d9bd" prot="public" virt="non-virtual"><scope>iceberg::puffin::BlobMetadataJsonParam</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

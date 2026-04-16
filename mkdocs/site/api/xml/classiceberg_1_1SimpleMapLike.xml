@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SimpleMapLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SimpleMapLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1MapLike" prot="public" virt="non-virtual">iceberg::MapLike</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SimpleMapLike_1a1cae6491de9762b87b5cd31fd10e7503" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>std::vector&lt;Scalar&gt; iceberg::SimpleMapLike::keys_</definition>
+        <argsstring></argsstring>
+        <name>keys_</name>
+        <qualifiedname>iceberg::SimpleMapLike::keys_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="93" column="15" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SimpleMapLike_1acc2613d9ad593e41edfe50987934a8d0" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>std::vector&lt;Scalar&gt; iceberg::SimpleMapLike::values_</definition>
+        <argsstring></argsstring>
+        <name>values_</name>
+        <qualifiedname>iceberg::SimpleMapLike::values_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="94" column="15" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="94" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SimpleMapLike_1ae7f026a01511dc371d670fa36426bbfe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SimpleMapLike::SimpleMapLike</definition>
+        <argsstring>(std::vector&lt; Scalar &gt; keys, std::vector&lt; Scalar &gt; values)</argsstring>
+        <name>SimpleMapLike</name>
+        <qualifiedname>iceberg::SimpleMapLike::SimpleMapLike</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+          <declname>keys</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="73" column="3" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="73" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleMapLike_1a768c6ce2e4bbbbbfcfee36b3bf09578d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::SimpleMapLike::GetKey</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetKey</name>
+        <qualifiedname>iceberg::SimpleMapLike::GetKey</qualifiedname>
+        <reimplements refid="classiceberg_1_1MapLike_1aefb93debfcbe52e3223ee36bf2345b6f">GetKey</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the key at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the key in the map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="76" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="76" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleMapLike_1a4c24a1eafc33410c120c4cc3656ad247" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::SimpleMapLike::GetValue</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetValue</name>
+        <qualifiedname>iceberg::SimpleMapLike::GetValue</qualifiedname>
+        <reimplements refid="classiceberg_1_1MapLike_1add2591f25282d409167352bbb1c5e558">GetValue</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the value in the map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="83" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="83" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleMapLike_1a0d5d03a0c6856e598483cbd5c6077117" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::SimpleMapLike::size</definition>
+        <argsstring>() const override</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::SimpleMapLike::size</qualifiedname>
+        <reimplements refid="classiceberg_1_1MapLike_1a9d769b5646f089820800c321bec7f2f6">size</reimplements>
+        <briefdescription>
+<para>Get the number of entries in the map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="90" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="90" bodyend="90"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::MapLike</label>
+        <link refid="classiceberg_1_1MapLike"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SimpleMapLike</label>
+        <link refid="classiceberg_1_1SimpleMapLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::MapLike</label>
+        <link refid="classiceberg_1_1MapLike"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SimpleMapLike</label>
+        <link refid="classiceberg_1_1SimpleMapLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/struct_like_set_test.cc" line="71" column="1" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="71" bodyend="95"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SimpleMapLike_1a768c6ce2e4bbbbbfcfee36b3bf09578d" prot="public" virt="virtual"><scope>iceberg::SimpleMapLike</scope><name>GetKey</name></member>
+      <member refid="classiceberg_1_1SimpleMapLike_1a4c24a1eafc33410c120c4cc3656ad247" prot="public" virt="virtual"><scope>iceberg::SimpleMapLike</scope><name>GetValue</name></member>
+      <member refid="classiceberg_1_1SimpleMapLike_1a1cae6491de9762b87b5cd31fd10e7503" prot="private" virt="non-virtual"><scope>iceberg::SimpleMapLike</scope><name>keys_</name></member>
+      <member refid="classiceberg_1_1SimpleMapLike_1ae7f026a01511dc371d670fa36426bbfe" prot="public" virt="non-virtual"><scope>iceberg::SimpleMapLike</scope><name>SimpleMapLike</name></member>
+      <member refid="classiceberg_1_1SimpleMapLike_1a0d5d03a0c6856e598483cbd5c6077117" prot="public" virt="virtual"><scope>iceberg::SimpleMapLike</scope><name>size</name></member>
+      <member refid="classiceberg_1_1SimpleMapLike_1acc2613d9ad593e41edfe50987934a8d0" prot="private" virt="non-virtual"><scope>iceberg::SimpleMapLike</scope><name>values_</name></member>
+      <member refid="classiceberg_1_1MapLike_1ae3323c2af8f85a78c85817e4385e3cc6" prot="public" virt="virtual"><scope>iceberg::SimpleMapLike</scope><name>~MapLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

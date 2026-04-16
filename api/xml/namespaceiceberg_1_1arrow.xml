@@ -1,0 +1,419 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1arrow" kind="namespace" language="C++">
+    <compoundname>iceberg::arrow</compoundname>
+    <innerclass refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO" prot="public">iceberg::arrow::ArrowFileSystemFileIO</innerclass>
+    <innerclass refid="structiceberg_1_1arrow_1_1MetadataColumnContext" prot="public">iceberg::arrow::MetadataColumnContext</innerclass>
+    <innerclass refid="structiceberg_1_1arrow_1_1S3Properties" prot="public">iceberg::arrow::S3Properties</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="file__io__register_8cc_1a9b62b8a657f3a09678eb3312aca50774" prot="public" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::arrow::kArrowFileIOsRegistered</definition>
+        <argsstring></argsstring>
+        <name>kArrowFileIOsRegistered</name>
+        <qualifiedname>iceberg::arrow::kArrowFileIOsRegistered</qualifiedname>
+        <initializer>= []() {
+  EnsureArrowFileIOsRegistered();
+  return true;
+}()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/file_io_register.cc" line="56" column="13" bodyfile="iceberg/arrow/file_io_register.cc" bodystart="56" bodyend="59"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="arrow__file__io_8h_1ac01e55e4fc2199c722e98a3c8a42d2f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeMockFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeMockFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeMockFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io.cc" line="100" column="17" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="100" bodyend="102" declfile="iceberg/arrow/arrow_file_io.h" declline="32" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__file__io_8h_1a261510dc94452d5775918724032b63f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeLocalFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeLocalFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeLocalFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io.cc" line="104" column="17" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="104" bodyend="106" declfile="iceberg/arrow/arrow_file_io.h" declline="34" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__file__io_8h_1aabaf255b303d8d2ca87115f3030b2c3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; FileIO &gt; &gt; iceberg::arrow::MakeS3FileIO</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties={})</argsstring>
+        <name>MakeS3FileIO</name>
+        <qualifiedname>iceberg::arrow::MakeS3FileIO</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Create an S3 <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> backed by Arrow&apos;s S3FileSystem. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function initializes the S3 subsystem if not already initialized (thread-safe). The S3 initialization is cached once per process.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Configuration properties for S3 access. See <ref refid="structiceberg_1_1arrow_1_1S3Properties" kindref="compound">S3Properties</ref> for available keys (credentials, region, endpoint, timeouts, etc.). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for S3 operations, or an error if S3 is not supported. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/arrow_s3_file_io.cc" line="159" column="8" bodyfile="iceberg/arrow/s3/arrow_s3_file_io.cc" bodystart="159" bodyend="172" declfile="iceberg/arrow/arrow_file_io.h" declline="44" declcolumn="30"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__file__io_8h_1aa53d2f0495e8a06c60a1f0ce0123a456" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT Status</type>
+        <definition>Status iceberg::arrow::FinalizeS3</definition>
+        <argsstring>()</argsstring>
+        <name>FinalizeS3</name>
+        <qualifiedname>iceberg::arrow::FinalizeS3</qualifiedname>
+        <briefdescription>
+<para>Finalize (clean up) the Arrow S3 subsystem. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Must be called before process exit if S3 was initialized, otherwise Arrow&apos;s static destructors may cause a non-zero exit. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/arrow_s3_file_io.cc" line="174" column="8" bodyfile="iceberg/arrow/s3/arrow_s3_file_io.cc" bodystart="174" bodyend="182" declfile="iceberg/arrow/arrow_file_io.h" declline="51" declcolumn="30"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__status__internal_8h_1a824ce51f59bd212336814486d03a0415" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>ErrorKind</type>
+        <definition>ErrorKind iceberg::arrow::ToErrorKind</definition>
+        <argsstring>(const ::arrow::Status &amp;status)</argsstring>
+        <name>ToErrorKind</name>
+        <qualifiedname>iceberg::arrow::ToErrorKind</qualifiedname>
+        <param>
+          <type>const ::arrow::Status &amp;</type>
+          <declname>status</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_status_internal.h" line="29" column="18" bodyfile="iceberg/arrow/arrow_status_internal.h" bodystart="29" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="file__io__register_8cc_1a941dc16a1c4d1e94bc52ec58ad46ad05" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::arrow::EnsureArrowFileIOsRegistered</definition>
+        <argsstring>()</argsstring>
+        <name>EnsureArrowFileIOsRegistered</name>
+        <qualifiedname>iceberg::arrow::EnsureArrowFileIOsRegistered</qualifiedname>
+        <briefdescription>
+<para>Register built-in Arrow <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementations into the <ref refid="classiceberg_1_1FileIORegistry" kindref="compound">FileIORegistry</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This operation is idempotent and safe to call multiple times. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/file_io_register.cc" line="48" column="6" bodyfile="iceberg/arrow/file_io_register.cc" bodystart="48" bodyend="54" declfile="iceberg/arrow/file_io_register.h" declline="32" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="metadata__column__util_8cc_1ac4fb744e0e7a79fd72afce17641fe57b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt; iceberg::arrow::MakeFilePathArray</definition>
+        <argsstring>(const std::string &amp;file_path, int64_t num_rows, ::arrow::MemoryPool *pool)</argsstring>
+        <name>MakeFilePathArray</name>
+        <qualifiedname>iceberg::arrow::MakeFilePathArray</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>num_rows</declname>
+        </param>
+        <param>
+          <type>::arrow::MemoryPool *</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+<para>Create a constant string array for _file column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates an Arrow StringArray where all values are the same file path string.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The file path value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_rows</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of rows in the batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Arrow memory pool. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Arrow StringArray with constant file_path value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/metadata_column_util.cc" line="30" column="8" bodyfile="iceberg/arrow/metadata_column_util.cc" bodystart="30" bodyend="41" declfile="iceberg/arrow/metadata_column_util_internal.h" declline="49" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="metadata__column__util_8cc_1a2ab51cdcc6d48ed5c3f15f3b25baf815" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt; iceberg::arrow::MakeRowPositionArray</definition>
+        <argsstring>(int64_t start_position, int64_t num_rows, ::arrow::MemoryPool *pool)</argsstring>
+        <name>MakeRowPositionArray</name>
+        <qualifiedname>iceberg::arrow::MakeRowPositionArray</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>start_position</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>num_rows</declname>
+        </param>
+        <param>
+          <type>::arrow::MemoryPool *</type>
+          <declname>pool</declname>
+        </param>
+        <briefdescription>
+<para>Create a sequential int64 array for _pos column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Creates an Arrow Int64Array with sequential values starting from start_position.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>start_position</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Starting row position (inclusive). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_rows</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of rows in the batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pool</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Arrow memory pool. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Arrow Int64Array with values [start_position, start_position + num_rows). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/metadata_column_util.cc" line="43" column="8" bodyfile="iceberg/arrow/metadata_column_util.cc" bodystart="43" bodyend="54" declfile="iceberg/arrow/metadata_column_util_internal.h" declline="61" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1abbe460fcdb67d3bb6988db2e261446c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, CreateWithDefaultProperties)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>CreateWithDefaultProperties</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="104" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="104" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1a776fb797c9b0c4c38c4da21dc75587c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, RequiresS3SupportAtBuildTime)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>RequiresS3SupportAtBuildTime</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="110" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="110" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1a41edff5e3c92002b539f4a977776047c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>RejectsIncompleteStaticCredentials</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="115" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="115" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1a741e97ca94a720c7e0ec12b1a98e2720" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, RejectsInvalidBooleanProperties)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>RejectsInvalidBooleanProperties</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="123" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="123" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1a69bd85a1f44fe0d4ba2ad1407f1be5bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, ReadWriteFile)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>ReadWriteFile</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="129" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="129" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1ad56e8b3682f162984923d21650005d3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, MakeS3FileIOWithProperties)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>MakeS3FileIOWithProperties</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="147" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="147" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1af684cda8db9c6b19f8ca8962dd45b529" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, MakeS3FileIOWithSslDisabled)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>MakeS3FileIOWithSslDisabled</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="165" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="165" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__s3__file__io__test_8cc_1a87e5e8a9653544036eea4f9a4f4a6102" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::arrow::TEST_F</definition>
+        <argsstring>(ArrowS3FileIOTest, MakeS3FileIOWithTimeouts)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::arrow::TEST_F</qualifiedname>
+        <param>
+          <type>ArrowS3FileIOTest</type>
+        </param>
+        <param>
+          <type>MakeS3FileIOWithTimeouts</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/arrow_s3_file_io_test.cc" line="174" column="1" bodyfile="iceberg/test/arrow_s3_file_io_test.cc" bodystart="174" bodyend="182"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow/arrow_file_io.h" line="30" column="1"/>
+  </compounddef>
+</doxygen>

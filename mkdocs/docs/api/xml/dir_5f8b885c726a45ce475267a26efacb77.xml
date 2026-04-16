@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_5f8b885c726a45ce475267a26efacb77" kind="dir">
+    <compoundname>iceberg/puffin</compoundname>
+    <innerfile refid="file__metadata_8cc">file_metadata.cc</innerfile>
+    <innerfile refid="file__metadata_8h">file_metadata.h</innerfile>
+    <innerfile refid="puffin_2json__serde_8cc">json_serde.cc</innerfile>
+    <innerfile refid="puffin_2json__serde__internal_8h">json_serde_internal.h</innerfile>
+    <innerfile refid="puffin__format_8cc">puffin_format.cc</innerfile>
+    <innerfile refid="puffin__format_8h">puffin_format.h</innerfile>
+    <innerfile refid="puffin_2type__fwd_8h">type_fwd.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/puffin/"/>
+  </compounddef>
+</doxygen>

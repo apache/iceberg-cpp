@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SimpleStructLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SimpleStructLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1StructLike" prot="public" virt="non-virtual">iceberg::StructLike</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SimpleStructLike_1acebbadf579b7ddd02e00f69e9459b643" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>std::vector&lt;Scalar&gt; iceberg::SimpleStructLike::fields_</definition>
+        <argsstring></argsstring>
+        <name>fields_</name>
+        <qualifiedname>iceberg::SimpleStructLike::fields_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="50" column="15" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SimpleStructLike_1a5cfdb4fcc5554200cf3662174290a9d2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SimpleStructLike::SimpleStructLike</definition>
+        <argsstring>(std::vector&lt; Scalar &gt; fields)</argsstring>
+        <name>SimpleStructLike</name>
+        <qualifiedname>iceberg::SimpleStructLike::SimpleStructLike</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+          <declname>fields</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="36" column="12" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleStructLike_1a09f4aabd43b411e4ae0f5f8c396bbb7d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::SimpleStructLike::GetField</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetField</name>
+        <qualifiedname>iceberg::SimpleStructLike::GetField</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11">GetField</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="38" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="38" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleStructLike_1aa0e975871f029d1cde3892b2c53148c0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::SimpleStructLike::num_fields</definition>
+        <argsstring>() const override</argsstring>
+        <name>num_fields</name>
+        <qualifiedname>iceberg::SimpleStructLike::num_fields</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914">num_fields</reimplements>
+        <briefdescription>
+<para>Get the number of fields in the struct. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="45" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="45" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleStructLike_1a5e24baa5b6df95c5cd587e672d0c8ce4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SimpleStructLike::SetField</definition>
+        <argsstring>(size_t pos, Scalar value)</argsstring>
+        <name>SetField</name>
+        <qualifiedname>iceberg::SimpleStructLike::SetField</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <param>
+          <type><ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref></type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="47" column="8" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="47" bodyend="47"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SimpleStructLike</label>
+        <link refid="classiceberg_1_1SimpleStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SimpleStructLike</label>
+        <link refid="classiceberg_1_1SimpleStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/struct_like_set_test.cc" line="34" column="1" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="34" bodyend="51"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SimpleStructLike_1acebbadf579b7ddd02e00f69e9459b643" prot="private" virt="non-virtual"><scope>iceberg::SimpleStructLike</scope><name>fields_</name></member>
+      <member refid="classiceberg_1_1SimpleStructLike_1a09f4aabd43b411e4ae0f5f8c396bbb7d" prot="public" virt="virtual"><scope>iceberg::SimpleStructLike</scope><name>GetField</name></member>
+      <member refid="classiceberg_1_1SimpleStructLike_1aa0e975871f029d1cde3892b2c53148c0" prot="public" virt="virtual"><scope>iceberg::SimpleStructLike</scope><name>num_fields</name></member>
+      <member refid="classiceberg_1_1SimpleStructLike_1a5e24baa5b6df95c5cd587e672d0c8ce4" prot="public" virt="non-virtual"><scope>iceberg::SimpleStructLike</scope><name>SetField</name></member>
+      <member refid="classiceberg_1_1SimpleStructLike_1a5cfdb4fcc5554200cf3662174290a9d2" prot="public" virt="non-virtual"><scope>iceberg::SimpleStructLike</scope><name>SimpleStructLike</name></member>
+      <member refid="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" virt="virtual"><scope>iceberg::SimpleStructLike</scope><name>~StructLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1puffin_1_1Blob" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::puffin::Blob</compoundname>
+    <includes refid="file__metadata_8h" local="no">file_metadata.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1Blob_1a4f7ca2a6cc93306a0a67890dadce3cea" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::puffin::Blob::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::puffin::Blob::type</qualifiedname>
+        <briefdescription>
+<para>See <ref refid="structiceberg_1_1puffin_1_1StandardBlobTypes" kindref="compound">StandardBlobTypes</ref> for known types. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="72" column="15" bodyfile="iceberg/puffin/file_metadata.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1Blob_1a3b5f15d99ca2e7230fbb92d7f861c468" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::puffin::Blob::input_fields</definition>
+        <argsstring></argsstring>
+        <name>input_fields</name>
+        <qualifiedname>iceberg::puffin::Blob::input_fields</qualifiedname>
+        <briefdescription>
+<para>Ordered list of field IDs the blob was computed from. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="74" column="15" bodyfile="iceberg/puffin/file_metadata.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1Blob_1a2668a95631f8f420d56b0d5145f14096" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::puffin::Blob::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::puffin::Blob::snapshot_id</qualifiedname>
+        <briefdescription>
+<para>ID of the Iceberg table&apos;s snapshot the blob was computed from. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="76" column="11" bodyfile="iceberg/puffin/file_metadata.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1Blob_1ac79dc1a305b5e235f57ca2031f67a75e" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::puffin::Blob::sequence_number</definition>
+        <argsstring></argsstring>
+        <name>sequence_number</name>
+        <qualifiedname>iceberg::puffin::Blob::sequence_number</qualifiedname>
+        <briefdescription>
+<para>Sequence number of the Iceberg table&apos;s snapshot the blob was computed from. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="78" column="11" bodyfile="iceberg/puffin/file_metadata.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1Blob_1a5c0cce127d5ab2c208fbdd593be4cb93" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::puffin::Blob::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>iceberg::puffin::Blob::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="79" column="15" bodyfile="iceberg/puffin/file_metadata.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1Blob_1ac624cbd7745bef9a4df537f167b9435e" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref> &gt;</type>
+        <definition>std::optional&lt;PuffinCompressionCodec&gt; iceberg::puffin::Blob::requested_compression</definition>
+        <argsstring></argsstring>
+        <name>requested_compression</name>
+        <qualifiedname>iceberg::puffin::Blob::requested_compression</qualifiedname>
+        <briefdescription>
+<para>If not set, the writer&apos;s default codec will be used. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="81" column="17" bodyfile="iceberg/puffin/file_metadata.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1Blob_1a7975ab6cfd2ccdd7d31dea33626a7d36" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::puffin::Blob::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::puffin::Blob::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="82" column="22" bodyfile="iceberg/puffin/file_metadata.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1puffin_1_1Blob_1ab8abc31f8c0bf89ddacc863aff40adbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Blob &amp;lhs, const Blob &amp;rhs)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::puffin::Blob::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="84" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A blob in a Puffin file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::puffin::Blob</label>
+        <link refid="structiceberg_1_1puffin_1_1Blob"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>input_fields</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>data</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/puffin/file_metadata.h" line="70" column="1" bodyfile="iceberg/puffin/file_metadata.h" bodystart="70" bodyend="85"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1a5c0cce127d5ab2c208fbdd593be4cb93" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>data</name></member>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1a3b5f15d99ca2e7230fbb92d7f861c468" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>input_fields</name></member>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1ab8abc31f8c0bf89ddacc863aff40adbb" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1a7975ab6cfd2ccdd7d31dea33626a7d36" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1ac624cbd7745bef9a4df537f167b9435e" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>requested_compression</name></member>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1ac79dc1a305b5e235f57ca2031f67a75e" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>sequence_number</name></member>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1a2668a95631f8f420d56b0d5145f14096" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>snapshot_id</name></member>
+      <member refid="structiceberg_1_1puffin_1_1Blob_1a4f7ca2a6cc93306a0a67890dadce3cea" prot="public" virt="non-virtual"><scope>iceberg::puffin::Blob</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

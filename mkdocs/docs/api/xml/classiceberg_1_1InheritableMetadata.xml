@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InheritableMetadata" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::InheritableMetadata</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1BaseInheritableMetadata" prot="public" virt="non-virtual">iceberg::BaseInheritableMetadata</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1CopyInheritableMetadata" prot="public" virt="non-virtual">iceberg::CopyInheritableMetadata</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1EmptyInheritableMetadata" prot="public" virt="non-virtual">iceberg::EmptyInheritableMetadata</derivedcompoundref>
+    <includes refid="inheritable__metadata_8h" local="no">inheritable_metadata.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1InheritableMetadata_1a49a06b5937dc52f4f4757485837a6f0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>iceberg::InheritableMetadata::~InheritableMetadata</definition>
+        <argsstring>()</argsstring>
+        <name>~InheritableMetadata</name>
+        <qualifiedname>iceberg::InheritableMetadata::~InheritableMetadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="42" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InheritableMetadata_1a8cce7bd6676ae4bd6b69eff701c6398f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::InheritableMetadata::Apply</definition>
+        <argsstring>(ManifestEntry &amp;entry)=0</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::InheritableMetadata::Apply</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1BaseInheritableMetadata_1a37bc831ae19c500e27aee98d2209b30c">Apply</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1EmptyInheritableMetadata_1ac6b93e1cb14ec4d3b51957174d6910d8">Apply</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1CopyInheritableMetadata_1a57c81e7f9cd6f6cc3123e8d68490a8a1">Apply</reimplementedby>
+        <param>
+          <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Apply inheritable metadata to a manifest entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest entry to modify. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="47" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Interface for applying inheritable metadata to manifest entries. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>When manifest entries have null values for certain fields (snapshot id, data sequence number, file sequence number), these values should be inherited from the manifest file. This interface provides a way to apply such inheritance rules. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::BaseInheritableMetadata</label>
+        <link refid="classiceberg_1_1BaseInheritableMetadata"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::CopyInheritableMetadata</label>
+        <link refid="classiceberg_1_1CopyInheritableMetadata"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::EmptyInheritableMetadata</label>
+        <link refid="classiceberg_1_1EmptyInheritableMetadata"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::InheritableMetadata</label>
+        <link refid="classiceberg_1_1InheritableMetadata"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/inheritable_metadata.h" line="40" column="1" bodyfile="iceberg/inheritable_metadata.h" bodystart="40" bodyend="48"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1InheritableMetadata_1a8cce7bd6676ae4bd6b69eff701c6398f" prot="public" virt="pure-virtual"><scope>iceberg::InheritableMetadata</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1InheritableMetadata_1a49a06b5937dc52f4f4757485837a6f0d" prot="public" virt="virtual"><scope>iceberg::InheritableMetadata</scope><name>~InheritableMetadata</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

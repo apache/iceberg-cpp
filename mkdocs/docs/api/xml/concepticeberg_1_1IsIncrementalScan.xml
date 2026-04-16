@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1IsIncrementalScan" kind="concept">
+    <compoundname>iceberg::IsIncrementalScan</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename T&gt;
+concept <ref refid="concepticeberg_1_1IsIncrementalScan" kindref="compound">iceberg::IsIncrementalScan</ref> =  std::is_base_of_v&lt;IncrementalScan&lt;FileScanTask&gt;, T&gt; ||
+                            std::is_base_of_v&lt;IncrementalScan&lt;ChangelogScanTask&gt;, T&gt;    </initializer>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/table_scan.h" line="142" column="1"/>
+  </compounddef>
+</doxygen>

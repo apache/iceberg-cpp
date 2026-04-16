@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ParseRoundTripParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ParseRoundTripParam</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cb" prot="public" static="no" strong="no">
+        <type></type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::ParseRoundTripParam::Kind</qualifiedname>
+        <enumvalue id="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cba95fd421460e1aad5c6e5097daa35b0dd" prot="public">
+          <name>kDay</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cba6d78ac0133c342a25fff466e945c6c23" prot="public">
+          <name>kTime</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cba41d3ad430ab1220ceb0a31e054f156e8" prot="public">
+          <name>kTimestamp</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cbacd4d6e8c921f8aebb40f16245868182c" prot="public">
+          <name>kTimestampTz</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="166" column="3" bodyfile="iceberg/test/transform_util_test.cc" bodystart="166" bodyend="166"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ParseRoundTripParam_1a2031f3478c13b8308f26528ab55bcb46" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ParseRoundTripParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::ParseRoundTripParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="163" column="15" bodyfile="iceberg/test/transform_util_test.cc" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseRoundTripParam_1ae32cee17711ab6aacfd572c1b84d1a6b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ParseRoundTripParam::str</definition>
+        <argsstring></argsstring>
+        <name>str</name>
+        <qualifiedname>iceberg::ParseRoundTripParam::str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="164" column="15" bodyfile="iceberg/test/transform_util_test.cc" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseRoundTripParam_1ab940c1b975094e3dda721a5680419ad7" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ParseRoundTripParam::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::ParseRoundTripParam::value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="165" column="11" bodyfile="iceberg/test/transform_util_test.cc" bodystart="165" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseRoundTripParam_1a66236842585cff82d46f5d7219ab8614" prot="public" static="no" mutable="no">
+        <type>enum iceberg::ParseRoundTripParam::Kind</type>
+        <definition>enum iceberg::ParseRoundTripParam::Kind iceberg::ParseRoundTripParam::kind</definition>
+        <argsstring></argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::ParseRoundTripParam::kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_util_test.cc" line="166" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ParseRoundTripParam</label>
+        <link refid="structiceberg_1_1ParseRoundTripParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+          <edgelabel>str</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/transform_util_test.cc" line="162" column="1" bodyfile="iceberg/test/transform_util_test.cc" bodystart="162" bodyend="167"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cba95fd421460e1aad5c6e5097daa35b0dd" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>kDay</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cb" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>Kind</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1a66236842585cff82d46f5d7219ab8614" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>kind</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cba6d78ac0133c342a25fff466e945c6c23" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>kTime</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cba41d3ad430ab1220ceb0a31e054f156e8" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>kTimestamp</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1ab7a6faaab88c5e9fc2c216998f9f10cbacd4d6e8c921f8aebb40f16245868182c" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>kTimestampTz</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1a2031f3478c13b8308f26528ab55bcb46" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1ae32cee17711ab6aacfd572c1b84d1a6b" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>str</name></member>
+      <member refid="structiceberg_1_1ParseRoundTripParam_1ab940c1b975094e3dda721a5680419ad7" prot="public" virt="non-virtual"><scope>iceberg::ParseRoundTripParam</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

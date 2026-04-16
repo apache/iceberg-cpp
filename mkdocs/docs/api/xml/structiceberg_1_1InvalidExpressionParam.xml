@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1InvalidExpressionParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::InvalidExpressionParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1InvalidExpressionParam_1a18b1cafdf6ad3618296ec9e4d32c62cc" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::InvalidExpressionParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::InvalidExpressionParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="199" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1InvalidExpressionParam_1a0abd68474b57936267c9b4482b41d080" prot="public" static="no" mutable="no">
+        <type>nlohmann::json</type>
+        <definition>nlohmann::json iceberg::InvalidExpressionParam::json</definition>
+        <argsstring></argsstring>
+        <name>json</name>
+        <qualifiedname>iceberg::InvalidExpressionParam::json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="200" column="18" bodyfile="iceberg/test/expression_json_test.cc" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1InvalidExpressionParam_1ac14f487655e8807f8ffcfcf5b2fafc75" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::InvalidExpressionParam::expected_error_substr</definition>
+        <argsstring></argsstring>
+        <name>expected_error_substr</name>
+        <qualifiedname>iceberg::InvalidExpressionParam::expected_error_substr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="201" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="201" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::InvalidExpressionParam</label>
+        <link refid="structiceberg_1_1InvalidExpressionParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_substr</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="198" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="198" bodyend="202"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1InvalidExpressionParam_1ac14f487655e8807f8ffcfcf5b2fafc75" prot="public" virt="non-virtual"><scope>iceberg::InvalidExpressionParam</scope><name>expected_error_substr</name></member>
+      <member refid="structiceberg_1_1InvalidExpressionParam_1a0abd68474b57936267c9b4482b41d080" prot="public" virt="non-virtual"><scope>iceberg::InvalidExpressionParam</scope><name>json</name></member>
+      <member refid="structiceberg_1_1InvalidExpressionParam_1a18b1cafdf6ad3618296ec9e4d32c62cc" prot="public" virt="non-virtual"><scope>iceberg::InvalidExpressionParam</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

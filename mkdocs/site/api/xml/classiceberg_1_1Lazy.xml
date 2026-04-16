@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Lazy" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Lazy</compoundname>
+    <innerclass refid="structiceberg_1_1Lazy_1_1Trait" prot="private">iceberg::Lazy::Trait</innerclass>
+    <innerclass refid="structiceberg_1_1Lazy_1_1Trait_3_01R_07_5_08_07Args_8_8_8_08_4" prot="private">iceberg::Lazy::Trait&lt; R(*)(Args...)&gt;</innerclass>
+    <templateparamlist>
+      <param>
+        <type>auto</type>
+        <declname>InitFunc</declname>
+        <defname>InitFunc</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1Lazy_1a6cbd0432451f98d93e76ac79130965aa" prot="private" static="no">
+        <type>Trait&lt; decltype(InitFunc)&gt;::ReturnType</type>
+        <definition>using iceberg::Lazy&lt; InitFunc &gt;::T =  Trait&lt;decltype(InitFunc)&gt;::ReturnType</definition>
+        <argsstring></argsstring>
+        <name>T</name>
+        <qualifiedname>iceberg::Lazy::T</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="44" column="3" bodyfile="iceberg/util/lazy.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Lazy_1aa14fa7f5f92ca1b30c9eb461e9177542" prot="private" static="no" mutable="yes">
+        <type>T</type>
+        <definition>T iceberg::Lazy&lt; InitFunc &gt;::value_</definition>
+        <argsstring></argsstring>
+        <name>value_</name>
+        <qualifiedname>iceberg::Lazy::value_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="63" column="13" bodyfile="iceberg/util/lazy.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Lazy_1ab3fca2a4a50b8a02431640663776ff7e" prot="private" static="no" mutable="yes">
+        <type>std::once_flag</type>
+        <definition>std::once_flag iceberg::Lazy&lt; InitFunc &gt;::flag_</definition>
+        <argsstring></argsstring>
+        <name>flag_</name>
+        <qualifiedname>iceberg::Lazy::flag_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="64" column="26" bodyfile="iceberg/util/lazy.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Lazy_1a96cae428c92af5806b35187c61836b82" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type>Result&lt; std::reference_wrapper&lt; T &gt; &gt;</type>
+        <definition>Result&lt; std::reference_wrapper&lt; T &gt; &gt; iceberg::Lazy&lt; InitFunc &gt;::Get</definition>
+        <argsstring>(Args &amp;&amp;... args) const</argsstring>
+        <name>Get</name>
+        <qualifiedname>iceberg::Lazy::Get</qualifiedname>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+    <requiresclause>std::invocable&lt;decltype(InitFunc), Args...&gt; &amp;&amp; std::same_as&lt;std::invoke_result_t&lt;decltype(InitFunc), Args...&gt;, Result&lt;T&gt;&gt;    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="50" column="10" bodyfile="iceberg/util/lazy.h" bodystart="50" bodyend="60"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/lazy.h" line="35" column="1" bodyfile="iceberg/util/lazy.h" bodystart="35" bodyend="65"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Lazy_1ab3fca2a4a50b8a02431640663776ff7e" prot="private" virt="non-virtual"><scope>iceberg::Lazy</scope><name>flag_</name></member>
+      <member refid="classiceberg_1_1Lazy_1a96cae428c92af5806b35187c61836b82" prot="public" virt="non-virtual"><scope>iceberg::Lazy</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1Lazy_1a6cbd0432451f98d93e76ac79130965aa" prot="private" virt="non-virtual"><scope>iceberg::Lazy</scope><name>T</name></member>
+      <member refid="classiceberg_1_1Lazy_1aa14fa7f5f92ca1b30c9eb461e9177542" prot="private" virt="non-virtual"><scope>iceberg::Lazy</scope><name>value_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1puffin_1_1StandardBlobTypes" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::puffin::StandardBlobTypes</compoundname>
+    <includes refid="file__metadata_8h" local="no">file_metadata.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1StandardBlobTypes_1a56ddc41d0b314ceb80ba6f8da65c7d93" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::puffin::StandardBlobTypes::kApacheDatasketchesThetaV1</definition>
+        <argsstring></argsstring>
+        <name>kApacheDatasketchesThetaV1</name>
+        <qualifiedname>iceberg::puffin::StandardBlobTypes::kApacheDatasketchesThetaV1</qualifiedname>
+        <initializer>=
+      &quot;apache-datasketches-theta-v1&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A serialized form of a &quot;compact&quot; Theta sketch produced by the Apache DataSketches library. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="55" column="37" bodyfile="iceberg/puffin/file_metadata.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1StandardBlobTypes_1a6dc6f92f1eafdfa747657dcbd4abd394" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::puffin::StandardBlobTypes::kDeletionVectorV1</definition>
+        <argsstring></argsstring>
+        <name>kDeletionVectorV1</name>
+        <qualifiedname>iceberg::puffin::StandardBlobTypes::kDeletionVectorV1</qualifiedname>
+        <initializer>= &quot;deletion-vector-v1&quot;</initializer>
+        <briefdescription>
+<para>A serialized deletion vector according to the Iceberg spec. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="59" column="37" bodyfile="iceberg/puffin/file_metadata.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Standard blob types defined by the Iceberg specification. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::puffin::StandardBlobTypes</label>
+        <link refid="structiceberg_1_1puffin_1_1StandardBlobTypes"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kApacheDatasketchesThetaV1</edgelabel>
+          <edgelabel>kDeletionVectorV1</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string_view</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/puffin/file_metadata.h" line="52" column="1" bodyfile="iceberg/puffin/file_metadata.h" bodystart="52" bodyend="60"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1puffin_1_1StandardBlobTypes_1a56ddc41d0b314ceb80ba6f8da65c7d93" prot="public" virt="non-virtual"><scope>iceberg::puffin::StandardBlobTypes</scope><name>kApacheDatasketchesThetaV1</name></member>
+      <member refid="structiceberg_1_1puffin_1_1StandardBlobTypes_1a6dc6f92f1eafdfa747657dcbd4abd394" prot="public" virt="non-virtual"><scope>iceberg::puffin::StandardBlobTypes</scope><name>kDeletionVectorV1</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

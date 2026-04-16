@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SchemaAwarePredicateParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SchemaAwarePredicateParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SchemaAwarePredicateParam_1a27e4797d2428af89e97b122a0eca9287" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SchemaAwarePredicateParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::SchemaAwarePredicateParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="499" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="499" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SchemaAwarePredicateParam_1afad8f8541d2cd58c611045aa14f411d3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SchemaAwarePredicateParam::field_name</definition>
+        <argsstring></argsstring>
+        <name>field_name</name>
+        <qualifiedname>iceberg::SchemaAwarePredicateParam::field_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="500" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="500" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SchemaAwarePredicateParam_1a374724bdc1d785c78c23afd08d1d2981" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::SchemaAwarePredicateParam::field_type</definition>
+        <argsstring></argsstring>
+        <name>field_type</name>
+        <qualifiedname>iceberg::SchemaAwarePredicateParam::field_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="501" column="19" bodyfile="iceberg/test/expression_json_test.cc" bodystart="501" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SchemaAwarePredicateParam_1a20dc41a42ba8992af34609797221e8d6" prot="public" static="no" mutable="no">
+        <type>nlohmann::json</type>
+        <definition>nlohmann::json iceberg::SchemaAwarePredicateParam::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::SchemaAwarePredicateParam::value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="502" column="18" bodyfile="iceberg/test/expression_json_test.cc" bodystart="502" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SchemaAwarePredicateParam</label>
+        <link refid="structiceberg_1_1SchemaAwarePredicateParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>field_name</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>field_type</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="498" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="498" bodyend="503"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SchemaAwarePredicateParam_1afad8f8541d2cd58c611045aa14f411d3" prot="public" virt="non-virtual"><scope>iceberg::SchemaAwarePredicateParam</scope><name>field_name</name></member>
+      <member refid="structiceberg_1_1SchemaAwarePredicateParam_1a374724bdc1d785c78c23afd08d1d2981" prot="public" virt="non-virtual"><scope>iceberg::SchemaAwarePredicateParam</scope><name>field_type</name></member>
+      <member refid="structiceberg_1_1SchemaAwarePredicateParam_1a27e4797d2428af89e97b122a0eca9287" prot="public" virt="non-virtual"><scope>iceberg::SchemaAwarePredicateParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1SchemaAwarePredicateParam_1a20dc41a42ba8992af34609797221e8d6" prot="public" virt="non-virtual"><scope>iceberg::SchemaAwarePredicateParam</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

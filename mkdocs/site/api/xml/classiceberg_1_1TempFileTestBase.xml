@@ -1,0 +1,336 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TempFileTestBase" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TempFileTestBase</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1FileScanTaskTest" prot="public" virt="non-virtual">iceberg::FileScanTaskTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1GZipTest" prot="public" virt="non-virtual">iceberg::GZipTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1LocalFileIOTest" prot="public" virt="non-virtual">iceberg::LocalFileIOTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1MetadataIOTest" prot="public" virt="non-virtual">iceberg::MetadataIOTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1avro_1_1AVROStreamTest" prot="public" virt="non-virtual">iceberg::avro::AVROStreamTest</derivedcompoundref>
+    <includes refid="temp__file__test__base_8h" local="no">temp_file_test_base.h</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TempFileTestBase_1a81e8f787019341a0f6e808b06944692c" prot="protected" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::TempFileTestBase::created_temp_files_</definition>
+        <argsstring></argsstring>
+        <name>created_temp_files_</name>
+        <qualifiedname>iceberg::TempFileTestBase::created_temp_files_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="185" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="185" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1a7f0c73d82ad005a93c34fc4712db5120" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TempFileTestBase::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::TempFileTestBase::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="70" column="8" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="70" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1ad0259e7197a5f7c88a6cd9688efe6b53" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TempFileTestBase::TearDown</definition>
+        <argsstring>() override</argsstring>
+        <name>TearDown</name>
+        <qualifiedname>iceberg::TempFileTestBase::TearDown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="74" column="8" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="74" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1ac4a5a13677373ca5e40f5251f2fc16d5" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::GenerateUniqueTempFilePath</definition>
+        <argsstring>() const</argsstring>
+        <name>GenerateUniqueTempFilePath</name>
+        <qualifiedname>iceberg::TempFileTestBase::GenerateUniqueTempFilePath</qualifiedname>
+        <briefdescription>
+<para>Generates a unique temporary filepath that works across platforms. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="87" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="87" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1a25203f87d8d23209c611949d95749559" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::GenerateUniqueTempFilePathWithSuffix</definition>
+        <argsstring>(const std::string &amp;suffix)</argsstring>
+        <name>GenerateUniqueTempFilePathWithSuffix</name>
+        <qualifiedname>iceberg::TempFileTestBase::GenerateUniqueTempFilePathWithSuffix</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>suffix</declname>
+        </param>
+        <briefdescription>
+<para>Create a temporary filepath with the specified suffix/extension. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="95" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="95" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1ab8c455679ca860cf68d867b134fd6dbc" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::GenerateRandomString</definition>
+        <argsstring>(size_t length) const</argsstring>
+        <name>GenerateRandomString</name>
+        <qualifiedname>iceberg::TempFileTestBase::GenerateRandomString</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Helper to generate a random alphanumeric string for unique filenames. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="103" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="103" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1ac5dbf7b55b849f990733840057bd450f" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::TestInfo</definition>
+        <argsstring>() const</argsstring>
+        <name>TestInfo</name>
+        <qualifiedname>iceberg::TempFileTestBase::TestInfo</qualifiedname>
+        <briefdescription>
+<para>Get the test name for inclusion in the filename. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="119" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="119" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1a469206ba6bfaea7b40483a594c819d8f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::CreateNewTempFilePath</definition>
+        <argsstring>()</argsstring>
+        <name>CreateNewTempFilePath</name>
+        <qualifiedname>iceberg::TempFileTestBase::CreateNewTempFilePath</qualifiedname>
+        <briefdescription>
+<para>Creates a new temporary filepath and registers it for cleanup. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="134" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="134" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1a79c5ec372d23b44b3b25f90faadafcdf" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::CreateNewTempFilePathWithSuffix</definition>
+        <argsstring>(const std::string &amp;suffix)</argsstring>
+        <name>CreateNewTempFilePathWithSuffix</name>
+        <qualifiedname>iceberg::TempFileTestBase::CreateNewTempFilePathWithSuffix</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>suffix</declname>
+        </param>
+        <briefdescription>
+<para>Create a temporary filepath with the specified suffix and registers it for cleanup. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="142" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="142" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1a78b1aeba8972a7b7a1efe8250fc275b9" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::CreateTempDirectory</definition>
+        <argsstring>()</argsstring>
+        <name>CreateTempDirectory</name>
+        <qualifiedname>iceberg::TempFileTestBase::CreateTempDirectory</qualifiedname>
+        <briefdescription>
+<para>Creates a temporary directory and registers it for cleanup. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="149" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="149" bodyend="164"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1a3ba86e7547c2ea06ac70f76e61040af5" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TempFileTestBase::WriteContentToFile</definition>
+        <argsstring>(const std::string &amp;path, const std::string &amp;content)</argsstring>
+        <name>WriteContentToFile</name>
+        <qualifiedname>iceberg::TempFileTestBase::WriteContentToFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>content</declname>
+        </param>
+        <briefdescription>
+<para>Creates a file with the given content at the specified path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="167" column="8" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="167" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TempFileTestBase_1a0f94d0c787eed57fca2687c77f0873dd" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TempFileTestBase::CreateTempFileWithContent</definition>
+        <argsstring>(const std::string &amp;content)</argsstring>
+        <name>CreateTempFileWithContent</name>
+        <qualifiedname>iceberg::TempFileTestBase::CreateTempFileWithContent</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>content</declname>
+        </param>
+        <briefdescription>
+<para>Creates a new temporary file with the given content. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temp_file_test_base.h" line="179" column="15" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="179" bodyend="183"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A base class for tests that need to create and manage temporary files. Provides utilities for creating platform-independent temporary files and ensures proper cleanup after tests run.</para>
+<para>Usage Example: <programlisting><codeline><highlight class="keyword">class<sp/></highlight><highlight class="normal">MyTest<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>test::TempFileTestBase<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>SetUp()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Always<sp/>call<sp/>base<sp/>class<sp/>SetUp<sp/>first</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>TempFileTestBase::SetUp();</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Create<sp/>test<sp/>resources</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>my_temp_file_<sp/>=<sp/>CreateNewTempFilePath();</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Additional<sp/>setup...</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Your<sp/>test-specific<sp/>members</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>std::string<sp/>my_temp_file_;</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">TEST_F(MyTest,<sp/>ExampleTest)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Use<sp/>temporary<sp/>files<sp/>in<sp/>your<sp/>test</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1TempFileTestBase_1a3ba86e7547c2ea06ac70f76e61040af5" kindref="member">WriteContentToFile</ref>(my_temp_file_,<sp/></highlight><highlight class="stringliteral">&quot;test<sp/>content&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Files<sp/>will<sp/>be<sp/>automatically<sp/>cleaned<sp/>up<sp/>in<sp/>TearDown</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+</programlisting></para>
+<para>Notes:<itemizedlist>
+<listitem><para>Always call TempFileTestBase::SetUp() in your derived class&apos;s SetUp()</para>
+</listitem><listitem><para>All files created using the provided methods will be automatically cleaned up</para>
+</listitem><listitem><para>You don&apos;t need to implement TearDown() unless you need additional cleanup </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::FileScanTaskTest</label>
+        <link refid="classiceberg_1_1FileScanTaskTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::GZipTest</label>
+        <link refid="classiceberg_1_1GZipTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::LocalFileIOTest</label>
+        <link refid="classiceberg_1_1LocalFileIOTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::MetadataIOTest</label>
+        <link refid="classiceberg_1_1MetadataIOTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::avro::AVROStreamTest</label>
+        <link refid="classiceberg_1_1avro_1_1AVROStreamTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>created_temp_files_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/temp_file_test_base.h" line="68" column="1" bodyfile="iceberg/test/temp_file_test_base.h" bodystart="68" bodyend="186"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TempFileTestBase_1a81e8f787019341a0f6e808b06944692c" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>created_temp_files_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a469206ba6bfaea7b40483a594c819d8f" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>CreateNewTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a79c5ec372d23b44b3b25f90faadafcdf" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>CreateNewTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a78b1aeba8972a7b7a1efe8250fc275b9" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>CreateTempDirectory</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a0f94d0c787eed57fca2687c77f0873dd" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>CreateTempFileWithContent</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ab8c455679ca860cf68d867b134fd6dbc" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>GenerateRandomString</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac4a5a13677373ca5e40f5251f2fc16d5" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>GenerateUniqueTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a25203f87d8d23209c611949d95749559" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>GenerateUniqueTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a7f0c73d82ad005a93c34fc4712db5120" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ad0259e7197a5f7c88a6cd9688efe6b53" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac5dbf7b55b849f990733840057bd450f" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>TestInfo</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a3ba86e7547c2ea06ac70f76e61040af5" prot="protected" virt="non-virtual"><scope>iceberg::TempFileTestBase</scope><name>WriteContentToFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1UnboundAggregateImpl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::UnboundAggregateImpl</compoundname>
+    <basecompoundref refid="classiceberg_1_1UnboundAggregate" prot="public" virt="non-virtual">iceberg::UnboundAggregate</basecompoundref>
+    <basecompoundref refid="classiceberg_1_1Aggregate" prot="public" virt="non-virtual">iceberg::Aggregate&lt; UnboundTerm&lt; B &gt; &gt;</basecompoundref>
+    <includes refid="aggregate_8h" local="no">aggregate.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename B</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1UnboundAggregateImpl_1a9d616c0fb4f31b56ccad0df41b3d831c" prot="private" static="no">
+        <type><ref refid="classiceberg_1_1Aggregate" kindref="compound">Aggregate</ref>&lt; <ref refid="classiceberg_1_1UnboundTerm" kindref="compound">UnboundTerm</ref>&lt; B &gt; &gt;</type>
+        <definition>using iceberg::UnboundAggregateImpl&lt; B &gt;::BASE =  Aggregate&lt;UnboundTerm&lt;B&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>BASE</name>
+        <qualifiedname>iceberg::UnboundAggregateImpl::BASE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="77" column="3" bodyfile="iceberg/expression/aggregate.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1UnboundAggregateImpl_1a64f138562adea7a887a788b66e98952d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundAggregateImpl" kindref="compound">UnboundAggregateImpl</ref>&lt; B &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; UnboundAggregateImpl&lt; B &gt; &gt; &gt; iceberg::UnboundAggregateImpl&lt; B &gt;::Make</definition>
+        <argsstring>(Expression::Operation op, std::shared_ptr&lt; UnboundTerm&lt; B &gt; &gt; term)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::UnboundAggregateImpl::Make</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundTerm" kindref="compound">UnboundTerm</ref>&lt; B &gt; &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="80" column="17" bodyfile="iceberg/expression/aggregate.cc" bodystart="497" bodyend="508"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1UnboundAggregateImpl_1a15f042b6cc58c144ad2042b922089a40" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1NamedReference" kindref="compound">NamedReference</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; NamedReference &gt; iceberg::UnboundAggregateImpl&lt; B &gt;::reference</definition>
+        <argsstring>() override</argsstring>
+        <name>reference</name>
+        <qualifiedname>iceberg::UnboundAggregateImpl::reference</qualifiedname>
+        <reimplements refid="classiceberg_1_1Unbound_1aba4992824a9033d7fa4e1c75bb2ed854">reference</reimplements>
+        <briefdescription>
+<para>Returns the underlying named reference for this unbound term. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="83" column="19" bodyfile="iceberg/expression/aggregate.h" bodystart="83" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UnboundAggregateImpl_1a4855375d718179c731529527844a88af" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::UnboundAggregateImpl&lt; B &gt;::Bind</definition>
+        <argsstring>(const Schema &amp;schema, bool case_sensitive) const override</argsstring>
+        <name>Bind</name>
+        <qualifiedname>iceberg::UnboundAggregateImpl::Bind</qualifiedname>
+        <reimplements refid="classiceberg_1_1Unbound_1a3af63f1670bd36266714c7cf3296fc83">Bind</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Bind this expression to a concrete schema. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to bind against </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether field name matching should be case sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A bound expression or an error if binding fails </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="87" column="10" bodyfile="iceberg/expression/aggregate.cc" bodystart="469" bodyend="494"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1UnboundAggregateImpl_1a92dc94a870064d1a874aff741303d71c" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::UnboundAggregateImpl&lt; B &gt;::UnboundAggregateImpl</definition>
+        <argsstring>(Expression::Operation op, std::shared_ptr&lt; UnboundTerm&lt; B &gt; &gt; term)</argsstring>
+        <name>UnboundAggregateImpl</name>
+        <qualifiedname>iceberg::UnboundAggregateImpl::UnboundAggregateImpl</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundTerm" kindref="compound">UnboundTerm</ref>&lt; B &gt; &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="91" column="3" bodyfile="iceberg/expression/aggregate.h" bodystart="91" bodyend="96"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Template for unbound aggregates that carry a term and operation. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="6">
+        <label>iceberg::Aggregate&lt; UnboundTerm&lt; B &gt; &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Unbound&lt; Expression &gt;</label>
+        <link refid="classiceberg_1_1Unbound"/>
+      </node>
+      <node id="3">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::UnboundAggregate</label>
+        <link refid="classiceberg_1_1UnboundAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UnboundAggregateImpl&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundAggregateImpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>iceberg::Aggregate&lt; UnboundTerm&lt; B &gt; &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Unbound&lt; Expression &gt;</label>
+        <link refid="classiceberg_1_1Unbound"/>
+      </node>
+      <node id="3">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::UnboundAggregate</label>
+        <link refid="classiceberg_1_1UnboundAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UnboundAggregateImpl&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundAggregateImpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/aggregate.h" line="75" column="1" bodyfile="iceberg/expression/aggregate.h" bodystart="76" bodyend="97"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Aggregate_1a6faf5ff7b6ecd69dc6cd26ee84a3dd30" prot="protected" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1UnboundAggregateImpl_1a9d616c0fb4f31b56ccad0df41b3d831c" prot="private" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>BASE</name></member>
+      <member refid="classiceberg_1_1UnboundAggregateImpl_1a4855375d718179c731529527844a88af" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1Unbound_1a032a320b067d50a56cfe7e5e6ed986e9" prot="public" virt="non-virtual" ambiguityscope="iceberg::UnboundAggregate::"><scope>iceberg::UnboundAggregateImpl</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1Expression_1ab760f80ffc03ab40301be7d59c621a4a" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1UnboundAggregate_1ab86b7e03739c4aa29b263613892ab3f5" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a5af32b25e4103d34dfc370064e1a14a9" prot="protected" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>IsSupportedOp</name></member>
+      <member refid="classiceberg_1_1UnboundAggregateImpl_1a64f138562adea7a887a788b66e98952d" prot="public" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1Expression_1a5a16ee5d023305b50e4a2216b4047eff" prot="public" virt="pure-virtual" ambiguityscope="iceberg::"><scope>iceberg::UnboundAggregateImpl</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251" prot="public" virt="virtual" ambiguityscope="Aggregate&lt; UnboundTerm&lt; B &gt; &gt;::"><scope>iceberg::UnboundAggregateImpl</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a4dbbc648f79d02a088ede60b0158dfee" prot="protected" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>operation_</name></member>
+      <member refid="classiceberg_1_1UnboundAggregateImpl_1a15f042b6cc58c144ad2042b922089a40" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>reference</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a761fc9c146cc30271fa100b2906bf056" prot="public" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>term</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a96a91318a214bade482691853f82ee03" prot="protected" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>term_</name></member>
+      <member refid="classiceberg_1_1Expression_1a2e9c204f698d069ebc0fefb9e5269ab6" prot="public" virt="virtual" ambiguityscope="iceberg::"><scope>iceberg::UnboundAggregateImpl</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3" prot="public" virt="virtual" ambiguityscope="Aggregate&lt; UnboundTerm&lt; B &gt; &gt;::"><scope>iceberg::UnboundAggregateImpl</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1UnboundAggregateImpl_1a92dc94a870064d1a874aff741303d71c" prot="private" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>UnboundAggregateImpl</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a1473f637e1355db39626813ed10831c6" prot="public" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>~Aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1UnboundAggregate_1a24f34d30f95bbc9ff8985314e889b1dc" prot="public" virt="non-virtual"><scope>iceberg::UnboundAggregateImpl</scope><name>~UnboundAggregate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

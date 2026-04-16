@@ -1,0 +1,479 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1Endpoint" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::Endpoint</compoundname>
+    <includes refid="endpoint_8h" local="no">endpoint.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1Endpoint_1a841f849a97091ac0d1eb81a50f286c0d" prot="private" static="no" mutable="no">
+        <type><ref refid="endpoint_8h_1a9c2a3903c0963da869a7da9606e5d64d" kindref="member">HttpMethod</ref></type>
+        <definition>HttpMethod iceberg::rest::Endpoint::method_</definition>
+        <argsstring></argsstring>
+        <name>method_</name>
+        <qualifiedname>iceberg::rest::Endpoint::method_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="134" column="14" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1Endpoint_1a2bdcc4b76ba6e396cc27dacfaddf2178" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::Endpoint::path_</definition>
+        <argsstring></argsstring>
+        <name>path_</name>
+        <qualifiedname>iceberg::rest::Endpoint::path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="135" column="15" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref> &gt;</type>
+        <definition>Result&lt; Endpoint &gt; iceberg::rest::Endpoint::Make</definition>
+        <argsstring>(HttpMethod method, std::string_view path)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::rest::Endpoint::Make</qualifiedname>
+        <param>
+          <type><ref refid="endpoint_8h_1a9c2a3903c0963da869a7da9606e5d64d" kindref="member">HttpMethod</ref></type>
+          <declname>method</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Make an endpoint with method and path template. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>method</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP method (GET, POST, etc.) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path template with placeholders (e.g., &quot;/v1/{prefix}/tables&quot;) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref> instance or error if invalid </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="50" column="17" bodyfile="iceberg/catalog/rest/endpoint.cc" bodystart="43" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref> &gt;</type>
+        <definition>Result&lt; Endpoint &gt; iceberg::rest::Endpoint::FromString</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>FromString</name>
+        <qualifiedname>iceberg::rest::Endpoint::FromString</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parse endpoint from string representation. &quot;METHOD&quot; have to be all upper-cased. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>String in format &quot;METHOD /path/template&quot; (e.g., &quot;GET /v1/namespaces&quot;) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref> instance or error if malformed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="57" column="17" bodyfile="iceberg/catalog/rest/endpoint.cc" bodystart="50" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a54bc71ffe01ac5066e07470f7406628a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::ListNamespaces</definition>
+        <argsstring>()</argsstring>
+        <name>ListNamespaces</name>
+        <qualifiedname>iceberg::rest::Endpoint::ListNamespaces</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="73" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="73" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1aae251707bedfcf8389f294ee337eb05a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::GetNamespaceProperties</definition>
+        <argsstring>()</argsstring>
+        <name>GetNamespaceProperties</name>
+        <qualifiedname>iceberg::rest::Endpoint::GetNamespaceProperties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="76" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="76" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1af774ba83e8fc9205fe69726cfa5d25cf" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::NamespaceExists</definition>
+        <argsstring>()</argsstring>
+        <name>NamespaceExists</name>
+        <qualifiedname>iceberg::rest::Endpoint::NamespaceExists</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="79" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="79" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a3f3de57bce8942b293b835c086c1c547" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::CreateNamespace</definition>
+        <argsstring>()</argsstring>
+        <name>CreateNamespace</name>
+        <qualifiedname>iceberg::rest::Endpoint::CreateNamespace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="82" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="82" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1ae6d92aae8fd5e316c76a240b1de2ada4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::UpdateNamespace</definition>
+        <argsstring>()</argsstring>
+        <name>UpdateNamespace</name>
+        <qualifiedname>iceberg::rest::Endpoint::UpdateNamespace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="85" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="85" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a85becd00b36d2dfaff5d230a191f307c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::DropNamespace</definition>
+        <argsstring>()</argsstring>
+        <name>DropNamespace</name>
+        <qualifiedname>iceberg::rest::Endpoint::DropNamespace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="88" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="88" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a074827dfb29ee12417f917e823ca14c5" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::ListTables</definition>
+        <argsstring>()</argsstring>
+        <name>ListTables</name>
+        <qualifiedname>iceberg::rest::Endpoint::ListTables</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="93" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="93" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1ab1668d261ffbd48a8da47f1c660b856f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::LoadTable</definition>
+        <argsstring>()</argsstring>
+        <name>LoadTable</name>
+        <qualifiedname>iceberg::rest::Endpoint::LoadTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="96" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="96" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1aefb96cb08aa9db396737c05f835a8d96" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::TableExists</definition>
+        <argsstring>()</argsstring>
+        <name>TableExists</name>
+        <qualifiedname>iceberg::rest::Endpoint::TableExists</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="99" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="99" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a51b5046bbfb643b9ee0bf98fb9eaa548" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::CreateTable</definition>
+        <argsstring>()</argsstring>
+        <name>CreateTable</name>
+        <qualifiedname>iceberg::rest::Endpoint::CreateTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="102" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="102" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1adf8684e3f32be14b80cfbcfb094f2798" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::UpdateTable</definition>
+        <argsstring>()</argsstring>
+        <name>UpdateTable</name>
+        <qualifiedname>iceberg::rest::Endpoint::UpdateTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="105" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="105" bodyend="107"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1acc0f0fbce6af924adf8e0ee9f0ec9242" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::DeleteTable</definition>
+        <argsstring>()</argsstring>
+        <name>DeleteTable</name>
+        <qualifiedname>iceberg::rest::Endpoint::DeleteTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="108" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="108" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a9f45ce998c7020570a2c5a5e70ee8bda" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::RenameTable</definition>
+        <argsstring>()</argsstring>
+        <name>RenameTable</name>
+        <qualifiedname>iceberg::rest::Endpoint::RenameTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="111" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="111" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a5ad39433102d1f35a8fbe28863353eaf" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::RegisterTable</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterTable</name>
+        <qualifiedname>iceberg::rest::Endpoint::RegisterTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="114" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="114" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a782f3726d15d02e3377015949b11991d" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::ReportMetrics</definition>
+        <argsstring>()</argsstring>
+        <name>ReportMetrics</name>
+        <qualifiedname>iceberg::rest::Endpoint::ReportMetrics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="117" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="117" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1ad531f3645f16327b4af22fd348ec1082" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::TableCredentials</definition>
+        <argsstring>()</argsstring>
+        <name>TableCredentials</name>
+        <qualifiedname>iceberg::rest::Endpoint::TableCredentials</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="121" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="121" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1abb77f2672b23a4faf5132a3f28840013" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref></type>
+        <definition>static Endpoint iceberg::rest::Endpoint::CommitTransaction</definition>
+        <argsstring>()</argsstring>
+        <name>CommitTransaction</name>
+        <qualifiedname>iceberg::rest::Endpoint::CommitTransaction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="127" column="19" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="127" bodyend="129"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1ac9600b1c93a0a4fadf436db38896cf7b" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr <ref refid="endpoint_8h_1a9c2a3903c0963da869a7da9606e5d64d" kindref="member">HttpMethod</ref></type>
+        <definition>constexpr HttpMethod iceberg::rest::Endpoint::method</definition>
+        <argsstring>() const</argsstring>
+        <name>method</name>
+        <qualifiedname>iceberg::rest::Endpoint::method</qualifiedname>
+        <briefdescription>
+<para>Get the HTTP method. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="60" column="24" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="60" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1afb251cd17967b54adf5f7b1b4e5dd347" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::rest::Endpoint::path</definition>
+        <argsstring>() const</argsstring>
+        <name>path</name>
+        <qualifiedname>iceberg::rest::Endpoint::path</qualifiedname>
+        <briefdescription>
+<para>Get the path template. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="63" column="20" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="63" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1ae59b7aac49e95cae5c62f160b6e6c16f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::Endpoint::ToString</definition>
+        <argsstring>() const</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::rest::Endpoint::ToString</qualifiedname>
+        <briefdescription>
+<para>Serialize to &quot;METHOD /path&quot; format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="66" column="15" bodyfile="iceberg/catalog/rest/endpoint.cc" bodystart="86" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a4f66ec498db0572dbed3f10f9f3287d4" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::rest::Endpoint::operator==</definition>
+        <argsstring>(const Endpoint &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::Endpoint::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="68" column="18" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="68" bodyend="70"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1Endpoint_1a5a429a75eb17e7833dd54431a14ffe88" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::Endpoint::Endpoint</definition>
+        <argsstring>(HttpMethod method, std::string_view path)</argsstring>
+        <name>Endpoint</name>
+        <qualifiedname>iceberg::rest::Endpoint::Endpoint</qualifiedname>
+        <param>
+          <type><ref refid="endpoint_8h_1a9c2a3903c0963da869a7da9606e5d64d" kindref="member">HttpMethod</ref></type>
+          <declname>method</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/endpoint.h" line="132" column="3" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="132" bodyend="132"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An <ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref> is an immutable value object identifying a specific REST API operation. It consists of: </para>
+    </briefdescription>
+    <detaileddescription>
+<para><itemizedlist>
+<listitem><para>HTTP method (GET, POST, DELETE, etc.)</para>
+</listitem><listitem><para>Path template (e.g., &quot;/v1/{prefix}/namespaces/{namespace}&quot;) </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/endpoint.h" line="43" column="1" bodyfile="iceberg/catalog/rest/endpoint.h" bodystart="43" bodyend="136"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1abb77f2672b23a4faf5132a3f28840013" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>CommitTransaction</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a3f3de57bce8942b293b835c086c1c547" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>CreateNamespace</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a51b5046bbfb643b9ee0bf98fb9eaa548" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>CreateTable</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1acc0f0fbce6af924adf8e0ee9f0ec9242" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>DeleteTable</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a85becd00b36d2dfaff5d230a191f307c" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>DropNamespace</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a5a429a75eb17e7833dd54431a14ffe88" prot="private" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>Endpoint</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a3cbabcc5aac1233fa90cdb62129ed515" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>FromString</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1aae251707bedfcf8389f294ee337eb05a" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>GetNamespaceProperties</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a54bc71ffe01ac5066e07470f7406628a" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>ListNamespaces</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a074827dfb29ee12417f917e823ca14c5" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>ListTables</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1ab1668d261ffbd48a8da47f1c660b856f" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>LoadTable</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1ad52f5b049f687f2f846c29f4a1f91227" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1ac9600b1c93a0a4fadf436db38896cf7b" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>method</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a841f849a97091ac0d1eb81a50f286c0d" prot="private" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>method_</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1af774ba83e8fc9205fe69726cfa5d25cf" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>NamespaceExists</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a4f66ec498db0572dbed3f10f9f3287d4" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1afb251cd17967b54adf5f7b1b4e5dd347" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>path</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a2bdcc4b76ba6e396cc27dacfaddf2178" prot="private" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>path_</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a5ad39433102d1f35a8fbe28863353eaf" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>RegisterTable</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a9f45ce998c7020570a2c5a5e70ee8bda" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>RenameTable</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1a782f3726d15d02e3377015949b11991d" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>ReportMetrics</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1ad531f3645f16327b4af22fd348ec1082" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>TableCredentials</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1aefb96cb08aa9db396737c05f835a8d96" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>TableExists</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1ae59b7aac49e95cae5c62f160b6e6c16f" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1ae6d92aae8fd5e316c76a240b1de2ada4" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>UpdateNamespace</name></member>
+      <member refid="classiceberg_1_1rest_1_1Endpoint_1adf8684e3f32be14b80cfbcfb094f2798" prot="public" virt="non-virtual"><scope>iceberg::rest::Endpoint</scope><name>UpdateTable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

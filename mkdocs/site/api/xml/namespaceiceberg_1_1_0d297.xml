@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1_0d297" kind="namespace" language="C++">
+    <compoundname>iceberg</compoundname>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceiceberg_1_1_0d297_1aadcb5ccdb7db25ffcfe62ba2cc579292" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>InteropBitmapShape</name>
+        <qualifiedname>iceberg::InteropBitmapShape</qualifiedname>
+        <enumvalue id="namespaceiceberg_1_1_0d297_1aadcb5ccdb7db25ffcfe62ba2cc579292a65d0c57fb98927f91459ad92c864def8" prot="public">
+          <name>kEmpty</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d297_1aadcb5ccdb7db25ffcfe62ba2cc579292a2f915cbc19990d46cf130703c9b77f2e" prot="public">
+          <name>kOnly32BitPositions</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d297_1aadcb5ccdb7db25ffcfe62ba2cc579292a96f68ce277bfcc352360a78c2f896687" prot="public">
+          <name>kSpreadAcrossKeys</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/roaring_position_bitmap_test.cc" line="274" column="1" bodyfile="iceberg/test/roaring_position_bitmap_test.cc" bodystart="274" bodyend="278"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/roaring_position_bitmap_test.cc" line="38" column="1"/>
+  </compounddef>
+</doxygen>

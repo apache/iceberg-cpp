@@ -1,0 +1,1014 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="auth__manager__test_8cc" kind="file" language="C++">
+    <compoundname>auth_manager_test.cc</compoundname>
+    <includes refid="auth__manager_8h" local="yes">iceberg/catalog/rest/auth/auth_manager.h</includes>
+    <includes local="no">string</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">gmock/gmock.h</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes local="no">nlohmann/json.hpp</includes>
+    <includes refid="auth__managers_8h" local="yes">iceberg/catalog/rest/auth/auth_managers.h</includes>
+    <includes refid="auth__properties_8h" local="yes">iceberg/catalog/rest/auth/auth_properties.h</includes>
+    <includes refid="auth__session_8h" local="yes">iceberg/catalog/rest/auth/auth_session.h</includes>
+    <includes refid="oauth2__util_8h" local="yes">iceberg/catalog/rest/auth/oauth2_util.h</includes>
+    <includes refid="http__client_8h" local="yes">iceberg/catalog/rest/http_client.h</includes>
+    <includes refid="catalog_2rest_2json__serde__internal_8h" local="yes">iceberg/catalog/rest/json_serde_internal.h</includes>
+    <includes refid="json__serde__internal_8h" local="yes">iceberg/json_serde_internal.h</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <incdepgraph>
+      <node id="2">
+        <label>iceberg/catalog/rest/auth/auth_manager.h</label>
+        <link refid="auth__manager_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>iceberg/catalog/rest/auth/auth_managers.h</label>
+        <link refid="auth__managers_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg/catalog/rest/auth/auth_properties.h</label>
+        <link refid="auth__properties_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/catalog/rest/auth/auth_session.h</label>
+        <link refid="auth__session_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/catalog/rest/auth/oauth2_util.h</label>
+        <link refid="oauth2__util_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>iceberg/catalog/rest/endpoint.h</label>
+        <link refid="endpoint_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>iceberg/catalog/rest/http_client.h</label>
+        <link refid="http__client_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h_source"/>
+      </node>
+      <node id="53">
+        <label>iceberg/catalog/rest/json_serde_internal.h</label>
+        <link refid="catalog_2rest_2json__serde__internal_8h"/>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg/catalog/rest/type_fwd.h</label>
+        <link refid="catalog_2rest_2type__fwd_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>iceberg/catalog/rest/types.h</label>
+        <link refid="types_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="55">
+        <label>iceberg/json_serde_internal.h</label>
+        <link refid="json__serde__internal_8h_source"/>
+        <childnode refid="56" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="57" relation="include">
+        </childnode>
+        <childnode refid="58" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>iceberg/schema.h</label>
+        <link refid="schema_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>iceberg/statistics_file.h</label>
+        <link refid="statistics__file_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="50">
+        <label>iceberg/table_identifier.h</label>
+        <link refid="table__identifier_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>iceberg/table_metadata.h</label>
+        <link refid="table__metadata_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="59" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="61" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="62" relation="include">
+        </childnode>
+      </node>
+      <node id="59">
+        <label>iceberg/table_properties.h</label>
+        <link refid="table__properties_8h_source"/>
+        <childnode refid="60" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/auth_manager_test.cc</label>
+        <link refid="auth__manager__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="55" relation="include">
+        </childnode>
+        <childnode refid="64" relation="include">
+        </childnode>
+      </node>
+      <node id="64">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="15">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="61">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>iceberg/util/formatter.h</label>
+        <link refid="formatter_8h"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="62">
+        <label>iceberg/util/timepoint.h</label>
+        <link refid="timepoint_8h_source"/>
+        <childnode refid="63" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>algorithm</label>
+      </node>
+      <node id="45">
+        <label>array</label>
+      </node>
+      <node id="20">
+        <label>cassert</label>
+      </node>
+      <node id="23">
+        <label>cerrno</label>
+      </node>
+      <node id="24">
+        <label>charconv</label>
+      </node>
+      <node id="63">
+        <label>chrono</label>
+      </node>
+      <node id="48">
+        <label>concepts</label>
+      </node>
+      <node id="9">
+        <label>cstdint</label>
+      </node>
+      <node id="12">
+        <label>expected</label>
+      </node>
+      <node id="13">
+        <label>format</label>
+      </node>
+      <node id="16">
+        <label>functional</label>
+      </node>
+      <node id="32">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="33">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="60">
+        <label>limits</label>
+      </node>
+      <node id="56">
+        <label>map</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="49">
+        <label>mutex</label>
+      </node>
+      <node id="34">
+        <label>nlohmann/json.hpp</label>
+      </node>
+      <node id="54">
+        <label>nlohmann/json_fwd.hpp</label>
+      </node>
+      <node id="10">
+        <label>optional</label>
+      </node>
+      <node id="25">
+        <label>ranges</label>
+      </node>
+      <node id="46">
+        <label>span</label>
+      </node>
+      <node id="18">
+        <label>stdexcept</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="26">
+        <label>string_view</label>
+      </node>
+      <node id="27">
+        <label>type_traits</label>
+      </node>
+      <node id="28">
+        <label>typeinfo</label>
+      </node>
+      <node id="5">
+        <label>unordered_map</label>
+      </node>
+      <node id="41">
+        <label>unordered_set</label>
+      </node>
+      <node id="29">
+        <label>utility</label>
+      </node>
+      <node id="30">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" prot="public">iceberg::rest::auth::AuthManagerTest</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest_1_1auth">iceberg::rest::auth</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="auth__manager_8h" kindref="compound">iceberg/catalog/rest/auth/auth_manager.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gmock/gmock.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;nlohmann/json.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="auth__managers_8h" kindref="compound">iceberg/catalog/rest/auth/auth_managers.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="auth__properties_8h" kindref="compound">iceberg/catalog/rest/auth/auth_properties.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="auth__session_8h" kindref="compound">iceberg/catalog/rest/auth/auth_session.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="oauth2__util_8h" kindref="compound">iceberg/catalog/rest/auth/oauth2_util.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="http__client_8h" kindref="compound">iceberg/catalog/rest/http_client.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="catalog_2rest_2json__serde__internal_8h" kindref="compound">iceberg/catalog/rest/json_serde_internal.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/json_serde_internal.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::rest::auth<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal">Result&lt;OAuthTokenResponse&gt;<sp/>ParseTokenResponse(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>str)<sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>ICEBERG_ASSIGN_OR_RAISE(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>json,<sp/>iceberg::FromJsonString(str));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>iceberg::rest::FromJson&lt;OAuthTokenResponse&gt;(json);</highlight></codeline>
+<codeline lineno="46"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::Test<sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref><sp/>client_{{}};</highlight></codeline>
+<codeline lineno="53"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>loading<sp/>NoopAuthManager<sp/>with<sp/>explicit<sp/>&quot;none&quot;<sp/>auth<sp/>type</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal">TEST_F(<ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagerTest" kindref="compound">AuthManagerTest</ref>,<sp/>LoadNoopAuthManagerExplicit)<sp/>{</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;none&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>EXPECT_TRUE(headers.empty());</highlight></codeline>
+<codeline lineno="69"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>that<sp/>NoopAuthManager<sp/>is<sp/>inferred<sp/>when<sp/>no<sp/>auth<sp/>properties<sp/>are<sp/>set</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>LoadNoopAuthManagerInferred)<sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>{});</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>that<sp/>auth<sp/>type<sp/>is<sp/>case-insensitive</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>AuthTypeCaseInsensitive)<sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>auth_type<sp/>:<sp/>{</highlight><highlight class="stringliteral">&quot;NONE&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;None&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;NoNe&quot;</highlight><highlight class="normal">})<sp/>{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/>auth_type}};</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_THAT(<ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties),<sp/>IsOk())</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Failed<sp/>for<sp/>auth<sp/>type:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>auth_type;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>that<sp/>unknown<sp/>auth<sp/>type<sp/>returns<sp/>InvalidArgument</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>UnknownAuthTypeReturnsInvalidArgument)<sp/>{</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;unknown-auth-type&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Unknown<sp/>authentication<sp/>type&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="95"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>loading<sp/>BasicAuthManager<sp/>with<sp/>valid<sp/>credentials</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>LoadBasicAuthManager)<sp/>{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;basic&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kBasicUsername,<sp/></highlight><highlight class="stringliteral">&quot;admin&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kBasicPassword,<sp/></highlight><highlight class="stringliteral">&quot;secret&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>base64(&quot;admin:secret&quot;)<sp/>==<sp/>&quot;YWRtaW46c2VjcmV0&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/>EXPECT_EQ(headers[</highlight><highlight class="stringliteral">&quot;Authorization&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;Basic<sp/>YWRtaW46c2VjcmV0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>BasicAuthManager<sp/>is<sp/>case-insensitive<sp/>for<sp/>auth<sp/>type</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>BasicAuthTypeCaseInsensitive)<sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>auth_type<sp/>:<sp/>{</highlight><highlight class="stringliteral">&quot;BASIC&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Basic&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;bAsIc&quot;</highlight><highlight class="normal">})<sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/>auth_type},</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kBasicUsername,<sp/></highlight><highlight class="stringliteral">&quot;user&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kBasicPassword,<sp/></highlight><highlight class="stringliteral">&quot;pass&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk())<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Failed<sp/>for<sp/>auth<sp/>type:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>auth_type;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk())<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Failed<sp/>for<sp/>auth<sp/>type:<sp/>&quot;</highlight><highlight class="normal"><sp/>&lt;&lt;<sp/>auth_type;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>base64(&quot;user:pass&quot;)<sp/>==<sp/>&quot;dXNlcjpwYXNz&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_EQ(headers[</highlight><highlight class="stringliteral">&quot;Authorization&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;Basic<sp/>dXNlcjpwYXNz&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>BasicAuthManager<sp/>fails<sp/>when<sp/>username<sp/>is<sp/>missing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>BasicAuthMissingUsername)<sp/>{</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;basic&quot;</highlight><highlight class="normal">},<sp/>{AuthProperties::kBasicPassword,<sp/></highlight><highlight class="stringliteral">&quot;secret&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Missing<sp/>required<sp/>property&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="147"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>BasicAuthManager<sp/>fails<sp/>when<sp/>password<sp/>is<sp/>missing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>BasicAuthMissingPassword)<sp/>{</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;basic&quot;</highlight><highlight class="normal">},<sp/>{AuthProperties::kBasicUsername,<sp/></highlight><highlight class="stringliteral">&quot;admin&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Missing<sp/>required<sp/>property&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="160"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>BasicAuthManager<sp/>handles<sp/>special<sp/>characters<sp/>in<sp/>credentials</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>BasicAuthSpecialCharacters)<sp/>{</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;basic&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kBasicUsername,<sp/></highlight><highlight class="stringliteral">&quot;user@domain.com&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kBasicPassword,<sp/></highlight><highlight class="stringliteral">&quot;p@ss:w0rd!&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>base64(&quot;user@domain.com:p@ss:w0rd!&quot;)<sp/>==<sp/>&quot;dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE=&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/>EXPECT_EQ(headers[</highlight><highlight class="stringliteral">&quot;Authorization&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;Basic<sp/>dXNlckBkb21haW4uY29tOnBAc3M6dzByZCE=&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>custom<sp/>auth<sp/>manager<sp/>registration</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>RegisterCustomAuthManager)<sp/>{</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acfaeccbee99934a746eb3d9ca3cfd4b6" kindref="member">AuthManagers::Register</ref>(</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;custom&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>[]([[maybe_unused]]<sp/>std::string_view<sp/>name,</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>[[maybe_unused]]<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>props)</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-&gt;<sp/>Result&lt;std::unique_ptr&lt;AuthManager&gt;&gt;<sp/>{</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">CustomAuthManager<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>AuthManager<sp/>{</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Result&lt;std::shared_ptr&lt;AuthSession&gt;&gt;<sp/>CatalogSession(</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>HttpClient&amp;,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;)</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>AuthSession::MakeDefault({{</highlight><highlight class="stringliteral">&quot;X-Custom-Auth&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;custom-value&quot;</highlight><highlight class="normal">}});</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;CustomAuthManager&gt;();</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;custom&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/>EXPECT_EQ(headers[</highlight><highlight class="stringliteral">&quot;X-Custom-Auth&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;custom-value&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuth2<sp/>with<sp/>static<sp/>token</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuth2StaticToken)<sp/>{</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;oauth2&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kToken.key(),<sp/></highlight><highlight class="stringliteral">&quot;my-static-token&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/>EXPECT_EQ(headers[</highlight><highlight class="stringliteral">&quot;Authorization&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;Bearer<sp/>my-static-token&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuth2<sp/>type<sp/>is<sp/>inferred<sp/>from<sp/>token<sp/>property</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuth2InferredFromToken)<sp/>{</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kToken.key(),<sp/></highlight><highlight class="stringliteral">&quot;inferred-token&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/>EXPECT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/>EXPECT_EQ(headers[</highlight><highlight class="stringliteral">&quot;Authorization&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;Bearer<sp/>inferred-token&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="245"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuth2<sp/>returns<sp/>unauthenticated<sp/>session<sp/>when<sp/>neither<sp/>token<sp/>nor<sp/>credential<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight><highlight class="comment">//<sp/>provided</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuth2MissingCredentials)<sp/>{</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;oauth2&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Session<sp/>should<sp/>have<sp/>no<sp/>auth<sp/>headers</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/>ASSERT_TRUE(session_result.value()-&gt;Authenticate(headers).has_value());</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/>EXPECT_EQ(headers.find(</highlight><highlight class="stringliteral">&quot;Authorization&quot;</highlight><highlight class="normal">),<sp/>headers.end());</highlight></codeline>
+<codeline lineno="264"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>that<sp/>when<sp/>both<sp/>token<sp/>and<sp/>credential<sp/>are<sp/>provided,<sp/>token<sp/>takes<sp/>priority</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight><highlight class="comment">//<sp/>in<sp/>CatalogSession<sp/>(without<sp/>a<sp/>prior<sp/>InitSession<sp/>call)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="268"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuth2TokenTakesPriorityOverCredential)<sp/>{</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kAuthType,<sp/></highlight><highlight class="stringliteral">&quot;oauth2&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kCredential.key(),<sp/></highlight><highlight class="stringliteral">&quot;secret-only&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{AuthProperties::kToken.key(),<sp/></highlight><highlight class="stringliteral">&quot;my-static-token&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight><highlight class="stringliteral">&quot;uri&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;http://localhost:8181&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"></highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>manager_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers_1acaf2bfb6af497847780339b64927ae38" kindref="member">AuthManagers::Load</ref>(</highlight><highlight class="stringliteral">&quot;test-catalog&quot;</highlight><highlight class="normal">,<sp/>properties);</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/>ASSERT_THAT(manager_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"></highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>session_result<sp/>=<sp/>manager_result.value()-&gt;CatalogSession(client_,<sp/>properties);</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"></highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>headers;</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/>ASSERT_THAT(session_result.value()-&gt;Authenticate(headers),<sp/>IsOk());</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/>EXPECT_EQ(headers[</highlight><highlight class="stringliteral">&quot;Authorization&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;Bearer<sp/>my-static-token&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="285"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuthTokenResponse<sp/>JSON<sp/>parsing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="288"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuthTokenResponseParsing)<sp/>{</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/>std::string<sp/>json<sp/>=<sp/>R</highlight><highlight class="stringliteral">&quot;({</highlight></codeline>
+<codeline lineno="290"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;access_token&quot;:<sp/>&quot;test-access-token&quot;,</highlight></codeline>
+<codeline lineno="291"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;token_type&quot;:<sp/>&quot;bearer&quot;,</highlight></codeline>
+<codeline lineno="292"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;expires_in&quot;:<sp/>3600,</highlight></codeline>
+<codeline lineno="293"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;issued_token_type&quot;:<sp/>&quot;urn:ietf:params:oauth:token-type:access_token&quot;,</highlight></codeline>
+<codeline lineno="294"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;refresh_token&quot;:<sp/>&quot;test-refresh-token&quot;,</highlight></codeline>
+<codeline lineno="295"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;scope&quot;:<sp/>&quot;catalog&quot;</highlight></codeline>
+<codeline lineno="296"><highlight class="stringliteral"><sp/><sp/>})&quot;;</highlight></codeline>
+<codeline lineno="297"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="298"><highlight class="stringliteral"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>ParseTokenResponse(json);</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;access_token,<sp/></highlight><highlight class="stringliteral">&quot;test-access-token&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;token_type,<sp/></highlight><highlight class="stringliteral">&quot;bearer&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/>ASSERT_TRUE(result-&gt;expires_in_secs.has_value());</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;expires_in_secs.value(),<sp/>3600);</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;issued_token_type,<sp/></highlight><highlight class="stringliteral">&quot;urn:ietf:params:oauth:token-type:access_token&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;refresh_token,<sp/></highlight><highlight class="stringliteral">&quot;test-refresh-token&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;scope,<sp/></highlight><highlight class="stringliteral">&quot;catalog&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="307"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuthTokenResponse<sp/>parsing<sp/>with<sp/>minimal<sp/>fields</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuthTokenResponseMinimal)<sp/>{</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/>std::string<sp/>json<sp/>=<sp/>R</highlight><highlight class="stringliteral">&quot;({</highlight></codeline>
+<codeline lineno="312"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;access_token&quot;:<sp/>&quot;token123&quot;,</highlight></codeline>
+<codeline lineno="313"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;token_type&quot;:<sp/>&quot;Bearer&quot;</highlight></codeline>
+<codeline lineno="314"><highlight class="stringliteral"><sp/><sp/>})&quot;;</highlight></codeline>
+<codeline lineno="315"><highlight class="stringliteral"></highlight></codeline>
+<codeline lineno="316"><highlight class="stringliteral"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>ParseTokenResponse(json);</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;access_token,<sp/></highlight><highlight class="stringliteral">&quot;token123&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;token_type,<sp/></highlight><highlight class="stringliteral">&quot;Bearer&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/>EXPECT_FALSE(result-&gt;expires_in_secs.has_value());</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/>EXPECT_TRUE(result-&gt;issued_token_type.empty());</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/>EXPECT_TRUE(result-&gt;refresh_token.empty());</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/>EXPECT_TRUE(result-&gt;scope.empty());</highlight></codeline>
+<codeline lineno="324"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"></highlight></codeline>
+<codeline lineno="326"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuthTokenResponse<sp/>validation<sp/>fails<sp/>when<sp/>access_token<sp/>is<sp/>missing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="327"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuthTokenResponseMissingAccessToken)<sp/>{</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/>std::string<sp/>json<sp/>=<sp/>R</highlight><highlight class="stringliteral">&quot;({&quot;token_type&quot;:<sp/>&quot;bearer&quot;})&quot;;</highlight></codeline>
+<codeline lineno="329"><highlight class="stringliteral"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>ParseTokenResponse(json);</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>::testing::Not(IsOk()));</highlight></codeline>
+<codeline lineno="331"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"></highlight></codeline>
+<codeline lineno="333"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuthTokenResponse<sp/>validation<sp/>fails<sp/>when<sp/>token_type<sp/>is<sp/>missing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuthTokenResponseMissingTokenType)<sp/>{</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/>std::string<sp/>json<sp/>=<sp/>R</highlight><highlight class="stringliteral">&quot;({&quot;access_token&quot;:<sp/>&quot;token123&quot;})&quot;;</highlight></codeline>
+<codeline lineno="336"><highlight class="stringliteral"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>ParseTokenResponse(json);</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>::testing::Not(IsOk()));</highlight></codeline>
+<codeline lineno="338"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"></highlight></codeline>
+<codeline lineno="340"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuthTokenResponse<sp/>validation<sp/>fails<sp/>for<sp/>unsupported<sp/>token_type</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="341"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuthTokenResponseUnsupportedTokenType)<sp/>{</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/>std::string<sp/>json<sp/>=<sp/>R</highlight><highlight class="stringliteral">&quot;({</highlight></codeline>
+<codeline lineno="343"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;access_token&quot;:<sp/>&quot;token123&quot;,</highlight></codeline>
+<codeline lineno="344"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;token_type&quot;:<sp/>&quot;mac&quot;</highlight></codeline>
+<codeline lineno="345"><highlight class="stringliteral"><sp/><sp/>})&quot;;</highlight></codeline>
+<codeline lineno="346"><highlight class="stringliteral"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>ParseTokenResponse(json);</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>::testing::Not(IsOk()));</highlight></codeline>
+<codeline lineno="348"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"></highlight></codeline>
+<codeline lineno="350"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Verifies<sp/>OAuthTokenResponse<sp/>accepts<sp/>N_A<sp/>token<sp/>type</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="351"><highlight class="normal">TEST_F(AuthManagerTest,<sp/>OAuthTokenResponseNATokenType)<sp/>{</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/>std::string<sp/>json<sp/>=<sp/>R</highlight><highlight class="stringliteral">&quot;({</highlight></codeline>
+<codeline lineno="353"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;access_token&quot;:<sp/>&quot;token123&quot;,</highlight></codeline>
+<codeline lineno="354"><highlight class="stringliteral"><sp/><sp/><sp/><sp/>&quot;token_type&quot;:<sp/>&quot;N_A&quot;</highlight></codeline>
+<codeline lineno="355"><highlight class="stringliteral"><sp/><sp/>})&quot;;</highlight></codeline>
+<codeline lineno="356"><highlight class="stringliteral"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>ParseTokenResponse(json);</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/>ASSERT_THAT(result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;token_type,<sp/></highlight><highlight class="stringliteral">&quot;N_A&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="359"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"></highlight></codeline>
+<codeline lineno="361"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest::auth</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/auth_manager_test.cc"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1puffin_1_1StandardPuffinProperties" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::puffin::StandardPuffinProperties</compoundname>
+    <includes refid="file__metadata_8h" local="no">file_metadata.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1StandardPuffinProperties_1a9a1e50e04e551d463d667b5d3bc0bebf" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::puffin::StandardPuffinProperties::kCreatedBy</definition>
+        <argsstring></argsstring>
+        <name>kCreatedBy</name>
+        <qualifiedname>iceberg::puffin::StandardPuffinProperties::kCreatedBy</qualifiedname>
+        <initializer>= &quot;created-by&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Human-readable identification of the application writing the file, along with its version. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="66" column="37" bodyfile="iceberg/puffin/file_metadata.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Standard file-level properties for Puffin files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::puffin::StandardPuffinProperties</label>
+        <link refid="structiceberg_1_1puffin_1_1StandardPuffinProperties"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kCreatedBy</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string_view</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/puffin/file_metadata.h" line="63" column="1" bodyfile="iceberg/puffin/file_metadata.h" bodystart="63" bodyend="67"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1puffin_1_1StandardPuffinProperties_1a9a1e50e04e551d463d667b5d3bc0bebf" prot="public" virt="non-virtual"><scope>iceberg::puffin::StandardPuffinProperties</scope><name>kCreatedBy</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ExpressionJsonRoundTripParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ExpressionJsonRoundTripParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ExpressionJsonRoundTripParam_1ad0150ea6cac09a5a6eccebc5ba15093c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ExpressionJsonRoundTripParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::ExpressionJsonRoundTripParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="42" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ExpressionJsonRoundTripParam_1a243960a9593aa21048faed8368dd91ef" prot="public" static="no" mutable="no">
+        <type>nlohmann::json</type>
+        <definition>nlohmann::json iceberg::ExpressionJsonRoundTripParam::json</definition>
+        <argsstring></argsstring>
+        <name>json</name>
+        <qualifiedname>iceberg::ExpressionJsonRoundTripParam::json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="43" column="18" bodyfile="iceberg/test/expression_json_test.cc" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ExpressionJsonRoundTripParam_1a75dc182d99629f23e7530d28abda15a5" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+        <definition>Expression::Operation iceberg::ExpressionJsonRoundTripParam::expected_op</definition>
+        <argsstring></argsstring>
+        <name>expected_op</name>
+        <qualifiedname>iceberg::ExpressionJsonRoundTripParam::expected_op</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="44" column="25" bodyfile="iceberg/test/expression_json_test.cc" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ExpressionJsonRoundTripParam</label>
+        <link refid="structiceberg_1_1ExpressionJsonRoundTripParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="41" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="41" bodyend="45"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ExpressionJsonRoundTripParam_1a75dc182d99629f23e7530d28abda15a5" prot="public" virt="non-virtual"><scope>iceberg::ExpressionJsonRoundTripParam</scope><name>expected_op</name></member>
+      <member refid="structiceberg_1_1ExpressionJsonRoundTripParam_1a243960a9593aa21048faed8368dd91ef" prot="public" virt="non-virtual"><scope>iceberg::ExpressionJsonRoundTripParam</scope><name>json</name></member>
+      <member refid="structiceberg_1_1ExpressionJsonRoundTripParam_1ad0150ea6cac09a5a6eccebc5ba15093c" prot="public" virt="non-virtual"><scope>iceberg::ExpressionJsonRoundTripParam</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
