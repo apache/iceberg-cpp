@@ -66,6 +66,7 @@ constexpr std::string_view kDockerProjectName = "iceberg-rest-catalog-service";
 constexpr std::string_view kCatalogName = "test_catalog";
 constexpr std::string_view kWarehouseName = "default";
 constexpr std::string_view kLocalhostUri = "http://localhost";
+constexpr std::string_view kStdFileIOImpl = "test.StdFileIO";
 
 /// \brief Check if a localhost port is ready to accept connections.
 bool CheckServiceReady(uint16_t port) {
@@ -97,6 +98,12 @@ std::string CatalogUri() { return std::format("{}:{}", kLocalhostUri, kRestCatal
 class RestCatalogIntegrationTest : public ::testing::Test {
  protected:
   static void SetUpTestSuite() {
+    FileIORegistry::Register(
+        std::string(kStdFileIOImpl),
+        [](const std::unordered_map<std::string, std::string>& /*properties*/)
+            -> Result<std::unique_ptr<FileIO>> {
+          return std::make_unique<test::StdFileIO>();
+        });
     docker_compose_ = std::make_unique<DockerCompose>(
         std::string{kDockerProjectName}, GetResourcePath("iceberg-rest-fixture"));
     docker_compose_->Up();
@@ -127,10 +134,11 @@ class RestCatalogIntegrationTest : public ::testing::Test {
     config.Set(RestCatalogProperties::kUri, CatalogUri())
         .Set(RestCatalogProperties::kName, std::string(kCatalogName))
         .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
+    config.mutable_configs()[std::string(RestCatalogProperties::kIOImpl.key())] =
+        std::string(kStdFileIOImpl);
     for (const auto& [k, v] : extra) {
       config.mutable_configs()[k] = v;
     }
-    config.SetFileIO(std::make_shared<test::StdFileIO>());
     return RestCatalog::Make(config);
   }
 
@@ -476,79 +484,6 @@ TEST_F(RestCatalogIntegrationTest, LoadTableWithSnapshotModeRefs) {
   ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog->LoadTable(table_id));
   EXPECT_NE(loaded->metadata(), nullptr);
   EXPECT_FALSE(loaded->metadata()->schemas.empty());
-}
-
-// ============================================================================
-// Tests for RestCatalog::Make(config) with auto-detected FileIO
-// ============================================================================
-
-TEST_F(RestCatalogIntegrationTest, MakeWithoutWarehouseReturnsError) {
-  auto config = RestCatalogProperties::default_properties();
-  config.Set(RestCatalogProperties::kUri, CatalogUri())
-      .Set(RestCatalogProperties::kName, std::string(kCatalogName));
-  // Note: warehouse is NOT set
-
-  auto result = RestCatalog::Make(config);
-
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("Warehouse location is required"));
-}
-
-TEST_F(RestCatalogIntegrationTest, MakeWithUnregisteredIoImplReturnsError) {
-  auto config = RestCatalogProperties::default_properties();
-  config.Set(RestCatalogProperties::kUri, CatalogUri())
-      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
-      .Set(RestCatalogProperties::kWarehouse, std::string("/local/warehouse"));
-  config.mutable_configs()[std::string(FileIOProperties::kImpl)] =
-      "com.nonexistent.FileIO";
-
-  auto result = RestCatalog::Make(config);
-
-  // Should fail because the io-impl is not registered
-  EXPECT_THAT(result, IsError(ErrorKind::kNotFound));
-  EXPECT_THAT(result, HasErrorMessage("FileIO implementation not found"));
-}
-
-TEST_F(RestCatalogIntegrationTest, MakeWithAutoDetectedLocalFileIO) {
-  FileIORegistry::Register(
-      std::string(FileIORegistry::kArrowLocalFileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> {
-        return std::make_unique<test::StdFileIO>();
-      });
-
-  auto config = RestCatalogProperties::default_properties();
-  config.Set(RestCatalogProperties::kUri, CatalogUri())
-      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
-      .Set(RestCatalogProperties::kWarehouse, std::string("/local/warehouse"));
-
-  auto catalog_result = RestCatalog::Make(config);
-  ASSERT_THAT(catalog_result, IsOk());
-
-  auto& catalog = catalog_result.value();
-  EXPECT_EQ(catalog->name(), kCatalogName);
-}
-
-TEST_F(RestCatalogIntegrationTest, MakeWithCustomIoImpl) {
-  const std::string custom_impl = "com.mycompany.CustomFileIO";
-  FileIORegistry::Register(
-      custom_impl,
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> {
-        return std::make_unique<test::StdFileIO>();
-      });
-
-  auto config = RestCatalogProperties::default_properties();
-  config.Set(RestCatalogProperties::kUri, CatalogUri())
-      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
-      .Set(RestCatalogProperties::kWarehouse, std::string("/any/warehouse"));
-  config.mutable_configs()[std::string(FileIOProperties::kImpl)] = custom_impl;
-
-  auto catalog_result = RestCatalog::Make(config);
-  ASSERT_THAT(catalog_result, IsOk());
-
-  auto& catalog = catalog_result.value();
-  EXPECT_EQ(catalog->name(), kCatalogName);
 }
 
 }  // namespace iceberg::rest

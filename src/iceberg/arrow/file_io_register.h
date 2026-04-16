@@ -26,10 +26,9 @@
 
 namespace iceberg::arrow {
 
-/// \brief Register the Arrow local filesystem FileIO into the FileIORegistry.
-ICEBERG_BUNDLE_EXPORT void RegisterLocalFileIO();
-
-/// \brief Register the Arrow S3 FileIO into the FileIORegistry.
-ICEBERG_BUNDLE_EXPORT void RegisterS3FileIO();
+/// \brief Register built-in Arrow FileIO implementations into the FileIORegistry.
+///
+/// This operation is idempotent and safe to call multiple times.
+ICEBERG_BUNDLE_EXPORT void EnsureArrowFileIOsRegistered();
 
 }  // namespace iceberg::arrow

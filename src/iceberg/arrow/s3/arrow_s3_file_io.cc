@@ -18,15 +18,13 @@
  */
 
 #include <cstdlib>
-#include <mutex>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include <arrow/filesystem/filesystem.h>
-#ifdef ICEBERG_S3_ENABLED
+#if ICEBERG_S3_ENABLED
 #  include <arrow/filesystem/s3fs.h>
-#  define ICEBERG_ARROW_HAS_S3 1
-#else
-#  define ICEBERG_ARROW_HAS_S3 0
 #endif
 
 #include "iceberg/arrow/arrow_file_io.h"
@@ -40,55 +38,77 @@ namespace iceberg::arrow {
 
 namespace {
 
-#if ICEBERG_ARROW_HAS_S3
+#if ICEBERG_S3_ENABLED
+const std::string* FindProperty(
+    const std::unordered_map<std::string, std::string>& properties,
+    std::string_view key) {
+  auto it = properties.find(std::string(key));
+  return it == properties.end() ? nullptr : &it->second;
+}
+
+Result<std::optional<bool>> ParseOptionalBool(
+    const std::unordered_map<std::string, std::string>& properties,
+    std::string_view key) {
+  const auto* value = FindProperty(properties, key);
+  if (value == nullptr) {
+    return std::nullopt;
+  }
+  if (*value == "true") {
+    return true;
+  }
+  if (*value == "false") {
+    return false;
+  }
+  return InvalidArgument(R"("{}" must be "true" or "false")", key);
+}
+
 Status EnsureS3Initialized() {
-  static std::once_flag init_flag;
-  static ::arrow::Status init_status = ::arrow::Status::OK();
-  std::call_once(init_flag, []() {
+  static const ::arrow::Status init_status = []() {
     auto options = ::arrow::fs::S3GlobalOptions::Defaults();
-    init_status = ::arrow::fs::InitializeS3(options);
-  });
+    return ::arrow::fs::InitializeS3(options);
+  }();
   if (!init_status.ok()) {
     return std::unexpected(Error{.kind = ::iceberg::arrow::ToErrorKind(init_status),
                                  .message = init_status.ToString()});
   }
   return {};
 }
+
 /// \brief Configure S3Options from a properties map.
 ///
 /// \param properties The configuration properties map.
 /// \return Configured S3Options.
 Result<::arrow::fs::S3Options> ConfigureS3Options(
     const std::unordered_map<std::string, std::string>& properties) {
-  ::arrow::fs::S3Options options;
+  auto options = ::arrow::fs::S3Options::Defaults();
 
   // Configure credentials
-  auto access_key_it = properties.find(std::string(S3Properties::kAccessKeyId));
-  auto secret_key_it = properties.find(std::string(S3Properties::kSecretAccessKey));
-  auto session_token_it = properties.find(std::string(S3Properties::kSessionToken));
+  const auto* access_key = FindProperty(properties, S3Properties::kAccessKeyId);
+  const auto* secret_key = FindProperty(properties, S3Properties::kSecretAccessKey);
+  const auto* session_token = FindProperty(properties, S3Properties::kSessionToken);
 
-  if (access_key_it != properties.end() && secret_key_it != properties.end()) {
-    if (session_token_it != properties.end()) {
-      options.ConfigureAccessKey(access_key_it->second, secret_key_it->second,
-                                 session_token_it->second);
+  if ((access_key == nullptr) != (secret_key == nullptr)) {
+    return InvalidArgument(
+        "S3 client access key ID and secret access key must be set at the same time");
+  }
+  if (access_key != nullptr) {
+    if (session_token != nullptr) {
+      options.ConfigureAccessKey(*access_key, *secret_key, *session_token);
     } else {
-      options.ConfigureAccessKey(access_key_it->second, secret_key_it->second);
+      options.ConfigureAccessKey(*access_key, *secret_key);
     }
-  } else {
-    // Use default credential chain (environment, instance profile, etc.)
-    options.ConfigureDefaultCredentials();
   }
 
   // Configure region
-  auto region_it = properties.find(std::string(S3Properties::kRegion));
-  if (region_it != properties.end()) {
-    options.region = region_it->second;
+  if (const auto* region = FindProperty(properties, S3Properties::kRegion);
+      region != nullptr) {
+    options.region = *region;
   }
 
   // Configure endpoint (for MinIO, LocalStack, etc.)
-  auto endpoint_it = properties.find(std::string(S3Properties::kEndpoint));
-  if (endpoint_it != properties.end()) {
-    options.endpoint_override = endpoint_it->second;
+  if (const auto* endpoint = FindProperty(properties, S3Properties::kEndpoint);
+      endpoint != nullptr) {
+    options.endpoint_override = *endpoint;
   } else {
     // Fall back to AWS standard environment variables for endpoint override
     const char* s3_endpoint_env = std::getenv("AWS_ENDPOINT_URL_S3");
@@ -102,14 +122,16 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     }
   }
 
-  auto path_style_it = properties.find(std::string(S3Properties::kPathStyleAccess));
-  if (path_style_it != properties.end() && path_style_it->second == "true") {
-    options.force_virtual_addressing = false;
+  ICEBERG_ASSIGN_OR_RAISE(const auto path_style_access,
+                          ParseOptionalBool(properties, S3Properties::kPathStyleAccess));
+  if (path_style_access.has_value()) {
+    options.force_virtual_addressing = !*path_style_access;
   }
 
   // Configure SSL
-  auto ssl_it = properties.find(std::string(S3Properties::kSslEnabled));
-  if (ssl_it != properties.end() && ssl_it->second == "false") {
+  ICEBERG_ASSIGN_OR_RAISE(const auto ssl_enabled,
+                          ParseOptionalBool(properties, S3Properties::kSslEnabled));
+  if (ssl_enabled.has_value() && !*ssl_enabled) {
     options.scheme = "http";
   }
 
@@ -136,9 +158,7 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
 
 Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::unordered_map<std::string, std::string>& properties) {
-#if !ICEBERG_ARROW_HAS_S3
-  return NotSupported("Arrow S3 support is not enabled");
-#else
+#if ICEBERG_S3_ENABLED
   ICEBERG_RETURN_UNEXPECTED(EnsureS3Initialized());
 
   // Configure S3 options from properties (uses default credentials if empty)
@@ -146,11 +166,13 @@ Result<std::unique_ptr<FileIO>> MakeS3FileIO(
   ICEBERG_ARROW_ASSIGN_OR_RETURN(auto fs, ::arrow::fs::S3FileSystem::Make(options));
 
   return std::make_unique<ArrowFileSystemFileIO>(std::move(fs));
+#else
+  return NotSupported("Arrow S3 support is not enabled");
 #endif
 }
 
 Status FinalizeS3() {
-#if ICEBERG_ARROW_HAS_S3
+#if ICEBERG_S3_ENABLED
   auto status = ::arrow::fs::FinalizeS3();
   ICEBERG_ARROW_RETURN_NOT_OK(status);
   return {};

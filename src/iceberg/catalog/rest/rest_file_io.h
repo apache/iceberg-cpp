@@ -19,30 +19,29 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
-#include <string>
 #include <string_view>
-#include <unordered_map>
 
+#include "iceberg/catalog/rest/catalog_properties.h"
+#include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/file_io.h"
-#include "iceberg/iceberg_export.h"
+#include "iceberg/file_io_registry.h"
 #include "iceberg/result.h"
 
-namespace iceberg {
+namespace iceberg::rest {
 
-class ICEBERG_EXPORT FileIOUtil {
- public:
-  /// \brief Detect FileIO registry key from URI scheme.
-  ///
-  /// Returns "s3" for "s3://..." URIs, "local" otherwise.
-  static std::string DetectFileIOName(std::string_view uri);
-
-  /// \brief Create a FileIO instance based on properties.
-  ///
-  /// Checks the "io-impl" property first; if not set, falls back to
-  /// detecting the scheme from the "warehouse" property.
-  static Result<std::unique_ptr<FileIO>> CreateFileIO(
-      const std::unordered_map<std::string, std::string>& properties);
+enum class BuiltinFileIOKind : uint8_t {
+  kArrowLocal,
+  kArrowS3,
 };
 
-}  // namespace iceberg
+ICEBERG_REST_EXPORT Result<BuiltinFileIOKind> DetectBuiltinFileIO(
+    std::string_view location);
+
+ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
+
+ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
+    const RestCatalogProperties& config);
+
+}  // namespace iceberg::rest

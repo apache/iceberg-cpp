@@ -36,7 +36,7 @@ ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeLocalFileIO();
 /// \brief Create an S3 FileIO backed by Arrow's S3FileSystem.
 ///
 /// This function initializes the S3 subsystem if not already initialized (thread-safe).
-/// The S3 initialization is done once per process using std::call_once.
+/// The S3 initialization is cached once per process.
 ///
 /// \param properties Configuration properties for S3 access. See S3Properties
 ///        for available keys (credentials, region, endpoint, timeouts, etc.).
