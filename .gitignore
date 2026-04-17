@@ -42,8 +42,11 @@ cmake-build-release/
 AGENTS.md
 CLAUDE.md
 GEMINI.md
+.claude/
 .cursor/
 .gemini/
+.github/prompts/
 .kiro/
 my-skills/
+openspec/
 skills/
