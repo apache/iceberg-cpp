@@ -45,6 +45,7 @@ class ICEBERG_EXPORT UpdateLocation : public PendingUpdate {
   UpdateLocation& SetLocation(std::string_view location);
 
   Kind kind() const final { return Kind::kUpdateLocation; }
+  bool IsRetryable() const override { return true; }
 
   /// \brief Apply the pending changes and return the new location.
   Result<std::string> Apply();

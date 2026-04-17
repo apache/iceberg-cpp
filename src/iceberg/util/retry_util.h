@@ -21,30 +21,33 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
+#include <optional>
 #include <random>
 #include <thread>
 #include <vector>
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
 
 /// \brief Configuration for retry behavior
-struct RetryConfig {
+struct ICEBERG_EXPORT RetryConfig {
   /// Maximum number of retry attempts (not including the first attempt)
   int32_t num_retries = 4;
   /// Minimum wait time between retries in milliseconds
   int32_t min_wait_ms = 100;
   /// Maximum wait time between retries in milliseconds
   int32_t max_wait_ms = 60 * 1000;  // 1 minute
-  /// Total maximum time for all retries in milliseconds
+  /// Total wall-clock time budget for retries, including backoff sleeps.
   int32_t total_timeout_ms = 30 * 60 * 1000;  // 30 minutes
   /// Exponential backoff scale factor
   double scale_factor = 2.0;
 };
 
 /// \brief Utility class for running tasks with retry logic
-class RetryRunner {
+class ICEBERG_EXPORT RetryRunner {
  public:
   /// \brief Construct a RetryRunner with the given configuration
   explicit RetryRunner(RetryConfig config = {}) : config_(std::move(config)) {}
@@ -92,9 +95,9 @@ class RetryRunner {
                              config_.num_retries);
     }
 
-    auto start_time = std::chrono::steady_clock::now();
+    const auto deadline = ComputeDeadline();
     int32_t attempt = 0;
-    int32_t max_attempts = config_.num_retries + 1;
+    const int32_t max_attempts = config_.num_retries + 1;
 
     while (true) {
       ++attempt;
@@ -107,28 +110,32 @@ class RetryRunner {
         return result;
       }
 
-      const auto& error = result.error();
-
-      auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                         std::chrono::steady_clock::now() - start_time)
-                         .count();
-
-      // total_timeout_ms <= 0 means no total timeout limit
-      bool timed_out = config_.total_timeout_ms > 0 && elapsed > config_.total_timeout_ms;
-      if (attempt >= max_attempts || timed_out) {
+      if (!CanRetry(result.error().kind, attempt, max_attempts, deadline)) {
         return result;
       }
 
-      if (!ShouldRetry(error.kind)) {
+      if (!WaitForNextAttempt(attempt, deadline)) {
         return result;
       }
-
-      int32_t delay_ms = CalculateDelay(attempt);
-      std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
     }
   }
 
  private:
+  using Clock = std::chrono::steady_clock;
+  using Duration = std::chrono::milliseconds;
+  using TimePoint = Clock::time_point;
+
+  std::optional<TimePoint> ComputeDeadline() const {
+    if (config_.total_timeout_ms <= 0) {
+      return std::nullopt;
+    }
+    return Clock::now() + Duration(config_.total_timeout_ms);
+  }
+
+  bool HasTimedOut(const std::optional<TimePoint>& deadline) const {
+    return deadline.has_value() && Clock::now() >= *deadline;
+  }
+
   /// \brief Check if the given error kind should trigger a retry.
   bool ShouldRetry(ErrorKind kind) const {
     if (!only_retry_on_.empty()) {
@@ -142,6 +149,42 @@ class RetryRunner {
     }
 
     return true;
+  }
+
+  bool CanRetry(ErrorKind kind, int32_t attempt, int32_t max_attempts,
+                const std::optional<TimePoint>& deadline) const {
+    return attempt < max_attempts && !HasTimedOut(deadline) && ShouldRetry(kind);
+  }
+
+  std::optional<Duration> RetryDelayWithinBudget(
+      int32_t attempt, const std::optional<TimePoint>& deadline) const {
+    const auto delay = Duration(CalculateDelay(attempt));
+    if (!deadline.has_value()) {
+      return delay;
+    }
+
+    const auto now = Clock::now();
+    if (now >= *deadline) {
+      return std::nullopt;
+    }
+
+    const auto remaining = std::chrono::duration_cast<Duration>(*deadline - now);
+    if (remaining <= Duration::zero() || delay >= remaining) {
+      return std::nullopt;
+    }
+
+    return delay;
+  }
+
+  bool WaitForNextAttempt(int32_t attempt,
+                          const std::optional<TimePoint>& deadline) const {
+    const auto delay = RetryDelayWithinBudget(attempt, deadline);
+    if (!delay.has_value()) {
+      return false;
+    }
+
+    std::this_thread::sleep_for(*delay);
+    return !HasTimedOut(deadline);
   }
 
   /// \brief Calculate delay with exponential backoff and jitter
@@ -164,8 +207,10 @@ class RetryRunner {
 };
 
 /// \brief Helper function to create a RetryRunner with table commit configuration
-inline RetryRunner MakeCommitRetryRunner(int32_t num_retries, int32_t min_wait_ms,
-                                         int32_t max_wait_ms, int32_t total_timeout_ms) {
+ICEBERG_EXPORT inline RetryRunner MakeCommitRetryRunner(int32_t num_retries,
+                                                        int32_t min_wait_ms,
+                                                        int32_t max_wait_ms,
+                                                        int32_t total_timeout_ms) {
   return RetryRunner(RetryConfig{.num_retries = num_retries,
                                  .min_wait_ms = min_wait_ms,
                                  .max_wait_ms = max_wait_ms,

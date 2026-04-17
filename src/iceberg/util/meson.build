@@ -34,6 +34,7 @@ install_headers(
         'macros.h',
         'partition_value_util.h',
         'property_util.h',
+        'retry_util.h',
         'string_util.h',
         'temporal_util.h',
         'timepoint.h',

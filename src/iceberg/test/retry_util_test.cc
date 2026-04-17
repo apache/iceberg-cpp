@@ -19,6 +19,9 @@
 
 #include "iceberg/util/retry_util.h"
 
+#include <chrono>
+#include <thread>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/result.h"
@@ -26,9 +29,6 @@
 
 namespace iceberg {
 
-// --------------------------------------------------------------------------
-// Test: Successful on first attempt — no retries
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, SuccessOnFirstAttempt) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -50,9 +50,6 @@ TEST(RetryRunnerTest, SuccessOnFirstAttempt) {
   EXPECT_EQ(attempts, 1);
 }
 
-// --------------------------------------------------------------------------
-// Test: Retry once then succeed
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, RetryOnceThenSucceed) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -77,9 +74,6 @@ TEST(RetryRunnerTest, RetryOnceThenSucceed) {
   EXPECT_EQ(attempts, 2);
 }
 
-// --------------------------------------------------------------------------
-// Test: Max attempts exhausted
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, MaxAttemptsExhausted) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -96,13 +90,10 @@ TEST(RetryRunnerTest, MaxAttemptsExhausted) {
                         &attempts);
 
   EXPECT_THAT(result, IsError(ErrorKind::kCommitFailed));
-  EXPECT_EQ(call_count, 3);  // 1 initial + 2 retries
+  EXPECT_EQ(call_count, 3);
   EXPECT_EQ(attempts, 3);
 }
 
-// --------------------------------------------------------------------------
-// Test: OnlyRetryOn filters correctly
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, OnlyRetryOnFilter) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -115,20 +106,15 @@ TEST(RetryRunnerTest, OnlyRetryOnFilter) {
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
-                          // Return a non-retryable error
                           return ValidationFailed("schema conflict");
                         },
                         &attempts);
 
-  // Should NOT retry because ValidationFailed is not in the retry list
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_EQ(call_count, 1);
   EXPECT_EQ(attempts, 1);
 }
 
-// --------------------------------------------------------------------------
-// Test: OnlyRetryOn retries matching error
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, OnlyRetryOnMatchingError) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -150,13 +136,10 @@ TEST(RetryRunnerTest, OnlyRetryOnMatchingError) {
 
   EXPECT_THAT(result, IsOk());
   EXPECT_EQ(*result, 100);
-  EXPECT_EQ(call_count, 3);  // 2 failures + 1 success
+  EXPECT_EQ(call_count, 3);
   EXPECT_EQ(attempts, 3);
 }
 
-// --------------------------------------------------------------------------
-// Test: StopRetryOn stops on matching error
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, StopRetryOnMatchingError) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -178,9 +161,6 @@ TEST(RetryRunnerTest, StopRetryOnMatchingError) {
   EXPECT_EQ(attempts, 1);
 }
 
-// --------------------------------------------------------------------------
-// Test: Zero retries means only one attempt
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, ZeroRetries) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -201,19 +181,40 @@ TEST(RetryRunnerTest, ZeroRetries) {
   EXPECT_EQ(attempts, 1);
 }
 
-// --------------------------------------------------------------------------
-// Test: MakeCommitRetryRunner has correct configuration
-// --------------------------------------------------------------------------
+TEST(RetryRunnerTest, TotalTimeoutStopsBeforeStartingAnotherAttempt) {
+  int call_count = 0;
+  int32_t attempts = 0;
+
+  auto result = RetryRunner(RetryConfig{.num_retries = 3,
+                                        .min_wait_ms = 20,
+                                        .max_wait_ms = 20,
+                                        .total_timeout_ms = 15})
+                    .Run(
+                        [&]() -> Result<int> {
+                          ++call_count;
+                          // The first failure consumes most of the 15 ms budget, so the
+                          // next 20 ms backoff should prevent another attempt from
+                          // starting.
+                          if (call_count == 1) {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                          }
+                          return CommitFailed("retry budget exhausted");
+                        },
+                        &attempts);
+
+  EXPECT_THAT(result, IsError(ErrorKind::kCommitFailed));
+  EXPECT_EQ(call_count, 1);
+  EXPECT_EQ(attempts, 1);
+}
+
 TEST(RetryRunnerTest, MakeCommitRetryRunnerConfig) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  // MakeCommitRetryRunner should only retry on kCommitFailed
   auto result = MakeCommitRetryRunner(2, 1, 10, 5000)
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
-                          // ValidationFailed should not be retried
                           return ValidationFailed("not retryable");
                         },
                         &attempts);
@@ -223,9 +224,6 @@ TEST(RetryRunnerTest, MakeCommitRetryRunnerConfig) {
   EXPECT_EQ(attempts, 1);
 }
 
-// --------------------------------------------------------------------------
-// Test: MakeCommitRetryRunner retries CommitFailed
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, MakeCommitRetryRunnerRetriesCommitFailed) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -247,9 +245,6 @@ TEST(RetryRunnerTest, MakeCommitRetryRunnerRetriesCommitFailed) {
   EXPECT_EQ(attempts, 3);
 }
 
-// --------------------------------------------------------------------------
-// Test: OnlyRetryOn with multiple error kinds
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, OnlyRetryOnMultipleErrorKinds) {
   int call_count = 0;
   int32_t attempts = 0;
@@ -279,9 +274,6 @@ TEST(RetryRunnerTest, OnlyRetryOnMultipleErrorKinds) {
   EXPECT_EQ(attempts, 3);
 }
 
-// --------------------------------------------------------------------------
-// Test: Default retry (no filter) retries all errors
-// --------------------------------------------------------------------------
 TEST(RetryRunnerTest, DefaultRetryAllErrors) {
   int call_count = 0;
   int32_t attempts = 0;

@@ -100,6 +100,11 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdatePartitionSpec; }
 
+  /// \brief Partition spec updates are not retryable.
+  ///
+  /// The update caches the current schema/spec state and may allocate or recycle
+  /// partition field IDs from that base. Replaying after a refresh can change the
+  /// intended transform bindings or field ID assignment semantics.
   bool IsRetryable() const override { return false; }
 
   struct ApplyResult {

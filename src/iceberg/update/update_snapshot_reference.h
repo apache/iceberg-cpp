@@ -135,6 +135,10 @@ class ICEBERG_EXPORT UpdateSnapshotReference : public PendingUpdate {
   Kind kind() const final { return Kind::kUpdateSnapshotReference; }
 
   /// \brief Snapshot reference updates are not retryable.
+  ///
+  /// The update snapshots the ref map at construction time and validates rename or
+  /// fast-forward operations against that captured state. Replaying after a refresh can
+  /// clobber or reinterpret concurrent ref changes.
   bool IsRetryable() const override { return false; }
 
   struct ApplyResult {

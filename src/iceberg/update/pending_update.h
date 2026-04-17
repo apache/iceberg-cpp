@@ -58,7 +58,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
   virtual Kind kind() const = 0;
 
   /// \brief Whether this update can be retried after a commit conflict.
-  virtual bool IsRetryable() const { return true; }
+  virtual bool IsRetryable() const = 0;
 
   /// \brief Apply the pending changes and commit.
   ///
