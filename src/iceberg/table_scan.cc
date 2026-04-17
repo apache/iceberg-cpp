@@ -19,8 +19,10 @@
 
 #include "iceberg/table_scan.h"
 
+#include <cstdint>
 #include <cstring>
 #include <iterator>
+#include <utility>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
@@ -814,8 +816,12 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
   std::unordered_set<int64_t> snapshot_ids;
   std::unordered_map<int64_t, int32_t> snapshot_ordinals;
   for (const auto& snapshot : changelog_snapshots) {
+    ICEBERG_PRECHECK(
+        std::cmp_less_equal(snapshot_ids.size(), std::numeric_limits<int32_t>::max()),
+        "Number of snapshots in changelog scan exceeds maximum supported");
     snapshot_ids.insert(snapshot.first->snapshot_id);
-    snapshot_ordinals.try_emplace(snapshot.first->snapshot_id, snapshot_ordinals.size());
+    snapshot_ordinals.try_emplace(snapshot.first->snapshot_id,
+                                  static_cast<int32_t>(snapshot_ordinals.size()));
   }
 
   std::vector<ManifestFile> data_manifests;
