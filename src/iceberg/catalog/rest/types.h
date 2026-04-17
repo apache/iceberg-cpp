@@ -28,9 +28,12 @@
 
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/expression/expression.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/macros.h"
 
@@ -293,6 +296,75 @@ struct ICEBERG_REST_EXPORT OAuthTokenResponse {
   Status Validate() const;
 
   bool operator==(const OAuthTokenResponse&) const = default;
+};
+
+/// \brief Request to initiate a server-side scan planning operation.
+struct ICEBERG_REST_EXPORT PlanTableScanRequest {
+  std::optional<int64_t> snapshot_id;
+  std::vector<std::string> select;
+  std::shared_ptr<Expression> filter;
+  bool case_sensitive = true;
+  bool use_snapshot_schema = false;
+  std::optional<int64_t> start_snapshot_id;
+  std::optional<int64_t> end_snapshot_id;
+  std::vector<std::string> statsFields;
+  std::optional<int64_t> min_rows_required;
+
+  Status Validate() const;
+
+  bool operator==(const PlanTableScanRequest&) const;
+};
+
+/// \brief Base response containing scan tasks and delete files returned by scan plan
+/// endpoints.
+struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
+  std::vector<std::string> plan_tasks;
+  std::vector<FileScanTask> file_scan_tasks;
+  std::vector<DataFile> delete_files;
+  // std::unordered_map<std::string, PartitionSpec> specsById;
+
+  Status Validate() const { return {}; };
+
+  bool operator==(const BaseScanTaskResponse&) const;
+};
+
+/// \brief Response from initiating a scan planning operation, including plan status and
+/// initial scan tasks.
+struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
+  std::string plan_status;
+  std::string plan_id;
+  // TODO(sandeepg): Add credentials.
+
+  Status Validate() const;
+
+  bool operator==(const PlanTableScanResponse&) const;
+};
+
+/// \brief Response from polling an asynchronous scan plan, including current status and
+/// available scan tasks.
+struct ICEBERG_REST_EXPORT FetchPlanningResultResponse : BaseScanTaskResponse {
+  std::string plan_status;
+  // TODO(sandeepg): Add credentials.
+
+  Status Validate() const;
+
+  bool operator==(const FetchPlanningResultResponse&) const;
+};
+
+/// \brief Request to fetch the scan tasks for a given plan task token.
+struct ICEBERG_REST_EXPORT FetchScanTasksRequest {
+  std::string planTask;
+
+  Status Validate() const;
+
+  bool operator==(const FetchScanTasksRequest&) const;
+};
+
+/// \brief Response containing the file scan tasks for a given plan task token.
+struct ICEBERG_REST_EXPORT FetchScanTasksResponse : BaseScanTaskResponse {
+  Status Validate() const;
+
+  bool operator==(const FetchScanTasksResponse&) const;
 };
 
 }  // namespace iceberg::rest
