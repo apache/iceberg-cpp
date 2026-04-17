@@ -464,11 +464,11 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
 /// \brief A base template class for incremental scans that read changes between
 /// snapshots, and return scan tasks of the specified type.
 template <typename ScanTaskType>
-class IncrementalScan : public TableScan {
+class ICEBERG_TEMPLATE_CLASS_EXPORT IncrementalScan : public TableScan {
  public:
   ~IncrementalScan() override = default;
 
-  virtual Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles() const = 0;
+  Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles() const;
 
  protected:
   virtual Result<std::vector<std::shared_ptr<ScanTaskType>>> PlanFiles(
@@ -476,12 +476,10 @@ class IncrementalScan : public TableScan {
       int64_t to_snapshot_id_inclusive) const = 0;
 
   using TableScan::TableScan;
-
-  // Allow the free function ResolvePlanFiles to access protected members.
-  template <typename T>
-  friend Result<std::vector<std::shared_ptr<T>>> ResolvePlanFiles(
-      const IncrementalScan<T>& scan);
 };
+
+extern template class ICEBERG_TEMPLATE_CLASS_EXPORT IncrementalScan<FileScanTask>;
+extern template class ICEBERG_TEMPLATE_CLASS_EXPORT IncrementalScan<ChangelogScanTask>;
 
 /// \brief A scan that reads data files added between snapshots (incremental appends).
 class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask> {
@@ -493,7 +491,7 @@ class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask
 
   ~IncrementalAppendScan() override = default;
 
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+  using IncrementalScan::PlanFiles;
 
  protected:
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles(
@@ -514,7 +512,7 @@ class ICEBERG_EXPORT IncrementalChangelogScan
 
   ~IncrementalChangelogScan() override = default;
 
-  Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanFiles() const override;
+  using IncrementalScan::PlanFiles;
 
  protected:
   Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanFiles(
