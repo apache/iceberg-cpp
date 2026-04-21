@@ -1440,7 +1440,7 @@ Status TableMetadataBuilder::Impl::RemoveSnapshots(
     if (ids_to_remove.contains(snapshot_id)) {
       snapshots_by_id_.erase(snapshot_id);
       snapshot_ids_to_remove.push_back(snapshot_id);
-      // TODO: Remove statistics metadata entries when a snapshot is expired.
+      // TODO(shangxinli): Remove statistics metadata entries when a snapshot is expired.
       // Until this is wired in, physical stats-file deletion is deferred in
       // ReachableFileCleanup::CleanFiles to keep metadata and physical files in sync.
       // ICEBERG_RETURN_UNEXPECTED(RemoveStatistics(snapshot_id));
