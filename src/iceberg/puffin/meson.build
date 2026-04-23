@@ -16,6 +16,12 @@
 # under the License.
 
 install_headers(
-    ['file_metadata.h', 'puffin_format.h', 'type_fwd.h'],
+    [
+        'file_metadata.h',
+        'puffin_format.h',
+        'puffin_reader.h',
+        'puffin_writer.h',
+        'type_fwd.h',
+    ],
     subdir: 'iceberg/puffin',
 )

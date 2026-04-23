@@ -103,7 +103,11 @@ iceberg_tests = {
     },
     'roaring_test': {'sources': files('roaring_test.cc')},
     'puffin_test': {
-        'sources': files('puffin_format_test.cc', 'puffin_json_test.cc'),
+        'sources': files(
+            'puffin_format_test.cc',
+            'puffin_json_test.cc',
+            'puffin_reader_writer_test.cc',
+        ),
     },
 }
 
