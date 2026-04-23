@@ -23,8 +23,10 @@
 /// Puffin file format constants and utilities.
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/puffin/file_metadata.h"
@@ -65,5 +67,13 @@ ICEBERG_DATA_EXPORT bool IsFlagSet(std::span<const uint8_t, 4> flags, PuffinFlag
 
 /// \brief Set a flag in the flags bytes.
 ICEBERG_DATA_EXPORT void SetFlag(std::span<uint8_t, 4> flags, PuffinFlag flag);
+
+/// \brief Compress data using the specified codec.
+ICEBERG_DATA_EXPORT Result<std::vector<std::byte>> Compress(
+    PuffinCompressionCodec codec, std::span<const std::byte> input);
+
+/// \brief Decompress data using the specified codec.
+ICEBERG_DATA_EXPORT Result<std::vector<std::byte>> Decompress(
+    PuffinCompressionCodec codec, std::span<const std::byte> input);
 
 }  // namespace iceberg::puffin
