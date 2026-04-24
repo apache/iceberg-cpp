@@ -19,6 +19,8 @@
 
 #include "iceberg/update/pending_update.h"
 
+#include "iceberg/result.h"
+#include "iceberg/table.h"
 #include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
 
@@ -33,16 +35,20 @@ Status PendingUpdate::Commit() {
   if (!ctx_->transaction) {
     // Table-created path: no transaction exists yet, create a temporary one.
     ICEBERG_ASSIGN_OR_RAISE(auto txn, Transaction::Make(ctx_));
-    Status status = txn->Apply(*this);
-    if (status.has_value()) {
-      auto commit_result = txn->Commit();
-      if (!commit_result.has_value()) {
-        status = std::unexpected(commit_result.error());
-      }
+    auto apply_status = txn->Apply(*this);
+    if (!apply_status.has_value()) {
+      std::ignore = Finalize(std::unexpected(apply_status.error()));
+      return apply_status;
     }
-    std::ignore =
-        Finalize(status.has_value() ? std::nullopt : std::make_optional(status.error()));
-    return status;
+
+    auto commit_result = txn->Commit();
+    if (!commit_result.has_value()) {
+      std::ignore = Finalize(std::unexpected(commit_result.error()));
+      return std::unexpected(commit_result.error());
+    }
+
+    std::ignore = Finalize(commit_result.value()->metadata().get());
+    return {};
   }
   auto txn = ctx_->transaction->lock();
   if (!txn) {
@@ -51,7 +57,8 @@ Status PendingUpdate::Commit() {
   return txn->Apply(*this);
 }
 
-Status PendingUpdate::Finalize([[maybe_unused]] std::optional<Error> commit_error) {
+Status PendingUpdate::Finalize(
+    [[maybe_unused]] Result<const TableMetadata*> commit_result) {
   return {};
 }
 

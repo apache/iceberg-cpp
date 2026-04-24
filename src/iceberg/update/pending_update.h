@@ -23,7 +23,6 @@
 /// API for table changes using builder pattern
 
 #include <memory>
-#include <optional>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -71,9 +70,10 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
   /// This method is called after the update is committed.
   /// Implementations should override this method to clean up any resources.
   ///
-  /// \param commit_error An optional error indicating whether the commit was successful
+  /// \param commit_result The committed table metadata when the commit succeeds, or the
+  /// commit error when it fails.
   /// \return Status indicating success or failure
-  virtual Status Finalize(std::optional<Error> commit_error);
+  virtual Status Finalize(Result<const TableMetadata*> commit_result);
 
   // Non-copyable, movable
   PendingUpdate(const PendingUpdate&) = delete;

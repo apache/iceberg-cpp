@@ -363,10 +363,13 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   auto commit_result =
       ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements, updates);
 
+  Result<const TableMetadata*> finalize_result =
+      commit_result.has_value()
+          ? Result<const TableMetadata*>(commit_result.value()->metadata().get())
+          : std::unexpected(commit_result.error());
+
   for (const auto& update : pending_updates_) {
-    std::ignore = update->Finalize(commit_result.has_value()
-                                       ? std::nullopt
-                                       : std::make_optional(commit_result.error()));
+    std::ignore = update->Finalize(finalize_result);
   }
 
   ICEBERG_RETURN_UNEXPECTED(commit_result);

@@ -297,9 +297,9 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
                      .stage_only = stage_only_};
 }
 
-Status SnapshotUpdate::Finalize(std::optional<Error> commit_error) {
-  if (commit_error.has_value()) {
-    if (commit_error->kind == ErrorKind::kCommitStateUnknown) {
+Status SnapshotUpdate::Finalize(Result<const TableMetadata*> commit_result) {
+  if (!commit_result.has_value()) {
+    if (commit_result.error().kind == ErrorKind::kCommitStateUnknown) {
       return {};
     }
     CleanAll();

@@ -75,6 +75,7 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
     std::vector<int64_t> snapshot_ids_to_remove;
     std::vector<int32_t> partition_spec_ids_to_remove;
     std::unordered_set<int32_t> schema_ids_to_remove;
+    std::shared_ptr<const TableMetadata> metadata_before_expiration;
   };
 
   /// \brief Expires a specific Snapshot identified by id.
@@ -150,9 +151,10 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// data files, and statistics files that are no longer referenced by any valid
   /// snapshot. The cleanup behavior is controlled by the CleanupLevel setting.
   ///
-  /// \param commit_error An optional error indicating whether the commit was successful
+  /// \param commit_result The committed table metadata when the commit succeeds, or the
+  /// commit error when it fails.
   /// \return Status indicating success or failure
-  Status Finalize(std::optional<Error> commit_error) override;
+  Status Finalize(Result<const TableMetadata*> commit_result) override;
 
  private:
   explicit ExpireSnapshots(std::shared_ptr<TransactionContext> ctx);

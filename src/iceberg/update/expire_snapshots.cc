@@ -33,6 +33,7 @@
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/statistics_file.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
@@ -54,9 +55,6 @@ Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
 }
 
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
-///
-/// Mirrors Java's FileCleanupStrategy: provides shared delete utilities while
-/// allowing different cleanup algorithms (ReachableFileCleanup, IncrementalFileCleanup).
 class FileCleanupStrategy {
  public:
   FileCleanupStrategy(std::shared_ptr<FileIO> file_io,
@@ -67,18 +65,17 @@ class FileCleanupStrategy {
 
   /// \brief Clean up files that are only reachable by expired snapshots.
   ///
-  /// \param metadata Table metadata before expiration (contains all snapshots).
+  /// \param metadata_before_expiration Table metadata before expiration.
+  /// \param metadata_after_expiration Table metadata after expiration.
   /// \param expired_snapshot_ids Snapshot IDs that were expired during this operation.
   /// \param level Controls which types of files are eligible for deletion.
-  virtual Status CleanFiles(const TableMetadata& metadata,
+  virtual Status CleanFiles(const TableMetadata& metadata_before_expiration,
+                            const TableMetadata& metadata_after_expiration,
                             const std::unordered_set<int64_t>& expired_snapshot_ids,
                             CleanupLevel level) = 0;
 
  protected:
-  /// \brief Delete a file, suppressing errors (best-effort).
-  ///
-  /// Uses the custom delete function if set, otherwise FileIO::DeleteFile.
-  /// Matches Java's suppressFailureWhenFinished behavior.
+  /// \brief Delete a single file
   void DeleteFile(const std::string& path) {
     try {
       if (delete_func_) {
@@ -87,9 +84,52 @@ class FileCleanupStrategy {
         std::ignore = file_io_->DeleteFile(path);
       }
     } catch (...) {
-      // Suppress all exceptions during file cleanup to match Java's
-      // suppressFailureWhenFinished behavior.
+      /// TODO(shangxinli): add retry
     }
+  }
+
+  /// TODO(shangxinli): Add bulk deletion
+  void DeleteFiles(const std::unordered_set<std::string>& paths) {
+    for (const auto& path : paths) {
+      DeleteFile(path);
+    }
+  }
+
+  bool HasAnyStatisticsFiles(const TableMetadata& metadata) const {
+    return !metadata.statistics.empty() || !metadata.partition_statistics.empty();
+  }
+
+  std::unordered_set<std::string> StatisticsFilesToDelete(
+      const TableMetadata& metadata_before_expiration,
+      const TableMetadata& metadata_after_expiration) const {
+    std::unordered_set<std::string> stats_files_to_delete;
+    std::unordered_set<std::string> live_stats_paths;
+
+    for (const auto& stats_file : metadata_after_expiration.statistics) {
+      if (stats_file) {
+        live_stats_paths.insert(stats_file->path);
+      }
+    }
+
+    for (const auto& part_stats_file : metadata_after_expiration.partition_statistics) {
+      if (part_stats_file) {
+        live_stats_paths.insert(part_stats_file->path);
+      }
+    }
+
+    for (const auto& stats_file : metadata_before_expiration.statistics) {
+      if (stats_file && !live_stats_paths.contains(stats_file->path)) {
+        stats_files_to_delete.insert(stats_file->path);
+      }
+    }
+
+    for (const auto& part_stats_file : metadata_before_expiration.partition_statistics) {
+      if (part_stats_file && !live_stats_paths.contains(part_stats_file->path)) {
+        stats_files_to_delete.insert(part_stats_file->path);
+      }
+    }
+
+    return stats_files_to_delete;
   }
 
   std::shared_ptr<FileIO> file_io_;
@@ -98,176 +138,192 @@ class FileCleanupStrategy {
 
 /// \brief File cleanup strategy that determines safe deletions via full reachability.
 ///
-/// Mirrors Java's ReachableFileCleanup: collects manifests from all expired and
-/// retained snapshots, prunes candidates still referenced by retained snapshots,
-/// then deletes orphaned manifests, data files, and manifest lists.
+/// Collects manifests from all expired and retained snapshots, prunes candidates
+/// still referenced by retained snapshots, then deletes orphaned manifests, data
+/// files, and manifest lists.
 ///
 /// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
 class ReachableFileCleanup : public FileCleanupStrategy {
  public:
   using FileCleanupStrategy::FileCleanupStrategy;
 
-  Status CleanFiles(const TableMetadata& metadata,
+  Status CleanFiles(const TableMetadata& metadata_before_expiration,
+                    const TableMetadata& metadata_after_expiration,
                     const std::unordered_set<int64_t>& expired_snapshot_ids,
                     CleanupLevel level) override {
     std::unordered_set<int64_t> retained_snapshot_ids;
-    for (const auto& snapshot : metadata.snapshots) {
-      if (snapshot && !expired_snapshot_ids.contains(snapshot->snapshot_id)) {
+    for (const auto& snapshot : metadata_after_expiration.snapshots) {
+      if (snapshot) {
         retained_snapshot_ids.insert(snapshot->snapshot_id);
       }
     }
 
-    // Phase 1: Collect manifest paths from expired and retained snapshots.
-    // The manifest_cache_ is populated here to avoid O(M*S) repeated I/O in
-    // FindDataFilesToDelete.
-    std::unordered_set<std::string> expired_manifest_paths;
+    std::unordered_set<std::string> manifest_lists_to_delete;
     for (int64_t snapshot_id : expired_snapshot_ids) {
-      ReadManifestsForSnapshot(metadata, snapshot_id, expired_manifest_paths);
-    }
-    bool retained_manifests_complete = true;
-    std::unordered_set<std::string> retained_manifest_paths;
-    for (int64_t snapshot_id : retained_snapshot_ids) {
-      if (!ReadManifestsForSnapshot(metadata, snapshot_id, retained_manifest_paths)) {
-        retained_manifests_complete = false;
-        break;
+      ICEBERG_ASSIGN_OR_RAISE(auto snapshot,
+                              metadata_before_expiration.SnapshotById(snapshot_id));
+      if (snapshot && !snapshot->manifest_list.empty()) {
+        manifest_lists_to_delete.insert(snapshot->manifest_list);
       }
     }
 
-    // If any retained snapshot's manifests could not be read, skip manifest and
-    // data file deletion. An incomplete retained set means we cannot safely
-    // determine which manifests are still live, so deleting any candidates risks
-    // removing files still referenced by retained snapshots. This matches Java's
-    // throwFailureWhenFinished behavior.
-    if (retained_manifests_complete) {
-      // Phase 2: Prune manifests still referenced by retained snapshots.
-      std::unordered_set<std::string> manifests_to_delete;
-      for (const auto& path : expired_manifest_paths) {
-        if (!retained_manifest_paths.contains(path)) {
-          manifests_to_delete.insert(path);
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto deletion_candidates,
+        ReadManifests(metadata_before_expiration, expired_snapshot_ids));
+
+    if (!deletion_candidates.empty()) {
+      std::unordered_set<ManifestFile> current_manifests;
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto manifests_to_delete,
+          PruneReferencedManifests(metadata_after_expiration, retained_snapshot_ids,
+                                   std::move(deletion_candidates), current_manifests));
+
+      if (!manifests_to_delete.empty()) {
+        if (level == CleanupLevel::kAll) {
+          // Deleting data files
+          auto data_files_to_delete = FindDataFilesToDelete(
+              metadata_after_expiration, manifests_to_delete, current_manifests);
+          DeleteFiles(data_files_to_delete);
         }
-      }
 
-      // Phase 3: Delete data files if cleanup level is kAll.
-      if (level == CleanupLevel::kAll && !manifests_to_delete.empty()) {
-        auto data_files_result =
-            FindDataFilesToDelete(metadata, manifests_to_delete, retained_manifest_paths);
-        if (data_files_result.has_value()) {
-          for (const auto& path : data_files_result.value()) {
-            DeleteFile(path);
-          }
-        }
-      }
-
-      // Phase 4: Delete orphaned manifest files.
-      for (const auto& path : manifests_to_delete) {
-        DeleteFile(path);
+        // Deleting manifest files
+        DeleteFiles(ManifestPaths(manifests_to_delete));
       }
     }
 
-    // Phase 5: Delete manifest lists from expired snapshots.
-    for (int64_t snapshot_id : expired_snapshot_ids) {
-      auto snapshot_result = metadata.SnapshotById(snapshot_id);
-      if (!snapshot_result.has_value()) continue;
-      const auto& snapshot = snapshot_result.value();
-      if (!snapshot->manifest_list.empty()) {
-        DeleteFile(snapshot->manifest_list);
-      }
-    }
+    // Deleting manifest-list files
+    DeleteFiles(manifest_lists_to_delete);
 
-    // TODO(shangxinli): Delete expired statistics and partition-statistics files here.
-    // This requires RemoveStatistics/RemovePartitionStatistics to be wired into
-    // RemoveSnapshots first (see TODO in table_metadata.cc), so that physical file
-    // deletion and metadata entry removal stay in sync.
+    // Deleting statistics files
+    if (HasAnyStatisticsFiles(metadata_before_expiration) ||
+        HasAnyStatisticsFiles(metadata_after_expiration)) {
+      DeleteFiles(
+          StatisticsFilesToDelete(metadata_before_expiration, metadata_after_expiration));
+    }
 
     return {};
   }
 
  private:
-  /// Cache of manifest path -> ManifestFile, populated during Phase 1 to avoid
-  /// re-reading manifest lists in FindDataFilesToDelete.
-  std::unordered_map<std::string, ManifestFile> manifest_cache_;
-
-  /// \brief Collect manifest paths for a snapshot into manifest_paths.
-  ///
-  /// Returns true if manifests were collected successfully. Returns false if the
-  /// snapshot or its manifest list cannot be read — callers must treat a false
-  /// result for a retained snapshot as an incomplete retained set and skip
-  /// manifest deletion to avoid removing live files.
-  bool ReadManifestsForSnapshot(const TableMetadata& metadata, int64_t snapshot_id,
-                                std::unordered_set<std::string>& manifest_paths) {
-    auto snapshot_result = metadata.SnapshotById(snapshot_id);
-    if (!snapshot_result.has_value()) return false;
-    auto& snapshot = snapshot_result.value();
+  /// \brief Collect manifests for a snapshot into manifests.
+  Result<std::unordered_set<ManifestFile>> ReadManifestsForSnapshot(
+      const TableMetadata& metadata, int64_t snapshot_id) {
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot, metadata.SnapshotById(snapshot_id));
 
     SnapshotCache snapshot_cache(snapshot.get());
-    auto manifests_result = snapshot_cache.Manifests(file_io_);
-    if (!manifests_result.has_value()) return false;
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests, snapshot_cache.Manifests(file_io_));
 
-    for (const auto& manifest : manifests_result.value()) {
-      manifest_paths.insert(manifest.manifest_path);
-      manifest_cache_.emplace(manifest.manifest_path, manifest);
+    std::unordered_set<ManifestFile> manifests;
+    for (const auto& manifest : snapshot_manifests) {
+      manifests.insert(manifest);
     }
-    return true;
+    return manifests;
+  }
+
+  /// \brief Collect manifests for a set of snapshots.
+  Result<std::unordered_set<ManifestFile>> ReadManifests(
+      const TableMetadata& metadata, const std::unordered_set<int64_t>& snapshot_ids) {
+    std::unordered_set<ManifestFile> manifests;
+    for (int64_t snapshot_id : snapshot_ids) {
+      ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
+                              ReadManifestsForSnapshot(metadata, snapshot_id));
+      manifests.insert(snapshot_manifests.begin(), snapshot_manifests.end());
+    }
+    return manifests;
+  }
+
+  /// \brief Remove manifests still referenced by retained snapshots.
+  Result<std::unordered_set<ManifestFile>> PruneReferencedManifests(
+      const TableMetadata& metadata,
+      const std::unordered_set<int64_t>& retained_snapshot_ids,
+      std::unordered_set<ManifestFile> manifests_to_delete,
+      std::unordered_set<ManifestFile>& current_manifests) {
+    for (int64_t snapshot_id : retained_snapshot_ids) {
+      ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
+                              ReadManifestsForSnapshot(metadata, snapshot_id));
+
+      for (const auto& manifest : snapshot_manifests) {
+        manifests_to_delete.erase(manifest);
+
+        if (manifests_to_delete.empty()) {
+          return manifests_to_delete;
+        }
+
+        current_manifests.insert(manifest);
+      }
+    }
+
+    return manifests_to_delete;
+  }
+
+  Result<std::unordered_set<std::string>> ReadLiveDataFilePaths(
+      const TableMetadata& metadata, const ManifestFile& manifest) {
+    ICEBERG_PRECHECK(manifest.content == ManifestContent::kData,
+                     "Cannot read data file paths from a delete manifest: {}",
+                     manifest.manifest_path);
+
+    /// TODO(shangxinli): optimize by only reading file paths
+    ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                            MakeManifestReader(manifest, file_io_, metadata));
+    ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
+
+    std::unordered_set<std::string> data_file_paths;
+    for (const auto& entry : entries) {
+      if (entry.data_file) {
+        data_file_paths.insert(entry.data_file->file_path);
+      }
+    }
+
+    return data_file_paths;
+  }
+
+  /// \brief Project manifests to manifest paths for deletion.
+  std::unordered_set<std::string> ManifestPaths(
+      const std::unordered_set<ManifestFile>& manifests) const {
+    std::unordered_set<std::string> manifest_paths;
+    manifest_paths.reserve(manifests.size());
+    for (const auto& manifest : manifests) {
+      manifest_paths.insert(manifest.manifest_path);
+    }
+    return manifest_paths;
   }
 
   /// \brief Find data files to delete from manifests being removed.
-  ///
-  /// Reads live entries (ADDED/EXISTING) from manifests_to_delete, then subtracts
-  /// any files still referenced by retained_manifests. Uses LiveEntries() to match
-  /// Java's ManifestFiles.readPaths (delegates to liveEntries()).
-  ///
-  /// If any retained manifest cannot be read, returns an empty set to prevent
-  /// accidental data loss (matching Java's throwFailureWhenFinished for retained
-  /// manifest reads).
-  Result<std::unordered_set<std::string>> FindDataFilesToDelete(
+  std::unordered_set<std::string> FindDataFilesToDelete(
       const TableMetadata& metadata,
-      const std::unordered_set<std::string>& manifests_to_delete,
-      const std::unordered_set<std::string>& retained_manifests) {
+      const std::unordered_set<ManifestFile>& manifests_to_delete,
+      const std::unordered_set<ManifestFile>& current_manifests) {
     std::unordered_set<std::string> data_files_to_delete;
 
-    // Step 1: Collect live file paths from manifests being deleted.
-    for (const auto& [path, manifest] : manifest_cache_) {
-      if (!manifests_to_delete.contains(path)) continue;
-
-      auto reader_result = MakeManifestReader(manifest, file_io_, metadata);
-      if (!reader_result.has_value()) continue;
-
-      auto entries_result = reader_result.value()->LiveEntries();
-      if (!entries_result.has_value()) continue;
-
-      for (const auto& entry : entries_result.value()) {
-        if (entry.data_file) {
-          data_files_to_delete.insert(entry.data_file->file_path);
-        }
+    // Collect live file paths from manifests being deleted.
+    for (const auto& manifest : manifests_to_delete) {
+      auto live_data_files = ReadLiveDataFilePaths(metadata, manifest);
+      // Ignore expired-manifest read failures and keep scanning candidates.
+      if (!live_data_files.has_value()) {
+        continue;
       }
+
+      data_files_to_delete.insert(live_data_files->begin(), live_data_files->end());
     }
 
     if (data_files_to_delete.empty()) {
       return data_files_to_delete;
     }
 
-    // Step 2: Remove files still referenced by retained manifests.
-    // Abort entirely if a retained manifest cannot be read to prevent data loss.
-    for (const auto& manifest_path : retained_manifests) {
-      if (data_files_to_delete.empty()) break;
+    // Remove files still referenced by current manifests.
+    for (const auto& manifest : current_manifests) {
+      if (data_files_to_delete.empty()) {
+        return data_files_to_delete;
+      }
 
-      auto it = manifest_cache_.find(manifest_path);
-      if (it == manifest_cache_.end()) continue;
-
-      auto reader_result = MakeManifestReader(it->second, file_io_, metadata);
-      if (!reader_result.has_value()) {
+      auto live_data_files = ReadLiveDataFilePaths(metadata, manifest);
+      // Fail closed if any retained manifest cannot be read safely.
+      if (!live_data_files.has_value()) {
         return std::unordered_set<std::string>{};
       }
 
-      auto entries_result = reader_result.value()->LiveEntries();
-      if (!entries_result.has_value()) {
-        return std::unordered_set<std::string>{};
-      }
-
-      for (const auto& entry : entries_result.value()) {
-        if (entry.data_file) {
-          data_files_to_delete.erase(entry.data_file->file_path);
-        }
+      for (const auto& file_path : live_data_files.value()) {
+        data_files_to_delete.erase(file_path);
       }
     }
 
@@ -481,6 +537,7 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
                        unreferenced_snapshot_ids.end());
 
   ApplyResult result;
+  result.metadata_before_expiration = std::make_shared<TableMetadata>(base);
 
   std::ranges::for_each(base.refs, [&retained_refs, &result](const auto& key_to_ref) {
     if (!retained_refs.contains(key_to_ref.first)) {
@@ -531,8 +588,8 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
   return result;
 }
 
-Status ExpireSnapshots::Finalize(std::optional<Error> commit_error) {
-  if (commit_error.has_value()) {
+Status ExpireSnapshots::Finalize(Result<const TableMetadata*> commit_result) {
+  if (!commit_result.has_value()) {
     return {};
   }
 
@@ -544,22 +601,23 @@ Status ExpireSnapshots::Finalize(std::optional<Error> commit_error) {
     return {};
   }
 
+  ICEBERG_PRECHECK(apply_result_->metadata_before_expiration != nullptr,
+                   "Missing pre-expiration table metadata for cleanup");
+  ICEBERG_PRECHECK(commit_result.value() != nullptr,
+                   "Missing committed table metadata for cleanup");
+  auto metadata_before_expiration_ptr = apply_result_->metadata_before_expiration;
+  const TableMetadata& metadata_before_expiration = *metadata_before_expiration_ptr;
+  const TableMetadata& metadata_after_expiration = *commit_result.value();
   std::unordered_set<int64_t> expired_ids(apply_result_->snapshot_ids_to_remove.begin(),
                                           apply_result_->snapshot_ids_to_remove.end());
   apply_result_.reset();
 
   // File cleanup is best-effort: log and continue on individual file deletion failures
-  // to avoid blocking metadata updates (matching Java behavior).
   ReachableFileCleanup strategy(ctx_->table->io(), delete_func_);
-  return strategy.CleanFiles(base(), expired_ids, cleanup_level_);
+  return strategy.CleanFiles(metadata_before_expiration, metadata_after_expiration,
+                             expired_ids, cleanup_level_);
 }
 
-// TODO(shangxinli): Implement IncrementalFileCleanup strategy for linear ancestry
-// optimization. Java uses this when: !specifiedSnapshotId && simple linear main branch
-// ancestry (no non-main snapshots removed, no non-main snapshots remain).
-// The incremental strategy is more efficient because it only needs to scan
-// manifests written by expired snapshots (checking added_snapshot_id), avoiding
-// the full reachability analysis. It also handles cherry-pick protection via
-// SnapshotSummary.SOURCE_SNAPSHOT_ID_PROP.
+// TODO(shangxinli): add IncrementalFileCleanup strategy for linear ancestry optimization.
 
 }  // namespace iceberg
