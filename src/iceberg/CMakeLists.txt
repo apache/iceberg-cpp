@@ -68,6 +68,8 @@ set(ICEBERG_SOURCES
     partition_summary.cc
     puffin/file_metadata.cc
     puffin/puffin_format.cc
+    puffin/puffin_reader.cc
+    puffin/puffin_writer.cc
     puffin/json_serde.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc

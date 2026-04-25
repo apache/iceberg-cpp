@@ -36,6 +36,18 @@ constexpr std::pair<int, int> GetFlagPosition(PuffinFlag flag) {
   std::unreachable();
 }
 
+}  // namespace
+
+bool IsFlagSet(std::span<const uint8_t, 4> flags, PuffinFlag flag) {
+  auto [byte_num, bit_num] = GetFlagPosition(flag);
+  return (flags[byte_num] & (1 << bit_num)) != 0;
+}
+
+void SetFlag(std::span<uint8_t, 4> flags, PuffinFlag flag) {
+  auto [byte_num, bit_num] = GetFlagPosition(flag);
+  flags[byte_num] |= (1 << bit_num);
+}
+
 // TODO(zhaoxuan1994): Move compression logic to a unified codec interface.
 Result<std::vector<std::byte>> Compress(PuffinCompressionCodec codec,
                                         std::span<const std::byte> input) {
@@ -61,18 +73,6 @@ Result<std::vector<std::byte>> Decompress(PuffinCompressionCodec codec,
       return NotSupported("Zstd decompression is not yet supported");
   }
   std::unreachable();
-}
-
-}  // namespace
-
-bool IsFlagSet(std::span<const uint8_t, 4> flags, PuffinFlag flag) {
-  auto [byte_num, bit_num] = GetFlagPosition(flag);
-  return (flags[byte_num] & (1 << bit_num)) != 0;
-}
-
-void SetFlag(std::span<uint8_t, 4> flags, PuffinFlag flag) {
-  auto [byte_num, bit_num] = GetFlagPosition(flag);
-  flags[byte_num] |= (1 << bit_num);
 }
 
 }  // namespace iceberg::puffin

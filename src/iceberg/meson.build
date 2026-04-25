@@ -91,6 +91,8 @@ iceberg_sources = files(
     'puffin/file_metadata.cc',
     'puffin/json_serde.cc',
     'puffin/puffin_format.cc',
+    'puffin/puffin_reader.cc',
+    'puffin/puffin_writer.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
