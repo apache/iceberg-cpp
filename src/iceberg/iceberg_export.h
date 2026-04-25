@@ -19,6 +19,10 @@
 
 #pragma once
 
+// Export macros for the main `iceberg` library (DLL). iceberg_data uses
+// ICEBERG_DATA_* in iceberg_data_export.h — do not use one macro for both DLLs
+// on MSVC.
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 #  ifdef ICEBERG_STATIC
 #    define ICEBERG_EXPORT
@@ -28,30 +32,32 @@
 #    define ICEBERG_EXPORT __declspec(dllimport)
 #  endif
 
-#  define ICEBERG_TEMPLATE_EXPORT ICEBERG_EXPORT
-
-// For template class declarations. Empty on MSVC: dllexport on a class template
-// declaration combined with extern template triggers C4910.
+// dllexport on a class template declaration combined with extern template
+// triggers MSVC C4910, so leave the class-template-decl macro empty there.
 #  if defined(_MSC_VER)
 #    define ICEBERG_TEMPLATE_CLASS_EXPORT
 #  else
 #    define ICEBERG_TEMPLATE_CLASS_EXPORT ICEBERG_EXPORT
 #  endif
 
-// For extern template declarations. Empty when building the DLL on MSVC:
-// `extern` + `dllexport` is contradictory and triggers C4910.
+// `extern template` + `dllexport` is contradictory on MSVC (also C4910).
 #  if defined(_MSC_VER) && defined(ICEBERG_EXPORTING) && !defined(ICEBERG_STATIC)
 #    define ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT
 #  else
-#    define ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT ICEBERG_TEMPLATE_EXPORT
+#    define ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT ICEBERG_EXPORT
 #  endif
+
+// Explicit template instantiation definitions in .cc files must be exported on
+// MSVC so dependent DLLs can link imported symbols.
+#  define ICEBERG_TEMPLATE_INSTANTIATION_EXPORT ICEBERG_EXPORT
 
 #else  // Non-Windows
-#  ifndef ICEBERG_EXPORT
-#    define ICEBERG_EXPORT __attribute__((visibility("default")))
-#  endif
-
-#  define ICEBERG_TEMPLATE_EXPORT
+#  define ICEBERG_EXPORT __attribute__((visibility("default")))
+// Default visibility for explicit template instantiations (hidden inlines
+// otherwise; needed when iceberg_data links iceberg).
 #  define ICEBERG_TEMPLATE_CLASS_EXPORT ICEBERG_EXPORT
-#  define ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT ICEBERG_TEMPLATE_EXPORT
+#  define ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT ICEBERG_EXPORT
+// GCC/Clang can warn when attributes appear on explicit template
+// instantiation definitions after the class is already defined.
+#  define ICEBERG_TEMPLATE_INSTANTIATION_EXPORT
 #endif

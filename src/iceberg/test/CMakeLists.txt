@@ -31,7 +31,7 @@ set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 configure_file("test_config.h.in" "test_config.h")
 
 function(add_iceberg_test test_name)
-  set(options USE_BUNDLE)
+  set(options USE_BUNDLE USE_DATA)
   set(oneValueArgs)
   set(multiValueArgs SOURCES)
   cmake_parse_arguments(ARG
@@ -46,10 +46,18 @@ function(add_iceberg_test test_name)
   target_sources(${test_name} PRIVATE ${ARG_SOURCES})
 
   if(ARG_USE_BUNDLE)
-    target_link_libraries(${test_name} PRIVATE iceberg_bundle_static GTest::gmock_main)
+    set(test_link_target
+        "$<IF:$<TARGET_EXISTS:iceberg_bundle_static>,iceberg_bundle_static,iceberg_bundle_shared>"
+    )
+  elseif(ARG_USE_DATA)
+    set(test_link_target
+        "$<IF:$<TARGET_EXISTS:iceberg_data_static>,iceberg_data_static,iceberg_data_shared>"
+    )
   else()
-    target_link_libraries(${test_name} PRIVATE iceberg_static GTest::gmock_main)
+    set(test_link_target
+        "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>")
   endif()
+  target_link_libraries(${test_name} PRIVATE ${test_link_target} GTest::gmock_main)
 
   if(MSVC_TOOLCHAIN)
     target_compile_options(${test_name} PRIVATE /bigobj)
@@ -109,6 +117,7 @@ add_iceberg_test(json_serde_test
                  schema_json_test.cc)
 
 add_iceberg_test(util_test
+                 USE_DATA
                  SOURCES
                  bucket_util_test.cc
                  config_test.cc
@@ -130,7 +139,11 @@ add_iceberg_test(util_test
 
 add_iceberg_test(roaring_test SOURCES roaring_test.cc)
 
-add_iceberg_test(puffin_test SOURCES puffin_format_test.cc puffin_json_test.cc)
+add_iceberg_test(puffin_test
+                 USE_DATA
+                 SOURCES
+                 puffin_format_test.cc
+                 puffin_json_test.cc)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test
@@ -226,7 +239,10 @@ if(ICEBERG_BUILD_REST)
     add_executable(${test_name})
     target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}/iceberg/test/")
     target_sources(${test_name} PRIVATE ${ARG_SOURCES})
-    target_link_libraries(${test_name} PRIVATE GTest::gmock_main iceberg_rest_static)
+    set(rest_test_link_target
+        "$<IF:$<TARGET_EXISTS:iceberg_rest_static>,iceberg_rest_static,iceberg_rest_shared>"
+    )
+    target_link_libraries(${test_name} PRIVATE GTest::gmock_main ${rest_test_link_target})
     if(MSVC_TOOLCHAIN)
       target_compile_options(${test_name} PRIVATE /bigobj)
     endif()

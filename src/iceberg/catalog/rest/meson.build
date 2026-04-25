@@ -40,6 +40,7 @@ cpr_needs_static = (
 )
 cpr_dep = dependency('cpr', static: cpr_needs_static)
 
+# iceberg + cpr.
 iceberg_rest_build_deps = [iceberg_dep, cpr_dep]
 iceberg_rest_lib = library(
     'iceberg_rest',
@@ -59,7 +60,7 @@ iceberg_rest_dep = declare_dependency(
     dependencies: iceberg_rest_build_deps,
     compile_args: iceberg_rest_compile_args,
 )
-meson.override_dependency('iceberg-rest', iceberg_rest_dep)
+meson.override_dependency('iceberg_rest', iceberg_rest_dep)
 pkg.generate(iceberg_rest_lib)
 
 install_headers(

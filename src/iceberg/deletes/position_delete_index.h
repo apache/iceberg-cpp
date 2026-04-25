@@ -26,7 +26,7 @@
 #include <memory>
 
 #include "iceberg/deletes/roaring_position_bitmap.h"
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 
 namespace iceberg {
 
@@ -35,7 +35,7 @@ namespace iceberg {
 /// This class provides a domain-specific API for position deletes
 /// in Iceberg MOR (merge-on-read) tables. Positions are 0-based
 /// row indices within a data file.
-class ICEBERG_EXPORT PositionDeleteIndex {
+class ICEBERG_DATA_EXPORT PositionDeleteIndex {
  public:
   PositionDeleteIndex() = default;
   ~PositionDeleteIndex() = default;

@@ -17,17 +17,13 @@
 
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
+
+# `iceberg`: metadata / planning. delete_file_index stays here because
+# manifest_group embeds DeleteFileIndex::Builder (no iceberg_data deps).
 set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     catalog/memory/in_memory_catalog.cc
-    data/data_writer.cc
-    data/delete_loader.cc
-    data/equality_delete_writer.cc
-    data/position_delete_writer.cc
-    data/writer.cc
     delete_file_index.cc
-    deletes/roaring_position_bitmap.cc
-    deletes/position_delete_index.cc
     expression/aggregate.cc
     expression/binder.cc
     expression/evaluator.cc
@@ -66,9 +62,6 @@ set(ICEBERG_SOURCES
     partition_field.cc
     partition_spec.cc
     partition_summary.cc
-    puffin/file_metadata.cc
-    puffin/puffin_format.cc
-    puffin/json_serde.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/partition_values.cc
@@ -125,6 +118,19 @@ set(ICEBERG_SOURCES
     util/url_encoder.cc
     util/uuid.cc)
 
+# iceberg_data: writers, deletes, Puffin (split library).
+set(ICEBERG_DATA_SOURCES
+    data/data_writer.cc
+    data/delete_loader.cc
+    data/equality_delete_writer.cc
+    data/position_delete_writer.cc
+    data/writer.cc
+    deletes/position_delete_index.cc
+    deletes/roaring_position_bitmap.cc
+    puffin/file_metadata.cc
+    puffin/json_serde.cc
+    puffin/puffin_format.cc)
+
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_STATIC_INSTALL_INTERFACE_LIBS)
@@ -169,6 +175,42 @@ add_iceberg_lib(iceberg
                 OUTPUTS
                 ICEBERG_LIBRARIES)
 
+# iceberg_data links iceberg.
+set(ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS)
+set(ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS)
+set(ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS)
+set(ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS)
+
+list(APPEND ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>")
+list(APPEND ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>")
+list(APPEND
+     ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+)
+list(APPEND
+     ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
+)
+
+add_iceberg_lib(iceberg_data
+                SOURCES
+                ${ICEBERG_DATA_SOURCES}
+                EXTRA_INCLUDES
+                ${ICEBERG_INCLUDES}
+                SHARED_LINK_LIBS
+                ${ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS}
+                STATIC_LINK_LIBS
+                ${ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS}
+                STATIC_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS}
+                SHARED_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS}
+                OUTPUTS
+                ICEBERG_DATA_LIBRARIES)
+
+# Top-level public headers; subdirs install their own via add_subdirectory.
 iceberg_install_all_headers(iceberg)
 
 add_subdirectory(catalog)
@@ -202,7 +244,8 @@ if(ICEBERG_BUILD_BUNDLE)
       parquet/parquet_schema_util.cc
       parquet/parquet_writer.cc)
 
-  # Libraries to link with exported libiceberg_bundle.{so,a}.
+  # Bundle links iceberg_data so one find_package(iceberg_bundle) pulls writers
+  # and Puffin; adapters only include main iceberg headers at compile time.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)
   set(ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS)
   set(ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS)
@@ -210,14 +253,14 @@ if(ICEBERG_BUILD_BUNDLE)
 
   list(APPEND
        ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+       "$<IF:$<TARGET_EXISTS:iceberg_data_static>,iceberg_data_static,iceberg_data_shared>"
        "$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>"
        "$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>"
        "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>"
   )
   list(APPEND
        ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
+       "$<IF:$<TARGET_EXISTS:iceberg_data_shared>,iceberg_data_shared,iceberg_data_static>"
        "$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>"
        "$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>"
        "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>"
@@ -225,14 +268,14 @@ if(ICEBERG_BUILD_BUNDLE)
 
   list(APPEND
        ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_data_static>,iceberg::iceberg_data_static,iceberg::iceberg_data_shared>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>>"
        "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>>"
   )
   list(APPEND
        ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_data_shared>,iceberg::iceberg_data_shared,iceberg::iceberg_data_static>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>>"
        "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
@@ -269,7 +312,11 @@ if(ICEBERG_BUILD_BUNDLE)
   add_subdirectory(parquet)
 endif()
 
-iceberg_install_cmake_package(iceberg iceberg_targets)
+iceberg_install_cmake_package(iceberg)
+iceberg_install_cmake_package(iceberg_data)
+if(ICEBERG_BUILD_BUNDLE)
+  iceberg_install_cmake_package(iceberg_bundle)
+endif()
 
 if(ICEBERG_BUILD_TESTS)
   add_subdirectory(test)

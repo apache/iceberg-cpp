@@ -17,25 +17,27 @@
 #
 # This config sets the following variables in your project::
 #
-#   iceberg_FOUND - true if the iceberg package is found
-#   iceberg_VERSION - version of the found package
+#   iceberg_rest_FOUND - true if iceberg_rest is found on the system
+#   iceberg_rest_VERSION - version of the found iceberg_rest
 #
 # This config sets the following targets (if built) in your project::
 #
-#   iceberg::iceberg_shared
-#   iceberg::iceberg_static
+#   iceberg::iceberg_rest_shared
+#   iceberg::iceberg_rest_static
 
 @PACKAGE_INIT@
 
-set(ICEBERG_SYSTEM_DEPENDENCIES "@ICEBERG_SYSTEM_DEPENDENCIES@")
+set(ICEBERG_REST_SYSTEM_DEPENDENCIES "@ICEBERG_REST_SYSTEM_DEPENDENCIES@")
 
 include(CMakeFindDependencyMacro)
 
-macro(iceberg_find_dependencies dependencies)
+find_dependency(iceberg)
+
+macro(iceberg_rest_find_dependencies dependencies)
   if(DEFINED CMAKE_MODULE_PATH)
-    set(ICEBERG_CMAKE_MODULE_PATH_OLD ${CMAKE_MODULE_PATH})
+    set(ICEBERG_REST_CMAKE_MODULE_PATH_OLD ${CMAKE_MODULE_PATH})
   else()
-    unset(ICEBERG_CMAKE_MODULE_PATH_OLD)
+    unset(ICEBERG_REST_CMAKE_MODULE_PATH_OLD)
   endif()
   set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
 
@@ -43,16 +45,17 @@ macro(iceberg_find_dependencies dependencies)
     find_dependency(${dependency})
   endforeach()
 
-  if(DEFINED ICEBERG_CMAKE_MODULE_PATH_OLD)
-    set(CMAKE_MODULE_PATH ${ICEBERG_CMAKE_MODULE_PATH_OLD})
-    unset(ICEBERG_CMAKE_MODULE_PATH_OLD)
+  if(DEFINED ICEBERG_REST_CMAKE_MODULE_PATH_OLD)
+    set(CMAKE_MODULE_PATH ${ICEBERG_REST_CMAKE_MODULE_PATH_OLD})
+    unset(ICEBERG_REST_CMAKE_MODULE_PATH_OLD)
   else()
     unset(CMAKE_MODULE_PATH)
   endif()
 endmacro()
 
-iceberg_find_dependencies("${ICEBERG_SYSTEM_DEPENDENCIES}")
+# cpr (+ OpenSSL/CURL when bundled).
+iceberg_rest_find_dependencies("${ICEBERG_REST_SYSTEM_DEPENDENCIES}")
 
-include("${CMAKE_CURRENT_LIST_DIR}/iceberg-targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/iceberg_rest-targets.cmake")
 
-check_required_components(iceberg)
+check_required_components(iceberg_rest)
