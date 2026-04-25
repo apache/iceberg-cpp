@@ -30,6 +30,9 @@ namespace {
 constexpr std::string_view kIllegalArgumentException = "IllegalArgumentException";
 constexpr std::string_view kNoSuchNamespaceException = "NoSuchNamespaceException";
 constexpr std::string_view kNamespaceNotEmptyException = "NamespaceNotEmptyException";
+constexpr std::string_view kNoSuchTableException = "NoSuchTableException";
+constexpr std::string_view kNoSuchPlanIdException = "NoSuchPlanIdException";
+constexpr std::string_view kNoSuchPlanTaskException = "NoSuchPlanTaskException";
 
 }  // namespace
 
@@ -178,6 +181,34 @@ Status ViewCommitErrorHandler::Accept(const ErrorResponse& error) const {
     case 503:
     case 504:
       return CommitStateUnknown("Service failed: {}: {}", error.code, error.message);
+  }
+
+  return DefaultErrorHandler::Accept(error);
+}
+
+const std::shared_ptr<ScanPlanErrorHandler>& ScanPlanErrorHandler::Instance() {
+  static const std::shared_ptr<ScanPlanErrorHandler> instance{new ScanPlanErrorHandler()};
+  return instance;
+}
+
+Status ScanPlanErrorHandler::Accept(const ErrorResponse& error) const {
+  switch (error.code) {
+    case 404:
+      if (error.type == kNoSuchNamespaceException) {
+        return NoSuchNamespace(error.message);
+      }
+      if (error.type == kNoSuchTableException) {
+        return NoSuchTable(error.message);
+      }
+      if (error.type == kNoSuchPlanIdException) {
+        return NoSuchPlanId(error.message);
+      }
+      if (error.type == kNoSuchPlanTaskException) {
+        return NoSuchPlanTask(error.message);
+      }
+      return NotFound(error.message);
+    case 406:
+      return NotSupported(error.message);
   }
 
   return DefaultErrorHandler::Accept(error);

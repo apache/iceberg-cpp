@@ -127,4 +127,15 @@ class ICEBERG_REST_EXPORT ViewCommitErrorHandler final : public DefaultErrorHand
   constexpr ViewCommitErrorHandler() = default;
 };
 
+/// \brief Scan plan operation error handler.
+class ICEBERG_REST_EXPORT ScanPlanErrorHandler final : public DefaultErrorHandler {
+ public:
+  static const std::shared_ptr<ScanPlanErrorHandler>& Instance();
+
+  Status Accept(const ErrorResponse& error) const override;
+
+ private:
+  constexpr ScanPlanErrorHandler() = default;
+};
+
 }  // namespace iceberg::rest

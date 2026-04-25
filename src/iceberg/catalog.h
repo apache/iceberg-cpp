@@ -26,8 +26,10 @@
 #include <unordered_set>
 #include <vector>
 
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -188,6 +190,44 @@ class ICEBERG_EXPORT Catalog {
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
   virtual Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
+
+  /// \brief Initiate a scan planning operation for the given table.
+  ///
+  /// \param table The table to scan.
+  /// \param context The scan context containing snapshot, filter, and other options.
+  /// \return A PlanTableScanResponse with the plan status and initial scan tasks.
+  virtual Result<rest::PlanTableScanResponse> PlanTableScan(
+      const Table& table, const internal::TableScanContext& context) {
+    return NotImplemented("PlanTableScan is not supported by this catalog");
+  }
+
+  /// \brief Fetch the current status and results of an asynchronous scan plan.
+  ///
+  /// \param table The table being scanned.
+  /// \param plan_id The plan ID returned by PlanTableScan.
+  /// \return A FetchPlanningResultResponse with the current plan status and tasks.
+  virtual Result<rest::FetchPlanningResultResponse> FetchPlanningResult(
+      const Table& table, const std::string& plan_id) {
+    return NotImplemented("FetchPlanningResult is not supported by this catalog");
+  }
+
+  /// \brief Cancel an in-progress scan planning operation.
+  ///
+  /// \param table The table being scanned.
+  /// \param plan_id The plan ID returned by PlanTableScan.
+  virtual Status CancelPlanning(const Table& table, const std::string& plan_id) {
+    return NotImplemented("CancelPlanning is not supported by this catalog");
+  }
+
+  /// \brief Fetch the scan tasks for a given plan task token.
+  ///
+  /// \param table The table being scanned.
+  /// \param plan_task The plan task token returned in a scan plan response.
+  /// \return A FetchScanTasksResponse with the file scan tasks.
+  virtual Result<rest::FetchScanTasksResponse> FetchScanTasks(
+      const Table& table, const std::string& plan_task) {
+    return NotImplemented("FetchScanTasks is not supported by this catalog");
+  }
 };
 
 }  // namespace iceberg

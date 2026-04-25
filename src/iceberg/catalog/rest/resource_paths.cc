@@ -114,4 +114,26 @@ Result<std::string> ResourcePaths::CommitTransaction() const {
   return std::format("{}/v1/{}transactions/commit", base_uri_, prefix_);
 }
 
+Result<std::string> ResourcePaths::ScanPlan(const TableIdentifier& ident) const {
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_namespace, EncodeNamespace(ident.ns));
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_table_name, EncodeString(ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/plan", base_uri_, prefix_,
+                     encoded_namespace, encoded_table_name);
+}
+
+Result<std::string> ResourcePaths::ScanPlan(const TableIdentifier& ident,
+                                            const std::string& plan_id) const {
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_namespace, EncodeNamespace(ident.ns));
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_table_name, EncodeString(ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/plan/{}", base_uri_, prefix_,
+                     encoded_namespace, encoded_table_name, plan_id);
+}
+
+Result<std::string> ResourcePaths::ScanTask(const TableIdentifier& ident) const {
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_namespace, EncodeNamespace(ident.ns));
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_table_name, EncodeString(ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/tasks", base_uri_, prefix_,
+                     encoded_namespace, encoded_table_name);
+}
+
 }  // namespace iceberg::rest

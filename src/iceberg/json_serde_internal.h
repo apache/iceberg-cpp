@@ -28,9 +28,13 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -412,5 +416,40 @@ ICEBERG_EXPORT nlohmann::json ToJson(const TableRequirement& requirement);
 /// \return A `TableRequirement` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
     const nlohmann::json& json);
+
+/// \brief Deserializes a JSON object into a `DataFile` object.
+///
+/// Parses a DataFile from the REST Catalog JSON format. Maps (column-sizes,
+/// value-counts, etc.) use the CountMap/BinaryMap parallel arrays format.
+/// Binary fields (lower-bounds, upper-bounds, key-metadata) are base64-encoded.
+///
+/// \param json The JSON object representing a `DataFile`.
+/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition
+/// parsing.
+/// \param schema The table schema, used with partitionSpecById to resolve partition
+/// types.
+/// \return A `DataFile` object or an error if the conversion fails.
+ICEBERG_EXPORT Result<DataFile> DataFileFromJson(const nlohmann::json& json);
+
+ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
+    const Schema& schema);
+
+/// \brief Deserializes a JSON array of file scan tasks.
+///
+/// Each task may reference delete files by index into \p delete_files.
+///
+/// \param json The JSON array of file scan task objects.
+/// \param delete_files Delete files indexed by the tasks' delete-file-references.
+/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition
+/// parsing.
+/// \param schema The table schema, used with partitionSpecById to resolve partition
+/// types.
+/// \return A vector of `FileScanTask` objects or an error if the conversion fails.
+ICEBERG_EXPORT Result<std::vector<FileScanTask>> FileScanTasksFromJson(
+    const nlohmann::json& json, const std::vector<DataFile>& delete_files,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
+    const Schema& schema);
 
 }  // namespace iceberg

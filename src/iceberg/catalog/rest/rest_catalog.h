@@ -99,6 +99,14 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
       const TableIdentifier& identifier,
       const std::string& metadata_file_location) override;
 
+  Result<PlanTableScanResponse> PlanTableScan(
+      const Table& table, const internal::TableScanContext& context) override;
+  Result<FetchPlanningResultResponse> FetchPlanningResult(
+      const Table& table, const std::string& plan_id) override;
+  Status CancelPlanning(const Table& table, const std::string& plan_id) override;
+  Result<FetchScanTasksResponse> FetchScanTasks(const Table& table,
+                                                const std::string& plan_task) override;
+
  private:
   RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
               std::unique_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
