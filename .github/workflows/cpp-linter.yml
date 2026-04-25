@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev ninja-build
+          sudo apt-get install -y libcurl4-openssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
       - name: Cache vcpkg packages
         uses: actions/cache@v4
         id: vcpkg-cache
