@@ -105,6 +105,12 @@ void RoaringPositionBitmap::Add(int64_t pos) {
   impl_->bitmaps[key].add(pos32);
 }
 
+void RoaringPositionBitmap::AddManyForKey(int32_t key, const uint32_t* positions,
+                                          size_t n) {
+  impl_->AllocateBitmapsIfNeeded(key + 1);
+  impl_->bitmaps[key].addMany(n, positions);
+}
+
 void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {
   pos_start = std::max(pos_start, int64_t{0});
   pos_end = std::min(pos_end, kMaxPosition + 1);

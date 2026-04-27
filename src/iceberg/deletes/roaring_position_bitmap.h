@@ -33,6 +33,8 @@
 
 namespace iceberg {
 
+class PositionDeleteIndex;
+
 /// \brief A bitmap that supports positive 64-bit positions, optimized
 /// for cases where most positions fit in 32 bits.
 ///
@@ -110,6 +112,12 @@ class ICEBERG_DATA_EXPORT RoaringPositionBitmap {
   std::unique_ptr<Impl> impl_;
 
   explicit RoaringPositionBitmap(std::unique_ptr<Impl> impl);
+
+  // Bulk-add positions sharing high-32-bit `key`. Internal hook for
+  // `PositionDeleteIndex::BulkAddForKey`; per-key grouping is the caller's
+  // job, keeping this a thin wrapper around CRoaring's `addMany`.
+  void AddManyForKey(int32_t key, const uint32_t* positions, size_t n);
+  friend class PositionDeleteIndex;
 };
 
 }  // namespace iceberg
