@@ -29,7 +29,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 
 namespace iceberg::puffin {
@@ -41,12 +41,12 @@ enum class PuffinCompressionCodec {
   kZstd,
 };
 
-ICEBERG_EXPORT std::string_view CodecName(PuffinCompressionCodec codec);
+ICEBERG_DATA_EXPORT std::string_view CodecName(PuffinCompressionCodec codec);
 
-ICEBERG_EXPORT Result<PuffinCompressionCodec> PuffinCompressionCodecFromName(
+ICEBERG_DATA_EXPORT Result<PuffinCompressionCodec> PuffinCompressionCodecFromName(
     std::string_view codec_name);
 
-ICEBERG_EXPORT std::string ToString(PuffinCompressionCodec codec);
+ICEBERG_DATA_EXPORT std::string ToString(PuffinCompressionCodec codec);
 
 /// \brief Standard blob types defined by the Iceberg specification.
 struct StandardBlobTypes {
@@ -67,7 +67,7 @@ struct StandardPuffinProperties {
 };
 
 /// \brief A blob in a Puffin file.
-struct ICEBERG_EXPORT Blob {
+struct ICEBERG_DATA_EXPORT Blob {
   /// See StandardBlobTypes for known types.
   std::string type;
   /// Ordered list of field IDs the blob was computed from.
@@ -84,10 +84,10 @@ struct ICEBERG_EXPORT Blob {
   friend bool operator==(const Blob& lhs, const Blob& rhs) = default;
 };
 
-ICEBERG_EXPORT std::string ToString(const Blob& blob);
+ICEBERG_DATA_EXPORT std::string ToString(const Blob& blob);
 
 /// \brief Metadata about a blob stored in a Puffin file footer.
-struct ICEBERG_EXPORT BlobMetadata {
+struct ICEBERG_DATA_EXPORT BlobMetadata {
   /// See StandardBlobTypes for known types.
   std::string type;
   /// Ordered list of field IDs the blob was computed from.
@@ -105,16 +105,16 @@ struct ICEBERG_EXPORT BlobMetadata {
   friend bool operator==(const BlobMetadata& lhs, const BlobMetadata& rhs) = default;
 };
 
-ICEBERG_EXPORT std::string ToString(const BlobMetadata& blob_metadata);
+ICEBERG_DATA_EXPORT std::string ToString(const BlobMetadata& blob_metadata);
 
 /// \brief Metadata about a Puffin file.
-struct ICEBERG_EXPORT FileMetadata {
+struct ICEBERG_DATA_EXPORT FileMetadata {
   std::vector<BlobMetadata> blobs;
   std::unordered_map<std::string, std::string> properties;
 
   friend bool operator==(const FileMetadata& lhs, const FileMetadata& rhs) = default;
 };
 
-ICEBERG_EXPORT std::string ToString(const FileMetadata& file_metadata);
+ICEBERG_DATA_EXPORT std::string ToString(const FileMetadata& file_metadata);
 
 }  // namespace iceberg::puffin

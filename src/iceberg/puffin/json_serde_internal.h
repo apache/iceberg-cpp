@@ -27,30 +27,30 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 #include "iceberg/puffin/type_fwd.h"
 #include "iceberg/result.h"
 
 namespace iceberg::puffin {
 
 /// \brief Serialize a BlobMetadata to JSON.
-ICEBERG_EXPORT nlohmann::json ToJson(const BlobMetadata& blob_metadata);
+ICEBERG_DATA_EXPORT nlohmann::json ToJson(const BlobMetadata& blob_metadata);
 
 /// \brief Deserialize a BlobMetadata from JSON.
-ICEBERG_EXPORT Result<BlobMetadata> BlobMetadataFromJson(const nlohmann::json& json);
+ICEBERG_DATA_EXPORT Result<BlobMetadata> BlobMetadataFromJson(const nlohmann::json& json);
 
 /// \brief Serialize a FileMetadata to JSON.
-ICEBERG_EXPORT nlohmann::json ToJson(const FileMetadata& file_metadata);
+ICEBERG_DATA_EXPORT nlohmann::json ToJson(const FileMetadata& file_metadata);
 
 /// \brief Deserialize a FileMetadata from JSON.
-ICEBERG_EXPORT Result<FileMetadata> FileMetadataFromJson(const nlohmann::json& json);
+ICEBERG_DATA_EXPORT Result<FileMetadata> FileMetadataFromJson(const nlohmann::json& json);
 
 /// \brief Serialize a FileMetadata to a JSON string.
-ICEBERG_EXPORT std::string ToJsonString(const FileMetadata& file_metadata,
-                                        bool pretty = false);
+ICEBERG_DATA_EXPORT std::string ToJsonString(const FileMetadata& file_metadata,
+                                             bool pretty = false);
 
 /// \brief Deserialize a FileMetadata from a JSON string.
-ICEBERG_EXPORT Result<FileMetadata> FileMetadataFromJsonString(
+ICEBERG_DATA_EXPORT Result<FileMetadata> FileMetadataFromJsonString(
     std::string_view json_string);
 
 }  // namespace iceberg::puffin

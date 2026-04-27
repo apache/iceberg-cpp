@@ -14,17 +14,23 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+#
+# This config sets the following variables in your project::
+#
+#   iceberg_data_FOUND - true if the iceberg_data package is found
+#   iceberg_data_VERSION - version of the found package
+#
+# This config sets the following targets (if built) in your project::
+#
+#   iceberg::iceberg_data_shared
+#   iceberg::iceberg_data_static
 
-# Please set CMAKE_PREFIX_PATH to the install prefix of iceberg.
-cmake_minimum_required(VERSION 3.25)
+@PACKAGE_INIT@
 
-project(example)
+include(CMakeFindDependencyMacro)
 
-set(CMAKE_CXX_STANDARD 23)
+find_dependency(iceberg)
 
-# Demo uses iceberg_bundle (Arrow/Avro/Parquet; pulls core + data).
-find_package(iceberg_bundle CONFIG REQUIRED)
+include("${CMAKE_CURRENT_LIST_DIR}/iceberg_data-targets.cmake")
 
-add_executable(demo_example demo_example.cc)
-
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_static)
+check_required_components(iceberg_data)

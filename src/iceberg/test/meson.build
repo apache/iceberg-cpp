@@ -101,10 +101,12 @@ iceberg_tests = {
             'uuid_test.cc',
             'visit_type_test.cc',
         ),
+        'iceberg_lib': iceberg_data_dep,
     },
     'roaring_test': {'sources': files('roaring_test.cc')},
     'puffin_test': {
         'sources': files('puffin_format_test.cc', 'puffin_json_test.cc'),
+        'iceberg_lib': iceberg_data_dep,
     },
 }
 
@@ -143,7 +145,7 @@ foreach test_name, values : iceberg_tests
     exc = executable(
         test_name,
         sources: values['sources'],
-        dependencies: [iceberg_dep, gmock_main_dep] + values.get(
+        dependencies: [values.get('iceberg_lib', iceberg_dep), gmock_main_dep] + values.get(
             'dependencies',
             [],
         ),

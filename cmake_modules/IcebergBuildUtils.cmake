@@ -20,7 +20,8 @@
 
 include(CMakePackageConfigHelpers)
 
-function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
+function(iceberg_install_cmake_package PACKAGE_NAME)
+  set(EXPORT_NAME "${PACKAGE_NAME}_targets")
   set(CONFIG_CMAKE "${PACKAGE_NAME}-config.cmake")
   set(BUILT_CONFIG_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_CMAKE}")
   configure_package_config_file("${CONFIG_CMAKE}.in" "${BUILT_CONFIG_CMAKE}"
@@ -33,9 +34,11 @@ function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
   install(FILES "${BUILT_CONFIG_CMAKE}" "${BUILT_CONFIG_VERSION_CMAKE}"
           DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}")
   set(TARGETS_CMAKE "${PACKAGE_NAME}-targets.cmake")
+  # Use iceberg:: for every export (not ${PACKAGE_NAME}::) so install INTERFACE
+  # link lines like iceberg::iceberg_data_static resolve across packages.
   install(EXPORT ${EXPORT_NAME}
           DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
-          NAMESPACE "${PACKAGE_NAME}::"
+          NAMESPACE "iceberg::"
           FILE "${TARGETS_CMAKE}")
 endfunction()
 
@@ -72,6 +75,8 @@ function(add_iceberg_lib LIB_NAME)
   if(ARG_OUTPUTS)
     set(${ARG_OUTPUTS})
   endif()
+
+  set(EXPORT_NAME "${LIB_NAME}_targets")
 
   # Allow overriding ICEBERG_BUILD_SHARED and ICEBERG_BUILD_STATIC
   if(DEFINED ARG_BUILD_SHARED)
@@ -162,7 +167,7 @@ function(add_iceberg_lib LIB_NAME)
     endif()
 
     install(TARGETS ${LIB_NAME}_shared
-            EXPORT iceberg_targets
+            EXPORT ${EXPORT_NAME}
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
             RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR}
@@ -229,7 +234,7 @@ function(add_iceberg_lib LIB_NAME)
     endif()
 
     install(TARGETS ${LIB_NAME}_static
-            EXPORT iceberg_targets
+            EXPORT ${EXPORT_NAME}
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
             RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR}

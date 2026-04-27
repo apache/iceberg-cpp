@@ -15,9 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Accumulate all dependencies to provide suitable static link parameters to the
-# third party libraries.
+# Per-package lists for *-config.cmake.in (iceberg avoids Arrow/Avro/cpr).
 set(ICEBERG_SYSTEM_DEPENDENCIES)
+set(ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES)
+set(ICEBERG_REST_SYSTEM_DEPENDENCIES)
 set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 
 # ----------------------------------------------------------------------
@@ -92,7 +93,7 @@ macro(prepare_fetchcontent)
 endmacro()
 
 # ----------------------------------------------------------------------
-# Apache Arrow
+# Apache Arrow (bundle-only)
 
 function(resolve_arrow_dependency)
   prepare_fetchcontent()
@@ -149,7 +150,7 @@ function(resolve_arrow_dependency)
     set_target_properties(parquet_static PROPERTIES OUTPUT_NAME
                                                     "iceberg_vendored_parquet")
     install(TARGETS arrow_static parquet_static
-            EXPORT iceberg_targets
+            EXPORT iceberg_bundle_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
@@ -167,20 +168,22 @@ function(resolve_arrow_dependency)
     endif()
 
     # Arrow's exported static target interface may reference system libraries
-    # (e.g. OpenSSL, CURL, ZLIB) that consumers need to find.
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ZLIB)
+    # (e.g. OpenSSL, CURL, ZLIB) that consumers need to find. ZLIB is also a
+    # core dependency (see resolve_zlib_dependency()), so it is intentionally
+    # placed in the lowest layer; OpenSSL/CURL are bundle-only because they
+    # are pulled in by Arrow's S3 filesystem.
     if(ARROW_S3)
-      list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL CURL)
+      list(APPEND ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES OpenSSL CURL)
     endif()
   else()
     set(ARROW_VENDORED FALSE)
     find_package(Arrow CONFIG REQUIRED)
     find_package(Parquet CONFIG REQUIRED)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow Parquet)
+    list(APPEND ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES Arrow Parquet)
   endif()
 
-  set(ICEBERG_SYSTEM_DEPENDENCIES
-      ${ICEBERG_SYSTEM_DEPENDENCIES}
+  set(ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES
+      ${ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES}
       PARENT_SCOPE)
   set(ARROW_VENDORED
       ${ARROW_VENDORED}
@@ -188,7 +191,7 @@ function(resolve_arrow_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# Apache Avro
+# Apache Avro (bundle-only)
 
 function(resolve_avro_dependency)
   prepare_fetchcontent()
@@ -249,7 +252,7 @@ function(resolve_avro_dependency)
     set_target_properties(avrocpp_s PROPERTIES OUTPUT_NAME "iceberg_vendored_avrocpp")
     set_target_properties(avrocpp_s PROPERTIES POSITION_INDEPENDENT_CODE ON)
     install(TARGETS avrocpp_s
-            EXPORT iceberg_targets
+            EXPORT iceberg_bundle_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
@@ -257,15 +260,15 @@ function(resolve_avro_dependency)
     # TODO: add vendored ZLIB and Snappy support
     find_package(Snappy CONFIG)
     if(Snappy_FOUND)
-      list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Snappy)
+      list(APPEND ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES Snappy)
     endif()
   else()
     set(AVRO_VENDORED FALSE)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Avro)
+    list(APPEND ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES Avro)
   endif()
 
-  set(ICEBERG_SYSTEM_DEPENDENCIES
-      ${ICEBERG_SYSTEM_DEPENDENCIES}
+  set(ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES
+      ${ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES}
       PARENT_SCOPE)
   set(AVRO_VENDORED
       ${AVRO_VENDORED}
@@ -273,7 +276,7 @@ function(resolve_avro_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# Nanoarrow
+# Nanoarrow (core)
 
 # It is also possible to vendor nanoarrow using the bundled source code.
 function(resolve_nanoarrow_dependency)
@@ -321,7 +324,7 @@ function(resolve_nanoarrow_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# CRoaring
+# CRoaring (core)
 
 function(resolve_croaring_dependency)
   prepare_fetchcontent()
@@ -375,7 +378,7 @@ function(resolve_croaring_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# nlohmann-json
+# nlohmann-json (core)
 
 function(resolve_nlohmann_json_dependency)
   prepare_fetchcontent()
@@ -437,7 +440,7 @@ function(resolve_nlohmann_json_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# zlib
+# zlib (core; lowest layer that needs it -- Arrow/Avro also pull it in)
 
 function(resolve_zlib_dependency)
   # use system zlib, zlib is required by arrow and avro
@@ -454,7 +457,7 @@ function(resolve_zlib_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# cpr (C++ Requests)
+# cpr (REST-only)
 
 function(resolve_cpr_dependency)
   prepare_fetchcontent()
@@ -493,18 +496,18 @@ function(resolve_cpr_dependency)
                                          POSITION_INDEPENDENT_CODE ON)
     add_library(iceberg::cpr ALIAS cpr)
     install(TARGETS cpr
-            EXPORT iceberg_targets
+            EXPORT iceberg_rest_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL CURL)
+    list(APPEND ICEBERG_REST_SYSTEM_DEPENDENCIES OpenSSL CURL)
   else()
     set(CPR_VENDORED FALSE)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES cpr)
+    list(APPEND ICEBERG_REST_SYSTEM_DEPENDENCIES cpr)
   endif()
 
-  set(ICEBERG_SYSTEM_DEPENDENCIES
-      ${ICEBERG_SYSTEM_DEPENDENCIES}
+  set(ICEBERG_REST_SYSTEM_DEPENDENCIES
+      ${ICEBERG_REST_SYSTEM_DEPENDENCIES}
       PARENT_SCOPE)
   set(CPR_VENDORED
       ${CPR_VENDORED}
@@ -512,15 +515,15 @@ function(resolve_cpr_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# Zstd
+# Zstd (bundle-only; pulled in via Arrow/Parquet)
 
 function(resolve_zstd_dependency)
   find_package(zstd CONFIG)
   if(zstd_FOUND)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES zstd)
+    list(APPEND ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES zstd)
     message(STATUS "Found zstd, version: ${zstd_VERSION}")
-    set(ICEBERG_SYSTEM_DEPENDENCIES
-        ${ICEBERG_SYSTEM_DEPENDENCIES}
+    set(ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES
+        ${ICEBERG_BUNDLE_SYSTEM_DEPENDENCIES}
         PARENT_SCOPE)
   endif()
 endfunction()

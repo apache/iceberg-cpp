@@ -32,7 +32,7 @@
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/data/writer.h"
 #include "iceberg/file_format.h"
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/type_fwd.h"
@@ -40,7 +40,7 @@
 namespace iceberg {
 
 /// \brief Options for creating an EqualityDeleteWriter.
-struct ICEBERG_EXPORT EqualityDeleteWriterOptions {
+struct ICEBERG_DATA_EXPORT EqualityDeleteWriterOptions {
   std::string path;
   std::shared_ptr<Schema> schema;
   std::shared_ptr<PartitionSpec> spec;
@@ -54,7 +54,7 @@ struct ICEBERG_EXPORT EqualityDeleteWriterOptions {
 };
 
 /// \brief Writer for Iceberg equality delete files.
-class ICEBERG_EXPORT EqualityDeleteWriter : public FileWriter {
+class ICEBERG_DATA_EXPORT EqualityDeleteWriter : public FileWriter {
  public:
   ~EqualityDeleteWriter() override;
 

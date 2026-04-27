@@ -39,17 +39,12 @@ configure_file(
 )
 
 iceberg_include_dir = include_directories('..')
+
+# `iceberg`: metadata / planning / model layer.
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
     'catalog/memory/in_memory_catalog.cc',
-    'data/data_writer.cc',
-    'data/delete_loader.cc',
-    'data/equality_delete_writer.cc',
-    'data/position_delete_writer.cc',
-    'data/writer.cc',
     'delete_file_index.cc',
-    'deletes/position_delete_index.cc',
-    'deletes/roaring_position_bitmap.cc',
     'expression/aggregate.cc',
     'expression/binder.cc',
     'expression/evaluator.cc',
@@ -88,9 +83,6 @@ iceberg_sources = files(
     'partition_field.cc',
     'partition_spec.cc',
     'partition_summary.cc',
-    'puffin/file_metadata.cc',
-    'puffin/json_serde.cc',
-    'puffin/puffin_format.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
@@ -148,6 +140,20 @@ iceberg_sources = files(
     'util/uuid.cc',
 )
 
+# iceberg_data: data-file / delete / Puffin / execution layer.
+iceberg_data_sources = files(
+    'data/data_writer.cc',
+    'data/delete_loader.cc',
+    'data/equality_delete_writer.cc',
+    'data/position_delete_writer.cc',
+    'data/writer.cc',
+    'deletes/position_delete_index.cc',
+    'deletes/roaring_position_bitmap.cc',
+    'puffin/file_metadata.cc',
+    'puffin/json_serde.cc',
+    'puffin/puffin_format.cc',
+)
+
 # CRoaring does not export symbols, so on Windows it must
 # be used as a static lib
 croaring_needs_static = (
@@ -173,7 +179,7 @@ iceberg_lib = library(
 )
 
 iceberg_interface_args = []
-if get_option('default_library') != 'shared'
+if get_option('default_library') == 'static'
     iceberg_interface_args += ['-DICEBERG_STATIC']
 endif
 
@@ -187,6 +193,32 @@ meson.override_dependency('iceberg', iceberg_dep)
 pkg = import('pkgconfig')
 pkg.generate(iceberg_lib)
 
+# iceberg_data -> iceberg (declare_dependency below).
+iceberg_data_lib = library(
+    'iceberg_data',
+    sources: iceberg_data_sources,
+    dependencies: [iceberg_dep],
+    include_directories: iceberg_include_dir,
+    install: true,
+    gnu_symbol_visibility: 'inlineshidden',
+    cpp_shared_args: ['-DICEBERG_DATA_EXPORTING'],
+    cpp_static_args: ['-DICEBERG_DATA_STATIC'],
+)
+
+iceberg_data_interface_args = []
+if get_option('default_library') == 'static'
+    iceberg_data_interface_args += ['-DICEBERG_DATA_STATIC']
+endif
+
+iceberg_data_dep = declare_dependency(
+    link_with: iceberg_data_lib,
+    dependencies: [iceberg_dep],
+    include_directories: iceberg_include_dir,
+    compile_args: iceberg_data_interface_args,
+)
+meson.override_dependency('iceberg_data', iceberg_data_dep)
+pkg.generate(iceberg_data_lib)
+
 install_headers(
     [
         'arrow_c_data.h',
@@ -199,6 +231,7 @@ install_headers(
         'file_io_registry.h',
         'file_reader.h',
         'file_writer.h',
+        'iceberg_data_export.h',
         'iceberg_export.h',
         'inheritable_metadata.h',
         'location_provider.h',
@@ -230,6 +263,17 @@ install_headers(
         'type.h',
     ],
     subdir: 'iceberg',
+)
+
+install_headers(
+    [
+        'data/data_writer.h',
+        'data/delete_loader.h',
+        'data/equality_delete_writer.h',
+        'data/position_delete_writer.h',
+        'data/writer.h',
+    ],
+    subdir: 'iceberg/data',
 )
 
 subdir('catalog')

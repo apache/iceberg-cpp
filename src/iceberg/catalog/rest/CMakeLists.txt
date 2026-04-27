@@ -39,6 +39,7 @@ set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS)
 
+# REST client: iceberg + cpr only.
 list(APPEND ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>" cpr::cpr)
 list(APPEND ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS
@@ -65,3 +66,5 @@ add_iceberg_lib(iceberg_rest
                 ${ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS})
 
 iceberg_install_all_headers(iceberg/catalog/rest)
+
+iceberg_install_cmake_package(iceberg_rest)
