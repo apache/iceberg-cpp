@@ -89,6 +89,7 @@ iceberg_tests = {
             'decimal_test.cc',
             'endian_test.cc',
             'formatter_test.cc',
+            'lazy_test.cc',
             'location_util_test.cc',
             'position_delete_index_test.cc',
             'retry_util_test.cc',

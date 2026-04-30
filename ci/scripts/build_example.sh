@@ -26,7 +26,7 @@ mkdir ${build_dir}
 pushd ${build_dir}
 
 is_windows() {
-    [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "win32" ]]
+    [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "win32" || "${OSTYPE}" == "cygwin" ]]
 }
 
 CMAKE_ARGS=(
