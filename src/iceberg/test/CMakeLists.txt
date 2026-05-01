@@ -31,7 +31,7 @@ set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 configure_file("test_config.h.in" "test_config.h")
 
 function(add_iceberg_test test_name)
-  set(options USE_BUNDLE)
+  set(options USE_BUNDLE USE_DATA)
   set(oneValueArgs)
   set(multiValueArgs SOURCES)
   cmake_parse_arguments(ARG
@@ -47,6 +47,10 @@ function(add_iceberg_test test_name)
 
   if(ARG_USE_BUNDLE)
     target_link_libraries(${test_name} PRIVATE iceberg_bundle_static GTest::gmock_main)
+  elseif(ARG_USE_DATA)
+    target_link_libraries(${test_name}
+                          PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_data_static>,iceberg_data_static,iceberg_data_shared>"
+                                  GTest::gmock_main)
   else()
     target_link_libraries(${test_name} PRIVATE iceberg_static GTest::gmock_main)
   endif()
@@ -109,6 +113,7 @@ add_iceberg_test(json_serde_test
                  schema_json_test.cc)
 
 add_iceberg_test(util_test
+                 USE_DATA
                  SOURCES
                  bucket_util_test.cc
                  config_test.cc
@@ -129,9 +134,13 @@ add_iceberg_test(util_test
                  uuid_test.cc
                  visit_type_test.cc)
 
-add_iceberg_test(roaring_test SOURCES roaring_test.cc)
+add_iceberg_test(roaring_test USE_DATA SOURCES roaring_test.cc)
 
-add_iceberg_test(puffin_test SOURCES puffin_format_test.cc puffin_json_test.cc)
+add_iceberg_test(puffin_test
+                 USE_DATA
+                 SOURCES
+                 puffin_format_test.cc
+                 puffin_json_test.cc)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test

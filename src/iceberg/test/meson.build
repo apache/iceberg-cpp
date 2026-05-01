@@ -102,10 +102,12 @@ iceberg_tests = {
             'uuid_test.cc',
             'visit_type_test.cc',
         ),
+        'use_data': true,
     },
-    'roaring_test': {'sources': files('roaring_test.cc')},
+    'roaring_test': {'sources': files('roaring_test.cc'), 'use_data': true},
     'puffin_test': {
         'sources': files('puffin_format_test.cc', 'puffin_json_test.cc'),
+        'use_data': true,
     },
 }
 
@@ -141,13 +143,17 @@ if get_option('rest').enabled()
 endif
 
 foreach test_name, values : iceberg_tests
+    test_deps = [gmock_main_dep] + values.get('dependencies', [])
+    if values.get('use_data', false)
+        test_deps = [iceberg_data_dep] + test_deps
+    else
+        test_deps = [iceberg_dep] + test_deps
+    endif
+
     exc = executable(
         test_name,
         sources: values['sources'],
-        dependencies: [iceberg_dep, gmock_main_dep] + values.get(
-            'dependencies',
-            [],
-        ),
+        dependencies: test_deps,
     )
     test(test_name, exc)
 endforeach

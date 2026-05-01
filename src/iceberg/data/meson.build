@@ -15,16 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Please set CMAKE_PREFIX_PATH to the install prefix of iceberg.
-cmake_minimum_required(VERSION 3.25)
-
-project(example)
-
-set(CMAKE_CXX_STANDARD 23)
-
-find_package(iceberg CONFIG REQUIRED COMPONENTS bundle rest)
-
-add_executable(demo_example demo_example.cc)
-
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_shared
-                                           iceberg::iceberg_rest_shared)
+install_headers(
+    [
+        'data_writer.h',
+        'delete_loader.h',
+        'equality_delete_writer.h',
+        'position_delete_writer.h',
+        'writer.h',
+    ],
+    subdir: 'iceberg/data',
+)
