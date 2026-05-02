@@ -149,7 +149,7 @@ list(APPEND
      "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_shared,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
      "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
 

@@ -535,9 +535,9 @@ Result<std::unique_ptr<ScanType>> TableScanBuilder<ScanType>::Build() {
 }
 
 // Explicit template instantiations
-template class TableScanBuilder<DataTableScan>;
-template class TableScanBuilder<IncrementalAppendScan>;
-template class TableScanBuilder<IncrementalChangelogScan>;
+template class ICEBERG_TEMPLATE_EXPORT TableScanBuilder<DataTableScan>;
+template class ICEBERG_TEMPLATE_EXPORT TableScanBuilder<IncrementalAppendScan>;
+template class ICEBERG_TEMPLATE_EXPORT TableScanBuilder<IncrementalChangelogScan>;
 
 TableScan::TableScan(std::shared_ptr<TableMetadata> metadata,
                      std::shared_ptr<Schema> schema, std::shared_ptr<FileIO> file_io,

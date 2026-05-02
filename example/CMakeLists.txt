@@ -26,5 +26,5 @@ find_package(iceberg CONFIG REQUIRED)
 
 add_executable(demo_example demo_example.cc)
 
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_static
-                                           iceberg::iceberg_rest_static)
+target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_shared
+                                           iceberg::iceberg_rest_shared)

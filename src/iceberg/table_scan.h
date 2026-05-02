@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/type_fwd.h"
@@ -252,7 +253,7 @@ concept IsIncrementalScan = std::is_base_of_v<IncrementalScan<FileScanTask>, T> 
 
 /// \brief Builder class for creating TableScan instances.
 template <typename ScanType = DataTableScan>
-class ICEBERG_EXPORT TableScanBuilder : public ErrorCollector {
+class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
  public:
   /// \brief Constructs a TableScanBuilder for the given table.
   /// \param metadata Current table metadata.
@@ -523,5 +524,12 @@ class ICEBERG_EXPORT IncrementalChangelogScan
 
   using IncrementalScan::IncrementalScan;
 };
+
+extern template class ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT
+    TableScanBuilder<DataTableScan>;
+extern template class ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT
+    TableScanBuilder<IncrementalAppendScan>;
+extern template class ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT
+    TableScanBuilder<IncrementalChangelogScan>;
 
 }  // namespace iceberg
