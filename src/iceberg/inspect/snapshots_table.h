@@ -36,7 +36,7 @@ namespace iceberg {
 /// - parent_id (long)
 /// - manifest_list (string)
 /// - summary (map<string, string>)
-class ICEBERG_EXPORT SnapshotsTable : public BaseMetadataTable {
+class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
  public:
   /// \brief Create a SnapshotsTable from table metadata
   ///
@@ -46,8 +46,12 @@ class ICEBERG_EXPORT SnapshotsTable : public BaseMetadataTable {
 
   ~SnapshotsTable() override;
 
+  MetadataTableType type() const noexcept override {
+    return MetadataTableType::kSnapshots;
+  }
+
  private:
-  SnapshotsTable(std::shared_ptr<Table> table);
+  explicit SnapshotsTable(std::shared_ptr<Table> table);
 
   std::shared_ptr<Schema> CreateSchema();
 

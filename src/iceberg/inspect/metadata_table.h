@@ -29,20 +29,26 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-/// Forward declarations
-class FileIO;
+/// \brief The type of metadata table
+enum class MetadataTableType {
+  kSnapshots,
+  kHistory,
+};
 
 /// \brief Base class for Iceberg metadata tables
 ///
 /// Metadata tables expose table metadata as queryable tables with schemas and scan
 /// support. They provide read-only access to metadata.
-class ICEBERG_EXPORT BaseMetadataTable : public Table {
+class ICEBERG_EXPORT MetadataTable : public StaticTable {
  public:
   /// \brief Returns the identifier of this table
-  const TableIdentifier& name() const { return identifier_; }
+  const TableIdentifier& name() const override { return identifier_; }
+
+  virtual MetadataTableType type() const noexcept = 0;
 
   /// \brief Returns the UUID of the table
   const std::string& uuid() const { return uuid_; }
@@ -137,32 +143,10 @@ class ICEBERG_EXPORT BaseMetadataTable : public Table {
   /// filter data.
   Result<std::unique_ptr<TableScanBuilder>> NewScan() const;
 
-  /// \brief Creating transactions is not supported in metadata tables.
-  Result<std::shared_ptr<Transaction>> NewTransaction() override;
-
-  /// \brief Updating partition specs is not supported in metadata tables.
-  Result<std::shared_ptr<UpdatePartitionSpec>> NewUpdatePartitionSpec() override;
-
-  /// \brief Updating table properties is not supported in metadata tables.
-  Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties() override;
-
-  /// \brief Updating sort orders is not supported in metadata tables.
-  Result<std::shared_ptr<UpdateSortOrder>> NewUpdateSortOrder() override;
-
-  /// \brief Updating schemas is not supported in metadata tables.
-  Result<std::shared_ptr<UpdateSchema>> NewUpdateSchema() override;
-
-  /// \brief Expiring snapshots is not supported in metadata tables.
-  Result<std::shared_ptr<ExpireSnapshots>> NewExpireSnapshots() override;
-
-  /// \brief Updating table location is not supported in metadata tables.
-  Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation() override;
-
  protected:
-  BaseMetadataTable(std::shared_ptr<Table> source_table, TableIdentifier identifier,
-                    std::shared_ptr<Schema> schema);
+  explicit MetadataTable(std::shared_ptr<Table> source_table, TableIdentifier identifier);
 
-  virtual ~BaseMetadataTable();
+  ~MetadataTable();
 
   std::shared_ptr<Table> source_table_;
   std::string uuid_;
@@ -175,6 +159,33 @@ class ICEBERG_EXPORT BaseMetadataTable : public Table {
   const std::shared_ptr<PartitionSpec> partition_spec = PartitionSpec::Unpartitioned();
   const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_specs_ = {
       {partition_spec->spec_id(), partition_spec}};
+};
+
+/// \brief Metadata table factory and inspector
+///
+/// MetadataTable provides factory methods to create specific metadata tables for
+/// inspecting table metadata. Each metadata table exposes a different aspect of the
+/// table's metadata as a scannable Iceberg table.
+///
+/// Usage:
+///   auto snapshots = ICEBERG_TRY(MetadataTable::GetSnapshotsTable(table));
+///   auto scan = ICEBERG_TRY(snapshots->NewScan());
+///   // ... scan and read snapshot data
+class ICEBERG_EXPORT MetadataTableFactory {
+ public:
+  /// \brief Create a SnapshotsTable from a table
+  ///
+  /// \param table The source table
+  /// \return A SnapshotsTable exposing all snapshots or error status
+  static Result<std::shared_ptr<SnapshotsTable>> GetSnapshotsTable(
+      std::shared_ptr<Table> table);
+
+  /// \brief Create a HistoryTable from a table
+  ///
+  /// \param table The source table
+  /// \return A HistoryTable exposing snapshot history or error status
+  static Result<std::shared_ptr<HistoryTable>> GetHistoryTable(
+      std::shared_ptr<Table> table);
 };
 
 }  // namespace iceberg

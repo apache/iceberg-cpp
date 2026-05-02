@@ -281,4 +281,20 @@ Result<std::shared_ptr<UpdateSchema>> StaticTable::NewUpdateSchema() {
   return NotSupported("Cannot create an update schema for a static table");
 }
 
+Result<std::shared_ptr<UpdateLocation>> StaticTable::NewUpdateLocation() {
+  return NotSupported("Cannot create an update location for a static table");
+}
+
+Result<std::shared_ptr<UpdatePartitionSpec>> StaticTable::NewUpdatePartitionSpec() {
+  return NotSupported("Cannot create an update partition spec for a static table");
+}
+
+Result<std::shared_ptr<UpdateSortOrder>> StaticTable::NewUpdateSortOrder() {
+  return NotSupported("Cannot create an update sort order for a static table");
+}
+
+Result<std::shared_ptr<ExpireSnapshots>> StaticTable::NewExpireSnapshots() {
+  return NotSupported("Cannot create an expire snapshots for a static table");
+}
+
 }  // namespace iceberg

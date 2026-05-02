@@ -204,6 +204,11 @@ class UpdateSnapshotReference;
 class UpdateSortOrder;
 class UpdateStatistics;
 
+/// \brief Metadata tables.
+class MetadataTable;
+class HistoryTable;
+class SnapshotsTable;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
