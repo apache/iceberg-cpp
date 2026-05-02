@@ -31,23 +31,24 @@
 namespace iceberg {
 
 SnapshotsTable::SnapshotsTable(std::shared_ptr<Table> table)
-    : BaseMetadataTable(table, CreateName(table->name()), CreateSchema()) {}
+    : MetadataTable(table, CreateName(table->name())) {
+  this->schema_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{
+          SchemaField::MakeRequired(1, "committed_at", timestamp_tz()),
+          SchemaField::MakeRequired(2, "snapshot_id", int64()),
+          SchemaField::MakeRequired(3, "parent_id", int64()),
+          SchemaField::MakeOptional(4, "operation", int64()),
+          SchemaField::MakeOptional(5, "manifest_list", string()),
+          SchemaField::MakeOptional(
+              6, "summary",
+              std::make_shared<iceberg::MapType>(
+                  SchemaField::MakeRequired(7, "key", string()),
+                  SchemaField::MakeRequired(8, "value", string())))},
+      1);
+  this->schemas_[schema_->schema_id()] = schema_;
+}
 
 SnapshotsTable::~SnapshotsTable() = default;
-
-std::shared_ptr<Schema> SnapshotsTable::CreateSchema() {
-  return std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "committed_at", int64()),
-                               SchemaField::MakeOptional(2, "snapshot_id", int64()),
-                               SchemaField::MakeRequired(3, "parent_id", int64()),
-                               SchemaField::MakeRequired(4, "manifest_list", string()),
-                               SchemaField::MakeRequired(
-                                   5, "summary",
-                                   std::make_shared<iceberg::MapType>(
-                                       SchemaField::MakeRequired(6, "key", string()),
-                                       SchemaField::MakeRequired(7, "value", string())))},
-      1);
-}
 
 TableIdentifier SnapshotsTable::CreateName(const TableIdentifier& source_name) {
   return TableIdentifier{source_name.ns, source_name.name + ".snapshots"};

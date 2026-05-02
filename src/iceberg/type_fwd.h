@@ -241,8 +241,8 @@ class DeleteLoader;
 class PositionDeleteIndex;
 
 /// \brief Metadata tables.
-class HistoryTable;
 class MetadataTable;
+class HistoryTable;
 class SnapshotsTable;
 
 /// ----------------------------------------------------------------------------
