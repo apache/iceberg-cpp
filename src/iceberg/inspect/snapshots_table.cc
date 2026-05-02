@@ -54,9 +54,9 @@ TableIdentifier SnapshotsTable::CreateName(const TableIdentifier& source_name) {
   return TableIdentifier{source_name.ns, source_name.name + ".snapshots"};
 }
 
-Result<std::shared_ptr<SnapshotsTable>> SnapshotsTable::Make(
+Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
     std::shared_ptr<Table> table) {
-  return std::shared_ptr<SnapshotsTable>(new SnapshotsTable(table));
+  return std::unique_ptr<SnapshotsTable>(new SnapshotsTable(table));
 }
 
 }  // namespace iceberg

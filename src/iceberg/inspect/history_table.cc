@@ -48,8 +48,8 @@ TableIdentifier HistoryTable::CreateName(const TableIdentifier& source_name) {
   return TableIdentifier{source_name.ns, source_name.name + ".history"};
 }
 
-Result<std::shared_ptr<HistoryTable>> HistoryTable::Make(std::shared_ptr<Table> table) {
-  return std::shared_ptr<HistoryTable>(new HistoryTable(table));
+Result<std::unique_ptr<HistoryTable>> HistoryTable::Make(std::shared_ptr<Table> table) {
+  return std::unique_ptr<HistoryTable>(new HistoryTable(table));
 }
 
 }  // namespace iceberg

@@ -42,7 +42,7 @@ class ICEBERG_EXPORT HistoryTable : public MetadataTable {
   ///
   /// \param[in] table The source table
   /// \return A HistoryTable instance or error status
-  static Result<std::shared_ptr<HistoryTable>> Make(std::shared_ptr<Table> table);
+  static Result<std::unique_ptr<HistoryTable>> Make(std::shared_ptr<Table> table);
 
   ~HistoryTable() override;
 
