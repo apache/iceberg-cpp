@@ -53,8 +53,6 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
  private:
   explicit SnapshotsTable(std::shared_ptr<Table> table);
 
-  std::shared_ptr<Schema> CreateSchema();
-
   TableIdentifier CreateName(const TableIdentifier& source_name);
 };
 
