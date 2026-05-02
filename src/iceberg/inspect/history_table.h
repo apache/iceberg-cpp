@@ -51,8 +51,6 @@ class ICEBERG_EXPORT HistoryTable : public MetadataTable {
  private:
   explicit HistoryTable(std::shared_ptr<Table> table);
 
-  std::shared_ptr<Schema> CreateSchema();
-
   TableIdentifier CreateName(const TableIdentifier& source_name);
 };
 
