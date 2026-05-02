@@ -31,19 +31,18 @@
 namespace iceberg {
 
 HistoryTable::HistoryTable(std::shared_ptr<Table> table)
-    : BaseMetadataTable(table, CreateName(table->name()), CreateSchema()) {}
-
-HistoryTable::~HistoryTable() = default;
-
-std::shared_ptr<Schema> HistoryTable::CreateSchema() {
-  return std::make_shared<Schema>(
+    : MetadataTable(table, CreateName(table->name())) {
+  this->schema_ = std::make_shared<Schema>(
       std::vector<SchemaField>{
-          SchemaField::MakeRequired(1, "made_current_at", int64()),
+          SchemaField::MakeRequired(1, "made_current_at", timestamp_tz()),
           SchemaField::MakeRequired(2, "snapshot_id", int64()),
           SchemaField::MakeOptional(3, "parent_id", int64()),
           SchemaField::MakeRequired(4, "is_current_ancestor", boolean())},
       1);
+  this->schemas_[schema_->schema_id()] = schema_;
 }
+
+HistoryTable::~HistoryTable() = default;
 
 TableIdentifier HistoryTable::CreateName(const TableIdentifier& source_name) {
   return TableIdentifier{source_name.ns, source_name.name + ".history"};

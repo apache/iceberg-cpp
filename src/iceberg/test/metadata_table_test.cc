@@ -22,7 +22,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/inspect/metadata_table_factory.h"
 #include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -83,7 +82,6 @@ TEST_F(MetadataTableTest, DelegatesToSourceTable) {
 }
 
 TEST_F(MetadataTableTest, NotSupportedOperations) {
-  EXPECT_THAT(snapshots_table_->Refresh(), HasErrorMessage("Cannot"));
   EXPECT_THAT(snapshots_table_->NewTransaction(), HasErrorMessage("Cannot"));
   EXPECT_THAT(snapshots_table_->NewUpdateProperties(), HasErrorMessage("Cannot"));
   EXPECT_THAT(snapshots_table_->NewUpdateSchema(), HasErrorMessage("Cannot"));

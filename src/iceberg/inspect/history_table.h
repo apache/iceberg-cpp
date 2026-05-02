@@ -36,7 +36,7 @@ namespace iceberg {
 /// - snapshot_id (long)
 /// - parent_id (long, optional)
 /// - is_current_ancestor (bool)
-class ICEBERG_EXPORT HistoryTable : public BaseMetadataTable {
+class ICEBERG_EXPORT HistoryTable : public MetadataTable {
  public:
   /// \brief Create a HistoryTable from table metadata
   ///
@@ -46,8 +46,10 @@ class ICEBERG_EXPORT HistoryTable : public BaseMetadataTable {
 
   ~HistoryTable() override;
 
+  MetadataTableType type() const noexcept override { return MetadataTableType::kHistory; }
+
  private:
-  HistoryTable(std::shared_ptr<Table> table);
+  explicit HistoryTable(std::shared_ptr<Table> table);
 
   std::shared_ptr<Schema> CreateSchema();
 
