@@ -177,14 +177,14 @@ class ICEBERG_EXPORT MetadataTableFactory {
   ///
   /// \param table The source table
   /// \return A SnapshotsTable exposing all snapshots or error status
-  static Result<std::shared_ptr<SnapshotsTable>> GetSnapshotsTable(
+  static Result<std::unique_ptr<SnapshotsTable>> GetSnapshotsTable(
       std::shared_ptr<Table> table);
 
   /// \brief Create a HistoryTable from a table
   ///
   /// \param table The source table
   /// \return A HistoryTable exposing snapshot history or error status
-  static Result<std::shared_ptr<HistoryTable>> GetHistoryTable(
+  static Result<std::unique_ptr<HistoryTable>> GetHistoryTable(
       std::shared_ptr<Table> table);
 };
 
