@@ -58,6 +58,7 @@ iceberg_tests = {
             'table_requirements_test.cc',
             'table_test.cc',
             'table_update_test.cc',
+            'metadata_table_test.cc',
         ),
     },
     'expression_test': {
