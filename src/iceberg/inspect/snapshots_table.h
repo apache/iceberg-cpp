@@ -42,7 +42,7 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
   ///
   /// \param[in] table The source table
   /// \return A SnapshotsTable instance or error status
-  static Result<std::shared_ptr<SnapshotsTable>> Make(std::shared_ptr<Table> table);
+  static Result<std::unique_ptr<SnapshotsTable>> Make(std::shared_ptr<Table> table);
 
   ~SnapshotsTable() override;
 

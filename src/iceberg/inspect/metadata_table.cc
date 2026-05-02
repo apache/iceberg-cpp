@@ -54,12 +54,12 @@ Result<std::unique_ptr<TableScanBuilder>> MetadataTable::NewScan() const {
   return NotSupported("TODO: Scanning metadata tables is not yet supported");
 };
 
-Result<std::shared_ptr<SnapshotsTable>> MetadataTableFactory::GetSnapshotsTable(
+Result<std::unique_ptr<SnapshotsTable>> MetadataTableFactory::GetSnapshotsTable(
     std::shared_ptr<Table> table) {
   return SnapshotsTable::Make(table);
 }
 
-Result<std::shared_ptr<HistoryTable>> MetadataTableFactory::GetHistoryTable(
+Result<std::unique_ptr<HistoryTable>> MetadataTableFactory::GetHistoryTable(
     std::shared_ptr<Table> table) {
   return HistoryTable::Make(table);
 }
