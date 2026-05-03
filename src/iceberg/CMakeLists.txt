@@ -132,13 +132,13 @@ set(ICEBERG_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
-     nanoarrow::nanoarrow_static
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      nlohmann_json::nlohmann_json
      roaring::roaring
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_SHARED_BUILD_INTERFACE_LIBS
-     nanoarrow::nanoarrow_shared
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      nlohmann_json::nlohmann_json
      roaring::roaring
      ZLIB::ZLIB)
