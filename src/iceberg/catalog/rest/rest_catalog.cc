@@ -572,7 +572,7 @@ Result<FetchScanTasksResponse> RestCatalog::FetchScanTasks(const Table& table,
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, /*headers=*/{}, *ScanPlanErrorHandler::Instance(),
+      client_->Post(path, json_request, /*headers=*/{}, *PlanTaskErrorHandler::Instance(),
                     *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));

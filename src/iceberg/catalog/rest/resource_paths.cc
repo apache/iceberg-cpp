@@ -113,8 +113,9 @@ Result<std::string> ResourcePaths::ScanPlan(const TableIdentifier& ident,
                                             const std::string& plan_id) const {
   ICEBERG_ASSIGN_OR_RAISE(std::string encoded_namespace, EncodeNamespace(ident.ns));
   ICEBERG_ASSIGN_OR_RAISE(std::string encoded_table_name, EncodeString(ident.name));
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_plan_id, EncodeString(plan_id));
   return std::format("{}/v1/{}namespaces/{}/tables/{}/plan/{}", base_uri_, prefix_,
-                     encoded_namespace, encoded_table_name, plan_id);
+                     encoded_namespace, encoded_table_name, encoded_plan_id);
 }
 
 Result<std::string> ResourcePaths::ScanTask(const TableIdentifier& ident) const {

@@ -138,4 +138,15 @@ class ICEBERG_REST_EXPORT ScanPlanErrorHandler final : public DefaultErrorHandle
   constexpr ScanPlanErrorHandler() = default;
 };
 
+/// \brief Fetch scan tasks operation error handler.
+class ICEBERG_REST_EXPORT PlanTaskErrorHandler final : public DefaultErrorHandler {
+ public:
+  static const std::shared_ptr<PlanTaskErrorHandler>& Instance();
+
+  Status Accept(const ErrorResponse& error) const override;
+
+ private:
+  constexpr PlanTaskErrorHandler() = default;
+};
+
 }  // namespace iceberg::rest

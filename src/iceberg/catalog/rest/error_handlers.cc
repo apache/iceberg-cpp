@@ -214,4 +214,24 @@ Status ScanPlanErrorHandler::Accept(const ErrorResponse& error) const {
   return DefaultErrorHandler::Accept(error);
 }
 
+const std::shared_ptr<PlanTaskErrorHandler>& PlanTaskErrorHandler::Instance() {
+  static const std::shared_ptr<PlanTaskErrorHandler> instance{new PlanTaskErrorHandler()};
+  return instance;
+}
+
+Status PlanTaskErrorHandler::Accept(const ErrorResponse& error) const {
+  switch (error.code) {
+    case 404:
+      if (error.type == kNoSuchNamespaceException) {
+        return NoSuchNamespace(error.message);
+      }
+      if (error.type == kNoSuchTableException) {
+        return NoSuchTable(error.message);
+      }
+      return NoSuchPlanTask(error.message);
+  }
+
+  return DefaultErrorHandler::Accept(error);
+}
+
 }  // namespace iceberg::rest
