@@ -28,7 +28,7 @@
 #include <string>
 #include <string_view>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
@@ -45,7 +45,7 @@ namespace iceberg {
 /// \note This class is used to represent deletion vectors. The Puffin reader/writer
 /// handle adding the additional required framing (length prefix, magic bytes, CRC-32)
 /// for `deletion-vector-v1` persistence.
-class ICEBERG_EXPORT RoaringPositionBitmap {
+class ICEBERG_DATA_EXPORT RoaringPositionBitmap {
  public:
   /// \brief Maximum supported position (aligned with the Java implementation).
   static constexpr int64_t kMaxPosition = 0x7FFFFFFE80000000LL;

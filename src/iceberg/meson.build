@@ -196,13 +196,13 @@ iceberg_data_lib = library(
     include_directories: iceberg_include_dir,
     install: true,
     gnu_symbol_visibility: 'inlineshidden',
-    cpp_shared_args: ['-DICEBERG_EXPORTING'],
-    cpp_static_args: ['-DICEBERG_STATIC'],
+    cpp_shared_args: ['-DICEBERG_DATA_EXPORTING'],
+    cpp_static_args: ['-DICEBERG_DATA_STATIC'],
 )
 
 iceberg_data_interface_args = []
 if get_option('default_library') != 'shared'
-    iceberg_data_interface_args += ['-DICEBERG_STATIC']
+    iceberg_data_interface_args += ['-DICEBERG_DATA_STATIC']
 endif
 
 iceberg_data_dep = declare_dependency(
@@ -229,6 +229,7 @@ install_headers(
         'file_io_registry.h',
         'file_reader.h',
         'file_writer.h',
+        'iceberg_data_export.h',
         'iceberg_export.h',
         'inheritable_metadata.h',
         'location_provider.h',

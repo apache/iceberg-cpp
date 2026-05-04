@@ -203,10 +203,6 @@ add_iceberg_lib(iceberg_data
                 SHARED_INSTALL_INTERFACE_LIBS
                 ${ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS})
 
-if(TARGET iceberg_data_shared)
-  target_compile_definitions(iceberg_data_shared PRIVATE ICEBERG_EXPORTING)
-endif()
-
 if(TARGET iceberg_data_static)
   target_compile_definitions(iceberg_data_static PRIVATE ICEBERG_STATIC)
 endif()

@@ -31,7 +31,7 @@
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/data/writer.h"
 #include "iceberg/file_format.h"
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/type_fwd.h"
@@ -39,7 +39,7 @@
 namespace iceberg {
 
 /// \brief Options for creating a DataWriter.
-struct ICEBERG_EXPORT DataWriterOptions {
+struct ICEBERG_DATA_EXPORT DataWriterOptions {
   std::string path;
   std::shared_ptr<Schema> schema;
   std::shared_ptr<PartitionSpec> spec;
@@ -51,7 +51,7 @@ struct ICEBERG_EXPORT DataWriterOptions {
 };
 
 /// \brief Writer for Iceberg data files.
-class ICEBERG_EXPORT DataWriter : public FileWriter {
+class ICEBERG_DATA_EXPORT DataWriter : public FileWriter {
  public:
   ~DataWriter() override;
 
