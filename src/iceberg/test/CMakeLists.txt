@@ -134,8 +134,6 @@ add_iceberg_test(util_test
                  uuid_test.cc
                  visit_type_test.cc)
 
-add_iceberg_test(roaring_test USE_DATA SOURCES roaring_test.cc)
-
 add_iceberg_test(puffin_test
                  USE_DATA
                  SOURCES

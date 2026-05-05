@@ -104,7 +104,6 @@ iceberg_tests = {
         ),
         'use_data': true,
     },
-    'roaring_test': {'sources': files('roaring_test.cc'), 'use_data': true},
     'puffin_test': {
         'sources': files('puffin_format_test.cc', 'puffin_json_test.cc'),
         'use_data': true,

@@ -201,7 +201,7 @@ iceberg_data_lib = library(
 )
 
 iceberg_data_interface_args = []
-if get_option('default_library') != 'shared'
+if get_option('default_library') == 'static'
     iceberg_data_interface_args += ['-DICEBERG_DATA_STATIC']
 endif
 
