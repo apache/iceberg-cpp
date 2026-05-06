@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Install dependencies
@@ -71,7 +71,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Build Iceberg
@@ -88,7 +88,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Set up MSVC Developer Command Prompt
@@ -135,11 +135,11 @@ jobs:
           - title: AArch64 macOS 26
             runs-on: macos-26
     steps:
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.x'
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Install build dependencies
