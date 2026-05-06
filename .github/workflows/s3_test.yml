@@ -1,0 +1,81 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# S3-backed tests against MinIO (Linux and macOS only).
+name: S3 Tests
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!dependabot/**'
+    tags:
+      - '**'
+  pull_request:
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  ICEBERG_HOME: /tmp/iceberg
+
+jobs:
+  s3-minio:
+    name: S3 (${{ matrix.title }})
+    runs-on: ${{ matrix.runs-on }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - title: AMD64 Ubuntu 24.04
+            runs-on: ubuntu-24.04
+            CC: gcc-14
+            CXX: g++-14
+          - title: AArch64 macOS 26
+            runs-on: macos-26
+    env:
+      ICEBERG_TEST_S3_URI: s3://iceberg-test
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://127.0.0.1:9000
+      AWS_EC2_METADATA_DISABLED: "TRUE"
+    steps:
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+      - name: Install dependencies on Ubuntu
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+      - name: Set Ubuntu Compilers
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
+        run: |
+          echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
+          echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
+      - name: Start MinIO
+        shell: bash
+        run: bash ci/scripts/start_minio.sh
+      - name: Build and test Iceberg with S3
+        shell: bash
+        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF OFF ON

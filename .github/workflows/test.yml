@@ -43,13 +43,6 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-    env:
-      ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ENDPOINT_URL: http://127.0.0.1:9000
-      AWS_EC2_METADATA_DISABLED: "TRUE"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -58,9 +51,6 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
-      - name: Start MinIO
-        shell: bash
-        run: bash ci/scripts/start_minio.sh
       - name: Build Iceberg
         shell: bash
         env:
@@ -79,21 +69,11 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-    env:
-      ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ENDPOINT_URL: http://127.0.0.1:9000
-      AWS_EC2_METADATA_DISABLED: "TRUE"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           persist-credentials: false
-      - name: Start MinIO
-        shell: bash
-        run: bash ci/scripts/start_minio.sh
       - name: Build Iceberg
         shell: bash
         run: ci/scripts/build_iceberg.sh $(pwd)
@@ -106,13 +86,6 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-    env:
-      ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ENDPOINT_URL: http://127.0.0.1:9000
-      AWS_EC2_METADATA_DISABLED: "TRUE"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -128,9 +101,6 @@ jobs:
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
-      - name: Start MinIO
-        shell: bash
-        run: bash ci/scripts/start_minio.sh
       - name: Build Iceberg
         shell: pwsh
         env:

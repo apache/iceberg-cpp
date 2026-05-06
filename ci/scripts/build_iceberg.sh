@@ -16,6 +16,8 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+#
+# Usage: build_iceberg.sh <source_dir> [rest_integration_tests=OFF] [sccache=OFF] [s3=OFF]
 
 set -eux
 
@@ -23,6 +25,7 @@ source_dir=${1}
 build_dir=${1}/build
 build_rest_integration_test=${2:-OFF}
 build_enable_sccache=${3:-OFF}
+build_enable_s3=${4:-OFF}
 
 mkdir ${build_dir}
 pushd ${build_dir}
@@ -36,9 +39,14 @@ CMAKE_ARGS=(
     "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX:-${ICEBERG_HOME}}"
     "-DICEBERG_BUILD_STATIC=ON"
     "-DICEBERG_BUILD_SHARED=ON"
-    "-DICEBERG_S3=ON"
     "-DICEBERG_BUILD_REST_INTEGRATION_TESTS=${build_rest_integration_test}"
 )
+
+if [[ "${build_enable_s3}" == "ON" ]]; then
+    CMAKE_ARGS+=("-DICEBERG_S3=ON")
+else
+    CMAKE_ARGS+=("-DICEBERG_S3=OFF")
+fi
 
 if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
