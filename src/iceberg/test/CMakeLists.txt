@@ -46,13 +46,17 @@ function(add_iceberg_test test_name)
   target_sources(${test_name} PRIVATE ${ARG_SOURCES})
 
   if(ARG_USE_BUNDLE)
-    target_link_libraries(${test_name} PRIVATE iceberg_bundle_static GTest::gmock_main)
+    target_link_libraries(${test_name}
+                          PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_bundle_static>,iceberg_bundle_static,iceberg_bundle_shared>"
+                                  GTest::gmock_main)
   elseif(ARG_USE_DATA)
     target_link_libraries(${test_name}
                           PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_data_static>,iceberg_data_static,iceberg_data_shared>"
                                   GTest::gmock_main)
   else()
-    target_link_libraries(${test_name} PRIVATE iceberg_static GTest::gmock_main)
+    target_link_libraries(${test_name}
+                          PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+                                  GTest::gmock_main)
   endif()
 
   if(MSVC_TOOLCHAIN)
