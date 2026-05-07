@@ -307,8 +307,8 @@ struct ICEBERG_REST_EXPORT PlanTableScanRequest {
   bool use_snapshot_schema = false;
   std::optional<int64_t> start_snapshot_id;
   std::optional<int64_t> end_snapshot_id;
-  std::vector<std::string> statsFields;
-  std::optional<int64_t> min_rows_required;
+  std::vector<std::string> stats_fields;
+  std::optional<int64_t> min_rows_requested;
 
   Status Validate() const;
 

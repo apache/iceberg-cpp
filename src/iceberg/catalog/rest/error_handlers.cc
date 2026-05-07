@@ -186,12 +186,12 @@ Status ViewCommitErrorHandler::Accept(const ErrorResponse& error) const {
   return DefaultErrorHandler::Accept(error);
 }
 
-const std::shared_ptr<ScanPlanErrorHandler>& ScanPlanErrorHandler::Instance() {
-  static const std::shared_ptr<ScanPlanErrorHandler> instance{new ScanPlanErrorHandler()};
+const std::shared_ptr<PlanErrorHandler>& PlanErrorHandler::Instance() {
+  static const std::shared_ptr<PlanErrorHandler> instance{new PlanErrorHandler()};
   return instance;
 }
 
-Status ScanPlanErrorHandler::Accept(const ErrorResponse& error) const {
+Status PlanErrorHandler::Accept(const ErrorResponse& error) const {
   switch (error.code) {
     case 404:
       if (error.type == kNoSuchNamespaceException) {
@@ -202,9 +202,6 @@ Status ScanPlanErrorHandler::Accept(const ErrorResponse& error) const {
       }
       if (error.type == kNoSuchPlanIdException) {
         return NoSuchPlanId(error.message);
-      }
-      if (error.type == kNoSuchPlanTaskException) {
-        return NoSuchPlanTask(error.message);
       }
       return NotFound(error.message);
     case 406:
@@ -228,7 +225,10 @@ Status PlanTaskErrorHandler::Accept(const ErrorResponse& error) const {
       if (error.type == kNoSuchTableException) {
         return NoSuchTable(error.message);
       }
-      return NoSuchPlanTask(error.message);
+      if (error.type == kNoSuchPlanTaskException) {
+        return NoSuchPlanTask(error.message);
+      }
+      return NotFound(error.message);
   }
 
   return DefaultErrorHandler::Accept(error);

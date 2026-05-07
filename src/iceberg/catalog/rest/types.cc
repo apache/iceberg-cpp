@@ -123,8 +123,8 @@ bool PlanTableScanRequest::operator==(const PlanTableScanRequest& other) const {
          filter == other.filter && case_sensitive == other.case_sensitive &&
          use_snapshot_schema == other.use_snapshot_schema &&
          start_snapshot_id == other.start_snapshot_id &&
-         end_snapshot_id == other.end_snapshot_id && statsFields == other.statsFields &&
-         min_rows_required == other.min_rows_required;
+         end_snapshot_id == other.end_snapshot_id && stats_fields == other.stats_fields &&
+         min_rows_requested == other.min_rows_requested;
 }
 
 bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
@@ -213,7 +213,7 @@ Status PlanTableScanRequest::Validate() const {
           "Invalid incremental scan: startSnapshotId and endSnapshotId is required");
     }
   }
-  if (min_rows_required.has_value() && min_rows_required.value() < 0) {
+  if (min_rows_requested.has_value() && min_rows_requested.value() < 0) {
     return ValidationFailed("Invalid scan: minRowsRequested is negative");
   }
   return {};

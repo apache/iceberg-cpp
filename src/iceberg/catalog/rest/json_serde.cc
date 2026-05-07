@@ -574,11 +574,11 @@ Result<nlohmann::json> ToJson(const PlanTableScanRequest& request) {
   if (request.end_snapshot_id.has_value()) {
     json[kEndSnapshotId] = request.end_snapshot_id.value();
   }
-  if (!request.statsFields.empty()) {
-    json[kStatsFields] = request.statsFields;
+  if (!request.stats_fields.empty()) {
+    json[kStatsFields] = request.stats_fields;
   }
-  if (request.min_rows_required.has_value()) {
-    json[kMinRowsRequested] = request.min_rows_required.value();
+  if (request.min_rows_requested.has_value()) {
+    json[kMinRowsRequested] = request.min_rows_requested.value();
   }
   return json;
 }

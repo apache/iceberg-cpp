@@ -501,7 +501,7 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
 Result<PlanTableScanResponse> RestCatalog::PlanTableScan(
     const Table& table, const internal::TableScanContext& context) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::PlanTableScan());
-  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->ScanPlan(table.name()));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Plan(table.name()));
   ICEBERG_ASSIGN_OR_RAISE(auto schema_ptr, table.schema());
   ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, table.specs());
 
@@ -519,7 +519,7 @@ Result<PlanTableScanResponse> RestCatalog::PlanTableScan(
     request.use_snapshot_schema = true;
   }
   if (context.min_rows_requested.has_value()) {
-    request.min_rows_required = context.min_rows_requested.value();
+    request.min_rows_requested = context.min_rows_requested.value();
   }
 
   ICEBERG_RETURN_UNEXPECTED(request.Validate());
@@ -527,7 +527,7 @@ Result<PlanTableScanResponse> RestCatalog::PlanTableScan(
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Post(path, json_request, /*headers=*/{}, *ScanPlanErrorHandler::Instance(),
+      client_->Post(path, json_request, /*headers=*/{}, *PlanErrorHandler::Instance(),
                     *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
@@ -537,13 +537,13 @@ Result<PlanTableScanResponse> RestCatalog::PlanTableScan(
 Result<FetchPlanningResultResponse> RestCatalog::FetchPlanningResult(
     const Table& table, const std::string& plan_id) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::FetchPlanningResult());
-  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->ScanPlan(table.name(), plan_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Plan(table.name(), plan_id));
   ICEBERG_ASSIGN_OR_RAISE(auto schema_ptr, table.schema());
   ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, table.specs());
 
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Get(path, /*params=*/{}, /*headers=*/{}, *ScanPlanErrorHandler::Instance(),
+      client_->Get(path, /*params=*/{}, /*headers=*/{}, *PlanErrorHandler::Instance(),
                    *catalog_session_));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return FetchPlanningResultResponseFromJson(json, specs_ref.get(), *schema_ptr);
@@ -551,19 +551,19 @@ Result<FetchPlanningResultResponse> RestCatalog::FetchPlanningResult(
 
 Status RestCatalog::CancelPlanning(const Table& table, const std::string& plan_id) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::CancelPlanning());
-  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->ScanPlan(table.name(), plan_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Plan(table.name(), plan_id));
 
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
       client_->Delete(path, /*params=*/{}, /*headers=*/{},
-                      *ScanPlanErrorHandler::Instance(), *catalog_session_));
+                      *PlanErrorHandler::Instance(), *catalog_session_));
   return {};
 }
 
 Result<FetchScanTasksResponse> RestCatalog::FetchScanTasks(const Table& table,
                                                            const std::string& plan_task) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::FetchScanTasks());
-  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->ScanTask(table.name()));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->FetchScanTasks(table.name()));
   ICEBERG_ASSIGN_OR_RAISE(auto schema_ptr, table.schema());
   ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, table.specs());
 
