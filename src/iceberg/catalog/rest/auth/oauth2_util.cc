@@ -29,6 +29,7 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/transform_util.h"
 
 namespace iceberg::rest::auth {
 
@@ -72,6 +73,50 @@ Result<OAuthTokenResponse> FetchToken(HttpClient& client, AuthSession& session,
   ICEBERG_ASSIGN_OR_RAISE(auto token_response, FromJson<OAuthTokenResponse>(json));
   ICEBERG_RETURN_UNEXPECTED(token_response.Validate());
   return token_response;
+}
+
+std::optional<int64_t> ExpiresAtMillis(const std::string& token) {
+  if (token.empty()) {
+    return std::nullopt;
+  }
+
+  // A JWT has exactly 3 dot-separated parts: header.payload.signature
+  auto first_dot = token.find('.');
+  if (first_dot == std::string::npos) {
+    return std::nullopt;
+  }
+  auto second_dot = token.find('.', first_dot + 1);
+  if (second_dot == std::string::npos) {
+    return std::nullopt;
+  }
+  // Ensure there's no third dot (exactly 3 parts)
+  if (token.find('.', second_dot + 1) != std::string::npos) {
+    return std::nullopt;
+  }
+
+  // Extract and decode the payload (second part)
+  std::string_view payload_b64 =
+      std::string_view(token).substr(first_dot + 1, second_dot - first_dot - 1);
+  std::string payload = TransformUtil::Base64UrlDecode(payload_b64);
+  if (payload.empty()) {
+    return std::nullopt;
+  }
+
+  // Parse JSON and extract "exp" claim
+  try {
+    auto json = nlohmann::json::parse(payload, nullptr, false);
+    if (json.is_discarded() || !json.is_object()) {
+      return std::nullopt;
+    }
+    auto it = json.find("exp");
+    if (it == json.end() || !it->is_number_integer()) {
+      return std::nullopt;
+    }
+    int64_t exp_seconds = it->get<int64_t>();
+    return exp_seconds * 1000;  // Convert seconds to milliseconds
+  } catch (...) {
+    return std::nullopt;
+  }
 }
 
 }  // namespace iceberg::rest::auth

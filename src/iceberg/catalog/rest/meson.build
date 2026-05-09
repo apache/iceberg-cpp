@@ -21,6 +21,7 @@ iceberg_rest_sources = files(
     'auth/auth_properties.cc',
     'auth/auth_session.cc',
     'auth/oauth2_util.cc',
+    'auth/token_refresh_scheduler.cc',
     'catalog_properties.cc',
     'endpoint.cc',
     'error_handlers.cc',
