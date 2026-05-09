@@ -358,4 +358,214 @@ TEST_F(AuthManagerTest, OAuthTokenResponseNATokenType) {
   EXPECT_EQ(result->token_type, "N_A");
 }
 
+// ---- ExpiresAtMillis tests ----
+
+// Helper: build a minimal JWT with a given payload JSON string.
+// JWT = base64url(header) + "." + base64url(payload) + "." + base64url(signature)
+namespace {
+
+// Base64url encode (no padding) for test token construction
+std::string Base64UrlEncode(std::string_view input) {
+  static constexpr std::string_view kChars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  std::string output;
+  uint32_t buffer = 0;
+  int bits = 0;
+  for (uint8_t c : input) {
+    buffer = (buffer << 8) | c;
+    bits += 8;
+    while (bits >= 6) {
+      bits -= 6;
+      output.push_back(kChars[(buffer >> bits) & 0x3F]);
+    }
+  }
+  if (bits > 0) {
+    output.push_back(kChars[(buffer << (6 - bits)) & 0x3F]);
+  }
+  return output;
+}
+
+std::string MakeJwt(const std::string& payload_json) {
+  std::string header = R"({"alg":"HS256","typ":"JWT"})";
+  std::string signature = "test-signature";
+  return Base64UrlEncode(header) + "." + Base64UrlEncode(payload_json) + "." +
+         Base64UrlEncode(signature);
+}
+
+}  // namespace
+
+// Valid JWT with exp claim
+TEST_F(AuthManagerTest, ExpiresAtMillisValidJwt) {
+  // exp = 1700000000 (seconds since epoch)
+  std::string token = MakeJwt(R"({"sub":"user","exp":1700000000})");
+  auto result = ExpiresAtMillis(token);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 1700000000LL * 1000);  // milliseconds
+}
+
+// Valid JWT with large exp value
+TEST_F(AuthManagerTest, ExpiresAtMillisLargeExp) {
+  std::string token = MakeJwt(R"({"exp":2000000000})");
+  auto result = ExpiresAtMillis(token);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 2000000000LL * 1000);
+}
+
+// Non-JWT token (no dots)
+TEST_F(AuthManagerTest, ExpiresAtMillisNonJwtNoDots) {
+  auto result = ExpiresAtMillis("just-a-plain-token");
+  EXPECT_FALSE(result.has_value());
+}
+
+// Non-JWT token (only one dot)
+TEST_F(AuthManagerTest, ExpiresAtMillisOneDot) {
+  auto result = ExpiresAtMillis("part1.part2");
+  EXPECT_FALSE(result.has_value());
+}
+
+// Non-JWT token (four dots — too many parts)
+TEST_F(AuthManagerTest, ExpiresAtMillisFourParts) {
+  auto result = ExpiresAtMillis("a.b.c.d");
+  EXPECT_FALSE(result.has_value());
+}
+
+// JWT without exp claim
+TEST_F(AuthManagerTest, ExpiresAtMillisNoExpClaim) {
+  std::string token = MakeJwt(R"({"sub":"user","iat":1700000000})");
+  auto result = ExpiresAtMillis(token);
+  EXPECT_FALSE(result.has_value());
+}
+
+// JWT with non-integer exp claim
+TEST_F(AuthManagerTest, ExpiresAtMillisExpNotInteger) {
+  std::string token = MakeJwt(R"({"exp":"not-a-number"})");
+  auto result = ExpiresAtMillis(token);
+  EXPECT_FALSE(result.has_value());
+}
+
+// Malformed base64 in payload
+TEST_F(AuthManagerTest, ExpiresAtMillisMalformedBase64) {
+  // Use invalid base64url characters in the payload part
+  std::string token = "eyJhbGciOiJIUzI1NiJ9.!!!invalid!!!.signature";
+  auto result = ExpiresAtMillis(token);
+  EXPECT_FALSE(result.has_value());
+}
+
+// Empty token
+TEST_F(AuthManagerTest, ExpiresAtMillisEmptyToken) {
+  auto result = ExpiresAtMillis("");
+  EXPECT_FALSE(result.has_value());
+}
+
+// Payload is valid base64 but not valid JSON
+TEST_F(AuthManagerTest, ExpiresAtMillisInvalidJson) {
+  std::string header = R"({"alg":"HS256"})";
+  std::string invalid_json = "this is not json";
+  std::string token =
+      Base64UrlEncode(header) + "." + Base64UrlEncode(invalid_json) + "." + "sig";
+  auto result = ExpiresAtMillis(token);
+  EXPECT_FALSE(result.has_value());
+}
+
+// ---- TokenRefreshScheduler tests ----
+
+}  // namespace iceberg::rest::auth
+
+#include <atomic>
+#include <chrono>
+#include <thread>
+
+#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
+
+namespace iceberg::rest::auth {
+
+TEST(TokenRefreshSchedulerTest, ScheduleFiresAfterDelay) {
+  TokenRefreshScheduler scheduler;
+  std::atomic<bool> fired{false};
+
+  scheduler.Schedule(std::chrono::milliseconds(50), [&] { fired.store(true); });
+
+  // Should not have fired immediately
+  EXPECT_FALSE(fired.load());
+
+  // Wait enough time for it to fire
+  std::this_thread::sleep_for(std::chrono::milliseconds(150));
+  EXPECT_TRUE(fired.load());
+
+  scheduler.Shutdown();
+}
+
+TEST(TokenRefreshSchedulerTest, CancelPreventsExecution) {
+  TokenRefreshScheduler scheduler;
+  std::atomic<bool> fired{false};
+
+  auto handle =
+      scheduler.Schedule(std::chrono::milliseconds(100), [&] { fired.store(true); });
+
+  // Cancel before it fires
+  scheduler.Cancel(handle);
+
+  // Wait past the scheduled time
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  EXPECT_FALSE(fired.load());
+
+  scheduler.Shutdown();
+}
+
+TEST(TokenRefreshSchedulerTest, MultipleTasksFireInOrder) {
+  TokenRefreshScheduler scheduler;
+  std::vector<int> order;
+  std::mutex order_mutex;
+
+  auto append = [&](int val) {
+    std::lock_guard lock(order_mutex);
+    order.push_back(val);
+  };
+
+  // Schedule in reverse order of fire time
+  scheduler.Schedule(std::chrono::milliseconds(150), [&] { append(3); });
+  scheduler.Schedule(std::chrono::milliseconds(50), [&] { append(1); });
+  scheduler.Schedule(std::chrono::milliseconds(100), [&] { append(2); });
+
+  // Wait for all to fire
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+  std::lock_guard lock(order_mutex);
+  ASSERT_EQ(3u, order.size());
+  EXPECT_EQ(1, order[0]);
+  EXPECT_EQ(2, order[1]);
+  EXPECT_EQ(3, order[2]);
+
+  scheduler.Shutdown();
+}
+
+TEST(TokenRefreshSchedulerTest, ShutdownWithPendingTasks) {
+  TokenRefreshScheduler scheduler;
+  std::atomic<bool> fired{false};
+
+  scheduler.Schedule(std::chrono::milliseconds(5000), [&] { fired.store(true); });
+
+  // Shutdown immediately — should not crash and task should not fire
+  scheduler.Shutdown();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  EXPECT_FALSE(fired.load());
+}
+
+TEST(TokenRefreshSchedulerTest, ScheduleAfterShutdownIsNoop) {
+  TokenRefreshScheduler scheduler;
+  scheduler.Shutdown();
+
+  auto handle = scheduler.Schedule(std::chrono::milliseconds(10), [] {});
+  EXPECT_EQ(0u, handle);
+}
+
+TEST(TokenRefreshSchedulerTest, CancelInvalidHandleIsNoop) {
+  TokenRefreshScheduler scheduler;
+  // Should not crash
+  scheduler.Cancel(0);
+  scheduler.Cancel(999);
+  scheduler.Shutdown();
+}
+
 }  // namespace iceberg::rest::auth

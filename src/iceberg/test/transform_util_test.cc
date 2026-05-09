@@ -159,6 +159,56 @@ TEST(TransformUtilTest, Base64Encode) {
   EXPECT_EQ("AA==", TransformUtil::Base64Encode({"\x00", 1}));
 }
 
+TEST(TransformUtilTest, Base64Decode) {
+  // Empty string
+  EXPECT_EQ("", TransformUtil::Base64Decode(""));
+
+  // Round-trip with Base64Encode
+  EXPECT_EQ("a", TransformUtil::Base64Decode("YQ=="));
+  EXPECT_EQ("ab", TransformUtil::Base64Decode("YWI="));
+  EXPECT_EQ("abc", TransformUtil::Base64Decode("YWJj"));
+  EXPECT_EQ("abcde", TransformUtil::Base64Decode("YWJjZGU="));
+  EXPECT_EQ("abcdef", TransformUtil::Base64Decode("YWJjZGVm"));
+  EXPECT_EQ("hello", TransformUtil::Base64Decode("aGVsbG8="));
+  EXPECT_EQ("test string", TransformUtil::Base64Decode("dGVzdCBzdHJpbmc="));
+
+  // Without padding (should still work)
+  EXPECT_EQ("a", TransformUtil::Base64Decode("YQ"));
+  EXPECT_EQ("ab", TransformUtil::Base64Decode("YWI"));
+
+  // Invalid characters return empty
+  EXPECT_EQ("", TransformUtil::Base64Decode("!!!"));
+}
+
+TEST(TransformUtilTest, Base64UrlDecode) {
+  // Empty string
+  EXPECT_EQ("", TransformUtil::Base64UrlDecode(""));
+
+  // Standard cases (same as Base64Decode for alphanumeric)
+  EXPECT_EQ("hello", TransformUtil::Base64UrlDecode("aGVsbG8"));
+  EXPECT_EQ("abc", TransformUtil::Base64UrlDecode("YWJj"));
+
+  // URL-safe characters: '-' and '_' instead of '+' and '/'
+  // "?>" in standard base64 is "Pz4=" (contains '+' and '/')
+  // In base64url it would use '-' and '_'
+  // Let's test with a known value: bytes {0xFB, 0xFF, 0xFE} encode to "+//+" in
+  // standard base64, and "-__-" in base64url
+  std::string decoded = TransformUtil::Base64UrlDecode("-__-");
+  EXPECT_EQ(3u, decoded.size());
+  EXPECT_EQ('\xFB', decoded[0]);
+  EXPECT_EQ('\xFF', decoded[1]);
+  EXPECT_EQ('\xFE', decoded[2]);
+
+  // Standard base64 chars '+' and '/' should be invalid in base64url
+  EXPECT_EQ("", TransformUtil::Base64UrlDecode("+//+"));
+
+  // With padding (should handle gracefully)
+  EXPECT_EQ("hello", TransformUtil::Base64UrlDecode("aGVsbG8="));
+
+  // Invalid characters return empty
+  EXPECT_EQ("", TransformUtil::Base64UrlDecode("!!!invalid!!!"));
+}
+
 struct ParseRoundTripParam {
   std::string name;
   std::string str;

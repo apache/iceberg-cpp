@@ -139,6 +139,19 @@ class ICEBERG_EXPORT TransformUtil {
 
   /// \brief Base64 encode a string
   static std::string Base64Encode(std::string_view str_to_encode);
+
+  /// \brief Base64 decode a string (standard alphabet: +/).
+  ///
+  /// Handles optional padding ('='). Returns an empty string if the input
+  /// contains invalid characters.
+  static std::string Base64Decode(std::string_view encoded);
+
+  /// \brief Base64url decode a string (URL-safe alphabet: -_).
+  ///
+  /// Handles optional padding ('='). Returns an empty string if the input
+  /// contains invalid characters. This variant uses '-' and '_' instead of
+  /// '+' and '/' per RFC 4648 §5.
+  static std::string Base64UrlDecode(std::string_view encoded);
 };
 
 }  // namespace iceberg
