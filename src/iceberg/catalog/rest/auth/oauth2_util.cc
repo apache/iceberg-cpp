@@ -75,48 +75,48 @@ Result<OAuthTokenResponse> FetchToken(HttpClient& client, AuthSession& session,
   return token_response;
 }
 
-std::optional<int64_t> ExpiresAtMillis(const std::string& token) {
+std::optional<int64_t> ExpiresAtMillis(std::string_view token) {
   if (token.empty()) {
     return std::nullopt;
   }
 
   // A JWT has exactly 3 dot-separated parts: header.payload.signature
   auto first_dot = token.find('.');
-  if (first_dot == std::string::npos) {
+  if (first_dot == std::string_view::npos) {
     return std::nullopt;
   }
   auto second_dot = token.find('.', first_dot + 1);
-  if (second_dot == std::string::npos) {
+  if (second_dot == std::string_view::npos) {
     return std::nullopt;
   }
-  // Ensure there's no third dot (exactly 3 parts)
-  if (token.find('.', second_dot + 1) != std::string::npos) {
+  // Ensure there are exactly 3 parts (no additional dots after the signature).
+  // Note: JWE tokens have 5 segments — they are intentionally not supported here
+  // and will return nullopt (graceful degradation to not scheduling refresh).
+  if (token.find('.', second_dot + 1) != std::string_view::npos) {
     return std::nullopt;
   }
 
-  // Extract and decode the payload (second part)
-  std::string_view payload_b64 =
-      std::string_view(token).substr(first_dot + 1, second_dot - first_dot - 1);
+  // Extract and decode the payload (second part).
+  // Note: Base64UrlDecode returns empty string on both empty input and decode failure.
+  // A valid JWT payload is never empty (at minimum "{}"), so empty result reliably
+  // indicates a decode failure here.
+  std::string_view payload_b64 = token.substr(first_dot + 1, second_dot - first_dot - 1);
   std::string payload = TransformUtil::Base64UrlDecode(payload_b64);
   if (payload.empty()) {
     return std::nullopt;
   }
 
   // Parse JSON and extract "exp" claim
-  try {
-    auto json = nlohmann::json::parse(payload, nullptr, false);
-    if (json.is_discarded() || !json.is_object()) {
-      return std::nullopt;
-    }
-    auto it = json.find("exp");
-    if (it == json.end() || !it->is_number_integer()) {
-      return std::nullopt;
-    }
-    int64_t exp_seconds = it->get<int64_t>();
-    return exp_seconds * 1000;  // Convert seconds to milliseconds
-  } catch (...) {
+  auto json = nlohmann::json::parse(payload, nullptr, false);
+  if (json.is_discarded() || !json.is_object()) {
     return std::nullopt;
   }
+  auto it = json.find("exp");
+  if (it == json.end() || !it->is_number()) {
+    return std::nullopt;
+  }
+  auto exp_seconds = static_cast<int64_t>(it->get<double>());
+  return exp_seconds * 1000;  // Convert seconds to milliseconds
 }
 
 }  // namespace iceberg::rest::auth

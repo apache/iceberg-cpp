@@ -394,7 +394,7 @@ std::string MakeJwt(const std::string& payload_json) {
 
 }  // namespace
 
-// Valid JWT with exp claim
+// Verifies ExpiresAtMillis extracts exp claim from a valid JWT
 TEST_F(AuthManagerTest, ExpiresAtMillisValidJwt) {
   // exp = 1700000000 (seconds since epoch)
   std::string token = MakeJwt(R"({"sub":"user","exp":1700000000})");
@@ -403,7 +403,7 @@ TEST_F(AuthManagerTest, ExpiresAtMillisValidJwt) {
   EXPECT_EQ(result.value(), 1700000000LL * 1000);  // milliseconds
 }
 
-// Valid JWT with large exp value
+// Verifies ExpiresAtMillis handles large exp values correctly
 TEST_F(AuthManagerTest, ExpiresAtMillisLargeExp) {
   std::string token = MakeJwt(R"({"exp":2000000000})");
   auto result = ExpiresAtMillis(token);
@@ -411,39 +411,47 @@ TEST_F(AuthManagerTest, ExpiresAtMillisLargeExp) {
   EXPECT_EQ(result.value(), 2000000000LL * 1000);
 }
 
-// Non-JWT token (no dots)
+// Verifies ExpiresAtMillis truncates floating-point exp to integer
+TEST_F(AuthManagerTest, ExpiresAtMillisFloatExp) {
+  std::string token = MakeJwt(R"({"exp":1700000000.5})");
+  auto result = ExpiresAtMillis(token);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 1700000000LL * 1000);  // truncated to int
+}
+
+// Verifies ExpiresAtMillis returns nullopt for non-JWT token without dots
 TEST_F(AuthManagerTest, ExpiresAtMillisNonJwtNoDots) {
   auto result = ExpiresAtMillis("just-a-plain-token");
   EXPECT_FALSE(result.has_value());
 }
 
-// Non-JWT token (only one dot)
+// Verifies ExpiresAtMillis returns nullopt for token with only one dot
 TEST_F(AuthManagerTest, ExpiresAtMillisOneDot) {
   auto result = ExpiresAtMillis("part1.part2");
   EXPECT_FALSE(result.has_value());
 }
 
-// Non-JWT token (four dots — too many parts)
+// Verifies ExpiresAtMillis returns nullopt for token with too many segments
 TEST_F(AuthManagerTest, ExpiresAtMillisFourParts) {
   auto result = ExpiresAtMillis("a.b.c.d");
   EXPECT_FALSE(result.has_value());
 }
 
-// JWT without exp claim
+// Verifies ExpiresAtMillis returns nullopt when JWT has no exp claim
 TEST_F(AuthManagerTest, ExpiresAtMillisNoExpClaim) {
   std::string token = MakeJwt(R"({"sub":"user","iat":1700000000})");
   auto result = ExpiresAtMillis(token);
   EXPECT_FALSE(result.has_value());
 }
 
-// JWT with non-integer exp claim
+// Verifies ExpiresAtMillis returns nullopt when exp is not a number
 TEST_F(AuthManagerTest, ExpiresAtMillisExpNotInteger) {
   std::string token = MakeJwt(R"({"exp":"not-a-number"})");
   auto result = ExpiresAtMillis(token);
   EXPECT_FALSE(result.has_value());
 }
 
-// Malformed base64 in payload
+// Verifies ExpiresAtMillis returns nullopt for malformed base64 payload
 TEST_F(AuthManagerTest, ExpiresAtMillisMalformedBase64) {
   // Use invalid base64url characters in the payload part
   std::string token = "eyJhbGciOiJIUzI1NiJ9.!!!invalid!!!.signature";
@@ -451,13 +459,13 @@ TEST_F(AuthManagerTest, ExpiresAtMillisMalformedBase64) {
   EXPECT_FALSE(result.has_value());
 }
 
-// Empty token
+// Verifies ExpiresAtMillis returns nullopt for empty token
 TEST_F(AuthManagerTest, ExpiresAtMillisEmptyToken) {
   auto result = ExpiresAtMillis("");
   EXPECT_FALSE(result.has_value());
 }
 
-// Payload is valid base64 but not valid JSON
+// Verifies ExpiresAtMillis returns nullopt when payload is not valid JSON
 TEST_F(AuthManagerTest, ExpiresAtMillisInvalidJson) {
   std::string header = R"({"alg":"HS256"})";
   std::string invalid_json = "this is not json";
@@ -474,11 +482,14 @@ TEST_F(AuthManagerTest, ExpiresAtMillisInvalidJson) {
 #include <atomic>
 #include <chrono>
 #include <thread>
+#include <vector>
 
 #include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
+#include "iceberg/catalog/rest/types.h"
 
 namespace iceberg::rest::auth {
 
+// Verifies that a scheduled task fires after the specified delay
 TEST(TokenRefreshSchedulerTest, ScheduleFiresAfterDelay) {
   TokenRefreshScheduler scheduler;
   std::atomic<bool> fired{false};
@@ -495,6 +506,7 @@ TEST(TokenRefreshSchedulerTest, ScheduleFiresAfterDelay) {
   scheduler.Shutdown();
 }
 
+// Verifies that cancelling a task prevents it from executing
 TEST(TokenRefreshSchedulerTest, CancelPreventsExecution) {
   TokenRefreshScheduler scheduler;
   std::atomic<bool> fired{false};
@@ -512,6 +524,7 @@ TEST(TokenRefreshSchedulerTest, CancelPreventsExecution) {
   scheduler.Shutdown();
 }
 
+// Verifies that multiple tasks fire in chronological order
 TEST(TokenRefreshSchedulerTest, MultipleTasksFireInOrder) {
   TokenRefreshScheduler scheduler;
   std::vector<int> order;
@@ -539,6 +552,7 @@ TEST(TokenRefreshSchedulerTest, MultipleTasksFireInOrder) {
   scheduler.Shutdown();
 }
 
+// Verifies that shutdown with pending tasks does not crash
 TEST(TokenRefreshSchedulerTest, ShutdownWithPendingTasks) {
   TokenRefreshScheduler scheduler;
   std::atomic<bool> fired{false};
@@ -552,6 +566,7 @@ TEST(TokenRefreshSchedulerTest, ShutdownWithPendingTasks) {
   EXPECT_FALSE(fired.load());
 }
 
+// Verifies that Schedule after shutdown returns invalid handle (0)
 TEST(TokenRefreshSchedulerTest, ScheduleAfterShutdownIsNoop) {
   TokenRefreshScheduler scheduler;
   scheduler.Shutdown();
@@ -560,12 +575,142 @@ TEST(TokenRefreshSchedulerTest, ScheduleAfterShutdownIsNoop) {
   EXPECT_EQ(0u, handle);
 }
 
+// Verifies that cancelling an invalid handle does not crash
 TEST(TokenRefreshSchedulerTest, CancelInvalidHandleIsNoop) {
   TokenRefreshScheduler scheduler;
   // Should not crash
   scheduler.Cancel(0);
   scheduler.Cancel(999);
   scheduler.Shutdown();
+}
+
+// ---- OAuth2AuthSession integration tests ----
+
+// Verifies that MakeOAuth2 creates a session with correct initial Bearer header
+TEST(OAuth2AuthSessionTest, InitialTokenIsUsed) {
+  HttpClient client({});
+  OAuthTokenResponse token_response;
+  token_response.access_token = "initial-token-123";
+  token_response.token_type = "bearer";
+  token_response.expires_in_secs = 3600;
+
+  // Create session (refresh will fail since there's no real server, but
+  // initial token should work)
+  auto session = AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
+                                         "client_id", "client_secret", "catalog", client);
+
+  std::unordered_map<std::string, std::string> headers;
+  ASSERT_THAT(session->Authenticate(headers), IsOk());
+  EXPECT_EQ(headers["Authorization"], "Bearer initial-token-123");
+
+  session->Close();
+}
+
+// Verifies that session without expiration does not schedule refresh
+TEST(OAuth2AuthSessionTest, NoExpirationNoRefresh) {
+  HttpClient client({});
+  OAuthTokenResponse token_response;
+  token_response.access_token = "static-token";
+  token_response.token_type = "bearer";
+  // No expires_in_secs set — token is not a JWT either
+
+  auto session = AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
+                                         "id", "secret", "catalog", client);
+
+  std::unordered_map<std::string, std::string> headers;
+  ASSERT_THAT(session->Authenticate(headers), IsOk());
+  EXPECT_EQ(headers["Authorization"], "Bearer static-token");
+
+  // Wait a bit — no crash, no refresh attempt
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  headers.clear();
+  ASSERT_THAT(session->Authenticate(headers), IsOk());
+  EXPECT_EQ(headers["Authorization"], "Bearer static-token");
+
+  session->Close();
+}
+
+// Verifies that Close prevents further refresh callbacks
+TEST(OAuth2AuthSessionTest, CloseStopsRefresh) {
+  HttpClient client({});
+  OAuthTokenResponse token_response;
+  token_response.access_token = "token-before-close";
+  token_response.token_type = "bearer";
+  token_response.expires_in_secs = 1;  // Expires in 1 second
+
+  auto session = AuthSession::MakeOAuth2(token_response, "http://localhost:9999/tokens",
+                                         "id", "secret", "catalog", client);
+
+  // Close immediately — should cancel the scheduled refresh
+  session->Close();
+
+  // Wait past expiration + refresh window
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+  // Token should still be the original (no refresh happened)
+  std::unordered_map<std::string, std::string> headers;
+  ASSERT_THAT(session->Authenticate(headers), IsOk());
+  EXPECT_EQ(headers["Authorization"], "Bearer token-before-close");
+}
+
+// Verifies that concurrent Authenticate calls are thread-safe
+TEST(OAuth2AuthSessionTest, ConcurrentAuthenticate) {
+  HttpClient client({});
+  OAuthTokenResponse token_response;
+  token_response.access_token = "concurrent-token";
+  token_response.token_type = "bearer";
+  token_response.expires_in_secs = 3600;
+
+  auto session = AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
+                                         "id", "secret", "catalog", client);
+
+  // Launch multiple threads calling Authenticate concurrently
+  std::vector<std::thread> threads;
+  std::atomic<int> success_count{0};
+
+  for (int i = 0; i < 10; ++i) {
+    threads.emplace_back([&] {
+      for (int j = 0; j < 100; ++j) {
+        std::unordered_map<std::string, std::string> headers;
+        auto status = session->Authenticate(headers);
+        if (status.has_value()) {
+          success_count.fetch_add(1);
+        }
+      }
+    });
+  }
+
+  for (auto& t : threads) {
+    t.join();
+  }
+
+  EXPECT_EQ(1000, success_count.load());
+  session->Close();
+}
+
+// Verifies that session still returns last known token after all refresh retries fail
+TEST(OAuth2AuthSessionTest, RefreshFailureKeepsLastToken) {
+  HttpClient client({});
+  OAuthTokenResponse token_response;
+  token_response.access_token = "original-token";
+  token_response.token_type = "bearer";
+  token_response.expires_in_secs = 1;  // Very short — will trigger refresh soon
+
+  auto session = AuthSession::MakeOAuth2(
+      token_response, "http://localhost:9999/nonexistent",  // Will fail
+      "id", "secret", "catalog", client);
+
+  // Wait for refresh to be attempted and fail (all retries)
+  // With non-blocking retries: 200ms + 400ms + 800ms + 1600ms ≈ 3s total
+  std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+  // Session should still return the original token (no crash)
+  std::unordered_map<std::string, std::string> headers;
+  ASSERT_THAT(session->Authenticate(headers), IsOk());
+  EXPECT_EQ(headers["Authorization"], "Bearer original-token");
+
+  session->Close();
 }
 
 }  // namespace iceberg::rest::auth

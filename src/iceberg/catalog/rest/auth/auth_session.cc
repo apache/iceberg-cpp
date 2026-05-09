@@ -23,7 +23,6 @@
 #include <chrono>
 #include <memory>
 #include <shared_mutex>
-#include <thread>
 #include <utility>
 
 #include "iceberg/catalog/rest/auth/auth_properties.h"
@@ -117,70 +116,78 @@ class OAuth2AuthSession : public AuthSession,
     }
   }
 
-  void DoRefresh() {
+  void DoRefresh() { DoRefreshAttempt(0, std::chrono::milliseconds(200)); }
+
+  /// \brief Single refresh attempt. On failure, schedules a retry via the
+  /// scheduler (non-blocking) instead of sleeping on the worker thread.
+  void DoRefreshAttempt(int attempt, std::chrono::milliseconds backoff) {
+    static constexpr int kMaxRetries = 5;
+    static constexpr auto kMaxBackoff = std::chrono::milliseconds(10'000);
+
     if (closed_.load()) return;
 
-    constexpr int kMaxRetries = 5;
-    constexpr auto kInitialBackoff = std::chrono::milliseconds(200);
-    constexpr auto kMaxBackoff = std::chrono::seconds(10);
-
-    // Build credential string for FetchToken
+    // Build credential and properties once (invariant across retries)
     std::string credential = config_.client_id.empty()
                                  ? config_.client_secret
                                  : config_.client_id + ":" + config_.client_secret;
 
-    auto backoff = kInitialBackoff;
-    for (int attempt = 0; attempt < kMaxRetries; ++attempt) {
-      if (closed_.load()) return;
+    // Use an empty session for the refresh request (no auth headers —
+    // avoids circular dependency of using an expired token to refresh itself)
+    auto empty_session = AuthSession::MakeDefault({});
 
-      // Use an empty session for the refresh request (no auth headers)
-      auto empty_session = AuthSession::MakeDefault({});
+    AuthProperties props;
+    props.Set(AuthProperties::kCredential, credential);
+    props.Set(AuthProperties::kScope, config_.scope);
+    props.Set(AuthProperties::kOAuth2ServerUri, config_.token_endpoint);
 
-      // Build properties for FetchToken
-      AuthProperties props;
-      props.Set(AuthProperties::kCredential, credential);
-      props.Set(AuthProperties::kScope, config_.scope);
-      props.Set(AuthProperties::kOAuth2ServerUri, config_.token_endpoint);
+    auto result = FetchToken(client_, *empty_session, props);
+    if (result.has_value()) {
+      auto& response = result.value();
+      {
+        std::unique_lock lock(mutex_);
+        token_ = response.access_token;
+        headers_ = {
+            {std::string(kAuthorizationHeader), std::string(kBearerPrefix) + token_}};
 
-      auto result = FetchToken(client_, *empty_session, props);
-      if (result.has_value()) {
-        auto& response = result.value();
-        {
-          std::unique_lock lock(mutex_);
-          token_ = response.access_token;
-          headers_ = {
-              {std::string(kAuthorizationHeader), std::string(kBearerPrefix) + token_}};
-
-          // Update expiration
-          if (response.expires_in_secs.has_value()) {
-            expires_at_ = std::chrono::steady_clock::now() +
-                          std::chrono::seconds(*response.expires_in_secs);
-          } else if (auto exp_ms = ExpiresAtMillis(token_); exp_ms.has_value()) {
-            auto now_sys = std::chrono::system_clock::now();
-            auto now_steady = std::chrono::steady_clock::now();
-            auto exp_sys =
-                std::chrono::system_clock::time_point(std::chrono::milliseconds(*exp_ms));
-            expires_at_ = now_steady + (exp_sys - now_sys);
-          }
+        // Update expiration
+        if (response.expires_in_secs.has_value()) {
+          expires_at_ = std::chrono::steady_clock::now() +
+                        std::chrono::seconds(*response.expires_in_secs);
+        } else if (auto exp_ms = ExpiresAtMillis(token_); exp_ms.has_value()) {
+          auto now_sys = std::chrono::system_clock::now();
+          auto now_steady = std::chrono::steady_clock::now();
+          auto exp_sys =
+              std::chrono::system_clock::time_point(std::chrono::milliseconds(*exp_ms));
+          expires_at_ = now_steady + (exp_sys - now_sys);
         }
-        // Schedule next refresh
-        ScheduleRefresh();
-        return;  // Success
       }
-
-      // Retry with exponential backoff
-      if (attempt < kMaxRetries - 1) {
-        std::this_thread::sleep_for(backoff);
-        backoff =
-            std::min(std::chrono::duration_cast<std::chrono::milliseconds>(backoff * 2),
-                     std::chrono::duration_cast<std::chrono::milliseconds>(kMaxBackoff));
-      }
+      // Note: ScheduleRefresh must be called outside the lock.
+      ScheduleRefresh();
+      return;  // Success
     }
 
-    // All retries failed — stop refreshing silently
-    // Next request will use the expired token; server returns 401
+    // Schedule retry with exponential backoff (non-blocking)
+    if (attempt + 1 < kMaxRetries) {
+      auto next_backoff =
+          std::min(std::chrono::duration_cast<std::chrono::milliseconds>(backoff * 2),
+                   kMaxBackoff);
+      std::weak_ptr<OAuth2AuthSession> weak_self = shared_from_this();
+      TokenRefreshScheduler::Instance().Schedule(
+          backoff,
+          [weak_self = std::move(weak_self), next_attempt = attempt + 1, next_backoff] {
+            if (auto self = weak_self.lock()) {
+              self->DoRefreshAttempt(next_attempt, next_backoff);
+            }
+          });
+    }
+    // All retries exhausted — stop refreshing silently.
+    // Next request will use the expired token; server returns 401.
   }
 
+  /// \brief Schedule the next token refresh based on expiration time.
+  ///
+  /// Must be called outside any lock on mutex_ (CalculateRefreshDelay
+  /// acquires shared_lock internally).
   void ScheduleRefresh() {
     if (!config_.keep_refreshed || closed_.load()) return;
 

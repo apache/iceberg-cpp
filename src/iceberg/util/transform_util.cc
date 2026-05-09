@@ -240,17 +240,11 @@ constexpr std::array<uint8_t, 256> kBase64DecodeTable = [] {
   return table;
 }();
 
-// Base64url decode table: same as standard but '-'=62, '_'=63
+// Base64url decode table: same as standard but '-'=62, '_'=63 (RFC 4648 §5)
 constexpr std::array<uint8_t, 256> kBase64UrlDecodeTable = [] {
-  std::array<uint8_t, 256> table{};
-  table.fill(0xFF);
-  for (int i = 0; i < 26; ++i) {
-    table[static_cast<size_t>('A' + i)] = static_cast<uint8_t>(i);
-    table[static_cast<size_t>('a' + i)] = static_cast<uint8_t>(26 + i);
-  }
-  for (int i = 0; i < 10; ++i) {
-    table[static_cast<size_t>('0' + i)] = static_cast<uint8_t>(52 + i);
-  }
+  auto table = kBase64DecodeTable;
+  table[static_cast<size_t>('+')] = 0xFF;  // '+' is invalid in base64url
+  table[static_cast<size_t>('/')] = 0xFF;  // '/' is invalid in base64url
   table[static_cast<size_t>('-')] = 62;
   table[static_cast<size_t>('_')] = 63;
   return table;

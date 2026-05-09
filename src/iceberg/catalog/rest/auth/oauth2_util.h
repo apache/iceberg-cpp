@@ -63,6 +63,6 @@ ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> AuthHeaders(
 /// \param token A token string. If it is a JWT (three dot-separated base64url
 ///        segments), the "exp" claim is extracted from the payload.
 /// \return Expiration time as milliseconds since epoch, or std::nullopt.
-ICEBERG_REST_EXPORT std::optional<int64_t> ExpiresAtMillis(const std::string& token);
+ICEBERG_REST_EXPORT std::optional<int64_t> ExpiresAtMillis(std::string_view token);
 
 }  // namespace iceberg::rest::auth
