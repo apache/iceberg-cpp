@@ -66,6 +66,7 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
   UpdateSortOrder& CaseSensitive(bool case_sensitive);
 
   Kind kind() const final { return Kind::kUpdateSortOrder; }
+  bool IsRetryable() const override { return true; }
 
   /// \brief Apply the pending changes and return the new SortOrder.
   Result<std::shared_ptr<SortOrder>> Apply();

@@ -36,7 +36,7 @@
 
 namespace iceberg {
 
-class WriterProperties : public ConfigBase<WriterProperties> {
+class ICEBERG_EXPORT WriterProperties : public ConfigBase<WriterProperties> {
  public:
   template <typename T>
   using Entry = const ConfigBase<WriterProperties>::Entry<T>;
@@ -73,9 +73,7 @@ struct ICEBERG_EXPORT WriterOptions {
   std::string path;
   /// \brief The schema of the data to write.
   std::shared_ptr<Schema> schema;
-  /// \brief FileIO instance to open the file. Writer implementations should down cast it
-  /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
-  /// `ArrowFileSystemFileIO` as the default implementation.
+  /// \brief FileIO instance to create the file.
   std::shared_ptr<class FileIO> io;
   /// \brief Metadata to write to the file.
   std::unordered_map<std::string, std::string> metadata;

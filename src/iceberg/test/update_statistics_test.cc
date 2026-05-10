@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -28,6 +29,7 @@
 #include "iceberg/result.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
 
 namespace iceberg {
@@ -64,6 +66,35 @@ class UpdateStatisticsTest : public UpdateTestBase {
         to_set, [snapshot_id](const auto& p) { return p.first == snapshot_id; });
     return it != to_set.end() ? it->second : nullptr;
   }
+};
+
+class UpdateStatisticsRetryTest : public UpdateStatisticsTest {
+ protected:
+  void SetUp() override {
+    UpdateStatisticsTest::SetUp();
+
+    mock_catalog_ = std::make_shared<::testing::NiceMock<MockCatalog>>();
+
+    ON_CALL(*mock_catalog_, LoadTable(::testing::_))
+        .WillByDefault([this](const TableIdentifier&) -> Result<std::shared_ptr<Table>> {
+          ++load_table_count_;
+          auto refreshed_metadata = std::make_shared<TableMetadata>(*table_->metadata());
+          auto refreshed_location = table_location_ + "/metadata/reload-" +
+                                    std::to_string(load_table_count_) + ".metadata.json";
+          return Table::Make(table_->name(), std::move(refreshed_metadata),
+                             std::move(refreshed_location), table_->io(), mock_catalog_);
+        });
+
+    auto result = Table::Make(table_->name(), table_->metadata(),
+                              std::string(table_->metadata_file_location()), table_->io(),
+                              mock_catalog_);
+    ASSERT_THAT(result, IsOk());
+    mock_table_ = std::move(result.value());
+  }
+
+  int load_table_count_ = 0;
+  std::shared_ptr<::testing::NiceMock<MockCatalog>> mock_catalog_;
+  std::shared_ptr<Table> mock_table_;
 };
 
 TEST_F(UpdateStatisticsTest, EmptyUpdate) {
@@ -216,6 +247,38 @@ TEST_F(UpdateStatisticsTest, CommitSuccess) {
   const auto& statistics = final_table->metadata()->statistics;
   EXPECT_EQ(statistics.size(), 1);
   EXPECT_EQ(*statistics[0], *stats_file);
+}
+
+TEST_F(UpdateStatisticsRetryTest, StandaloneCommitRetriesAfterConflict) {
+  ICEBERG_UNWRAP_OR_FAIL(auto current_snapshot, mock_table_->current_snapshot());
+  auto stats_file = MakeStatisticsFile(current_snapshot->snapshot_id,
+                                       "/warehouse/test_table/metadata/stats-1.puffin");
+
+  int update_call_count = 0;
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault([this, &update_call_count, stats_file](
+                         const TableIdentifier&,
+                         const std::vector<std::unique_ptr<TableRequirement>>&,
+                         const std::vector<std::unique_ptr<TableUpdate>>&)
+                         -> Result<std::shared_ptr<Table>> {
+        ++update_call_count;
+        if (update_call_count == 1) {
+          return CommitFailed("conflict on first attempt");
+        }
+        auto committed_metadata =
+            std::make_shared<TableMetadata>(*mock_table_->metadata());
+        committed_metadata->statistics = {stats_file};
+        return Table::Make(mock_table_->name(), std::move(committed_metadata),
+                           table_location_ + "/metadata/committed.metadata.json",
+                           mock_table_->io(), mock_catalog_);
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update, mock_table_->NewUpdateStatistics());
+  update->SetStatistics(stats_file);
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_EQ(update_call_count, 2);
+  EXPECT_EQ(load_table_count_, 1);
 }
 
 }  // namespace iceberg

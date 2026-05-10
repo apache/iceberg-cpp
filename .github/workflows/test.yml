@@ -43,24 +43,14 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-    env:
-      ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ENDPOINT_URL: http://127.0.0.1:9000
-      AWS_EC2_METADATA_DISABLED: "TRUE"
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
-      - name: Start MinIO
-        shell: bash
-        run: bash ci/scripts/start_minio.sh
       - name: Build Iceberg
         shell: bash
         env:
@@ -79,21 +69,11 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-    env:
-      ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ENDPOINT_URL: http://127.0.0.1:9000
-      AWS_EC2_METADATA_DISABLED: "TRUE"
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - name: Start MinIO
-        shell: bash
-        run: bash ci/scripts/start_minio.sh
       - name: Build Iceberg
         shell: bash
         run: ci/scripts/build_iceberg.sh $(pwd)
@@ -106,41 +86,35 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-    env:
-      ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ENDPOINT_URL: http://127.0.0.1:9000
-      AWS_EC2_METADATA_DISABLED: "TRUE"
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - name: Set up MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: x64
       - name: Install dependencies
         shell: pwsh
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
       - name: Setup sccache
-        uses: mozilla-actions/sccache-action@7d986dd989559c6ecdb630a3fd2557667be217ad # v0.0.9
-      - name: Start MinIO
-        shell: bash
-        run: bash ci/scripts/start_minio.sh
+        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: Build Iceberg
         shell: pwsh
         env:
           SCCACHE_GHA_ENABLED: "true"
         run: |
           $ErrorActionPreference = "Stop"
-          cmd /c "call `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat`" x64 && bash -lc `"ci/scripts/build_iceberg.sh `$(pwd) OFF ON`""
+          bash -lc 'ci/scripts/build_iceberg.sh $(pwd) OFF ON'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           sccache --show-stats
       - name: Build Example
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          cmd /c "call `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat`" x64 && bash -lc `"ci/scripts/build_example.sh `$(pwd)/example`""
+          bash -lc 'ci/scripts/build_example.sh $(pwd)/example'
   meson:
     name: Meson - ${{ matrix.title }}
     runs-on: ${{ matrix.runs-on }}
@@ -161,11 +135,11 @@ jobs:
           - title: AArch64 macOS 26
             runs-on: macos-26
     steps:
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.x'
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - name: Install build dependencies

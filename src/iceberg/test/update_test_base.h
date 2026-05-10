@@ -26,7 +26,7 @@
 #include <arrow/filesystem/mockfs.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/catalog/memory/in_memory_catalog.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"

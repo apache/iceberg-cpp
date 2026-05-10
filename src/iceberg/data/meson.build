@@ -15,25 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: "Run License Check"
-
-on: pull_request
-
-permissions:
-  contents: read
-
-jobs:
-  license-check:
-    name: "License Check"
-    runs-on: ubuntu-slim
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-      - name: Check license header
-        uses: apache/skywalking-eyes@61275cc80d0798a405cb070f7d3a8aaf7cf2c2c1 # v0.8.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          config: .github/.licenserc.yaml
+install_headers(
+    [
+        'data_writer.h',
+        'delete_loader.h',
+        'equality_delete_writer.h',
+        'position_delete_writer.h',
+        'writer.h',
+    ],
+    subdir: 'iceberg/data',
+)

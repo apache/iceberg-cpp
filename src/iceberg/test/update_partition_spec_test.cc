@@ -28,7 +28,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/catalog/memory/in_memory_catalog.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/partition_spec.h"

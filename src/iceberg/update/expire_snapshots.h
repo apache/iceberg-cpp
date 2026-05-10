@@ -140,6 +140,7 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   ExpireSnapshots& CleanExpiredMetadata(bool clean);
 
   Kind kind() const final { return Kind::kExpireSnapshots; }
+  bool IsRetryable() const override { return true; }
 
   /// \brief Apply the pending changes and return the results
   /// \return The results of changes

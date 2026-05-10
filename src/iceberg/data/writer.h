@@ -27,14 +27,14 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
 /// \brief Base interface for data file writers.
-class ICEBERG_EXPORT FileWriter {
+class ICEBERG_DATA_EXPORT FileWriter {
  public:
   virtual ~FileWriter();
 
@@ -49,7 +49,7 @@ class ICEBERG_EXPORT FileWriter {
   virtual Status Close() = 0;
 
   /// \brief File metadata for all files produced by this writer.
-  struct ICEBERG_EXPORT WriteResult {
+  struct ICEBERG_DATA_EXPORT WriteResult {
     /// Usually a writer produces a single data or delete file.
     /// Position delete writer may produce multiple file-scoped delete files.
     /// In the future, multiple files can be produced if file rolling is supported.

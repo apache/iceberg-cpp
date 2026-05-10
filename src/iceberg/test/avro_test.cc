@@ -23,12 +23,13 @@
 #include <arrow/array.h>
 #include <arrow/array/array_base.h>
 #include <arrow/c/bridge.h>
+#include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
 #include <avro/DataFile.hh>
 #include <avro/Generic.hh>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_stream_internal.h"
 #include "iceberg/avro/avro_writer.h"
@@ -37,16 +38,19 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/std_io.h"
+#include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 
 namespace iceberg::avro {
 
-class AvroReaderTest : public ::testing::Test {
+class AvroReaderTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { RegisterAll(); }
 
   void SetUp() override {
+    TempFileTestBase::SetUp();
     file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
     temp_avro_file_ = "avro_reader_test.avro";
   }
@@ -185,6 +189,16 @@ TEST_F(AvroReaderTest, ReadTwoFields) {
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(AvroReaderTest, RoundTripWithGenericFileIO) {
+  file_io_ = std::make_shared<iceberg::test::StdFileIO>();
+  temp_avro_file_ = CreateNewTempFilePathWithSuffix(".avro");
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>())});
+
+  ASSERT_NO_FATAL_FAILURE(WriteAndVerify(schema, R"([[1, "Foo"], [2, "Bar"]])"));
 }
 
 TEST_F(AvroReaderTest, ReadReorderedFieldsWithNulls) {

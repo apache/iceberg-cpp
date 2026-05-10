@@ -42,14 +42,7 @@ iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
     'catalog/memory/in_memory_catalog.cc',
-    'data/data_writer.cc',
-    'data/delete_loader.cc',
-    'data/equality_delete_writer.cc',
-    'data/position_delete_writer.cc',
-    'data/writer.cc',
     'delete_file_index.cc',
-    'deletes/position_delete_index.cc',
-    'deletes/roaring_position_bitmap.cc',
     'expression/aggregate.cc',
     'expression/binder.cc',
     'expression/evaluator.cc',
@@ -65,6 +58,7 @@ iceberg_sources = files(
     'expression/rewrite_not.cc',
     'expression/strict_metrics_evaluator.cc',
     'expression/term.cc',
+    'file_io.cc',
     'file_io_registry.cc',
     'file_reader.cc',
     'file_writer.cc',
@@ -88,9 +82,6 @@ iceberg_sources = files(
     'partition_field.cc',
     'partition_spec.cc',
     'partition_summary.cc',
-    'puffin/file_metadata.cc',
-    'puffin/json_serde.cc',
-    'puffin/puffin_format.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
@@ -136,6 +127,7 @@ iceberg_sources = files(
     'util/gzip_internal.cc',
     'util/murmurhash3_internal.cc',
     'util/property_util.cc',
+    'util/retry_util.cc',
     'util/snapshot_util.cc',
     'util/string_util.cc',
     'util/struct_like_set.cc',
@@ -146,6 +138,19 @@ iceberg_sources = files(
     'util/type_util.cc',
     'util/url_encoder.cc',
     'util/uuid.cc',
+)
+
+iceberg_data_sources = files(
+    'data/data_writer.cc',
+    'data/delete_loader.cc',
+    'data/equality_delete_writer.cc',
+    'data/position_delete_writer.cc',
+    'data/writer.cc',
+    'deletes/position_delete_index.cc',
+    'deletes/roaring_position_bitmap.cc',
+    'puffin/file_metadata.cc',
+    'puffin/json_serde.cc',
+    'puffin/puffin_format.cc',
 )
 
 # CRoaring does not export symbols, so on Windows it must
@@ -159,7 +164,7 @@ nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
 zlib_dep = dependency('zlib')
 
-iceberg_deps = [croaring_dep, nanoarrow_dep, nlohmann_json_dep, zlib_dep]
+iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, zlib_dep]
 
 iceberg_lib = library(
     'iceberg',
@@ -184,8 +189,35 @@ iceberg_dep = declare_dependency(
     compile_args: iceberg_interface_args,
 )
 meson.override_dependency('iceberg', iceberg_dep)
+
+iceberg_data_deps = [iceberg_dep, croaring_dep]
+iceberg_data_lib = library(
+    'iceberg_data',
+    sources: iceberg_data_sources,
+    dependencies: iceberg_data_deps,
+    include_directories: iceberg_include_dir,
+    install: true,
+    gnu_symbol_visibility: 'inlineshidden',
+    cpp_shared_args: ['-DICEBERG_DATA_EXPORTING'],
+    cpp_static_args: ['-DICEBERG_DATA_STATIC'],
+)
+
+iceberg_data_interface_args = []
+if get_option('default_library') == 'static'
+    iceberg_data_interface_args += ['-DICEBERG_DATA_STATIC']
+endif
+
+iceberg_data_dep = declare_dependency(
+    link_with: iceberg_data_lib,
+    dependencies: iceberg_data_deps,
+    include_directories: iceberg_include_dir,
+    compile_args: iceberg_data_interface_args,
+)
+meson.override_dependency('iceberg-data', iceberg_data_dep)
+
 pkg = import('pkgconfig')
 pkg.generate(iceberg_lib)
+pkg.generate(iceberg_data_lib)
 
 install_headers(
     [
@@ -199,6 +231,7 @@ install_headers(
         'file_io_registry.h',
         'file_reader.h',
         'file_writer.h',
+        'iceberg_data_export.h',
         'iceberg_export.h',
         'inheritable_metadata.h',
         'location_provider.h',
@@ -233,6 +266,7 @@ install_headers(
 )
 
 subdir('catalog')
+subdir('data')
 subdir('deletes')
 subdir('expression')
 subdir('manifest')

@@ -29,10 +29,9 @@
 #include <parquet/file_writer.h>
 #include <parquet/properties.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/schema_internal.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::parquet {
@@ -41,9 +40,7 @@ namespace {
 
 Result<std::shared_ptr<::arrow::io::OutputStream>> OpenOutputStream(
     const WriterOptions& options) {
-  auto io = internal::checked_pointer_cast<arrow::ArrowFileSystemFileIO>(options.io);
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto output, io->fs()->OpenOutputStream(options.path));
-  return output;
+  return arrow::OpenArrowOutputStream(options.io, options.path);
 }
 
 Result<::arrow::Compression::type> ParseCompression(const WriterProperties& properties) {

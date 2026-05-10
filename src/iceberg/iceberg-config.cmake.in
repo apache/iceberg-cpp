@@ -24,6 +24,8 @@
 #
 #   iceberg::iceberg_shared
 #   iceberg::iceberg_static
+#   iceberg::iceberg_data_shared
+#   iceberg::iceberg_data_static
 #   iceberg::iceberg_bundle_shared
 #   iceberg::iceberg_bundle_static
 #   iceberg::iceberg_rest_shared

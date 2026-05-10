@@ -23,7 +23,7 @@
 #include <arrow/util/compression.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
@@ -69,7 +69,11 @@ TEST_F(GZipTest, GZipDecompressedString) {
   ASSERT_TRUE(compressed_stream->Flush().ok());
   ASSERT_TRUE(compressed_stream->Close().ok());
 
-  auto result = io_->ReadFile(temp_filepath_, test_string.size());
+  ICEBERG_UNWRAP_OR_FAIL(auto input_file, io_->NewInputFile(temp_filepath_));
+  ICEBERG_UNWRAP_OR_FAIL(auto compressed_size, input_file->Size());
+  ASSERT_GE(compressed_size, 0);
+
+  auto result = io_->ReadFile(temp_filepath_, static_cast<size_t>(compressed_size));
   EXPECT_THAT(result, IsOk());
 
   auto gzip_decompressor = std::make_unique<GZipDecompressor>();

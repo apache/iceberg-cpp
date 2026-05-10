@@ -51,6 +51,7 @@ class ICEBERG_EXPORT SetSnapshot : public PendingUpdate {
   SetSnapshot& RollbackTo(int64_t snapshot_id);
 
   Kind kind() const final { return Kind::kSetSnapshot; }
+  bool IsRetryable() const override { return true; }
 
   /// \brief Apply the pending changes and return the target snapshot ID.
   Result<int64_t> Apply();

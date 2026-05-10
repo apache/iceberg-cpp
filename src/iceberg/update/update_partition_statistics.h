@@ -63,6 +63,13 @@ class ICEBERG_EXPORT UpdatePartitionStatistics : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdatePartitionStatistics; }
 
+  /// \brief Partition statistics updates are intentionally not retried today.
+  ///
+  /// This matches the current Java `SetPartitionStatistics` behavior, which commits
+  /// directly without a retry loop. Keep this conservative until we add explicit replay
+  /// coverage for this update type.
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     std::vector<std::pair<int64_t, std::shared_ptr<PartitionStatisticsFile>>> to_set;
     std::vector<int64_t> to_remove;

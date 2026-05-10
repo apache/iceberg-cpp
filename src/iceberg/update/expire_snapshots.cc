@@ -929,4 +929,11 @@ Status ExpireSnapshots::Finalize(Result<const TableMetadata*> commit_result) {
                               expired_ids, cleanup_level_);
 }
 
+  ReachableFileCleanup strategy(ctx_->table->io(), delete_func_);
+  return strategy.CleanFiles(metadata_before_expiration, metadata_after_expiration,
+                             expired_ids, cleanup_level_);
+}
+
+// TODO(shangxinli): add IncrementalFileCleanup strategy for linear ancestry optimization.
+
 }  // namespace iceberg

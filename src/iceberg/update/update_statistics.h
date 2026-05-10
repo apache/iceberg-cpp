@@ -62,6 +62,12 @@ class ICEBERG_EXPORT UpdateStatistics : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateStatistics; }
 
+  /// \brief Statistics updates are retryable.
+  ///
+  /// The operation is keyed by snapshot ID and only replaces or removes statistics file
+  /// references, so replaying it after a refresh preserves the caller's intent.
+  bool IsRetryable() const override { return true; }
+
   struct ApplyResult {
     std::vector<std::pair<int64_t, std::shared_ptr<StatisticsFile>>> to_set;
     std::vector<int64_t> to_remove;
