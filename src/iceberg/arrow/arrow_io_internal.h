@@ -19,14 +19,36 @@
 
 #pragma once
 
+#include <cstddef>
 #include <memory>
+#include <optional>
+#include <string>
 
-#include <arrow/filesystem/filesystem.h>
+#include <arrow/filesystem/type_fwd.h>
+#include <arrow/io/type_fwd.h>
 
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg::arrow {
+
+/// \brief Open a FileIO input as an Arrow input stream.
+///
+/// Uses ArrowFileSystemFileIO's native Arrow stream directly when possible and falls
+/// back to a FileIO stream adapter otherwise. The fallback requires FileIO to
+/// implement NewInputFile.
+ICEBERG_BUNDLE_EXPORT Result<std::shared_ptr<::arrow::io::RandomAccessFile>>
+OpenArrowInputStream(const std::shared_ptr<FileIO>& io, const std::string& path,
+                     std::optional<size_t> length = std::nullopt);
+
+/// \brief Open a FileIO output as an Arrow output stream.
+///
+/// Uses ArrowFileSystemFileIO's native Arrow stream directly when possible and falls
+/// back to a FileIO stream adapter otherwise. The fallback requires FileIO to
+/// implement NewOutputFile.
+ICEBERG_BUNDLE_EXPORT Result<std::shared_ptr<::arrow::io::OutputStream>>
+OpenArrowOutputStream(const std::shared_ptr<FileIO>& io, const std::string& path,
+                      bool overwrite = true);
 
 /// \brief A concrete implementation of FileIO for Arrow file system.
 class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
@@ -42,12 +64,15 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
 
   ~ArrowFileSystemFileIO() override = default;
 
-  /// \brief Read the content of the file at the given location.
-  Result<std::string> ReadFile(const std::string& file_location,
-                               std::optional<size_t> length) override;
+  /// \brief Create an input file handle for the given location.
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override;
 
-  /// \brief Write the given content to the file at the given location.
-  Status WriteFile(const std::string& file_location, std::string_view content) override;
+  /// \brief Create an input file handle for the given location with a known length.
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location,
+                                                  size_t length) override;
+
+  /// \brief Create an output file handle for the given location.
+  Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string file_location) override;
 
   /// \brief Delete a file at the given location.
   Status DeleteFile(const std::string& file_location) override;
@@ -56,6 +81,13 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
   const std::shared_ptr<::arrow::fs::FileSystem>& fs() const { return arrow_fs_; }
 
  private:
+  friend Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(
+      const std::shared_ptr<FileIO>& io, const std::string& path,
+      std::optional<size_t> length);
+
+  friend Result<std::shared_ptr<::arrow::io::OutputStream>> OpenArrowOutputStream(
+      const std::shared_ptr<FileIO>& io, const std::string& path, bool overwrite);
+
   /// \brief Resolve a file location to a filesystem path.
   Result<std::string> ResolvePath(const std::string& file_location);
 

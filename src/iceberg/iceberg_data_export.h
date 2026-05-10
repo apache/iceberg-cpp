@@ -19,16 +19,16 @@
 
 #pragma once
 
-/// \file iceberg/arrow/file_io_register.h
-/// \brief Provide functions to register Arrow FileIO implementations.
-
-#include "iceberg/iceberg_bundle_export.h"
-
-namespace iceberg::arrow {
-
-/// \brief Register built-in Arrow FileIO implementations into the FileIORegistry.
-///
-/// This operation is idempotent and safe to call multiple times.
-ICEBERG_BUNDLE_EXPORT void EnsureArrowFileIOsRegistered();
-
-}  // namespace iceberg::arrow
+#if defined(_WIN32) || defined(__CYGWIN__)
+#  ifdef ICEBERG_DATA_STATIC
+#    define ICEBERG_DATA_EXPORT
+#  elif defined(ICEBERG_DATA_EXPORTING)
+#    define ICEBERG_DATA_EXPORT __declspec(dllexport)
+#  else
+#    define ICEBERG_DATA_EXPORT __declspec(dllimport)
+#  endif
+#else  // Not Windows
+#  ifndef ICEBERG_DATA_EXPORT
+#    define ICEBERG_DATA_EXPORT __attribute__((visibility("default")))
+#  endif
+#endif

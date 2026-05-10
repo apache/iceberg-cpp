@@ -95,9 +95,7 @@ struct ICEBERG_EXPORT ReaderOptions {
   std::optional<size_t> length;
   /// \brief The split to read.
   std::optional<Split> split;
-  /// \brief FileIO instance to open the file. Reader implementations should down cast it
-  /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
-  /// `ArrowFileSystemFileIO` as the default implementation.
+  /// \brief FileIO instance to open the file.
   std::shared_ptr<class FileIO> io;
   /// \brief The projection schema to read from the file. This field is required.
   std::shared_ptr<class Schema> projection;

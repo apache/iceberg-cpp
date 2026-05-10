@@ -31,7 +31,7 @@
 #include <avro/Generic.hh>
 #include <avro/GenericDatum.hh>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
@@ -42,7 +42,6 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema_internal.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
@@ -51,13 +50,8 @@ namespace {
 
 Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& options,
                                                            int64_t buffer_size) {
-  ::arrow::fs::FileInfo file_info(options.path, ::arrow::fs::FileType::File);
-  if (options.length) {
-    file_info.set_size(options.length.value());
-  }
-
-  auto io = internal::checked_pointer_cast<arrow::ArrowFileSystemFileIO>(options.io);
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file, io->fs()->OpenInputFile(file_info));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto file, arrow::OpenArrowInputStream(options.io, options.path, options.length));
   return std::make_unique<AvroInputStream>(file, buffer_size);
 }
 

@@ -27,8 +27,8 @@
 #  include <arrow/filesystem/s3fs.h>
 #endif
 
-#include "iceberg/arrow/arrow_file_io.h"
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/util/macros.h"

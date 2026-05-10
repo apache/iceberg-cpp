@@ -52,6 +52,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ~SnapshotUpdate() override;
 
   Kind kind() const override { return Kind::kUpdateSnapshot; }
+  bool IsRetryable() const override { return true; }
 
   /// \brief Set a callback to delete files instead of the table's default.
   ///

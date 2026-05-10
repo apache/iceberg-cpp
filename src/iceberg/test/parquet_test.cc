@@ -21,6 +21,7 @@
 
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
+#include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
 #include <arrow/table.h>
@@ -30,7 +31,7 @@
 #include <parquet/arrow/writer.h>
 #include <parquet/metadata.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
@@ -41,6 +42,8 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/std_io.h"
+#include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -123,11 +126,12 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
 
 }  // namespace
 
-class ParquetReaderTest : public ::testing::Test {
+class ParquetReaderTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { parquet::RegisterAll(); }
 
   void SetUp() override {
+    TempFileTestBase::SetUp();
     file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
     temp_parquet_file_ = "parquet_reader_test.parquet";
   }
@@ -230,6 +234,42 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, RoundTripWithGenericFileIO) {
+  auto file_io = std::make_shared<iceberg::test::StdFileIO>();
+  auto path = CreateNewTempFilePathWithSuffix(".parquet");
+
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               SchemaField::MakeOptional(2, "name", string())});
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  auto array =
+      ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                         R"([[1, "Foo"], [2, "Bar"]])")
+          .ValueOrDie();
+
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression,
+                        std::string("uncompressed"));
+  auto writer_result = WriterFactoryRegistry::Open(
+      FileFormatType::kParquet, {.path = path,
+                                 .schema = schema,
+                                 .io = file_io,
+                                 .properties = std::move(writer_properties)});
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+  ASSERT_THAT(WriteArray(array, *writer), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto length, writer->length());
+
+  std::shared_ptr<::arrow::Array> out;
+  auto read_status = ReadArray(
+      out, {.path = path, .length = length, .io = file_io, .projection = schema},
+      nullptr);
+  ASSERT_THAT(read_status, IsOk());
+  ASSERT_TRUE(out->Equals(*array));
 }
 
 TEST_F(ParquetReaderTest, ReadReorderedFieldsWithNulls) {

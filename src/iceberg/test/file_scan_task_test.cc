@@ -27,7 +27,7 @@
 #include <parquet/arrow/writer.h>
 #include <parquet/metadata.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -36,7 +36,6 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/type.h"
-#include "iceberg/util/checked_cast.h"
 
 namespace iceberg {
 
@@ -68,12 +67,14 @@ class FileScanTaskTest : public TempFileTestBase {
                                         .ValueOrDie()})
                      .ValueOrDie();
 
-    auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
-    auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
+    ICEBERG_UNWRAP_OR_FAIL(auto outfile,
+                           arrow::OpenArrowOutputStream(file_io_, temp_parquet_file_));
 
     ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
                                              outfile, chunk_size)
                     .ok());
+    ASSERT_TRUE(outfile->Close().ok());
+    RefreshParquetFileSize();
   }
 
   // Helper to create a valid but empty Parquet file.
@@ -84,11 +85,28 @@ class FileScanTaskTest : public TempFileTestBase {
                         ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"1"}))});
     auto empty_table = ::arrow::Table::FromRecordBatches(arrow_schema, {}).ValueOrDie();
 
-    auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
-    auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
+    ICEBERG_UNWRAP_OR_FAIL(auto outfile,
+                           arrow::OpenArrowOutputStream(file_io_, temp_parquet_file_));
     ASSERT_TRUE(::parquet::arrow::WriteTable(*empty_table, ::arrow::default_memory_pool(),
                                              outfile, 1024)
                     .ok());
+    ASSERT_TRUE(outfile->Close().ok());
+    RefreshParquetFileSize();
+  }
+
+  void RefreshParquetFileSize() {
+    ICEBERG_UNWRAP_OR_FAIL(auto input_file, file_io_->NewInputFile(temp_parquet_file_));
+    ICEBERG_UNWRAP_OR_FAIL(auto size, input_file->Size());
+    ASSERT_GT(size, 0);
+    parquet_file_size_ = size;
+  }
+
+  std::shared_ptr<DataFile> MakeDataFile() const {
+    auto data_file = std::make_shared<DataFile>();
+    data_file->file_path = temp_parquet_file_;
+    data_file->file_format = FileFormatType::kParquet;
+    data_file->file_size_in_bytes = parquet_file_size_;
+    return data_file;
   }
 
   // Helper method to verify the content of the next batch from an ArrowArrayStream.
@@ -124,12 +142,11 @@ class FileScanTaskTest : public TempFileTestBase {
 
   std::shared_ptr<FileIO> file_io_;
   std::string temp_parquet_file_;
+  int64_t parquet_file_size_ = 0;
 };
 
 TEST_F(FileScanTaskTest, ReadFullSchema) {
-  auto data_file = std::make_shared<DataFile>();
-  data_file->file_path = temp_parquet_file_;
-  data_file->file_format = FileFormatType::kParquet;
+  auto data_file = MakeDataFile();
 
   auto projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
@@ -146,9 +163,7 @@ TEST_F(FileScanTaskTest, ReadFullSchema) {
 }
 
 TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
-  auto data_file = std::make_shared<DataFile>();
-  data_file->file_path = temp_parquet_file_;
-  data_file->file_format = FileFormatType::kParquet;
+  auto data_file = MakeDataFile();
 
   auto projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(2, "name", string()),
@@ -166,9 +181,7 @@ TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
 
 TEST_F(FileScanTaskTest, ReadEmptyFile) {
   CreateEmptyParquetFile();
-  auto data_file = std::make_shared<DataFile>();
-  data_file->file_path = temp_parquet_file_;
-  data_file->file_format = FileFormatType::kParquet;
+  auto data_file = MakeDataFile();
 
   auto projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});

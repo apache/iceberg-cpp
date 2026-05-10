@@ -29,6 +29,7 @@
 #include <span>
 #include <string>
 #include <thread>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
@@ -184,6 +185,24 @@ class FileCleanupStrategy {
     std::vector<std::string> as_vec(paths.begin(), paths.end());
     RunInParallel<std::string>(std::span<const std::string>(as_vec),
                                [this](const std::string& p) { DeleteFile(p); });
+  /// \brief Delete a single file
+  void DeleteFile(const std::string& path) {
+    try {
+      if (delete_func_) {
+        delete_func_(path);
+      } else {
+        std::ignore = file_io_->DeleteFile(path);
+      }
+    } catch (...) {
+      /// TODO(shangxinli): add retry
+    }
+  }
+
+  /// TODO(shangxinli): Add bulk deletion
+  void DeleteFiles(const std::unordered_set<std::string>& paths) {
+    for (const auto& path : paths) {
+      DeleteFile(path);
+    }
   }
 
   bool HasAnyStatisticsFiles(const TableMetadata& metadata) const {

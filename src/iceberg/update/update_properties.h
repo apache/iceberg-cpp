@@ -66,6 +66,7 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   UpdateProperties& Remove(const std::string& key);
 
   Kind kind() const final { return Kind::kUpdateProperties; }
+  bool IsRetryable() const override { return true; }
 
   /// \brief Apply the pending changes and return the updates and removals.
   Result<ApplyResult> Apply();

@@ -25,7 +25,7 @@
 #include <arrow/record_batch.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_file_io.h"
+#include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"

@@ -134,6 +134,13 @@ class ICEBERG_EXPORT UpdateSnapshotReference : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateSnapshotReference; }
 
+  /// \brief Snapshot reference updates are not retryable.
+  ///
+  /// The update snapshots the ref map at construction time and validates rename or
+  /// fast-forward operations against that captured state. Replaying after a refresh can
+  /// clobber or reinterpret concurrent ref changes.
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     /// References to set or update (name, ref pairs)
     std::vector<std::pair<std::string, std::shared_ptr<SnapshotRef>>> to_set;

@@ -15,12 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
-#include "iceberg/arrow/file_io_register.h"
+#include "iceberg/arrow/arrow_io_register.h"
 
 #include <mutex>
 #include <string>
 
-#include "iceberg/arrow/arrow_file_io.h"
+#include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/file_io_registry.h"
 
 namespace iceberg::arrow {

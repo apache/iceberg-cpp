@@ -334,6 +334,13 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateSchema; }
 
+  /// \brief Schema updates are not retryable.
+  ///
+  /// The update records field IDs, move targets, and last-column-id-derived state from
+  /// the schema that was current when the builder was created. Replaying after a refresh
+  /// can apply a different schema evolution than the caller originally authored.
+  bool IsRetryable() const override { return false; }
+
   struct ApplyResult {
     std::shared_ptr<Schema> schema;
     int32_t new_last_column_id;

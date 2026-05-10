@@ -26,14 +26,14 @@
 #include <span>
 #include <string_view>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
 /// \brief Loads delete files and constructs in-memory delete indexes.
-class ICEBERG_EXPORT DeleteLoader {
+class ICEBERG_DATA_EXPORT DeleteLoader {
  public:
   /// \brief Create a DeleteLoader.
   /// \param io FileIO instance for reading delete files
