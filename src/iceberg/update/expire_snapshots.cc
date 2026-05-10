@@ -20,11 +20,15 @@
 #include "iceberg/update/expire_snapshots.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
+#include <future>
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -54,6 +58,64 @@ Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
   return ManifestReader::Make(manifest, file_io, std::move(schema), std::move(spec));
 }
 
+/// \brief Cap on per-CleanFiles worker concurrency.
+///
+/// Java's RemoveSnapshots takes ExecutorServices from the table operations layer.
+/// C++ has no shared executor today, so each strategy spins up an ad-hoc pool via
+/// std::async. Cap concurrency to avoid swamping FileIO with hundreds of in-flight
+/// requests on hosts with very high core counts.
+constexpr std::size_t kMaxParallelism = 8;
+
+std::size_t WorkerCount(std::size_t item_count) {
+  if (item_count <= 1) return 1;
+  std::size_t hw = std::thread::hardware_concurrency();
+  if (hw == 0) hw = 2;
+  return std::min({item_count, kMaxParallelism, hw});
+}
+
+/// \brief Run `work` over `items` using up to WorkerCount(items) std::async workers.
+///
+/// Each worker drains a contiguous slice of `items`. Exceptions thrown by `work` are
+/// swallowed -- callers that need to know whether a unit succeeded should record it
+/// inside `work` (e.g. via an atomic counter or a thread-safe collection).
+template <typename Item, typename Fn>
+void RunInParallel(std::span<const Item> items, Fn&& work) {
+  if (items.empty()) return;
+  std::size_t n = WorkerCount(items.size());
+  if (n <= 1) {
+    for (const auto& item : items) {
+      try {
+        work(item);
+      } catch (...) {
+        // best-effort
+      }
+    }
+    return;
+  }
+
+  std::vector<std::future<void>> futures;
+  futures.reserve(n);
+  std::size_t per = (items.size() + n - 1) / n;
+  for (std::size_t i = 0; i < n; ++i) {
+    std::size_t begin = i * per;
+    if (begin >= items.size()) break;
+    std::size_t end = std::min(begin + per, items.size());
+    auto slice = items.subspan(begin, end - begin);
+    futures.emplace_back(std::async(std::launch::async, [slice, &work]() {
+      for (const auto& item : slice) {
+        try {
+          work(item);
+        } catch (...) {
+          // best-effort: see RunInParallel doc
+        }
+      }
+    }));
+  }
+  for (auto& f : futures) {
+    f.wait();
+  }
+}
+
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
 class FileCleanupStrategy {
  public:
@@ -75,24 +137,53 @@ class FileCleanupStrategy {
                             CleanupLevel level) = 0;
 
  protected:
-  /// \brief Delete a single file
+  /// Number of attempts for a single best-effort delete. Mirrors Java's
+  /// Tasks.foreach(...).retry(3).
+  static constexpr int kDeleteMaxAttempts = 3;
+
+  /// \brief Delete a file, suppressing errors (best-effort) with bounded retries.
+  ///
+  /// Uses the custom delete function if set, otherwise FileIO::DeleteFile. Retries
+  /// up to kDeleteMaxAttempts times on transient FileIO errors; stops immediately
+  /// when the underlying status is kNotFound (matching Java's stopRetryOn
+  /// NotFoundException). Custom delete callbacks are invoked exactly once -- caller
+  /// retry policy is opaque to us.
   void DeleteFile(const std::string& path) {
-    try {
-      if (delete_func_) {
+    if (delete_func_) {
+      try {
         delete_func_(path);
-      } else {
-        std::ignore = file_io_->DeleteFile(path);
+      } catch (...) {
+        // Suppress all exceptions during file cleanup to match Java's
+        // suppressFailureWhenFinished behavior.
       }
-    } catch (...) {
-      /// TODO(shangxinli): add retry
+      return;
+    }
+
+    for (int attempt = 1; attempt <= kDeleteMaxAttempts; ++attempt) {
+      try {
+        auto status = file_io_->DeleteFile(path);
+        if (status.has_value()) return;
+        if (status.error().kind == ErrorKind::kNotFound) return;
+        if (attempt == kDeleteMaxAttempts) return;
+      } catch (...) {
+        if (attempt == kDeleteMaxAttempts) return;
+      }
+      // Linear backoff (10ms, 20ms). Tiny on purpose -- this is best-effort cleanup,
+      // not a critical write path; we just want to ride out a transient blip.
+      std::this_thread::sleep_for(std::chrono::milliseconds(10 * attempt));
     }
   }
 
-  /// TODO(shangxinli): Add bulk deletion
+  /// \brief Delete a batch of files, parallelized via RunInParallel.
+  ///
+  /// TODO(shangxinli): When FileIO grows a SupportsBulkOperations-style
+  /// `DeleteFiles(span<string>)` API, prefer the bulk path here (mirroring
+  /// Java's FileCleanupStrategy.deleteFiles).
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
-    for (const auto& path : paths) {
-      DeleteFile(path);
-    }
+    if (paths.empty()) return;
+    std::vector<std::string> as_vec(paths.begin(), paths.end());
+    RunInParallel<std::string>(std::span<const std::string>(as_vec),
+                               [this](const std::string& p) { DeleteFile(p); });
   }
 
   bool HasAnyStatisticsFiles(const TableMetadata& metadata) const {

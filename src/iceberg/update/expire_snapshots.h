@@ -114,6 +114,9 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// If this method is not called, unnecessary manifests and data files will still be
   /// deleted.
   ///
+  /// \note The supplied function may be invoked concurrently from worker threads
+  /// when bulk deletion is parallelized; implementations must be thread-safe.
+  ///
   /// \param delete_func A function that will be called to delete manifests and data files
   /// \return Reference to this for method chaining.
   ExpireSnapshots& DeleteWith(std::function<void(const std::string&)> delete_func);
