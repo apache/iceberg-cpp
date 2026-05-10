@@ -350,6 +350,11 @@ TEST_F(ExpireSnapshotsCleanupTest, IgnoresExpiredDeleteManifestReadFailures) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  // Force ReachableFileCleanup: the empty current manifest list makes this an
+  // unreachable-orphan scenario, which Incremental cannot detect (added-in-ancestor
+  // files are preserved unless an explicit DELETED entry exists). Specifying the
+  // snapshot id forces the dispatch to Reachable.
+  update->ExpireSnapshotId(kExpiredSnapshotId);
   update->DeleteWith(
       [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
 
@@ -388,6 +393,8 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredFiles) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  // See note above; same scenario.
+  update->ExpireSnapshotId(kExpiredSnapshotId);
   update->DeleteWith(
       [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
 
@@ -571,6 +578,77 @@ TEST_F(ExpireSnapshotsCleanupTest, KeepsReusedPartitionStats) {
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Not(testing::Contains(reused_statistics_path)));
+}
+
+// Linear-ancestry, no specified ID: dispatch must pick IncrementalFileCleanup.
+// Since the expired snapshot is an ancestor and the expired manifest only
+// contains ADDED entries (no DELETED), incremental correctly preserves the
+// data file (matches Java IncrementalFileCleanup semantics) and only removes
+// the manifest, manifest list, and (if any) delete manifest.
+TEST_F(ExpireSnapshotsCleanupTest, IncrementalDispatchPreservesAncestorAddedFiles) {
+  const auto expired_data_file_path = table_location_ + "/data/expired-data.parquet";
+  const auto expired_data_manifest_path = table_location_ + "/metadata/expired-data.avro";
+  const auto expired_manifest_list_path =
+      table_location_ + "/metadata/expired-manifest-list.avro";
+  const auto current_manifest_list_path =
+      table_location_ + "/metadata/current-manifest-list.avro";
+
+  auto expired_data_manifest = WriteDataManifest(
+      expired_data_manifest_path, kExpiredSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId, kExpiredSequenceNumber,
+                 MakeDataFile(expired_data_file_path))});
+  WriteManifestList(expired_manifest_list_path, kExpiredSnapshotId,
+                    /*parent_snapshot_id=*/0, kExpiredSequenceNumber,
+                    {expired_data_manifest});
+  WriteManifestList(current_manifest_list_path, kCurrentSnapshotId, kExpiredSnapshotId,
+                    kCurrentSequenceNumber, {});
+  RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
+
+  std::vector<std::string> deleted_files;
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  // No ExpireSnapshotId -> incremental dispatch.
+  update->DeleteWith(
+      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  // Manifest + manifest list deleted, data file preserved.
+  EXPECT_THAT(deleted_files, testing::Contains(expired_data_manifest_path));
+  EXPECT_THAT(deleted_files, testing::Contains(expired_manifest_list_path));
+  EXPECT_THAT(deleted_files, testing::Not(testing::Contains(expired_data_file_path)));
+}
+
+// Same fixture, but force the Reachable path with ExpireSnapshotId. Reachable
+// detects the data file as unreachable from the (empty) current state and
+// deletes it -- demonstrating the dispatch actually selects different code paths.
+TEST_F(ExpireSnapshotsCleanupTest, ReachableDispatchDeletesUnreachableData) {
+  const auto expired_data_file_path = table_location_ + "/data/expired-data.parquet";
+  const auto expired_data_manifest_path = table_location_ + "/metadata/expired-data.avro";
+  const auto expired_manifest_list_path =
+      table_location_ + "/metadata/expired-manifest-list.avro";
+  const auto current_manifest_list_path =
+      table_location_ + "/metadata/current-manifest-list.avro";
+
+  auto expired_data_manifest = WriteDataManifest(
+      expired_data_manifest_path, kExpiredSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId, kExpiredSequenceNumber,
+                 MakeDataFile(expired_data_file_path))});
+  WriteManifestList(expired_manifest_list_path, kExpiredSnapshotId,
+                    /*parent_snapshot_id=*/0, kExpiredSequenceNumber,
+                    {expired_data_manifest});
+  WriteManifestList(current_manifest_list_path, kCurrentSnapshotId, kExpiredSnapshotId,
+                    kCurrentSequenceNumber, {});
+  RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
+
+  std::vector<std::string> deleted_files;
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  update->ExpireSnapshotId(kExpiredSnapshotId);
+  update->DeleteWith(
+      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
+                                                           expired_data_manifest_path,
+                                                           expired_manifest_list_path));
 }
 
 }  // namespace iceberg
