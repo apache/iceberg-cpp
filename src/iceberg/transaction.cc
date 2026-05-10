@@ -368,11 +368,6 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
           ? Result<const TableMetadata*>(commit_result.value()->metadata().get())
           : std::unexpected(commit_result.error());
 
-  Result<const TableMetadata*> finalize_result =
-      commit_result.has_value()
-          ? Result<const TableMetadata*>(commit_result.value()->metadata().get())
-          : std::unexpected(commit_result.error());
-
   for (const auto& update : pending_updates_) {
     std::ignore = update->Finalize(finalize_result);
   }
