@@ -19,6 +19,7 @@
 
 #include "iceberg/update/expire_snapshots.h"
 
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -244,10 +245,13 @@ TEST_F(ExpireSnapshotsTest, ExpireOlderThan) {
 }
 
 TEST_F(ExpireSnapshotsTest, FinalizeRequiresCommittedMetadata) {
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   // Apply first so apply_result_ is cached
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
@@ -262,11 +266,14 @@ TEST_F(ExpireSnapshotsTest, FinalizeRequiresCommittedMetadata) {
 }
 
 TEST_F(ExpireSnapshotsTest, CleanupNoneSkipsDeletion) {
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->CleanupLevel(CleanupLevel::kNone);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
@@ -278,10 +285,13 @@ TEST_F(ExpireSnapshotsTest, CleanupNoneSkipsDeletion) {
 }
 
 TEST_F(ExpireSnapshotsTest, FinalizeSkippedOnCommitError) {
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
@@ -294,11 +304,14 @@ TEST_F(ExpireSnapshotsTest, FinalizeSkippedOnCommitError) {
 }
 
 TEST_F(ExpireSnapshotsTest, FinalizeSkipsWhenNothingExpired) {
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->RetainLast(2);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_TRUE(result.snapshot_ids_to_remove.empty());
@@ -348,10 +361,13 @@ TEST_F(ExpireSnapshotsCleanupTest, IgnoresExpiredDeleteManifestReadFailures) {
                     kCurrentSequenceNumber, {});
   RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
@@ -386,10 +402,13 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredFiles) {
                     kCurrentSequenceNumber, {});
   RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
@@ -424,11 +443,14 @@ TEST_F(ExpireSnapshotsCleanupTest, MetadataOnlySkipsDataDeletion) {
                     kCurrentSequenceNumber, {});
   RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->CleanupLevel(CleanupLevel::kMetadataOnly);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_manifest_path,
@@ -462,10 +484,13 @@ TEST_F(ExpireSnapshotsCleanupTest, RetainedDeleteManifestSkipsDataDeletion) {
                     kCurrentSequenceNumber, {current_delete_manifest});
   RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_manifest_path,
@@ -487,10 +512,13 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredStats) {
       expired_manifest_list_path, current_manifest_list_path,
       {MakeStatisticsFile(kExpiredSnapshotId, expired_statistics_path)}, {});
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Contains(expired_statistics_path));
@@ -513,10 +541,13 @@ TEST_F(ExpireSnapshotsCleanupTest, KeepsReusedStats) {
        MakeStatisticsFile(kCurrentSnapshotId, reused_statistics_path)},
       {});
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Not(testing::Contains(reused_statistics_path)));
@@ -538,10 +569,13 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredPartitionStats) {
       expired_manifest_list_path, current_manifest_list_path, {},
       {MakePartitionStatisticsFile(kExpiredSnapshotId, expired_statistics_path)});
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Contains(expired_statistics_path));
@@ -564,10 +598,13 @@ TEST_F(ExpireSnapshotsCleanupTest, KeepsReusedPartitionStats) {
       {MakePartitionStatisticsFile(kExpiredSnapshotId, reused_statistics_path),
        MakePartitionStatisticsFile(kCurrentSnapshotId, reused_statistics_path)});
 
+  std::mutex deleted_files_mu;
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Not(testing::Contains(reused_statistics_path)));
