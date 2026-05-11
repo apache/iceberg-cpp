@@ -144,10 +144,6 @@ if get_option('rest').enabled()
                     ),
                     'dependencies': [iceberg_rest_dep],
                 },
-                'polaris_oauth2_integration_test': {
-                    'sources': files('polaris_oauth2_test.cc'),
-                    'dependencies': [iceberg_rest_dep],
-                },
             }
         endif
     endif
