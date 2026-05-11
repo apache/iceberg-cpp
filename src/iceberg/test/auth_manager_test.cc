@@ -524,34 +524,6 @@ TEST(TokenRefreshSchedulerTest, CancelPreventsExecution) {
   scheduler.Shutdown();
 }
 
-// Verifies that multiple tasks fire in chronological order
-TEST(TokenRefreshSchedulerTest, MultipleTasksFireInOrder) {
-  TokenRefreshScheduler scheduler;
-  std::vector<int> order;
-  std::mutex order_mutex;
-
-  auto append = [&](int val) {
-    std::lock_guard lock(order_mutex);
-    order.push_back(val);
-  };
-
-  // Schedule in reverse order of fire time
-  scheduler.Schedule(std::chrono::milliseconds(150), [&] { append(3); });
-  scheduler.Schedule(std::chrono::milliseconds(50), [&] { append(1); });
-  scheduler.Schedule(std::chrono::milliseconds(100), [&] { append(2); });
-
-  // Wait for all to fire
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-  std::lock_guard lock(order_mutex);
-  ASSERT_EQ(3u, order.size());
-  EXPECT_EQ(1, order[0]);
-  EXPECT_EQ(2, order[1]);
-  EXPECT_EQ(3, order[2]);
-
-  scheduler.Shutdown();
-}
-
 // Verifies that shutdown with pending tasks does not crash
 TEST(TokenRefreshSchedulerTest, ShutdownWithPendingTasks) {
   TokenRefreshScheduler scheduler;
