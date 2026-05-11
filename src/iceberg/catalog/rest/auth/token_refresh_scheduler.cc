@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 
 #include <algorithm>
+#include <ranges>
 
 namespace iceberg::rest::auth {
 
@@ -81,9 +82,8 @@ void TokenRefreshScheduler::Run() {
       if (tasks_.empty()) continue;
 
       // Find the task with the earliest fire_at
-      auto earliest_it = std::min_element(
-          tasks_.begin(), tasks_.end(),
-          [](const Task& a, const Task& b) { return a.fire_at < b.fire_at; });
+      auto earliest_it = std::ranges::min_element(
+          tasks_, [](const Task& a, const Task& b) { return a.fire_at < b.fire_at; });
 
       auto fire_at = earliest_it->fire_at;
       auto target_id = earliest_it->id;
@@ -97,9 +97,8 @@ void TokenRefreshScheduler::Run() {
         if (shutdown_) return true;
         if (tasks_.empty()) return true;
         // Check if the earliest task has changed (new task added or cancelled)
-        auto new_earliest = std::min_element(
-            tasks_.begin(), tasks_.end(),
-            [](const Task& a, const Task& b) { return a.fire_at < b.fire_at; });
+        auto new_earliest = std::ranges::min_element(
+            tasks_, [](const Task& a, const Task& b) { return a.fire_at < b.fire_at; });
         return new_earliest->id != target_id;
       });
 
@@ -107,8 +106,8 @@ void TokenRefreshScheduler::Run() {
 
       // If we were woken because the earliest task changed, loop again
       auto now = std::chrono::steady_clock::now();
-      auto due_it = std::find_if(tasks_.begin(), tasks_.end(),
-                                 [now](const Task& t) { return t.fire_at <= now; });
+      auto due_it =
+          std::ranges::find_if(tasks_, [now](const Task& t) { return t.fire_at <= now; });
       if (due_it == tasks_.end()) continue;
 
       callback = std::move(due_it->callback);

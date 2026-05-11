@@ -285,16 +285,16 @@ std::string TransformUtil::Base64Encode(std::string_view str_to_encode) {
 
 namespace {
 
-// Shared base64 decode logic. The decode table maps ASCII char → 6-bit value.
+// Shared base64 decode logic. The decode table maps ASCII char -> 6-bit value.
 // 0xFF means invalid character.
-std::string Base64DecodeWithTable(std::string_view input,
-                                  const std::array<uint8_t, 256>& table) {
+Result<std::string> Base64DecodeWithTable(std::string_view input,
+                                          const std::array<uint8_t, 256>& table) {
   // Strip trailing padding
   while (!input.empty() && input.back() == '=') {
     input.remove_suffix(1);
   }
   if (input.empty()) {
-    return {};
+    return std::string{};
   }
 
   std::string output;
@@ -306,7 +306,7 @@ std::string Base64DecodeWithTable(std::string_view input,
   for (char c : input) {
     uint8_t val = table[static_cast<uint8_t>(c)];
     if (val == 0xFF) {
-      return {};  // Invalid character
+      return InvalidArgument("Invalid base64 character: '{}'", c);
     }
     buffer = (buffer << 6) | val;
     bits_collected += 6;
@@ -347,11 +347,11 @@ constexpr std::array<uint8_t, 256> kBase64UrlDecodeTable = [] {
 
 }  // namespace
 
-std::string TransformUtil::Base64Decode(std::string_view encoded) {
+Result<std::string> TransformUtil::Base64Decode(std::string_view encoded) {
   return Base64DecodeWithTable(encoded, kBase64DecodeTable);
 }
 
-std::string TransformUtil::Base64UrlDecode(std::string_view encoded) {
+Result<std::string> TransformUtil::Base64UrlDecode(std::string_view encoded) {
   return Base64DecodeWithTable(encoded, kBase64UrlDecodeTable);
 }
 

@@ -97,14 +97,15 @@ std::optional<int64_t> ExpiresAtMillis(std::string_view token) {
   }
 
   // Extract and decode the payload (second part).
-  // Note: Base64UrlDecode returns empty string on both empty input and decode failure.
+  // Note: Base64UrlDecode returns an error on invalid input, and Ok("") on empty input.
   // A valid JWT payload is never empty (at minimum "{}"), so empty result reliably
-  // indicates a decode failure here.
+  // indicates the token is not a JWT we can parse.
   std::string_view payload_b64 = token.substr(first_dot + 1, second_dot - first_dot - 1);
-  std::string payload = TransformUtil::Base64UrlDecode(payload_b64);
-  if (payload.empty()) {
+  auto payload_result = TransformUtil::Base64UrlDecode(payload_b64);
+  if (!payload_result.has_value() || payload_result->empty()) {
     return std::nullopt;
   }
+  const std::string& payload = *payload_result;
 
   // Parse JSON and extract "exp" claim
   auto json = nlohmann::json::parse(payload, nullptr, false);
