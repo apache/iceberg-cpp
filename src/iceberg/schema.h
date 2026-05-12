@@ -57,6 +57,8 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   explicit Schema(std::vector<SchemaField> fields, int32_t schema_id = kInitialSchemaId);
 
+  ~Schema() override;
+
   /// \brief Create a schema.
   ///
   /// \param fields The fields that make up the schema.
