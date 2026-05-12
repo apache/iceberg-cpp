@@ -61,23 +61,15 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   SigV4AuthSession(
       std::shared_ptr<AuthSession> delegate, std::string signing_region,
       std::string signing_name,
-      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider,
-      std::unordered_map<std::string, std::string> effective_properties);
+      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider);
 
   ~SigV4AuthSession() override;
 
-  Result<HTTPRequest> Authenticate(const HTTPRequest& request) override;
+  Result<HttpRequest> Authenticate(const HttpRequest& request) override;
 
   Status Close() override;
 
   const std::shared_ptr<AuthSession>& delegate() const { return delegate_; }
-
-  /// Merged properties this session was built from. Child sessions inherit
-  /// from this (not the catalog's) so contextual overrides propagate into
-  /// table sessions.
-  const std::unordered_map<std::string, std::string>& effective_properties() const {
-    return effective_properties_;
-  }
 
  private:
   std::shared_ptr<AuthSession> delegate_;
@@ -85,7 +77,6 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   std::string signing_name_;
   std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider_;
   std::unique_ptr<Aws::Client::AWSAuthV4Signer> signer_;
-  std::unordered_map<std::string, std::string> effective_properties_;
 };
 
 /// \brief An AuthManager that produces SigV4AuthSession instances.
@@ -124,9 +115,10 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
       const std::unordered_map<std::string, std::string>& properties);
   Result<std::shared_ptr<AuthSession>> WrapSession(
       std::shared_ptr<AuthSession> delegate_session,
-      std::unordered_map<std::string, std::string> properties);
+      const std::unordered_map<std::string, std::string>& properties);
 
   std::unique_ptr<AuthManager> delegate_;
+  std::unordered_map<std::string, std::string> catalog_properties_;
 };
 
 }  // namespace iceberg::rest::auth

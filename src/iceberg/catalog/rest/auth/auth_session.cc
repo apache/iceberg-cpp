@@ -33,8 +33,8 @@ class DefaultAuthSession : public AuthSession {
   explicit DefaultAuthSession(std::unordered_map<std::string, std::string> headers)
       : headers_(std::move(headers)) {}
 
-  Result<HTTPRequest> Authenticate(const HTTPRequest& request) override {
-    HTTPRequest authenticated = request;
+  Result<HttpRequest> Authenticate(const HttpRequest& request) override {
+    HttpRequest authenticated = request;
     for (const auto& [key, value] : headers_) {
       authenticated.headers.try_emplace(key, value);
     }

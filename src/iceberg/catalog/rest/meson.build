@@ -40,15 +40,15 @@ cpr_needs_static = (
 )
 cpr_dep = dependency('cpr', static: cpr_needs_static)
 
+iceberg_rest_sources += files('auth/sigv4_auth_manager.cc')
 iceberg_rest_build_deps = [iceberg_dep, cpr_dep]
 iceberg_rest_compile_defs = []
 
 sigv4_opt = get_option('sigv4')
 aws_sdk_core_dep = dependency('aws-cpp-sdk-core', required: sigv4_opt)
 if aws_sdk_core_dep.found()
-    iceberg_rest_sources += files('auth/sigv4_auth_manager.cc')
     iceberg_rest_build_deps += aws_sdk_core_dep
-    iceberg_rest_compile_defs += '-DICEBERG_BUILD_SIGV4'
+    iceberg_rest_compile_defs += '-DICEBERG_SIGV4'
 endif
 
 iceberg_rest_lib = library(
@@ -79,6 +79,7 @@ install_headers(
         'endpoint.h',
         'error_handlers.h',
         'http_client.h',
+        'http_request.h',
         'iceberg_rest_export.h',
         'resource_paths.h',
         'rest_catalog.h',
@@ -97,7 +98,4 @@ iceberg_rest_auth_headers = [
     'auth/auth_session.h',
     'auth/oauth2_util.h',
 ]
-if aws_sdk_core_dep.found()
-    iceberg_rest_auth_headers += ['auth/sigv4_auth_manager.h']
-endif
 install_headers(iceberg_rest_auth_headers, subdir: 'iceberg/catalog/rest/auth')

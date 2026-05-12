@@ -23,7 +23,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "iceberg/catalog/rest/endpoint.h"
+#include "iceberg/catalog/rest/http_request.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -32,17 +32,6 @@
 /// \brief Authentication session interface for REST catalog.
 
 namespace iceberg::rest::auth {
-
-/// \brief An outgoing HTTP request passed through an AuthSession. Mirrors the
-/// HTTPRequest type used by the Java reference implementation so signing
-/// implementations like SigV4 can operate on method, url, headers, and body
-/// as a single value.
-struct ICEBERG_REST_EXPORT HTTPRequest {
-  HttpMethod method = HttpMethod::kGet;
-  std::string url;
-  std::unordered_map<std::string, std::string> headers;
-  std::string body;
-};
 
 /// \brief An authentication session that can authenticate outgoing HTTP requests.
 class ICEBERG_REST_EXPORT AuthSession {
@@ -63,7 +52,7 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///         - NotAuthorized: Not authenticated (401)
   ///         - IOError: Network or connection errors when reaching auth server
   ///         - RestError: HTTP errors from authentication service
-  virtual Result<HTTPRequest> Authenticate(const HTTPRequest& request) = 0;
+  virtual Result<HttpRequest> Authenticate(const HttpRequest& request) = 0;
 
   /// \brief Close the session and release any resources.
   ///
