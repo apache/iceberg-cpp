@@ -45,8 +45,10 @@ set(ICEBERG_SOURCES
     location_provider.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
+    manifest/manifest_filter_manager.cc
     manifest/manifest_group.cc
     manifest/manifest_list.cc
+    manifest/manifest_merge_manager.cc
     manifest/manifest_reader.cc
     manifest/manifest_util.cc
     manifest/manifest_writer.cc
