@@ -47,11 +47,10 @@ Result<std::unique_ptr<AuthManager>> MakeOAuth2Manager(
     std::string_view name,
     const std::unordered_map<std::string, std::string>& properties);
 
-#ifdef ICEBERG_BUILD_SIGV4
-/// \brief Create a SigV4 authentication manager with a delegate.
+/// \brief Create a SigV4 authentication manager with a delegate. Returns
+/// NotSupported when the library was built without ICEBERG_SIGV4.
 Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
     std::string_view name,
     const std::unordered_map<std::string, std::string>& properties);
-#endif
 
 }  // namespace iceberg::rest::auth

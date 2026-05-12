@@ -290,7 +290,7 @@ if(ICEBERG_BUILD_REST)
                         rest_json_serde_test.cc
                         rest_util_test.cc)
 
-  if(ICEBERG_BUILD_SIGV4)
+  if(ICEBERG_SIGV4)
     add_rest_iceberg_test(sigv4_auth_test SOURCES sigv4_auth_test.cc)
     target_link_libraries(sigv4_auth_test PRIVATE aws-cpp-sdk-core)
   endif()

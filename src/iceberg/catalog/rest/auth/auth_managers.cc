@@ -66,10 +66,8 @@ AuthManagerRegistry CreateDefaultRegistry() {
       {AuthProperties::kAuthTypeNone, MakeNoopAuthManager},
       {AuthProperties::kAuthTypeBasic, MakeBasicAuthManager},
       {AuthProperties::kAuthTypeOAuth2, MakeOAuth2Manager},
+      {AuthProperties::kAuthTypeSigV4, MakeSigV4AuthManager},
   };
-#ifdef ICEBERG_BUILD_SIGV4
-  registry[AuthProperties::kAuthTypeSigV4] = MakeSigV4AuthManager;
-#endif
   return registry;
 }
 

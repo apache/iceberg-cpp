@@ -73,7 +73,13 @@ macro(iceberg_find_components components)
   endforeach()
 endmacro()
 
-# Find system dependencies
+# AWSSDK's CMake config dispatches sub-package finds via AWSSDK_FIND_COMPONENTS,
+# so a plain find_dependency would not bring in aws-cpp-sdk-core.
+if("AWSSDK" IN_LIST ICEBERG_SYSTEM_DEPENDENCIES)
+  list(REMOVE_ITEM ICEBERG_SYSTEM_DEPENDENCIES AWSSDK)
+  include(CMakeFindDependencyMacro)
+  find_dependency(AWSSDK COMPONENTS core)
+endif()
 iceberg_find_dependencies("${ICEBERG_SYSTEM_DEPENDENCIES}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/iceberg-targets.cmake")

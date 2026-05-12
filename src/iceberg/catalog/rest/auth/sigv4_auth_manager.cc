@@ -17,32 +17,34 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/auth/sigv4_auth_manager.h"
-
-#include <sstream>
-
-#include <aws/core/Aws.h>
-#include <aws/core/auth/AWSAuthSigner.h>
-#include <aws/core/auth/AWSCredentialsProvider.h>
-#include <aws/core/auth/AWSCredentialsProviderChain.h>
-#include <aws/core/client/ClientConfiguration.h>
-#include <aws/core/http/standard/StandardHttpRequest.h>
-#include <aws/core/utils/HashingUtils.h>
-
 #include "iceberg/catalog/rest/auth/auth_manager_internal.h"
-#include "iceberg/catalog/rest/auth/auth_managers.h"
-#include "iceberg/catalog/rest/auth/auth_properties.h"
-#include "iceberg/catalog/rest/endpoint.h"
-#include "iceberg/util/macros.h"
-#include "iceberg/util/string_util.h"
+#include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
+
+#ifdef ICEBERG_SIGV4
+
+#  include <sstream>
+
+#  include <aws/core/Aws.h>
+#  include <aws/core/auth/AWSAuthSigner.h>
+#  include <aws/core/auth/AWSCredentialsProvider.h>
+#  include <aws/core/auth/AWSCredentialsProviderChain.h>
+#  include <aws/core/client/ClientConfiguration.h>
+#  include <aws/core/http/standard/StandardHttpRequest.h>
+#  include <aws/core/utils/HashingUtils.h>
+
+#  include "iceberg/catalog/rest/auth/auth_managers.h"
+#  include "iceberg/catalog/rest/auth/auth_properties.h"
+#  include "iceberg/util/macros.h"
+#  include "iceberg/util/string_util.h"
 
 namespace iceberg::rest::auth {
 
 namespace {
 
-/// \brief Ensures AWS SDK is initialized exactly once per process.
-/// ShutdownAPI is intentionally never called (leak-by-design) to avoid
-/// static destruction order issues with objects that may outlive shutdown.
+/// \brief Ensures the AWS SDK is initialized exactly once per process.
+///
+/// Aws::InitAPI / ShutdownAPI must bracket the process lifetime, which a
+/// library cannot enforce, so we never call ShutdownAPI (leak by design).
 class AwsSdkGuard {
  public:
   static void EnsureInitialized() {
@@ -106,19 +108,17 @@ class RestSigV4Signer : public Aws::Client::AWSAuthV4Signer {
 SigV4AuthSession::SigV4AuthSession(
     std::shared_ptr<AuthSession> delegate, std::string signing_region,
     std::string signing_name,
-    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider,
-    std::unordered_map<std::string, std::string> effective_properties)
+    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider)
     : delegate_(std::move(delegate)),
       signing_region_(std::move(signing_region)),
       signing_name_(std::move(signing_name)),
       credentials_provider_(std::move(credentials_provider)),
       signer_(std::make_unique<RestSigV4Signer>(
-          credentials_provider_, signing_name_.c_str(), signing_region_.c_str())),
-      effective_properties_(std::move(effective_properties)) {}
+          credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {}
 
 SigV4AuthSession::~SigV4AuthSession() = default;
 
-Result<HTTPRequest> SigV4AuthSession::Authenticate(const HTTPRequest& request) {
+Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_request, delegate_->Authenticate(request));
   const auto& original_headers = delegate_request.headers;
 
@@ -157,7 +157,7 @@ Result<HTTPRequest> SigV4AuthSession::Authenticate(const HTTPRequest& request) {
                                         .message = "SigV4 signing failed"});
   }
 
-  HTTPRequest signed_request{.method = delegate_request.method,
+  HttpRequest signed_request{.method = delegate_request.method,
                              .url = std::move(delegate_request.url),
                              .headers = {},
                              .body = std::move(delegate_request.body)};
@@ -199,10 +199,16 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
     HttpClient& shared_client,
     const std::unordered_map<std::string, std::string>& properties) {
   AwsSdkGuard::EnsureInitialized();
+  catalog_properties_ = properties;
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session,
                           delegate_->CatalogSession(shared_client, properties));
   return WrapSession(std::move(delegate_session), properties);
 }
+
+// Contextual and table sessions both merge against the stored catalog
+// properties, matching Java's RESTSigV4AuthManager. Contextual overrides do
+// not propagate into child table sessions; the two derivations are
+// independent dimensions on top of the catalog baseline.
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
     const std::unordered_map<std::string, std::string>& context,
@@ -214,8 +220,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session, delegate_->ContextualSession(
                                                      context, sigv4_parent->delegate()));
 
-  auto merged = MergeProperties(sigv4_parent->effective_properties(), context);
-  return WrapSession(std::move(delegate_session), std::move(merged));
+  auto merged = MergeProperties(catalog_properties_, context);
+  return WrapSession(std::move(delegate_session), merged);
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
@@ -230,8 +236,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
       auto delegate_session,
       delegate_->TableSession(table, properties, sigv4_parent->delegate()));
 
-  auto merged = MergeProperties(sigv4_parent->effective_properties(), properties);
-  return WrapSession(std::move(delegate_session), std::move(merged));
+  auto merged = MergeProperties(catalog_properties_, properties);
+  return WrapSession(std::move(delegate_session), merged);
 }
 
 Status SigV4AuthManager::Close() { return delegate_->Close(); }
@@ -286,13 +292,13 @@ std::string SigV4AuthManager::ResolveSigningName(
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
     std::shared_ptr<AuthSession> delegate_session,
-    std::unordered_map<std::string, std::string> properties) {
+    const std::unordered_map<std::string, std::string>& properties) {
   auto region = ResolveSigningRegion(properties);
   auto service = ResolveSigningName(properties);
   ICEBERG_ASSIGN_OR_RAISE(auto credentials, MakeCredentialsProvider(properties));
-  return std::make_shared<SigV4AuthSession>(
-      std::move(delegate_session), std::move(region), std::move(service),
-      std::move(credentials), std::move(properties));
+  return std::make_shared<SigV4AuthSession>(std::move(delegate_session),
+                                            std::move(region), std::move(service),
+                                            std::move(credentials));
 }
 
 Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
@@ -318,3 +324,18 @@ Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
 }
 
 }  // namespace iceberg::rest::auth
+
+#else  // !ICEBERG_SIGV4
+
+namespace iceberg::rest::auth {
+
+Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
+    std::string_view /*name*/,
+    const std::unordered_map<std::string, std::string>& /*properties*/) {
+  return NotSupported(
+      "SigV4 authentication is not built; configure with -DICEBERG_SIGV4=ON");
+}
+
+}  // namespace iceberg::rest::auth
+
+#endif  // ICEBERG_SIGV4

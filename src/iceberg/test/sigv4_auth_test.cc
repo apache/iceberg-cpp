@@ -17,20 +17,22 @@
  * under the License.
  */
 
-#include <string>
-#include <unordered_map>
+#ifdef ICEBERG_SIGV4
 
-#include <aws/core/Aws.h>
-#include <aws/core/auth/AWSCredentialsProvider.h>
-#include <gtest/gtest.h>
+#  include <string>
+#  include <unordered_map>
 
-#include "iceberg/catalog/rest/auth/auth_managers.h"
-#include "iceberg/catalog/rest/auth/auth_properties.h"
-#include "iceberg/catalog/rest/auth/auth_session.h"
-#include "iceberg/catalog/rest/auth/sigv4_auth_manager.h"
-#include "iceberg/catalog/rest/http_client.h"
-#include "iceberg/table_identifier.h"
-#include "iceberg/test/matchers.h"
+#  include <aws/core/Aws.h>
+#  include <aws/core/auth/AWSCredentialsProvider.h>
+#  include <gtest/gtest.h>
+
+#  include "iceberg/catalog/rest/auth/auth_managers.h"
+#  include "iceberg/catalog/rest/auth/auth_properties.h"
+#  include "iceberg/catalog/rest/auth/auth_session.h"
+#  include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
+#  include "iceberg/catalog/rest/http_client.h"
+#  include "iceberg/table_identifier.h"
+#  include "iceberg/test/matchers.h"
 
 namespace iceberg::rest::auth {
 
@@ -82,7 +84,7 @@ TEST_F(SigV4AuthTest, AuthenticateAddsAuthorizationHeader) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
   auto auth_result = session_result.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -100,7 +102,7 @@ TEST_F(SigV4AuthTest, AuthenticateWithPostBody) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kPost,
+  HttpRequest request{.method = HttpMethod::kPost,
                       .url = "https://example.com/v1/namespaces",
                       .headers = {{"Content-Type", "application/json"}},
                       .body = R"({"namespace":["ns1"]})"};
@@ -123,7 +125,7 @@ TEST_F(SigV4AuthTest, DelegateAuthorizationHeaderRelocated) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
   auto auth_result = session_result.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -144,7 +146,7 @@ TEST_F(SigV4AuthTest, AuthenticateWithSessionToken) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
   auto auth_result = session_result.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -165,7 +167,7 @@ TEST_F(SigV4AuthTest, CustomSigningNameAndRegion) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
   auto auth_result = session_result.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -193,7 +195,7 @@ TEST_F(SigV4AuthTest, DelegateDefaultsToOAuth2NoAuth) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
   auto auth_result = session_result.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -215,7 +217,7 @@ TEST_F(SigV4AuthTest, TableSessionInheritsProperties) {
                                                             catalog_session.value());
   ASSERT_THAT(table_session, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet,
+  HttpRequest request{.method = HttpMethod::kGet,
                       .url = "https://example.com/v1/ns1/tables/table1"};
   auto auth_result = table_session.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
@@ -223,9 +225,6 @@ TEST_F(SigV4AuthTest, TableSessionInheritsProperties) {
             auth_result.value().headers.end());
 }
 
-// ---------- Tests ported from Java TestRESTSigV4AuthSession ----------
-
-// Java: authenticateWithoutBody
 TEST_F(SigV4AuthTest, AuthenticateWithoutBodyDetailedHeaders) {
   auto properties = MakeSigV4Properties();
   auto manager_result = AuthManagers::Load("test-catalog", properties);
@@ -234,7 +233,7 @@ TEST_F(SigV4AuthTest, AuthenticateWithoutBodyDetailedHeaders) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet,
+  HttpRequest request{.method = HttpMethod::kGet,
                       .url = "http://localhost:8080/path",
                       .headers = {{"Content-Type", "application/json"}}};
   auto auth_result = session_result.value()->Authenticate(request);
@@ -264,7 +263,6 @@ TEST_F(SigV4AuthTest, AuthenticateWithoutBodyDetailedHeaders) {
   EXPECT_NE(headers.find("x-amz-date"), headers.end());
 }
 
-// Java: authenticateWithBody
 TEST_F(SigV4AuthTest, AuthenticateWithBodyDetailedHeaders) {
   auto properties = MakeSigV4Properties();
   auto manager_result = AuthManagers::Load("test-catalog", properties);
@@ -273,7 +271,7 @@ TEST_F(SigV4AuthTest, AuthenticateWithBodyDetailedHeaders) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kPost,
+  HttpRequest request{.method = HttpMethod::kPost,
                       .url = "http://localhost:8080/path",
                       .headers = {{"Content-Type", "application/json"}},
                       .body = R"({"namespace":["ns1"]})"};
@@ -295,7 +293,6 @@ TEST_F(SigV4AuthTest, AuthenticateWithBodyDetailedHeaders) {
       << "Expected Base64 SHA256, got: " << sha_it->second;
 }
 
-// Java: authenticateConflictingAuthorizationHeader
 TEST_F(SigV4AuthTest, ConflictingAuthorizationHeaderIncludedInSignedHeaders) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kToken.key()] = "my-oauth-token";
@@ -307,7 +304,7 @@ TEST_F(SigV4AuthTest, ConflictingAuthorizationHeaderIncludedInSignedHeaders) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet,
+  HttpRequest request{.method = HttpMethod::kGet,
                       .url = "http://localhost:8080/path",
                       .headers = {{"Content-Type", "application/json"}}};
   auto auth_result = session_result.value()->Authenticate(request);
@@ -330,7 +327,6 @@ TEST_F(SigV4AuthTest, ConflictingAuthorizationHeaderIncludedInSignedHeaders) {
   EXPECT_EQ(orig_it->second, "Bearer my-oauth-token");
 }
 
-// Java: authenticateConflictingSigv4Headers
 TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
   auto delegate = AuthSession::MakeDefault({
       {"x-amz-content-sha256", "fake-sha256"},
@@ -340,11 +336,10 @@ TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
   auto credentials =
       std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(Aws::Auth::AWSCredentials(
           "AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"));
-  auto session = std::make_shared<SigV4AuthSession>(
-      delegate, "us-east-1", "execute-api", credentials,
-      std::unordered_map<std::string, std::string>{});
+  auto session = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
+                                                    credentials);
 
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "http://localhost:8080/path"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "http://localhost:8080/path"};
   auto auth_result = session->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -365,22 +360,17 @@ TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
   EXPECT_NE(headers.find("authorization"), headers.end());
 }
 
-// Java: close (TestRESTSigV4AuthSession)
 TEST_F(SigV4AuthTest, SessionCloseDelegatesToInner) {
   auto delegate = AuthSession::MakeDefault({});
   auto credentials = std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(
       Aws::Auth::AWSCredentials("id", "secret"));
-  auto session = std::make_shared<SigV4AuthSession>(
-      delegate, "us-east-1", "execute-api", credentials,
-      std::unordered_map<std::string, std::string>{});
+  auto session = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
+                                                    credentials);
 
   // Close should succeed without error
   EXPECT_THAT(session->Close(), IsOk());
 }
 
-// ---------- Tests ported from Java TestRESTSigV4AuthManager ----------
-
-// Java: createCustomDelegate
 TEST_F(SigV4AuthTest, CreateCustomDelegateNone) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kAuthType, "sigv4"},
@@ -397,7 +387,7 @@ TEST_F(SigV4AuthTest, CreateCustomDelegateNone) {
   ASSERT_THAT(session_result, IsOk());
 
   // Authenticate should work with noop delegate
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
   auto auth_result = session_result.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -406,7 +396,6 @@ TEST_F(SigV4AuthTest, CreateCustomDelegateNone) {
   EXPECT_EQ(headers.find("original-authorization"), headers.end());
 }
 
-// Java: createInvalidCustomDelegate
 TEST_F(SigV4AuthTest, CreateInvalidCustomDelegateSigV4Circular) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kAuthType, "sigv4"},
@@ -422,7 +411,6 @@ TEST_F(SigV4AuthTest, CreateInvalidCustomDelegateSigV4Circular) {
               HasErrorMessage("Cannot delegate a SigV4 auth manager to another SigV4"));
 }
 
-// Java: contextualSession
 TEST_F(SigV4AuthTest, ContextualSessionOverridesProperties) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kSigV4SigningRegion] = "us-west-2";
@@ -444,7 +432,7 @@ TEST_F(SigV4AuthTest, ContextualSessionOverridesProperties) {
       manager_result.value()->ContextualSession(context, catalog_session.value());
   ASSERT_THAT(ctx_session, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
   auto auth_result = ctx_session.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
   const auto& headers = auth_result.value().headers;
@@ -456,7 +444,6 @@ TEST_F(SigV4AuthTest, ContextualSessionOverridesProperties) {
       << "Expected eu-west-1 in Authorization, got: " << auth_it->second;
 }
 
-// Java: tableSession (with property override)
 TEST_F(SigV4AuthTest, TableSessionOverridesProperties) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kSigV4SigningRegion] = "us-west-2";
@@ -479,7 +466,7 @@ TEST_F(SigV4AuthTest, TableSessionOverridesProperties) {
                                                             catalog_session.value());
   ASSERT_THAT(table_session, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet,
+  HttpRequest request{.method = HttpMethod::kGet,
                       .url = "https://example.com/v1/db1/tables/table1"};
   auto auth_result = table_session.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
@@ -492,7 +479,10 @@ TEST_F(SigV4AuthTest, TableSessionOverridesProperties) {
       << "Expected ap-southeast-1 in Authorization, got: " << auth_it->second;
 }
 
-TEST_F(SigV4AuthTest, TableSessionInheritsContextualOverrides) {
+// Matches Java RESTSigV4AuthManager: a table session derived from a contextual
+// parent does NOT inherit the contextual overrides; it merges catalog props
+// with table props directly. Contextual and table are independent dimensions.
+TEST_F(SigV4AuthTest, TableSessionIgnoresContextualOverrides) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kSigV4SigningRegion] = "us-west-2";
 
@@ -511,19 +501,18 @@ TEST_F(SigV4AuthTest, TableSessionInheritsContextualOverrides) {
                                                             ctx_session.value());
   ASSERT_THAT(table_session, IsOk());
 
-  HTTPRequest request{.method = HttpMethod::kGet,
+  HttpRequest request{.method = HttpMethod::kGet,
                       .url = "https://example.com/v1/db1/tables/table1"};
   auto auth_result = table_session.value()->Authenticate(request);
   ASSERT_THAT(auth_result, IsOk());
 
   auto auth_it = auth_result.value().headers.find("authorization");
   ASSERT_NE(auth_it, auth_result.value().headers.end());
-  EXPECT_TRUE(auth_it->second.find("eu-west-1") != std::string::npos)
-      << "Table session should inherit eu-west-1 from contextual parent, got: "
+  EXPECT_TRUE(auth_it->second.find("us-west-2") != std::string::npos)
+      << "Table session should use the catalog region, not the contextual override, got: "
       << auth_it->second;
 }
 
-// Java: close (TestRESTSigV4AuthManager)
 TEST_F(SigV4AuthTest, ManagerCloseDelegatesToInner) {
   auto properties = MakeSigV4Properties();
   auto manager_result = AuthManagers::Load("test-catalog", properties);
@@ -534,3 +523,5 @@ TEST_F(SigV4AuthTest, ManagerCloseDelegatesToInner) {
 }
 
 }  // namespace iceberg::rest::auth
+
+#endif  // ICEBERG_SIGV4

@@ -81,11 +81,12 @@ std::unordered_map<std::string, std::string> MergeHeaders(
   return merged;
 }
 
-cpr::Header ToCprHeader(const auth::HTTPRequest& request) {
+cpr::Header ToCprHeader(const HttpRequest& request) {
   return {request.headers.begin(), request.headers.end()};
 }
 
 /// \brief Append URL-encoded query parameters to a URL, sorted by key.
+/// \param base_url must not already contain a query string ('?' or '&').
 Result<std::string> AppendQueryString(
     const std::string& base_url,
     const std::unordered_map<std::string, std::string>& params) {

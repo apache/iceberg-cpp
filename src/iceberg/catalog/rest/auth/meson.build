@@ -15,17 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-iceberg_rest_auth_headers = [
-    'auth_manager.h',
-    'auth_managers.h',
-    'auth_properties.h',
-    'auth_session.h',
-    'oauth2_util.h',
-]
-if aws_sdk_core_dep.found()
-    iceberg_rest_auth_headers += ['sigv4_auth_manager.h']
-endif
 install_headers(
-    iceberg_rest_auth_headers,
+    [
+        'auth_manager.h',
+        'auth_managers.h',
+        'auth_properties.h',
+        'auth_session.h',
+        'oauth2_util.h',
+    ],
     subdir: 'iceberg/catalog/rest/auth',
 )
