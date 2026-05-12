@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1internal_1_1PositionDeletes" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::internal::PositionDeletes</compoundname>
+    <includes refid="delete__file__index_8h" local="no">delete_file_index.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1PositionDeletes_1ac5c10b7d9ef12f498151fc32667b4d32" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestEntry&gt; iceberg::internal::PositionDeletes::files_</definition>
+        <argsstring></argsstring>
+        <name>files_</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::files_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="176" column="15" bodyfile="iceberg/delete_file_index.h" bodystart="176" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1PositionDeletes_1af4b2d0b18c617f9b2958cc9fa017da94" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::internal::PositionDeletes::seqs_</definition>
+        <argsstring></argsstring>
+        <name>seqs_</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::seqs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="177" column="15" bodyfile="iceberg/delete_file_index.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1PositionDeletes_1ac0b5b3f36c111f47742c437e2fb535d3" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::internal::PositionDeletes::indexed_</definition>
+        <argsstring></argsstring>
+        <name>indexed_</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::indexed_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="178" column="8" bodyfile="iceberg/delete_file_index.h" bodystart="178" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1PositionDeletes_1ad45845e23d6d6fce091b9451602ee776" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::PositionDeletes::PositionDeletes</definition>
+        <argsstring>()=default</argsstring>
+        <name>PositionDeletes</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::PositionDeletes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="158" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1PositionDeletes_1a793b75935432318d4d2ea34f2376ca17" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::internal::PositionDeletes::Add</definition>
+        <argsstring>(ManifestEntry &amp;&amp;entry)</argsstring>
+        <name>Add</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::Add</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;&amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Add a position delete file to this group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="161" column="11" bodyfile="iceberg/delete_file_index.cc" bodystart="169" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1PositionDeletes_1a73437de18d3d1cc7f31b753d42b2909e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::internal::PositionDeletes::Filter</definition>
+        <argsstring>(int64_t seq)</argsstring>
+        <name>Filter</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::Filter</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>seq</declname>
+        </param>
+        <briefdescription>
+<para>Returns all delete files with data_sequence_number &gt;= the given sequence number. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="165" column="15" bodyfile="iceberg/delete_file_index.cc" bodystart="178" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1PositionDeletes_1a3f35d134f8305dcbd1c106c7f5ff1d26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::internal::PositionDeletes::ReferencedDeleteFiles</definition>
+        <argsstring>()</argsstring>
+        <name>ReferencedDeleteFiles</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::ReferencedDeleteFiles</qualifiedname>
+        <briefdescription>
+<para>Get all delete files in this group. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="168" column="15" bodyfile="iceberg/delete_file_index.cc" bodystart="190" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1PositionDeletes_1a2d5f652d40d5352a2555d2e34d287c43" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::PositionDeletes::empty</definition>
+        <argsstring>() const</argsstring>
+        <name>empty</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::empty</qualifiedname>
+        <briefdescription>
+<para>Check if this group is empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="171" column="8" bodyfile="iceberg/delete_file_index.h" bodystart="171" bodyend="171"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1PositionDeletes_1a68d99f134cc61a6a96ad5c000d38f48f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::internal::PositionDeletes::IndexIfNeeded</definition>
+        <argsstring>()</argsstring>
+        <name>IndexIfNeeded</name>
+        <qualifiedname>iceberg::internal::PositionDeletes::IndexIfNeeded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="174" column="8" bodyfile="iceberg/delete_file_index.cc" bodystart="196" bodyend="210"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A group of position delete files sorted by the sequence number they apply to. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Position delete files apply to data files with a sequence number &lt;= the delete file&apos;s data sequence number. </para>
+    </detaileddescription>
+    <location file="iceberg/delete_file_index.h" line="156" column="1" bodyfile="iceberg/delete_file_index.h" bodystart="156" bodyend="179"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1a793b75935432318d4d2ea34f2376ca17" prot="public" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>Add</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1a2d5f652d40d5352a2555d2e34d287c43" prot="public" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>empty</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1ac5c10b7d9ef12f498151fc32667b4d32" prot="private" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>files_</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1a73437de18d3d1cc7f31b753d42b2909e" prot="public" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>Filter</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1ac0b5b3f36c111f47742c437e2fb535d3" prot="private" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>indexed_</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1a68d99f134cc61a6a96ad5c000d38f48f" prot="private" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>IndexIfNeeded</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1ad45845e23d6d6fce091b9451602ee776" prot="public" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>PositionDeletes</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1a3f35d134f8305dcbd1c106c7f5ff1d26" prot="public" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>ReferencedDeleteFiles</name></member>
+      <member refid="classiceberg_1_1internal_1_1PositionDeletes_1af4b2d0b18c617f9b2958cc9fa017da94" prot="private" virt="non-virtual"><scope>iceberg::internal::PositionDeletes</scope><name>seqs_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

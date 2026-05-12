@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1StructLikeAccessor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::StructLikeAccessor</compoundname>
+    <includes refid="struct__like_8h" local="no">struct_like.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1StructLikeAccessor_1a60f9443af0e5c1304afd391157bed5a8" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::StructLikeAccessor::type_</definition>
+        <argsstring></argsstring>
+        <name>type_</name>
+        <qualifiedname>iceberg::StructLikeAccessor::type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="128" column="19" bodyfile="iceberg/row/struct_like.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StructLikeAccessor_1a6aafa5afab7fad0a6dd13826f4155780" prot="private" static="no" mutable="no">
+        <type>std::function&lt; Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;(const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;)&gt;</type>
+        <definition>std::function&lt;Result&lt;Scalar&gt;(const StructLike&amp;)&gt; iceberg::StructLikeAccessor::accessor_</definition>
+        <argsstring></argsstring>
+        <name>accessor_</name>
+        <qualifiedname>iceberg::StructLikeAccessor::accessor_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="129" column="19" bodyfile="iceberg/row/struct_like.h" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StructLikeAccessor_1aa55def2eacfadcfe4c6d3920155f130e" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; size_t &gt;</type>
+        <definition>std::vector&lt;size_t&gt; iceberg::StructLikeAccessor::position_path_</definition>
+        <argsstring></argsstring>
+        <name>position_path_</name>
+        <qualifiedname>iceberg::StructLikeAccessor::position_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="130" column="15" bodyfile="iceberg/row/struct_like.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1StructLikeAccessor_1a336853e36bf67a305a3569141aeea976" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::StructLikeAccessor::StructLikeAccessor</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; type, std::span&lt; const size_t &gt; position_path)</argsstring>
+        <name>StructLikeAccessor</name>
+        <qualifiedname>iceberg::StructLikeAccessor::StructLikeAccessor</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const size_t &gt;</type>
+          <declname>position_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="107" column="12" bodyfile="iceberg/row/struct_like.cc" bodystart="71" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeAccessor_1aece7efe1b080bf203dabed4da1ce56d9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::StructLikeAccessor::Get</definition>
+        <argsstring>(const StructLike &amp;struct_like) const</argsstring>
+        <name>Get</name>
+        <qualifiedname>iceberg::StructLikeAccessor::Get</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>struct_like</declname>
+        </param>
+        <briefdescription>
+<para>Get the scalar value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="111" column="10" bodyfile="iceberg/row/struct_like.h" bodystart="111" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeAccessor_1a3f640dcbadd020a8d859fb1edc6c6ed2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::StructLikeAccessor::GetLiteral</definition>
+        <argsstring>(const StructLike &amp;struct_like) const</argsstring>
+        <name>GetLiteral</name>
+        <qualifiedname>iceberg::StructLikeAccessor::GetLiteral</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>struct_like</declname>
+        </param>
+        <briefdescription>
+<para>Get the literal value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The literal value at the given position, or an error if it is not a primitive type. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="119" column="10" bodyfile="iceberg/row/struct_like.cc" bodystart="112" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeAccessor_1aa3b945081589837e6c30b290174874c7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+        <definition>const Type &amp; iceberg::StructLikeAccessor::type</definition>
+        <argsstring>() const</argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::StructLikeAccessor::type</qualifiedname>
+        <briefdescription>
+<para>Get the type of the value that this accessor is bound to. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="122" column="14" bodyfile="iceberg/row/struct_like.h" bodystart="122" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLikeAccessor_1a2dd0c8c322eb750c08f31100258a8c6f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; size_t &gt; &amp;</type>
+        <definition>const std::vector&lt; size_t &gt; &amp; iceberg::StructLikeAccessor::position_path</definition>
+        <argsstring>() const</argsstring>
+        <name>position_path</name>
+        <qualifiedname>iceberg::StructLikeAccessor::position_path</qualifiedname>
+        <briefdescription>
+<para>Get the position path of the value that this accessor bounded to. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="125" column="21" bodyfile="iceberg/row/struct_like.h" bodystart="125" bodyend="125"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An accessor for a struct-like object. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/row/struct_like.h" line="105" column="1" bodyfile="iceberg/row/struct_like.h" bodystart="105" bodyend="131"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1StructLikeAccessor_1a6aafa5afab7fad0a6dd13826f4155780" prot="private" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>accessor_</name></member>
+      <member refid="classiceberg_1_1StructLikeAccessor_1aece7efe1b080bf203dabed4da1ce56d9" prot="public" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1StructLikeAccessor_1a3f640dcbadd020a8d859fb1edc6c6ed2" prot="public" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>GetLiteral</name></member>
+      <member refid="classiceberg_1_1StructLikeAccessor_1a2dd0c8c322eb750c08f31100258a8c6f" prot="public" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>position_path</name></member>
+      <member refid="classiceberg_1_1StructLikeAccessor_1aa55def2eacfadcfe4c6d3920155f130e" prot="private" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>position_path_</name></member>
+      <member refid="classiceberg_1_1StructLikeAccessor_1a336853e36bf67a305a3569141aeea976" prot="public" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>StructLikeAccessor</name></member>
+      <member refid="classiceberg_1_1StructLikeAccessor_1aa3b945081589837e6c30b290174874c7" prot="public" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>type</name></member>
+      <member refid="classiceberg_1_1StructLikeAccessor_1a60f9443af0e5c1304afd391157bed5a8" prot="private" virt="non-virtual"><scope>iceberg::StructLikeAccessor</scope><name>type_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

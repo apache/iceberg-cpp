@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1RetryConfig" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::RetryConfig</compoundname>
+    <includes refid="retry__util_8h" local="no">retry_util.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1RetryConfig_1a0d4e08f7e74793956080ddb66c797602" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::RetryConfig::num_retries</definition>
+        <argsstring></argsstring>
+        <name>num_retries</name>
+        <qualifiedname>iceberg::RetryConfig::num_retries</qualifiedname>
+        <initializer>= 4</initializer>
+        <briefdescription>
+<para>Maximum number of retry attempts (not including the first attempt) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="61" column="11" bodyfile="iceberg/util/retry_util.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RetryConfig_1ae803735b161f9c2eb4478c2b5fa043c4" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::RetryConfig::min_wait_ms</definition>
+        <argsstring></argsstring>
+        <name>min_wait_ms</name>
+        <qualifiedname>iceberg::RetryConfig::min_wait_ms</qualifiedname>
+        <initializer>= 100</initializer>
+        <briefdescription>
+<para>Minimum wait time between retries in milliseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="63" column="11" bodyfile="iceberg/util/retry_util.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RetryConfig_1a11a1892d24142aaa9fb5385576cb7b81" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::RetryConfig::max_wait_ms</definition>
+        <argsstring></argsstring>
+        <name>max_wait_ms</name>
+        <qualifiedname>iceberg::RetryConfig::max_wait_ms</qualifiedname>
+        <initializer>= 60 * 1000</initializer>
+        <briefdescription>
+<para>Maximum wait time between retries in milliseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="65" column="11" bodyfile="iceberg/util/retry_util.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RetryConfig_1a263c3683a4e87e62f70a256d0eb83f7a" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::RetryConfig::total_timeout_ms</definition>
+        <argsstring></argsstring>
+        <name>total_timeout_ms</name>
+        <qualifiedname>iceberg::RetryConfig::total_timeout_ms</qualifiedname>
+        <initializer>= 30 * 60 * 1000</initializer>
+        <briefdescription>
+<para>Total wall-clock time budget for retries, including backoff sleeps. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="67" column="11" bodyfile="iceberg/util/retry_util.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RetryConfig_1a98f14caf3962c28f8a43eaecffcf3bc9" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double iceberg::RetryConfig::scale_factor</definition>
+        <argsstring></argsstring>
+        <name>scale_factor</name>
+        <qualifiedname>iceberg::RetryConfig::scale_factor</qualifiedname>
+        <initializer>= 2.0</initializer>
+        <briefdescription>
+<para>Exponential backoff scale factor. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="69" column="10" bodyfile="iceberg/util/retry_util.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Configuration for retry behavior. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/retry_util.h" line="59" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="59" bodyend="70"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1RetryConfig_1a11a1892d24142aaa9fb5385576cb7b81" prot="public" virt="non-virtual"><scope>iceberg::RetryConfig</scope><name>max_wait_ms</name></member>
+      <member refid="structiceberg_1_1RetryConfig_1ae803735b161f9c2eb4478c2b5fa043c4" prot="public" virt="non-virtual"><scope>iceberg::RetryConfig</scope><name>min_wait_ms</name></member>
+      <member refid="structiceberg_1_1RetryConfig_1a0d4e08f7e74793956080ddb66c797602" prot="public" virt="non-virtual"><scope>iceberg::RetryConfig</scope><name>num_retries</name></member>
+      <member refid="structiceberg_1_1RetryConfig_1a98f14caf3962c28f8a43eaecffcf3bc9" prot="public" virt="non-virtual"><scope>iceberg::RetryConfig</scope><name>scale_factor</name></member>
+      <member refid="structiceberg_1_1RetryConfig_1a263c3683a4e87e62f70a256d0eb83f7a" prot="public" virt="non-virtual"><scope>iceberg::RetryConfig</scope><name>total_timeout_ms</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

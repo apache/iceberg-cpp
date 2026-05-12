@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1StdInputFile" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::test::StdInputFile</compoundname>
+    <basecompoundref refid="classiceberg_1_1InputFile" prot="public" virt="non-virtual">iceberg::InputFile</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1StdInputFile_1a0cc21569b92c8c2d479851035df23136" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::test::StdInputFile::location_</definition>
+        <argsstring></argsstring>
+        <name>location_</name>
+        <qualifiedname>iceberg::test::StdInputFile::location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="238" column="15" bodyfile="iceberg/test/std_io.h" bodystart="238" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1StdInputFile_1ae491515e831d4b4714a310b9098b9a82" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::test::StdInputFile::file_size_</definition>
+        <argsstring></argsstring>
+        <name>file_size_</name>
+        <qualifiedname>iceberg::test::StdInputFile::file_size_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="239" column="17" bodyfile="iceberg/test/std_io.h" bodystart="239" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdInputFile_1a23e674a3cb9d36166cb04b7d3a6989cb" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::StdInputFile::StdInputFile</definition>
+        <argsstring>(std::string location, std::optional&lt; int64_t &gt; file_size=std::nullopt)</argsstring>
+        <name>StdInputFile</name>
+        <qualifiedname>iceberg::test::StdInputFile::StdInputFile</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>file_size</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="211" column="12" bodyfile="iceberg/test/std_io.h" bodystart="211" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdInputFile_1a38ad27dacd93d24da917194038724248" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::test::StdInputFile::location</definition>
+        <argsstring>() const override</argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::test::StdInputFile::location</qualifiedname>
+        <reimplements refid="classiceberg_1_1InputFile_1a187e1519accc6da35fdafc779551c303">location</reimplements>
+        <briefdescription>
+<para>File location represented by this handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="215" column="20" bodyfile="iceberg/test/std_io.h" bodystart="215" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdInputFile_1a28ba4a6b356600ed1188c0d77714ba80" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::test::StdInputFile::Size</definition>
+        <argsstring>() const override</argsstring>
+        <name>Size</name>
+        <qualifiedname>iceberg::test::StdInputFile::Size</qualifiedname>
+        <reimplements refid="classiceberg_1_1InputFile_1a8c4986b0d2b414dc2791cb528f035837">Size</reimplements>
+        <briefdescription>
+<para>Return the total file size in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="217" column="10" bodyfile="iceberg/test/std_io.h" bodystart="217" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdInputFile_1af3baf79aa43151e01d9a66f3dced2494" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1SeekableInputStream" kindref="compound">SeekableInputStream</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; SeekableInputStream &gt; &gt; iceberg::test::StdInputFile::Open</definition>
+        <argsstring>() override</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::test::StdInputFile::Open</qualifiedname>
+        <reimplements refid="classiceberg_1_1InputFile_1a6fe70deb243671584f2b02ab473c74f9">Open</reimplements>
+        <briefdescription>
+<para>Open a new independent input stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="229" column="10" bodyfile="iceberg/test/std_io.h" bodystart="229" bodyend="235"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::InputFile</label>
+        <link refid="classiceberg_1_1InputFile"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdInputFile</label>
+        <link refid="classiceberg_1_1test_1_1StdInputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::InputFile</label>
+        <link refid="classiceberg_1_1InputFile"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdInputFile</label>
+        <link refid="classiceberg_1_1test_1_1StdInputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/std_io.h" line="209" column="1" bodyfile="iceberg/test/std_io.h" bodystart="209" bodyend="240"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1StdInputFile_1ae491515e831d4b4714a310b9098b9a82" prot="private" virt="non-virtual"><scope>iceberg::test::StdInputFile</scope><name>file_size_</name></member>
+      <member refid="classiceberg_1_1test_1_1StdInputFile_1a38ad27dacd93d24da917194038724248" prot="public" virt="virtual"><scope>iceberg::test::StdInputFile</scope><name>location</name></member>
+      <member refid="classiceberg_1_1test_1_1StdInputFile_1a0cc21569b92c8c2d479851035df23136" prot="private" virt="non-virtual"><scope>iceberg::test::StdInputFile</scope><name>location_</name></member>
+      <member refid="classiceberg_1_1test_1_1StdInputFile_1af3baf79aa43151e01d9a66f3dced2494" prot="public" virt="virtual"><scope>iceberg::test::StdInputFile</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1test_1_1StdInputFile_1a28ba4a6b356600ed1188c0d77714ba80" prot="public" virt="virtual"><scope>iceberg::test::StdInputFile</scope><name>Size</name></member>
+      <member refid="classiceberg_1_1test_1_1StdInputFile_1a23e674a3cb9d36166cb04b7d3a6989cb" prot="public" virt="non-virtual"><scope>iceberg::test::StdInputFile</scope><name>StdInputFile</name></member>
+      <member refid="classiceberg_1_1InputFile_1ae45533be9b39a243101308c08e74d475" prot="public" virt="virtual"><scope>iceberg::test::StdInputFile</scope><name>~InputFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

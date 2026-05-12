@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PartitionFieldSummaryStructLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PartitionFieldSummaryStructLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1StructLike" prot="public" virt="non-virtual">iceberg::StructLike</basecompoundref>
+    <includes refid="manifest__wrapper_8h" local="no">manifest_wrapper.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PartitionFieldSummaryStructLike_1a3d4d967652fc24adb329d30883e33671" prot="private" static="no" mutable="no">
+        <type>std::reference_wrapper&lt; const <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &gt;</type>
+        <definition>std::reference_wrapper&lt;const PartitionFieldSummary&gt; iceberg::PartitionFieldSummaryStructLike::summary_</definition>
+        <argsstring></argsstring>
+        <name>summary_</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::summary_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="52" column="26" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldSummaryStructLike_1af97d9c85c7d492cfe9b59be1bc24b6f4" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionFieldSummaryStructLike::PartitionFieldSummaryStructLike</definition>
+        <argsstring>(const PartitionFieldSummary &amp;summary)</argsstring>
+        <name>PartitionFieldSummaryStructLike</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::PartitionFieldSummaryStructLike</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &amp;</type>
+          <declname>summary</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="37" column="12" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="37" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldSummaryStructLike_1a68661b4a8d232054cf38ee2ac33dd2cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionFieldSummaryStructLike::~PartitionFieldSummaryStructLike</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~PartitionFieldSummaryStructLike</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::~PartitionFieldSummaryStructLike</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="39" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldSummaryStructLike_1abd1c996f3e12866dcd312060db0f69e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionFieldSummaryStructLike::PartitionFieldSummaryStructLike</definition>
+        <argsstring>(const PartitionFieldSummaryStructLike &amp;)=delete</argsstring>
+        <name>PartitionFieldSummaryStructLike</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::PartitionFieldSummaryStructLike</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionFieldSummaryStructLike" kindref="compound">PartitionFieldSummaryStructLike</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="41" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldSummaryStructLike_1ab5ad702a6fba2d2b591adddcbc3b2a41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1PartitionFieldSummaryStructLike" kindref="compound">PartitionFieldSummaryStructLike</ref> &amp;</type>
+        <definition>PartitionFieldSummaryStructLike &amp; iceberg::PartitionFieldSummaryStructLike::operator=</definition>
+        <argsstring>(const PartitionFieldSummaryStructLike &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionFieldSummaryStructLike" kindref="compound">PartitionFieldSummaryStructLike</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="42" column="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldSummaryStructLike_1ae0feb05d6d4e743ceba1c15487c0d6d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::PartitionFieldSummaryStructLike::GetField</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetField</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::GetField</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11">GetField</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="45" column="10" bodyfile="iceberg/row/manifest_wrapper.cc" bodystart="44" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldSummaryStructLike_1a76b18514d053921e283415a0c2d444cf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::PartitionFieldSummaryStructLike::num_fields</definition>
+        <argsstring>() const override</argsstring>
+        <name>num_fields</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::num_fields</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914">num_fields</reimplements>
+        <briefdescription>
+<para>Get the number of fields in the struct. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="47" column="10" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="47" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldSummaryStructLike_1afef630d3dc92a058dfa06ba7ebfec914" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::PartitionFieldSummaryStructLike::Reset</definition>
+        <argsstring>(const PartitionFieldSummary &amp;summary)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::PartitionFieldSummaryStructLike::Reset</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &amp;</type>
+          <declname>summary</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="49" column="8" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="49" bodyend="49"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> wrapper for <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::PartitionFieldSummaryStructLike</label>
+        <link refid="classiceberg_1_1PartitionFieldSummaryStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::PartitionFieldSummaryStructLike</label>
+        <link refid="classiceberg_1_1PartitionFieldSummaryStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/row/manifest_wrapper.h" line="35" column="1" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="35" bodyend="53"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1ae0feb05d6d4e743ceba1c15487c0d6d6" prot="public" virt="virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>GetField</name></member>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1a76b18514d053921e283415a0c2d444cf" prot="public" virt="virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>num_fields</name></member>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1ab5ad702a6fba2d2b591adddcbc3b2a41" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1af97d9c85c7d492cfe9b59be1bc24b6f4" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>PartitionFieldSummaryStructLike</name></member>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1abd1c996f3e12866dcd312060db0f69e8" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>PartitionFieldSummaryStructLike</name></member>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1afef630d3dc92a058dfa06ba7ebfec914" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1a3d4d967652fc24adb329d30883e33671" prot="private" virt="non-virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>summary_</name></member>
+      <member refid="classiceberg_1_1PartitionFieldSummaryStructLike_1a68661b4a8d232054cf38ee2ac33dd2cb" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>~PartitionFieldSummaryStructLike</name></member>
+      <member refid="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" virt="virtual"><scope>iceberg::PartitionFieldSummaryStructLike</scope><name>~StructLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

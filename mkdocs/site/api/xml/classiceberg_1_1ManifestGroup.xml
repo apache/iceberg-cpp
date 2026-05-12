@@ -1,0 +1,915 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestGroup" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestGroup</compoundname>
+    <basecompoundref refid="classiceberg_1_1ErrorCollector" prot="public" virt="non-virtual">iceberg::ErrorCollector</basecompoundref>
+    <includes refid="manifest__group_8h" local="no">manifest_group.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1ManifestGroup_1a95a50aa86646e19ea61117c6f320b056" prot="public" static="no">
+        <type>std::function&lt; Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1ScanTask" kindref="compound">ScanTask</ref> &gt; &gt; &gt;(std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &amp;&amp;, const <ref refid="structiceberg_1_1TaskContext" kindref="compound">TaskContext</ref> &amp;)&gt;</type>
+        <definition>using iceberg::ManifestGroup::CreateTasksFunction =  std::function&lt;Result&lt;std::vector&lt;std::shared_ptr&lt;ScanTask&gt; &gt;&gt;( std::vector&lt;ManifestEntry&gt;&amp;&amp;, const TaskContext&amp;)&gt;</definition>
+        <argsstring></argsstring>
+        <name>CreateTasksFunction</name>
+        <qualifiedname>iceberg::ManifestGroup::CreateTasksFunction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="129" column="3" bodyfile="iceberg/manifest/manifest_group.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1ad822d934db91ab863b60c004ea7d6d1d" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::ManifestGroup::io_</definition>
+        <argsstring></argsstring>
+        <name>io_</name>
+        <qualifiedname>iceberg::ManifestGroup::io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="150" column="19" bodyfile="iceberg/manifest/manifest_group.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1a7eea476f370645180d9ff972e58d3878" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ManifestGroup::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ManifestGroup::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="151" column="19" bodyfile="iceberg/manifest/manifest_group.h" bodystart="151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1a8cea3bd1ea33c7e377a8a402be763449" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, std::shared_ptr&lt;PartitionSpec&gt; &gt; iceberg::ManifestGroup::specs_by_id_</definition>
+        <argsstring></argsstring>
+        <name>specs_by_id_</name>
+        <qualifiedname>iceberg::ManifestGroup::specs_by_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="152" column="22" bodyfile="iceberg/manifest/manifest_group.h" bodystart="152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1a6486cb1d3446d863c8502787952ef956" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::ManifestGroup::data_manifests_</definition>
+        <argsstring></argsstring>
+        <name>data_manifests_</name>
+        <qualifiedname>iceberg::ManifestGroup::data_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="153" column="15" bodyfile="iceberg/manifest/manifest_group.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1a55a09b72f7df55f2b15263a45069399c" prot="private" static="no" mutable="no">
+        <type>DeleteFileIndex::Builder</type>
+        <definition>DeleteFileIndex::Builder iceberg::ManifestGroup::delete_index_builder_</definition>
+        <argsstring></argsstring>
+        <name>delete_index_builder_</name>
+        <qualifiedname>iceberg::ManifestGroup::delete_index_builder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="154" column="28" bodyfile="iceberg/manifest/manifest_group.h" bodystart="154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1ac93fbab17b40dcfc7afbea04137cde53" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::ManifestGroup::data_filter_</definition>
+        <argsstring></argsstring>
+        <name>data_filter_</name>
+        <qualifiedname>iceberg::ManifestGroup::data_filter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="155" column="19" bodyfile="iceberg/manifest/manifest_group.h" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1af4fb7773dcbddf351e388dc883dabbbb" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::ManifestGroup::file_filter_</definition>
+        <argsstring></argsstring>
+        <name>file_filter_</name>
+        <qualifiedname>iceberg::ManifestGroup::file_filter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="156" column="19" bodyfile="iceberg/manifest/manifest_group.h" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1a60a326cf5f3f6f759f4bffd851e71f2e" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::ManifestGroup::partition_filter_</definition>
+        <argsstring></argsstring>
+        <name>partition_filter_</name>
+        <qualifiedname>iceberg::ManifestGroup::partition_filter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="157" column="19" bodyfile="iceberg/manifest/manifest_group.h" bodystart="157" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1a7e4af7a10f15f8d3103b4caff6c91280" prot="private" static="no" mutable="no">
+        <type>std::function&lt; bool(const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;)&gt;</type>
+        <definition>std::function&lt;bool(const ManifestEntry&amp;)&gt; iceberg::ManifestGroup::manifest_entry_predicate_</definition>
+        <argsstring></argsstring>
+        <name>manifest_entry_predicate_</name>
+        <qualifiedname>iceberg::ManifestGroup::manifest_entry_predicate_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="158" column="17" bodyfile="iceberg/manifest/manifest_group.h" bodystart="158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1abf4fe339f0c29cff6b235b430d68067c" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::ManifestGroup::columns_</definition>
+        <argsstring></argsstring>
+        <name>columns_</name>
+        <qualifiedname>iceberg::ManifestGroup::columns_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="159" column="15" bodyfile="iceberg/manifest/manifest_group.h" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1a468fa927bd54e47ebdc852805a019b51" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::ManifestGroup::columns_to_keep_stats_</definition>
+        <argsstring></argsstring>
+        <name>columns_to_keep_stats_</name>
+        <qualifiedname>iceberg::ManifestGroup::columns_to_keep_stats_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="160" column="22" bodyfile="iceberg/manifest/manifest_group.h" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1af7a73fc541e9c181bcc9affb2f57c861" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestGroup::case_sensitive_</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive_</name>
+        <qualifiedname>iceberg::ManifestGroup::case_sensitive_</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="161" column="8" bodyfile="iceberg/manifest/manifest_group.h" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1ab1f789f0c7eca60290e8f14baba08c76" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestGroup::ignore_deleted_</definition>
+        <argsstring></argsstring>
+        <name>ignore_deleted_</name>
+        <qualifiedname>iceberg::ManifestGroup::ignore_deleted_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="162" column="8" bodyfile="iceberg/manifest/manifest_group.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1afe500ac3cde2c7ccd9285de0b7dfcc56" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestGroup::ignore_existing_</definition>
+        <argsstring></argsstring>
+        <name>ignore_existing_</name>
+        <qualifiedname>iceberg::ManifestGroup::ignore_existing_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="163" column="8" bodyfile="iceberg/manifest/manifest_group.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroup_1af0c70a238dd4afd94adbe9a18c8db703" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestGroup::ignore_residuals_</definition>
+        <argsstring></argsstring>
+        <name>ignore_residuals_</name>
+        <qualifiedname>iceberg::ManifestGroup::ignore_residuals_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="164" column="8" bodyfile="iceberg/manifest/manifest_group.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1aa7437c314d71a295a30c2e6241f0dafa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestGroup &gt; &gt; iceberg::ManifestGroup::Make</definition>
+        <argsstring>(std::shared_ptr&lt; FileIO &gt; io, std::shared_ptr&lt; Schema &gt; schema, std::unordered_map&lt; int32_t, std::shared_ptr&lt; PartitionSpec &gt; &gt; specs_by_id_, std::vector&lt; ManifestFile &gt; manifests)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ManifestGroup::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::unordered_map&lt; int32_t, std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &gt;</type>
+          <declname>specs_by_id_</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+          <declname>manifests</declname>
+        </param>
+        <briefdescription>
+<para>Construct a <ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> with a list of manifests. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> for reading manifest files. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Current table schema. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>specs_by_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Mapping of partition spec ID to <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>manifests</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>List of manifest files to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="61" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="40" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a17d95cc1e662389cf12683962caab898" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestGroup &gt; &gt; iceberg::ManifestGroup::Make</definition>
+        <argsstring>(std::shared_ptr&lt; FileIO &gt; io, std::shared_ptr&lt; Schema &gt; schema, std::unordered_map&lt; int32_t, std::shared_ptr&lt; PartitionSpec &gt; &gt; specs_by_id, std::vector&lt; ManifestFile &gt; data_manifests, std::vector&lt; ManifestFile &gt; delete_manifests)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ManifestGroup::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::unordered_map&lt; int32_t, std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &gt;</type>
+          <declname>specs_by_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+          <declname>data_manifests</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+          <declname>delete_manifests</declname>
+        </param>
+        <briefdescription>
+<para>Construct a <ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> with pre-separated manifests. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> for reading manifest files. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Current table schema. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>specs_by_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Mapping of partition spec ID to <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_manifests</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>List of data manifest files. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>delete_manifests</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>List of delete manifest files. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="73" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="58" bodyend="70"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a2290d7a6546456a74740c117deb56390" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestGroup::~ManifestGroup</definition>
+        <argsstring>() override</argsstring>
+        <name>~ManifestGroup</name>
+        <qualifiedname>iceberg::ManifestGroup::~ManifestGroup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="79" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1ac3ec6469adc1b4d52f7bd0f4d8553c2c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestGroup::ManifestGroup</definition>
+        <argsstring>(ManifestGroup &amp;&amp;) noexcept</argsstring>
+        <name>ManifestGroup</name>
+        <qualifiedname>iceberg::ManifestGroup::ManifestGroup</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="81" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a8fee6baed136fe2cf7cbccfbe76d5425" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::operator=</definition>
+        <argsstring>(ManifestGroup &amp;&amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ManifestGroup::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="82" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a2fccd7d74e6530319640b260e497f0f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestGroup::ManifestGroup</definition>
+        <argsstring>(const ManifestGroup &amp;)=delete</argsstring>
+        <name>ManifestGroup</name>
+        <qualifiedname>iceberg::ManifestGroup::ManifestGroup</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="83" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a3b977e888de1d688db1bc0b26eee76af" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::operator=</definition>
+        <argsstring>(const ManifestGroup &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ManifestGroup::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="84" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a2e876f421c4732aacf237e587db88aa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::FilterData</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; filter)</argsstring>
+        <name>FilterData</name>
+        <qualifiedname>iceberg::ManifestGroup::FilterData</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>filter</declname>
+        </param>
+        <briefdescription>
+<para>Set a row-level data filter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="87" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="92" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1adc359e0a4ec0bd55031c8774b5c49fc9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::FilterFiles</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; filter)</argsstring>
+        <name>FilterFiles</name>
+        <qualifiedname>iceberg::ManifestGroup::FilterFiles</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>filter</declname>
+        </param>
+        <briefdescription>
+<para>Set a filter that is evaluated against each <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>&apos;s metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="90" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="98" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a0168331dafdc6413e3a2e7a413cc7fbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::FilterPartitions</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; filter)</argsstring>
+        <name>FilterPartitions</name>
+        <qualifiedname>iceberg::ManifestGroup::FilterPartitions</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>filter</declname>
+        </param>
+        <briefdescription>
+<para>Set a partition filter expression. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="93" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="104" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1ab8e30af9e4708e8f0dae0d01e0b1ad2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::FilterManifestEntries</definition>
+        <argsstring>(std::function&lt; bool(const ManifestEntry &amp;)&gt; predicate)</argsstring>
+        <name>FilterManifestEntries</name>
+        <qualifiedname>iceberg::ManifestGroup::FilterManifestEntries</qualifiedname>
+        <param>
+          <type>std::function&lt; bool(const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;)&gt;</type>
+          <declname>predicate</declname>
+        </param>
+        <briefdescription>
+<para>Set a custom manifest entry filter predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>predicate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A function that returns true if the entry should be included. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="98" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="111" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a3274b2444b8c85b908144a379514ea54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::IgnoreDeleted</definition>
+        <argsstring>()</argsstring>
+        <name>IgnoreDeleted</name>
+        <qualifiedname>iceberg::ManifestGroup::IgnoreDeleted</qualifiedname>
+        <briefdescription>
+<para>Ignore deleted entries in manifests. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="102" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="121" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a4096cdfdb97b0bb01c62f5e86e2ef387" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::IgnoreExisting</definition>
+        <argsstring>()</argsstring>
+        <name>IgnoreExisting</name>
+        <qualifiedname>iceberg::ManifestGroup::IgnoreExisting</qualifiedname>
+        <briefdescription>
+<para>Ignore existing entries in manifests. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="105" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="126" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a0f2351bd9e9bb9bd21a2803fa2d29a26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::IgnoreResiduals</definition>
+        <argsstring>()</argsstring>
+        <name>IgnoreResiduals</name>
+        <qualifiedname>iceberg::ManifestGroup::IgnoreResiduals</qualifiedname>
+        <briefdescription>
+<para>Ignore residual filter computation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="108" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="131" bodyend="135"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1ac92a4da5bcd85888efd76ec84db9d32a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::Select</definition>
+        <argsstring>(std::vector&lt; std::string &gt; columns)</argsstring>
+        <name>Select</name>
+        <qualifiedname>iceberg::ManifestGroup::Select</qualifiedname>
+        <param>
+          <type>std::vector&lt; std::string &gt;</type>
+          <declname>columns</declname>
+        </param>
+        <briefdescription>
+<para>Select specific columns from manifest entries. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>columns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Column names to select from manifest entries. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="113" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="137" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1ad82d674a060b43619587c6ec4c3c3564" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::CaseSensitive</definition>
+        <argsstring>(bool case_sensitive)</argsstring>
+        <name>CaseSensitive</name>
+        <qualifiedname>iceberg::ManifestGroup::CaseSensitive</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Set case sensitivity for column name matching. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="116" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="142" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a80cdc82a15db4dcb7858aaa0ce683638" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestGroup" kindref="compound">ManifestGroup</ref> &amp;</type>
+        <definition>ManifestGroup &amp; iceberg::ManifestGroup::ColumnsToKeepStats</definition>
+        <argsstring>(std::unordered_set&lt; int32_t &gt; column_ids)</argsstring>
+        <name>ColumnsToKeepStats</name>
+        <qualifiedname>iceberg::ManifestGroup::ColumnsToKeepStats</qualifiedname>
+        <param>
+          <type>std::unordered_set&lt; int32_t &gt;</type>
+          <declname>column_ids</declname>
+        </param>
+        <briefdescription>
+<para>Specify columns that should retain their statistics. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_ids</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Field IDs of columns whose statistics should be preserved. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="121" column="17" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="148" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a569e982b5854916354457209fb8f0427" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; FileScanTask &gt; &gt; &gt; iceberg::ManifestGroup::PlanFiles</definition>
+        <argsstring>()</argsstring>
+        <name>PlanFiles</name>
+        <qualifiedname>iceberg::ManifestGroup::PlanFiles</qualifiedname>
+        <briefdescription>
+<para>Plan scan tasks for all matching data files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="124" column="10" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="153" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1ac32c99dc2e55004d2ad68893b52ff609" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestEntry &gt; &gt; iceberg::ManifestGroup::Entries</definition>
+        <argsstring>()</argsstring>
+        <name>Entries</name>
+        <qualifiedname>iceberg::ManifestGroup::Entries</qualifiedname>
+        <briefdescription>
+<para>Get all matching manifest entries. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="127" column="10" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="251" bodyend="261"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1aac0a4d827717f2255b75f553b77b5373" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1ScanTask" kindref="compound">ScanTask</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::shared_ptr&lt; ScanTask &gt; &gt; &gt; iceberg::ManifestGroup::Plan</definition>
+        <argsstring>(const CreateTasksFunction &amp;create_tasks)</argsstring>
+        <name>Plan</name>
+        <qualifiedname>iceberg::ManifestGroup::Plan</qualifiedname>
+        <param>
+          <type>const CreateTasksFunction &amp;</type>
+          <declname>create_tasks</declname>
+        </param>
+        <briefdescription>
+<para>Plan tasks using a custom task creation function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>create_tasks</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A function that creates ScanTasks from entries and context. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A list of <ref refid="classiceberg_1_1ScanTask" kindref="compound">ScanTask</ref> objects, or error on failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="137" column="10" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="187" bodyend="249"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a784a5e496e107628c8ea27d53570802a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestGroup::ManifestGroup</definition>
+        <argsstring>(std::shared_ptr&lt; FileIO &gt; io, std::shared_ptr&lt; Schema &gt; schema, std::unordered_map&lt; int32_t, std::shared_ptr&lt; PartitionSpec &gt; &gt; specs_by_id, std::vector&lt; ManifestFile &gt; data_manifests, DeleteFileIndex::Builder &amp;&amp;delete_index_builder)</argsstring>
+        <name>ManifestGroup</name>
+        <qualifiedname>iceberg::ManifestGroup::ManifestGroup</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::unordered_map&lt; int32_t, std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &gt;</type>
+          <declname>specs_by_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+          <declname>data_manifests</declname>
+        </param>
+        <param>
+          <type>DeleteFileIndex::Builder &amp;&amp;</type>
+          <declname>delete_index_builder</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="141" column="3" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="72" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a7d2a5fdb8b30746774bbc9c4e94ae608" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; int32_t, std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; int32_t, std::vector&lt; ManifestEntry &gt; &gt; &gt; iceberg::ManifestGroup::ReadEntries</definition>
+        <argsstring>()</argsstring>
+        <name>ReadEntries</name>
+        <qualifiedname>iceberg::ManifestGroup::ReadEntries</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="146" column="10" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="283" bodyend="365"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroup_1a7e0991cc668b6d41e0dc19cff9563851" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestReader &gt; &gt; iceberg::ManifestGroup::MakeReader</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>MakeReader</name>
+        <qualifiedname>iceberg::ManifestGroup::MakeReader</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="148" column="10" bodyfile="iceberg/manifest/manifest_group.cc" bodystart="263" bodyend="280"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Coordinates reading manifest files and producing scan tasks. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestGroup</label>
+        <link refid="classiceberg_1_1ManifestGroup"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestGroup</label>
+        <link refid="classiceberg_1_1ManifestGroup"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_group.h" line="53" column="1" bodyfile="iceberg/manifest/manifest_group.h" bodystart="53" bodyend="165"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1af7a73fc541e9c181bcc9affb2f57c861" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>case_sensitive_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ad82d674a060b43619587c6ec4c3c3564" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>CaseSensitive</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1abf4fe339f0c29cff6b235b430d68067c" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>columns_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a468fa927bd54e47ebdc852805a019b51" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>columns_to_keep_stats_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a80cdc82a15db4dcb7858aaa0ce683638" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ColumnsToKeepStats</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a95a50aa86646e19ea61117c6f320b056" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>CreateTasksFunction</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ac93fbab17b40dcfc7afbea04137cde53" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>data_filter_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a6486cb1d3446d863c8502787952ef956" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>data_manifests_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a55a09b72f7df55f2b15263a45069399c" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>delete_index_builder_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ac32c99dc2e55004d2ad68893b52ff609" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>Entries</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1af4fb7773dcbddf351e388dc883dabbbb" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>file_filter_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a2e876f421c4732aacf237e587db88aa8" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>FilterData</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1adc359e0a4ec0bd55031c8774b5c49fc9" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>FilterFiles</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ab8e30af9e4708e8f0dae0d01e0b1ad2a" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>FilterManifestEntries</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a0168331dafdc6413e3a2e7a413cc7fbb" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>FilterPartitions</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ab1f789f0c7eca60290e8f14baba08c76" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ignore_deleted_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1afe500ac3cde2c7ccd9285de0b7dfcc56" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ignore_existing_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1af0c70a238dd4afd94adbe9a18c8db703" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ignore_residuals_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a3274b2444b8c85b908144a379514ea54" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>IgnoreDeleted</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a4096cdfdb97b0bb01c62f5e86e2ef387" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>IgnoreExisting</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a0f2351bd9e9bb9bd21a2803fa2d29a26" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>IgnoreResiduals</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ad822d934db91ab863b60c004ea7d6d1d" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>io_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1aa7437c314d71a295a30c2e6241f0dafa" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a17d95cc1e662389cf12683962caab898" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a7e0991cc668b6d41e0dc19cff9563851" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>MakeReader</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a7e4af7a10f15f8d3103b4caff6c91280" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>manifest_entry_predicate_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ac3ec6469adc1b4d52f7bd0f4d8553c2c" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ManifestGroup</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a2fccd7d74e6530319640b260e497f0f1" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ManifestGroup</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a784a5e496e107628c8ea27d53570802a" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ManifestGroup</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a8fee6baed136fe2cf7cbccfbe76d5425" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a3b977e888de1d688db1bc0b26eee76af" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::ManifestGroup</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::ManifestGroup</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a60a326cf5f3f6f759f4bffd851e71f2e" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>partition_filter_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1aac0a4d827717f2255b75f553b77b5373" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>Plan</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a569e982b5854916354457209fb8f0427" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>PlanFiles</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a7d2a5fdb8b30746774bbc9c4e94ae608" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>ReadEntries</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a7eea476f370645180d9ff972e58d3878" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1ac92a4da5bcd85888efd76ec84db9d32a" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>Select</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a8cea3bd1ea33c7e377a8a402be763449" prot="private" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>specs_by_id_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::ManifestGroup</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ManifestGroup_1a2290d7a6546456a74740c117deb56390" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup</scope><name>~ManifestGroup</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

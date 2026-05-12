@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1HasValueMatcher" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::HasValueMatcher</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename MatcherT</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1HasValueMatcher_1ad2a145b0d4a23937d26b9e14b16017a0" prot="private" static="no" mutable="no">
+        <type>MatcherT</type>
+        <definition>MatcherT iceberg::HasValueMatcher&lt; MatcherT &gt;::matcher_</definition>
+        <argsstring></argsstring>
+        <name>matcher_</name>
+        <qualifiedname>iceberg::HasValueMatcher::matcher_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="136" column="12" bodyfile="iceberg/test/matchers.h" bodystart="136" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1HasValueMatcher_1a4f0110b26dbde9904cd0c3bf304b52d6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::HasValueMatcher&lt; MatcherT &gt;::HasValueMatcher</definition>
+        <argsstring>(MatcherT matcher)</argsstring>
+        <name>HasValueMatcher</name>
+        <qualifiedname>iceberg::HasValueMatcher::HasValueMatcher</qualifiedname>
+        <param>
+          <type>MatcherT</type>
+          <declname>matcher</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="111" column="12" bodyfile="iceberg/test/matchers.h" bodystart="111" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1HasValueMatcher_1af11b1201fd4ef14ea9c938b3e698d856" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>bool</type>
+        <definition>bool iceberg::HasValueMatcher&lt; MatcherT &gt;::MatchAndExplain</definition>
+        <argsstring>(const T &amp;value, ::testing::MatchResultListener *result_listener) const</argsstring>
+        <name>MatchAndExplain</name>
+        <qualifiedname>iceberg::HasValueMatcher::MatchAndExplain</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>::testing::MatchResultListener *</type>
+          <declname>result_listener</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="114" column="8" bodyfile="iceberg/test/matchers.h" bodystart="114" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1HasValueMatcher_1a7640120340470b5aed09f0fe307dd819" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::HasValueMatcher&lt; MatcherT &gt;::DescribeTo</definition>
+        <argsstring>(std::ostream *os) const</argsstring>
+        <name>DescribeTo</name>
+        <qualifiedname>iceberg::HasValueMatcher::DescribeTo</qualifiedname>
+        <param>
+          <type>std::ostream *</type>
+          <declname>os</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="125" column="8" bodyfile="iceberg/test/matchers.h" bodystart="125" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1HasValueMatcher_1a82754252cc2a9ff1879194e01fba164a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::HasValueMatcher&lt; MatcherT &gt;::DescribeNegationTo</definition>
+        <argsstring>(std::ostream *os) const</argsstring>
+        <name>DescribeNegationTo</name>
+        <qualifiedname>iceberg::HasValueMatcher::DescribeNegationTo</qualifiedname>
+        <param>
+          <type>std::ostream *</type>
+          <declname>os</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/matchers.h" line="130" column="8" bodyfile="iceberg/test/matchers.h" bodystart="130" bodyend="133"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/matchers.h" line="109" column="1" bodyfile="iceberg/test/matchers.h" bodystart="109" bodyend="137"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1HasValueMatcher_1a82754252cc2a9ff1879194e01fba164a" prot="public" virt="non-virtual"><scope>iceberg::HasValueMatcher</scope><name>DescribeNegationTo</name></member>
+      <member refid="classiceberg_1_1HasValueMatcher_1a7640120340470b5aed09f0fe307dd819" prot="public" virt="non-virtual"><scope>iceberg::HasValueMatcher</scope><name>DescribeTo</name></member>
+      <member refid="classiceberg_1_1HasValueMatcher_1a4f0110b26dbde9904cd0c3bf304b52d6" prot="public" virt="non-virtual"><scope>iceberg::HasValueMatcher</scope><name>HasValueMatcher</name></member>
+      <member refid="classiceberg_1_1HasValueMatcher_1af11b1201fd4ef14ea9c938b3e698d856" prot="public" virt="non-virtual"><scope>iceberg::HasValueMatcher</scope><name>MatchAndExplain</name></member>
+      <member refid="classiceberg_1_1HasValueMatcher_1ad2a145b0d4a23937d26b9e14b16017a0" prot="private" virt="non-virtual"><scope>iceberg::HasValueMatcher</scope><name>matcher_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

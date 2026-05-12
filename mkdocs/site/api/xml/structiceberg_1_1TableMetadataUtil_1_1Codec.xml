@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TableMetadataUtil_1_1Codec" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TableMetadataUtil::Codec</compoundname>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1ae2db69622d5aeb1c86602700db8d6e60" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::TableMetadataUtil::Codec::kTableMetadataFileSuffix</definition>
+        <argsstring></argsstring>
+        <name>kTableMetadataFileSuffix</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::kTableMetadataFileSuffix</qualifiedname>
+        <initializer>= &quot;.metadata.json&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="521" column="39" bodyfile="iceberg/table_metadata.h" bodystart="521" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1a1e00b3b22f742a26ec460fe3a661c566" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::TableMetadataUtil::Codec::kCompGzipTableMetadataFileSuffix</definition>
+        <argsstring></argsstring>
+        <name>kCompGzipTableMetadataFileSuffix</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::kCompGzipTableMetadataFileSuffix</qualifiedname>
+        <initializer>=
+        &quot;.metadata.json.gz&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="522" column="39" bodyfile="iceberg/table_metadata.h" bodystart="522" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1a3cec2228802dbf6ab108da81387bd5e4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::TableMetadataUtil::Codec::kGzipTableMetadataFileSuffix</definition>
+        <argsstring></argsstring>
+        <name>kGzipTableMetadataFileSuffix</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::kGzipTableMetadataFileSuffix</qualifiedname>
+        <initializer>= &quot;.gz.metadata.json&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="524" column="39" bodyfile="iceberg/table_metadata.h" bodystart="524" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1a02bf707f0d586e6f67c9a8950264edd9" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::TableMetadataUtil::Codec::kGzipTableMetadataFileExtension</definition>
+        <argsstring></argsstring>
+        <name>kGzipTableMetadataFileExtension</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::kGzipTableMetadataFileExtension</qualifiedname>
+        <initializer>= &quot;.gz&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="525" column="39" bodyfile="iceberg/table_metadata.h" bodystart="525" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1a488aed62beea177f31b9e03b7c274ab7" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::TableMetadataUtil::Codec::kCodecTypeGzip</definition>
+        <argsstring></argsstring>
+        <name>kCodecTypeGzip</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::kCodecTypeGzip</qualifiedname>
+        <initializer>= &quot;GZIP&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="526" column="39" bodyfile="iceberg/table_metadata.h" bodystart="526" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1ae68a8cf7f6a1c7b058dfa41144920b5f" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::TableMetadataUtil::Codec::kCodecTypeNone</definition>
+        <argsstring></argsstring>
+        <name>kCodecTypeNone</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::kCodecTypeNone</qualifiedname>
+        <initializer>= &quot;NONE&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="527" column="39" bodyfile="iceberg/table_metadata.h" bodystart="527" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1a4e3423ecb7872ed883db52f9ddd7dd63" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; MetadataFileCodecType &gt;</type>
+        <definition>Result&lt; MetadataFileCodecType &gt; iceberg::TableMetadataUtil::Codec::FromString</definition>
+        <argsstring>(std::string_view name)</argsstring>
+        <name>FromString</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::FromString</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Returns the MetadataFileCodecType corresponding to the given string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The MetadataFileCodecType corresponding to the given string. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="503" column="19" bodyfile="iceberg/table_metadata.cc" bodystart="410" bodyend="419"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1a56b2486cea80f2d08f20d2c453174a42" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; MetadataFileCodecType &gt;</type>
+        <definition>Result&lt; MetadataFileCodecType &gt; iceberg::TableMetadataUtil::Codec::FromFileName</definition>
+        <argsstring>(std::string_view file_name)</argsstring>
+        <name>FromFileName</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::FromFileName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>file_name</declname>
+        </param>
+        <briefdescription>
+<para>Get the codec type from the table metadata file name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The codec type of the table metadata file. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="509" column="19" bodyfile="iceberg/table_metadata.cc" bodystart="421" bodyend="438"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1ae6da382f1dc40d08bd2f6474713296be" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::TableMetadataUtil::Codec::NameToFileExtension</definition>
+        <argsstring>(std::string_view codec)</argsstring>
+        <name>NameToFileExtension</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::NameToFileExtension</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>codec</declname>
+        </param>
+        <briefdescription>
+<para>Get the file extension from the codec type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>codec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The codec name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The file extension of the codec. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="514" column="19" bodyfile="iceberg/table_metadata.cc" bodystart="440" bodyend="444"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1_1Codec_1ab765f898ff5d032e3a05e2b3095ebc6b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TableMetadataUtil::Codec::TypeToFileExtension</definition>
+        <argsstring>(MetadataFileCodecType codec)</argsstring>
+        <name>TypeToFileExtension</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Codec::TypeToFileExtension</qualifiedname>
+        <param>
+          <type>MetadataFileCodecType</type>
+          <declname>codec</declname>
+        </param>
+        <briefdescription>
+<para>Get the file extension from the codec type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>codec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The codec type. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The file extension of the codec. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="519" column="24" bodyfile="iceberg/table_metadata.cc" bodystart="446" bodyend="454"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::TableMetadataUtil::Codec</label>
+        <link refid="structiceberg_1_1TableMetadataUtil_1_1Codec"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kCodecTypeGzip</edgelabel>
+          <edgelabel>kCodecTypeNone</edgelabel>
+          <edgelabel>kCompGzipTableMetadataFileSuffix</edgelabel>
+          <edgelabel>kGzipTableMetadataFileExtension</edgelabel>
+          <edgelabel>kGzipTableMetadataFileSuffix</edgelabel>
+          <edgelabel>kTableMetadataFileSuffix</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string_view</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_metadata.h" line="498" column="3" bodyfile="iceberg/table_metadata.h" bodystart="498" bodyend="528"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1a56b2486cea80f2d08f20d2c453174a42" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>FromFileName</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1a4e3423ecb7872ed883db52f9ddd7dd63" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>FromString</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1a488aed62beea177f31b9e03b7c274ab7" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>kCodecTypeGzip</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1ae68a8cf7f6a1c7b058dfa41144920b5f" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>kCodecTypeNone</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1a1e00b3b22f742a26ec460fe3a661c566" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>kCompGzipTableMetadataFileSuffix</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1a02bf707f0d586e6f67c9a8950264edd9" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>kGzipTableMetadataFileExtension</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1a3cec2228802dbf6ab108da81387bd5e4" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>kGzipTableMetadataFileSuffix</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1ae2db69622d5aeb1c86602700db8d6e60" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>kTableMetadataFileSuffix</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1ae6da382f1dc40d08bd2f6474713296be" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>NameToFileExtension</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1_1Codec_1ab765f898ff5d032e3a05e2b3095ebc6b" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil::Codec</scope><name>TypeToFileExtension</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

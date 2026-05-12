@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1UrlEncoder" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::UrlEncoder</compoundname>
+    <includes refid="url__encoder_8h" local="no">url_encoder.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1UrlEncoder_1a5fb81572f607d755ec55665a725b593d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::UrlEncoder::Encode</definition>
+        <argsstring>(std::string_view str_to_encode)</argsstring>
+        <name>Encode</name>
+        <qualifiedname>iceberg::UrlEncoder::Encode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str_to_encode</declname>
+        </param>
+        <briefdescription>
+<para>URL-encode a string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is a simple implementation of url-encode<itemizedlist>
+<listitem><para>Unreserved characters: [A-Z], [a-z], [0-9], &quot;-&quot;, &quot;_&quot;, &quot;.&quot;, &quot;~&quot;</para>
+</listitem><listitem><para>Space is encoded as &quot;%20&quot; (unlike Java&apos;s URLEncoder which uses &quot;+&quot;).</para>
+</listitem><listitem><para>All other characters are percent-encoded (XX). <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str_to_encode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string to encode. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The URL-encoded string. </para>
+</simplesect>
+</para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/url_encoder.h" line="43" column="22" bodyfile="iceberg/util/url_encoder.cc" bodystart="43" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1UrlEncoder_1a2e39cfd27c00f0fa83aaf9912e5471fa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::UrlEncoder::Decode</definition>
+        <argsstring>(std::string_view str_to_decode)</argsstring>
+        <name>Decode</name>
+        <qualifiedname>iceberg::UrlEncoder::Decode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str_to_decode</declname>
+        </param>
+        <briefdescription>
+<para>URL-decode a string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Decodes percent-encoded characters (e.g., &quot;%20&quot; -&gt; space). <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str_to_decode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The encoded string to decode. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The decoded string. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/url_encoder.h" line="50" column="22" bodyfile="iceberg/util/url_encoder.cc" bodystart="61" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utilities for encoding and decoding URLs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/url_encoder.h" line="33" column="1" bodyfile="iceberg/util/url_encoder.h" bodystart="33" bodyend="51"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1UrlEncoder_1a2e39cfd27c00f0fa83aaf9912e5471fa" prot="public" virt="non-virtual"><scope>iceberg::UrlEncoder</scope><name>Decode</name></member>
+      <member refid="classiceberg_1_1UrlEncoder_1a5fb81572f607d755ec55665a725b593d" prot="public" virt="non-virtual"><scope>iceberg::UrlEncoder</scope><name>Encode</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1test" kind="namespace" language="C++">
+    <compoundname>iceberg::test</compoundname>
+    <innerclass refid="classiceberg_1_1test_1_1StdFileIO" prot="public">iceberg::test::StdFileIO</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdInputFile" prot="public">iceberg::test::StdInputFile</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdOutputFile" prot="public">iceberg::test::StdOutputFile</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdPositionOutputStream" prot="public">iceberg::test::StdPositionOutputStream</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdSeekableInputStream" prot="public">iceberg::test::StdSeekableInputStream</innerclass>
+    <innernamespace refid="namespaceiceberg_1_1test_1_1detail">iceberg::test::detail</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/std_io.h" line="40" column="1"/>
+  </compounddef>
+</doxygen>

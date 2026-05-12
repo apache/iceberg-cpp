@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1AssignUUID" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::AssignUUID</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AssignUUID_1a7c8f3db1220470e6a80e3eec3e54bcfe" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::table::AssignUUID::uuid_</definition>
+        <argsstring></argsstring>
+        <name>uuid_</name>
+        <qualifiedname>iceberg::table::AssignUUID::uuid_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="128" column="15" bodyfile="iceberg/table_update.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssignUUID_1ad0dc41a5c1b6125c90984d229fb8ddb0" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::AssignUUID::AssignUUID</definition>
+        <argsstring>(std::string uuid)</argsstring>
+        <name>AssignUUID</name>
+        <qualifiedname>iceberg::table::AssignUUID::AssignUUID</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>uuid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="113" column="12" bodyfile="iceberg/table_update.h" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssignUUID_1adb6fb7011db8a55ce50d9c80d5141d31" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::table::AssignUUID::uuid</definition>
+        <argsstring>() const</argsstring>
+        <name>uuid</name>
+        <qualifiedname>iceberg::table::AssignUUID::uuid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="115" column="21" bodyfile="iceberg/table_update.h" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssignUUID_1a025ce419780aa37f5429b86958a8a965" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::AssignUUID::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::AssignUUID::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="117" column="8" bodyfile="iceberg/table_update.cc" bodystart="39" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssignUUID_1a257f3be976b2141fa4b17d60e6e3f4c0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::AssignUUID::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::AssignUUID::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="119" column="8" bodyfile="iceberg/table_update.cc" bodystart="43" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssignUUID_1ad56b4656cf4ddf19b3e50c7bd52d95d4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::AssignUUID::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::AssignUUID::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="121" column="8" bodyfile="iceberg/table_update.h" bodystart="121" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssignUUID_1a55717a7c9a1fc0731253b71ae7892a9f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::AssignUUID::Equals</definition>
+        <argsstring>(const TableUpdate &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::AssignUUID::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1afd0780e6106546f7462e8e66d62db1f2">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The update to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the updates are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="123" column="8" bodyfile="iceberg/table_update.cc" bodystart="47" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssignUUID_1a17d172f63b9b4de26176065502b990eb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableUpdate &gt; iceberg::table::AssignUUID::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::AssignUUID::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1affb4be490ac63849864bf8ed636363aa">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="125" column="19" bodyfile="iceberg/table_update.cc" bodystart="55" bodyend="57"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents an assignment of a UUID to the table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssignUUID</label>
+        <link refid="classiceberg_1_1table_1_1AssignUUID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssignUUID</label>
+        <link refid="classiceberg_1_1table_1_1AssignUUID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="111" column="1" bodyfile="iceberg/table_update.h" bodystart="111" bodyend="129"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1a025ce419780aa37f5429b86958a8a965" prot="public" virt="virtual"><scope>iceberg::table::AssignUUID</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1ad0dc41a5c1b6125c90984d229fb8ddb0" prot="public" virt="non-virtual"><scope>iceberg::table::AssignUUID</scope><name>AssignUUID</name></member>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1a17d172f63b9b4de26176065502b990eb" prot="public" virt="virtual"><scope>iceberg::table::AssignUUID</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1a55717a7c9a1fc0731253b71ae7892a9f" prot="public" virt="virtual"><scope>iceberg::table::AssignUUID</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1a257f3be976b2141fa4b17d60e6e3f4c0" prot="public" virt="virtual"><scope>iceberg::table::AssignUUID</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1ad56b4656cf4ddf19b3e50c7bd52d95d4" prot="public" virt="virtual"><scope>iceberg::table::AssignUUID</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::AssignUUID</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1adb6fb7011db8a55ce50d9c80d5141d31" prot="public" virt="non-virtual"><scope>iceberg::table::AssignUUID</scope><name>uuid</name></member>
+      <member refid="classiceberg_1_1table_1_1AssignUUID_1a7c8f3db1220470e6a80e3eec3e54bcfe" prot="private" virt="non-virtual"><scope>iceberg::table::AssignUUID</scope><name>uuid_</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::AssignUUID</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,594 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Expression" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Expression</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Aggregate" prot="public" virt="virtual">iceberg::Aggregate&lt; BoundTerm &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Aggregate" prot="public" virt="virtual">iceberg::Aggregate&lt; UnboundTerm&lt; B &gt; &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Predicate" prot="public" virt="virtual">iceberg::Predicate&lt; BoundTerm &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Predicate" prot="public" virt="virtual">iceberg::Predicate&lt; UnboundTerm&lt; B &gt; &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Aggregate" prot="public" virt="virtual">iceberg::Aggregate&lt; T &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1And" prot="public" virt="non-virtual">iceberg::And</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1False" prot="public" virt="non-virtual">iceberg::False</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Not" prot="public" virt="non-virtual">iceberg::Not</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Or" prot="public" virt="non-virtual">iceberg::Or</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Predicate" prot="public" virt="virtual">iceberg::Predicate&lt; T &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1True" prot="public" virt="non-virtual">iceberg::True</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1UnboundAggregate" prot="public" virt="virtual">iceberg::UnboundAggregate</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1UnboundPredicate" prot="public" virt="virtual">iceberg::UnboundPredicate</derivedcompoundref>
+    <includes refid="expression_8h" local="no">expression.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>Operation</name>
+        <qualifiedname>iceberg::Expression::Operation</qualifiedname>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca66e2fa9ba4f5420341b16f9d6365f428" prot="public">
+          <name>kTrue</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caf564c2bfece5a7928f8860f983c50098" prot="public">
+          <name>kFalse</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca97d32b1715072e6ea4faed111189927a" prot="public">
+          <name>kIsNull</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca1a578f0f8d46031f3bacc20f79162499" prot="public">
+          <name>kNotNull</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caf9cb74e50bc6723cd99de9f0d254b3b9" prot="public">
+          <name>kIsNan</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9cae0782a08b0a8c8dbf5fda484515c1496" prot="public">
+          <name>kNotNan</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca79e0a0a6afb3ede6b7579b1c22fd5e66" prot="public">
+          <name>kLt</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caf84e8ff0584b6fd9593d05a4c468a8eb" prot="public">
+          <name>kLtEq</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caf166c5f480408355d40fdedd40d08cd5" prot="public">
+          <name>kGt</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caddbf7754597753c5274503a53c873c6f" prot="public">
+          <name>kGtEq</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca3d02bee6105201371a5a6c70cfdf1719" prot="public">
+          <name>kEq</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9cabb14edfc6ffd963c35dfeb060df322ce" prot="public">
+          <name>kNotEq</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9cadb7843524af7e7869b18c9838fd67675" prot="public">
+          <name>kIn</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca8624c3ccdf1a8baa8cc4c125c8eb145e" prot="public">
+          <name>kNotIn</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9cab7d431618e9218819789f11bc63ae0a4" prot="public">
+          <name>kNot</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca5c61096a81b3e5cbbde4f43b14c8f0d9" prot="public">
+          <name>kAnd</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca5b7e85783b7acdff953371531833aac4" prot="public">
+          <name>kOr</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9cabd22832547f86e972f549b76d20d3c89" prot="public">
+          <name>kStartsWith</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9cae91dd90127f32bf10dc341430a8dbcc3" prot="public">
+          <name>kNotStartsWith</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca5a162d352f3b3603e03fc9b2f043fb40" prot="public">
+          <name>kCount</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caaf5ca7501d60b2b27b71f940041fbae5" prot="public">
+          <name>kCountNull</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caebe2d34fa4539f5a36f6fc14ab3332f2" prot="public">
+          <name>kCountStar</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9caa0b1ac8aae6b1cfbbe89085c642b3b4b" prot="public">
+          <name>kMax</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9ca8fbc2f6c44a6d70550df79903eb57d48" prot="public">
+          <name>kMin</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Operation types for expressions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="40" column="3" bodyfile="iceberg/expression/expression.h" bodystart="40" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Expression::~Expression</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Expression</name>
+        <qualifiedname>iceberg::Expression::~Expression</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="67" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a5a16ee5d023305b50e4a2216b4047eff" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Operation</ref></type>
+        <definition>virtual Operation iceberg::Expression::op</definition>
+        <argsstring>() const =0</argsstring>
+        <name>op</name>
+        <qualifiedname>iceberg::Expression::op</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1True_1aa40701eb9c6cc8b57130643a1000ad14">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1False_1aaccc2ef838f10e74398e471743e6fb23">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1And_1a8d680f4240a81b08ed533e9bf89479c9">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Or_1afe9e736e8ba2e8b5748941f2b349fc6d">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Not_1a5ca78cdd707666ff271492a8c45f37ec">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f">op</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f">op</reimplementedby>
+        <briefdescription>
+<para>Returns the operation for an expression node. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="70" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::Expression::Negate</definition>
+        <argsstring>() const</argsstring>
+        <name>Negate</name>
+        <qualifiedname>iceberg::Expression::Negate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1True_1a5849e24284fb2c87b234379e371a13ce">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1False_1a8f3630c6ec3a6a4eef65f3e680628004">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1And_1a24a38d7c3faaac99a71b51e6dfb4b0d6">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Or_1ab102b67d93ba34588fa0f0b77ea9243f">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Not_1a7d347d1bfbb07a9678e002bb2eed1495">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicateImpl_1ac2729f36f0bc8b2e1ac71ae6221563e6">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundUnaryPredicate_1ac15e4e053e268ecb0a0e3d0297bd6ca8">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundLiteralPredicate_1a8f0ed718c05bc6c94e653819e099e091">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundSetPredicate_1ab82330a3d48d9b139764ae3972c0c271">Negate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicate_1a7c77c2d962a6965ca484a8b74cbf4b0d">Negate</reimplementedby>
+        <briefdescription>
+<para>Returns the negation of this expression, equivalent to not(this). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="73" column="18" bodyfile="iceberg/expression/expression.h" bodystart="73" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Expression::Equals</definition>
+        <argsstring>(const Expression &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::Expression::Equals</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1True_1a53e99598cb32cb1d709838ba1a154a26">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1False_1aabcd9ebfb3e6cec22fa5bd45aedfacc6">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1And_1aa1b15d267e484f7b4c32eb5b7dc647f5">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Or_1acbd078a10cd61ba2d76788b42966b197">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Not_1a5f9793238a0dd8b701b8f3f6dbc613b1">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundUnaryPredicate_1a3ad39a4f9541ec0eeb24611213faae43">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundLiteralPredicate_1aa92ed21cf7fd9e7ada37ad9eb91a9977">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1BoundSetPredicate_1a06619576f7388681a6f0c04432b61e4e">Equals</reimplementedby>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether this expression will accept the same values as another. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>another expression </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the expressions are equivalent </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="80" column="16" bodyfile="iceberg/expression/expression.h" bodystart="80" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a2e9c204f698d069ebc0fefb9e5269ab6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Expression::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Expression::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <reimplementedby refid="classiceberg_1_1True_1ab2e3e9e09c33a7f8d614b069b1c0ef84">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1False_1a7c87482982da354f63c8b09bab9bde35">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Or_1aec794d22f9863e170a65d9a1b89c9655">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1Not_1a64edca3880c4eee4918b7c32cfa25d83">ToString</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicateImpl_1a77b0726d46f4ef179c83064e010c14a4">ToString</reimplementedby>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="85" column="15" bodyfile="iceberg/expression/expression.h" bodystart="85" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Expression::is_unbound_predicate</definition>
+        <argsstring>() const</argsstring>
+        <name>is_unbound_predicate</name>
+        <qualifiedname>iceberg::Expression::is_unbound_predicate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicate_1a3661c1eb43a28a3fe79e586045a94568">is_unbound_predicate</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="87" column="16" bodyfile="iceberg/expression/expression.h" bodystart="87" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Expression::is_bound_predicate</definition>
+        <argsstring>() const</argsstring>
+        <name>is_bound_predicate</name>
+        <qualifiedname>iceberg::Expression::is_bound_predicate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1BoundPredicate_1a9066e8e9c4285260800764816e7b278d">is_bound_predicate</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="88" column="16" bodyfile="iceberg/expression/expression.h" bodystart="88" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Expression::is_unbound_aggregate</definition>
+        <argsstring>() const</argsstring>
+        <name>is_unbound_aggregate</name>
+        <qualifiedname>iceberg::Expression::is_unbound_aggregate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1UnboundAggregate_1ab86b7e03739c4aa29b263613892ab3f5">is_unbound_aggregate</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="89" column="16" bodyfile="iceberg/expression/expression.h" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Expression_1ab760f80ffc03ab40301be7d59c621a4a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Expression::is_bound_aggregate</definition>
+        <argsstring>() const</argsstring>
+        <name>is_bound_aggregate</name>
+        <qualifiedname>iceberg::Expression::is_bound_aggregate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1BoundAggregate_1a14aa0f3e84ca3ec8323134d4b0fa43d7">is_bound_aggregate</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="90" column="16" bodyfile="iceberg/expression/expression.h" bodystart="90" bodyend="90"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a boolean expression tree. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::Aggregate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::Aggregate&lt; UnboundTerm&lt; B &gt; &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::Predicate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::Predicate&lt; UnboundTerm&lt; B &gt; &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg::Aggregate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg::And</label>
+        <link refid="classiceberg_1_1And"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::BoundAggregate</label>
+        <link refid="classiceberg_1_1BoundAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::BoundLiteralPredicate</label>
+        <link refid="classiceberg_1_1BoundLiteralPredicate"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::BoundPredicate</label>
+        <link refid="classiceberg_1_1BoundPredicate"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::BoundSetPredicate</label>
+        <link refid="classiceberg_1_1BoundSetPredicate"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::BoundUnaryPredicate</label>
+        <link refid="classiceberg_1_1BoundUnaryPredicate"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::CountAggregate</label>
+        <link refid="classiceberg_1_1CountAggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::CountNonNullAggregate</label>
+        <link refid="classiceberg_1_1CountNonNullAggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::CountNullAggregate</label>
+        <link refid="classiceberg_1_1CountNullAggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::CountStarAggregate</label>
+        <link refid="classiceberg_1_1CountStarAggregate"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::False</label>
+        <link refid="classiceberg_1_1False"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::MaxAggregate</label>
+        <link refid="classiceberg_1_1MaxAggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::MinAggregate</label>
+        <link refid="classiceberg_1_1MinAggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg::Not</label>
+        <link refid="classiceberg_1_1Not"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iceberg::Or</label>
+        <link refid="classiceberg_1_1Or"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg::Predicate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Predicate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>iceberg::True</label>
+        <link refid="classiceberg_1_1True"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg::UnboundAggregate</label>
+        <link refid="classiceberg_1_1UnboundAggregate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::UnboundAggregateImpl&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundAggregateImpl"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="27" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg::UnboundPredicate</label>
+        <link refid="classiceberg_1_1UnboundPredicate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::UnboundPredicateImpl&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundPredicateImpl"/>
+        <childnode refid="18" relation="public-inheritance">
+        </childnode>
+        <childnode refid="28" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/expression.h" line="37" column="1" bodyfile="iceberg/expression/expression.h" bodystart="37" bodyend="91"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1Expression_1ab760f80ffc03ab40301be7d59c621a4a" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1Expression_1a5a16ee5d023305b50e4a2216b4047eff" prot="public" virt="pure-virtual"><scope>iceberg::Expression</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::Expression</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Expression_1a2e9c204f698d069ebc0fefb9e5269ab6" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Expression</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

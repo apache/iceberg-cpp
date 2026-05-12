@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="s3__properties_8h" kind="file" language="C++">
+    <compoundname>s3_properties.h</compoundname>
+    <includes local="no">string_view</includes>
+    <includedby refid="arrow__s3__file__io_8cc" local="yes">iceberg/arrow/s3/arrow_s3_file_io.cc</includedby>
+    <includedby refid="arrow__s3__file__io__test_8cc" local="yes">iceberg/test/arrow_s3_file_io_test.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>iceberg/arrow/s3/s3_properties.h</label>
+        <link refid="s3__properties_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>string_view</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structiceberg_1_1arrow_1_1S3Properties" prot="public">iceberg::arrow::S3Properties</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1arrow">iceberg::arrow</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::arrow<sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31" refid="structiceberg_1_1arrow_1_1S3Properties" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1arrow_1_1S3Properties" kindref="compound">S3Properties</ref><sp/>{</highlight></codeline>
+<codeline lineno="33" refid="structiceberg_1_1arrow_1_1S3Properties_1a30e6db54fade15dc71a3d96acb4b2cf2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a30e6db54fade15dc71a3d96acb4b2cf2" kindref="member">kS3Schema</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="35" refid="structiceberg_1_1arrow_1_1S3Properties_1a74b91b99b163d51c58a402d0f83455d6" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a74b91b99b163d51c58a402d0f83455d6" kindref="member">kAccessKeyId</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.access-key-id&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37" refid="structiceberg_1_1arrow_1_1S3Properties_1a14889abe7efdfb7be4fc0d6f2ecaade9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a14889abe7efdfb7be4fc0d6f2ecaade9" kindref="member">kSecretAccessKey</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.secret-access-key&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39" refid="structiceberg_1_1arrow_1_1S3Properties_1a4dec61230ee68d2b9bbcf8dbc999c6c8" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a4dec61230ee68d2b9bbcf8dbc999c6c8" kindref="member">kSessionToken</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.session-token&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41" refid="structiceberg_1_1arrow_1_1S3Properties_1a65574ce4f661cbc8d8a411c1c6a35e31" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a65574ce4f661cbc8d8a411c1c6a35e31" kindref="member">kRegion</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.region&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43" refid="structiceberg_1_1arrow_1_1S3Properties_1a99156e6180c4a40fc23504f01c59ee40" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a99156e6180c4a40fc23504f01c59ee40" kindref="member">kEndpoint</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.endpoint&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="45" refid="structiceberg_1_1arrow_1_1S3Properties_1a66135f09349d2c6d3babb892a0f2d28b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a66135f09349d2c6d3babb892a0f2d28b" kindref="member">kPathStyleAccess</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.path-style-access&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="47" refid="structiceberg_1_1arrow_1_1S3Properties_1ab54266a1acc0977d8ed9bf83fe54e223" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1ab54266a1acc0977d8ed9bf83fe54e223" kindref="member">kSslEnabled</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.ssl.enabled&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="49" refid="structiceberg_1_1arrow_1_1S3Properties_1a80f30f9b8a5d743a59b7a5b9c56e9b5d" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a80f30f9b8a5d743a59b7a5b9c56e9b5d" kindref="member">kConnectTimeoutMs</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.connect-timeout-ms&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="51" refid="structiceberg_1_1arrow_1_1S3Properties_1a3b0bc87f9ac7c4e3fbb0ada424742a8f" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="structiceberg_1_1arrow_1_1S3Properties_1a3b0bc87f9ac7c4e3fbb0ada424742a8f" kindref="member">kSocketTimeoutMs</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3.socket-timeout-ms&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::arrow</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/arrow/s3/s3_properties.h"/>
+  </compounddef>
+</doxygen>

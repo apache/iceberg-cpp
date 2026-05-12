@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_e2a56cbfce0adec9f8ed935297afb507" kind="dir">
+    <compoundname>iceberg/deletes</compoundname>
+    <innerfile refid="position__delete__index_8cc">position_delete_index.cc</innerfile>
+    <innerfile refid="position__delete__index_8h">position_delete_index.h</innerfile>
+    <innerfile refid="roaring__position__bitmap_8cc">roaring_position_bitmap.cc</innerfile>
+    <innerfile refid="roaring__position__bitmap_8h">roaring_position_bitmap.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/deletes/"/>
+  </compounddef>
+</doxygen>

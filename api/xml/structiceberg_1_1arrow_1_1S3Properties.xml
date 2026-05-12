@@ -1,0 +1,215 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1arrow_1_1S3Properties" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::arrow::S3Properties</compoundname>
+    <includes refid="s3__properties_8h" local="no">s3_properties.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a30e6db54fade15dc71a3d96acb4b2cf2" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kS3Schema</definition>
+        <argsstring></argsstring>
+        <name>kS3Schema</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kS3Schema</qualifiedname>
+        <initializer>= &quot;s3&quot;</initializer>
+        <briefdescription>
+<para>S3 URI scheme. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="33" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a74b91b99b163d51c58a402d0f83455d6" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kAccessKeyId</definition>
+        <argsstring></argsstring>
+        <name>kAccessKeyId</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kAccessKeyId</qualifiedname>
+        <initializer>= &quot;s3.access-key-id&quot;</initializer>
+        <briefdescription>
+<para>AWS access key ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="35" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a14889abe7efdfb7be4fc0d6f2ecaade9" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kSecretAccessKey</definition>
+        <argsstring></argsstring>
+        <name>kSecretAccessKey</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kSecretAccessKey</qualifiedname>
+        <initializer>= &quot;s3.secret-access-key&quot;</initializer>
+        <briefdescription>
+<para>AWS secret access key. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="37" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a4dec61230ee68d2b9bbcf8dbc999c6c8" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kSessionToken</definition>
+        <argsstring></argsstring>
+        <name>kSessionToken</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kSessionToken</qualifiedname>
+        <initializer>= &quot;s3.session-token&quot;</initializer>
+        <briefdescription>
+<para>AWS session token (for temporary credentials) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="39" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a65574ce4f661cbc8d8a411c1c6a35e31" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kRegion</definition>
+        <argsstring></argsstring>
+        <name>kRegion</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kRegion</qualifiedname>
+        <initializer>= &quot;s3.region&quot;</initializer>
+        <briefdescription>
+<para>AWS region. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="41" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a99156e6180c4a40fc23504f01c59ee40" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kEndpoint</definition>
+        <argsstring></argsstring>
+        <name>kEndpoint</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kEndpoint</qualifiedname>
+        <initializer>= &quot;s3.endpoint&quot;</initializer>
+        <briefdescription>
+<para>Custom endpoint override (for MinIO, LocalStack, etc.) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="43" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a66135f09349d2c6d3babb892a0f2d28b" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kPathStyleAccess</definition>
+        <argsstring></argsstring>
+        <name>kPathStyleAccess</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kPathStyleAccess</qualifiedname>
+        <initializer>= &quot;s3.path-style-access&quot;</initializer>
+        <briefdescription>
+<para>Whether to use path-style access (needed for MinIO) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="45" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1ab54266a1acc0977d8ed9bf83fe54e223" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kSslEnabled</definition>
+        <argsstring></argsstring>
+        <name>kSslEnabled</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kSslEnabled</qualifiedname>
+        <initializer>= &quot;s3.ssl.enabled&quot;</initializer>
+        <briefdescription>
+<para>Whether SSL is enabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="47" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a80f30f9b8a5d743a59b7a5b9c56e9b5d" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kConnectTimeoutMs</definition>
+        <argsstring></argsstring>
+        <name>kConnectTimeoutMs</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kConnectTimeoutMs</qualifiedname>
+        <initializer>= &quot;s3.connect-timeout-ms&quot;</initializer>
+        <briefdescription>
+<para>Connection timeout in milliseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="49" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1arrow_1_1S3Properties_1a3b0bc87f9ac7c4e3fbb0ada424742a8f" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::arrow::S3Properties::kSocketTimeoutMs</definition>
+        <argsstring></argsstring>
+        <name>kSocketTimeoutMs</name>
+        <qualifiedname>iceberg::arrow::S3Properties::kSocketTimeoutMs</qualifiedname>
+        <initializer>= &quot;s3.socket-timeout-ms&quot;</initializer>
+        <briefdescription>
+<para>Socket timeout in milliseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="51" column="37" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>S3 configuration property keys for ArrowS3FileIO. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>These constants define the property keys used to configure S3 access via the Arrow filesystem integration, following the Iceberg spec for S3 configuration properties. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::arrow::S3Properties</label>
+        <link refid="structiceberg_1_1arrow_1_1S3Properties"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kAccessKeyId</edgelabel>
+          <edgelabel>kConnectTimeoutMs</edgelabel>
+          <edgelabel>kEndpoint</edgelabel>
+          <edgelabel>kPathStyleAccess</edgelabel>
+          <edgelabel>kRegion</edgelabel>
+          <edgelabel>kS3Schema</edgelabel>
+          <edgelabel>kSecretAccessKey</edgelabel>
+          <edgelabel>kSessionToken</edgelabel>
+          <edgelabel>kSocketTimeoutMs</edgelabel>
+          <edgelabel>kSslEnabled</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string_view</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/arrow/s3/s3_properties.h" line="31" column="1" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="31" bodyend="52"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a74b91b99b163d51c58a402d0f83455d6" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kAccessKeyId</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a80f30f9b8a5d743a59b7a5b9c56e9b5d" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kConnectTimeoutMs</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a99156e6180c4a40fc23504f01c59ee40" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kEndpoint</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a66135f09349d2c6d3babb892a0f2d28b" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kPathStyleAccess</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a65574ce4f661cbc8d8a411c1c6a35e31" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kRegion</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a30e6db54fade15dc71a3d96acb4b2cf2" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kS3Schema</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a14889abe7efdfb7be4fc0d6f2ecaade9" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kSecretAccessKey</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a4dec61230ee68d2b9bbcf8dbc999c6c8" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kSessionToken</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1a3b0bc87f9ac7c4e3fbb0ada424742a8f" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kSocketTimeoutMs</name></member>
+      <member refid="structiceberg_1_1arrow_1_1S3Properties_1ab54266a1acc0977d8ed9bf83fe54e223" prot="public" virt="non-virtual"><scope>iceberg::arrow::S3Properties</scope><name>kSslEnabled</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

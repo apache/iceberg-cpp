@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DeletedDataFileScanTask" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DeletedDataFileScanTask</compoundname>
+    <basecompoundref refid="classiceberg_1_1ChangelogScanTask" prot="public" virt="non-virtual">iceberg::ChangelogScanTask</basecompoundref>
+    <includes refid="table__scan_8h" local="no">table_scan.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DeletedDataFileScanTask_1a1f792f6c6329905f820cd96d542a5039" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>ChangelogOperation</type>
+        <definition>ChangelogOperation iceberg::DeletedDataFileScanTask::operation</definition>
+        <argsstring>() const override</argsstring>
+        <name>operation</name>
+        <qualifiedname>iceberg::DeletedDataFileScanTask::operation</qualifiedname>
+        <reimplements refid="classiceberg_1_1ChangelogScanTask_1a3a02af995f9c7d760a35b63b3217e7ac">operation</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="210" column="22" bodyfile="iceberg/table_scan.h" bodystart="210" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeletedDataFileScanTask_1acf47d6994ca907e93bc16086fab96878" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; DataFile &gt; &amp; iceberg::DeletedDataFileScanTask::data_file</definition>
+        <argsstring>() const</argsstring>
+        <name>data_file</name>
+        <qualifiedname>iceberg::DeletedDataFileScanTask::data_file</qualifiedname>
+        <briefdescription>
+<para>The data file that was deleted. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="213" column="25" bodyfile="iceberg/table_scan.h" bodystart="213" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeletedDataFileScanTask_1a9918f17ba9208f6662bb119b62c5c8c6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt; &amp;</type>
+        <definition>const std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; &amp; iceberg::DeletedDataFileScanTask::existing_deletes</definition>
+        <argsstring>() const</argsstring>
+        <name>existing_deletes</name>
+        <qualifiedname>iceberg::DeletedDataFileScanTask::existing_deletes</qualifiedname>
+        <briefdescription>
+<para>A list of previously added delete files to apply when reading the data file in this task. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A list of delete files to apply </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="219" column="21" bodyfile="iceberg/table_scan.h" bodystart="219" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeletedDataFileScanTask_1a9e2f454c8e7c00a0b4bdabde62678272" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ChangelogScanTask::ChangelogScanTask</definition>
+        <argsstring>(int32_t change_ordinal, int64_t commit_snapshot_id, std::shared_ptr&lt; DataFile &gt; data_file, std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; delete_files={}, std::shared_ptr&lt; Expression &gt; residual_filter=nullptr)</argsstring>
+        <name>ChangelogScanTask</name>
+        <qualifiedname>iceberg::DeletedDataFileScanTask::ChangelogScanTask</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>change_ordinal</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>commit_snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>data_file</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+          <defval>{}</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>residual_filter</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Construct an <ref refid="classiceberg_1_1AddedRowsScanTask" kindref="compound">AddedRowsScanTask</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>change_ordinal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Position in the changelog order (0-based). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>commit_snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID that committed this change. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data file containing the added rows. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>delete_files</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Delete files that apply to this data file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>residual_filter</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional residual filter to apply after reading. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="208" column="3" bodyfile="iceberg/table_scan.h" bodystart="123" bodyend="131"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A scan task for deletes generated by removing a data file from the table. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>All historical delete files added earlier must be applied while reading the data file. This is required to output only those data records that were live when the data file was removed.</para>
+<para>Suppose snapshot S1 contains data files F1, F2, F3. Then snapshot S2 adds a position delete file, D1, that deletes records from F2 and snapshot S3 removes F2 entirely. A scan for changes generated by S3 should include the following task:<itemizedlist>
+<listitem><para><ref refid="classiceberg_1_1DeletedDataFileScanTask" kindref="compound">DeletedDataFileScanTask</ref>(file=F2, existing-deletes=[D1], snapshot=S3)</para>
+</listitem></itemizedlist>
+</para>
+<para>Readers consuming these tasks should produce deleted records with metadata like change ordinal and commit snapshot ID. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ChangelogScanTask</label>
+        <link refid="classiceberg_1_1ChangelogScanTask"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::DeletedDataFileScanTask</label>
+        <link refid="classiceberg_1_1DeletedDataFileScanTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ScanTask</label>
+        <link refid="classiceberg_1_1ScanTask"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ChangelogScanTask</label>
+        <link refid="classiceberg_1_1ChangelogScanTask"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>data_file_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>delete_files_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>residual_filter_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::DeletedDataFileScanTask</label>
+        <link refid="classiceberg_1_1DeletedDataFileScanTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ScanTask</label>
+        <link refid="classiceberg_1_1ScanTask"/>
+      </node>
+      <node id="15">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="16">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="10">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="11">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::Expression &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::DataFile &gt; &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_scan.h" line="206" column="1" bodyfile="iceberg/table_scan.h" bodystart="206" bodyend="222"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a160098d1828a8fb9d8bef1e420bb7f69" prot="public" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>change_ordinal</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a855bace400a8e30bec431ed1bc0a927f" prot="protected" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>change_ordinal_</name></member>
+      <member refid="classiceberg_1_1DeletedDataFileScanTask_1a9e2f454c8e7c00a0b4bdabde62678272" prot="public" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>ChangelogScanTask</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a45fd4b830f7b10ae26591fb6786cc221" prot="public" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>commit_snapshot_id</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a79863b18c3410a023288a7e59c711476" prot="protected" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>commit_snapshot_id_</name></member>
+      <member refid="classiceberg_1_1DeletedDataFileScanTask_1acf47d6994ca907e93bc16086fab96878" prot="public" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>data_file</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1ade3e55368c5a8992ef6e6e436ce7e29a" prot="protected" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>data_file_</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1aced7b82299c0fed2fe370eb5112b02ce" prot="protected" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>delete_files_</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a84246b65ec7e10024d3bdf159aea243f" prot="public" virt="virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>estimated_row_count</name></member>
+      <member refid="classiceberg_1_1DeletedDataFileScanTask_1a9918f17ba9208f6662bb119b62c5c8c6" prot="public" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>existing_deletes</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1af173a61632f2b88e4da007a0859100f4" prot="public" virt="virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>files_count</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1ace10d0cf9753b1b3dbb0289071c2d155" prot="public" virt="virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1ScanTask_1ab28bdbcb5d183627dfec1ef4d3321c1f" prot="public" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1DeletedDataFileScanTask_1a1f792f6c6329905f820cd96d542a5039" prot="public" virt="virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>operation</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1aeb1748029814282a872b4bead4221b09" prot="public" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>residual_filter</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a85b80a5eb3c4bb302819b66ce11d2ee2" prot="protected" virt="non-virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>residual_filter_</name></member>
+      <member refid="classiceberg_1_1ChangelogScanTask_1a0a3b4dd22854acb631e33271dd9a1250" prot="public" virt="virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>size_bytes</name></member>
+      <member refid="classiceberg_1_1ScanTask_1abfdda64a7967dbfda4543c4a6cb085ec" prot="public" virt="virtual"><scope>iceberg::DeletedDataFileScanTask</scope><name>~ScanTask</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

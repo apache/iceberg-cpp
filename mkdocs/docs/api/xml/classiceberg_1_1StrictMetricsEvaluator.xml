@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1StrictMetricsEvaluator" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::StrictMetricsEvaluator</compoundname>
+    <includes refid="strict__metrics__evaluator_8h" local="no">strict_metrics_evaluator.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1StrictMetricsEvaluator_1aca583aa9573a7ce600850bc93f0ef79d" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::StrictMetricsEvaluator::expr_</definition>
+        <argsstring></argsstring>
+        <name>expr_</name>
+        <qualifiedname>iceberg::StrictMetricsEvaluator::expr_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/strict_metrics_evaluator.h" line="75" column="19" bodyfile="iceberg/expression/strict_metrics_evaluator.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StrictMetricsEvaluator_1ad450d9579cfaeaeafe1646aa35aa8735" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::StrictMetricsEvaluator::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::StrictMetricsEvaluator::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/strict_metrics_evaluator.h" line="76" column="19" bodyfile="iceberg/expression/strict_metrics_evaluator.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1StrictMetricsEvaluator_1af04e6d693aacbda8cee264fd4167d226" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1StrictMetricsEvaluator" kindref="compound">StrictMetricsEvaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; StrictMetricsEvaluator &gt; &gt; iceberg::StrictMetricsEvaluator::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr, std::shared_ptr&lt; Schema &gt; schema, bool case_sensitive=true)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::StrictMetricsEvaluator::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Make a strict metrics evaluator. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The expression to evaluate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema of the table </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether field name matching is case-sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/strict_metrics_evaluator.h" line="58" column="17" bodyfile="iceberg/expression/strict_metrics_evaluator.cc" bodystart="488" bodyend="496"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1StrictMetricsEvaluator_1af80c3f6bfb03fb7ff245f7dcb38b9146" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::StrictMetricsEvaluator::~StrictMetricsEvaluator</definition>
+        <argsstring>()</argsstring>
+        <name>~StrictMetricsEvaluator</name>
+        <qualifiedname>iceberg::StrictMetricsEvaluator::~StrictMetricsEvaluator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/strict_metrics_evaluator.h" line="62" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StrictMetricsEvaluator_1ad92d4c67b2ac9e8b837bc2e7e4b196ef" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::StrictMetricsEvaluator::Evaluate</definition>
+        <argsstring>(const DataFile &amp;data_file) const</argsstring>
+        <name>Evaluate</name>
+        <qualifiedname>iceberg::StrictMetricsEvaluator::Evaluate</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <briefdescription>
+<para>Evaluate the expression against a <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data file to evaluate </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the file matches the expression, false otherwise, or error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/strict_metrics_evaluator.h" line="68" column="10" bodyfile="iceberg/expression/strict_metrics_evaluator.cc" bodystart="498" bodyend="504"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1StrictMetricsEvaluator_1a8b3e82678ba0032051b38d6bac13b989" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::StrictMetricsEvaluator::StrictMetricsEvaluator</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr, std::shared_ptr&lt; Schema &gt; schema)</argsstring>
+        <name>StrictMetricsEvaluator</name>
+        <qualifiedname>iceberg::StrictMetricsEvaluator::StrictMetricsEvaluator</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/strict_metrics_evaluator.h" line="71" column="12" bodyfile="iceberg/expression/strict_metrics_evaluator.cc" bodystart="482" bodyend="484"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Evaluates an <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> against <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="note"><para>: The evaluator is thread-safe. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="iceberg/expression/strict_metrics_evaluator.h" line="51" column="1" bodyfile="iceberg/expression/strict_metrics_evaluator.h" bodystart="51" bodyend="77"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1StrictMetricsEvaluator_1ad92d4c67b2ac9e8b837bc2e7e4b196ef" prot="public" virt="non-virtual"><scope>iceberg::StrictMetricsEvaluator</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1StrictMetricsEvaluator_1aca583aa9573a7ce600850bc93f0ef79d" prot="private" virt="non-virtual"><scope>iceberg::StrictMetricsEvaluator</scope><name>expr_</name></member>
+      <member refid="classiceberg_1_1StrictMetricsEvaluator_1af04e6d693aacbda8cee264fd4167d226" prot="public" virt="non-virtual"><scope>iceberg::StrictMetricsEvaluator</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1StrictMetricsEvaluator_1ad450d9579cfaeaeafe1646aa35aa8735" prot="private" virt="non-virtual"><scope>iceberg::StrictMetricsEvaluator</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1StrictMetricsEvaluator_1a8b3e82678ba0032051b38d6bac13b989" prot="private" virt="non-virtual"><scope>iceberg::StrictMetricsEvaluator</scope><name>StrictMetricsEvaluator</name></member>
+      <member refid="classiceberg_1_1StrictMetricsEvaluator_1af80c3f6bfb03fb7ff245f7dcb38b9146" prot="public" virt="non-virtual"><scope>iceberg::StrictMetricsEvaluator</scope><name>~StrictMetricsEvaluator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

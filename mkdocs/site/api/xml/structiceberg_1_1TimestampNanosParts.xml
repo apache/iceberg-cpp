@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TimestampNanosParts" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TimestampNanosParts</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1a24a1eca2e98aed5451ab27494b3710ff" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimestampNanosParts::year</definition>
+        <argsstring></argsstring>
+        <name>year</name>
+        <qualifiedname>iceberg::TimestampNanosParts::year</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="55" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="55" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1aaf3f68b7736ca6552f3b4a0f1f51d6fb" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t iceberg::TimestampNanosParts::month</definition>
+        <argsstring></argsstring>
+        <name>month</name>
+        <qualifiedname>iceberg::TimestampNanosParts::month</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="56" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1ab14c72d18d6a39834e429fb690324d7c" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t iceberg::TimestampNanosParts::day</definition>
+        <argsstring></argsstring>
+        <name>day</name>
+        <qualifiedname>iceberg::TimestampNanosParts::day</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="57" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="57" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1ab9d338e7cef57841250ab552f5647ded" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimestampNanosParts::hour</definition>
+        <argsstring></argsstring>
+        <name>hour</name>
+        <qualifiedname>iceberg::TimestampNanosParts::hour</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="58" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="58" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1a90f1abf6040fb281c197b44b76240411" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimestampNanosParts::minute</definition>
+        <argsstring></argsstring>
+        <name>minute</name>
+        <qualifiedname>iceberg::TimestampNanosParts::minute</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="59" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="59" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1ac31b39bd878e57a01f4d1fff51d1070c" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimestampNanosParts::second</definition>
+        <argsstring></argsstring>
+        <name>second</name>
+        <qualifiedname>iceberg::TimestampNanosParts::second</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="60" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="60" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1a2d3d5ccd1b87889eaa32830443dd7759" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimestampNanosParts::nanosecond</definition>
+        <argsstring></argsstring>
+        <name>nanosecond</name>
+        <qualifiedname>iceberg::TimestampNanosParts::nanosecond</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="61" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="61" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimestampNanosParts_1a957fe30eea181f3cb2dd813edfee0eb3" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TimestampNanosParts::tz_offset_minutes</definition>
+        <argsstring></argsstring>
+        <name>tz_offset_minutes</name>
+        <qualifiedname>iceberg::TimestampNanosParts::tz_offset_minutes</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="63" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="63" bodyend="63"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/temporal_test_helper.h" line="54" column="1" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="54" bodyend="64"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TimestampNanosParts_1ab14c72d18d6a39834e429fb690324d7c" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>day</name></member>
+      <member refid="structiceberg_1_1TimestampNanosParts_1ab9d338e7cef57841250ab552f5647ded" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>hour</name></member>
+      <member refid="structiceberg_1_1TimestampNanosParts_1a90f1abf6040fb281c197b44b76240411" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>minute</name></member>
+      <member refid="structiceberg_1_1TimestampNanosParts_1aaf3f68b7736ca6552f3b4a0f1f51d6fb" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>month</name></member>
+      <member refid="structiceberg_1_1TimestampNanosParts_1a2d3d5ccd1b87889eaa32830443dd7759" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>nanosecond</name></member>
+      <member refid="structiceberg_1_1TimestampNanosParts_1ac31b39bd878e57a01f4d1fff51d1070c" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>second</name></member>
+      <member refid="structiceberg_1_1TimestampNanosParts_1a957fe30eea181f3cb2dd813edfee0eb3" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>tz_offset_minutes</name></member>
+      <member refid="structiceberg_1_1TimestampNanosParts_1a24a1eca2e98aed5451ab27494b3710ff" prot="public" virt="non-virtual"><scope>iceberg::TimestampNanosParts</scope><name>year</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

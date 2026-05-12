@@ -1,0 +1,464 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1RetryRunner" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::RetryRunner</compoundname>
+    <includes refid="retry__util_8h" local="no">retry_util.h</includes>
+    <sectiondef kind="private-type">
+      <memberdef kind="enum" id="classiceberg_1_1RetryRunner_1aaa5aba9854fae66069201983edb17f19" prot="private" static="no" strong="yes">
+        <type></type>
+        <name>RetryPolicyMode</name>
+        <qualifiedname>iceberg::RetryRunner::RetryPolicyMode</qualifiedname>
+        <enumvalue id="classiceberg_1_1RetryRunner_1aaa5aba9854fae66069201983edb17f19ac69d34d47bfd5244204004878441d53f" prot="private">
+          <name>kUnset</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1RetryRunner_1aaa5aba9854fae66069201983edb17f19ae4df8bdfb8ec10df275ea40842678005" prot="private">
+          <name>kOnlyRetryOn</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1RetryRunner_1aaa5aba9854fae66069201983edb17f19af47e858f465890c6e23ad60e2c51e7e3" prot="private">
+          <name>kStopRetryOn</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="165" column="3" bodyfile="iceberg/util/retry_util.h" bodystart="165" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1RetryRunner_1a5153c0f5e100b011140a43253a5f982d" prot="private" static="no">
+        <type>std::chrono::steady_clock</type>
+        <definition>using iceberg::RetryRunner::Clock =  std::chrono::steady_clock</definition>
+        <argsstring></argsstring>
+        <name>Clock</name>
+        <qualifiedname>iceberg::RetryRunner::Clock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="174" column="3" bodyfile="iceberg/util/retry_util.h" bodystart="174" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1RetryRunner_1af34ecbc2799a4958c6499d284434f163" prot="private" static="no">
+        <type>std::chrono::milliseconds</type>
+        <definition>using iceberg::RetryRunner::Duration =  std::chrono::milliseconds</definition>
+        <argsstring></argsstring>
+        <name>Duration</name>
+        <qualifiedname>iceberg::RetryRunner::Duration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="175" column="3" bodyfile="iceberg/util/retry_util.h" bodystart="175" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1RetryRunner_1a9aad3e484d91246785fa7da75f7ea3d5" prot="private" static="no">
+        <type>Clock::time_point</type>
+        <definition>using iceberg::RetryRunner::TimePoint =  Clock::time_point</definition>
+        <argsstring></argsstring>
+        <name>TimePoint</name>
+        <qualifiedname>iceberg::RetryRunner::TimePoint</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="176" column="3" bodyfile="iceberg/util/retry_util.h" bodystart="176" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1RetryRunner_1a650adf87841f1255511b40df222e464b" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1RetryConfig" kindref="compound">RetryConfig</ref></type>
+        <definition>RetryConfig iceberg::RetryRunner::config_</definition>
+        <argsstring></argsstring>
+        <name>config_</name>
+        <qualifiedname>iceberg::RetryRunner::config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="194" column="15" bodyfile="iceberg/util/retry_util.h" bodystart="194" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RetryRunner_1a035554dde63cf88bab57c86b8aca02a9" prot="private" static="no" mutable="no">
+        <type>RetryPolicyMode</type>
+        <definition>RetryPolicyMode iceberg::RetryRunner::retry_policy_mode_</definition>
+        <argsstring></argsstring>
+        <name>retry_policy_mode_</name>
+        <qualifiedname>iceberg::RetryRunner::retry_policy_mode_</qualifiedname>
+        <initializer>= RetryPolicyMode::kUnset</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="195" column="19" bodyfile="iceberg/util/retry_util.h" bodystart="195" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RetryRunner_1a6e55f0d3cd47ab54eeed0ff847ff956a" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; ErrorKind &gt;</type>
+        <definition>std::vector&lt;ErrorKind&gt; iceberg::RetryRunner::retry_error_kinds_</definition>
+        <argsstring></argsstring>
+        <name>retry_error_kinds_</name>
+        <qualifiedname>iceberg::RetryRunner::retry_error_kinds_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="196" column="15" bodyfile="iceberg/util/retry_util.h" bodystart="196" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a4dad9ff4b8d5bd0ce2f8dc8be1eddc46" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RetryRunner::RetryRunner</definition>
+        <argsstring>(RetryConfig config={})</argsstring>
+        <name>RetryRunner</name>
+        <qualifiedname>iceberg::RetryRunner::RetryRunner</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1RetryConfig" kindref="compound">RetryConfig</ref></type>
+          <declname>config</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Construct a <ref refid="classiceberg_1_1RetryRunner" kindref="compound">RetryRunner</ref> with the given configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="79" column="12" bodyfile="iceberg/util/retry_util.h" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a74ade24306f9d95dc8858cad398f1d76" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RetryRunner" kindref="compound">RetryRunner</ref> &amp;</type>
+        <definition>RetryRunner &amp; iceberg::RetryRunner::OnlyRetryOn</definition>
+        <argsstring>(std::initializer_list&lt; ErrorKind &gt; error_kinds)</argsstring>
+        <name>OnlyRetryOn</name>
+        <qualifiedname>iceberg::RetryRunner::OnlyRetryOn</qualifiedname>
+        <param>
+          <type>std::initializer_list&lt; ErrorKind &gt;</type>
+          <declname>error_kinds</declname>
+        </param>
+        <briefdescription>
+<para>Specify error types that should trigger a retry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When set, only errors matching one of these kinds will be retried. All other errors will stop retries immediately.</para>
+<para><simplesect kind="note"><para>OnlyRetryOn takes priority over StopRetryOn. If OnlyRetryOn is set, StopRetryOn is ignored. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="88" column="15" bodyfile="iceberg/util/retry_util.h" bodystart="88" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a99ec9aa552a2b1ff95579c2f43bb9037" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RetryRunner" kindref="compound">RetryRunner</ref> &amp;</type>
+        <definition>RetryRunner &amp; iceberg::RetryRunner::OnlyRetryOn</definition>
+        <argsstring>(ErrorKind error_kind)</argsstring>
+        <name>OnlyRetryOn</name>
+        <qualifiedname>iceberg::RetryRunner::OnlyRetryOn</qualifiedname>
+        <param>
+          <type>ErrorKind</type>
+          <declname>error_kind</declname>
+        </param>
+        <briefdescription>
+<para>Specify a single error type that should trigger a retry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>OnlyRetryOn takes priority over StopRetryOn. If OnlyRetryOn is set, StopRetryOn is ignored. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="98" column="15" bodyfile="iceberg/util/retry_util.h" bodystart="98" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a57a9703d04a6d65590ee96e28d698fc2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RetryRunner" kindref="compound">RetryRunner</ref> &amp;</type>
+        <definition>RetryRunner &amp; iceberg::RetryRunner::StopRetryOn</definition>
+        <argsstring>(std::initializer_list&lt; ErrorKind &gt; error_kinds)</argsstring>
+        <name>StopRetryOn</name>
+        <qualifiedname>iceberg::RetryRunner::StopRetryOn</qualifiedname>
+        <param>
+          <type>std::initializer_list&lt; ErrorKind &gt;</type>
+          <declname>error_kinds</declname>
+        </param>
+        <briefdescription>
+<para>Specify error types that should stop retries immediately. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When set, errors matching one of these kinds will not be retried. All other errors will be retried.</para>
+<para><simplesect kind="note"><para>OnlyRetryOn takes priority over StopRetryOn. If OnlyRetryOn is set, StopRetryOn is ignored. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="107" column="15" bodyfile="iceberg/util/retry_util.h" bodystart="107" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a5d6bb40dd0b0d16e879faf30991a8f33" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RetryRunner" kindref="compound">RetryRunner</ref> &amp;</type>
+        <definition>RetryRunner &amp; iceberg::RetryRunner::StopRetryOn</definition>
+        <argsstring>(ErrorKind error_kind)</argsstring>
+        <name>StopRetryOn</name>
+        <qualifiedname>iceberg::RetryRunner::StopRetryOn</qualifiedname>
+        <param>
+          <type>ErrorKind</type>
+          <declname>error_kind</declname>
+        </param>
+        <briefdescription>
+<para>Specify a single error type that should stop retries immediately. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>OnlyRetryOn takes priority over StopRetryOn. If OnlyRetryOn is set, StopRetryOn is ignored. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="121" column="15" bodyfile="iceberg/util/retry_util.h" bodystart="121" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a5502259f597476b247170f3d5daa84e3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto iceberg::RetryRunner::Run</definition>
+        <argsstring>(F &amp;&amp;task, int32_t *attempt_counter=nullptr) -&gt; detail::RetryTaskResult&lt; F &gt;</argsstring>
+        <name>Run</name>
+        <qualifiedname>iceberg::RetryRunner::Run</qualifiedname>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>task</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>attempt_counter</declname>
+          <defval>nullptr</defval>
+        </param>
+    <requiresclause>detail::RetryTask&lt;F&gt;    </requiresclause>
+        <briefdescription>
+<para>Run a task that returns a Result&lt;T&gt; </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When <computeroutput>num_retries &gt; 0</computeroutput>, the retry policy must be configured explicitly via <computeroutput>OnlyRetryOn(...)</computeroutput> or <computeroutput>StopRetryOn(...)</computeroutput>.</para>
+<para>TODO: Replace attempt_counter with a metrics reporter once it is available. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="131" column="8" bodyfile="iceberg/util/retry_util.h" bodystart="131" bodyend="162"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a67ffb407b9fe921158e029d01eacf83b" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::RetryRunner::ValidateConfig</definition>
+        <argsstring>() const</argsstring>
+        <name>ValidateConfig</name>
+        <qualifiedname>iceberg::RetryRunner::ValidateConfig</qualifiedname>
+        <briefdescription>
+<para>Validate retry counts, timing bounds, and the selected retry policy. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="179" column="10" bodyfile="iceberg/util/retry_util.cc" bodystart="82" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1adf566a23ca265ae151235f704deacec8" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; TimePoint &gt;</type>
+        <definition>std::optional&lt; RetryRunner::TimePoint &gt; iceberg::RetryRunner::ComputeDeadline</definition>
+        <argsstring>() const</argsstring>
+        <name>ComputeDeadline</name>
+        <qualifiedname>iceberg::RetryRunner::ComputeDeadline</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="180" column="17" bodyfile="iceberg/util/retry_util.cc" bodystart="118" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a455f761655323db366845b90ebd9b1d3" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RetryRunner::HasTimedOut</definition>
+        <argsstring>(const std::optional&lt; TimePoint &gt; &amp;deadline) const</argsstring>
+        <name>HasTimedOut</name>
+        <qualifiedname>iceberg::RetryRunner::HasTimedOut</qualifiedname>
+        <param>
+          <type>const std::optional&lt; TimePoint &gt; &amp;</type>
+          <declname>deadline</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="181" column="8" bodyfile="iceberg/util/retry_util.cc" bodystart="125" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a8cab427b0fd17d6f8a0af86e2fa560d6" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RetryRunner::ShouldRetry</definition>
+        <argsstring>(ErrorKind kind) const</argsstring>
+        <name>ShouldRetry</name>
+        <qualifiedname>iceberg::RetryRunner::ShouldRetry</qualifiedname>
+        <param>
+          <type>ErrorKind</type>
+          <declname>kind</declname>
+        </param>
+        <briefdescription>
+<para>Check if the given error kind should trigger a retry. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="184" column="8" bodyfile="iceberg/util/retry_util.cc" bodystart="129" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a3e13ffbf868df3de0abb7c6c6373dc84" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RetryRunner::CanRetry</definition>
+        <argsstring>(ErrorKind kind, int32_t attempt, int32_t max_attempts, const std::optional&lt; TimePoint &gt; &amp;deadline) const</argsstring>
+        <name>CanRetry</name>
+        <qualifiedname>iceberg::RetryRunner::CanRetry</qualifiedname>
+        <param>
+          <type>ErrorKind</type>
+          <declname>kind</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>attempt</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>max_attempts</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; TimePoint &gt; &amp;</type>
+          <declname>deadline</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="185" column="8" bodyfile="iceberg/util/retry_util.cc" bodystart="142" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1aa25b1c9d1c322a6ed205aa3f35b53c0d" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; Duration &gt;</type>
+        <definition>std::optional&lt; RetryRunner::Duration &gt; iceberg::RetryRunner::RetryDelayWithinBudget</definition>
+        <argsstring>(int32_t attempt, const std::optional&lt; TimePoint &gt; &amp;deadline) const</argsstring>
+        <name>RetryDelayWithinBudget</name>
+        <qualifiedname>iceberg::RetryRunner::RetryDelayWithinBudget</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>attempt</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; TimePoint &gt; &amp;</type>
+          <declname>deadline</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="187" column="17" bodyfile="iceberg/util/retry_util.cc" bodystart="147" bodyend="165"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a48c486179e7e9e1361c1ba078f40c78c" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RetryRunner::WaitForNextAttempt</definition>
+        <argsstring>(int32_t attempt, const std::optional&lt; TimePoint &gt; &amp;deadline) const</argsstring>
+        <name>WaitForNextAttempt</name>
+        <qualifiedname>iceberg::RetryRunner::WaitForNextAttempt</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>attempt</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; TimePoint &gt; &amp;</type>
+          <declname>deadline</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="189" column="8" bodyfile="iceberg/util/retry_util.cc" bodystart="167" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RetryRunner_1a1019e0dab5a6fd5e5520b4ad9963dfd2" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::RetryRunner::CalculateDelay</definition>
+        <argsstring>(int32_t attempt) const</argsstring>
+        <name>CalculateDelay</name>
+        <qualifiedname>iceberg::RetryRunner::CalculateDelay</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>attempt</declname>
+        </param>
+        <briefdescription>
+<para>Calculate delay with exponential backoff and jitter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="192" column="11" bodyfile="iceberg/util/retry_util.cc" bodystart="178" bodyend="184"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utility class for running tasks with retry logic. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>When retries are enabled (<computeroutput>num_retries &gt; 0</computeroutput>), callers must explicitly configure retry policy with <computeroutput>OnlyRetryOn(...)</computeroutput> or <computeroutput>StopRetryOn(...)</computeroutput>. </para>
+    </detaileddescription>
+    <location file="iceberg/util/retry_util.h" line="76" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="76" bodyend="197"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1RetryRunner_1a1019e0dab5a6fd5e5520b4ad9963dfd2" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>CalculateDelay</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a3e13ffbf868df3de0abb7c6c6373dc84" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>CanRetry</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a5153c0f5e100b011140a43253a5f982d" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>Clock</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1adf566a23ca265ae151235f704deacec8" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>ComputeDeadline</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a650adf87841f1255511b40df222e464b" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>config_</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1af34ecbc2799a4958c6499d284434f163" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>Duration</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a455f761655323db366845b90ebd9b1d3" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>HasTimedOut</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a74ade24306f9d95dc8858cad398f1d76" prot="public" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>OnlyRetryOn</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a99ec9aa552a2b1ff95579c2f43bb9037" prot="public" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>OnlyRetryOn</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a6e55f0d3cd47ab54eeed0ff847ff956a" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>retry_error_kinds_</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a035554dde63cf88bab57c86b8aca02a9" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>retry_policy_mode_</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1aa25b1c9d1c322a6ed205aa3f35b53c0d" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>RetryDelayWithinBudget</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1aaa5aba9854fae66069201983edb17f19" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>RetryPolicyMode</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a4dad9ff4b8d5bd0ce2f8dc8be1eddc46" prot="public" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>RetryRunner</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a5502259f597476b247170f3d5daa84e3" prot="public" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>Run</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a8cab427b0fd17d6f8a0af86e2fa560d6" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>ShouldRetry</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a57a9703d04a6d65590ee96e28d698fc2" prot="public" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>StopRetryOn</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a5d6bb40dd0b0d16e879faf30991a8f33" prot="public" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>StopRetryOn</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a9aad3e484d91246785fa7da75f7ea3d5" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>TimePoint</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a67ffb407b9fe921158e029d01eacf83b" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>ValidateConfig</name></member>
+      <member refid="classiceberg_1_1RetryRunner_1a48c486179e7e9e1361c1ba078f40c78c" prot="private" virt="non-virtual"><scope>iceberg::RetryRunner</scope><name>WaitForNextAttempt</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

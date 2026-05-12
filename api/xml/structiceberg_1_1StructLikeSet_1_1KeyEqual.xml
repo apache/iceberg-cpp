@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1StructLikeSet_1_1KeyEqual" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::StructLikeSet::KeyEqual</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1StructLikeSet_1_1KeyEqual_1a640fb9fbd9feb336ea81b3f6e0369e19" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::StructLikeSet&lt; kValidate &gt;::KeyEqual::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::StructLikeSet::KeyEqual::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="80" column="5" bodyfile="iceberg/util/struct_like_set.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1StructLikeSet_1_1KeyEqual_1a29aa2633ac51b1394fcfa7e07c9e3d90" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StructLikeSet&lt; kValidate &gt;::KeyEqual::operator()</definition>
+        <argsstring>(const std::unique_ptr&lt; StructLike &gt; &amp;lhs, const std::unique_ptr&lt; StructLike &gt; &amp;rhs) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StructLikeSet::KeyEqual::operator()</qualifiedname>
+        <param>
+          <type>const std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt; &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="81" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="603" bodyend="607"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1StructLikeSet_1_1KeyEqual_1adaf5fecbcae88b73fededdae861d7d65" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StructLikeSet&lt; kValidate &gt;::KeyEqual::operator()</definition>
+        <argsstring>(const StructLike &amp;lhs, const std::unique_ptr&lt; StructLike &gt; &amp;rhs) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StructLikeSet::KeyEqual::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt; &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="83" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="610" bodyend="613"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1StructLikeSet_1_1KeyEqual_1a818f19a4a34532b0380bd8b5283f815a" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StructLikeSet&lt; kValidate &gt;::KeyEqual::operator()</definition>
+        <argsstring>(const std::unique_ptr&lt; StructLike &gt; &amp;lhs, const StructLike &amp;rhs) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StructLikeSet::KeyEqual::operator()</qualifiedname>
+        <param>
+          <type>const std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt; &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="85" column="10" bodyfile="iceberg/util/struct_like_set.cc" bodystart="616" bodyend="619"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Transparent equality functor operating on <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/struct_like_set.h" line="79" column="3" bodyfile="iceberg/util/struct_like_set.h" bodystart="79" bodyend="87"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1StructLikeSet_1_1KeyEqual_1a640fb9fbd9feb336ea81b3f6e0369e19" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet::KeyEqual</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1StructLikeSet_1_1KeyEqual_1a29aa2633ac51b1394fcfa7e07c9e3d90" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet::KeyEqual</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1StructLikeSet_1_1KeyEqual_1adaf5fecbcae88b73fededdae861d7d65" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet::KeyEqual</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1StructLikeSet_1_1KeyEqual_1a818f19a4a34532b0380bd8b5283f815a" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet::KeyEqual</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

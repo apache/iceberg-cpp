@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PositionOutputStream" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::PositionOutputStream</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1test_1_1StdPositionOutputStream" prot="public" virt="non-virtual">iceberg::test::StdPositionOutputStream</derivedcompoundref>
+    <includes refid="file__io_8h" local="no">file_io.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PositionOutputStream_1a5b25b209d5a47e9f0120847487cc18a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::PositionOutputStream::~PositionOutputStream</definition>
+        <argsstring>()=default</argsstring>
+        <name>~PositionOutputStream</name>
+        <qualifiedname>iceberg::PositionOutputStream::~PositionOutputStream</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="63" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionOutputStream_1a8a297ee1f7081592e89e04d312608944" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>virtual Result&lt; int64_t &gt; iceberg::PositionOutputStream::Position</definition>
+        <argsstring>() const =0</argsstring>
+        <name>Position</name>
+        <qualifiedname>iceberg::PositionOutputStream::Position</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1StdPositionOutputStream_1a6bc8e1bf108788599c8e8f43540af127">Position</reimplementedby>
+        <briefdescription>
+<para>Return the current write position. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="66" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionOutputStream_1a8e4e2b8170e8890315f29f923adca4fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::PositionOutputStream::Write</definition>
+        <argsstring>(std::span&lt; const std::byte &gt; data)=0</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::PositionOutputStream::Write</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1StdPositionOutputStream_1a313f8300dca717765dc9cc5d73aaf6a2">Write</reimplementedby>
+        <param>
+          <type>std::span&lt; const std::byte &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Write all bytes in data at the current position. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="69" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionOutputStream_1af39318871759febda6183d96f12c566a" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::PositionOutputStream::Flush</definition>
+        <argsstring>()=0</argsstring>
+        <name>Flush</name>
+        <qualifiedname>iceberg::PositionOutputStream::Flush</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1StdPositionOutputStream_1ad868890f010ae1da2a9928d4003eb65e">Flush</reimplementedby>
+        <briefdescription>
+<para>Flush buffered data to the underlying store. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="72" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionOutputStream_1afdc2d172994065da3c356f9652e4ee54" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::PositionOutputStream::Close</definition>
+        <argsstring>()=0</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::PositionOutputStream::Close</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1StdPositionOutputStream_1afd03afc5920ea55a104b561e6cfd695e">Close</reimplementedby>
+        <briefdescription>
+<para>Close the stream. Implementations should allow repeated Close calls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="75" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Positioned byte stream for writing file contents. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::PositionOutputStream</label>
+        <link refid="classiceberg_1_1PositionOutputStream"/>
+      </node>
+      <node id="2">
+        <label>iceberg::test::StdPositionOutputStream</label>
+        <link refid="classiceberg_1_1test_1_1StdPositionOutputStream"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/file_io.h" line="61" column="1" bodyfile="iceberg/file_io.h" bodystart="61" bodyend="76"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PositionOutputStream_1afdc2d172994065da3c356f9652e4ee54" prot="public" virt="pure-virtual"><scope>iceberg::PositionOutputStream</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1PositionOutputStream_1af39318871759febda6183d96f12c566a" prot="public" virt="pure-virtual"><scope>iceberg::PositionOutputStream</scope><name>Flush</name></member>
+      <member refid="classiceberg_1_1PositionOutputStream_1a8a297ee1f7081592e89e04d312608944" prot="public" virt="pure-virtual"><scope>iceberg::PositionOutputStream</scope><name>Position</name></member>
+      <member refid="classiceberg_1_1PositionOutputStream_1a8e4e2b8170e8890315f29f923adca4fd" prot="public" virt="pure-virtual"><scope>iceberg::PositionOutputStream</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1PositionOutputStream_1a5b25b209d5a47e9f0120847487cc18a6" prot="public" virt="virtual"><scope>iceberg::PositionOutputStream</scope><name>~PositionOutputStream</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,222 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DeleteLoader" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DeleteLoader</compoundname>
+    <includes refid="delete__loader_8h" local="no">delete_loader.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DeleteLoader_1a4923cf265d62ccfcd500d76084e692b7" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::DeleteLoader::io_</definition>
+        <argsstring></argsstring>
+        <name>io_</name>
+        <qualifiedname>iceberg::DeleteLoader::io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_loader.h" line="76" column="19" bodyfile="iceberg/data/delete_loader.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoader_1a6b7c34d6dbd2c1ba2ff1c21b11ff07eb" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteLoader::DeleteLoader</definition>
+        <argsstring>(std::shared_ptr&lt; FileIO &gt; io)</argsstring>
+        <name>DeleteLoader</name>
+        <qualifiedname>iceberg::DeleteLoader::DeleteLoader</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1DeleteLoader" kindref="compound">DeleteLoader</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for reading delete files </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_loader.h" line="40" column="12" bodyfile="iceberg/data/delete_loader.cc" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoader_1ae0b383e150393d869f15342c28d8c0cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteLoader::~DeleteLoader</definition>
+        <argsstring>()</argsstring>
+        <name>~DeleteLoader</name>
+        <qualifiedname>iceberg::DeleteLoader::~DeleteLoader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_loader.h" line="42" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoader_1abb3f9974fdcfe3b36e863264daf6d990" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> &gt;</type>
+        <definition>Result&lt; PositionDeleteIndex &gt; iceberg::DeleteLoader::LoadPositionDeletes</definition>
+        <argsstring>(std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; delete_files, std::string_view data_file_path) const</argsstring>
+        <name>LoadPositionDeletes</name>
+        <qualifiedname>iceberg::DeleteLoader::LoadPositionDeletes</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>data_file_path</declname>
+        </param>
+        <briefdescription>
+<para>Load position deletes for a specific data file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Reads the given position delete files and returns a <ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> containing only the positions that apply to the specified data file path. Supports both regular position delete files and deletion vectors.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>delete_files</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Position delete files to load (must have content == Content::kPositionDeletes) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_file_path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path of the data file to filter positions for </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> with deleted positions for the data file </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_loader.h" line="54" column="10" bodyfile="iceberg/data/delete_loader.cc" bodystart="107" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoader_1a37fbf5e8ee0d659770564a0ed7f7ad65" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLikeSet" kindref="compound">UncheckedStructLikeSet</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; UncheckedStructLikeSet &gt; &gt; iceberg::DeleteLoader::LoadEqualityDeletes</definition>
+        <argsstring>(std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; delete_files, const StructType &amp;equality_type) const</argsstring>
+        <name>LoadEqualityDeletes</name>
+        <qualifiedname>iceberg::DeleteLoader::LoadEqualityDeletes</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <declname>equality_type</declname>
+        </param>
+        <briefdescription>
+<para>Load equality deletes into an in-memory set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>delete_files</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Equality delete files to load (must have content == Content::kEqualityDeletes) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>equality_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The struct type describing the equality columns </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="classiceberg_1_1StructLikeSet" kindref="compound">StructLikeSet</ref> containing the deleted rows </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_loader.h" line="64" column="10" bodyfile="iceberg/data/delete_loader.cc" bodystart="133" bodyend="171"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoader_1a5b8e69b396948b36955817fc11cdad0c" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DeleteLoader::LoadPositionDelete</definition>
+        <argsstring>(const DataFile &amp;file, PositionDeleteIndex &amp;index, std::string_view data_file_path) const</argsstring>
+        <name>LoadPositionDelete</name>
+        <qualifiedname>iceberg::DeleteLoader::LoadPositionDelete</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> &amp;</type>
+          <declname>index</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>data_file_path</declname>
+        </param>
+        <briefdescription>
+<para>Load a single position delete file into the index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_loader.h" line="70" column="10" bodyfile="iceberg/data/delete_loader.cc" bodystart="66" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoader_1a91a45380b5b3652d9baba2865a6fe994" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DeleteLoader::LoadDV</definition>
+        <argsstring>(const DataFile &amp;file, PositionDeleteIndex &amp;index) const</argsstring>
+        <name>LoadDV</name>
+        <qualifiedname>iceberg::DeleteLoader::LoadDV</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> &amp;</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Load a single deletion vector file into the index. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_loader.h" line="74" column="10" bodyfile="iceberg/data/delete_loader.cc" bodystart="103" bodyend="105"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Loads delete files and constructs in-memory delete indexes. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/data/delete_loader.h" line="36" column="1" bodyfile="iceberg/data/delete_loader.h" bodystart="36" bodyend="77"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DeleteLoader_1a6b7c34d6dbd2c1ba2ff1c21b11ff07eb" prot="public" virt="non-virtual"><scope>iceberg::DeleteLoader</scope><name>DeleteLoader</name></member>
+      <member refid="classiceberg_1_1DeleteLoader_1a4923cf265d62ccfcd500d76084e692b7" prot="private" virt="non-virtual"><scope>iceberg::DeleteLoader</scope><name>io_</name></member>
+      <member refid="classiceberg_1_1DeleteLoader_1a91a45380b5b3652d9baba2865a6fe994" prot="private" virt="non-virtual"><scope>iceberg::DeleteLoader</scope><name>LoadDV</name></member>
+      <member refid="classiceberg_1_1DeleteLoader_1a37fbf5e8ee0d659770564a0ed7f7ad65" prot="public" virt="non-virtual"><scope>iceberg::DeleteLoader</scope><name>LoadEqualityDeletes</name></member>
+      <member refid="classiceberg_1_1DeleteLoader_1a5b8e69b396948b36955817fc11cdad0c" prot="private" virt="non-virtual"><scope>iceberg::DeleteLoader</scope><name>LoadPositionDelete</name></member>
+      <member refid="classiceberg_1_1DeleteLoader_1abb3f9974fdcfe3b36e863264daf6d990" prot="public" virt="non-virtual"><scope>iceberg::DeleteLoader</scope><name>LoadPositionDeletes</name></member>
+      <member refid="classiceberg_1_1DeleteLoader_1ae0b383e150393d869f15342c28d8c0cd" prot="public" virt="non-virtual"><scope>iceberg::DeleteLoader</scope><name>~DeleteLoader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,274 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classBasicShortNameTest" kind="class" language="C++" prot="public">
+    <compoundname>BasicShortNameTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classBasicShortNameTest_1a44417cd549d04ecc1ea1fceb5a410dc5" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">iceberg::Schema</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::Schema&gt; BasicShortNameTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>BasicShortNameTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="203" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classBasicShortNameTest_1aacbe9a3caeb205d4967b41ce1821b561" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; BasicShortNameTest::field1_</definition>
+        <argsstring></argsstring>
+        <name>field1_</name>
+        <qualifiedname>BasicShortNameTest::field1_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="204" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classBasicShortNameTest_1abf9dd13b482d34663744cf30149a81d5" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; BasicShortNameTest::field2_</definition>
+        <argsstring></argsstring>
+        <name>field2_</name>
+        <qualifiedname>BasicShortNameTest::field2_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="205" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classBasicShortNameTest_1a5a384e75eb44928a628fe78149df5d51" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; BasicShortNameTest::field3_</definition>
+        <argsstring></argsstring>
+        <name>field3_</name>
+        <qualifiedname>BasicShortNameTest::field3_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="206" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classBasicShortNameTest_1a3ab2678d99bcace949ba0457f28ccbdd" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; BasicShortNameTest::field4_</definition>
+        <argsstring></argsstring>
+        <name>field4_</name>
+        <qualifiedname>BasicShortNameTest::field4_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="207" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classBasicShortNameTest_1a0c90782e125252736d0d9c06dd0170fc" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; BasicShortNameTest::field5_</definition>
+        <argsstring></argsstring>
+        <name>field5_</name>
+        <qualifiedname>BasicShortNameTest::field5_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="208" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="208" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classBasicShortNameTest_1a10f07384aa9fe5c253fb0ced586b6f36" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; BasicShortNameTest::field6_</definition>
+        <argsstring></argsstring>
+        <name>field6_</name>
+        <qualifiedname>BasicShortNameTest::field6_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="209" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classBasicShortNameTest_1ae9151a993a989b8e0d15d63e4fe11fbd" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; BasicShortNameTest::field7_</definition>
+        <argsstring></argsstring>
+        <name>field7_</name>
+        <qualifiedname>BasicShortNameTest::field7_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="210" column="19" bodyfile="iceberg/test/schema_test.cc" bodystart="210" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classBasicShortNameTest_1ac33df0596b378c67e4bc1df5f585bc5c" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BasicShortNameTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>BasicShortNameTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_test.cc" line="180" column="8" bodyfile="iceberg/test/schema_test.cc" bodystart="180" bodyend="201"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>BasicShortNameTest</label>
+        <link refid="classBasicShortNameTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>BasicShortNameTest</label>
+        <link refid="classBasicShortNameTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field1_</edgelabel>
+          <edgelabel>field2_</edgelabel>
+          <edgelabel>field3_</edgelabel>
+          <edgelabel>field4_</edgelabel>
+          <edgelabel>field5_</edgelabel>
+          <edgelabel>field6_</edgelabel>
+          <edgelabel>field7_</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>std::unique_ptr&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/schema_test.cc" line="178" column="1" bodyfile="iceberg/test/schema_test.cc" bodystart="178" bodyend="211"/>
+    <listofallmembers>
+      <member refid="classBasicShortNameTest_1aacbe9a3caeb205d4967b41ce1821b561" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>field1_</name></member>
+      <member refid="classBasicShortNameTest_1abf9dd13b482d34663744cf30149a81d5" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>field2_</name></member>
+      <member refid="classBasicShortNameTest_1a5a384e75eb44928a628fe78149df5d51" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>field3_</name></member>
+      <member refid="classBasicShortNameTest_1a3ab2678d99bcace949ba0457f28ccbdd" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>field4_</name></member>
+      <member refid="classBasicShortNameTest_1a0c90782e125252736d0d9c06dd0170fc" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>field5_</name></member>
+      <member refid="classBasicShortNameTest_1a10f07384aa9fe5c253fb0ced586b6f36" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>field6_</name></member>
+      <member refid="classBasicShortNameTest_1ae9151a993a989b8e0d15d63e4fe11fbd" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>field7_</name></member>
+      <member refid="classBasicShortNameTest_1a44417cd549d04ecc1ea1fceb5a410dc5" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>schema_</name></member>
+      <member refid="classBasicShortNameTest_1ac33df0596b378c67e4bc1df5f585bc5c" prot="protected" virt="non-virtual"><scope>BasicShortNameTest</scope><name>SetUp</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

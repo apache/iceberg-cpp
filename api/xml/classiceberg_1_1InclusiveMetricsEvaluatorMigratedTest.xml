@@ -1,0 +1,431 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::InclusiveMetricsEvaluatorMigratedTest</compoundname>
+    <basecompoundref refid="classiceberg_1_1InclusiveMetricsEvaluatorTest" prot="public" virt="non-virtual">iceberg::InclusiveMetricsEvaluatorTest</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1abc6449de13d7c9b6cfc903b2603b5f51" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::file1_</definition>
+        <argsstring></argsstring>
+        <name>file1_</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::file1_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="544" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="544" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a03ed70e146e6216db7ba22c26a99c3b9" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::file2_</definition>
+        <argsstring></argsstring>
+        <name>file2_</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::file2_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="545" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="545" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a39d507a75f86061908a52d8a576f1506" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::file3_</definition>
+        <argsstring></argsstring>
+        <name>file3_</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::file3_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="546" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="546" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1ab0f56261b158ee5af0eac38ec521ea72" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::file4_</definition>
+        <argsstring></argsstring>
+        <name>file4_</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::file4_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="547" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="547" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a470c31fd21036fb24cbf0e9bca6a866d" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::file5_</definition>
+        <argsstring></argsstring>
+        <name>file5_</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::file5_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="548" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="548" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a21b346f00c9928f208742e071d4c886f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::InclusiveMetricsEvaluatorMigratedTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="393" column="8" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="393" bodyend="417"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1afd9fafa11e266bf1c1faf2cb449edbb6" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile1</definition>
+        <argsstring>()</argsstring>
+        <name>PrepareDataFile1</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="419" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="419" bodyend="449"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1aa7faed1fd4e02566c99d1aedb3160c3a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile2</definition>
+        <argsstring>()</argsstring>
+        <name>PrepareDataFile2</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="451" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="451" bodyend="470"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a1baddd94c111650f0927ac065edf4fad" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile3</definition>
+        <argsstring>()</argsstring>
+        <name>PrepareDataFile3</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile3</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="472" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="472" bodyend="491"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a23bbc93ba01ac7b15009d3089cdd0a32" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile4</definition>
+        <argsstring>()</argsstring>
+        <name>PrepareDataFile4</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile4</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="493" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="493" bodyend="512"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a70a035c347418c07d83c7dd38fdd490c" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile5</definition>
+        <argsstring>()</argsstring>
+        <name>PrepareDataFile5</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::PrepareDataFile5</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="514" column="19" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="514" bodyend="533"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a47e20e5d5b3f4381b74edb1d0e1c1822" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::InclusiveMetricsEvaluatorMigratedTest::RunTest</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;expr, bool expected_result, const std::shared_ptr&lt; DataFile &gt; &amp;file, bool case_sensitive=true)</argsstring>
+        <name>RunTest</name>
+        <qualifiedname>iceberg::InclusiveMetricsEvaluatorMigratedTest::RunTest</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>expected_result</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &amp;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="535" column="8" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="535" bodyend="542"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::InclusiveMetricsEvaluatorMigratedTest</label>
+        <link refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InclusiveMetricsEvaluatorTest</label>
+        <link refid="classiceberg_1_1InclusiveMetricsEvaluatorTest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="18">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="19" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="25" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="27" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::InclusiveMetricsEvaluatorMigratedTest</label>
+        <link refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>file1_</edgelabel>
+          <edgelabel>file2_</edgelabel>
+          <edgelabel>file3_</edgelabel>
+          <edgelabel>file4_</edgelabel>
+          <edgelabel>file5_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InclusiveMetricsEvaluatorTest</label>
+        <link refid="classiceberg_1_1InclusiveMetricsEvaluatorTest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="23">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="24">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="25" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="20">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="19">
+        <label>std::string</label>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::string_view</label>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="27">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="26">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="25">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/inclusive_metrics_evaluator_test.cc" line="391" column="1" bodyfile="iceberg/test/inclusive_metrics_evaluator_test.cc" bodystart="391" bodyend="549"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorTest_1a6ae40e83bc6e7938328834b51dd2abed" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1abc6449de13d7c9b6cfc903b2603b5f51" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>file1_</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a03ed70e146e6216db7ba22c26a99c3b9" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>file2_</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a39d507a75f86061908a52d8a576f1506" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>file3_</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1ab0f56261b158ee5af0eac38ec521ea72" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>file4_</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a470c31fd21036fb24cbf0e9bca6a866d" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>file5_</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorTest_1ae138971942f501136d44dc1316919237" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>PrepareDataFile</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1afd9fafa11e266bf1c1faf2cb449edbb6" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>PrepareDataFile1</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1aa7faed1fd4e02566c99d1aedb3160c3a" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>PrepareDataFile2</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a1baddd94c111650f0927ac065edf4fad" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>PrepareDataFile3</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a23bbc93ba01ac7b15009d3089cdd0a32" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>PrepareDataFile4</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a70a035c347418c07d83c7dd38fdd490c" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>PrepareDataFile5</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a47e20e5d5b3f4381b74edb1d0e1c1822" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>RunTest</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorTest_1aa3f7954603e1957d9285b42bd18731b7" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorMigratedTest_1a21b346f00c9928f208742e071d4c886f" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorTest_1ae3908c5e8a30351db1853544e46a9f3a" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>TestCase</name></member>
+      <member refid="classiceberg_1_1InclusiveMetricsEvaluatorTest_1ad19f911a72caeed989cc0f733191ee8b" prot="protected" virt="non-virtual"><scope>iceberg::InclusiveMetricsEvaluatorMigratedTest</scope><name>TestStringCase</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

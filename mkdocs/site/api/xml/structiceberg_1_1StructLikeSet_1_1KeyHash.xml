@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1StructLikeSet_1_1KeyHash" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::StructLikeSet::KeyHash</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1StructLikeSet_1_1KeyHash_1ae1db3c9df6bf81801f2dd3631f193afa" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::StructLikeSet&lt; kValidate &gt;::KeyHash::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::StructLikeSet::KeyHash::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="73" column="5" bodyfile="iceberg/util/struct_like_set.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1StructLikeSet_1_1KeyHash_1af0830da96fbeb503ea5abd4e44b83901" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::StructLikeSet&lt; kValidate &gt;::KeyHash::operator()</definition>
+        <argsstring>(const std::unique_ptr&lt; StructLike &gt; &amp;p) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StructLikeSet::KeyHash::operator()</qualifiedname>
+        <param>
+          <type>const std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt; &amp;</type>
+          <declname>p</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="74" column="12" bodyfile="iceberg/util/struct_like_set.cc" bodystart="590" bodyend="593"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1StructLikeSet_1_1KeyHash_1a0cde0bd64789dde411bafe55a0c8e5d4" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::StructLikeSet&lt; kValidate &gt;::KeyHash::operator()</definition>
+        <argsstring>(const StructLike &amp;s) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StructLikeSet::KeyHash::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/struct_like_set.h" line="75" column="12" bodyfile="iceberg/util/struct_like_set.cc" bodystart="596" bodyend="598"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Transparent hash functor operating on <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/struct_like_set.h" line="72" column="3" bodyfile="iceberg/util/struct_like_set.h" bodystart="72" bodyend="76"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1StructLikeSet_1_1KeyHash_1ae1db3c9df6bf81801f2dd3631f193afa" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet::KeyHash</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1StructLikeSet_1_1KeyHash_1af0830da96fbeb503ea5abd4e44b83901" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet::KeyHash</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1StructLikeSet_1_1KeyHash_1a0cde0bd64789dde411bafe55a0c8e5d4" prot="public" virt="non-virtual"><scope>iceberg::StructLikeSet::KeyHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

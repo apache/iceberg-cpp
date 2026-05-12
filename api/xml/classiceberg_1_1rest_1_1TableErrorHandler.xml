@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1TableErrorHandler" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>iceberg::rest::TableErrorHandler</compoundname>
+    <basecompoundref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" prot="public" virt="non-virtual">iceberg::rest::DefaultErrorHandler</basecompoundref>
+    <includes refid="error__handlers_8h" local="no">error_handlers.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1TableErrorHandler_1a9f4fefebea118dac9fb722d8a0795abb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1TableErrorHandler" kindref="compound">TableErrorHandler</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; TableErrorHandler &gt; &amp; iceberg::rest::TableErrorHandler::Instance</definition>
+        <argsstring>()</argsstring>
+        <name>Instance</name>
+        <qualifiedname>iceberg::rest::TableErrorHandler::Instance</qualifiedname>
+        <briefdescription>
+<para>Returns the singleton instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="86" column="32" bodyfile="iceberg/catalog/rest/error_handlers.cc" bodystart="104" bodyend="107"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1TableErrorHandler_1aaea77b29df551d626aac415321f21a4c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::TableErrorHandler::Accept</definition>
+        <argsstring>(const ErrorResponse &amp;error) const override</argsstring>
+        <name>Accept</name>
+        <qualifiedname>iceberg::rest::TableErrorHandler::Accept</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a11588f49fa4cbc28fae0ae196e1affb1">Accept</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref> &amp;</type>
+          <declname>error</declname>
+        </param>
+        <briefdescription>
+<para>Process an error response and return an appropriate <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The error response parsed from the HTTP response body </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> object with appropriate ErrorKind and message </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="88" column="10" bodyfile="iceberg/catalog/rest/error_handlers.cc" bodystart="109" bodyend="121"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1TableErrorHandler_1a7565c1391927dcc311b72655931c6a3d" prot="private" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::rest::TableErrorHandler::TableErrorHandler</definition>
+        <argsstring>()=default</argsstring>
+        <name>TableErrorHandler</name>
+        <qualifiedname>iceberg::rest::TableErrorHandler::TableErrorHandler</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="91" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Table-level error handler. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::rest::DefaultErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1DefaultErrorHandler"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::rest::ErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1ErrorHandler"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::TableErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1TableErrorHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::rest::DefaultErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1DefaultErrorHandler"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::rest::ErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1ErrorHandler"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::TableErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1TableErrorHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/error_handlers.h" line="83" column="1" bodyfile="iceberg/catalog/rest/error_handlers.h" bodystart="83" bodyend="92"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1TableErrorHandler_1aaea77b29df551d626aac415321f21a4c" prot="public" virt="virtual"><scope>iceberg::rest::TableErrorHandler</scope><name>Accept</name></member>
+      <member refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a69713ed946e5365409eac265d78ddcf7" prot="protected" virt="non-virtual"><scope>iceberg::rest::TableErrorHandler</scope><name>DefaultErrorHandler</name></member>
+      <member refid="classiceberg_1_1rest_1_1TableErrorHandler_1a9f4fefebea118dac9fb722d8a0795abb" prot="public" virt="non-virtual"><scope>iceberg::rest::TableErrorHandler</scope><name>Instance</name></member>
+      <member refid="classiceberg_1_1rest_1_1TableErrorHandler_1a7565c1391927dcc311b72655931c6a3d" prot="private" virt="non-virtual"><scope>iceberg::rest::TableErrorHandler</scope><name>TableErrorHandler</name></member>
+      <member refid="classiceberg_1_1rest_1_1ErrorHandler_1a1e4b61afbcf63e4f937ba67063493823" prot="public" virt="virtual"><scope>iceberg::rest::TableErrorHandler</scope><name>~ErrorHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

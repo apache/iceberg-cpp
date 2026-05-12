@@ -1,0 +1,694 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestWriterVersionsTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestWriterVersionsTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriterVersionsTest_1a50ad4de499ad360bddb932320ebaf72c" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ManifestWriterVersionsTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::schema_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="404" column="19" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="404" bodyend="404"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriterVersionsTest_1aa6a520012c7932a5de52997a0ec800a0" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::ManifestWriterVersionsTest::spec_</definition>
+        <argsstring></argsstring>
+        <name>spec_</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::spec_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="405" column="19" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="405" bodyend="405"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriterVersionsTest_1a4f626e5b74ebc479d9978153b1f01953" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::ManifestWriterVersionsTest::data_file_</definition>
+        <argsstring></argsstring>
+        <name>data_file_</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::data_file_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="406" column="19" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="406" bodyend="406"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriterVersionsTest_1a502c21cb6199834ff5e5ab614808a335" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::ManifestWriterVersionsTest::delete_file_</definition>
+        <argsstring></argsstring>
+        <name>delete_file_</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::delete_file_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="407" column="19" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="407" bodyend="407"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriterVersionsTest_1a223d3b63c11600c67386b0156a06787c" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::ManifestWriterVersionsTest::data_file_without_first_row_id_</definition>
+        <argsstring></argsstring>
+        <name>data_file_without_first_row_id_</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::data_file_without_first_row_id_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="408" column="19" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="408" bodyend="408"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestWriterVersionsTest_1a17f418aa40cf4db3a759fc9e37066363" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::ManifestWriterVersionsTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::file_io_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="410" column="19" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="410" bodyend="410"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ae2d22db3ad26dda01f1f2e532521406a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestWriterVersionsTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="134" column="8" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="134" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1a625933b0df1762e2a9dd496ca999e90b" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::ManifestWriterVersionsTest::WriteManifests</definition>
+        <argsstring>(int8_t format_version, const std::vector&lt; ManifestFile &gt; &amp;manifests) const</argsstring>
+        <name>WriteManifests</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::WriteManifests</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>manifests</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="160" column="15" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="160" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1af6533a775aa5f3652f85d03fbd073971" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt; ManifestFile &gt; iceberg::ManifestWriterVersionsTest::WriteAndReadManifests</definition>
+        <argsstring>(const std::vector&lt; ManifestFile &gt; &amp;manifests, int8_t format_version) const</argsstring>
+        <name>WriteAndReadManifests</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::WriteAndReadManifests</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>manifests</declname>
+        </param>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="177" column="15" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="177" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1a71c162656e7070ec5876de5d2932e469" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt; ManifestFile &gt; iceberg::ManifestWriterVersionsTest::ReadManifests</definition>
+        <argsstring>(const std::string &amp;manifest_list_path) const</argsstring>
+        <name>ReadManifests</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::ReadManifests</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>manifest_list_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="182" column="15" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="182" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ad2214b7242fdaca0588e125d7adc482f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ManifestWriterVersionsTest::WriteManifest</definition>
+        <argsstring>(int8_t format_version, std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; data_files)</argsstring>
+        <name>WriteManifest</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::WriteManifest</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>data_files</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="198" column="16" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="198" bodyend="218"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1abf262fc8672196ec6939902094ef96fb" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt;</type>
+        <definition>std::vector&lt; ManifestEntry &gt; iceberg::ManifestWriterVersionsTest::ReadManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest_file)</argsstring>
+        <name>ReadManifest</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::ReadManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest_file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="220" column="15" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="220" bodyend="229"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ad851a2d4aa257f85f17d75dd9673ba7a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ManifestWriterVersionsTest::WriteDeleteManifest</definition>
+        <argsstring>(int8_t format_version, std::shared_ptr&lt; DataFile &gt; delete_file)</argsstring>
+        <name>WriteDeleteManifest</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::WriteDeleteManifest</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>delete_file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="231" column="16" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="231" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ae95fd9de5345d2bc2897335faa3795da" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ManifestWriterVersionsTest::RewriteManifest</definition>
+        <argsstring>(const ManifestFile &amp;old_manifest, int8_t format_version)</argsstring>
+        <name>RewriteManifest</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::RewriteManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>old_manifest</declname>
+        </param>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="252" column="16" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="252" bodyend="277"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1a1c41eaa9cf13c479e9a5f85715f26330" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestWriterVersionsTest::CheckManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest, int64_t expected_sequence_number, int64_t expected_min_sequence_number)</argsstring>
+        <name>CheckManifest</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::CheckManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>expected_sequence_number</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>expected_min_sequence_number</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="279" column="8" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="279" bodyend="302"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ad3e15320066b106fb305accc56b89ecf" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestWriterVersionsTest::CheckDataFile</definition>
+        <argsstring>(const DataFile &amp;data_file, DataFile::Content expected_content, std::optional&lt; int64_t &gt; expected_first_row_id=std::nullopt)</argsstring>
+        <name>CheckDataFile</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::CheckDataFile</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" kindref="member">DataFile::Content</ref></type>
+          <declname>expected_content</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_first_row_id</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="304" column="8" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="304" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1a49c2429c1c893b3f7832e254157444de" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestWriterVersionsTest::CheckEntry</definition>
+        <argsstring>(const ManifestEntry &amp;entry, std::optional&lt; int64_t &gt; expected_data_sequence_number, std::optional&lt; int64_t &gt; expected_file_sequence_number, DataFile::Content expected_content, ManifestStatus expected_status=ManifestStatus::kAdded, std::optional&lt; int64_t &gt; expected_first_row_id=std::nullopt)</argsstring>
+        <name>CheckEntry</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::CheckEntry</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_data_sequence_number</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_file_sequence_number</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" kindref="member">DataFile::Content</ref></type>
+          <declname>expected_content</declname>
+        </param>
+        <param>
+          <type>ManifestStatus</type>
+          <declname>expected_status</declname>
+          <defval>ManifestStatus::kAdded</defval>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_first_row_id</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="359" column="8" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="359" bodyend="372"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ac5bb60b972f91890358d3abadcea3136" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestWriterVersionsTest::CheckRewrittenManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest, int64_t expected_sequence_number, int64_t expected_min_sequence_number)</argsstring>
+        <name>CheckRewrittenManifest</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::CheckRewrittenManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>expected_sequence_number</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>expected_min_sequence_number</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="374" column="8" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="374" bodyend="387"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ada1494acc7293491d0471d03e7dfbe27" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestWriterVersionsTest::CheckRewrittenEntry</definition>
+        <argsstring>(const ManifestEntry &amp;entry, int64_t expected_sequence_number, DataFile::Content expected_content, std::optional&lt; int64_t &gt; expected_first_row_id=std::nullopt)</argsstring>
+        <name>CheckRewrittenEntry</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::CheckRewrittenEntry</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>expected_sequence_number</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" kindref="member">DataFile::Content</ref></type>
+          <declname>expected_content</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_first_row_id</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="389" column="8" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="389" bodyend="402"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1aeb44be4f240a1501b52aeac3d7b5bb83" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::ManifestWriterVersionsTest::CreateManifestListPath</definition>
+        <argsstring>()</argsstring>
+        <name>CreateManifestListPath</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::CreateManifestListPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="155" column="22" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="155" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestWriterVersionsTest_1ad1a18a2f6c0a2ec25cba53fe313f8343" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::ManifestWriterVersionsTest::CreateManifestPath</definition>
+        <argsstring>()</argsstring>
+        <name>CreateManifestPath</name>
+        <qualifiedname>iceberg::ManifestWriterVersionsTest::CreateManifestPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_writer_versions_test.cc" line="193" column="22" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="193" bodyend="196"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ManifestWriterVersionsTest</label>
+        <link refid="classiceberg_1_1ManifestWriterVersionsTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="19">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="20" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="25" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="27" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestWriterVersionsTest</label>
+        <link refid="classiceberg_1_1ManifestWriterVersionsTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>spec_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>data_file_</edgelabel>
+          <edgelabel>data_file_without_first_row_id_</edgelabel>
+          <edgelabel>delete_file_</edgelabel>
+        </childnode>
+        <childnode refid="29" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="23" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="24">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="25">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="26" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="29">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="30" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="17" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="21">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="20">
+        <label>std::string</label>
+        <childnode refid="21" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="27">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="26">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/manifest_writer_versions_test.cc" line="132" column="1" bodyfile="iceberg/test/manifest_writer_versions_test.cc" bodystart="132" bodyend="411"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ad3e15320066b106fb305accc56b89ecf" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>CheckDataFile</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a49c2429c1c893b3f7832e254157444de" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>CheckEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a1c41eaa9cf13c479e9a5f85715f26330" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>CheckManifest</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ada1494acc7293491d0471d03e7dfbe27" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>CheckRewrittenEntry</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ac5bb60b972f91890358d3abadcea3136" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>CheckRewrittenManifest</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1aeb44be4f240a1501b52aeac3d7b5bb83" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>CreateManifestListPath</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ad1a18a2f6c0a2ec25cba53fe313f8343" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>CreateManifestPath</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a4f626e5b74ebc479d9978153b1f01953" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>data_file_</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a223d3b63c11600c67386b0156a06787c" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>data_file_without_first_row_id_</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a502c21cb6199834ff5e5ab614808a335" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>delete_file_</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a17f418aa40cf4db3a759fc9e37066363" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1abf262fc8672196ec6939902094ef96fb" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>ReadManifest</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a71c162656e7070ec5876de5d2932e469" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>ReadManifests</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ae95fd9de5345d2bc2897335faa3795da" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>RewriteManifest</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a50ad4de499ad360bddb932320ebaf72c" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ae2d22db3ad26dda01f1f2e532521406a" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1aa6a520012c7932a5de52997a0ec800a0" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>spec_</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1af6533a775aa5f3652f85d03fbd073971" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>WriteAndReadManifests</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ad851a2d4aa257f85f17d75dd9673ba7a" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>WriteDeleteManifest</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1ad2214b7242fdaca0588e125d7adc482f" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>WriteManifest</name></member>
+      <member refid="classiceberg_1_1ManifestWriterVersionsTest_1a625933b0df1762e2a9dd496ca999e90b" prot="protected" virt="non-virtual"><scope>iceberg::ManifestWriterVersionsTest</scope><name>WriteManifests</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

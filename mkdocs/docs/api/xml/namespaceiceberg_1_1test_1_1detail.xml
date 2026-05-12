@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1test_1_1detail" kind="namespace" language="C++">
+    <compoundname>iceberg::test::detail</compoundname>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="std__io_8h_1aaa06aae8fdd38f4c9f8be6c65d85c1ce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::streamsize &gt;</type>
+        <definition>Result&lt; std::streamsize &gt; iceberg::test::detail::ToStreamSize</definition>
+        <argsstring>(size_t size)</argsstring>
+        <name>ToStreamSize</name>
+        <qualifiedname>iceberg::test::detail::ToStreamSize</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="44" column="15" bodyfile="iceberg/test/std_io.h" bodystart="44" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="std__io_8h_1a228ad6df157024e987855e2efb8afbdc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::test::detail::ToInt64FileSize</definition>
+        <argsstring>(uintmax_t size, std::string_view location)</argsstring>
+        <name>ToInt64FileSize</name>
+        <qualifiedname>iceberg::test::detail::ToInt64FileSize</qualifiedname>
+        <param>
+          <type>uintmax_t</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="51" column="15" bodyfile="iceberg/test/std_io.h" bodystart="51" bodyend="56"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/std_io.h" line="42" column="1"/>
+  </compounddef>
+</doxygen>

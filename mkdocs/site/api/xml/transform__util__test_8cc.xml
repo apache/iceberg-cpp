@@ -1,0 +1,482 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="transform__util__test_8cc" kind="file" language="C++">
+    <compoundname>transform_util_test.cc</compoundname>
+    <includes refid="transform__util_8h" local="yes">iceberg/util/transform_util.h</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <incdepgraph>
+      <node id="13">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="5">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/transform_util_test.cc</label>
+        <link refid="transform__util__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/util/transform_util.h</label>
+        <link refid="transform__util_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>cassert</label>
+      </node>
+      <node id="6">
+        <label>expected</label>
+      </node>
+      <node id="7">
+        <label>format</label>
+      </node>
+      <node id="10">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="8">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="14">
+        <label>stdexcept</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structiceberg_1_1ParseRoundTripParam" prot="public">iceberg::ParseRoundTripParam</innerclass>
+    <innerclass refid="classiceberg_1_1ParseRoundTripTest" prot="public">iceberg::ParseRoundTripTest</innerclass>
+    <innerclass refid="structiceberg_1_1ParseOnlyParam" prot="public">iceberg::ParseOnlyParam</innerclass>
+    <innerclass refid="classiceberg_1_1ParseOnlyTest" prot="public">iceberg::ParseOnlyTest</innerclass>
+    <innerclass refid="structiceberg_1_1ParseTimeErrorParam" prot="public">iceberg::ParseTimeErrorParam</innerclass>
+    <innerclass refid="classiceberg_1_1ParseTimeErrorTest" prot="public">iceberg::ParseTimeErrorTest</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/util/transform_util.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanYear)<sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(0));</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1971&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(1));</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(-1));</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(999<sp/>-<sp/>1970));</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e5317a2b55d0b9d64a13ab9510b6ce3" kindref="member">TransformUtil::HumanYear</ref>(56));</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanMonth)<sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>is<sp/>January<sp/>1970</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(0));</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>is<sp/>Febrary<sp/>1970</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-02&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(1));</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>-1<sp/>is<sp/>December<sp/>1969</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(-1));</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(-11641));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>12<sp/>is<sp/>January<sp/>1971</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1971-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(12));</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>672<sp/>is<sp/>December<sp/>2026-01</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a4f3a5607a2e2b5edce632fbbc22e76af" kindref="member">TransformUtil::HumanMonth</ref>(672));</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanDay)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>is<sp/>Unix<sp/>epoch<sp/>(1970-01-01)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(0));</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>is<sp/>1970-01-02</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-02&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(1));</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>-1<sp/>is<sp/>1969-12-31</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(-1));</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12-31</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(-354286));</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>365<sp/>is<sp/>1971-01-01<sp/>(non-leap<sp/>year)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1971-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(365));</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>20454<sp/>is<sp/>2026-01-01</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(20454));</highlight></codeline>
+<codeline lineno="64"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanHour)<sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0<sp/>is<sp/>Unix<sp/>epoch<sp/>at<sp/>00:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01-00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(0));</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>is<sp/>first<sp/>hour<sp/>of<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01-01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(1));</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>-1<sp/>is<sp/>previous<sp/>day&apos;s<sp/>last<sp/>hour</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31-23&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(-1));</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>999-12-31<sp/>at<sp/>23:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31-23&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(-8502841));</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>24<sp/>is<sp/>next<sp/>day<sp/>at<sp/>00:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-02-00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(24));</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>490896<sp/>is<sp/>2026-01-01<sp/>at<sp/>00:00</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01-00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a5737dcb152c45aab8e67ba7aed0e38e0" kindref="member">TransformUtil::HumanHour</ref>(490896));</highlight></codeline>
+<codeline lineno="79"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanTime)<sp/>{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(0));</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1000000));</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1.5<sp/>seconds<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01.500&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1500000));</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1.001<sp/>seconds<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01.001&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1001000));</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1.000001<sp/>seconds<sp/>after<sp/>midnight</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;00:00:01.000001&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(1000001));</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>hour,<sp/>2<sp/>minutes,<sp/>3<sp/>seconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;01:02:03&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(3723000000));</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>23:59:59</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;23:59:59&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(86399000000));</highlight></codeline>
+<codeline lineno="96"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanTimestamp)<sp/>{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Unix<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(0));</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>after<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:01&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1000000));</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>before<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31T23:59:59&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(-1000000));</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12-31T23:59:59</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31T23:59:59&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(-30610224001000000L));</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precistion<sp/>with<sp/>500<sp/>milliseconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1767225601500000L));</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>millisecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.001&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1767225601001000L));</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>microsecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.000001&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(1767225601000001L));</highlight></codeline>
+<codeline lineno="114"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal">TEST(TransformUtilTest,<sp/>HumanTimestampWithZone)<sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Unix<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00+00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(0));</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>after<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:01+00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1000000));</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1<sp/>second<sp/>before<sp/>epoch</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;1969-12-31T23:59:59+00:00&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(-1000000));</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>0999-12-31T23:59:59</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;0999-12-31T23:59:59+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(-30610224001000000L));</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precistion<sp/>with<sp/>500<sp/>milliseconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1767225601500000L));</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>millisecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.001+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1767225601001000L));</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>precision<sp/>with<sp/>1<sp/>microsecond</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.000001+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(1767225601000001L));</highlight></codeline>
+<codeline lineno="135"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal">TEST(TransformUtilTest,<sp/>Base64Encode)<sp/>{</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Empty<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Single<sp/>character</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YQ==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;a&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWI=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;ab&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJj&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;abc&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Multiple<sp/>of<sp/>3<sp/>characters</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJjZGU=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;abcde&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJjZGVm&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;abcdef&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Common<sp/>strings</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;U29tZSBkYXRhIHdpdGggY2hhcmFjdGVycw==&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;Some<sp/>data<sp/>with<sp/>characters&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;aGVsbG8=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;dGVzdCBzdHJpbmc=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;test<sp/>string&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Unicode</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;8J+EgA==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>(</highlight><highlight class="stringliteral">&quot;\xF0\x9F\x84\x80&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Null<sp/>byte</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;AA==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1TransformUtil_1ae9b9b466b8f4d7877b79b23666c64523" kindref="member">TransformUtil::Base64Encode</ref>({</highlight><highlight class="stringliteral">&quot;\x00&quot;</highlight><highlight class="normal">,<sp/>1}));</highlight></codeline>
+<codeline lineno="160"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162" refid="structiceberg_1_1ParseRoundTripParam" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1ParseRoundTripParam" kindref="compound">ParseRoundTripParam</ref><sp/>{</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/>std::string<sp/>name;</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/>std::string<sp/>str;</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/>int64_t<sp/>value;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>Kind<sp/>{<sp/>kDay,<sp/>kTime,<sp/>kTimestamp,<sp/>kTimestampTz<sp/>}<sp/>kind;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169" refid="classiceberg_1_1ParseRoundTripTest" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1ParseRoundTripTest" kindref="compound">ParseRoundTripTest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::TestWithParam&lt;ParseRoundTripParam&gt;<sp/>{};</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal">TEST_P(<ref refid="classiceberg_1_1ParseRoundTripTest" kindref="compound">ParseRoundTripTest</ref>,<sp/>RoundTrip)<sp/>{</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>param<sp/>=<sp/>GetParam();</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(param.kind)<sp/>{</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseRoundTripParam::kDay:<sp/>{</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(<ref refid="classiceberg_1_1TransformUtil_1af63c12a708200acf8c579916bf687d95" kindref="member">TransformUtil::HumanDay</ref>(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int32_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(param.value)),<sp/>param.str);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e561c6085c6dfeeb3bc92b3c07b31c3" kindref="member">TransformUtil::ParseDay</ref>(param.str));</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int32_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(param.value));</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseRoundTripParam::kTime:<sp/>{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(<ref refid="classiceberg_1_1TransformUtil_1a6316ac666a48e161265326f2ffb4f2c1" kindref="member">TransformUtil::HumanTime</ref>(param.value),<sp/>param.str);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,<sp/><ref refid="classiceberg_1_1TransformUtil_1a86861abdd92237b6aecdd7660a9cde91" kindref="member">TransformUtil::ParseTime</ref>(param.str));</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/>param.value);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseRoundTripParam::kTimestamp:<sp/>{</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(<ref refid="classiceberg_1_1TransformUtil_1a972354a52e40d336f46b83771526e912" kindref="member">TransformUtil::HumanTimestamp</ref>(param.value),<sp/>param.str);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,<sp/><ref refid="classiceberg_1_1TransformUtil_1a8cd38e6fb9d303835da9cf1944ac0f86" kindref="member">TransformUtil::ParseTimestamp</ref>(param.str));</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/>param.value);</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseRoundTripParam::kTimestampTz:<sp/>{</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(<ref refid="classiceberg_1_1TransformUtil_1af34308c5bd43562588b0dde9a28e4fc4" kindref="member">TransformUtil::HumanTimestampWithZone</ref>(param.value),<sp/>param.str);</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1a2931804944c77470187b77602489d8ee" kindref="member">TransformUtil::ParseTimestampWithZone</ref>(param.str));</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/>param.value);</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="200"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202" refid="structiceberg_1_1ParseOnlyParam" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1ParseOnlyParam" kindref="compound">ParseOnlyParam</ref><sp/>{</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/>std::string<sp/>name;</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/>std::string<sp/>str;</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/>int64_t<sp/>value;</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>Kind<sp/>{<sp/>kDay,<sp/>kTime,<sp/>kTimestamp,<sp/>kTimestampTz<sp/>}<sp/>kind;</highlight></codeline>
+<codeline lineno="207"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209" refid="classiceberg_1_1ParseOnlyTest" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1ParseOnlyTest" kindref="compound">ParseOnlyTest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::TestWithParam&lt;ParseOnlyParam&gt;<sp/>{};</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal">TEST_P(<ref refid="classiceberg_1_1ParseOnlyTest" kindref="compound">ParseOnlyTest</ref>,<sp/>ParsesCorrectly)<sp/>{</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>param<sp/>=<sp/>GetParam();</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(param.kind)<sp/>{</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseOnlyParam::kDay:<sp/>{</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,<sp/><ref refid="classiceberg_1_1TransformUtil_1a9e561c6085c6dfeeb3bc92b3c07b31c3" kindref="member">TransformUtil::ParseDay</ref>(param.str));</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/></highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="normal">int32_t</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(param.value));</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseOnlyParam::kTime:<sp/>{</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,<sp/><ref refid="classiceberg_1_1TransformUtil_1a86861abdd92237b6aecdd7660a9cde91" kindref="member">TransformUtil::ParseTime</ref>(param.str));</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/>param.value);</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseOnlyParam::kTimestamp:<sp/>{</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,<sp/><ref refid="classiceberg_1_1TransformUtil_1a8cd38e6fb9d303835da9cf1944ac0f86" kindref="member">TransformUtil::ParseTimestamp</ref>(param.str));</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/>param.value);</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>ParseOnlyParam::kTimestampTz:<sp/>{</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed,</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1TransformUtil_1a2931804944c77470187b77602489d8ee" kindref="member">TransformUtil::ParseTimestampWithZone</ref>(param.str));</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>EXPECT_EQ(parsed,<sp/>param.value);</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="236"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238" refid="structiceberg_1_1ParseTimeErrorParam" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1ParseTimeErrorParam" kindref="compound">ParseTimeErrorParam</ref><sp/>{</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/>std::string<sp/>name;</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/>std::string<sp/>str;</highlight></codeline>
+<codeline lineno="241"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight></codeline>
+<codeline lineno="243" refid="classiceberg_1_1ParseTimeErrorTest" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1ParseTimeErrorTest" kindref="compound">ParseTimeErrorTest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::TestWithParam&lt;ParseTimeErrorParam&gt;<sp/>{};</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal">TEST_P(<ref refid="classiceberg_1_1ParseTimeErrorTest" kindref="compound">ParseTimeErrorTest</ref>,<sp/>ReturnsError)<sp/>{</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/>EXPECT_THAT(<ref refid="classiceberg_1_1TransformUtil_1a86861abdd92237b6aecdd7660a9cde91" kindref="member">TransformUtil::ParseTime</ref>(GetParam().str),</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="248"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight></codeline>
+<codeline lineno="250"><highlight class="normal">INSTANTIATE_TEST_SUITE_P(</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/>TransformUtilTest,<sp/>ParseRoundTripTest,</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/>::testing::Values(</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Day<sp/>round-trips</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;DayEpoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01&quot;</highlight><highlight class="normal">,<sp/>0,<sp/>ParseRoundTripParam::kDay},</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;DayNext&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-02&quot;</highlight><highlight class="normal">,<sp/>1,<sp/>ParseRoundTripParam::kDay},</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;DayBeforeEpoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1969-12-31&quot;</highlight><highlight class="normal">,<sp/>-1,</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kDay},</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;DayYear999&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;0999-12-31&quot;</highlight><highlight class="normal">,<sp/>-354286,</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kDay},</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;DayNonLeap&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1971-01-01&quot;</highlight><highlight class="normal">,<sp/>365,<sp/>ParseRoundTripParam::kDay},</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;DayY2K&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2000-01-01&quot;</highlight><highlight class="normal">,<sp/>10957,<sp/>ParseRoundTripParam::kDay},</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;Day2026&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01&quot;</highlight><highlight class="normal">,<sp/>20454,<sp/>ParseRoundTripParam::kDay},</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Time<sp/>round-trips</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimeMidnight&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00&quot;</highlight><highlight class="normal">,<sp/>0,<sp/>ParseRoundTripParam::kTime},</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimeOneSec&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01&quot;</highlight><highlight class="normal">,<sp/>1000000,</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTime},</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimeMillis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.500&quot;</highlight><highlight class="normal">,<sp/>1500000,</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTime},</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimeOneMillis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.001&quot;</highlight><highlight class="normal">,<sp/>1001000,</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTime},</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimeMicros&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.000001&quot;</highlight><highlight class="normal">,<sp/>1000001,</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTime},</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimeHourMinSec&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;01:02:03&quot;</highlight><highlight class="normal">,<sp/>3723000000,</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTime},</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimeEndOfDay&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;23:59:59&quot;</highlight><highlight class="normal">,<sp/>86399000000,</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTime},</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Timestamp<sp/>round-trips</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampEpoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTimestamp},</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampOneSec&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:01&quot;</highlight><highlight class="normal">,<sp/>1000000,</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTimestamp},</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampMillis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601500000L,<sp/>ParseRoundTripParam::kTimestamp},</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampOneMillis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.001&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601001000L,<sp/>ParseRoundTripParam::kTimestamp},</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampMicros&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.000001&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601000001L,<sp/>ParseRoundTripParam::kTimestamp},</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TimestampTz<sp/>round-trips</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampTzEpoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00+00:00&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampTzOneSec&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:01+00:00&quot;</highlight><highlight class="normal">,<sp/>1000000,</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampTzMillis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601500000L,<sp/>ParseRoundTripParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampTzOneMillis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.001+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601001000L,<sp/>ParseRoundTripParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseRoundTripParam{</highlight><highlight class="stringliteral">&quot;TimestampTzMicros&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.000001+00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601000001L,<sp/>ParseRoundTripParam::kTimestampTz}),</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/>[](const<sp/>::testing::TestParamInfo&lt;ParseRoundTripParam&gt;&amp;<sp/>info)<sp/>{</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>info.param.name;</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight></codeline>
+<codeline lineno="303"><highlight class="normal">INSTANTIATE_TEST_SUITE_P(</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/><sp/><sp/>TransformUtilTest,<sp/>ParseOnlyTest,</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/>::testing::Values(</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TimestampTz<sp/>with<sp/>&quot;Z&quot;<sp/>suffix</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzSuffixZ_Epoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00Z&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzSuffixZ_Millis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500Z&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601500000L,<sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TimestampTz<sp/>with<sp/>&quot;-00:00&quot;<sp/>suffix</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNegZero_Epoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00-00:00&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNegZero_Millis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T00:00:01.500-00:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601500000L,<sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Fractional<sp/>micros<sp/>truncates<sp/>nanos</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimeTruncatesNanos&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.123456789&quot;</highlight><highlight class="normal">,<sp/>1123456,</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTime},</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Fractional<sp/>seconds<sp/>(trimmed<sp/>trailing<sp/>zeros)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;1Digit&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.5&quot;</highlight><highlight class="normal">,<sp/>1500000,<sp/>ParseOnlyParam::kTime},</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;2Digits&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.50&quot;</highlight><highlight class="normal">,<sp/>1500000,<sp/>ParseOnlyParam::kTime},</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;2DigitsNonZero&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.12&quot;</highlight><highlight class="normal">,<sp/>1120000,<sp/>ParseOnlyParam::kTime},</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;4Digits&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;00:00:01.0001&quot;</highlight><highlight class="normal">,<sp/>1000100,<sp/>ParseOnlyParam::kTime},</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Timestamp<sp/>without<sp/>seconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampNoSec_Zero&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestamp},</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampNoSec_OneMin&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:01&quot;</highlight><highlight class="normal">,<sp/>60000000,</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestamp},</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>TimestampTz<sp/>without<sp/>seconds</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNoSec_Offset&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00+00:00&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNoSec_OneMin&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:01+00:00&quot;</highlight><highlight class="normal">,<sp/>60000000,</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNoSec_Z&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00Z&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Extended<sp/>year<sp/>with<sp/>&apos;+&apos;<sp/>prefix</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;ExtendedYearPlusEpoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;+1970-01-01&quot;</highlight><highlight class="normal">,<sp/>0,<sp/>ParseOnlyParam::kDay},</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;ExtendedYearPlus2026&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;+2026-01-01&quot;</highlight><highlight class="normal">,<sp/>20454,</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kDay},</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;ExtendedYearMinus2026&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;-2026-01-01&quot;</highlight><highlight class="normal">,<sp/>-1459509,</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kDay},</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Non-UTC<sp/>timezone<sp/>offsets</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzPositiveOffset&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T05:00:00+05:00&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNegativeOffset&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T00:00:00-05:00&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>18000000000,<sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzOffsetWithMillis&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;2026-01-01T05:30:01.500+05:30&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1767225601500000L,<sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNegOffsetToEpoch&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1969-12-31T19:00:00-05:00&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz},</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam{</highlight><highlight class="stringliteral">&quot;TimestampTzNoSecWithOffset&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1970-01-01T05:30+05:30&quot;</highlight><highlight class="normal">,<sp/>0,</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseOnlyParam::kTimestampTz}),</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/>[](const<sp/>::testing::TestParamInfo&lt;ParseOnlyParam&gt;&amp;<sp/>info)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>info.param.name;<sp/>});</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"></highlight></codeline>
+<codeline lineno="355"><highlight class="normal">INSTANTIATE_TEST_SUITE_P(</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/>TransformUtilTest,<sp/>ParseTimeErrorTest,</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/>::testing::Values(ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;EmptyString&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;TooShort1Char&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;TooShort2Chars&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;12&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;TooShort4Chars&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;12:3&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;MissingColon&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;1200:00&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;OutofRangeHours&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;24:00:00&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;OutofRangeMinutes&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;12:60:00&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;OutofRangeSeconds&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;12:30:61&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ParseTimeErrorParam{</highlight><highlight class="stringliteral">&quot;SpaceInsteadOfColon&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;12<sp/>30&quot;</highlight><highlight class="normal">}),</highlight></codeline>
+<codeline lineno="366"><highlight class="normal"><sp/><sp/><sp/><sp/>[](const<sp/>::testing::TestParamInfo&lt;ParseTimeErrorParam&gt;&amp;<sp/>info)<sp/>{</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>info.param.name;</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"></highlight></codeline>
+<codeline lineno="370"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/transform_util_test.cc"/>
+  </compounddef>
+</doxygen>

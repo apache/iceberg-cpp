@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ExpressionVisitorTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ExpressionVisitorTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1BinderTest" prot="public" virt="non-virtual">iceberg::BinderTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1IsBoundVisitorTest" prot="public" virt="non-virtual">iceberg::IsBoundVisitorTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1ReferenceVisitorTest" prot="public" virt="non-virtual">iceberg::ReferenceVisitorTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1RewriteNotTest" prot="public" virt="non-virtual">iceberg::RewriteNotTest</derivedcompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ExpressionVisitorTest_1aafaad477906da2e1b41bcbc9f82f41b5" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ExpressionVisitorTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ExpressionVisitorTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_visitor_test.cc" line="49" column="19" bodyfile="iceberg/test/expression_visitor_test.cc" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitorTest_1a7e3600980c35bacf974ade9add4558ea" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ExpressionVisitorTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::ExpressionVisitorTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_visitor_test.cc" line="34" column="8" bodyfile="iceberg/test/expression_visitor_test.cc" bodystart="34" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ExpressionVisitorTest_1a9c2f51e69329b9a60407eb6de8a3b20a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::ExpressionVisitorTest::Bind</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;expr, bool case_sensitive=true)</argsstring>
+        <name>Bind</name>
+        <qualifiedname>iceberg::ExpressionVisitorTest::Bind</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_visitor_test.cc" line="44" column="10" bodyfile="iceberg/test/expression_visitor_test.cc" bodystart="44" bodyend="47"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::BinderTest</label>
+        <link refid="classiceberg_1_1BinderTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ExpressionVisitorTest</label>
+        <link refid="classiceberg_1_1ExpressionVisitorTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::IsBoundVisitorTest</label>
+        <link refid="classiceberg_1_1IsBoundVisitorTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::ReferenceVisitorTest</label>
+        <link refid="classiceberg_1_1ReferenceVisitorTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::RewriteNotTest</label>
+        <link refid="classiceberg_1_1RewriteNotTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ExpressionVisitorTest</label>
+        <link refid="classiceberg_1_1ExpressionVisitorTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_visitor_test.cc" line="32" column="1" bodyfile="iceberg/test/expression_visitor_test.cc" bodystart="32" bodyend="50"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ExpressionVisitorTest_1a9c2f51e69329b9a60407eb6de8a3b20a" prot="protected" virt="non-virtual"><scope>iceberg::ExpressionVisitorTest</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitorTest_1aafaad477906da2e1b41bcbc9f82f41b5" prot="protected" virt="non-virtual"><scope>iceberg::ExpressionVisitorTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitorTest_1a7e3600980c35bacf974ade9add4558ea" prot="protected" virt="non-virtual"><scope>iceberg::ExpressionVisitorTest</scope><name>SetUp</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

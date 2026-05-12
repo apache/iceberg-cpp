@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FieldProjection_1_1ExtraAttributes" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::FieldProjection::ExtraAttributes</compoundname>
+    <derivedcompoundref refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes" prot="public" virt="non-virtual">iceberg::parquet::ParquetExtraAttributes</derivedcompoundref>
+    <includes refid="schema__util_8h" local="no">schema_util.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1FieldProjection_1_1ExtraAttributes_1aaa49dea97f5e1ed214f44126a2167dde" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::FieldProjection::ExtraAttributes::~ExtraAttributes</definition>
+        <argsstring>()=default</argsstring>
+        <name>~ExtraAttributes</name>
+        <qualifiedname>iceberg::FieldProjection::ExtraAttributes::~ExtraAttributes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="63" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Format-specific attributes for the field. For example, for Parquet it might store column id and level info of the projected leaf field. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::FieldProjection::ExtraAttributes</label>
+        <link refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes"/>
+      </node>
+      <node id="2">
+        <label>iceberg::parquet::ParquetExtraAttributes</label>
+        <link refid="structiceberg_1_1parquet_1_1ParquetExtraAttributes"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/schema_util.h" line="62" column="3" bodyfile="iceberg/schema_util.h" bodystart="62" bodyend="64"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes_1aaa49dea97f5e1ed214f44126a2167dde" prot="public" virt="virtual"><scope>iceberg::FieldProjection::ExtraAttributes</scope><name>~ExtraAttributes</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

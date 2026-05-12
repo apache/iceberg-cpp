@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TruncateTransform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TruncateTransform</compoundname>
+    <basecompoundref refid="classiceberg_1_1TransformFunction" prot="public" virt="non-virtual">iceberg::TransformFunction</basecompoundref>
+    <includes refid="transform__function_8h" local="no">transform_function.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TruncateTransform_1ada92d9cde1d408b621dbf6e5f3285c88" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TruncateTransform::width_</definition>
+        <argsstring></argsstring>
+        <name>width_</name>
+        <qualifiedname>iceberg::TruncateTransform::width_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="100" column="11" bodyfile="iceberg/transform_function.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TruncateTransform_1a0dc958d8dee48b93760b350cb7035980" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TruncateTransform::TruncateTransform</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type, int32_t width)</argsstring>
+        <name>TruncateTransform</name>
+        <qualifiedname>iceberg::TruncateTransform::TruncateTransform</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the input data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to (e.g., for strings or numbers). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="81" column="3" bodyfile="iceberg/transform_function.cc" bodystart="97" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateTransform_1a2a8fe5828f4fa5fd42c17e11c4561b06" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TruncateTransform::Transform</definition>
+        <argsstring>(const Literal &amp;literal) override</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::TruncateTransform::Transform</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1afb1c573d9bd098c76d858f476ef16f3f">Transform</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Truncates the input <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to the specified width. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="84" column="10" bodyfile="iceberg/transform_function.cc" bodystart="101" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateTransform_1aee53ce089b7c524e881c64e2950fc250" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Type &gt; iceberg::TruncateTransform::ResultType</definition>
+        <argsstring>() const override</argsstring>
+        <name>ResultType</name>
+        <qualifiedname>iceberg::TruncateTransform::ResultType</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1a82841b58ce6380a7467bccf57e18e0d5">ResultType</reimplements>
+        <briefdescription>
+<para>Returns the same type as source_type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="87" column="19" bodyfile="iceberg/transform_function.cc" bodystart="107" bodyend="107"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateTransform_1aa33ba89ba851e42b4cd1ea608c8655e1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::TruncateTransform::width</definition>
+        <argsstring>() const</argsstring>
+        <name>width</name>
+        <qualifiedname>iceberg::TruncateTransform::width</qualifiedname>
+        <briefdescription>
+<para>Returns the width to truncate to. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="90" column="11" bodyfile="iceberg/transform_function.h" bodystart="90" bodyend="90"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TruncateTransform_1a488d2674fb260c10f8727ae6ef8479fd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TransformFunction &gt; &gt; iceberg::TruncateTransform::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type, int32_t width)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::TruncateTransform::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1TruncateTransform" kindref="compound">TruncateTransform</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the input data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1TruncateTransform" kindref="compound">TruncateTransform</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="96" column="17" bodyfile="iceberg/transform_function.cc" bodystart="109" bodyend="129"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Truncate transform that truncates values to a specified width. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+      <node id="1">
+        <label>iceberg::TruncateTransform</label>
+        <link refid="classiceberg_1_1TruncateTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+      <node id="1">
+        <label>iceberg::TruncateTransform</label>
+        <link refid="classiceberg_1_1TruncateTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/transform_function.h" line="77" column="1" bodyfile="iceberg/transform_function.h" bodystart="77" bodyend="101"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TruncateTransform_1a488d2674fb260c10f8727ae6ef8479fd" prot="public" virt="non-virtual"><scope>iceberg::TruncateTransform</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1TruncateTransform_1aee53ce089b7c524e881c64e2950fc250" prot="public" virt="virtual"><scope>iceberg::TruncateTransform</scope><name>ResultType</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a5fb6043200973c2a68f1b59b52f3dc91" prot="public" virt="non-virtual"><scope>iceberg::TruncateTransform</scope><name>source_type</name></member>
+      <member refid="classiceberg_1_1TruncateTransform_1a2a8fe5828f4fa5fd42c17e11c4561b06" prot="public" virt="virtual"><scope>iceberg::TruncateTransform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1abf4c9031fa1b0de214e6aa7ffc717c56" prot="public" virt="non-virtual"><scope>iceberg::TruncateTransform</scope><name>transform_type</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a3e97589741424abf0fb1c0c01117bb5e" prot="public" virt="non-virtual"><scope>iceberg::TruncateTransform</scope><name>TransformFunction</name></member>
+      <member refid="classiceberg_1_1TruncateTransform_1a0dc958d8dee48b93760b350cb7035980" prot="public" virt="non-virtual"><scope>iceberg::TruncateTransform</scope><name>TruncateTransform</name></member>
+      <member refid="classiceberg_1_1TruncateTransform_1aa33ba89ba851e42b4cd1ea608c8655e1" prot="public" virt="non-virtual"><scope>iceberg::TruncateTransform</scope><name>width</name></member>
+      <member refid="classiceberg_1_1TruncateTransform_1ada92d9cde1d408b621dbf6e5f3285c88" prot="private" virt="non-virtual"><scope>iceberg::TruncateTransform</scope><name>width_</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a523fa272f921de4a2b69a7b6277b39f4" prot="public" virt="virtual"><scope>iceberg::TruncateTransform</scope><name>~TransformFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

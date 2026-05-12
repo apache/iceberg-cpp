@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1detail" kind="namespace" language="C++">
+    <compoundname>iceberg::detail</compoundname>
+    <innerclass refid="structiceberg_1_1detail_1_1IsResult" prot="public">iceberg::detail::IsResult</innerclass>
+    <innerclass refid="structiceberg_1_1detail_1_1IsResult_3_01Result_3_01T_01_4_01_4" prot="public">iceberg::detail::IsResult&lt; Result&lt; T &gt; &gt;</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="retry__util_8h_1abada4466c1f18d1c3e6f77dd308d35ac" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type>std::remove_cvref_t&lt; std::invoke_result_t&lt; F &amp; &gt; &gt;</type>
+        <definition>using iceberg::detail::RetryTaskResult = typedef std::remove_cvref_t&lt;std::invoke_result_t&lt;F&amp;&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>RetryTaskResult</name>
+        <qualifiedname>iceberg::detail::RetryTaskResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="54" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/retry_util.h" line="37" column="1"/>
+  </compounddef>
+</doxygen>

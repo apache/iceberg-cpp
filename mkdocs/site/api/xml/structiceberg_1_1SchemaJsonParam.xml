@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SchemaJsonParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SchemaJsonParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SchemaJsonParam_1ad46fc7212054eefdaa7b0d63c99c4fe4" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SchemaJsonParam::json</definition>
+        <argsstring></argsstring>
+        <name>json</name>
+        <qualifiedname>iceberg::SchemaJsonParam::json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_json_test.cc" line="36" column="15" bodyfile="iceberg/test/schema_json_test.cc" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SchemaJsonParam_1aaa380b5ffc3d9c9ae0d574270cf5aec3" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::SchemaJsonParam::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::SchemaJsonParam::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/schema_json_test.cc" line="37" column="19" bodyfile="iceberg/test/schema_json_test.cc" bodystart="37" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SchemaJsonParam</label>
+        <link refid="structiceberg_1_1SchemaJsonParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>json</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/schema_json_test.cc" line="35" column="1" bodyfile="iceberg/test/schema_json_test.cc" bodystart="35" bodyend="38"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SchemaJsonParam_1ad46fc7212054eefdaa7b0d63c99c4fe4" prot="public" virt="non-virtual"><scope>iceberg::SchemaJsonParam</scope><name>json</name></member>
+      <member refid="structiceberg_1_1SchemaJsonParam_1aaa380b5ffc3d9c9ae0d574270cf5aec3" prot="public" virt="non-virtual"><scope>iceberg::SchemaJsonParam</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

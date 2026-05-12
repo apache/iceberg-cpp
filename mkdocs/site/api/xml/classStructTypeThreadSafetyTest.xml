@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classStructTypeThreadSafetyTest" kind="class" language="C++" prot="public">
+    <compoundname>StructTypeThreadSafetyTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classStructTypeThreadSafetyTest_1a64bfd599f14ef4d5175805150ac81bbc" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">iceberg::StructType</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::StructType&gt; StructTypeThreadSafetyTest::struct_type_</definition>
+        <argsstring></argsstring>
+        <name>struct_type_</name>
+        <qualifiedname>StructTypeThreadSafetyTest::struct_type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="529" column="19" bodyfile="iceberg/test/type_test.cc" bodystart="529" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classStructTypeThreadSafetyTest_1a18a4d232f31ddc41265e0a4dc670ea56" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; StructTypeThreadSafetyTest::field1_</definition>
+        <argsstring></argsstring>
+        <name>field1_</name>
+        <qualifiedname>StructTypeThreadSafetyTest::field1_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="530" column="19" bodyfile="iceberg/test/type_test.cc" bodystart="530" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classStructTypeThreadSafetyTest_1abe573b55e92c697867758a8eef21fe12" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; StructTypeThreadSafetyTest::field2_</definition>
+        <argsstring></argsstring>
+        <name>field2_</name>
+        <qualifiedname>StructTypeThreadSafetyTest::field2_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="531" column="19" bodyfile="iceberg/test/type_test.cc" bodystart="531" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classStructTypeThreadSafetyTest_1ad2516b7fb1a60107dae2f5ed1bed1202" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">iceberg::SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;iceberg::SchemaField&gt; StructTypeThreadSafetyTest::field3_</definition>
+        <argsstring></argsstring>
+        <name>field3_</name>
+        <qualifiedname>StructTypeThreadSafetyTest::field3_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="532" column="19" bodyfile="iceberg/test/type_test.cc" bodystart="532" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classStructTypeThreadSafetyTest_1ab0afde90cb522de2e2934c47d39e89ee" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void StructTypeThreadSafetyTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>StructTypeThreadSafetyTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/type_test.cc" line="520" column="8" bodyfile="iceberg/test/type_test.cc" bodystart="520" bodyend="527"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>StructTypeThreadSafetyTest</label>
+        <link refid="classStructTypeThreadSafetyTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="10">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>StructTypeThreadSafetyTest</label>
+        <link refid="classStructTypeThreadSafetyTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>struct_type_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field1_</edgelabel>
+          <edgelabel>field2_</edgelabel>
+          <edgelabel>field3_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="13">
+        <label>std::unique_ptr&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::StructType &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/type_test.cc" line="518" column="1" bodyfile="iceberg/test/type_test.cc" bodystart="518" bodyend="533"/>
+    <listofallmembers>
+      <member refid="classStructTypeThreadSafetyTest_1a18a4d232f31ddc41265e0a4dc670ea56" prot="protected" virt="non-virtual"><scope>StructTypeThreadSafetyTest</scope><name>field1_</name></member>
+      <member refid="classStructTypeThreadSafetyTest_1abe573b55e92c697867758a8eef21fe12" prot="protected" virt="non-virtual"><scope>StructTypeThreadSafetyTest</scope><name>field2_</name></member>
+      <member refid="classStructTypeThreadSafetyTest_1ad2516b7fb1a60107dae2f5ed1bed1202" prot="protected" virt="non-virtual"><scope>StructTypeThreadSafetyTest</scope><name>field3_</name></member>
+      <member refid="classStructTypeThreadSafetyTest_1ab0afde90cb522de2e2934c47d39e89ee" prot="protected" virt="non-virtual"><scope>StructTypeThreadSafetyTest</scope><name>SetUp</name></member>
+      <member refid="classStructTypeThreadSafetyTest_1a64bfd599f14ef4d5175805150ac81bbc" prot="protected" virt="non-virtual"><scope>StructTypeThreadSafetyTest</scope><name>struct_type_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

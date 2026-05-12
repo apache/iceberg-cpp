@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ArrowArrayMapLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ArrowArrayMapLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1MapLike" prot="public" virt="non-virtual">iceberg::MapLike</basecompoundref>
+    <includes refid="arrow__array__wrapper_8h" local="no">arrow_array_wrapper.h</includes>
+    <innerclass refid="classiceberg_1_1ArrowArrayMapLike_1_1Impl" prot="public">iceberg::ArrowArrayMapLike::Impl</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayMapLike_1a6ff77ef2121bb79a7763aa03aab9bc9e" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ArrowArrayMapLike_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::ArrowArrayMapLike::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="111" column="19" bodyfile="iceberg/row/arrow_array_wrapper.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a5b4fa99d992f62af85e189e2f6c3680f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowArrayMapLike::~ArrowArrayMapLike</definition>
+        <argsstring>() override</argsstring>
+        <name>~ArrowArrayMapLike</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::~ArrowArrayMapLike</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="88" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1ab6122b7ece0ce63e851a3fa264a930c5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::ArrowArrayMapLike::GetKey</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetKey</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::GetKey</qualifiedname>
+        <reimplements refid="classiceberg_1_1MapLike_1aefb93debfcbe52e3223ee36bf2345b6f">GetKey</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the key at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the key in the map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="90" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="395" bodyend="395"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a2b8b3eded23593478824d4888f5b3342" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::ArrowArrayMapLike::GetValue</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetValue</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::GetValue</qualifiedname>
+        <reimplements refid="classiceberg_1_1MapLike_1add2591f25282d409167352bbb1c5e558">GetValue</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the value in the map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="92" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="397" bodyend="399"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a36ca31afe3fb870a15a5222eecd35697" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::ArrowArrayMapLike::size</definition>
+        <argsstring>() const override</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::size</qualifiedname>
+        <reimplements refid="classiceberg_1_1MapLike_1a9d769b5646f089820800c321bec7f2f6">size</reimplements>
+        <briefdescription>
+<para>Get the number of entries in the map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="94" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="401" bodyend="401"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1aafdb716f2776ea8a64d07300eb212b08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ArrowArrayMapLike::Reset</definition>
+        <argsstring>(int64_t row_index)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::Reset</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>row_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="96" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="403" bodyend="403"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a5c5be0ea8083d84aea8f40c934e8eae2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ArrowArrayMapLike::Reset</definition>
+        <argsstring>(const ArrowArray &amp;array, int64_t row_index=0)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::Reset</qualifiedname>
+        <param>
+          <type>const <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &amp;</type>
+          <declname>array</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>row_index</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="98" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="405" bodyend="407"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a8b756e9befc3008b9f268394988adce1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowArrayMapLike::ArrowArrayMapLike</definition>
+        <argsstring>(const ArrowArrayMapLike &amp;other)=delete</argsstring>
+        <name>ArrowArrayMapLike</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::ArrowArrayMapLike</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ArrowArrayMapLike" kindref="compound">ArrowArrayMapLike</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="104" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a5100ec1dce1b48dd678e3aba5422ba11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ArrowArrayMapLike" kindref="compound">ArrowArrayMapLike</ref> &amp;</type>
+        <definition>ArrowArrayMapLike &amp; iceberg::ArrowArrayMapLike::operator=</definition>
+        <argsstring>(const ArrowArrayMapLike &amp;other)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ArrowArrayMapLike" kindref="compound">ArrowArrayMapLike</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="105" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a88ac179e4f2accc1e979cf380269081c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ArrowArrayMapLike" kindref="compound">ArrowArrayMapLike</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ArrowArrayMapLike &gt; &gt; iceberg::ArrowArrayMapLike::Make</definition>
+        <argsstring>(const ArrowSchema &amp;schema, const ArrowArray &amp;array, int64_t row_index=0)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &amp;</type>
+          <declname>array</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>row_index</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="100" column="17" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="383" bodyend="388"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayMapLike_1a72297078a2242372e20e56649560bb65" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowArrayMapLike::ArrowArrayMapLike</definition>
+        <argsstring>(std::unique_ptr&lt; Impl &gt; impl)</argsstring>
+        <name>ArrowArrayMapLike</name>
+        <qualifiedname>iceberg::ArrowArrayMapLike::ArrowArrayMapLike</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ArrowArrayMapLike_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+          <declname>impl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.h" line="109" column="12" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="390" bodyend="391"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Wrapper for one row of a map-typed <ref refid="structArrowArray" kindref="compound">ArrowArray</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ArrowArrayMapLike</label>
+        <link refid="classiceberg_1_1ArrowArrayMapLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MapLike</label>
+        <link refid="classiceberg_1_1MapLike"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ArrowArrayMapLike</label>
+        <link refid="classiceberg_1_1ArrowArrayMapLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MapLike</label>
+        <link refid="classiceberg_1_1MapLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/row/arrow_array_wrapper.h" line="86" column="1" bodyfile="iceberg/row/arrow_array_wrapper.h" bodystart="86" bodyend="112"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a8b756e9befc3008b9f268394988adce1" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>ArrowArrayMapLike</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a72297078a2242372e20e56649560bb65" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>ArrowArrayMapLike</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1ab6122b7ece0ce63e851a3fa264a930c5" prot="public" virt="virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>GetKey</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a2b8b3eded23593478824d4888f5b3342" prot="public" virt="virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>GetValue</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a6ff77ef2121bb79a7763aa03aab9bc9e" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a88ac179e4f2accc1e979cf380269081c" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a5100ec1dce1b48dd678e3aba5422ba11" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1aafdb716f2776ea8a64d07300eb212b08" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a5c5be0ea8083d84aea8f40c934e8eae2" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a36ca31afe3fb870a15a5222eecd35697" prot="public" virt="virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>size</name></member>
+      <member refid="classiceberg_1_1ArrowArrayMapLike_1a5b4fa99d992f62af85e189e2f6c3680f" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>~ArrowArrayMapLike</name></member>
+      <member refid="classiceberg_1_1MapLike_1ae3323c2af8f85a78c85817e4385e3cc6" prot="public" virt="virtual"><scope>iceberg::ArrowArrayMapLike</scope><name>~MapLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

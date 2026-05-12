@@ -1,0 +1,163 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Evaluator" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Evaluator</compoundname>
+    <includes refid="evaluator_8h" local="no">evaluator.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Evaluator_1ab715abfd1fcd6b99bca7de65cf7c6e4d" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::Evaluator::bound_expr_</definition>
+        <argsstring></argsstring>
+        <name>bound_expr_</name>
+        <qualifiedname>iceberg::Evaluator::bound_expr_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/evaluator.h" line="62" column="19" bodyfile="iceberg/expression/evaluator.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Evaluator_1af99788e2bda3dc7575eded47fa40087e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Evaluator" kindref="compound">Evaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; Evaluator &gt; &gt; iceberg::Evaluator::Make</definition>
+        <argsstring>(const Schema &amp;schema, std::shared_ptr&lt; Expression &gt; unbound, bool case_sensitive=true)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::Evaluator::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>unbound</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Make an evaluator for an unbound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to bind against </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>unbound</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound expression to evaluate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether field name matching is case-sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/evaluator.h" line="47" column="17" bodyfile="iceberg/expression/evaluator.cc" bodystart="139" bodyend="144"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Evaluator_1aae316e90e196673f1e8101814b6f988c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Evaluator::~Evaluator</definition>
+        <argsstring>()</argsstring>
+        <name>~Evaluator</name>
+        <qualifiedname>iceberg::Evaluator::~Evaluator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/evaluator.h" line="51" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Evaluator_1a9ca9ed7b2eaf77a1f74ebed5831428dd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::Evaluator::Evaluate</definition>
+        <argsstring>(const StructLike &amp;row) const</argsstring>
+        <name>Evaluate</name>
+        <qualifiedname>iceberg::Evaluator::Evaluate</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>row</declname>
+        </param>
+        <briefdescription>
+<para>Evaluate the expression against a data row. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>row</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data row to evaluate </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the row matches the expression, false otherwise, or error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/evaluator.h" line="57" column="10" bodyfile="iceberg/expression/evaluator.cc" bodystart="146" bodyend="149"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1Evaluator_1a774fa736f9bd07473cd3e65d1a1fcae1" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Evaluator::Evaluator</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; bound_expr)</argsstring>
+        <name>Evaluator</name>
+        <qualifiedname>iceberg::Evaluator::Evaluator</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>bound_expr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/evaluator.h" line="60" column="12" bodyfile="iceberg/expression/evaluator.cc" bodystart="134" bodyend="135"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Evaluates an <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> against data rows. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class evaluates bound expressions against <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> data rows to determine if the row matches the expression criteria. The evaluator binds unbound expressions to a schema on construction and then can be used to evaluate multiple data rows.</para>
+<para><simplesect kind="note"><para>: The evaluator is thread-safe. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="iceberg/expression/evaluator.h" line="40" column="1" bodyfile="iceberg/expression/evaluator.h" bodystart="40" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Evaluator_1ab715abfd1fcd6b99bca7de65cf7c6e4d" prot="private" virt="non-virtual"><scope>iceberg::Evaluator</scope><name>bound_expr_</name></member>
+      <member refid="classiceberg_1_1Evaluator_1a9ca9ed7b2eaf77a1f74ebed5831428dd" prot="public" virt="non-virtual"><scope>iceberg::Evaluator</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1Evaluator_1a774fa736f9bd07473cd3e65d1a1fcae1" prot="private" virt="non-virtual"><scope>iceberg::Evaluator</scope><name>Evaluator</name></member>
+      <member refid="classiceberg_1_1Evaluator_1af99788e2bda3dc7575eded47fa40087e" prot="public" virt="non-virtual"><scope>iceberg::Evaluator</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1Evaluator_1aae316e90e196673f1e8101814b6f988c" prot="public" virt="non-virtual"><scope>iceberg::Evaluator</scope><name>~Evaluator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

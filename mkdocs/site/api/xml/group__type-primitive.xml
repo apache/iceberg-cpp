@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="group__type-primitive" kind="group">
+    <compoundname>type-primitive</compoundname>
+    <title>Primitive Types</title>
+    <innerclass refid="classiceberg_1_1BooleanType" prot="public">iceberg::BooleanType</innerclass>
+    <innerclass refid="classiceberg_1_1IntType" prot="public">iceberg::IntType</innerclass>
+    <innerclass refid="classiceberg_1_1LongType" prot="public">iceberg::LongType</innerclass>
+    <innerclass refid="classiceberg_1_1FloatType" prot="public">iceberg::FloatType</innerclass>
+    <innerclass refid="classiceberg_1_1DoubleType" prot="public">iceberg::DoubleType</innerclass>
+    <innerclass refid="classiceberg_1_1DecimalType" prot="public">iceberg::DecimalType</innerclass>
+    <innerclass refid="classiceberg_1_1DateType" prot="public">iceberg::DateType</innerclass>
+    <innerclass refid="classiceberg_1_1TimeType" prot="public">iceberg::TimeType</innerclass>
+    <innerclass refid="classiceberg_1_1TimestampBase" prot="public">iceberg::TimestampBase</innerclass>
+    <innerclass refid="classiceberg_1_1TimestampType" prot="public">iceberg::TimestampType</innerclass>
+    <innerclass refid="classiceberg_1_1TimestampTzType" prot="public">iceberg::TimestampTzType</innerclass>
+    <innerclass refid="classiceberg_1_1BinaryType" prot="public">iceberg::BinaryType</innerclass>
+    <innerclass refid="classiceberg_1_1StringType" prot="public">iceberg::StringType</innerclass>
+    <innerclass refid="classiceberg_1_1FixedType" prot="public">iceberg::FixedType</innerclass>
+    <innerclass refid="classiceberg_1_1UuidType" prot="public">iceberg::UuidType</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Primitive types do not have nested fields. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BucketTransform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::BucketTransform</compoundname>
+    <basecompoundref refid="classiceberg_1_1TransformFunction" prot="public" virt="non-virtual">iceberg::TransformFunction</basecompoundref>
+    <includes refid="transform__function_8h" local="no">transform_function.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1BucketTransform_1aa840afc23462cda602c20638a381359a" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::BucketTransform::num_buckets_</definition>
+        <argsstring></argsstring>
+        <name>num_buckets_</name>
+        <qualifiedname>iceberg::BucketTransform::num_buckets_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="73" column="11" bodyfile="iceberg/transform_function.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1BucketTransform_1a125bf86e3a179ecec02cfc183bf922d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BucketTransform::BucketTransform</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type, int32_t num_buckets)</argsstring>
+        <name>BucketTransform</name>
+        <qualifiedname>iceberg::BucketTransform::BucketTransform</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>num_buckets</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the input data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_buckets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of buckets to hash into. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="51" column="3" bodyfile="iceberg/transform_function.cc" bodystart="50" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BucketTransform_1ade142bc532fe7e108bc317f7e52f1853" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::BucketTransform::Transform</definition>
+        <argsstring>(const Literal &amp;literal) override</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::BucketTransform::Transform</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1afb1c573d9bd098c76d858f476ef16f3f">Transform</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Applies the bucket hash function to the input <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref>:<itemizedlist>
+<listitem><para><ulink url="https://iceberg.apache.org/spec/#appendix-b-32-bit-hash-requirements">https://iceberg.apache.org/spec/#appendix-b-32-bit-hash-requirements</ulink> </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="57" column="10" bodyfile="iceberg/transform_function.cc" bodystart="54" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BucketTransform_1a527f3ecbca2ca01185495a3f85e18115" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Type &gt; iceberg::BucketTransform::ResultType</definition>
+        <argsstring>() const override</argsstring>
+        <name>ResultType</name>
+        <qualifiedname>iceberg::BucketTransform::ResultType</qualifiedname>
+        <reimplements refid="classiceberg_1_1TransformFunction_1a82841b58ce6380a7467bccf57e18e0d5">ResultType</reimplements>
+        <briefdescription>
+<para>Returns INT32 as the output type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="60" column="19" bodyfile="iceberg/transform_function.cc" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BucketTransform_1a8487e6484edd8373653bb193bc8191bb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::BucketTransform::num_buckets</definition>
+        <argsstring>() const</argsstring>
+        <name>num_buckets</name>
+        <qualifiedname>iceberg::BucketTransform::num_buckets</qualifiedname>
+        <briefdescription>
+<para>Returns the number of buckets. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="63" column="11" bodyfile="iceberg/transform_function.h" bodystart="63" bodyend="63"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1BucketTransform_1a53f80963a6b47eb54b7af1bad419b4c6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TransformFunction &gt; &gt; iceberg::BucketTransform::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Type &gt; const &amp;source_type, int32_t num_buckets)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::BucketTransform::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; const &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>num_buckets</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1BucketTransform" kindref="compound">BucketTransform</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the input data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_buckets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of buckets to hash into. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the <ref refid="classiceberg_1_1BucketTransform" kindref="compound">BucketTransform</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform_function.h" line="69" column="17" bodyfile="iceberg/transform_function.cc" bodystart="69" bodyend="95"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Bucket transform that hashes input values into N buckets. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::BucketTransform</label>
+        <link refid="classiceberg_1_1BucketTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::BucketTransform</label>
+        <link refid="classiceberg_1_1BucketTransform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TransformFunction</label>
+        <link refid="classiceberg_1_1TransformFunction"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/transform_function.h" line="47" column="1" bodyfile="iceberg/transform_function.h" bodystart="47" bodyend="74"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BucketTransform_1a125bf86e3a179ecec02cfc183bf922d9" prot="public" virt="non-virtual"><scope>iceberg::BucketTransform</scope><name>BucketTransform</name></member>
+      <member refid="classiceberg_1_1BucketTransform_1a53f80963a6b47eb54b7af1bad419b4c6" prot="public" virt="non-virtual"><scope>iceberg::BucketTransform</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1BucketTransform_1a8487e6484edd8373653bb193bc8191bb" prot="public" virt="non-virtual"><scope>iceberg::BucketTransform</scope><name>num_buckets</name></member>
+      <member refid="classiceberg_1_1BucketTransform_1aa840afc23462cda602c20638a381359a" prot="private" virt="non-virtual"><scope>iceberg::BucketTransform</scope><name>num_buckets_</name></member>
+      <member refid="classiceberg_1_1BucketTransform_1a527f3ecbca2ca01185495a3f85e18115" prot="public" virt="virtual"><scope>iceberg::BucketTransform</scope><name>ResultType</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a5fb6043200973c2a68f1b59b52f3dc91" prot="public" virt="non-virtual"><scope>iceberg::BucketTransform</scope><name>source_type</name></member>
+      <member refid="classiceberg_1_1BucketTransform_1ade142bc532fe7e108bc317f7e52f1853" prot="public" virt="virtual"><scope>iceberg::BucketTransform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1abf4c9031fa1b0de214e6aa7ffc717c56" prot="public" virt="non-virtual"><scope>iceberg::BucketTransform</scope><name>transform_type</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a3e97589741424abf0fb1c0c01117bb5e" prot="public" virt="non-virtual"><scope>iceberg::BucketTransform</scope><name>TransformFunction</name></member>
+      <member refid="classiceberg_1_1TransformFunction_1a523fa272f921de4a2b69a7b6277b39f4" prot="public" virt="virtual"><scope>iceberg::BucketTransform</scope><name>~TransformFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

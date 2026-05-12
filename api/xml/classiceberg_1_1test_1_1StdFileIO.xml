@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1StdFileIO" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::test::StdFileIO</compoundname>
+    <basecompoundref refid="classiceberg_1_1FileIO" prot="public" virt="non-virtual">iceberg::FileIO</basecompoundref>
+    <includes refid="std__io_8h" local="no">std_io.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdFileIO_1a05aaa2438f805520e76fa54aa6f2d8a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InputFile &gt; &gt; iceberg::test::StdFileIO::NewInputFile</definition>
+        <argsstring>(std::string file_location) override</argsstring>
+        <name>NewInputFile</name>
+        <qualifiedname>iceberg::test::StdFileIO::NewInputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a7382a497499449305bbc7ac710b4518e">NewInputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Create an input file handle for the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="291" column="10" bodyfile="iceberg/test/std_io.h" bodystart="291" bodyend="293"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdFileIO_1a7978fa3867d0ce231b735341748f3a28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InputFile &gt; &gt; iceberg::test::StdFileIO::NewInputFile</definition>
+        <argsstring>(std::string file_location, size_t length) override</argsstring>
+        <name>NewInputFile</name>
+        <qualifiedname>iceberg::test::StdFileIO::NewInputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1ac3de646d00ec6e4be1f7a6e7513fe4a9">NewInputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Create an input file handle for the given location with a known length. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The length is a caller-provided content length hint. Implementations may use it to avoid an extra metadata lookup. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="295" column="10" bodyfile="iceberg/test/std_io.h" bodystart="295" bodyend="302"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdFileIO_1a5629cdd8ea1c2a5260b144707f64c0b0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; OutputFile &gt; &gt; iceberg::test::StdFileIO::NewOutputFile</definition>
+        <argsstring>(std::string file_location) override</argsstring>
+        <name>NewOutputFile</name>
+        <qualifiedname>iceberg::test::StdFileIO::NewOutputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a0c817d2a00f3ab2bccfd6ece3827ddee">NewOutputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Create an output file handle for the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="304" column="10" bodyfile="iceberg/test/std_io.h" bodystart="304" bodyend="306"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdFileIO_1a1050c568739393ef643f8601086a354e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::test::StdFileIO::DeleteFile</definition>
+        <argsstring>(const std::string &amp;file_location) override</argsstring>
+        <name>DeleteFile</name>
+        <qualifiedname>iceberg::test::StdFileIO::DeleteFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1ace7c9ec329017d5a99082739e8578937">DeleteFile</reimplements>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Delete a file at the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location of the file to delete. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void if the delete succeeded, an error code if the delete failed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="308" column="10" bodyfile="iceberg/test/std_io.h" bodystart="308" bodyend="317"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Simple local filesystem <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementation for testing. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides a basic <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementation that reads and writes files to the local filesystem using standard C++ file streams. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdFileIO</label>
+        <link refid="classiceberg_1_1test_1_1StdFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdFileIO</label>
+        <link refid="classiceberg_1_1test_1_1StdFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/std_io.h" line="289" column="1" bodyfile="iceberg/test/std_io.h" bodystart="289" bodyend="318"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1StdFileIO_1a1050c568739393ef643f8601086a354e" prot="public" virt="virtual"><scope>iceberg::test::StdFileIO</scope><name>DeleteFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a4c7135a7de2494ad9b4ad6aacd65bf45" prot="public" virt="non-virtual"><scope>iceberg::test::StdFileIO</scope><name>FileIO</name></member>
+      <member refid="classiceberg_1_1test_1_1StdFileIO_1a05aaa2438f805520e76fa54aa6f2d8a2" prot="public" virt="virtual"><scope>iceberg::test::StdFileIO</scope><name>NewInputFile</name></member>
+      <member refid="classiceberg_1_1test_1_1StdFileIO_1a7978fa3867d0ce231b735341748f3a28" prot="public" virt="virtual"><scope>iceberg::test::StdFileIO</scope><name>NewInputFile</name></member>
+      <member refid="classiceberg_1_1test_1_1StdFileIO_1a5629cdd8ea1c2a5260b144707f64c0b0" prot="public" virt="virtual"><scope>iceberg::test::StdFileIO</scope><name>NewOutputFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a110b0f784b0e25f51a72ac925799543c" prot="public" virt="virtual"><scope>iceberg::test::StdFileIO</scope><name>ReadFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a4c4d440121e666052c1f55194209c375" prot="public" virt="virtual"><scope>iceberg::test::StdFileIO</scope><name>WriteFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1af3d6e79fa37cfcd2c0a8face664a70ec" prot="public" virt="virtual"><scope>iceberg::test::StdFileIO</scope><name>~FileIO</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

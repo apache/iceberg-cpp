@@ -1,0 +1,623 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1AuthProperties" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::AuthProperties</compoundname>
+    <basecompoundref refid="classiceberg_1_1ConfigBase" prot="public" virt="non-virtual">iceberg::ConfigBase&lt; AuthProperties &gt;</basecompoundref>
+    <includes refid="auth__properties_8h" local="no">auth_properties.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a7b11be3f0407699ba7ab8850420616a7" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>const <ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref>&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties" kindref="compound">AuthProperties</ref> &gt;::Entry&lt; T &gt;</type>
+        <definition>using iceberg::rest::auth::AuthProperties::Entry =  const ConfigBase&lt;AuthProperties&gt;::Entry&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>Entry</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::Entry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="40" column="3" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a46cab002d49cac707eaf1db737f43fb5" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kAuthType</definition>
+        <argsstring></argsstring>
+        <name>kAuthType</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kAuthType</qualifiedname>
+        <initializer>= &quot;rest.auth.type&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="44" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1af7176f5743cbb958b6cdeca6b36d6205" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kAuthTypeNone</definition>
+        <argsstring></argsstring>
+        <name>kAuthTypeNone</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kAuthTypeNone</qualifiedname>
+        <initializer>= &quot;none&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="45" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ad0c6fc6cca23b59c1513977ff7377851" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kAuthTypeBasic</definition>
+        <argsstring></argsstring>
+        <name>kAuthTypeBasic</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kAuthTypeBasic</qualifiedname>
+        <initializer>= &quot;basic&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="46" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a2bcd4dacfef4b100f2659e0ba80ff539" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kAuthTypeOAuth2</definition>
+        <argsstring></argsstring>
+        <name>kAuthTypeOAuth2</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kAuthTypeOAuth2</qualifiedname>
+        <initializer>= &quot;oauth2&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="47" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a8eacab90e2a4c10aee6c753d7fb01401" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kAuthTypeSigV4</definition>
+        <argsstring></argsstring>
+        <name>kAuthTypeSigV4</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kAuthTypeSigV4</qualifiedname>
+        <initializer>= &quot;sigv4&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="48" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aeb24478a173e654ba4025ecb3fd28685" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kBasicUsername</definition>
+        <argsstring></argsstring>
+        <name>kBasicUsername</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kBasicUsername</qualifiedname>
+        <initializer>= &quot;rest.auth.basic.username&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="52" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1adec7f7b8606b127d8514b1a1fa6cce29" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kBasicPassword</definition>
+        <argsstring></argsstring>
+        <name>kBasicPassword</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kBasicPassword</qualifiedname>
+        <initializer>= &quot;rest.auth.basic.password&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="53" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aa69823da0ab682eb134efdd596e84de3" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kSigV4Region</definition>
+        <argsstring></argsstring>
+        <name>kSigV4Region</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kSigV4Region</qualifiedname>
+        <initializer>= &quot;rest.auth.sigv4.region&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="57" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a2015a6bdd368668ec4d33f1a24a02fa2" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kSigV4Service</definition>
+        <argsstring></argsstring>
+        <name>kSigV4Service</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kSigV4Service</qualifiedname>
+        <initializer>= &quot;rest.auth.sigv4.service&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="58" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a055cc0337696cac908e2370c961b2277" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::rest::auth::AuthProperties::kSigV4DelegateAuthType</definition>
+        <argsstring></argsstring>
+        <name>kSigV4DelegateAuthType</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kSigV4DelegateAuthType</qualifiedname>
+        <initializer>=
+      &quot;rest.auth.sigv4.delegate-auth-type&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="59" column="35" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1add7d4ada74870c815f75d93ff034d43e" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::rest::auth::AuthProperties::kToken</definition>
+        <argsstring></argsstring>
+        <name>kToken</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kToken</qualifiedname>
+        <initializer>{&quot;token&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="64" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="64" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a15bf7ad374f8fcd122af58e3602a5313" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::rest::auth::AuthProperties::kCredential</definition>
+        <argsstring></argsstring>
+        <name>kCredential</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kCredential</qualifiedname>
+        <initializer>{&quot;credential&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="65" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aa6491626c3bad61feb208c2276b223f6" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::rest::auth::AuthProperties::kScope</definition>
+        <argsstring></argsstring>
+        <name>kScope</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kScope</qualifiedname>
+        <initializer>{&quot;scope&quot;, &quot;catalog&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="66" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1af103cf25e5dcc5ef5244b6d81cdfeaf8" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::rest::auth::AuthProperties::kOAuth2ServerUri</definition>
+        <argsstring></argsstring>
+        <name>kOAuth2ServerUri</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kOAuth2ServerUri</qualifiedname>
+        <initializer>{&quot;oauth2-server-uri&quot;,
+                                                    &quot;v1/oauth/tokens&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="67" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="67" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a692502da607b38deb34ac997ba88b8bb" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::rest::auth::AuthProperties::kKeepRefreshed</definition>
+        <argsstring></argsstring>
+        <name>kKeepRefreshed</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kKeepRefreshed</qualifiedname>
+        <initializer>{&quot;token-refresh-enabled&quot;, true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="69" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aa613cf8fc2b78db6d147b023d03730fe" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::rest::auth::AuthProperties::kExchangeEnabled</definition>
+        <argsstring></argsstring>
+        <name>kExchangeEnabled</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kExchangeEnabled</qualifiedname>
+        <initializer>{&quot;token-exchange-enabled&quot;, true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="70" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a632283e1dfc5c1bd7efb8c25835dda78" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::rest::auth::AuthProperties::kAudience</definition>
+        <argsstring></argsstring>
+        <name>kAudience</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kAudience</qualifiedname>
+        <initializer>{&quot;audience&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="71" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="71" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a521a59b93959bbc01a04110ee88f0713" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::rest::auth::AuthProperties::kResource</definition>
+        <argsstring></argsstring>
+        <name>kResource</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::kResource</qualifiedname>
+        <initializer>{&quot;resource&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="72" column="23" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ae19f84da91d52fd7e739669be8d020b9" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::AuthProperties::client_id_</definition>
+        <argsstring></argsstring>
+        <name>client_id_</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::client_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="100" column="15" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a4af59cea5fe586caabd19ad572d7cef3" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::AuthProperties::client_secret_</definition>
+        <argsstring></argsstring>
+        <name>client_secret_</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::client_secret_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="101" column="15" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ab507016f2dfb34009198ff29a3b8427d" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::AuthProperties::token_type_</definition>
+        <argsstring></argsstring>
+        <name>token_type_</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::token_type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="102" column="15" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a60a970950275d91d929c9aab82e9a51a" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::rest::auth::AuthProperties::expires_at_millis_</definition>
+        <argsstring></argsstring>
+        <name>expires_at_millis_</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::expires_at_millis_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="103" column="17" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a727340e935fb440f9d1b2249c11de77a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties" kindref="compound">AuthProperties</ref> &gt;</type>
+        <definition>Result&lt; AuthProperties &gt; iceberg::rest::auth::AuthProperties::FromProperties</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>FromProperties</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::FromProperties</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Build an <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties" kindref="compound">AuthProperties</ref> from a properties map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="75" column="17" bodyfile="iceberg/catalog/rest/auth/auth_properties.cc" bodystart="52" bodyend="81"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1abf994144d9b4a7a4a90b724b77b6c26c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::AuthProperties::token</definition>
+        <argsstring>() const</argsstring>
+        <name>token</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::token</qualifiedname>
+        <briefdescription>
+<para>Get the bearer token. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="79" column="15" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a1ef10527c950afc8ea7d2890c5c3bcdf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::AuthProperties::credential</definition>
+        <argsstring>() const</argsstring>
+        <name>credential</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::credential</qualifiedname>
+        <briefdescription>
+<para>Get the raw credential string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="81" column="15" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="81" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a9bf9004c9134712b456ec7188f65fd87" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::AuthProperties::scope</definition>
+        <argsstring>() const</argsstring>
+        <name>scope</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::scope</qualifiedname>
+        <briefdescription>
+<para>Get the OAuth2 scope. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="83" column="15" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="83" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a2de70e190a117ccdd1a460abd4a1da27" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::AuthProperties::oauth2_server_uri</definition>
+        <argsstring>() const</argsstring>
+        <name>oauth2_server_uri</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::oauth2_server_uri</qualifiedname>
+        <briefdescription>
+<para>Get the token endpoint URI. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="85" column="15" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="85" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ae5dcc0573e8885878a9ee885adee9871" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::auth::AuthProperties::keep_refreshed</definition>
+        <argsstring>() const</argsstring>
+        <name>keep_refreshed</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::keep_refreshed</qualifiedname>
+        <briefdescription>
+<para>Whether token refresh is enabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="87" column="8" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="87" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a6b71a671c13d68aa09858989fa948490" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::auth::AuthProperties::exchange_enabled</definition>
+        <argsstring>() const</argsstring>
+        <name>exchange_enabled</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::exchange_enabled</qualifiedname>
+        <briefdescription>
+<para>Whether token exchange is enabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="89" column="8" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1acb9a674a365dad9149c9025982b3f61b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::rest::auth::AuthProperties::client_id</definition>
+        <argsstring>() const</argsstring>
+        <name>client_id</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::client_id</qualifiedname>
+        <briefdescription>
+<para>Parsed client_id from credential (empty if no colon). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="92" column="21" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="92" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a89ad096600233a1cce6cddd9e17a18e9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::rest::auth::AuthProperties::client_secret</definition>
+        <argsstring>() const</argsstring>
+        <name>client_secret</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::client_secret</qualifiedname>
+        <briefdescription>
+<para>Parsed client_secret from credential. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="94" column="21" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="94" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a0196f616aa5a29422b52ac5d4a2266ce" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; iceberg::rest::auth::AuthProperties::optional_oauth_params</definition>
+        <argsstring>() const</argsstring>
+        <name>optional_oauth_params</name>
+        <qualifiedname>iceberg::rest::auth::AuthProperties::optional_oauth_params</qualifiedname>
+        <briefdescription>
+<para>Build optional OAuth params (audience, resource) from config. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_properties.h" line="97" column="22" bodyfile="iceberg/catalog/rest/auth/auth_properties.cc" bodystart="40" bodyend="50"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Authentication properties. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; AuthProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::auth::AuthProperties</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; AuthProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::auth::AuthProperties</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>kAuthType</edgelabel>
+          <edgelabel>kAuthTypeBasic</edgelabel>
+          <edgelabel>kAuthTypeNone</edgelabel>
+          <edgelabel>kAuthTypeOAuth2</edgelabel>
+          <edgelabel>kAuthTypeSigV4</edgelabel>
+          <edgelabel>kBasicPassword</edgelabel>
+          <edgelabel>kBasicUsername</edgelabel>
+          <edgelabel>kSigV4DelegateAuthType</edgelabel>
+          <edgelabel>kSigV4Region</edgelabel>
+          <edgelabel>kSigV4Service</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/auth/auth_properties.h" line="37" column="1" bodyfile="iceberg/catalog/rest/auth/auth_properties.h" bodystart="37" bodyend="104"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1acb9a674a365dad9149c9025982b3f61b" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>client_id</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ae19f84da91d52fd7e739669be8d020b9" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>client_id_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a89ad096600233a1cce6cddd9e17a18e9" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>client_secret</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a4af59cea5fe586caabd19ad572d7cef3" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>client_secret_</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a464281576df4a683611d8319e578257c" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a5988dbb52a6ce914c88ef10c66e5bba7" prot="protected" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>configs_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a1ef10527c950afc8ea7d2890c5c3bcdf" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>credential</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a7b11be3f0407699ba7ab8850420616a7" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>Entry</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a6b71a671c13d68aa09858989fa948490" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>exchange_enabled</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a60a970950275d91d929c9aab82e9a51a" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>expires_at_millis_</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a78dc1c7d65af1e096a19fc77d2c9ed39" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>Extract</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a727340e935fb440f9d1b2249c11de77a" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>FromProperties</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a793c5c7e230dac7b87c16200f8263db6" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a632283e1dfc5c1bd7efb8c25835dda78" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kAudience</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a46cab002d49cac707eaf1db737f43fb5" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kAuthType</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ad0c6fc6cca23b59c1513977ff7377851" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kAuthTypeBasic</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1af7176f5743cbb958b6cdeca6b36d6205" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kAuthTypeNone</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a2bcd4dacfef4b100f2659e0ba80ff539" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kAuthTypeOAuth2</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a8eacab90e2a4c10aee6c753d7fb01401" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kAuthTypeSigV4</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1adec7f7b8606b127d8514b1a1fa6cce29" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kBasicPassword</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aeb24478a173e654ba4025ecb3fd28685" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kBasicUsername</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a15bf7ad374f8fcd122af58e3602a5313" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kCredential</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ae5dcc0573e8885878a9ee885adee9871" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>keep_refreshed</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aa613cf8fc2b78db6d147b023d03730fe" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kExchangeEnabled</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a692502da607b38deb34ac997ba88b8bb" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kKeepRefreshed</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1af103cf25e5dcc5ef5244b6d81cdfeaf8" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kOAuth2ServerUri</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a521a59b93959bbc01a04110ee88f0713" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kResource</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aa6491626c3bad61feb208c2276b223f6" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kScope</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a055cc0337696cac908e2370c961b2277" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kSigV4DelegateAuthType</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1aa69823da0ab682eb134efdd596e84de3" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kSigV4Region</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a2015a6bdd368668ec4d33f1a24a02fa2" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kSigV4Service</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1add7d4ada74870c815f75d93ff034d43e" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>kToken</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a75f09e1cd2bb55b4df854298ed678313" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>mutable_configs</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a2de70e190a117ccdd1a460abd4a1da27" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>oauth2_server_uri</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a0196f616aa5a29422b52ac5d4a2266ce" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>optional_oauth_params</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a95b58a9275880fc2437210f42e8946f2" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1a9bf9004c9134712b456ec7188f65fd87" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>scope</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a3c626ca9dd5adf5a1f2e72d3f751059c" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1abf994144d9b4a7a4a90b724b77b6c26c" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>token</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties_1ab507016f2dfb34009198ff29a3b8427d" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>token_type_</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a1fe814df79a9ed72e34fa9d7e6e8d443" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::AuthProperties</scope><name>Unset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

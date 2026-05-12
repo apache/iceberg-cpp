@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1RoundTripParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::RoundTripParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1RoundTripParam_1a9e12e5219822f3a6e69174d285da7c5a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::RoundTripParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::avro::RoundTripParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1193" column="15" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1RoundTripParam_1a1ba80e7046787300cd146a62725eb503" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::avro::RoundTripParam::iceberg_schema</definition>
+        <argsstring></argsstring>
+        <name>iceberg_schema</name>
+        <qualifiedname>iceberg::avro::RoundTripParam::iceberg_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1194" column="19" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1194" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1RoundTripParam_1a7884f3aec06bbb5080463d2d8d749152" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::RoundTripParam::arrow_json</definition>
+        <argsstring></argsstring>
+        <name>arrow_json</name>
+        <qualifiedname>iceberg::avro::RoundTripParam::arrow_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="1195" column="15" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1195" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="7">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::RoundTripParam</label>
+        <link refid="structiceberg_1_1avro_1_1RoundTripParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>arrow_json</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>iceberg_schema</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::string_view</label>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_data_test.cc" line="1192" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="1192" bodyend="1196"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1RoundTripParam_1a7884f3aec06bbb5080463d2d8d749152" prot="public" virt="non-virtual"><scope>iceberg::avro::RoundTripParam</scope><name>arrow_json</name></member>
+      <member refid="structiceberg_1_1avro_1_1RoundTripParam_1a1ba80e7046787300cd146a62725eb503" prot="public" virt="non-virtual"><scope>iceberg::avro::RoundTripParam</scope><name>iceberg_schema</name></member>
+      <member refid="structiceberg_1_1avro_1_1RoundTripParam_1a9e12e5219822f3a6e69174d285da7c5a" prot="public" virt="non-virtual"><scope>iceberg::avro::RoundTripParam</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

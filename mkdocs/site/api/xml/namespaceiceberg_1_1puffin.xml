@@ -1,0 +1,549 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1puffin" kind="namespace" language="C++">
+    <compoundname>iceberg::puffin</compoundname>
+    <innerclass refid="structiceberg_1_1puffin_1_1Blob" prot="public">iceberg::puffin::Blob</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1BlobMetadata" prot="public">iceberg::puffin::BlobMetadata</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1BlobMetadataJsonParam" prot="public">iceberg::puffin::BlobMetadataJsonParam</innerclass>
+    <innerclass refid="classiceberg_1_1puffin_1_1BlobMetadataJsonTest" prot="public">iceberg::puffin::BlobMetadataJsonTest</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1FileMetadata" prot="public">iceberg::puffin::FileMetadata</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1InvalidBlobMetadataJsonParam" prot="public">iceberg::puffin::InvalidBlobMetadataJsonParam</innerclass>
+    <innerclass refid="classiceberg_1_1puffin_1_1InvalidBlobMetadataJsonTest" prot="public">iceberg::puffin::InvalidBlobMetadataJsonTest</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1PuffinFormat" prot="public">iceberg::puffin::PuffinFormat</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1StandardBlobTypes" prot="public">iceberg::puffin::StandardBlobTypes</innerclass>
+    <innerclass refid="structiceberg_1_1puffin_1_1StandardPuffinProperties" prot="public">iceberg::puffin::StandardPuffinProperties</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>PuffinCompressionCodec</name>
+        <qualifiedname>iceberg::puffin::PuffinCompressionCodec</qualifiedname>
+        <enumvalue id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cca35c3ace1970663a16e5c65baa5941b13" prot="public">
+          <name>kNone</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cca1e4f1a721e48e902f0f6f792841fc5da" prot="public">
+          <name>kLz4</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06ccaae6c9a6b443fe27d3385c2bafd7744c2" prot="public">
+          <name>kZstd</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Compression codecs supported by Puffin files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="38" column="1" bodyfile="iceberg/puffin/file_metadata.h" bodystart="38" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="enum" id="puffin__format_8h_1a2cd3ff021208ed4bccdf50de53744870" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>PuffinFlag</name>
+        <qualifiedname>iceberg::puffin::PuffinFlag</qualifiedname>
+        <enumvalue id="puffin__format_8h_1a2cd3ff021208ed4bccdf50de53744870a6919a327c0dd61cf2818006d9ceb022f" prot="public">
+          <name>kFooterPayloadCompressed</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+<para>Whether the footer payload is compressed. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Footer flags for Puffin files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="58" column="1" bodyfile="iceberg/puffin/puffin_format.h" bodystart="58" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="file__metadata_8cc_1ad6e56d2c95523a28c547f15a0c132ff3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>ICEBERG_DATA_EXPORT std::string_view iceberg::puffin::CodecName</definition>
+        <argsstring>(PuffinCompressionCodec codec)</argsstring>
+        <name>CodecName</name>
+        <qualifiedname>iceberg::puffin::CodecName</qualifiedname>
+        <param>
+          <type><ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+          <declname>codec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="34" column="18" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="34" bodyend="44" declfile="iceberg/puffin/file_metadata.h" declline="44" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1ab1ec3e795b6cb1990eae3b53cc6bd793" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref> &gt;</type>
+        <definition>ICEBERG_DATA_EXPORT Result&lt; PuffinCompressionCodec &gt; iceberg::puffin::PuffinCompressionCodecFromName</definition>
+        <argsstring>(std::string_view codec_name)</argsstring>
+        <name>PuffinCompressionCodecFromName</name>
+        <qualifiedname>iceberg::puffin::PuffinCompressionCodecFromName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>codec_name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="46" column="8" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="46" bodyend="58" declfile="iceberg/puffin/file_metadata.h" declline="46" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1aa59a86399aca0ff8f67d13c925e47815" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_DATA_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(PuffinCompressionCodec codec)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type><ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+          <declname>codec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="60" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="60" bodyend="62" declfile="iceberg/puffin/file_metadata.h" declline="49" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1ad4b1d07a19160db7f26031b928cdbfd5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_DATA_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(const Blob &amp;blob)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref> &amp;</type>
+          <declname>blob</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="64" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="64" bodyend="80" declfile="iceberg/puffin/file_metadata.h" declline="87" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1ae67ead257f7490f55dcd4d48b0b630e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_DATA_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(const BlobMetadata &amp;blob_metadata)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &amp;</type>
+          <declname>blob_metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="82" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="82" bodyend="99" declfile="iceberg/puffin/file_metadata.h" declline="108" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="file__metadata_8cc_1a014b7ed48a8f2c1623fb3e85e5e49ada" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_DATA_EXPORT std::string iceberg::puffin::ToString</definition>
+        <argsstring>(const FileMetadata &amp;file_metadata)</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::puffin::ToString</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &amp;</type>
+          <declname>file_metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.cc" line="101" column="13" bodyfile="iceberg/puffin/file_metadata.cc" bodystart="101" bodyend="116" declfile="iceberg/puffin/file_metadata.h" declline="118" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin_2json__serde_8cc_1a303f3aa8966ed7614b28d78dcd012aff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>nlohmann::json</type>
+        <definition>ICEBERG_DATA_EXPORT nlohmann::json iceberg::puffin::ToJson</definition>
+        <argsstring>(const BlobMetadata &amp;blob_metadata)</argsstring>
+        <name>ToJson</name>
+        <qualifiedname>iceberg::puffin::ToJson</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &amp;</type>
+          <declname>blob_metadata</declname>
+        </param>
+        <briefdescription>
+<para>Serialize a <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> to JSON. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/json_serde.cc" line="41" column="16" bodyfile="iceberg/puffin/json_serde.cc" bodystart="41" bodyend="54" declfile="iceberg/puffin/json_serde_internal.h" declline="37" declcolumn="36"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin_2json__serde_8cc_1aea4c53be0331ad885916047e712aa4c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &gt;</type>
+        <definition>ICEBERG_DATA_EXPORT Result&lt; BlobMetadata &gt; iceberg::puffin::BlobMetadataFromJson</definition>
+        <argsstring>(const nlohmann::json &amp;json)</argsstring>
+        <name>BlobMetadataFromJson</name>
+        <qualifiedname>iceberg::puffin::BlobMetadataFromJson</qualifiedname>
+        <param>
+          <type>const nlohmann::json &amp;</type>
+          <declname>json</declname>
+        </param>
+        <briefdescription>
+<para>Deserialize a <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> from JSON. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/json_serde.cc" line="56" column="8" bodyfile="iceberg/puffin/json_serde.cc" bodystart="56" bodyend="74" declfile="iceberg/puffin/json_serde_internal.h" declline="40" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin_2json__serde_8cc_1ab8789cb0dd4b68833bc23b4312fbb4c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>nlohmann::json</type>
+        <definition>ICEBERG_DATA_EXPORT nlohmann::json iceberg::puffin::ToJson</definition>
+        <argsstring>(const FileMetadata &amp;file_metadata)</argsstring>
+        <name>ToJson</name>
+        <qualifiedname>iceberg::puffin::ToJson</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &amp;</type>
+          <declname>file_metadata</declname>
+        </param>
+        <briefdescription>
+<para>Serialize a <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> to JSON. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/json_serde.cc" line="76" column="16" bodyfile="iceberg/puffin/json_serde.cc" bodystart="76" bodyend="88" declfile="iceberg/puffin/json_serde_internal.h" declline="43" declcolumn="36"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin_2json__serde_8cc_1a85d5f6e43826808afd29b7f634a04853" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &gt;</type>
+        <definition>ICEBERG_DATA_EXPORT Result&lt; FileMetadata &gt; iceberg::puffin::FileMetadataFromJson</definition>
+        <argsstring>(const nlohmann::json &amp;json)</argsstring>
+        <name>FileMetadataFromJson</name>
+        <qualifiedname>iceberg::puffin::FileMetadataFromJson</qualifiedname>
+        <param>
+          <type>const nlohmann::json &amp;</type>
+          <declname>json</declname>
+        </param>
+        <briefdescription>
+<para>Deserialize a <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> from JSON. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/json_serde.cc" line="90" column="8" bodyfile="iceberg/puffin/json_serde.cc" bodystart="90" bodyend="108" declfile="iceberg/puffin/json_serde_internal.h" declline="46" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin_2json__serde_8cc_1acca7cdf9178ffa5067b3cf07edd592c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>ICEBERG_DATA_EXPORT std::string iceberg::puffin::ToJsonString</definition>
+        <argsstring>(const FileMetadata &amp;file_metadata, bool pretty=false)</argsstring>
+        <name>ToJsonString</name>
+        <qualifiedname>iceberg::puffin::ToJsonString</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &amp;</type>
+          <declname>file_metadata</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>pretty</declname>
+        </param>
+        <briefdescription>
+<para>Serialize a <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> to a JSON string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/json_serde.cc" line="110" column="13" bodyfile="iceberg/puffin/json_serde.cc" bodystart="110" bodyend="113" declfile="iceberg/puffin/json_serde_internal.h" declline="49" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin_2json__serde_8cc_1aa2e50733bde1e688057e7fee9bd78896" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &gt;</type>
+        <definition>ICEBERG_DATA_EXPORT Result&lt; FileMetadata &gt; iceberg::puffin::FileMetadataFromJsonString</definition>
+        <argsstring>(std::string_view json_string)</argsstring>
+        <name>FileMetadataFromJsonString</name>
+        <qualifiedname>iceberg::puffin::FileMetadataFromJsonString</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>json_string</declname>
+        </param>
+        <briefdescription>
+<para>Deserialize a <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> from a JSON string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/json_serde.cc" line="115" column="8" bodyfile="iceberg/puffin/json_serde.cc" bodystart="115" bodyend="125" declfile="iceberg/puffin/json_serde_internal.h" declline="53" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__format_8cc_1aed751ea08aa52c77bbc777834f24a68f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>ICEBERG_DATA_EXPORT bool iceberg::puffin::IsFlagSet</definition>
+        <argsstring>(std::span&lt; const uint8_t, 4 &gt; flags, PuffinFlag flag)</argsstring>
+        <name>IsFlagSet</name>
+        <qualifiedname>iceberg::puffin::IsFlagSet</qualifiedname>
+        <param>
+          <type>std::span&lt; const uint8_t, 4 &gt;</type>
+          <declname>flags</declname>
+        </param>
+        <param>
+          <type><ref refid="puffin__format_8h_1a2cd3ff021208ed4bccdf50de53744870" kindref="member">PuffinFlag</ref></type>
+          <declname>flag</declname>
+        </param>
+        <briefdescription>
+<para>Check if a flag is set in the flags bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.cc" line="68" column="6" bodyfile="iceberg/puffin/puffin_format.cc" bodystart="68" bodyend="71" declfile="iceberg/puffin/puffin_format.h" declline="64" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__format_8cc_1a30fd1ed640db4cf85fa9784cffcf4e8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>ICEBERG_DATA_EXPORT void iceberg::puffin::SetFlag</definition>
+        <argsstring>(std::span&lt; uint8_t, 4 &gt; flags, PuffinFlag flag)</argsstring>
+        <name>SetFlag</name>
+        <qualifiedname>iceberg::puffin::SetFlag</qualifiedname>
+        <param>
+          <type>std::span&lt; uint8_t, 4 &gt;</type>
+          <declname>flags</declname>
+        </param>
+        <param>
+          <type><ref refid="puffin__format_8h_1a2cd3ff021208ed4bccdf50de53744870" kindref="member">PuffinFlag</ref></type>
+          <declname>flag</declname>
+        </param>
+        <briefdescription>
+<para>Set a flag in the flags bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.cc" line="73" column="6" bodyfile="iceberg/puffin/puffin_format.cc" bodystart="73" bodyend="76" declfile="iceberg/puffin/puffin_format.h" declline="67" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__format__test_8cc_1a36bc5c649db52f3c651eeac4e66d89c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::TEST</definition>
+        <argsstring>(PuffinFormatTest, FlagSetAndCheck)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::puffin::TEST</qualifiedname>
+        <param>
+          <type>PuffinFormatTest</type>
+        </param>
+        <param>
+          <type>FlagSetAndCheck</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_format_test.cc" line="29" column="1" bodyfile="iceberg/test/puffin_format_test.cc" bodystart="29" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__json__test_8cc_1a3b4c563e20afb3d90c3107f7770c17f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::TEST_P</definition>
+        <argsstring>(BlobMetadataJsonTest, RoundTrip)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::puffin::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1puffin_1_1BlobMetadataJsonTest" kindref="compound">BlobMetadataJsonTest</ref></type>
+        </param>
+        <param>
+          <type>RoundTrip</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="41" column="1" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="41" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__json__test_8cc_1ad3b28b62444e00a2c7aa624343766d3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(PuffinJson, BlobMetadataJsonTest, ::testing::Values(BlobMetadataJsonParam{ .name=&quot;AllFields&quot;,.blob={.type=&quot;apache-datasketches-theta-v1&quot;,.input_fields={1, 2},.snapshot_id=12345,.sequence_number=67,.offset=100,.length=200,.compression_codec=&quot;zstd&quot;,.properties={{&quot;key&quot;, &quot;value&quot;}}},.expected_json=R&quot;({
+              &quot;type&quot;: &quot;apache-datasketches-theta-v1&quot;,
+              &quot;fields&quot;: [1, 2],
+              &quot;snapshot-id&quot;: 12345,
+              &quot;sequence-number&quot;: 67,
+              &quot;offset&quot;: 100,
+              &quot;length&quot;: 200,
+              &quot;compression-codec&quot;: &quot;zstd&quot;,
+              &quot;properties&quot;: {&quot;key&quot;: &quot;value&quot;}
+            })&quot;}, BlobMetadataJsonParam{.name=&quot;MinimalFields&quot;,.blob={.type=&quot;test-type&quot;,.input_fields={1},.snapshot_id=100,.sequence_number=1,.offset=0,.length=50},.expected_json=R&quot;({
+              &quot;type&quot;: &quot;test-type&quot;,
+              &quot;fields&quot;: [1],
+              &quot;snapshot-id&quot;: 100,
+              &quot;sequence-number&quot;: 1,
+              &quot;offset&quot;: 0,
+              &quot;length&quot;: 50
+            })&quot;}), [](const ::testing::TestParamInfo&lt; BlobMetadataJsonParam &gt; &amp;info) { return info.param.name;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::puffin::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>PuffinJson</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1puffin_1_1BlobMetadataJsonTest" kindref="compound">BlobMetadataJsonTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::Values(<ref refid="structiceberg_1_1puffin_1_1BlobMetadataJsonParam" kindref="compound">BlobMetadataJsonParam</ref>{ .name=&quot;AllFields&quot;,.blob={.type=&quot;apache-datasketches-theta-v1&quot;,.input_fields={1, 2},.snapshot_id=12345,.sequence_number=67,.offset=100,.length=200,.compression_codec=&quot;zstd&quot;,.properties={{&quot;key&quot;, &quot;value&quot;}}},.expected_json=R&quot;({              &quot;type&quot;: &quot;apache-datasketches-theta-v1&quot;,              &quot;fields&quot;: [1, 2],              &quot;snapshot-id&quot;: 12345,              &quot;sequence-number&quot;: 67,              &quot;offset&quot;: 100,              &quot;length&quot;: 200,              &quot;compression-codec&quot;: &quot;zstd&quot;,              &quot;properties&quot;: {&quot;key&quot;: &quot;value&quot;}            })&quot;}, BlobMetadataJsonParam{.name=&quot;MinimalFields&quot;,.blob={.type=&quot;test-type&quot;,.input_fields={1},.snapshot_id=100,.sequence_number=1,.offset=0,.length=50},.expected_json=R&quot;({              &quot;type&quot;: &quot;test-type&quot;,              &quot;fields&quot;: [1],              &quot;snapshot-id&quot;: 100,              &quot;sequence-number&quot;: 1,              &quot;offset&quot;: 0,              &quot;length&quot;: 50            })&quot;})</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadataJsonParam" kindref="compound">BlobMetadataJsonParam</ref> &gt; &amp;info) { return info.param.name;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="51" column="1" declfile="iceberg/test/puffin_json_test.cc" declline="51" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__json__test_8cc_1addc84bddcf562b064185f07300a1fea2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::TEST_P</definition>
+        <argsstring>(InvalidBlobMetadataJsonTest, DeserializeFails)</argsstring>
+        <name>TEST_P</name>
+        <qualifiedname>iceberg::puffin::TEST_P</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1puffin_1_1InvalidBlobMetadataJsonTest" kindref="compound">InvalidBlobMetadataJsonTest</ref></type>
+        </param>
+        <param>
+          <type>DeserializeFails</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="102" column="1" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="102" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__json__test_8cc_1a1e27e7f34620b3f9065250475f298cc1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::INSTANTIATE_TEST_SUITE_P</definition>
+        <argsstring>(PuffinJson, InvalidBlobMetadataJsonTest, ::testing::Values(InvalidBlobMetadataJsonParam{.name=&quot;MissingType&quot;,.json=R&quot;({&quot;fields&quot;:[1],&quot;snapshot-id&quot;:1,
+                                       &quot;sequence-number&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingFields&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;snapshot-id&quot;:1,
+                                       &quot;sequence-number&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingSnapshotId&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],
+                                       &quot;sequence-number&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingSequenceNumber&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],
+                                       &quot;snapshot-id&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingOffset&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],
+                                       &quot;snapshot-id&quot;:1,&quot;sequence-number&quot;:1,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingLength&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],
+                                       &quot;snapshot-id&quot;:1,&quot;sequence-number&quot;:1,&quot;offset&quot;:0})&quot;}), [](const ::testing::TestParamInfo&lt; InvalidBlobMetadataJsonParam &gt; &amp;info) { return info.param.name;})</argsstring>
+        <name>INSTANTIATE_TEST_SUITE_P</name>
+        <qualifiedname>iceberg::puffin::INSTANTIATE_TEST_SUITE_P</qualifiedname>
+        <param>
+          <type>PuffinJson</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1puffin_1_1InvalidBlobMetadataJsonTest" kindref="compound">InvalidBlobMetadataJsonTest</ref></type>
+        </param>
+        <param>
+          <type>::testing::Values(<ref refid="structiceberg_1_1puffin_1_1InvalidBlobMetadataJsonParam" kindref="compound">InvalidBlobMetadataJsonParam</ref>{.name=&quot;MissingType&quot;,.json=R&quot;({&quot;fields&quot;:[1],&quot;snapshot-id&quot;:1,                                       &quot;sequence-number&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingFields&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;snapshot-id&quot;:1,                                       &quot;sequence-number&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingSnapshotId&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],                                       &quot;sequence-number&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingSequenceNumber&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],                                       &quot;snapshot-id&quot;:1,&quot;offset&quot;:0,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingOffset&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],                                       &quot;snapshot-id&quot;:1,&quot;sequence-number&quot;:1,&quot;length&quot;:10})&quot;}, InvalidBlobMetadataJsonParam{.name=&quot;MissingLength&quot;,.json=R&quot;({&quot;type&quot;:&quot;t&quot;,&quot;fields&quot;:[1],                                       &quot;snapshot-id&quot;:1,&quot;sequence-number&quot;:1,&quot;offset&quot;:0})&quot;})</type>
+        </param>
+        <param>
+          <attributes>[]</attributes>
+          <type>(const ::testing::TestParamInfo&lt; <ref refid="structiceberg_1_1puffin_1_1InvalidBlobMetadataJsonParam" kindref="compound">InvalidBlobMetadataJsonParam</ref> &gt; &amp;info) { return info.param.name;}</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="107" column="1" declfile="iceberg/test/puffin_json_test.cc" declline="107" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__json__test_8cc_1a030a06a8e3a9f8f4c07b3f7599a971b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::TEST</definition>
+        <argsstring>(PuffinJsonTest, FileMetadataRoundTrip)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::puffin::TEST</qualifiedname>
+        <param>
+          <type>PuffinJsonTest</type>
+        </param>
+        <param>
+          <type>FileMetadataRoundTrip</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="134" column="1" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="134" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__json__test_8cc_1aea8134e81c8cc3f01c3aa79ef4d18f7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::TEST</definition>
+        <argsstring>(PuffinJsonTest, FileMetadataStringRoundTrip)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::puffin::TEST</qualifiedname>
+        <param>
+          <type>PuffinJsonTest</type>
+        </param>
+        <param>
+          <type>FileMetadataStringRoundTrip</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="182" column="1" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="182" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="function" id="puffin__json__test_8cc_1a1e37b1a399a568de0a249badca23117d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::TEST</definition>
+        <argsstring>(PuffinJsonTest, FileMetadataFromInvalidString)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::puffin::TEST</qualifiedname>
+        <param>
+          <type>PuffinJsonTest</type>
+        </param>
+        <param>
+          <type>FileMetadataFromInvalidString</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/puffin_json_test.cc" line="195" column="1" bodyfile="iceberg/test/puffin_json_test.cc" bodystart="195" bodyend="199"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/puffin/file_metadata.cc" line="27" column="1"/>
+  </compounddef>
+</doxygen>

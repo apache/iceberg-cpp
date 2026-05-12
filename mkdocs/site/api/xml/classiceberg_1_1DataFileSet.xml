@@ -1,0 +1,355 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DataFileSet" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DataFileSet</compoundname>
+    <includes refid="data__file__set_8h" local="no">data_file_set.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1DataFileSet_1abae3888e612ba9a78f1d57135361b7ee" prot="public" static="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>using iceberg::DataFileSet::value_type =  std::shared_ptr&lt;DataFile&gt;</definition>
+        <argsstring></argsstring>
+        <name>value_type</name>
+        <qualifiedname>iceberg::DataFileSet::value_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="43" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1DataFileSet_1af782885a799c24a67409d3d11a545946" prot="public" static="no">
+        <type>typename std::vector&lt; value_type &gt;::iterator</type>
+        <definition>using iceberg::DataFileSet::iterator =  typename std::vector&lt;value_type&gt;::iterator</definition>
+        <argsstring></argsstring>
+        <name>iterator</name>
+        <qualifiedname>iceberg::DataFileSet::iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="44" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1DataFileSet_1abe2c8628e985bbb74c059f33010a0de5" prot="public" static="no">
+        <type>typename std::vector&lt; value_type &gt;::const_iterator</type>
+        <definition>using iceberg::DataFileSet::const_iterator =  typename std::vector&lt;value_type&gt;::const_iterator</definition>
+        <argsstring></argsstring>
+        <name>const_iterator</name>
+        <qualifiedname>iceberg::DataFileSet::const_iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="45" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1DataFileSet_1a8a54d17a1c55aa7ba88e019ff747ba35" prot="public" static="no">
+        <type>typename std::vector&lt; value_type &gt;::difference_type</type>
+        <definition>using iceberg::DataFileSet::difference_type =  typename std::vector&lt;value_type&gt;::difference_type</definition>
+        <argsstring></argsstring>
+        <name>difference_type</name>
+        <qualifiedname>iceberg::DataFileSet::difference_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="46" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DataFileSet_1abc30d7adbd19b30bd01aa477f85304cd" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; value_type &gt;</type>
+        <definition>std::vector&lt;value_type&gt; iceberg::DataFileSet::elements_</definition>
+        <argsstring></argsstring>
+        <name>elements_</name>
+        <qualifiedname>iceberg::DataFileSet::elements_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="104" column="15" bodyfile="iceberg/util/data_file_set.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DataFileSet_1ab06a7f08b76e525bffcf93a16bf5913d" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string_view, size_t, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, <ref refid="structiceberg_1_1StringEqual" kindref="compound">StringEqual</ref> &gt;</type>
+        <definition>std::unordered_map&lt;std::string_view, size_t, StringHash, StringEqual&gt; iceberg::DataFileSet::index_by_path_</definition>
+        <argsstring></argsstring>
+        <name>index_by_path_</name>
+        <qualifiedname>iceberg::DataFileSet::index_by_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="105" column="22" bodyfile="iceberg/util/data_file_set.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1aaa0276b86253a2a1a8e519c986a45f45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DataFileSet::DataFileSet</definition>
+        <argsstring>()=default</argsstring>
+        <name>DataFileSet</name>
+        <qualifiedname>iceberg::DataFileSet::DataFileSet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="48" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1ad8a1b43807bbc7496a21575abb71b431" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::pair&lt; iterator, bool &gt;</type>
+        <definition>std::pair&lt; iterator, bool &gt; iceberg::DataFileSet::insert</definition>
+        <argsstring>(const value_type &amp;file)</argsstring>
+        <name>insert</name>
+        <qualifiedname>iceberg::DataFileSet::insert</qualifiedname>
+        <param>
+          <type>const value_type &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Insert a data file into the set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data file to insert </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pair with an iterator to the inserted element (or the existing one) and a bool indicating whether insertion took place </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="54" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1afda7eaffede5ab7d274fd2e505775bfe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::pair&lt; iterator, bool &gt;</type>
+        <definition>std::pair&lt; iterator, bool &gt; iceberg::DataFileSet::insert</definition>
+        <argsstring>(value_type &amp;&amp;file)</argsstring>
+        <name>insert</name>
+        <qualifiedname>iceberg::DataFileSet::insert</qualifiedname>
+        <param>
+          <type>value_type &amp;&amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Insert a data file into the set (move version). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="57" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="57" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1ad05372f48830697956a2002f9272cf65" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::DataFileSet::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::DataFileSet::size</qualifiedname>
+        <briefdescription>
+<para>Get the number of elements in the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="62" column="10" bodyfile="iceberg/util/data_file_set.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1afa1c160bbab9d68e42883283edae4942" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DataFileSet::empty</definition>
+        <argsstring>() const</argsstring>
+        <name>empty</name>
+        <qualifiedname>iceberg::DataFileSet::empty</qualifiedname>
+        <briefdescription>
+<para>Check if the set is empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="65" column="8" bodyfile="iceberg/util/data_file_set.h" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1a676adcaae68f2c53dae70a682534d069" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DataFileSet::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>iceberg::DataFileSet::clear</qualifiedname>
+        <briefdescription>
+<para>Clear all elements from the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="68" column="8" bodyfile="iceberg/util/data_file_set.h" bodystart="68" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1ae7aa475024e7475b13fee5b147ad089d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>iterator</type>
+        <definition>iterator iceberg::DataFileSet::begin</definition>
+        <argsstring>()</argsstring>
+        <name>begin</name>
+        <qualifiedname>iceberg::DataFileSet::begin</qualifiedname>
+        <briefdescription>
+<para>Get iterator to the beginning. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="74" column="12" bodyfile="iceberg/util/data_file_set.h" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1add3c21d4425d34644c7ced0ab0b714a2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DataFileSet::begin</definition>
+        <argsstring>() const</argsstring>
+        <name>begin</name>
+        <qualifiedname>iceberg::DataFileSet::begin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="75" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1a90c5ab8c1c32fad65113ece85ca6ae6c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DataFileSet::cbegin</definition>
+        <argsstring>() const</argsstring>
+        <name>cbegin</name>
+        <qualifiedname>iceberg::DataFileSet::cbegin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="76" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1a52f39f16b394f713b5e6940a53a7faec" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>iterator</type>
+        <definition>iterator iceberg::DataFileSet::end</definition>
+        <argsstring>()</argsstring>
+        <name>end</name>
+        <qualifiedname>iceberg::DataFileSet::end</qualifiedname>
+        <briefdescription>
+<para>Get iterator to the end. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="79" column="12" bodyfile="iceberg/util/data_file_set.h" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1a7df7684042ad76d68e184897433380f8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DataFileSet::end</definition>
+        <argsstring>() const</argsstring>
+        <name>end</name>
+        <qualifiedname>iceberg::DataFileSet::end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="80" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1a4d9bec9ee0e5b116be3a9142318a3d83" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DataFileSet::cend</definition>
+        <argsstring>() const</argsstring>
+        <name>cend</name>
+        <qualifiedname>iceberg::DataFileSet::cend</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="81" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="81" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1a7ab8d749595050f90704212b4afc3a97" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::span&lt; const value_type &gt;</type>
+        <definition>std::span&lt; const value_type &gt; iceberg::DataFileSet::as_span</definition>
+        <argsstring>() const</argsstring>
+        <name>as_span</name>
+        <qualifiedname>iceberg::DataFileSet::as_span</qualifiedname>
+        <briefdescription>
+<para>Get a non-owning view of the data files in insertion order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="84" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="84" bodyend="84"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1DataFileSet_1a82097a1aceb96d2c38ae19035d8c75be" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::pair&lt; iterator, bool &gt;</type>
+        <definition>std::pair&lt; iterator, bool &gt; iceberg::DataFileSet::InsertImpl</definition>
+        <argsstring>(value_type file)</argsstring>
+        <name>InsertImpl</name>
+        <qualifiedname>iceberg::DataFileSet::InsertImpl</qualifiedname>
+        <param>
+          <type>value_type</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="87" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="87" bodyend="101"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A set of <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> pointers with insertion order preserved and deduplicated by file path. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/data_file_set.h" line="41" column="1" bodyfile="iceberg/util/data_file_set.h" bodystart="41" bodyend="106"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DataFileSet_1a7ab8d749595050f90704212b4afc3a97" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>as_span</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1ae7aa475024e7475b13fee5b147ad089d" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>begin</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1add3c21d4425d34644c7ced0ab0b714a2" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>begin</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1a90c5ab8c1c32fad65113ece85ca6ae6c" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>cbegin</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1a4d9bec9ee0e5b116be3a9142318a3d83" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>cend</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1a676adcaae68f2c53dae70a682534d069" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>clear</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1abe2c8628e985bbb74c059f33010a0de5" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>const_iterator</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1aaa0276b86253a2a1a8e519c986a45f45" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>DataFileSet</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1a8a54d17a1c55aa7ba88e019ff747ba35" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>difference_type</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1abc30d7adbd19b30bd01aa477f85304cd" prot="private" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>elements_</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1afa1c160bbab9d68e42883283edae4942" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>empty</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1a52f39f16b394f713b5e6940a53a7faec" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>end</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1a7df7684042ad76d68e184897433380f8" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>end</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1ab06a7f08b76e525bffcf93a16bf5913d" prot="private" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>index_by_path_</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1ad8a1b43807bbc7496a21575abb71b431" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>insert</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1afda7eaffede5ab7d274fd2e505775bfe" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>insert</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1a82097a1aceb96d2c38ae19035d8c75be" prot="private" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>InsertImpl</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1af782885a799c24a67409d3d11a545946" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>iterator</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1ad05372f48830697956a2002f9272cf65" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>size</name></member>
+      <member refid="classiceberg_1_1DataFileSet_1abae3888e612ba9a78f1d57135361b7ee" prot="public" virt="non-virtual"><scope>iceberg::DataFileSet</scope><name>value_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

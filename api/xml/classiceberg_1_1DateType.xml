@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DateType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DateType</compoundname>
+    <basecompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</basecompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DateType_1a0bfae6454b4ac61e396e577699fe0465" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr const TypeId iceberg::DateType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::DateType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kDate</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="323" column="33" bodyfile="iceberg/type.h" bodystart="323" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DateType_1a1c65d576d9c8b0c6982e8073917b5ee2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DateType::DateType</definition>
+        <argsstring>()=default</argsstring>
+        <name>DateType</name>
+        <qualifiedname>iceberg::DateType::DateType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="325" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DateType_1aed8bca85dcd2560657e1f14c76120d23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DateType::~DateType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~DateType</name>
+        <qualifiedname>iceberg::DateType::~DateType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="326" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DateType_1a52aaefc8bbbb4245bf6307bdb7d14ded" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::DateType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::DateType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="328" column="10" bodyfile="iceberg/type.cc" bodystart="307" bodyend="307"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DateType_1aba6fa8bcd07668bcbadaff316e210bac" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::DateType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::DateType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="329" column="15" bodyfile="iceberg/type.cc" bodystart="308" bodyend="308"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1DateType_1ad20312546a7660cc58682d55bf799510" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DateType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::DateType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="332" column="8" bodyfile="iceberg/type.cc" bodystart="309" bodyend="309"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing a calendar date without reference to a timezone or time. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DateType</label>
+        <link refid="classiceberg_1_1DateType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DateType</label>
+        <link refid="classiceberg_1_1DateType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="321" column="1" bodyfile="iceberg/type.h" bodystart="321" bodyend="333"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DateType_1a1c65d576d9c8b0c6982e8073917b5ee2" prot="public" virt="non-virtual"><scope>iceberg::DateType</scope><name>DateType</name></member>
+      <member refid="classiceberg_1_1DateType_1ad20312546a7660cc58682d55bf799510" prot="protected" virt="virtual"><scope>iceberg::DateType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::DateType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::DateType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1DateType_1a0bfae6454b4ac61e396e577699fe0465" prot="public" virt="non-virtual"><scope>iceberg::DateType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1DateType_1aba6fa8bcd07668bcbadaff316e210bac" prot="public" virt="virtual"><scope>iceberg::DateType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1DateType_1a52aaefc8bbbb4245bf6307bdb7d14ded" prot="public" virt="virtual"><scope>iceberg::DateType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1DateType_1aed8bca85dcd2560657e1f14c76120d23" prot="public" virt="non-virtual"><scope>iceberg::DateType</scope><name>~DateType</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::DateType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::DateType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

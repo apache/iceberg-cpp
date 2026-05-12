@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1puffin_1_1PuffinFormat" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::puffin::PuffinFormat</compoundname>
+    <includes refid="puffin__format_8h" local="no">puffin_format.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1aa51929b1f0819b7d42499a37aa14b228" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::array&lt; uint8_t, 4 &gt;</type>
+        <definition>constexpr std::array&lt;uint8_t, 4&gt; iceberg::puffin::PuffinFormat::kMagicV1</definition>
+        <argsstring></argsstring>
+        <name>kMagicV1</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kMagicV1</qualifiedname>
+        <initializer>= {0x50, 0x46, 0x41, 0x31}</initializer>
+        <briefdescription>
+<para>Magic bytes: &quot;PFA1&quot; (Puffin Fratercula arctica, version 1) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="38" column="31" bodyfile="iceberg/puffin/puffin_format.h" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1ae4695e9217a20b6a0b4765b87b5d3158" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kMagicLength</definition>
+        <argsstring></argsstring>
+        <name>kMagicLength</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kMagicLength</qualifiedname>
+        <initializer>= 4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="40" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1a7b0c234eb105bb5b79912aaff6add19d" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kFooterStartMagicOffset</definition>
+        <argsstring></argsstring>
+        <name>kFooterStartMagicOffset</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kFooterStartMagicOffset</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="41" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1a0b08c3d8ed4b9549a0f701756ab1efbb" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kFooterStartMagicLength</definition>
+        <argsstring></argsstring>
+        <name>kFooterStartMagicLength</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kFooterStartMagicLength</qualifiedname>
+        <initializer>= kMagicLength</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="42" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1a3b14e32b231ad6ed67520960abd0b6f0" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kFooterStructPayloadSizeOffset</definition>
+        <argsstring></argsstring>
+        <name>kFooterStructPayloadSizeOffset</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kFooterStructPayloadSizeOffset</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="43" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1a9a9a5a604721b90b2b3e4479b9d4071d" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kFooterStructFlagsOffset</definition>
+        <argsstring></argsstring>
+        <name>kFooterStructFlagsOffset</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kFooterStructFlagsOffset</qualifiedname>
+        <initializer>= kFooterStructPayloadSizeOffset + 4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="44" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1a2b2688c669650f9e00a7559a7f3ac836" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kFooterStructFlagsLength</definition>
+        <argsstring></argsstring>
+        <name>kFooterStructFlagsLength</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kFooterStructFlagsLength</qualifiedname>
+        <initializer>= 4</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="45" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1a2ad63f2de29f68061ed835104e85f12b" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kFooterStructMagicOffset</definition>
+        <argsstring></argsstring>
+        <name>kFooterStructMagicOffset</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kFooterStructMagicOffset</qualifiedname>
+        <initializer>=
+      kFooterStructFlagsOffset + kFooterStructFlagsLength</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="46" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1a942dd3e333003e1f5099d25eafb4e902" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::puffin::PuffinFormat::kFooterStructLength</definition>
+        <argsstring></argsstring>
+        <name>kFooterStructLength</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kFooterStructLength</qualifiedname>
+        <initializer>= kFooterStructMagicOffset + kMagicLength</initializer>
+        <briefdescription>
+<para>Total length of the footer struct: payload_size(4) + flags(4) + magic(4) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="50" column="28" bodyfile="iceberg/puffin/puffin_format.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1PuffinFormat_1ae49ee45628bb0a2af5641fb238aed44f" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr <ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+        <definition>constexpr PuffinCompressionCodec iceberg::puffin::PuffinFormat::kDefaultFooterCompressionCodec</definition>
+        <argsstring></argsstring>
+        <name>kDefaultFooterCompressionCodec</name>
+        <qualifiedname>iceberg::puffin::PuffinFormat::kDefaultFooterCompressionCodec</qualifiedname>
+        <initializer>=
+      PuffinCompressionCodec::kLz4</initializer>
+        <briefdescription>
+<para>Default compression codec for footer payload. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_format.h" line="53" column="43" bodyfile="iceberg/puffin/puffin_format.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Puffin file format constants. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>std::array&lt; uint8_t, 4 &gt;</label>
+      </node>
+      <node id="1">
+        <label>iceberg::puffin::PuffinFormat</label>
+        <link refid="structiceberg_1_1puffin_1_1PuffinFormat"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kMagicV1</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/puffin/puffin_format.h" line="36" column="1" bodyfile="iceberg/puffin/puffin_format.h" bodystart="36" bodyend="55"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1ae49ee45628bb0a2af5641fb238aed44f" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kDefaultFooterCompressionCodec</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1a0b08c3d8ed4b9549a0f701756ab1efbb" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kFooterStartMagicLength</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1a7b0c234eb105bb5b79912aaff6add19d" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kFooterStartMagicOffset</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1a2b2688c669650f9e00a7559a7f3ac836" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kFooterStructFlagsLength</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1a9a9a5a604721b90b2b3e4479b9d4071d" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kFooterStructFlagsOffset</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1a942dd3e333003e1f5099d25eafb4e902" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kFooterStructLength</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1a2ad63f2de29f68061ed835104e85f12b" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kFooterStructMagicOffset</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1a3b14e32b231ad6ed67520960abd0b6f0" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kFooterStructPayloadSizeOffset</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1ae4695e9217a20b6a0b4765b87b5d3158" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kMagicLength</name></member>
+      <member refid="structiceberg_1_1puffin_1_1PuffinFormat_1aa51929b1f0819b7d42499a37aa14b228" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinFormat</scope><name>kMagicV1</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1OAuthTokenResponse" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::OAuthTokenResponse</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1a6c652a6033afd9b07859026f6f2d2e8c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::OAuthTokenResponse::access_token</definition>
+        <argsstring></argsstring>
+        <name>access_token</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::access_token</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="285" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="285" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1a8080766bfc09c21b6bfcf5cd14c6eedd" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::OAuthTokenResponse::token_type</definition>
+        <argsstring></argsstring>
+        <name>token_type</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::token_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="286" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="286" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1ae0cd990f309b2ebfa2eee74e4b67aec6" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::rest::OAuthTokenResponse::expires_in_secs</definition>
+        <argsstring></argsstring>
+        <name>expires_in_secs</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::expires_in_secs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="287" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="287" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1a0863afe3c7ad1438eb5afd4e23a78e32" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::OAuthTokenResponse::issued_token_type</definition>
+        <argsstring></argsstring>
+        <name>issued_token_type</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::issued_token_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="288" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="288" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1a867477e61a19f24765e79bb75fec05a5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::OAuthTokenResponse::refresh_token</definition>
+        <argsstring></argsstring>
+        <name>refresh_token</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::refresh_token</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="289" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="289" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1a0e2588b561956496edd722972ee3ac0e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::OAuthTokenResponse::scope</definition>
+        <argsstring></argsstring>
+        <name>scope</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::scope</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="290" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="290" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1a0aa269edcd84635ea508f082d91c0850" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::OAuthTokenResponse::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the token response. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="293" column="10" bodyfile="iceberg/catalog/rest/types.cc" bodystart="121" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1OAuthTokenResponse_1ad39a749bda12d28c2a2fc2a1832d1634" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::OAuthTokenResponse::operator==</definition>
+        <argsstring>(const OAuthTokenResponse &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::OAuthTokenResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1OAuthTokenResponse" kindref="compound">OAuthTokenResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="295" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Response from an OAuth2 token endpoint. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::OAuthTokenResponse</label>
+        <link refid="structiceberg_1_1rest_1_1OAuthTokenResponse"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>access_token</edgelabel>
+          <edgelabel>issued_token_type</edgelabel>
+          <edgelabel>refresh_token</edgelabel>
+          <edgelabel>scope</edgelabel>
+          <edgelabel>token_type</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="284" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="284" bodyend="296"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1a6c652a6033afd9b07859026f6f2d2e8c" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>access_token</name></member>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1ae0cd990f309b2ebfa2eee74e4b67aec6" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>expires_in_secs</name></member>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1a0863afe3c7ad1438eb5afd4e23a78e32" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>issued_token_type</name></member>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1ad39a749bda12d28c2a2fc2a1832d1634" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1a867477e61a19f24765e79bb75fec05a5" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>refresh_token</name></member>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1a0e2588b561956496edd722972ee3ac0e" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>scope</name></member>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1a8080766bfc09c21b6bfcf5cd14c6eedd" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>token_type</name></member>
+      <member refid="structiceberg_1_1rest_1_1OAuthTokenResponse_1a0aa269edcd84635ea508f082d91c0850" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthTokenResponse</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

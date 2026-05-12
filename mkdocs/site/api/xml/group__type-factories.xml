@@ -1,0 +1,373 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="group__type-factories" kind="group">
+    <compoundname>type-factories</compoundname>
+    <title>Factory functions for creating primitive data types</title>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="group__type-factories_1gafb5f5aec1d1d6218809ee512e2f87e83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; BooleanType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; BooleanType &gt; &amp; iceberg::boolean</definition>
+        <argsstring>()</argsstring>
+        <name>boolean</name>
+        <qualifiedname>iceberg::boolean</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1BooleanType" kindref="compound">BooleanType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="476" column="38" declfile="iceberg/type.h" declline="476" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; IntType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; IntType &gt; &amp; iceberg::int32</definition>
+        <argsstring>()</argsstring>
+        <name>int32</name>
+        <qualifiedname>iceberg::int32</qualifiedname>
+        <briefdescription>
+<para>Return an <ref refid="classiceberg_1_1IntType" kindref="compound">IntType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="478" column="38" declfile="iceberg/type.h" declline="478" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; LongType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; LongType &gt; &amp; iceberg::int64</definition>
+        <argsstring>()</argsstring>
+        <name>int64</name>
+        <qualifiedname>iceberg::int64</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1LongType" kindref="compound">LongType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="480" column="38" declfile="iceberg/type.h" declline="480" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1gab54ddf6ad9419b772fbde66891733212" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; FloatType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; FloatType &gt; &amp; iceberg::float32</definition>
+        <argsstring>()</argsstring>
+        <name>float32</name>
+        <qualifiedname>iceberg::float32</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1FloatType" kindref="compound">FloatType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="482" column="38" declfile="iceberg/type.h" declline="482" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga8457285a5fea3eda5b3f4289bce62ecb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; DoubleType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; DoubleType &gt; &amp; iceberg::float64</definition>
+        <argsstring>()</argsstring>
+        <name>float64</name>
+        <qualifiedname>iceberg::float64</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1DoubleType" kindref="compound">DoubleType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="484" column="38" declfile="iceberg/type.h" declline="484" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga377ecf647b08303fd9f87c31b1519dbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; DateType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; DateType &gt; &amp; iceberg::date</definition>
+        <argsstring>()</argsstring>
+        <name>date</name>
+        <qualifiedname>iceberg::date</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1DateType" kindref="compound">DateType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="486" column="38" declfile="iceberg/type.h" declline="486" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga7048c118c821d9aba4c08f3f23262b0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; TimeType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; TimeType &gt; &amp; iceberg::time</definition>
+        <argsstring>()</argsstring>
+        <name>time</name>
+        <qualifiedname>iceberg::time</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1TimeType" kindref="compound">TimeType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="488" column="38" declfile="iceberg/type.h" declline="488" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga98107734ef37f6f3b36b9fa3a6e30fe9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; TimestampType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; TimestampType &gt; &amp; iceberg::timestamp</definition>
+        <argsstring>()</argsstring>
+        <name>timestamp</name>
+        <qualifiedname>iceberg::timestamp</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1TimestampType" kindref="compound">TimestampType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="490" column="38" declfile="iceberg/type.h" declline="490" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga6533501016e29cf4e348da8a2a20635d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; TimestampTzType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; TimestampTzType &gt; &amp; iceberg::timestamp_tz</definition>
+        <argsstring>()</argsstring>
+        <name>timestamp_tz</name>
+        <qualifiedname>iceberg::timestamp_tz</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1TimestampTzType" kindref="compound">TimestampTzType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="492" column="38" declfile="iceberg/type.h" declline="492" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; BinaryType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; BinaryType &gt; &amp; iceberg::binary</definition>
+        <argsstring>()</argsstring>
+        <name>binary</name>
+        <qualifiedname>iceberg::binary</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1BinaryType" kindref="compound">BinaryType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="494" column="38" declfile="iceberg/type.h" declline="494" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; StringType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; StringType &gt; &amp; iceberg::string</definition>
+        <argsstring>()</argsstring>
+        <name>string</name>
+        <qualifiedname>iceberg::string</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1StringType" kindref="compound">StringType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="496" column="38" declfile="iceberg/type.h" declline="496" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1gafcf0f5e6522390678b91a9515b174bcf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; UuidType &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; UuidType &gt; &amp; iceberg::uuid</definition>
+        <argsstring>()</argsstring>
+        <name>uuid</name>
+        <qualifiedname>iceberg::uuid</qualifiedname>
+        <briefdescription>
+<para>Return a <ref refid="classiceberg_1_1UuidType" kindref="compound">UuidType</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="498" column="38" declfile="iceberg/type.h" declline="498" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1gaf9e64fe9d9556ef90130264f95b4d9f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; DecimalType &gt;</type>
+        <definition>ICEBERG_EXPORT std::shared_ptr&lt; DecimalType &gt; iceberg::decimal</definition>
+        <argsstring>(int32_t precision, int32_t scale)</argsstring>
+        <name>decimal</name>
+        <qualifiedname>iceberg::decimal</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>precision</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1DecimalType" kindref="compound">DecimalType</ref> with the given precision and scale. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>precision</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of decimal digits (max 38). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>scale</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of decimal digits after the decimal point. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A shared pointer to the <ref refid="classiceberg_1_1DecimalType" kindref="compound">DecimalType</ref> instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.cc" line="380" column="17" bodyfile="iceberg/type.cc" bodystart="380" bodyend="382" declfile="iceberg/type.h" declline="504" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1gab0c125df895ca2e1f90a05c9b0704cf5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; FixedType &gt;</type>
+        <definition>ICEBERG_EXPORT std::shared_ptr&lt; FixedType &gt; iceberg::fixed</definition>
+        <argsstring>(int32_t length)</argsstring>
+        <name>fixed</name>
+        <qualifiedname>iceberg::fixed</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1FixedType" kindref="compound">FixedType</ref> with the given length. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>length</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of bytes to store (must be &gt;= 0). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A shared pointer to the <ref refid="classiceberg_1_1FixedType" kindref="compound">FixedType</ref> instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.cc" line="384" column="17" bodyfile="iceberg/type.cc" bodystart="384" bodyend="386" declfile="iceberg/type.h" declline="509" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1gabb4c15b4e4cef71d45d6af7bc2777469" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; StructType &gt;</type>
+        <definition>ICEBERG_EXPORT std::shared_ptr&lt; StructType &gt; iceberg::struct_</definition>
+        <argsstring>(std::vector&lt; SchemaField &gt; fields)</argsstring>
+        <name>struct_</name>
+        <qualifiedname>iceberg::struct_</qualifiedname>
+        <param>
+          <type>std::vector&lt; SchemaField &gt;</type>
+          <declname>fields</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> with the given fields. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fields</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The fields of the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A shared pointer to the <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.cc" line="396" column="17" bodyfile="iceberg/type.cc" bodystart="396" bodyend="398" declfile="iceberg/type.h" declline="514" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga63d320f2972eee8c041fd5c98ecc1070" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; ListType &gt;</type>
+        <definition>ICEBERG_EXPORT std::shared_ptr&lt; ListType &gt; iceberg::list</definition>
+        <argsstring>(SchemaField element)</argsstring>
+        <name>list</name>
+        <qualifiedname>iceberg::list</qualifiedname>
+        <param>
+          <type>SchemaField</type>
+          <declname>element</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref> with the given element field. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>element</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The element field of the list. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A shared pointer to the <ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref> instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.cc" line="392" column="17" bodyfile="iceberg/type.cc" bodystart="392" bodyend="394" declfile="iceberg/type.h" declline="519" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="group__type-factories_1ga4d0b2254f39850e311ffed558e1bac7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; MapType &gt;</type>
+        <definition>ICEBERG_EXPORT std::shared_ptr&lt; MapType &gt; iceberg::map</definition>
+        <argsstring>(SchemaField key, SchemaField value)</argsstring>
+        <name>map</name>
+        <qualifiedname>iceberg::map</qualifiedname>
+        <param>
+          <type>SchemaField</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>SchemaField</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref> with the given key and value fields. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The key field of the map. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The value field of the map. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A shared pointer to the <ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref> instance. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.cc" line="388" column="17" bodyfile="iceberg/type.cc" bodystart="388" bodyend="390" declfile="iceberg/type.h" declline="525" declcolumn="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Factory functions for creating primitive data types </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

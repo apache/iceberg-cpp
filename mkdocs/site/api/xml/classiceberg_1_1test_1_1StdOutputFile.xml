@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1StdOutputFile" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::test::StdOutputFile</compoundname>
+    <basecompoundref refid="classiceberg_1_1OutputFile" prot="public" virt="non-virtual">iceberg::OutputFile</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1StdOutputFile_1a58f0a811116c06dc4b35be707af1a8fe" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::test::StdOutputFile::location_</definition>
+        <argsstring></argsstring>
+        <name>location_</name>
+        <qualifiedname>iceberg::test::StdOutputFile::location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="282" column="15" bodyfile="iceberg/test/std_io.h" bodystart="282" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdOutputFile_1acae7ff082ed83da54c3ea0d9f8701144" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::StdOutputFile::StdOutputFile</definition>
+        <argsstring>(std::string location)</argsstring>
+        <name>StdOutputFile</name>
+        <qualifiedname>iceberg::test::StdOutputFile::StdOutputFile</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="244" column="12" bodyfile="iceberg/test/std_io.h" bodystart="244" bodyend="244"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdOutputFile_1a1c53af51833becb561c64957e0fa1b07" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::test::StdOutputFile::location</definition>
+        <argsstring>() const override</argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::test::StdOutputFile::location</qualifiedname>
+        <reimplements refid="classiceberg_1_1OutputFile_1a9b91b6756cda5efce0c4a82ffdf062c2">location</reimplements>
+        <briefdescription>
+<para>File location represented by this handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="246" column="20" bodyfile="iceberg/test/std_io.h" bodystart="246" bodyend="246"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdOutputFile_1ad49d4d48851cbc8fc98e946fe2f7a09e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionOutputStream" kindref="compound">PositionOutputStream</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; PositionOutputStream &gt; &gt; iceberg::test::StdOutputFile::Create</definition>
+        <argsstring>() override</argsstring>
+        <name>Create</name>
+        <qualifiedname>iceberg::test::StdOutputFile::Create</qualifiedname>
+        <reimplements refid="classiceberg_1_1OutputFile_1ac051688db9914d35a75fb178427d38b8">Create</reimplements>
+        <briefdescription>
+<para>Create a new output stream and fail if the file already exists. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="248" column="10" bodyfile="iceberg/test/std_io.h" bodystart="248" bodyend="250"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdOutputFile_1a886b84aff34214d9da846f93137a97d1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionOutputStream" kindref="compound">PositionOutputStream</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; PositionOutputStream &gt; &gt; iceberg::test::StdOutputFile::CreateOrOverwrite</definition>
+        <argsstring>() override</argsstring>
+        <name>CreateOrOverwrite</name>
+        <qualifiedname>iceberg::test::StdOutputFile::CreateOrOverwrite</qualifiedname>
+        <reimplements refid="classiceberg_1_1OutputFile_1a7bc8474d8acaeb7a3df73c348d4fb99a">CreateOrOverwrite</reimplements>
+        <briefdescription>
+<para>Create a new output stream, replacing any existing file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="252" column="10" bodyfile="iceberg/test/std_io.h" bodystart="252" bodyend="254"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdOutputFile_1a5d6a8141dcdd920044a28a7a4d623167" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionOutputStream" kindref="compound">PositionOutputStream</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; PositionOutputStream &gt; &gt; iceberg::test::StdOutputFile::Create</definition>
+        <argsstring>(bool overwrite)</argsstring>
+        <name>Create</name>
+        <qualifiedname>iceberg::test::StdOutputFile::Create</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>overwrite</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="257" column="10" bodyfile="iceberg/test/std_io.h" bodystart="257" bodyend="280"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::OutputFile</label>
+        <link refid="classiceberg_1_1OutputFile"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdOutputFile</label>
+        <link refid="classiceberg_1_1test_1_1StdOutputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::OutputFile</label>
+        <link refid="classiceberg_1_1OutputFile"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdOutputFile</label>
+        <link refid="classiceberg_1_1test_1_1StdOutputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/std_io.h" line="242" column="1" bodyfile="iceberg/test/std_io.h" bodystart="242" bodyend="283"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1StdOutputFile_1ad49d4d48851cbc8fc98e946fe2f7a09e" prot="public" virt="virtual"><scope>iceberg::test::StdOutputFile</scope><name>Create</name></member>
+      <member refid="classiceberg_1_1test_1_1StdOutputFile_1a5d6a8141dcdd920044a28a7a4d623167" prot="private" virt="non-virtual"><scope>iceberg::test::StdOutputFile</scope><name>Create</name></member>
+      <member refid="classiceberg_1_1test_1_1StdOutputFile_1a886b84aff34214d9da846f93137a97d1" prot="public" virt="virtual"><scope>iceberg::test::StdOutputFile</scope><name>CreateOrOverwrite</name></member>
+      <member refid="classiceberg_1_1test_1_1StdOutputFile_1a1c53af51833becb561c64957e0fa1b07" prot="public" virt="virtual"><scope>iceberg::test::StdOutputFile</scope><name>location</name></member>
+      <member refid="classiceberg_1_1test_1_1StdOutputFile_1a58f0a811116c06dc4b35be707af1a8fe" prot="private" virt="non-virtual"><scope>iceberg::test::StdOutputFile</scope><name>location_</name></member>
+      <member refid="classiceberg_1_1test_1_1StdOutputFile_1acae7ff082ed83da54c3ea0d9f8701144" prot="public" virt="non-virtual"><scope>iceberg::test::StdOutputFile</scope><name>StdOutputFile</name></member>
+      <member refid="classiceberg_1_1OutputFile_1a48a76fcb369ba6920d30c99c84f7b1e1" prot="public" virt="virtual"><scope>iceberg::test::StdOutputFile</scope><name>~OutputFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

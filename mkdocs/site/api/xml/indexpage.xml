@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="indexpage" kind="page">
+    <compoundname>index</compoundname>
+    <title>iceberg-cpp</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para><anchor id="index_1md__2home_2runner_2work_2iceberg-cpp_2iceberg-cpp_2README"/></para>
+<para><image type="html" name="https://iceberg.apache.org/assets/images/Iceberg-logo.svg" alt="Iceberg" inline="yes"></image>
+</para>
+<para><ulink url="https://apache-iceberg.slack.com/"><image type="html" name="https://img.shields.io/badge/chat-on%20Slack-brightgreen.svg" alt="Slack" inline="yes"></image>
+</ulink> <ulink url="https://deepwiki.com/apache/iceberg-cpp"><image type="html" name="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" inline="yes"></image>
+</ulink> <ulink url="https://opensource.org/licenses/Apache-2.0"><image type="html" name="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License" inline="yes"></image>
+</ulink></para>
+<sect1 id="index_1autotoc_md1">
+<title>Apache Iceberg™ C++</title>
+<para>C++ implementation of <ulink url="https://iceberg.apache.org/">Apache Iceberg™</ulink>.</para>
+<sect2 id="index_1autotoc_md2">
+<title>Requirements</title>
+<para><bold>Required:</bold></para>
+<para><itemizedlist>
+<listitem><para>C++23 compliant compiler (GCC 14+, Clang 16+, MSVC 2022+)</para>
+</listitem><listitem><para>CMake 3.25+ or Meson 1.5+</para>
+</listitem><listitem><para><ulink url="https://ninja-build.org/">Ninja</ulink> (recommended build backend)</para>
+</listitem></itemizedlist>
+</para>
+<para><bold>Optional:</bold></para>
+<para><itemizedlist>
+<listitem><para>Python 3 and <ulink url="https://pre-commit.com/">pre-commit</ulink> (for linting)</para>
+</listitem></itemizedlist>
+</para>
+</sect2>
+<sect2 id="index_1autotoc_md3">
+<title>Quick Start</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">git<sp/>clone<sp/>https://github.com/apache/iceberg-cpp.git</highlight></codeline>
+<codeline><highlight class="normal">cd<sp/>iceberg-cpp</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+</programlisting></para>
+</sect2>
+<sect2 id="index_1autotoc_md4">
+<title>Build with CMake</title>
+<sect3 id="index_1autotoc_md5">
+<title>Build, Run Tests and Install Core Libraries</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DICEBERG_BUILD_STATIC=ON<sp/>-DICEBERG_BUILD_SHARED=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+</programlisting></para>
+<para>To run a specific test suite:</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>-R<sp/>schema_test<sp/>--output-on-failure</highlight></codeline>
+</programlisting></para>
+</sect3>
+<sect3 id="index_1autotoc_md6">
+<title>Build and Install Iceberg Bundle Library</title>
+<sect4 id="index_1autotoc_md7">
+<title>Vendored Apache Arrow (default)</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DICEBERG_BUILD_BUNDLE=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+</programlisting></para>
+</sect4>
+<sect4 id="index_1autotoc_md8">
+<title>Provided Apache Arrow</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_INSTALL_PREFIX=/path/to/install<sp/>-DCMAKE_PREFIX_PATH=/path/to/arrow<sp/>-DICEBERG_BUILD_BUNDLE=ON</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+<codeline><highlight class="normal">ctest<sp/>--test-dir<sp/>build<sp/>--output-on-failure</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--install<sp/>build</highlight></codeline>
+</programlisting></para>
+</sect4>
+</sect3>
+<sect3 id="index_1autotoc_md9">
+<title>CMake Build Options</title>
+<para><table rows="9" cols="3"><row>
+<entry thead="yes"><para>Option   </para>
+</entry><entry thead="yes"><para>Default   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_BUILD_STATIC</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>ON</computeroutput>   </para>
+</entry><entry thead="no"><para>Build static library    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_BUILD_SHARED</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para>Build shared library    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_BUILD_TESTS</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>ON</computeroutput>   </para>
+</entry><entry thead="no"><para>Build tests    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_BUILD_BUNDLE</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>ON</computeroutput>   </para>
+</entry><entry thead="no"><para>Build the battery-included library    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_BUILD_REST</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>ON</computeroutput>   </para>
+</entry><entry thead="no"><para>Build REST catalog client    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_BUILD_REST_INTEGRATION_TESTS</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para>Build REST catalog integration tests    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_ENABLE_ASAN</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para>Enable Address Sanitizer    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_ENABLE_UBSAN</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para>Enable Undefined Behavior Sanitizer   </para>
+</entry></row>
+</table>
+</para>
+</sect3>
+</sect2>
+<sect2 id="index_1autotoc_md10">
+<title>Build with Meson</title>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">meson<sp/>setup<sp/>builddir</highlight></codeline>
+<codeline><highlight class="normal">meson<sp/>compile<sp/>-C<sp/>builddir</highlight></codeline>
+<codeline><highlight class="normal">meson<sp/>test<sp/>-C<sp/>builddir<sp/>--timeout-multiplier<sp/>0</highlight></codeline>
+</programlisting></para>
+<para>Meson provides built-in equivalents for several CMake options:</para>
+<para><itemizedlist>
+<listitem><para><computeroutput>--default-library=&lt;shared|static|both&gt;</computeroutput> instead of <computeroutput>ICEBERG_BUILD_STATIC</computeroutput> / <computeroutput>ICEBERG_BUILD_SHARED</computeroutput></para>
+</listitem><listitem><para><computeroutput>-Db_sanitize=address,undefined</computeroutput> instead of <computeroutput>ICEBERG_ENABLE_ASAN</computeroutput> / <computeroutput>ICEBERG_ENABLE_UBSAN</computeroutput></para>
+</listitem><listitem><para><computeroutput>--libdir</computeroutput>, <computeroutput>--bindir</computeroutput>, <computeroutput>--includedir</computeroutput> for install directories</para>
+</listitem></itemizedlist>
+</para>
+<para>Meson-specific options (configured via <computeroutput>-D&lt;option&gt;=&lt;value&gt;</computeroutput>):</para>
+<para><table rows="4" cols="3"><row>
+<entry thead="yes"><para>Option   </para>
+</entry><entry thead="yes"><para>Default   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>rest</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>enabled</computeroutput>   </para>
+</entry><entry thead="no"><para>Build REST catalog client    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>rest_integration_test</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>disabled</computeroutput>   </para>
+</entry><entry thead="no"><para>Build integration test for REST catalog    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>tests</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>enabled</computeroutput>   </para>
+</entry><entry thead="no"><para>Build tests   </para>
+</entry></row>
+</table>
+</para>
+<sect3 id="index_1autotoc_md11">
+<title>Build Examples</title>
+<para>After installing the core libraries, you can build the examples:</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cd<sp/>example</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_PREFIX_PATH=/path/to/install</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>--build<sp/>build</highlight></codeline>
+</programlisting></para>
+<para>If you are using provided Apache Arrow, include <computeroutput>/path/to/arrow</computeroutput> in <computeroutput>CMAKE_PREFIX_PATH</computeroutput>:</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-G<sp/>Ninja<sp/>-DCMAKE_PREFIX_PATH=&quot;/path/to/install;/path/to/arrow&quot;</highlight></codeline>
+</programlisting></para>
+</sect3>
+</sect2>
+<sect2 id="index_1autotoc_md12">
+<title>Customizing Dependency URLs</title>
+<para>If you experience network issues when downloading dependencies, you can customize the download URLs using environment variables:</para>
+<para><itemizedlist>
+<listitem><para><computeroutput>ICEBERG_ARROW_URL</computeroutput>: Apache Arrow tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_AVRO_URL</computeroutput>: Apache Avro tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_AVRO_GIT_URL</computeroutput>: Apache Avro git repository URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_NANOARROW_URL</computeroutput>: Nanoarrow tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_CROARING_URL</computeroutput>: CRoaring tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_NLOHMANN_JSON_URL</computeroutput>: nlohmann-json tarball URL</para>
+</listitem><listitem><para><computeroutput>ICEBERG_CPR_URL</computeroutput>: cpr tarball URL</para>
+</listitem></itemizedlist>
+</para>
+<para>Example:</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">export<sp/>ICEBERG_ARROW_URL=&quot;https://your-mirror.com/apache-arrow-22.0.0.tar.gz&quot;</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build</highlight></codeline>
+</programlisting></para>
+</sect2>
+<sect2 id="index_1autotoc_md13">
+<title>Contribute</title>
+<para>Apache Iceberg is an active open-source project, governed under the Apache Software Foundation (ASF). Iceberg-cpp is open to people who want to contribute to it. Here are some ways to get involved:</para>
+<para><itemizedlist>
+<listitem><para>Submit <ulink url="https://github.com/apache/iceberg-cpp/issues/new">Issues</ulink> for bug report or feature requests.</para>
+</listitem><listitem><para>Discuss at <ulink url="mailto:dev@iceberg.apache.org">dev mailing list</ulink> (<ulink url="mailto:dev-subscribe@iceberg.apache.org?subject=(send%20this%20email%20to%20subscribe)">subscribe</ulink> / <ulink url="mailto:dev-unsubscribe@iceberg.apache.org?subject=(send%20this%20email%20to%20unsubscribe)">unsubscribe</ulink> / <ulink url="https://lists.apache.org/list.html?dev@iceberg.apache.org">archives</ulink>)</para>
+</listitem><listitem><para>Talk to the community directly at <ulink url="https://join.slack.com/t/apache-iceberg/shared_invite/zt-1zbov3k6e-KtJfoaxp97YfX6dPz1Bk7A">Slack #cpp channel</ulink>.</para>
+</listitem></itemizedlist>
+</para>
+<para>The Apache Iceberg community is built on the principles described in the <ulink url="https://www.apache.org/theapacheway/index.html">Apache Way</ulink> and all who engage with the community are expected to be respectful, open, come with the best interests of the community in mind, and abide by the Apache Foundation <ulink url="https://www.apache.org/foundation/policies/conduct.html">Code of Conduct</ulink>.</para>
+<para>In addition, contributors using AI-assisted tools must follow the documented guidelines for AI-assisted contributions available on the Iceberg website: <ulink url="https://iceberg.apache.org/contribute/#guidelines-for-ai-assisted-contributions">https://iceberg.apache.org/contribute/#guidelines-for-ai-assisted-contributions</ulink>.</para>
+<sect3 id="index_1autotoc_md14">
+<title>Linting</title>
+<para>Install the python package <computeroutput>pre-commit</computeroutput> and run once <computeroutput>pre-commit install</computeroutput>.</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">pip<sp/>install<sp/>pre-commit</highlight></codeline>
+<codeline><highlight class="normal">pre-commit<sp/>install</highlight></codeline>
+</programlisting></para>
+<para>This will setup a git pre-commit-hook that is executed on each commit and will report the linting problems. To run all hooks on all files use <computeroutput>pre-commit run -a</computeroutput>.</para>
+</sect3>
+<sect3 id="index_1autotoc_md15">
+<title>Dev Containers</title>
+<para>We provide Dev Container configuration file templates.</para>
+<para>To use a Dev Container as your development environment, follow the steps below, then select <computeroutput>Dev Containers: Reopen in Container</computeroutput> from VS Code&apos;s Command Palette.</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cd<sp/>.devcontainer</highlight></codeline>
+<codeline><highlight class="normal">cp<sp/>Dockerfile.template<sp/>Dockerfile</highlight></codeline>
+<codeline><highlight class="normal">cp<sp/>devcontainer.json.template<sp/>devcontainer.json</highlight></codeline>
+</programlisting></para>
+<para>If you make improvements that could benefit all developers, please update the template files and submit a pull request.</para>
+</sect3>
+</sect2>
+<sect2 id="index_1autotoc_md16">
+<title>License</title>
+<para>Licensed under the <ulink url="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</ulink> </para>
+</sect2>
+</sect1>
+    </detaileddescription>
+    <location file="/home/runner/work/iceberg-cpp/iceberg-cpp/README.md"/>
+  </compounddef>
+</doxygen>

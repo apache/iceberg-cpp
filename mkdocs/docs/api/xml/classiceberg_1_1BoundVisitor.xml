@@ -1,0 +1,740 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BoundVisitor" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::BoundVisitor</compoundname>
+    <basecompoundref refid="classiceberg_1_1ExpressionVisitor" prot="public" virt="non-virtual">iceberg::ExpressionVisitor&lt; R &gt;</basecompoundref>
+    <includes refid="expression__visitor_8h" local="no">expression_visitor.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename R</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1aaa4c792a68c052ce7d9d8ebe15c9b894" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::BoundVisitor&lt; R &gt;::~BoundVisitor</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~BoundVisitor</name>
+        <qualifiedname>iceberg::BoundVisitor::~BoundVisitor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="108" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a147dc2c9bef077b86ffbf82b933716b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::IsNull</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr)=0</argsstring>
+        <name>IsNull</name>
+        <qualifiedname>iceberg::BoundVisitor::IsNull</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1ad8c6e1f1890856ce4273aa36569124d2">IsNull</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a660343a3f4fc81eb9ad1acc19f0ef132">IsNull</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a4a6bbdd6cad633f8b059a647825ace07">IsNull</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a1885ceb3de2c6896418cafebb277c782">IsNull</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit an IS_NULL bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="112" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a896da482841ec11cc70d7d8382147913" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::NotNull</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr)=0</argsstring>
+        <name>NotNull</name>
+        <qualifiedname>iceberg::BoundVisitor::NotNull</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a02c02dcb427fcf0caf40392366ff62dc">NotNull</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a3725adb34d1d98a22658550fe21dc7e0">NotNull</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a749c23ff1691c2962d8de9c34c4c8aa3">NotNull</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1ad54c1474089f5cacc1b73d5945d14f09">NotNull</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit a NOT_NULL bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="116" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1aeaafcbf51500c8dbbbec948f30d9a8b8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::IsNaN</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr)</argsstring>
+        <name>IsNaN</name>
+        <qualifiedname>iceberg::BoundVisitor::IsNaN</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1ac861d2e81bb05fa99cfe246d98ef30c2">IsNaN</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a7c2175761267241c2cc58e8d0736e581">IsNaN</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1adc5aee10f8d00449d7ce7e6836c7d873">IsNaN</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a939f100f9a60b55f11f3acae770b3b03">IsNaN</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit an IS_NAN bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="120" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="120" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1aeac3873dd7f39239b63176b08c22c97c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::NotNaN</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr)</argsstring>
+        <name>NotNaN</name>
+        <qualifiedname>iceberg::BoundVisitor::NotNaN</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1af4f59ab9a76382262ad251e1fad11fb5">NotNaN</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a4b34332e5700ecda854de109322a7b9d">NotNaN</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1ae5726b2ff440473023d39491d9bf7ac1">NotNaN</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1aaf635d61b5f928d7c57213383f5c9a92">NotNaN</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit a NOT_NAN bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="126" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="126" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a07eb597069fc4907677ea59bc9e7f8fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::Lt</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)=0</argsstring>
+        <name>Lt</name>
+        <qualifiedname>iceberg::BoundVisitor::Lt</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1adf17642bcac405ead1a95ae620bce085">Lt</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1aff3c99d0e755ca8735e0f7926af837d4">Lt</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a5a1e64dff377993628e5f9b1bb8c9a32">Lt</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a5fff9fd37d682d60b32a5a8877e71462">Lt</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a less-than bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="133" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a3d1cc2b13541dcf37cf19cffc2cba55e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::LtEq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)=0</argsstring>
+        <name>LtEq</name>
+        <qualifiedname>iceberg::BoundVisitor::LtEq</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1ab1e389110237ba316f6ba24a5dab0a1a">LtEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1abcdfd191da462a1bf42bd5c0d8699854">LtEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a2f38bd2d6b90144837152dffb29715a0">LtEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a9ce22eb39e19ae162ea91116b6690f99">LtEq</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a less-than-or-equal bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="138" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a0722a7fb3652d01b85d09e2a6595ac67" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::Gt</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)=0</argsstring>
+        <name>Gt</name>
+        <qualifiedname>iceberg::BoundVisitor::Gt</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a9c7f2fbb7d5133fced376c2d697411e5">Gt</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a9be2f1e76ad3fc99167bea0b0d9769c1">Gt</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1ac1e94c405eb1b47dcdd28c03e19952f4">Gt</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a5ae139a2422f7dc3493749402afe06ac">Gt</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a greater-than bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="143" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a887464c3e7230573dc77ab07c4d52f2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::GtEq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)=0</argsstring>
+        <name>GtEq</name>
+        <qualifiedname>iceberg::BoundVisitor::GtEq</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1aef2aa14b79e1ca0043c707547f1ef0b8">GtEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a3e8ba317d9f1a7a92701bf0ada366107">GtEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1ac30068eb34bd6b391b45bf8cc9335a2a">GtEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a60de89e43673bd72de74395758687a9e">GtEq</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a greater-than-or-equal bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="148" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1ab8b110291e99d2e743c9a70637d2800c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::Eq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)=0</argsstring>
+        <name>Eq</name>
+        <qualifiedname>iceberg::BoundVisitor::Eq</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a62d666807b94200e98ad7883219738fd">Eq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a9ef2d6f1f816477dcc8adfc6a06f1dba">Eq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a06eaa4f298f1c9fc3fe4cf69b97d5436">Eq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a8f818f51f31797528f612f0be6f9aeb1">Eq</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit an equality bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="153" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a962cb7ca85f1f3def77affe42048e176" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::NotEq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)=0</argsstring>
+        <name>NotEq</name>
+        <qualifiedname>iceberg::BoundVisitor::NotEq</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a5cf019d2f5301a82d4ae1addd22504b0">NotEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1afe4581c2f349e5d70c80a570305b13ef">NotEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1aa0b3e274e05d817ff83ebde0b9fd6d2b">NotEq</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1afc9898d6806461c17fd005c142eef481">NotEq</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a not-equal bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="158" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1af8d118683a69b4d27a6769da12114d38" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::StartsWith</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)</argsstring>
+        <name>StartsWith</name>
+        <qualifiedname>iceberg::BoundVisitor::StartsWith</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a1d05f779918754c1fb0ee368255cee4d">StartsWith</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a1702a48fd5a0752dc9a7b7d65cbb4ba4">StartsWith</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1ab9c72d8dcde81f8ad70cc74f0b8b40fc">StartsWith</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1acea5a48063be331d53489a3aa1feec25">StartsWith</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a starts-with bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to check for prefix match </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="163" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="163" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a3b98b13ef68f001de28a99896a13620e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::NotStartsWith</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit)</argsstring>
+        <name>NotStartsWith</name>
+        <qualifiedname>iceberg::BoundVisitor::NotStartsWith</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a6d1a75d55e9e7c503482a5776bb015f6">NotStartsWith</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1af8b6d0890e7b3addd27b95cca3fdf951">NotStartsWith</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1ae28cea2d55b64a48f046597736b7f98a">NotStartsWith</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a46ecf55eaa4a2704bb3db109693bc8d9">NotStartsWith</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a not-starts-with bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to check for prefix match </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="171" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="171" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a4ad6c0161e30c914d43aeafd2c31ed2d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::In</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const BoundSetPredicate::LiteralSet &amp;literal_set)</argsstring>
+        <name>In</name>
+        <qualifiedname>iceberg::BoundVisitor::In</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1ab49ae2d26cdc929b2332efde6cb8b13e">In</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1af36e3fc86ed61a23ea0c2d5b61df3365">In</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a4ffd94f2d0f34c93d2363f6512f610d5">In</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a38a00371a2ef2afdd337244b4c9d398f">In</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const BoundSetPredicate::LiteralSet &amp;</type>
+          <declname>literal_set</declname>
+        </param>
+        <briefdescription>
+<para>Visit an IN set bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>literal_set</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The set of literal values to test membership </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="179" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="179" bodyend="183"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a82f60a5b3f27b69262beafd4e91ddaf0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>virtual Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::NotIn</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const BoundSetPredicate::LiteralSet &amp;literal_set)</argsstring>
+        <name>NotIn</name>
+        <qualifiedname>iceberg::BoundVisitor::NotIn</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1EvalVisitor_1a52e1ad8298a183a6e70c03a5a27ff8cc">NotIn</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InclusiveMetricsVisitor_1a2265be28bc735cf13e08e03dc5bacc11">NotIn</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestEvalVisitor_1a9f868628328a139254da2f9188bf51a7">NotIn</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1StrictMetricsVisitor_1a6332ffc54f028fdf982e45a06f8618a1">NotIn</reimplementedby>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const BoundSetPredicate::LiteralSet &amp;</type>
+          <declname>literal_set</declname>
+        </param>
+        <briefdescription>
+<para>Visit a NOT_IN set bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>literal_set</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The set of literal values to test membership </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="188" column="18" bodyfile="iceberg/expression/expression_visitor.h" bodystart="188" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1ab39f8eaf365886cadbbd210584915f59" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::BoundVisitor::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1ae15b69bbbd82d8c0b941cb4bc3324fc4">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit a bound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method dispatches to specific visitor methods based on the predicate type and operation.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="200" column="10" bodyfile="iceberg/expression/expression_visitor.h" bodystart="200" bodyend="259"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundVisitor_1a28ebad2dc79a712dce34ed30e3614004" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; R &gt;</type>
+        <definition>Result&lt; R &gt; iceberg::BoundVisitor&lt; R &gt;::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; UnboundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::BoundVisitor::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1a1c01ceb403a5c6e2706f9b197d729ead">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit an unbound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound predicate </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression_visitor.h" line="264" column="10" bodyfile="iceberg/expression/expression_visitor.h" bodystart="264" bodyend="267"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Visitor for bound expressions. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This visitor is for traversing bound expression trees.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>R</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The return type produced by visitor methods </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::BoundVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1BoundVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::BoundVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1BoundVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/expression_visitor.h" line="106" column="1" bodyfile="iceberg/expression/expression_visitor.h" bodystart="106" bodyend="268"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a4a7c83473af339c9c64cef5e9f3947ee" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a699e13e4420928256b3fb08a87674a9f" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa6abb6e1020467e2ab3a2e17563990be" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>AlwaysFalse</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aed1c555ca56ff0aaa898d31aa52f7287" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>AlwaysTrue</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a134636ef9aac1bbf8ade254e1c1c24d6" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>And</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1ab8b110291e99d2e743c9a70637d2800c" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>Eq</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a0722a7fb3652d01b85d09e2a6595ac67" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>Gt</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a887464c3e7230573dc77ab07c4d52f2e" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>GtEq</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a4ad6c0161e30c914d43aeafd2c31ed2d" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>In</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1aeaafcbf51500c8dbbbec948f30d9a8b8" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>IsNaN</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a147dc2c9bef077b86ffbf82b933716b7" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>IsNull</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a07eb597069fc4907677ea59bc9e7f8fa" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>Lt</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a3d1cc2b13541dcf37cf19cffc2cba55e" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>LtEq</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a3785b1824deecc35b76c64ae6bb57f23" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a962cb7ca85f1f3def77affe42048e176" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>NotEq</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a82f60a5b3f27b69262beafd4e91ddaf0" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>NotIn</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1aeac3873dd7f39239b63176b08c22c97c" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>NotNaN</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a896da482841ec11cc70d7d8382147913" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>NotNull</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a3b98b13ef68f001de28a99896a13620e" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>NotStartsWith</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa21a66f372f1b32f94d8be2bb5643440" prot="public" virt="pure-virtual"><scope>iceberg::BoundVisitor</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1ab39f8eaf365886cadbbd210584915f59" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a28ebad2dc79a712dce34ed30e3614004" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1af8d118683a69b4d27a6769da12114d38" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>StartsWith</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1aaa4c792a68c052ce7d9d8ebe15c9b894" prot="public" virt="non-virtual"><scope>iceberg::BoundVisitor</scope><name>~BoundVisitor</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a94e8c3eb4910ab2e221163c19fda6492" prot="public" virt="virtual"><scope>iceberg::BoundVisitor</scope><name>~ExpressionVisitor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

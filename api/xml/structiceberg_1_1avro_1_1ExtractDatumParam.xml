@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1ExtractDatumParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::ExtractDatumParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ExtractDatumParam_1a21dd282a00dce09596abab41268ca7d0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::ExtractDatumParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::avro::ExtractDatumParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="762" column="15" bodyfile="iceberg/test/avro_data_test.cc" bodystart="762" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ExtractDatumParam_1a5a16940519d3b6bc4929097239190380" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::avro::ExtractDatumParam::iceberg_type</definition>
+        <argsstring></argsstring>
+        <name>iceberg_type</name>
+        <qualifiedname>iceberg::avro::ExtractDatumParam::iceberg_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="763" column="19" bodyfile="iceberg/test/avro_data_test.cc" bodystart="763" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ExtractDatumParam_1afd60956534e69f9cae61a39367bedf49" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::ExtractDatumParam::arrow_json</definition>
+        <argsstring></argsstring>
+        <name>arrow_json</name>
+        <qualifiedname>iceberg::avro::ExtractDatumParam::arrow_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="764" column="15" bodyfile="iceberg/test/avro_data_test.cc" bodystart="764" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ExtractDatumParam_1a8e793a075b5d5530074104068f454651" prot="public" static="no" mutable="no">
+        <type>std::function&lt; void(const ::avro::GenericDatum &amp;, int)&gt;</type>
+        <definition>std::function&lt;void(const ::avro::GenericDatum&amp;, int)&gt; iceberg::avro::ExtractDatumParam::value_verifier</definition>
+        <argsstring></argsstring>
+        <name>value_verifier</name>
+        <qualifiedname>iceberg::avro::ExtractDatumParam::value_verifier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="765" column="17" bodyfile="iceberg/test/avro_data_test.cc" bodystart="765" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::ExtractDatumParam</label>
+        <link refid="structiceberg_1_1avro_1_1ExtractDatumParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>arrow_json</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>iceberg_type</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_data_test.cc" line="761" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="761" bodyend="766"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1ExtractDatumParam_1afd60956534e69f9cae61a39367bedf49" prot="public" virt="non-virtual"><scope>iceberg::avro::ExtractDatumParam</scope><name>arrow_json</name></member>
+      <member refid="structiceberg_1_1avro_1_1ExtractDatumParam_1a5a16940519d3b6bc4929097239190380" prot="public" virt="non-virtual"><scope>iceberg::avro::ExtractDatumParam</scope><name>iceberg_type</name></member>
+      <member refid="structiceberg_1_1avro_1_1ExtractDatumParam_1a21dd282a00dce09596abab41268ca7d0" prot="public" virt="non-virtual"><scope>iceberg::avro::ExtractDatumParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1avro_1_1ExtractDatumParam_1a8e793a075b5d5530074104068f454651" prot="public" virt="non-virtual"><scope>iceberg::avro::ExtractDatumParam</scope><name>value_verifier</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

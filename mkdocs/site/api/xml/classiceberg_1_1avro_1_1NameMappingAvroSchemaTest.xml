@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::NameMappingAvroSchemaTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1ad6a4b06f35ccde55746a355049f2234a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::avro::NameMappingAvroSchemaTest::CreateSimpleNameMapping</definition>
+        <argsstring>()</argsstring>
+        <name>CreateSimpleNameMapping</name>
+        <qualifiedname>iceberg::avro::NameMappingAvroSchemaTest::CreateSimpleNameMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1197" column="19" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1197" bodyend="1203"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1a0f06d400f3d3e2627b12d9ab8f298468" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::avro::NameMappingAvroSchemaTest::CreateNestedNameMapping</definition>
+        <argsstring>()</argsstring>
+        <name>CreateNestedNameMapping</name>
+        <qualifiedname>iceberg::avro::NameMappingAvroSchemaTest::CreateNestedNameMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1206" column="19" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1206" bodyend="1222"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1aa84d9da53ebf28ff8c5885bbc534fbcc" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::avro::NameMappingAvroSchemaTest::CreateArrayNameMapping</definition>
+        <argsstring>()</argsstring>
+        <name>CreateArrayNameMapping</name>
+        <qualifiedname>iceberg::avro::NameMappingAvroSchemaTest::CreateArrayNameMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1225" column="19" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1225" bodyend="1238"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1a4e550ea1cd610daa1443e377509eb2dd" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::avro::NameMappingAvroSchemaTest::CreateMapNameMapping</definition>
+        <argsstring>()</argsstring>
+        <name>CreateMapNameMapping</name>
+        <qualifiedname>iceberg::avro::NameMappingAvroSchemaTest::CreateMapNameMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1241" column="19" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1241" bodyend="1256"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1a8dc994c12e8c3cf03f3e098248b72d00" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::avro::NameMappingAvroSchemaTest::CreateUnionNameMapping</definition>
+        <argsstring>()</argsstring>
+        <name>CreateUnionNameMapping</name>
+        <qualifiedname>iceberg::avro::NameMappingAvroSchemaTest::CreateUnionNameMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1259" column="19" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1259" bodyend="1264"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1af22ac9b14733d33e282d31c90c1d11ce" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::avro::NameMappingAvroSchemaTest::CreateComplexMapNameMapping</definition>
+        <argsstring>()</argsstring>
+        <name>CreateComplexMapNameMapping</name>
+        <qualifiedname>iceberg::avro::NameMappingAvroSchemaTest::CreateComplexMapNameMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_schema_test.cc" line="1268" column="19" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1268" bodyend="1289"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::avro::NameMappingAvroSchemaTest</label>
+        <link refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::avro::NameMappingAvroSchemaTest</label>
+        <link refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_schema_test.cc" line="1194" column="1" bodyfile="iceberg/test/avro_schema_test.cc" bodystart="1194" bodyend="1290"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1aa84d9da53ebf28ff8c5885bbc534fbcc" prot="protected" virt="non-virtual"><scope>iceberg::avro::NameMappingAvroSchemaTest</scope><name>CreateArrayNameMapping</name></member>
+      <member refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1af22ac9b14733d33e282d31c90c1d11ce" prot="protected" virt="non-virtual"><scope>iceberg::avro::NameMappingAvroSchemaTest</scope><name>CreateComplexMapNameMapping</name></member>
+      <member refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1a4e550ea1cd610daa1443e377509eb2dd" prot="protected" virt="non-virtual"><scope>iceberg::avro::NameMappingAvroSchemaTest</scope><name>CreateMapNameMapping</name></member>
+      <member refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1a0f06d400f3d3e2627b12d9ab8f298468" prot="protected" virt="non-virtual"><scope>iceberg::avro::NameMappingAvroSchemaTest</scope><name>CreateNestedNameMapping</name></member>
+      <member refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1ad6a4b06f35ccde55746a355049f2234a" prot="protected" virt="non-virtual"><scope>iceberg::avro::NameMappingAvroSchemaTest</scope><name>CreateSimpleNameMapping</name></member>
+      <member refid="classiceberg_1_1avro_1_1NameMappingAvroSchemaTest_1a8dc994c12e8c3cf03f3e098248b72d00" prot="protected" virt="non-virtual"><scope>iceberg::avro::NameMappingAvroSchemaTest</scope><name>CreateUnionNameMapping</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

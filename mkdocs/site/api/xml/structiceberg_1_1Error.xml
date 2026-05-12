@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1Error" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::Error</compoundname>
+    <includes refid="result_8h" local="no">result.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1Error_1a0632effe5c843100c5ab6b6f70de972b" prot="public" static="no" mutable="no">
+        <type>ErrorKind</type>
+        <definition>ErrorKind iceberg::Error::kind</definition>
+        <argsstring></argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::Error::kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/result.h" line="67" column="13" bodyfile="iceberg/result.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1Error_1ae40e95014b71a78e432ef8fc160bf1c0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::Error::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>iceberg::Error::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/result.h" line="68" column="15" bodyfile="iceberg/result.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> with a kind and a message. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/result.h" line="66" column="1" bodyfile="iceberg/result.h" bodystart="66" bodyend="69"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1Error_1a0632effe5c843100c5ab6b6f70de972b" prot="public" virt="non-virtual"><scope>iceberg::Error</scope><name>kind</name></member>
+      <member refid="structiceberg_1_1Error_1ae40e95014b71a78e432ef8fc160bf1c0" prot="public" virt="non-virtual"><scope>iceberg::Error</scope><name>message</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
