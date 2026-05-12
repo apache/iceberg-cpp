@@ -183,4 +183,4 @@ jobs:
           meson compile -C builddir
       - name: Test Iceberg
         run: |
-          meson test -C builddir --timeout-multiplier 0
+          meson test -C builddir --timeout-multiplier 0 --print-errorlogs
