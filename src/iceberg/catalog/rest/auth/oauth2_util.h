@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -52,5 +54,15 @@ ICEBERG_REST_EXPORT Result<OAuthTokenResponse> FetchToken(
 /// \return Headers map with Authorization header if token is non-empty.
 ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> AuthHeaders(
     const std::string& token);
+
+/// \brief Extract expiration time from a JWT token.
+///
+/// Decodes the JWT payload (base64url) and reads the "exp" claim.
+/// Returns std::nullopt if the token is not a valid JWT or has no "exp" claim.
+///
+/// \param token A token string. If it is a JWT (three dot-separated base64url
+///        segments), the "exp" claim is extracted from the payload.
+/// \return Expiration time as milliseconds since epoch, or std::nullopt.
+ICEBERG_REST_EXPORT std::optional<int64_t> ExpiresAtMillis(std::string_view token);
 
 }  // namespace iceberg::rest::auth
