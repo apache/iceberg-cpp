@@ -132,6 +132,7 @@ add_iceberg_test(util_test
                  retry_util_test.cc
                  string_util_test.cc
                  struct_like_set_test.cc
+                 thread_pool_test.cc
                  transform_util_test.cc
                  truncate_util_test.cc
                  url_encoder_test.cc

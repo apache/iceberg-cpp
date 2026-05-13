@@ -110,6 +110,7 @@ set(ICEBERG_SOURCES
     util/string_util.cc
     util/struct_like_set.cc
     util/temporal_util.cc
+    util/thread_pool_internal.cc
     util/timepoint.cc
     util/transform_util.cc
     util/truncate_util.cc

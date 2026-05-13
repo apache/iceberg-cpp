@@ -22,11 +22,9 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
-#include <future>
 #include <iterator>
 #include <memory>
 #include <optional>
-#include <span>
 #include <string>
 #include <thread>
 #include <unordered_set>
@@ -44,6 +42,7 @@
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
+#include "iceberg/util/thread_pool_internal.h"
 
 namespace iceberg {
 
@@ -58,62 +57,18 @@ Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
   return ManifestReader::Make(manifest, file_io, std::move(schema), std::move(spec));
 }
 
-/// \brief Cap on per-CleanFiles worker concurrency.
+/// \brief Cap on per-strategy worker concurrency.
 ///
 /// Java's RemoveSnapshots takes ExecutorServices from the table operations layer.
-/// C++ has no shared executor today, so each strategy spins up an ad-hoc pool via
-/// std::async. Cap concurrency to avoid swamping FileIO with hundreds of in-flight
-/// requests on hosts with very high core counts.
+/// C++ has no shared executor today, so each strategy owns a private ThreadPool.
+/// Cap concurrency to avoid swamping FileIO with hundreds of in-flight requests
+/// on hosts with very high core counts.
 constexpr std::size_t kMaxParallelism = 8;
 
-std::size_t WorkerCount(std::size_t item_count) {
-  if (item_count <= 1) return 1;
+std::size_t WorkerCount() {
   std::size_t hw = std::thread::hardware_concurrency();
   if (hw == 0) hw = 2;
-  return std::min({item_count, kMaxParallelism, hw});
-}
-
-/// \brief Run `work` over `items` using up to WorkerCount(items) std::async workers.
-///
-/// Each worker drains a contiguous slice of `items`. Exceptions thrown by `work` are
-/// swallowed -- callers that need to know whether a unit succeeded should record it
-/// inside `work` (e.g. via an atomic counter or a thread-safe collection).
-template <typename Item, typename Fn>
-void RunInParallel(std::span<const Item> items, Fn&& work) {
-  if (items.empty()) return;
-  std::size_t n = WorkerCount(items.size());
-  if (n <= 1) {
-    for (const auto& item : items) {
-      try {
-        work(item);
-      } catch (...) {
-        // best-effort
-      }
-    }
-    return;
-  }
-
-  std::vector<std::future<void>> futures;
-  futures.reserve(n);
-  std::size_t per = (items.size() + n - 1) / n;
-  for (std::size_t i = 0; i < n; ++i) {
-    std::size_t begin = i * per;
-    if (begin >= items.size()) break;
-    std::size_t end = std::min(begin + per, items.size());
-    auto slice = items.subspan(begin, end - begin);
-    futures.emplace_back(std::async(std::launch::async, [slice, &work]() {
-      for (const auto& item : slice) {
-        try {
-          work(item);
-        } catch (...) {
-          // best-effort: see RunInParallel doc
-        }
-      }
-    }));
-  }
-  for (auto& f : futures) {
-    f.wait();
-  }
+  return std::min(kMaxParallelism, hw);
 }
 
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
@@ -121,7 +76,9 @@ class FileCleanupStrategy {
  public:
   FileCleanupStrategy(std::shared_ptr<FileIO> file_io,
                       std::function<void(const std::string&)> delete_func)
-      : file_io_(std::move(file_io)), delete_func_(std::move(delete_func)) {}
+      : file_io_(std::move(file_io)),
+        delete_func_(std::move(delete_func)),
+        pool_(WorkerCount()) {}
 
   virtual ~FileCleanupStrategy() = default;
 
@@ -174,16 +131,20 @@ class FileCleanupStrategy {
     }
   }
 
-  /// \brief Delete a batch of files, parallelized via RunInParallel.
+  /// \brief Delete a batch of files in parallel via the strategy's worker pool.
   ///
   /// TODO(shangxinli): When FileIO grows a SupportsBulkOperations-style
   /// `DeleteFiles(span<string>)` API, prefer the bulk path here (mirroring
   /// Java's FileCleanupStrategy.deleteFiles).
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
     if (paths.empty()) return;
+    if (paths.size() == 1) {
+      DeleteFile(*paths.begin());
+      return;
+    }
     std::vector<std::string> as_vec(paths.begin(), paths.end());
-    RunInParallel<std::string>(std::span<const std::string>(as_vec),
-                               [this](const std::string& p) { DeleteFile(p); });
+    pool_.RunAndWait<std::string>(std::span<const std::string>(as_vec),
+                                  [this](const std::string& p) { DeleteFile(p); });
   }
 
   bool HasAnyStatisticsFiles(const TableMetadata& metadata) const {
@@ -225,6 +186,13 @@ class FileCleanupStrategy {
 
   std::shared_ptr<FileIO> file_io_;
   std::function<void(const std::string&)> delete_func_;
+  // Worker pool for parallel best-effort deletion. Must be declared after the
+  // members it does NOT touch -- the pool's worker threads only run tasks
+  // submitted via Submit/RunAndWait, which capture `this` and dereference
+  // file_io_ / delete_func_, so those members must outlive the pool. Since
+  // destruction order is reverse declaration order, listing pool_ last ensures
+  // workers are joined before file_io_ and delete_func_ are destroyed.
+  ThreadPool pool_;
 };
 
 /// \brief File cleanup strategy that determines safe deletions via full reachability.
@@ -233,7 +201,7 @@ class FileCleanupStrategy {
 /// still referenced by retained snapshots, then deletes orphaned manifests, data
 /// files, and manifest lists.
 ///
-/// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
+/// TODO(shangxinli): Add multi-threaded manifest reading.
 class ReachableFileCleanup : public FileCleanupStrategy {
  public:
   using FileCleanupStrategy::FileCleanupStrategy;
