@@ -668,23 +668,21 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
 // to the two-arg virtual PlanFiles() override in the concrete subclass.
 // Defined as a friend to access the protected two-arg PlanFiles().
 template <typename ScanTaskType>
-Result<std::vector<std::shared_ptr<ScanTaskType>>> ResolvePlanFiles(
-    const IncrementalScan<ScanTaskType>& scan) {
-  if (IsScanCurrentLineage(scan.context())) {
-    if (scan.metadata()->current_snapshot_id == kInvalidSnapshotId) {
+Result<std::vector<std::shared_ptr<ScanTaskType>>>
+IncrementalScan<ScanTaskType>::PlanFiles() const {
+  if (IsScanCurrentLineage(context_)) {
+    if (metadata_->current_snapshot_id == kInvalidSnapshotId) {
       return std::vector<std::shared_ptr<ScanTaskType>>{};
     }
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(
-      int64_t to_snapshot_id_inclusive,
-      internal::ToSnapshotIdInclusive(scan.context(), *scan.metadata()));
+  ICEBERG_ASSIGN_OR_RAISE(int64_t to_snapshot_id_inclusive,
+                          internal::ToSnapshotIdInclusive(context_, *metadata_));
   ICEBERG_ASSIGN_OR_RAISE(
       std::optional<int64_t> from_snapshot_id_exclusive,
-      internal::FromSnapshotIdExclusive(scan.context(), *scan.metadata(),
-                                        to_snapshot_id_inclusive));
+      internal::FromSnapshotIdExclusive(context_, *metadata_, to_snapshot_id_inclusive));
 
-  return scan.PlanFiles(from_snapshot_id_exclusive, to_snapshot_id_inclusive);
+  return PlanFiles(from_snapshot_id_exclusive, to_snapshot_id_inclusive);
 }
 
 // IncrementalAppendScan implementation
@@ -697,11 +695,6 @@ Result<std::unique_ptr<IncrementalAppendScan>> IncrementalAppendScan::Make(
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
   return std::unique_ptr<IncrementalAppendScan>(new IncrementalAppendScan(
       std::move(metadata), std::move(schema), std::move(io), std::move(context)));
-}
-
-Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFiles()
-    const {
-  return ResolvePlanFiles<FileScanTask>(*this);
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFiles(
@@ -778,11 +771,6 @@ Result<std::unique_ptr<IncrementalChangelogScan>> IncrementalChangelogScan::Make
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
   return std::unique_ptr<IncrementalChangelogScan>(new IncrementalChangelogScan(
       std::move(metadata), std::move(schema), std::move(io), std::move(context)));
-}
-
-Result<std::vector<std::shared_ptr<ChangelogScanTask>>>
-IncrementalChangelogScan::PlanFiles() const {
-  return ResolvePlanFiles<ChangelogScanTask>(*this);
 }
 
 Result<std::vector<std::shared_ptr<ChangelogScanTask>>>
@@ -912,5 +900,8 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
          }) |
          std::ranges::to<std::vector>();
 }
+
+template class ICEBERG_TEMPLATE_EXPORT IncrementalScan<FileScanTask>;
+template class ICEBERG_TEMPLATE_EXPORT IncrementalScan<ChangelogScanTask>;
 
 }  // namespace iceberg
