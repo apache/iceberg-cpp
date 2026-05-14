@@ -58,27 +58,50 @@ class ICEBERG_EXPORT ManifestMergeManager {
 
   /// \brief Merge existing and new manifests according to configured thresholds.
   ///
+  /// Manifests are grouped by (partition_spec_id, content) — data and delete manifests
+  /// are never merged together.  Within each group, a greedy bin-packing algorithm
+  /// combines manifests up to target_size_bytes.  The bin that contains the newest
+  /// manifest for that content type is protected by min_count_to_merge: if it has fewer
+  /// than that many items it is passed through unchanged.
+  ///
+  /// \note Java's ManifestMergeManager additionally exposes replacedManifestsCount()
+  /// and cleanUncommitted(committed) for retry / rollback support.  In this C++
+  /// implementation those responsibilities are handled by the caller
+  /// (MergingSnapshotUpdate in PR2) via a tracked ManifestWriterFactory wrapper.
+  ///
   /// \param existing_manifests Manifests already in the base snapshot
   /// \param new_manifests Newly written manifests to incorporate
+  /// \param snapshot_id The ID of the snapshot being committed.  Used to preserve
+  ///   ADDED/DELETED status for entries written by this snapshot and to suppress
+  ///   stale DELETED tombstones from prior snapshots.
   /// \param metadata Table metadata (provides specs and schema for readers)
   /// \param file_io File IO used to open existing manifests for reading
   /// \param writer_factory Factory to create new ManifestWriter instances
   /// \return The merged manifest list, or an error
   Result<std::vector<ManifestFile>> MergeManifests(
       const std::vector<ManifestFile>& existing_manifests,
-      const std::vector<ManifestFile>& new_manifests, const TableMetadata& metadata,
-      std::shared_ptr<FileIO> file_io, const ManifestWriterFactory& writer_factory);
+      const std::vector<ManifestFile>& new_manifests, int64_t snapshot_id,
+      const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
+      const ManifestWriterFactory& writer_factory);
 
  private:
   /// \brief Merge a group of manifests sharing the same spec_id.
   ///
-  /// Returns the merged manifests for this group (pass-throughs + newly written).
+  /// \param first The overall first (newest) manifest across all groups, used to
+  ///   apply the min_count_to_merge threshold on the bin that contains it.
   Result<std::vector<ManifestFile>> MergeGroup(
-      const std::vector<ManifestFile>& group, const TableMetadata& metadata,
-      std::shared_ptr<FileIO> file_io, const ManifestWriterFactory& writer_factory);
+      const std::vector<ManifestFile>& group, const ManifestFile& first,
+      int64_t snapshot_id, const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
+      const ManifestWriterFactory& writer_factory);
 
   /// \brief Write a merged manifest from all manifests in a bin.
-  Result<ManifestFile> FlushBin(const std::vector<ManifestFile>& bin,
+  ///
+  /// Entries are written snapshot-aware:
+  /// - ADDED from snapshot_id  → WriteAddedEntry (preserve status)
+  /// - DELETED from snapshot_id → WriteDeletedEntry (preserve tombstone)
+  /// - DELETED from older snapshots → dropped (stale tombstones are not carried forward)
+  /// - All other entries          → WriteExistingEntry
+  Result<ManifestFile> FlushBin(const std::vector<ManifestFile>& bin, int64_t snapshot_id,
                                 const TableMetadata& metadata,
                                 std::shared_ptr<FileIO> file_io,
                                 const ManifestWriterFactory& writer_factory);
