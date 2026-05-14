@@ -27,6 +27,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/exception.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/manifest/manifest_entry.h"
@@ -84,15 +85,14 @@ class ManifestFilterManagerTest : public MinimalUpdateTestBase {
 
   ManifestWriterFactory MakeWriterFactory(const TableMetadata& metadata) {
     auto fv = metadata.format_version;
-    return [this, fv, &metadata](int32_t spec_id,
-                                  ManifestContent content) mutable
+    return [this, fv, &metadata](int32_t spec_id, ManifestContent content) mutable
                -> Result<std::unique_ptr<ManifestWriter>> {
       ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata.PartitionSpecById(spec_id));
       ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-      auto path = std::format("{}/metadata/flt-{}.avro", table_location_,
-                              manifest_counter_++);
-      return ManifestWriter::MakeWriter(fv, kTestSnapshotId, path, file_io_, spec,
-                                        schema, content);
+      auto path =
+          std::format("{}/metadata/flt-{}.avro", table_location_, manifest_counter_++);
+      return ManifestWriter::MakeWriter(fv, kTestSnapshotId, path, file_io_, spec, schema,
+                                        content);
     };
   }
 
@@ -103,7 +103,8 @@ class ManifestFilterManagerTest : public MinimalUpdateTestBase {
     for (const auto& m : manifests) {
       ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata.PartitionSpecById(m.partition_spec_id));
       ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-      ICEBERG_ASSIGN_OR_RAISE(auto reader, ManifestReader::Make(m, file_io_, schema, spec));
+      ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                              ManifestReader::Make(m, file_io_, schema, spec));
       ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
       result.insert(result.end(), entries.begin(), entries.end());
     }
@@ -126,11 +127,22 @@ TEST_F(ManifestFilterManagerTest, NullSnapshotReturnsEmpty) {
   EXPECT_TRUE(result.empty());
 }
 
-TEST_F(ManifestFilterManagerTest, DeletesFilesReturnsCorrectState) {
+TEST_F(ManifestFilterManagerTest, ContainsDeletesReturnsCorrectState) {
   ManifestFilterManager mgr(ManifestContent::kData, file_io_);
-  EXPECT_FALSE(mgr.DeletesFiles());
+  EXPECT_FALSE(mgr.ContainsDeletes());
   mgr.DeleteFile("/some/path.parquet");
-  EXPECT_TRUE(mgr.DeletesFiles());
+  EXPECT_TRUE(mgr.ContainsDeletes());
+}
+
+TEST_F(ManifestFilterManagerTest, DeleteByRowFilterRejectsNull) {
+  ManifestFilterManager mgr(ManifestContent::kData, file_io_);
+  EXPECT_THROW(mgr.DeleteByRowFilter(nullptr), IcebergError);
+}
+
+TEST_F(ManifestFilterManagerTest, DeleteFileObjectRejectsNull) {
+  ManifestFilterManager mgr(ManifestContent::kData, file_io_);
+  std::shared_ptr<DataFile> null_file;
+  EXPECT_THROW(mgr.DeleteFile(null_file), IcebergError);
 }
 
 TEST_F(ManifestFilterManagerTest, NoConditionsReturnsManifestsUnchanged) {
@@ -140,7 +152,7 @@ TEST_F(ManifestFilterManagerTest, NoConditionsReturnsManifestsUnchanged) {
 
   // Load original manifests so we can compare paths
   ICEBERG_UNWRAP_OR_FAIL(auto list_reader,
-                          ManifestListReader::Make(snap->manifest_list, file_io_));
+                         ManifestListReader::Make(snap->manifest_list, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto orig_manifests, list_reader->Files());
 
   ManifestFilterManager mgr(ManifestContent::kData, file_io_);
@@ -191,8 +203,7 @@ TEST_F(ManifestFilterManagerTest, RowFilterAlwaysTrueDeletesAll) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
   for (const auto& e : entries) {
-    EXPECT_EQ(e.status, ManifestStatus::kDeleted)
-        << "Expected all entries to be DELETED";
+    EXPECT_EQ(e.status, ManifestStatus::kDeleted) << "Expected all entries to be DELETED";
   }
 }
 
@@ -209,9 +220,39 @@ TEST_F(ManifestFilterManagerTest, RowFilterAlwaysFalseDeletesNone) {
   ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
   for (const auto& e : entries) {
     // AlwaysFalse means nothing can match → entries remain ADDED or EXISTING
-    EXPECT_NE(e.status, ManifestStatus::kDeleted)
-        << "Expected no entries to be DELETED";
+    EXPECT_NE(e.status, ManifestStatus::kDeleted) << "Expected no entries to be DELETED";
   }
+}
+
+TEST_F(ManifestFilterManagerTest, RowFilterUsesPartitionResiduals) {
+  ICEBERG_UNWRAP_OR_FAIL(auto snap, CommitFiles({file_a_, file_b_}));
+  auto* metadata = table_->metadata().get();
+  auto factory = MakeWriterFactory(*metadata);
+
+  ManifestFilterManager mgr(ManifestContent::kData, file_io_);
+  mgr.CaseSensitive(false);
+  mgr.DeleteByRowFilter(Expressions::Equal("X", Literal::Long(1L)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, mgr.FilterManifests(*metadata, snap, factory));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
+  int deleted_count = 0;
+  int live_count = 0;
+  for (const auto& e : entries) {
+    ASSERT_NE(e.data_file, nullptr);
+    if (e.status == ManifestStatus::kDeleted) {
+      ++deleted_count;
+      EXPECT_EQ(e.data_file->file_path, file_a_->file_path);
+    } else {
+      ++live_count;
+      EXPECT_EQ(e.data_file->file_path, file_b_->file_path);
+    }
+  }
+
+  EXPECT_EQ(deleted_count, 1);
+  EXPECT_EQ(live_count, 1);
+  ASSERT_EQ(mgr.FilesToBeDeleted().size(), 1U);
+  EXPECT_EQ(mgr.FilesToBeDeleted().begin()->get()->file_path, file_a_->file_path);
 }
 
 TEST_F(ManifestFilterManagerTest, DropPartition) {
