@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <map>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -63,7 +64,7 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeManifests(
   // content types.  Use reverse spec ordering to match Java's reverse-TreeMap behaviour,
   // which is observable in v3 tables where first-row IDs are assigned in output order.
   using GroupKey = std::pair<int32_t, ManifestContent>;
-  std::map<GroupKey, std::vector<ManifestFile>, std::greater<GroupKey>> by_spec;
+  std::map<GroupKey, std::vector<ManifestFile>, std::greater<>> by_spec;
   for (const auto& m : all) {
     by_spec[{m.partition_spec_id, m.content}].push_back(m);
   }
@@ -97,8 +98,7 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
   std::vector<ManifestFile> current_bin;
   int64_t bin_size = 0;
 
-  for (auto it = group.rbegin(); it != group.rend(); ++it) {
-    const auto& manifest = *it;
+  for (const auto& manifest : std::views::reverse(group)) {
     if (!current_bin.empty() &&
         bin_size + manifest.manifest_length > target_size_bytes_) {
       bins.push_back(std::move(current_bin));
