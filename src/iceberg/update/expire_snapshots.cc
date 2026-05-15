@@ -406,8 +406,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
         return InvalidArgument(
             "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
             "protection during incremental cleanup",
-            SnapshotSummaryFields::kSourceSnapshotId, it->second,
-            ancestor->snapshot_id);
+            SnapshotSummaryFields::kSourceSnapshotId, it->second, ancestor->snapshot_id);
       }
     }
 
@@ -464,8 +463,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
           return InvalidArgument(
               "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
               "protection during incremental cleanup",
-              SnapshotSummaryFields::kSourceSnapshotId, src_it->second,
-              snapshot_id);
+              SnapshotSummaryFields::kSourceSnapshotId, src_it->second, snapshot_id);
         }
       }
       // If this commit was cherry-picked from a still-live snapshot, skip --
