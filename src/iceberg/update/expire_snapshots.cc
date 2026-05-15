@@ -31,6 +31,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -402,7 +403,11 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
       try {
         picked_ancestor_snapshot_ids.insert(std::stoll(it->second));
       } catch (...) {
-        // Malformed source-snapshot-id; skip rather than fail cleanup.
+        return InvalidArgument(
+            "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
+            "protection during incremental cleanup",
+            SnapshotSummaryFields::kSourceSnapshotId, it->second,
+            ancestor->snapshot_id);
       }
     }
 
@@ -456,7 +461,11 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
         try {
           source_snapshot_id = std::stoll(src_it->second);
         } catch (...) {
-          source_snapshot_id = -1;
+          return InvalidArgument(
+              "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
+              "protection during incremental cleanup",
+              SnapshotSummaryFields::kSourceSnapshotId, src_it->second,
+              snapshot_id);
         }
       }
       // If this commit was cherry-picked from a still-live snapshot, skip --
