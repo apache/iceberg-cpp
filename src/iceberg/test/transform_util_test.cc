@@ -134,6 +134,45 @@ TEST(TransformUtilTest, HumanTimestampWithZone) {
             TransformUtil::HumanTimestampWithZone(1767225601000001L));
 }
 
+TEST(TransformUtilTest, HumanTimestampNs) {
+  EXPECT_EQ("1970-01-01T00:00:00.000000001", TransformUtil::HumanTimestampNs(1));
+  EXPECT_EQ("2026-01-01T00:00:01.000001001",
+            TransformUtil::HumanTimestampNs(1767225601000001001L));
+}
+
+TEST(TransformUtilTest, HumanTimestampNsWithZone) {
+  EXPECT_EQ("1970-01-01T00:00:00.000000001+00:00",
+            TransformUtil::HumanTimestampNsWithZone(1));
+  EXPECT_EQ("2026-01-01T00:00:01.000001001+00:00",
+            TransformUtil::HumanTimestampNsWithZone(1767225601000001001L));
+}
+
+TEST(TransformUtilTest, ParseTimestampNs) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto nanos, TransformUtil::ParseTimestampNs("2026-01-01T00:00:01.000001001"));
+  EXPECT_EQ(nanos, 1767225601000001001L);
+}
+
+TEST(TransformUtilTest, ParseTimestampNsRejectsMoreThanNineFractionalDigits) {
+  EXPECT_THAT(TransformUtil::ParseTimestampNs("2026-01-01T00:00:01.0000010011"),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(TransformUtilTest, ParseTimestampNsWithZone) {
+  ICEBERG_UNWRAP_OR_FAIL(auto nanos, TransformUtil::ParseTimestampNsWithZone(
+                                         "2026-01-01T00:00:01.000001001+00:00"));
+  EXPECT_EQ(nanos, 1767225601000001001L);
+}
+
+TEST(TransformUtilTest, ParseTimestampNsWithZoneRejectsOffsetPastPlusMinus1800) {
+  EXPECT_THAT(
+      TransformUtil::ParseTimestampNsWithZone("2026-01-01T00:00:01.000001001+18:01"),
+      IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(
+      TransformUtil::ParseTimestampNsWithZone("2026-01-01T00:00:01.000001001-18:30"),
+      IsError(ErrorKind::kInvalidArgument));
+}
+
 TEST(TransformUtilTest, Base64Encode) {
   // Empty string
   EXPECT_EQ("", TransformUtil::Base64Encode(""));

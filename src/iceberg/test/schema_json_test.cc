@@ -71,6 +71,8 @@ INSTANTIATE_TEST_SUITE_P(
         SchemaJsonParam{.json = "\"timestamp\"", .type = iceberg::timestamp()},
         SchemaJsonParam{.json = "\"timestamptz\"",
                         .type = std::make_shared<TimestampTzType>()},
+        SchemaJsonParam{.json = "\"timestamp_ns\"", .type = iceberg::timestamp_ns()},
+        SchemaJsonParam{.json = "\"timestamptz_ns\"", .type = iceberg::timestamptz_ns()},
         SchemaJsonParam{
             .json =
                 R"({"element":"string","element-id":3,"element-required":true,"type":"list"})",

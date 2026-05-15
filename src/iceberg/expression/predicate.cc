@@ -494,10 +494,10 @@ bool BoundLiteralPredicate::Equals(const Expression& other) const {
     }
   }
 
-  // TODO(gangwu): add TypeId::kTimestampNano
   static const std::unordered_set<TypeId> kIntegralTypes = {
-      TypeId::kInt,  TypeId::kLong,      TypeId::kDate,
-      TypeId::kTime, TypeId::kTimestamp, TypeId::kTimestampTz};
+      TypeId::kInt,         TypeId::kLong,         TypeId::kDate,
+      TypeId::kTime,        TypeId::kTimestamp,    TypeId::kTimestampTz,
+      TypeId::kTimestampNs, TypeId::kTimestampTzNs};
 
   if (kIntegralTypes.contains(term_->type()->type_id()) &&
       term_->Equals(*other_pred->term())) {

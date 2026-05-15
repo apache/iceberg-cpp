@@ -79,6 +79,8 @@ Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
     case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
     case TypeId::kString:
     case TypeId::kUuid:
     case TypeId::kFixed:
@@ -148,6 +150,8 @@ Result<std::unique_ptr<TransformFunction>> YearTransform::Make(
     case TypeId::kDate:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
       break;
     default:
       return NotSupported("{} is not a valid input type for year transform",
@@ -176,6 +180,8 @@ Result<std::unique_ptr<TransformFunction>> MonthTransform::Make(
     case TypeId::kDate:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
       break;
     default:
       return NotSupported("{} is not a valid input type for month transform",
@@ -204,6 +210,8 @@ Result<std::unique_ptr<TransformFunction>> DayTransform::Make(
     case TypeId::kDate:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
       break;
     default:
       return NotSupported("{} is not a valid input type for day transform",
@@ -231,6 +239,8 @@ Result<std::unique_ptr<TransformFunction>> HourTransform::Make(
   switch (source_type->type_id()) {
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
       break;
     default:
       return NotSupported("{} is not a valid input type for hour transform",

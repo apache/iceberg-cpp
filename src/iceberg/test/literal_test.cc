@@ -580,7 +580,15 @@ INSTANTIATE_TEST_SUITE_P(
         BasicLiteralTestParam{.test_name = "TimestampTz",
                               .literal = Literal::TimestampTz(1684137600000000LL),
                               .expected_type_id = TypeId::kTimestampTz,
-                              .expected_string = "1684137600000000"}),
+                              .expected_string = "1684137600000000"},
+        BasicLiteralTestParam{.test_name = "TimestampNs",
+                              .literal = Literal::TimestampNs(1684137600000000001LL),
+                              .expected_type_id = TypeId::kTimestampNs,
+                              .expected_string = "1684137600000000001"},
+        BasicLiteralTestParam{.test_name = "TimestampTzNs",
+                              .literal = Literal::TimestampTzNs(1684137600000000001LL),
+                              .expected_type_id = TypeId::kTimestampTzNs,
+                              .expected_string = "1684137600000000001"}),
     [](const ::testing::TestParamInfo<BasicLiteralTestParam>& info) {
       return info.param.test_name;
     });

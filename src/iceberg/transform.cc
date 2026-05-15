@@ -152,6 +152,8 @@ bool Transform::CanTransform(const Type& source_type) const {
         case TypeId::kTime:
         case TypeId::kTimestamp:
         case TypeId::kTimestampTz:
+        case TypeId::kTimestampNs:
+        case TypeId::kTimestampTzNs:
         case TypeId::kString:
         case TypeId::kUuid:
         case TypeId::kFixed:
@@ -177,6 +179,8 @@ bool Transform::CanTransform(const Type& source_type) const {
         case TypeId::kDate:
         case TypeId::kTimestamp:
         case TypeId::kTimestampTz:
+        case TypeId::kTimestampNs:
+        case TypeId::kTimestampTzNs:
           return true;
         default:
           return false;
@@ -186,6 +190,8 @@ bool Transform::CanTransform(const Type& source_type) const {
         case TypeId::kDate:
         case TypeId::kTimestamp:
         case TypeId::kTimestampTz:
+        case TypeId::kTimestampNs:
+        case TypeId::kTimestampTzNs:
           return true;
         default:
           return false;
@@ -194,6 +200,8 @@ bool Transform::CanTransform(const Type& source_type) const {
       switch (source_type.type_id()) {
         case TypeId::kTimestamp:
         case TypeId::kTimestampTz:
+        case TypeId::kTimestampNs:
+        case TypeId::kTimestampTzNs:
           return true;
         default:
           return false;
@@ -420,6 +428,11 @@ Result<std::string> Transform::ToHumanString(const Literal& value) {
           return TransformUtil::HumanTimestamp(std::get<int64_t>(value.value()));
         case TypeId::kTimestampTz:
           return TransformUtil::HumanTimestampWithZone(std::get<int64_t>(value.value()));
+        case TypeId::kTimestampNs:
+          return TransformUtil::HumanTimestampNs(std::get<int64_t>(value.value()));
+        case TypeId::kTimestampTzNs:
+          return TransformUtil::HumanTimestampNsWithZone(
+              std::get<int64_t>(value.value()));
         case TypeId::kFixed:
         case TypeId::kBinary: {
           const auto& binary_data = std::get<std::vector<uint8_t>>(value.value());

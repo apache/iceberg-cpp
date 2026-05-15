@@ -326,6 +326,22 @@ bool TimestampTzType::Equals(const Type& other) const {
   return other.type_id() == kTypeId;
 }
 
+bool TimestampNsType::is_zoned() const { return false; }
+TimeUnit TimestampNsType::time_unit() const { return TimeUnit::kNanosecond; }
+TypeId TimestampNsType::type_id() const { return kTypeId; }
+std::string TimestampNsType::ToString() const { return "timestamp_ns"; }
+bool TimestampNsType::Equals(const Type& other) const {
+  return other.type_id() == kTypeId;
+}
+
+bool TimestampTzNsType::is_zoned() const { return true; }
+TimeUnit TimestampTzNsType::time_unit() const { return TimeUnit::kNanosecond; }
+TypeId TimestampTzNsType::type_id() const { return kTypeId; }
+std::string TimestampTzNsType::ToString() const { return "timestamptz_ns"; }
+bool TimestampTzNsType::Equals(const Type& other) const {
+  return other.type_id() == kTypeId;
+}
+
 TypeId StringType::type_id() const { return kTypeId; }
 std::string StringType::ToString() const { return "string"; }
 bool StringType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
@@ -371,6 +387,8 @@ TYPE_FACTORY(date, DateType)
 TYPE_FACTORY(time, TimeType)
 TYPE_FACTORY(timestamp, TimestampType)
 TYPE_FACTORY(timestamp_tz, TimestampTzType)
+TYPE_FACTORY(timestamp_ns, TimestampNsType)
+TYPE_FACTORY(timestamptz_ns, TimestampTzNsType)
 TYPE_FACTORY(binary, BinaryType)
 TYPE_FACTORY(string, StringType)
 TYPE_FACTORY(uuid, UuidType)
@@ -425,6 +443,10 @@ std::string_view ToString(TypeId id) {
       return "timestamp";
     case TypeId::kTimestampTz:
       return "timestamptz";
+    case TypeId::kTimestampNs:
+      return "timestamp_ns";
+    case TypeId::kTimestampTzNs:
+      return "timestamptz_ns";
     case TypeId::kString:
       return "string";
     case TypeId::kUuid:

@@ -396,6 +396,44 @@ class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
   bool Equals(const Type& other) const override;
 };
 
+/// \brief A data type representing a timestamp in nanoseconds without
+///   reference to a timezone.
+class ICEBERG_EXPORT TimestampNsType : public TimestampBase {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kTimestampNs;
+
+  TimestampNsType() = default;
+  ~TimestampNsType() override = default;
+
+  bool is_zoned() const override;
+  TimeUnit time_unit() const override;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+};
+
+/// \brief A data type representing a timestamp as nanoseconds since the
+///   epoch in UTC. A time zone or offset is not stored.
+class ICEBERG_EXPORT TimestampTzNsType : public TimestampBase {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kTimestampTzNs;
+
+  TimestampTzNsType() = default;
+  ~TimestampTzNsType() override = default;
+
+  bool is_zoned() const override;
+  TimeUnit time_unit() const override;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+};
+
 /// \brief A data type representing an arbitrary-length byte sequence.
 class ICEBERG_EXPORT BinaryType : public PrimitiveType {
  public:
@@ -490,6 +528,10 @@ ICEBERG_EXPORT const std::shared_ptr<TimeType>& time();
 ICEBERG_EXPORT const std::shared_ptr<TimestampType>& timestamp();
 /// \brief Return a TimestampTzType instance.
 ICEBERG_EXPORT const std::shared_ptr<TimestampTzType>& timestamp_tz();
+/// \brief Return a TimestampNsType instance.
+ICEBERG_EXPORT const std::shared_ptr<TimestampNsType>& timestamp_ns();
+/// \brief Return a TimestampTzNsType instance.
+ICEBERG_EXPORT const std::shared_ptr<TimestampTzNsType>& timestamptz_ns();
 /// \brief Return a BinaryType instance.
 ICEBERG_EXPORT const std::shared_ptr<BinaryType>& binary();
 /// \brief Return a StringType instance.

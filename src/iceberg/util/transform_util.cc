@@ -32,6 +32,9 @@ constexpr auto kEpochDate = std::chrono::year{1970} / std::chrono::January / 1;
 constexpr int64_t kMicrosPerMillis = 1'000;
 constexpr int64_t kMicrosPerSecond = 1'000'000;
 constexpr int64_t kMicrosPerDay = 86'400'000'000LL;
+constexpr int64_t kNanosPerMillis = 1'000'000;
+constexpr int64_t kNanosPerSecond = 1'000'000'000;
+constexpr int64_t kNanosPerDay = 86'400'000'000'000LL;
 
 /// Parse a timezone offset of the form "+HH:mm" or "-HH:mm" and return the
 /// offset in microseconds (positive for east of UTC, negative for west).
@@ -44,27 +47,106 @@ Result<int64_t> ParseTimezoneOffset(std::string_view offset) {
                           StringUtils::ParseNumber<int64_t>(offset.substr(1, 2)));
   ICEBERG_ASSIGN_OR_RAISE(auto minutes,
                           StringUtils::ParseNumber<int64_t>(offset.substr(4, 2)));
-  if (hours > 18 || minutes > 59) {
+  if (hours > 18 || minutes > 59) [[unlikely]] {
     return InvalidArgument("Invalid timezone offset: '{}'", offset);
   }
+
+  if (hours == 18 && minutes != 0) [[unlikely]] {
+    return InvalidArgument("Timezone offset '{}' not in range [-18:00, +18:00]", offset);
+  }
+
   auto micros = hours * 3'600 * kMicrosPerSecond + minutes * 60 * kMicrosPerSecond;
   return negative ? -micros : micros;
+}
+
+Result<std::pair<std::string_view, int64_t>> ParseTimestampWithZoneSuffix(
+    std::string_view str) {
+  if (str.empty()) [[unlikely]] {
+    return InvalidArgument("Invalid timestamptz string: '{}'", str);
+  }
+
+  int64_t offset_micros = 0;
+  std::string_view timestamp_part;
+
+  if (str.back() == 'Z') {
+    timestamp_part = str.substr(0, str.size() - 1);
+  } else if (str.size() >= 6 &&
+             (str[str.size() - 6] == '+' || str[str.size() - 6] == '-')) {
+    // Parse "+HH:mm" or "-HH:mm" offset suffix
+    ICEBERG_ASSIGN_OR_RAISE(offset_micros,
+                            ParseTimezoneOffset(str.substr(str.size() - 6)));
+    timestamp_part = str.substr(0, str.size() - 6);
+  } else {
+    return InvalidArgument("Invalid timestamptz string (missing timezone suffix): '{}'",
+                           str);
+  }
+
+  return std::make_pair(timestamp_part, offset_micros);
 }
 
 /// Parse fractional seconds (after '.') and return micros.
 /// Digits beyond 6 are truncated (nanosecond precision).
 Result<int64_t> ParseFractionalMicros(std::string_view frac) {
-  if (frac.empty()) {
+  if (frac.empty() || frac.size() > 9) [[unlikely]] {
     return InvalidArgument("Invalid fractional seconds: '{}'", frac);
   }
   // Truncate to microsecond precision (6 digits), matching Java ISO_LOCAL_TIME behavior
   if (frac.size() > 6) frac = frac.substr(0, 6);
   ICEBERG_ASSIGN_OR_RAISE(auto val, StringUtils::ParseNumber<int32_t>(frac));
-  // Right-pad to 6 digits: "500" → 500000, "001" → 1000, "000001" → 1
+  // Right-pad to 6 digits: "500" -> 500000, "001" -> 1000, "000001" -> 1000
   for (size_t i = frac.size(); i < 6; ++i) {
     val *= 10;
   }
   return static_cast<int64_t>(val);
+}
+
+/// Parse fractional seconds (after '.') and return nanos.
+Result<int64_t> ParseFractionalNanos(std::string_view frac) {
+  if (frac.empty() || frac.size() > 9) [[unlikely]] {
+    return InvalidArgument("Invalid fractional seconds: '{}'", frac);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto val, StringUtils::ParseNumber<int32_t>(frac));
+  // Right-pad to 9 digits: "500" -> 500000000, "001" -> 1000000, "000001" -> 1000
+  for (size_t i = frac.size(); i < 9; ++i) {
+    val *= 10;
+  }
+  return static_cast<int64_t>(val);
+}
+
+template <typename TimeScaleParser>
+Result<int64_t> ParseTimeWithFraction(std::string_view str, int64_t units_per_second,
+                                      TimeScaleParser&& parse_fraction) {
+  if (str.size() < 5 || str[2] != ':') [[unlikely]] {
+    return InvalidArgument("Invalid time string: '{}'", str);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto hours,
+                          StringUtils::ParseNumber<int64_t>(str.substr(0, 2)));
+  ICEBERG_ASSIGN_OR_RAISE(auto minutes,
+                          StringUtils::ParseNumber<int64_t>(str.substr(3, 2)));
+  int64_t seconds = 0;
+
+  int64_t frac_units = 0;
+  if (str.size() > 5) {
+    if (str[5] != ':' || str.size() < 8) [[unlikely]] {
+      return InvalidArgument("Invalid time string: '{}'", str);
+    }
+    ICEBERG_ASSIGN_OR_RAISE(seconds, StringUtils::ParseNumber<int64_t>(str.substr(6, 2)));
+    if (str.size() > 8) {
+      if (str[8] != '.') [[unlikely]] {
+        return InvalidArgument("Invalid time string: '{}'", str);
+      }
+      ICEBERG_ASSIGN_OR_RAISE(frac_units, parse_fraction(str.substr(9)));
+    }
+  }
+
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 ||
+      seconds > 59) [[unlikely]] {
+    return InvalidArgument("Invalid time string: '{}'", str);
+  }
+
+  return hours * 3'600 * units_per_second + minutes * 60 * units_per_second +
+         seconds * units_per_second + frac_units;
 }
 }  // namespace
 
@@ -79,7 +161,7 @@ std::string TransformUtil::HumanMonth(int32_t month_ordinal) {
 }
 
 std::string TransformUtil::HumanDay(int32_t day_ordinal) {
-  auto ymd = std::chrono::sys_days(kEpochDate) + std::chrono::days{day_ordinal};
+  auto ymd = std::chrono::sys_days{kEpochDate} + std::chrono::days{day_ordinal};
   return std::format("{:%F}", ymd);
 }
 
@@ -117,6 +199,21 @@ std::string TransformUtil::HumanTimestamp(int64_t timestamp_micros) {
   }
 }
 
+std::string TransformUtil::HumanTimestampNs(int64_t timestamp_nanos) {
+  auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
+      std::chrono::seconds(timestamp_nanos / kNanosPerSecond)};
+  auto nanos = timestamp_nanos % kNanosPerSecond;
+  if (nanos == 0) {
+    return std::format("{:%FT%T}", tp);
+  } else if (nanos % kNanosPerMillis == 0) {
+    return std::format("{:%FT%T}.{:03d}", tp, nanos / kNanosPerMillis);
+  } else if (nanos % kMicrosPerMillis == 0) {
+    return std::format("{:%FT%T}.{:06d}", tp, nanos / kMicrosPerMillis);
+  } else {
+    return std::format("{:%FT%T}.{:09d}", tp, nanos);
+  }
+}
+
 std::string TransformUtil::HumanTimestampWithZone(int64_t timestamp_micros) {
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
       std::chrono::seconds(timestamp_micros / kMicrosPerSecond)};
@@ -127,6 +224,21 @@ std::string TransformUtil::HumanTimestampWithZone(int64_t timestamp_micros) {
     return std::format("{:%FT%T}.{:03d}+00:00", tp, micros / kMicrosPerMillis);
   } else {
     return std::format("{:%FT%T}.{:06d}+00:00", tp, micros);
+  }
+}
+
+std::string TransformUtil::HumanTimestampNsWithZone(int64_t timestamp_nanos) {
+  auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
+      std::chrono::seconds(timestamp_nanos / kNanosPerSecond)};
+  auto nanos = timestamp_nanos % kNanosPerSecond;
+  if (nanos == 0) {
+    return std::format("{:%FT%T}+00:00", tp);
+  } else if (nanos % kNanosPerMillis == 0) {
+    return std::format("{:%FT%T}.{:03d}+00:00", tp, nanos / kNanosPerMillis);
+  } else if (nanos % kMicrosPerMillis == 0) {
+    return std::format("{:%FT%T}.{:06d}+00:00", tp, nanos / kMicrosPerMillis);
+  } else {
+    return std::format("{:%FT%T}.{:09d}+00:00", tp, nanos);
   }
 }
 
@@ -156,47 +268,19 @@ Result<int32_t> TransformUtil::ParseDay(std::string_view str) {
     return InvalidArgument("Invalid date: '{}'", str);
   }
 
-  auto days = std::chrono::sys_days(ymd) - std::chrono::sys_days(kEpochDate);
+  auto days = std::chrono::sys_days{ymd} - std::chrono::sys_days{kEpochDate};
   return static_cast<int32_t>(days.count());
 }
 
 Result<int64_t> TransformUtil::ParseTime(std::string_view str) {
-  if (str.size() < 5 || str[2] != ':') [[unlikely]] {
-    return InvalidArgument("Invalid time string: '{}'", str);
-  }
+  return ParseTimeWithFraction(str, kMicrosPerSecond, ParseFractionalMicros);
+}
 
-  ICEBERG_ASSIGN_OR_RAISE(auto hours,
-                          StringUtils::ParseNumber<int64_t>(str.substr(0, 2)));
-  ICEBERG_ASSIGN_OR_RAISE(auto minutes,
-                          StringUtils::ParseNumber<int64_t>(str.substr(3, 2)));
-  int64_t seconds = 0;
-
-  int64_t frac_micros = 0;
-  if (str.size() > 5) {
-    if (str[5] != ':' || str.size() < 8) [[unlikely]] {
-      return InvalidArgument("Invalid time string: '{}'", str);
-    }
-    ICEBERG_ASSIGN_OR_RAISE(seconds, StringUtils::ParseNumber<int64_t>(str.substr(6, 2)));
-    if (str.size() > 8) {
-      if (str[8] != '.') [[unlikely]] {
-        return InvalidArgument("Invalid time string: '{}'", str);
-      }
-      ICEBERG_ASSIGN_OR_RAISE(frac_micros, ParseFractionalMicros(str.substr(9)));
-    }
-  }
-
-  // check that hours, minutes, seconds are in valid ranges
-  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 ||
-      seconds > 59) [[unlikely]] {
-    return InvalidArgument("Invalid time string: '{}'", str);
-  }
-
-  return hours * 3'600 * kMicrosPerSecond + minutes * 60 * kMicrosPerSecond +
-         seconds * kMicrosPerSecond + frac_micros;
+Result<int64_t> TransformUtil::ParseTimeNs(std::string_view str) {
+  return ParseTimeWithFraction(str, kNanosPerSecond, ParseFractionalNanos);
 }
 
 Result<int64_t> TransformUtil::ParseTimestamp(std::string_view str) {
-  // Format: "yyyy-MM-ddTHH:mm:ss[.SSS[SSS]]"
   auto t_pos = str.find('T');
   if (t_pos == std::string_view::npos) [[unlikely]] {
     return InvalidArgument("Invalid timestamp string (missing 'T'): '{}'", str);
@@ -208,30 +292,30 @@ Result<int64_t> TransformUtil::ParseTimestamp(std::string_view str) {
   return static_cast<int64_t>(days) * kMicrosPerDay + time_micros;
 }
 
+Result<int64_t> TransformUtil::ParseTimestampNs(std::string_view str) {
+  auto t_pos = str.find('T');
+  if (t_pos == std::string_view::npos) [[unlikely]] {
+    return InvalidArgument("Invalid timestamp string (missing 'T'): '{}'", str);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto days, ParseDay(str.substr(0, t_pos)));
+  ICEBERG_ASSIGN_OR_RAISE(auto time_nanos, ParseTimeNs(str.substr(t_pos + 1)));
+
+  return static_cast<int64_t>(days) * kNanosPerDay + time_nanos;
+}
+
 Result<int64_t> TransformUtil::ParseTimestampWithZone(std::string_view str) {
-  if (str.empty()) [[unlikely]] {
-    return InvalidArgument("Invalid timestamptz string: '{}'", str);
-  }
-
-  int64_t offset_micros = 0;
-  std::string_view timestamp_part;
-
-  if (str.back() == 'Z') {
-    // "Z" suffix means UTC (offset = 0)
-    timestamp_part = str.substr(0, str.size() - 1);
-  } else if (str.size() >= 6 &&
-             (str[str.size() - 6] == '+' || str[str.size() - 6] == '-')) {
-    // Parse "+HH:mm" or "-HH:mm" offset suffix
-    ICEBERG_ASSIGN_OR_RAISE(offset_micros,
-                            ParseTimezoneOffset(str.substr(str.size() - 6)));
-    timestamp_part = str.substr(0, str.size() - 6);
-  } else {
-    return InvalidArgument("Invalid timestamptz string (missing timezone suffix): '{}'",
-                           str);
-  }
-
+  ICEBERG_ASSIGN_OR_RAISE(auto timestamp_with_offset, ParseTimestampWithZoneSuffix(str));
+  const auto [timestamp_part, offset_micros] = timestamp_with_offset;
   ICEBERG_ASSIGN_OR_RAISE(auto local_micros, ParseTimestamp(timestamp_part));
   return local_micros - offset_micros;
+}
+
+Result<int64_t> TransformUtil::ParseTimestampNsWithZone(std::string_view str) {
+  ICEBERG_ASSIGN_OR_RAISE(auto timestamp_with_offset, ParseTimestampWithZoneSuffix(str));
+  const auto [timestamp_part, offset_micros] = timestamp_with_offset;
+  ICEBERG_ASSIGN_OR_RAISE(auto local_nanos, ParseTimestampNs(timestamp_part));
+  return local_nanos - offset_micros * 1000;
 }
 
 std::string TransformUtil::Base64Encode(std::string_view str_to_encode) {

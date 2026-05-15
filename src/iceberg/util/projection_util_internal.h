@@ -54,6 +54,10 @@ class ProjectionUtil {
         return Literal::Timestamp(std::get<int64_t>(literal.value()) + adjustment);
       case TypeId::kTimestampTz:
         return Literal::TimestampTz(std::get<int64_t>(literal.value()) + adjustment);
+      case TypeId::kTimestampNs:
+        return Literal::TimestampNs(std::get<int64_t>(literal.value()) + adjustment);
+      case TypeId::kTimestampTzNs:
+        return Literal::TimestampTzNs(std::get<int64_t>(literal.value()) + adjustment);
       case TypeId::kDecimal: {
         const auto& decimal_type =
             internal::checked_cast<const DecimalType&>(*literal.type());
@@ -143,6 +147,8 @@ class ProjectionUtil {
       case TypeId::kDate:
       case TypeId::kTimestamp:
       case TypeId::kTimestampTz:
+      case TypeId::kTimestampNs:
+      case TypeId::kTimestampTzNs:
         break;
       default:
         return NotSupported("{} is not a valid input type for numeric transform",
@@ -179,6 +185,8 @@ class ProjectionUtil {
       case TypeId::kDate:
       case TypeId::kTimestamp:
       case TypeId::kTimestampTz:
+      case TypeId::kTimestampNs:
+      case TypeId::kTimestampTzNs:
         break;
       default:
         return NotSupported("{} is not a valid input type for numeric transform",
