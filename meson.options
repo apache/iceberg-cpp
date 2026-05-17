@@ -44,4 +44,11 @@ option(
     value: 'disabled',
 )
 
+option(
+    'sigv4',
+    type: 'feature',
+    description: 'Build AWS SigV4 authentication support for rest catalog',
+    value: 'disabled',
+)
+
 option('tests', type: 'feature', description: 'Build tests', value: 'enabled')

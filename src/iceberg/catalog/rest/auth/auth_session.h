@@ -23,6 +23,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "iceberg/catalog/rest/http_request.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -37,20 +38,21 @@ class ICEBERG_REST_EXPORT AuthSession {
  public:
   virtual ~AuthSession() = default;
 
-  /// \brief Authenticate the given request headers.
+  /// \brief Authenticate an outgoing HTTP request.
   ///
-  /// This method adds authentication information (e.g., Authorization header)
-  /// to the provided headers map. The implementation should be idempotent.
+  /// Returns a new request with authentication information (e.g., an
+  /// Authorization header) added. Implementations must be idempotent and must
+  /// not mutate the input request.
   ///
-  /// \param[in,out] headers The headers map to add authentication information to.
-  /// \return Status indicating success or one of the following errors:
+  /// \param request The request to authenticate.
+  /// \return The authenticated request on success, or one of:
   ///         - AuthenticationFailed: General authentication failure (invalid credentials,
   ///         etc.)
   ///         - TokenExpired: Authentication token has expired and needs refresh
   ///         - NotAuthorized: Not authenticated (401)
   ///         - IOError: Network or connection errors when reaching auth server
   ///         - RestError: HTTP errors from authentication service
-  virtual Status Authenticate(std::unordered_map<std::string, std::string>& headers) = 0;
+  virtual Result<HttpRequest> Authenticate(const HttpRequest& request) = 0;
 
   /// \brief Close the session and release any resources.
   ///
