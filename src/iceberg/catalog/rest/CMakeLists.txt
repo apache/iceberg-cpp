@@ -23,6 +23,7 @@ set(ICEBERG_REST_SOURCES
     auth/auth_properties.cc
     auth/auth_session.cc
     auth/oauth2_util.cc
+    auth/sigv4_auth_manager.cc
     catalog_properties.cc
     endpoint.cc
     error_handlers.cc
@@ -33,8 +34,6 @@ set(ICEBERG_REST_SOURCES
     rest_file_io.cc
     rest_util.cc
     types.cc)
-
-list(APPEND ICEBERG_REST_SOURCES auth/sigv4_auth_manager.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
