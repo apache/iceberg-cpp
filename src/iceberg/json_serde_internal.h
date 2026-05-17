@@ -447,8 +447,9 @@ ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
 /// \param schema The table schema, used with partitionSpecById to resolve partition
 /// types.
 /// \return A vector of `FileScanTask` objects or an error if the conversion fails.
-ICEBERG_EXPORT Result<std::vector<FileScanTask>> FileScanTasksFromJson(
-    const nlohmann::json& json, const std::vector<DataFile>& delete_files,
+ICEBERG_EXPORT Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
+    const nlohmann::json& json,
+    const std::vector<std::shared_ptr<DataFile>>& delete_files,
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
     const Schema& schema);
 

@@ -1395,7 +1395,7 @@ TEST(PlanTableScanResponseFromJsonTest, SubmittedStatusMissingOptionalFields) {
   auto json = nlohmann::json::parse(R"({"status":"submitted","plan-id":"abc-123"})");
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->plan_status, "submitted");
+  EXPECT_EQ(result->plan_status, PlanStatus::kSubmitted);
   EXPECT_EQ(result->plan_id, "abc-123");
   EXPECT_TRUE(result->plan_tasks.empty());
   EXPECT_TRUE(result->file_scan_tasks.empty());
@@ -1408,7 +1408,7 @@ TEST(PlanTableScanResponseFromJsonTest, CompletedStatusWithPlanTasks) {
       R"({"status":"completed","plan-id":"abc-123","plan-tasks":["task-1","task-2"],"delete-files":[],"file-scan-tasks":[]})");
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->plan_status, "completed");
+  EXPECT_EQ(result->plan_status, PlanStatus::kCompleted);
   EXPECT_EQ(result->plan_id, "abc-123");
   ASSERT_EQ(result->plan_tasks.size(), 2);
   EXPECT_EQ(result->plan_tasks[0], "task-1");
@@ -1436,7 +1436,7 @@ TEST(FetchPlanningResultResponseFromJsonTest, SubmittedStatusNoTasks) {
   auto json = nlohmann::json::parse(R"({"status":"submitted"})");
   auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->plan_status, "submitted");
+  EXPECT_EQ(result->plan_status, PlanStatus::kSubmitted);
   EXPECT_TRUE(result->plan_tasks.empty());
   EXPECT_TRUE(result->file_scan_tasks.empty());
   EXPECT_TRUE(result->delete_files.empty());
@@ -1447,7 +1447,7 @@ TEST(FetchPlanningResultResponseFromJsonTest, CompletedStatusWithPlanTasks) {
       R"({"status":"completed","plan-tasks":["task-1"],"delete-files":[],"file-scan-tasks":[]})");
   auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->plan_status, "completed");
+  EXPECT_EQ(result->plan_status, PlanStatus::kCompleted);
   ASSERT_EQ(result->plan_tasks.size(), 1);
   EXPECT_EQ(result->plan_tasks[0], "task-1");
 }
@@ -1492,10 +1492,10 @@ TEST(FetchScanTasksResponseFromJsonTest, WithFileScanTasks) {
   EXPECT_TRUE(result->plan_tasks.empty());
   ASSERT_EQ(result->delete_files.size(), 1);
   ASSERT_EQ(result->file_scan_tasks.size(), 1);
-  EXPECT_EQ(result->file_scan_tasks[0].data_file()->file_path,
+  EXPECT_EQ(result->file_scan_tasks[0]->data_file()->file_path,
             "s3://bucket/data/file.parquet");
-  ASSERT_EQ(result->file_scan_tasks[0].delete_files().size(), 1);
-  EXPECT_EQ(result->file_scan_tasks[0].delete_files()[0]->file_path,
+  ASSERT_EQ(result->file_scan_tasks[0]->delete_files().size(), 1);
+  EXPECT_EQ(result->file_scan_tasks[0]->delete_files()[0]->file_path,
             "s3://bucket/deletes/delete.parquet");
 }
 

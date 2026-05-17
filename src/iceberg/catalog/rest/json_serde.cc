@@ -113,7 +113,7 @@ Status BaseScanTaskResponseFromJson(
   for (const auto& entry_json : delete_files_json) {
     ICEBERG_ASSIGN_OR_RAISE(auto delete_file,
                             DataFileFromJson(entry_json, partition_specs_by_id, schema));
-    response->delete_files.push_back(std::move(delete_file));
+    response->delete_files.push_back(std::make_shared<DataFile>(std::move(delete_file)));
   }
 
   // 3. file_scan_tasks
@@ -595,8 +595,9 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
         partition_specs_by_id,
     const Schema& schema) {
   PlanTableScanResponse response;
-  ICEBERG_ASSIGN_OR_RAISE(response.plan_status,
+  ICEBERG_ASSIGN_OR_RAISE(auto plan_status_str,
                           GetJsonValue<std::string>(json, kPlanStatus));
+  ICEBERG_ASSIGN_OR_RAISE(response.plan_status, PlanStatusFromString(plan_status_str));
   ICEBERG_ASSIGN_OR_RAISE(response.plan_id,
                           GetJsonValueOrDefault<std::string>(json, kPlanId));
   ICEBERG_RETURN_UNEXPECTED(
@@ -611,8 +612,9 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
         partition_specs_by_id,
     const Schema& schema) {
   FetchPlanningResultResponse response;
-  ICEBERG_ASSIGN_OR_RAISE(response.plan_status,
+  ICEBERG_ASSIGN_OR_RAISE(auto plan_status_str,
                           GetJsonValue<std::string>(json, kPlanStatus));
+  ICEBERG_ASSIGN_OR_RAISE(response.plan_status, PlanStatusFromString(plan_status_str));
   ICEBERG_RETURN_UNEXPECTED(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());

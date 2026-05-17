@@ -1894,15 +1894,16 @@ Result<DataFile> DataFileFromJson(
   return df;
 }
 
-Result<std::vector<FileScanTask>> FileScanTasksFromJson(
-    const nlohmann::json& json, const std::vector<DataFile>& delete_files,
+Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
+    const nlohmann::json& json,
+    const std::vector<std::shared_ptr<DataFile>>& delete_files,
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
     const Schema& schema) {
   if (!json.is_array()) {
     return JsonParseError("Cannot parse file scan tasks from non-array: {}",
                           SafeDumpJson(json));
   }
-  std::vector<FileScanTask> file_scan_tasks;
+  std::vector<std::shared_ptr<FileScanTask>> file_scan_tasks;
   for (const auto& task_json : json) {
     if (!task_json.is_object()) {
       return JsonParseError("Cannot parse file scan task from a non-object: {}",
@@ -1925,7 +1926,7 @@ Result<std::vector<FileScanTask>> FileScanTasksFromJson(
               "delete-file-references index {} is out of range (delete_files size: {})",
               ref, delete_files.size());
         }
-        task_delete_files.push_back(std::make_shared<DataFile>(delete_files[ref]));
+        task_delete_files.push_back(delete_files[ref]);
       }
     }
 
@@ -1936,9 +1937,10 @@ Result<std::vector<FileScanTask>> FileScanTasksFromJson(
       ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
     }
 
-    file_scan_tasks.emplace_back(std::make_shared<DataFile>(std::move(data_file)),
-                                 std::move(task_delete_files),
-                                 std::move(residual_filter));
+    file_scan_tasks.push_back(
+        std::make_shared<FileScanTask>(std::make_shared<DataFile>(std::move(data_file)),
+                                      std::move(task_delete_files),
+                                      std::move(residual_filter)));
   }
   return file_scan_tasks;
 }

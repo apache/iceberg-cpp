@@ -942,10 +942,10 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   ASSERT_THAT(result, IsOk());
   ASSERT_EQ(result.value().size(), 1U);
   const auto& task = result.value()[0];
-  ASSERT_NE(task.data_file(), nullptr);
-  EXPECT_EQ(task.data_file()->file_path, "s3://bucket/data/file.parquet");
-  EXPECT_TRUE(task.delete_files().empty());
-  EXPECT_EQ(task.residual_filter(), nullptr);
+  ASSERT_NE(task->data_file(), nullptr);
+  EXPECT_EQ(task->data_file()->file_path, "s3://bucket/data/file.parquet");
+  EXPECT_TRUE(task->delete_files().empty());
+  EXPECT_EQ(task->residual_filter(), nullptr);
 }
 
 TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
@@ -967,12 +967,13 @@ TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
     "delete-file-references": [0]
   }])"_json;
 
-  auto result = FileScanTasksFromJson(json, {delete_file}, {}, Schema({}, 0));
+  auto result =
+      FileScanTasksFromJson(json, {std::make_shared<DataFile>(delete_file)}, {}, Schema({}, 0));
   ASSERT_THAT(result, IsOk());
   ASSERT_EQ(result.value().size(), 1U);
   const auto& task = result.value()[0];
-  ASSERT_EQ(task.delete_files().size(), 1U);
-  EXPECT_EQ(task.delete_files()[0]->file_path, "s3://bucket/deletes/pos_delete.parquet");
+  ASSERT_EQ(task->delete_files().size(), 1U);
+  EXPECT_EQ(task->delete_files()[0]->file_path, "s3://bucket/deletes/pos_delete.parquet");
 }
 
 TEST(FileScanTasksFromJsonTest, DeleteFileReferenceOutOfRange) {

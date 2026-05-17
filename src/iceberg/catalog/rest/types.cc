@@ -131,8 +131,16 @@ bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
   if (plan_tasks != other.plan_tasks) {
     return false;
   }
-  if (delete_files != other.delete_files) {
+  if (delete_files.size() != other.delete_files.size()) {
     return false;
+  }
+  for (size_t i = 0; i < delete_files.size(); ++i) {
+    if (!delete_files[i] != !other.delete_files[i]) {
+      return false;
+    }
+    if (delete_files[i] && *delete_files[i] != *other.delete_files[i]) {
+      return false;
+    }
   }
   if (file_scan_tasks.size() != other.file_scan_tasks.size()) {
     return false;
@@ -140,24 +148,28 @@ bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
   for (size_t i = 0; i < file_scan_tasks.size(); ++i) {
     const auto& a = file_scan_tasks[i];
     const auto& b = other.file_scan_tasks[i];
-    if (!a.data_file() != !b.data_file()) {
+    if (!a != !b) {
       return false;
     }
-    if (a.data_file() && *a.data_file() != *b.data_file()) {
+    if (!a) continue;
+    if (!a->data_file() != !b->data_file()) {
       return false;
     }
-    if (a.delete_files().size() != b.delete_files().size()) {
+    if (a->data_file() && *a->data_file() != *b->data_file()) {
       return false;
     }
-    for (size_t j = 0; j < a.delete_files().size(); ++j) {
-      if (!a.delete_files()[j] != !b.delete_files()[j]) {
+    if (a->delete_files().size() != b->delete_files().size()) {
+      return false;
+    }
+    for (size_t j = 0; j < a->delete_files().size(); ++j) {
+      if (!a->delete_files()[j] != !b->delete_files()[j]) {
         return false;
       }
-      if (a.delete_files()[j] && *a.delete_files()[j] != *b.delete_files()[j]) {
+      if (a->delete_files()[j] && *a->delete_files()[j] != *b->delete_files()[j]) {
         return false;
       }
     }
-    if (a.residual_filter() != b.residual_filter()) {
+    if (a->residual_filter() != b->residual_filter()) {
       return false;
     }
   }
@@ -220,22 +232,20 @@ Status PlanTableScanRequest::Validate() const {
 }
 
 Status PlanTableScanResponse::Validate() const {
-  if (plan_status.empty()) {
-    return ValidationFailed("Invalid response: plan status must be defined");
-  }
-  if (plan_status == "submitted" && plan_id.empty()) {
+  if (plan_status == PlanStatus::kSubmitted && plan_id.empty()) {
     return ValidationFailed(
         "Invalid response: plan id should be defined when status is 'submitted'");
   }
-  if (plan_status == "cancelled") {
+  if (plan_status == PlanStatus::kCancelled) {
     return ValidationFailed(
         "Invalid response: 'cancelled' is not a valid status for planTableScan");
   }
-  if (plan_status != "completed" && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+  if (plan_status != PlanStatus::kCompleted && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
     return ValidationFailed(
         "Invalid response: tasks can only be defined when status is 'completed'");
   }
-  if (!plan_id.empty() && plan_status != "submitted" && plan_status != "completed") {
+  if (!plan_id.empty() && plan_status != PlanStatus::kSubmitted &&
+      plan_status != PlanStatus::kCompleted) {
     return ValidationFailed(
         "Invalid response: plan id can only be defined when status is 'submitted' or "
         "'completed'");
@@ -249,10 +259,7 @@ Status PlanTableScanResponse::Validate() const {
 }
 
 Status FetchPlanningResultResponse::Validate() const {
-  if (plan_status.empty()) {
-    return ValidationFailed("Invalid status: null");
-  }
-  if (plan_status != "completed" && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+  if (plan_status != PlanStatus::kCompleted && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
     return ValidationFailed(
         "Invalid response: tasks can only be returned in a 'completed' status");
   }

@@ -23,6 +23,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -319,8 +320,8 @@ struct ICEBERG_REST_EXPORT PlanTableScanRequest {
 /// endpoints.
 struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
   std::vector<std::string> plan_tasks;
-  std::vector<FileScanTask> file_scan_tasks;
-  std::vector<DataFile> delete_files;
+  std::vector<std::shared_ptr<FileScanTask>> file_scan_tasks;
+  std::vector<std::shared_ptr<DataFile>> delete_files;
   // std::unordered_map<std::string, PartitionSpec> specsById;
 
   Status Validate() const { return {}; };
@@ -331,7 +332,7 @@ struct ICEBERG_REST_EXPORT BaseScanTaskResponse {
 /// \brief Response from initiating a scan planning operation, including plan status and
 /// initial scan tasks.
 struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
-  std::string plan_status;
+  PlanStatus plan_status = PlanStatus::kCompleted;
   std::string plan_id;
   // TODO(sandeepg): Add credentials.
 
@@ -343,7 +344,7 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse : BaseScanTaskResponse {
 /// \brief Response from polling an asynchronous scan plan, including current status and
 /// available scan tasks.
 struct ICEBERG_REST_EXPORT FetchPlanningResultResponse : BaseScanTaskResponse {
-  std::string plan_status;
+  PlanStatus plan_status = PlanStatus::kCompleted;
   // TODO(sandeepg): Add credentials.
 
   Status Validate() const;
