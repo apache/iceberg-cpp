@@ -22,13 +22,13 @@
 #  include <string>
 #  include <unordered_map>
 
-#  include <aws/core/Aws.h>
 #  include <aws/core/auth/AWSCredentialsProvider.h>
 #  include <gtest/gtest.h>
 
 #  include "iceberg/catalog/rest/auth/auth_managers.h"
 #  include "iceberg/catalog/rest/auth/auth_properties.h"
 #  include "iceberg/catalog/rest/auth/auth_session.h"
+#  include "iceberg/catalog/rest/auth/aws_sdk.h"
 #  include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
 #  include "iceberg/catalog/rest/http_client.h"
 #  include "iceberg/table_identifier.h"
@@ -38,14 +38,7 @@ namespace iceberg::rest::auth {
 
 class SigV4AuthTest : public ::testing::Test {
  protected:
-  static void SetUpTestSuite() {
-    static bool initialized = false;
-    if (!initialized) {
-      Aws::SDKOptions options;
-      Aws::InitAPI(options);
-      initialized = true;
-    }
-  }
+  static void SetUpTestSuite() { ASSERT_THAT(InitializeAwsSdk(), IsOk()); }
 
   HttpClient client_{{}};
 
@@ -60,6 +53,23 @@ class SigV4AuthTest : public ::testing::Test {
     };
   }
 };
+
+TEST_F(SigV4AuthTest, LifecycleInitializeIsIdempotent) {
+  EXPECT_THAT(InitializeAwsSdk(), IsOk());
+  EXPECT_TRUE(IsAwsSdkInitialized());
+  EXPECT_FALSE(IsAwsSdkFinalized());
+}
+
+TEST_F(SigV4AuthTest, LifecycleFinalizeRefusesWhileSessionsAlive) {
+  auto properties = MakeSigV4Properties();
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+  auto session_result = manager_result.value()->CatalogSession(client_, properties);
+  ASSERT_THAT(session_result, IsOk());
+
+  EXPECT_THAT(FinalizeAwsSdk(), IsError(ErrorKind::kInvalid));
+  EXPECT_TRUE(IsAwsSdkInitialized());
+}
 
 TEST_F(SigV4AuthTest, LoadSigV4AuthManager) {
   auto properties = MakeSigV4Properties();
