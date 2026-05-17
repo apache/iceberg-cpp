@@ -1753,7 +1753,7 @@ Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
 
 Result<DataFile> DataFileFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
     const Schema& schema) {
   if (!json.is_object()) {
     return JsonParseError("DataFile must be a JSON object: {}", SafeDumpJson(json));
@@ -1788,8 +1788,8 @@ Result<DataFile> DataFileFromJson(
                             SafeDumpJson(partition_vals));
     }
     std::vector<Literal> literals;
-    auto it = partitionSpecById.find(df.partition_spec_id.value_or(-1));
-    if (it == partitionSpecById.end()) {
+    auto it = partition_spec_by_id.find(df.partition_spec_id.value_or(-1));
+    if (it == partition_spec_by_id.end()) {
       return JsonParseError("Invalid partition spec id: {}",
                             df.partition_spec_id.value_or(-1));
     }
@@ -1897,7 +1897,7 @@ Result<DataFile> DataFileFromJson(
 Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     const nlohmann::json& json,
     const std::vector<std::shared_ptr<DataFile>>& delete_files,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
     const Schema& schema) {
   if (!json.is_array()) {
     return JsonParseError("Cannot parse file scan tasks from non-array: {}",
@@ -1913,7 +1913,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(auto data_file,
-                            DataFileFromJson(data_file_json, partitionSpecById, schema));
+                            DataFileFromJson(data_file_json, partition_spec_by_id, schema));
 
     std::vector<std::shared_ptr<DataFile>> task_delete_files;
     if (task_json.contains(kDeleteFileReferences) &&

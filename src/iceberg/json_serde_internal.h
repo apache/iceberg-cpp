@@ -424,16 +424,16 @@ ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJso
 /// Binary fields (lower-bounds, upper-bounds, key-metadata) are base64-encoded.
 ///
 /// \param json The JSON object representing a `DataFile`.
-/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition
+/// \param partition_spec_by_id Map from spec ID to PartitionSpec for type-aware partition
 /// parsing.
-/// \param schema The table schema, used with partitionSpecById to resolve partition
+/// \param schema The table schema, used with partition_spec_by_id to resolve partition
 /// types.
 /// \return A `DataFile` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<DataFile> DataFileFromJson(const nlohmann::json& json);
 
 ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
     const Schema& schema);
 
 /// \brief Deserializes a JSON array of file scan tasks.
@@ -442,15 +442,15 @@ ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
 ///
 /// \param json The JSON array of file scan task objects.
 /// \param delete_files Delete files indexed by the tasks' delete-file-references.
-/// \param partitionSpecById Map from spec ID to PartitionSpec for type-aware partition
+/// \param partition_spec_by_id Map from spec ID to PartitionSpec for type-aware partition
 /// parsing.
-/// \param schema The table schema, used with partitionSpecById to resolve partition
+/// \param schema The table schema, used with partition_spec_by_id to resolve partition
 /// types.
 /// \return A vector of `FileScanTask` objects or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     const nlohmann::json& json,
     const std::vector<std::shared_ptr<DataFile>>& delete_files,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partitionSpecById,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
     const Schema& schema);
 
 }  // namespace iceberg
