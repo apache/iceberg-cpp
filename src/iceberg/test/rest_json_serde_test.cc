@@ -1742,4 +1742,101 @@ TEST(FileScanTasksFromJsonTest, NotAnArray) {
   EXPECT_THAT(result, HasErrorMessage("non-array"));
 }
 
+// --- Roundtrip tests ---
+
+TEST(DataFileRoundtripTest, RequiredFieldsOnly) {
+  DataFile df;
+  df.content = DataFile::Content::kData;
+  df.file_path = "s3://bucket/data/file.parquet";
+  df.file_format = FileFormatType::kParquet;
+  df.file_size_in_bytes = 12345;
+  df.record_count = 100;
+
+  auto json = ToJson(df);
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value(), df);
+}
+
+TEST(DataFileRoundtripTest, WithOptionalFields) {
+  DataFile df;
+  df.content = DataFile::Content::kPositionDeletes;
+  df.file_path = "s3://bucket/deletes/pos.parquet";
+  df.file_format = FileFormatType::kParquet;
+  df.file_size_in_bytes = 5000;
+  df.record_count = 50;
+  df.partition_spec_id = 1;
+  df.column_sizes = {{1, 1000}, {2, 2000}};
+  df.value_counts = {{1, 100}, {2, 100}};
+  df.null_value_counts = {{1, 0}};
+  df.nan_value_counts = {{2, 5}};
+  df.split_offsets = {0, 4096};
+  df.sort_order_id = 0;
+  df.referenced_data_file = "s3://bucket/data/file.parquet";
+
+  auto json = ToJson(df);
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value(), df);
+}
+
+TEST(FetchScanTasksResponseRoundtripTest, WithFileScanTasksAndDeleteFiles) {
+  auto json = nlohmann::json::parse(R"({
+    "plan-tasks": [],
+    "delete-files": [
+      {
+        "content": "position_deletes",
+        "file-path": "s3://bucket/deletes/delete.parquet",
+        "file-format": "PARQUET",
+        "file-size-in-bytes": 512,
+        "record-count": 5
+      }
+    ],
+    "file-scan-tasks": [
+      {
+        "data-file": {
+          "content": "data",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "file-size-in-bytes": 12345,
+          "record-count": 100
+        },
+        "delete-file-references": [0]
+      }
+    ]
+  })");
+
+  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  auto roundtrip_json = ToJson(*result);
+  auto result2 = FetchScanTasksResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
+
+TEST(PlanTableScanResponseRoundtripTest, SubmittedStatus) {
+  auto json = nlohmann::json::parse(R"({"status": "submitted", "plan-id": "abc-123"})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  auto roundtrip_json = ToJson(*result);
+  auto result2 = PlanTableScanResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
+
+TEST(FetchPlanningResultResponseRoundtripTest, CompletedWithPlanTasks) {
+  auto json =
+      nlohmann::json::parse(R"({"status": "completed", "plan-tasks": ["task-1", "task-2"]})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  auto roundtrip_json = ToJson(*result);
+  auto result2 =
+      FetchPlanningResultResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
+
 }  // namespace iceberg::rest

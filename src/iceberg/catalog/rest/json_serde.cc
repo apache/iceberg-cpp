@@ -17,8 +17,10 @@
  * under the License.
  */
 
+#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -314,7 +316,128 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
   return file_scan_tasks;
 }
 
+nlohmann::json ToJson(const DataFile& df) {
+  nlohmann::json json;
+  json[kContent] = ToString(df.content);
+  json[kFilePath] = df.file_path;
+  json[kFileFormat] = ToString(df.file_format);
+
+  if (df.partition_spec_id.has_value()) {
+    json[kSpecId] = df.partition_spec_id.value();
+  }
+
+  json[kRecordCount] = df.record_count;
+  json[kFileSizeInBytes] = df.file_size_in_bytes;
+
+  auto write_int_map = [&](std::string_view key,
+                           const std::map<int32_t, int64_t>& m) {
+    if (!m.empty()) {
+      std::vector<int32_t> keys;
+      std::vector<int64_t> values;
+      for (const auto& [k, v] : m) {
+        keys.push_back(k);
+        values.push_back(v);
+      }
+      json[key] = {{"keys", std::move(keys)}, {"values", std::move(values)}};
+    }
+  };
+
+  write_int_map(kColumnSizes, df.column_sizes);
+  write_int_map(kValueCounts, df.value_counts);
+  write_int_map(kNullValueCounts, df.null_value_counts);
+  write_int_map(kNanValueCounts, df.nan_value_counts);
+
+  auto write_binary_map = [&](std::string_view key,
+                              const std::map<int32_t, std::vector<uint8_t>>& m) {
+    if (!m.empty()) {
+      std::vector<int32_t> keys;
+      std::vector<std::vector<uint8_t>> values;
+      for (const auto& [k, v] : m) {
+        keys.push_back(k);
+        values.push_back(v);
+      }
+      json[key] = {{"keys", std::move(keys)}, {"values", std::move(values)}};
+    }
+  };
+
+  write_binary_map(kLowerBounds, df.lower_bounds);
+  write_binary_map(kUpperBounds, df.upper_bounds);
+
+  if (!df.key_metadata.empty()) {
+    json[kKeyMetadata] = df.key_metadata;
+  }
+  if (!df.split_offsets.empty()) {
+    json[kSplitOffsets] = df.split_offsets;
+  }
+  if (!df.equality_ids.empty()) {
+    json[kEqualityIds] = df.equality_ids;
+  }
+  if (df.sort_order_id.has_value()) {
+    json[kSortOrderId] = df.sort_order_id.value();
+  }
+  if (df.first_row_id.has_value()) {
+    json[kFirstRowId] = df.first_row_id.value();
+  }
+  if (df.referenced_data_file.has_value()) {
+    json[kReferencedDataFile] = df.referenced_data_file.value();
+  }
+  if (df.content_offset.has_value()) {
+    json[kContentOffset] = df.content_offset.value();
+  }
+  if (df.content_size_in_bytes.has_value()) {
+    json[kContentSizeInBytes] = df.content_size_in_bytes.value();
+  }
+
+  return json;
+}
+
 namespace {
+
+nlohmann::json BaseScanTaskResponseToJson(const BaseScanTaskResponse& response) {
+  nlohmann::json json;
+
+  SetContainerField(json, kPlanTasks, response.plan_tasks);
+
+  // Build delete_files array and a pointer-to-index map for reference lookup.
+  std::unordered_map<const DataFile*, int32_t> delete_file_index;
+  nlohmann::json delete_files_json = nlohmann::json::array();
+  for (size_t i = 0; i < response.delete_files.size(); ++i) {
+    if (response.delete_files[i]) {
+      delete_files_json.push_back(ToJson(*response.delete_files[i]));
+      delete_file_index[response.delete_files[i].get()] = static_cast<int32_t>(i);
+    }
+  }
+  if (!delete_files_json.empty()) {
+    json[kDeleteFiles] = std::move(delete_files_json);
+  }
+
+  nlohmann::json tasks_json = nlohmann::json::array();
+  for (const auto& task : response.file_scan_tasks) {
+    if (!task) continue;
+    nlohmann::json task_json;
+    if (task->data_file()) {
+      task_json[kDataFile] = ToJson(*task->data_file());
+    }
+    if (!task->delete_files().empty()) {
+      std::vector<int32_t> refs;
+      for (const auto& df : task->delete_files()) {
+        auto it = delete_file_index.find(df.get());
+        if (it != delete_file_index.end()) {
+          refs.push_back(it->second);
+        }
+      }
+      if (!refs.empty()) {
+        task_json[kDeleteFileReferences] = std::move(refs);
+      }
+    }
+    tasks_json.push_back(std::move(task_json));
+  }
+  if (!tasks_json.empty()) {
+    json[kFileScanTasks] = std::move(tasks_json);
+  }
+
+  return json;
+}
 
 Status BaseScanTaskResponseFromJson(
     const nlohmann::json& json, BaseScanTaskResponse* response,
@@ -851,6 +974,25 @@ Result<FetchScanTasksResponse> FetchScanTasksResponseFromJson(
       BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
+}
+
+nlohmann::json ToJson(const PlanTableScanResponse& response) {
+  nlohmann::json json = BaseScanTaskResponseToJson(response);
+  json[kPlanStatus] = ToString(response.plan_status);
+  if (!response.plan_id.empty()) {
+    json[kPlanId] = response.plan_id;
+  }
+  return json;
+}
+
+nlohmann::json ToJson(const FetchPlanningResultResponse& response) {
+  nlohmann::json json = BaseScanTaskResponseToJson(response);
+  json[kPlanStatus] = ToString(response.plan_status);
+  return json;
+}
+
+nlohmann::json ToJson(const FetchScanTasksResponse& response) {
+  return BaseScanTaskResponseToJson(response);
 }
 
 #define ICEBERG_DEFINE_FROM_JSON(Model)                       \
