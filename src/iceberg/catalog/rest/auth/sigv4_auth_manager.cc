@@ -44,17 +44,63 @@ namespace iceberg::rest::auth {
 
 namespace {
 
-enum class LifecycleState : uint8_t { kUninitialized, kInitialized, kFinalized };
+class AwsSdkLifecycle {
+ public:
+  static AwsSdkLifecycle& Instance() {
+    static AwsSdkLifecycle instance;
+    return instance;
+  }
 
-std::atomic<LifecycleState> g_state{LifecycleState::kUninitialized};
-std::mutex g_lifecycle_mutex;
-Aws::SDKOptions g_sdk_options;
-std::atomic<size_t> g_active_session_count{0};
+  Status Initialize() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto s = state_.load();
+    if (s == State::kInitialized) return {};
+    if (s == State::kFinalized) {
+      return InvalidArgument("AWS SDK has already been finalized; cannot reinitialize");
+    }
+    Aws::InitAPI(options_);
+    state_.store(State::kInitialized);
+    return {};
+  }
 
-Status EnsureSdkInitialized() {
-  if (g_state.load() == LifecycleState::kInitialized) return {};
-  return InitializeAwsSdk();
-}
+  Status Finalize() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (state_.load() != State::kInitialized) return {};
+    auto live = active_session_count_.load();
+    if (live != 0) {
+      return Invalid(
+          "Cannot finalize AWS SDK while {} SigV4 auth session(s) are still alive", live);
+    }
+    Aws::ShutdownAPI(options_);
+    state_.store(State::kFinalized);
+    return {};
+  }
+
+  Status EnsureInitialized() {
+    if (state_.load() == State::kInitialized) return {};
+    return Initialize();
+  }
+
+  bool IsInitialized() const { return state_.load() == State::kInitialized; }
+  bool IsFinalized() const { return state_.load() == State::kFinalized; }
+
+  void IncrementSessionCount() {
+    active_session_count_.fetch_add(1, std::memory_order_relaxed);
+  }
+  void DecrementSessionCount() {
+    active_session_count_.fetch_sub(1, std::memory_order_relaxed);
+  }
+
+ private:
+  enum class State : uint8_t { kUninitialized, kInitialized, kFinalized };
+
+  AwsSdkLifecycle() = default;
+
+  std::atomic<State> state_{State::kUninitialized};
+  std::mutex mutex_;
+  Aws::SDKOptions options_;
+  std::atomic<size_t> active_session_count_{0};
+};
 
 Aws::Http::HttpMethod ToAwsMethod(HttpMethod method) {
   switch (method) {
@@ -112,12 +158,11 @@ SigV4AuthSession::SigV4AuthSession(
       credentials_provider_(std::move(credentials_provider)),
       signer_(std::make_unique<RestSigV4Signer>(
           credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {
-  // Counted so FinalizeAwsSdk() refuses to ShutdownAPI while sessions exist.
-  g_active_session_count.fetch_add(1, std::memory_order_relaxed);
+  AwsSdkLifecycle::Instance().IncrementSessionCount();
 }
 
 SigV4AuthSession::~SigV4AuthSession() {
-  g_active_session_count.fetch_sub(1, std::memory_order_relaxed);
+  AwsSdkLifecycle::Instance().DecrementSessionCount();
 }
 
 Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
@@ -191,7 +236,7 @@ SigV4AuthManager::~SigV4AuthManager() = default;
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::InitSession(
     HttpClient& init_client,
     const std::unordered_map<std::string, std::string>& properties) {
-  ICEBERG_RETURN_UNEXPECTED(EnsureSdkInitialized());
+  ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().EnsureInitialized());
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session,
                           delegate_->InitSession(init_client, properties));
   return WrapSession(std::move(delegate_session), properties);
@@ -200,7 +245,7 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::InitSession(
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
     HttpClient& shared_client,
     const std::unordered_map<std::string, std::string>& properties) {
-  ICEBERG_RETURN_UNEXPECTED(EnsureSdkInitialized());
+  ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().EnsureInitialized());
   catalog_properties_ = properties;
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session,
                           delegate_->CatalogSession(shared_client, properties));
@@ -325,34 +370,13 @@ Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
   return std::make_unique<SigV4AuthManager>(std::move(delegate));
 }
 
-Status InitializeAwsSdk() {
-  std::lock_guard<std::mutex> lock(g_lifecycle_mutex);
-  auto state = g_state.load();
-  if (state == LifecycleState::kInitialized) return {};
-  if (state == LifecycleState::kFinalized) {
-    return InvalidArgument("AWS SDK has already been finalized; cannot reinitialize");
-  }
-  Aws::InitAPI(g_sdk_options);
-  g_state.store(LifecycleState::kInitialized);
-  return {};
-}
+Status InitializeAwsSdk() { return AwsSdkLifecycle::Instance().Initialize(); }
 
-Status FinalizeAwsSdk() {
-  std::lock_guard<std::mutex> lock(g_lifecycle_mutex);
-  if (g_state.load() != LifecycleState::kInitialized) return {};
-  auto live = g_active_session_count.load();
-  if (live != 0) {
-    return Invalid(
-        "Cannot finalize AWS SDK while {} SigV4 auth session(s) are still alive", live);
-  }
-  Aws::ShutdownAPI(g_sdk_options);
-  g_state.store(LifecycleState::kFinalized);
-  return {};
-}
+Status FinalizeAwsSdk() { return AwsSdkLifecycle::Instance().Finalize(); }
 
-bool IsAwsSdkInitialized() { return g_state.load() == LifecycleState::kInitialized; }
+bool IsAwsSdkInitialized() { return AwsSdkLifecycle::Instance().IsInitialized(); }
 
-bool IsAwsSdkFinalized() { return g_state.load() == LifecycleState::kFinalized; }
+bool IsAwsSdkFinalized() { return AwsSdkLifecycle::Instance().IsFinalized(); }
 
 }  // namespace iceberg::rest::auth
 
