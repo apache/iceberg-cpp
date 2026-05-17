@@ -28,13 +28,9 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-#include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
-#include "iceberg/schema.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {

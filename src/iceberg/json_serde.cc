@@ -27,10 +27,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/constants.h"
-#include "iceberg/expression/json_serde_internal.h"
-#include "iceberg/file_format.h"
 #include "iceberg/json_serde_internal.h"
-#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
@@ -43,7 +40,6 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_requirement.h"
-#include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -228,30 +224,6 @@ constexpr std::string_view kRequirementAssertDefaultSortOrderID =
     "assert-default-sort-order-id";
 constexpr std::string_view kLastAssignedFieldId = "last-assigned-field-id";
 constexpr std::string_view kLastAssignedPartitionId = "last-assigned-partition-id";
-
-// FileScanTask / DataFile constants (kSpecId, kSortOrderId, and kFileSizeInBytes
-// are already defined above)
-constexpr std::string_view kDataFile = "data-file";
-constexpr std::string_view kDeleteFileReferences = "delete-file-references";
-constexpr std::string_view kResidualFilter = "residual-filter";
-constexpr std::string_view kContent = "content";
-constexpr std::string_view kFilePath = "file-path";
-constexpr std::string_view kFileFormat = "file-format";
-constexpr std::string_view kPartition = "partition";
-constexpr std::string_view kRecordCount = "record-count";
-constexpr std::string_view kColumnSizes = "column-sizes";
-constexpr std::string_view kValueCounts = "value-counts";
-constexpr std::string_view kNullValueCounts = "null-value-counts";
-constexpr std::string_view kNanValueCounts = "nan-value-counts";
-constexpr std::string_view kLowerBounds = "lower-bounds";
-constexpr std::string_view kUpperBounds = "upper-bounds";
-constexpr std::string_view kKeyMetadata = "key-metadata";
-constexpr std::string_view kSplitOffsets = "split-offsets";
-constexpr std::string_view kEqualityIds = "equality-ids";
-constexpr std::string_view kFirstRowId = "first-row-id";
-constexpr std::string_view kReferencedDataFile = "referenced-data-file";
-constexpr std::string_view kContentOffset = "content-offset";
-constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
 
 }  // namespace
 
