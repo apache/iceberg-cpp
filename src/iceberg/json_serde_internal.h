@@ -417,40 +417,4 @@ ICEBERG_EXPORT nlohmann::json ToJson(const TableRequirement& requirement);
 ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
     const nlohmann::json& json);
 
-/// \brief Deserializes a JSON object into a `DataFile` object.
-///
-/// Parses a DataFile from the REST Catalog JSON format. Maps (column-sizes,
-/// value-counts, etc.) use the CountMap/BinaryMap parallel arrays format.
-/// Binary fields (lower-bounds, upper-bounds, key-metadata) are base64-encoded.
-///
-/// \param json The JSON object representing a `DataFile`.
-/// \param partition_spec_by_id Map from spec ID to PartitionSpec for type-aware partition
-/// parsing.
-/// \param schema The table schema, used with partition_spec_by_id to resolve partition
-/// types.
-/// \return A `DataFile` object or an error if the conversion fails.
-ICEBERG_EXPORT Result<DataFile> DataFileFromJson(const nlohmann::json& json);
-
-ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
-    const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
-    const Schema& schema);
-
-/// \brief Deserializes a JSON array of file scan tasks.
-///
-/// Each task may reference delete files by index into \p delete_files.
-///
-/// \param json The JSON array of file scan task objects.
-/// \param delete_files Delete files indexed by the tasks' delete-file-references.
-/// \param partition_spec_by_id Map from spec ID to PartitionSpec for type-aware partition
-/// parsing.
-/// \param schema The table schema, used with partition_spec_by_id to resolve partition
-/// types.
-/// \return A vector of `FileScanTask` objects or an error if the conversion fails.
-ICEBERG_EXPORT Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
-    const nlohmann::json& json,
-    const std::vector<std::shared_ptr<DataFile>>& delete_files,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
-    const Schema& schema);
-
 }  // namespace iceberg

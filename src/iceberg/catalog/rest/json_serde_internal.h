@@ -19,15 +19,19 @@
 
 #pragma once
 
+#include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include <nlohmann/json_fwd.hpp>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
+#include "iceberg/table_scan.h"
 
 /// \file iceberg/catalog/rest/json_serde_internal.h
 /// JSON serialization and deserialization for Iceberg REST Catalog API types.
@@ -87,5 +91,16 @@ ICEBERG_REST_EXPORT Result<FetchScanTasksResponse> FetchScanTasksResponseFromJso
 
 ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const PlanTableScanRequest& request);
 ICEBERG_REST_EXPORT nlohmann::json ToJson(const FetchScanTasksRequest& request);
+
+ICEBERG_REST_EXPORT Result<DataFile> DataFileFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
+    const Schema& schema);
+
+ICEBERG_REST_EXPORT Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
+    const nlohmann::json& json,
+    const std::vector<std::shared_ptr<DataFile>>& delete_files,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
+    const Schema& schema);
 
 }  // namespace iceberg::rest
