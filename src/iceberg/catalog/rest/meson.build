@@ -96,6 +96,7 @@ iceberg_rest_auth_headers = [
     'auth/auth_managers.h',
     'auth/auth_properties.h',
     'auth/auth_session.h',
+    'auth/aws_sdk.h',
     'auth/oauth2_util.h',
 ]
 install_headers(iceberg_rest_auth_headers, subdir: 'iceberg/catalog/rest/auth')
