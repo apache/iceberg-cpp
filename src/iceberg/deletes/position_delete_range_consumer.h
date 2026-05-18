@@ -17,31 +17,26 @@
  * under the License.
  */
 
-#include "iceberg/deletes/position_delete_index.h"
+#pragma once
+
+#include <cstdint>
+#include <span>
+
+#include "iceberg/iceberg_data_export.h"
 
 namespace iceberg {
 
-void PositionDeleteIndex::Delete(int64_t pos) { bitmap_.Add(pos); }
+class PositionDeleteIndex;
 
-void PositionDeleteIndex::Delete(int64_t pos_start, int64_t pos_end) {
-  bitmap_.AddRange(pos_start, pos_end);
-}
-
-bool PositionDeleteIndex::IsDeleted(int64_t pos) const { return bitmap_.Contains(pos); }
-
-bool PositionDeleteIndex::IsEmpty() const { return bitmap_.IsEmpty(); }
-
-int64_t PositionDeleteIndex::Cardinality() const {
-  return static_cast<int64_t>(bitmap_.Cardinality());
-}
-
-void PositionDeleteIndex::Merge(const PositionDeleteIndex& other) {
-  bitmap_.Or(other.bitmap_);
-}
-
-void PositionDeleteIndex::BulkAddForKey(int32_t key, const uint32_t* positions,
-                                        size_t n) {
-  bitmap_.AddManyForKey(key, positions, n);
-}
+/// \brief Apply `positions` to `target` as deletes; semantically equivalent
+/// to calling `target.Delete(pos)` for each entry. Out-of-range positions
+/// are silently ignored. Sorted, mostly-contiguous input is fastest.
+///
+/// \warning Not safe to call recursively or interleaved on the same thread:
+///     the bulk dispatch path uses a thread-local staging buffer that a
+///     nested invocation would corrupt. Concurrent calls on different
+///     threads are safe with disjoint `target`.
+void ICEBERG_DATA_EXPORT ForEachPositionDelete(std::span<const int64_t> positions,
+                                               PositionDeleteIndex& target);
 
 }  // namespace iceberg

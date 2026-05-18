@@ -19,14 +19,21 @@
 
 #include "iceberg/data/delete_loader.h"
 
+#include <cstring>
+#include <span>
 #include <string>
 #include <vector>
 
+#include <nanoarrow/nanoarrow.h>
+
+#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
+#include "iceberg/deletes/position_delete_range_consumer.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/result.h"
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/macros.h"
@@ -57,6 +64,25 @@ Result<std::unique_ptr<Reader>> OpenDeleteFile(const DataFile& file,
   return ReaderFactoryRegistry::Open(file.file_format, options);
 }
 
+/// Raw `int64` values buffer (offset-adjusted). Skips the validity bitmap:
+/// `kDeleteFilePos` is required by the V2 spec.
+const int64_t* Int64ValuesBuffer(const ArrowArrayView* view) {
+  return view->buffer_views[1].data.as_int64 + view->offset;
+}
+
+/// String-equals at `row_idx` via nanoarrow's unsafe direct-buffer access.
+/// Skips the validity bitmap: `kDeleteFilePath` is required by the V2 spec.
+bool StringEquals(const ArrowArrayView* view, int64_t row_idx, std::string_view target) {
+  ArrowStringView sv = ArrowArrayViewGetStringUnsafe(view, row_idx);
+  if (static_cast<size_t>(sv.size_bytes) != target.size()) {
+    return false;
+  }
+  if (target.empty()) {
+    return true;
+  }
+  return sv.data != nullptr && std::memcmp(sv.data, target.data(), target.size()) == 0;
+}
+
 }  // namespace
 
 DeleteLoader::DeleteLoader(std::shared_ptr<FileIO> io) : io_(std::move(io)) {}
@@ -71,6 +97,25 @@ Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteInde
   ICEBERG_ASSIGN_OR_RAISE(auto arrow_schema, reader->Schema());
   internal::ArrowSchemaGuard schema_guard(&arrow_schema);
 
+  // Reused across batches; reads child buffers directly to avoid the
+  // per-row `Scalar` dispatch in `ArrowArrayStructLike`.
+  ArrowArrayView array_view;
+  internal::ArrowArrayViewGuard view_guard(&array_view);
+  ArrowError error;
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowArrayViewInitFromSchema(&array_view, &arrow_schema, &error), error);
+
+  // Fast path when the writer's `referenced_data_file` hint matches our
+  // target: skip the path column, hand `pos_data` straight to
+  // `ForEachPositionDelete`. Trusts the hint -- spec-compliant writers
+  // only set it when all rows share one data file.
+  const bool use_referenced_data_file_fast_path =
+      file.referenced_data_file.has_value() &&
+      file.referenced_data_file.value() == data_file_path;
+
+  // Filter-path staging buffer; reused across batches via `clear()`.
+  std::vector<int64_t> positions;
+
   while (true) {
     ICEBERG_ASSIGN_OR_RAISE(auto batch_opt, reader->Next());
     if (!batch_opt.has_value()) break;
@@ -78,23 +123,44 @@ Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteInde
     auto& batch = batch_opt.value();
     internal::ArrowArrayGuard batch_guard(&batch);
 
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto row, ArrowArrayStructLike::Make(arrow_schema, batch, /*row_index=*/0));
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewSetArray(&array_view, &batch, &error), error);
 
-    for (int64_t i = 0; i < batch.length; ++i) {
-      if (i > 0) {
-        ICEBERG_RETURN_UNEXPECTED(row->Reset(i));
-      }
-      // Field 0: file_path
-      ICEBERG_ASSIGN_OR_RAISE(auto path_scalar, row->GetField(0));
-      auto path = std::get<std::string_view>(path_scalar);
+    const int64_t length = batch.length;
+    if (length <= 0) {
+      continue;
+    }
 
-      if (path == data_file_path) {
-        // Field 1: pos
-        ICEBERG_ASSIGN_OR_RAISE(auto pos_scalar, row->GetField(1));
-        index.Delete(std::get<int64_t>(pos_scalar));
+    // Child indices must match `PosDeleteSchema()`: 0 = file_path, 1 = pos.
+    const ArrowArrayView* path_view = array_view.children[0];
+    const ArrowArrayView* pos_view = array_view.children[1];
+
+    // V2 spec marks pos and file_path as required (NOT NULL). The direct
+    // buffer access below skips the validity bitmap, so a non-compliant
+    // batch would silently corrupt the index. Fail fast instead.
+    if (ArrowArrayViewComputeNullCount(pos_view) != 0 ||
+        ArrowArrayViewComputeNullCount(path_view) != 0) {
+      return InvalidArrowData(
+          "position delete file has null values in required pos/file_path columns");
+    }
+
+    const int64_t* pos_data = Int64ValuesBuffer(pos_view);
+
+    if (use_referenced_data_file_fast_path) {
+      ForEachPositionDelete(std::span<const int64_t>(pos_data, length), index);
+      continue;
+    }
+
+    positions.clear();
+    if (positions.capacity() < static_cast<size_t>(length)) {
+      positions.reserve(static_cast<size_t>(length));
+    }
+    for (int64_t i = 0; i < length; ++i) {
+      if (StringEquals(path_view, i, data_file_path)) {
+        positions.push_back(pos_data[i]);
       }
     }
+    ForEachPositionDelete(positions, index);
   }
 
   return reader->Close();

@@ -167,6 +167,7 @@ set(ICEBERG_DATA_SOURCES
     data/position_delete_writer.cc
     data/writer.cc
     deletes/position_delete_index.cc
+    deletes/position_delete_range_consumer.cc
     deletes/roaring_position_bitmap.cc
     puffin/file_metadata.cc
     puffin/json_serde.cc

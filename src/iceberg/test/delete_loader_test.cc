@@ -169,6 +169,10 @@ TEST_F(DeleteLoaderTest, LoadPositionDeletesFiltersByDataFilePath) {
                                                          {"data_b.parquet", 10},
                                                          {"data_b.parquet", 20}});
 
+  // Mixed paths -> writer must NOT set the hint, forcing the loader's
+  // per-row filter path. Locks the routing in case the writer behavior changes.
+  ASSERT_FALSE(delete_file->referenced_data_file.has_value());
+
   std::vector<std::shared_ptr<DataFile>> files = {delete_file};
 
   // Load only positions for data_a.parquet
@@ -205,6 +209,34 @@ TEST_F(DeleteLoaderTest, LoadPositionDeletesSkipsMismatchedReferencedDataFile) {
   auto result = loader_->LoadPositionDeletes(files, "data.parquet");
   ASSERT_THAT(result, IsOk());
   ASSERT_TRUE(result.value().IsEmpty());
+}
+
+TEST_F(DeleteLoaderTest, LoadPositionDeletesFastPathHonorsReferencedDataFile) {
+  // Single-file writes -> writer sets referenced_data_file -> loader takes
+  // the zero-copy fast path. Sized above the consumer's 64-element sniff
+  // threshold so the dispatcher's real coalesce/bulk logic runs end-to-end,
+  // not just the small-input shortcut covered by LoadPositionDeletesSingleFile.
+  constexpr int64_t kRowCount = 128;
+  std::vector<std::pair<std::string, int64_t>> deletes;
+  deletes.reserve(kRowCount);
+  for (int64_t i = 0; i < kRowCount; ++i) {
+    deletes.emplace_back("data.parquet", i);
+  }
+  auto delete_file = WritePositionDeletes("pos_deletes_fast_path.parquet", deletes);
+
+  ASSERT_TRUE(delete_file->referenced_data_file.has_value());
+  ASSERT_EQ(delete_file->referenced_data_file.value(), "data.parquet");
+
+  std::vector<std::shared_ptr<DataFile>> files = {delete_file};
+  auto result = loader_->LoadPositionDeletes(files, "data.parquet");
+  ASSERT_THAT(result, IsOk());
+
+  auto& index = result.value();
+  ASSERT_EQ(index.Cardinality(), kRowCount);
+  ASSERT_TRUE(index.IsDeleted(0));
+  ASSERT_TRUE(index.IsDeleted(kRowCount / 2));
+  ASSERT_TRUE(index.IsDeleted(kRowCount - 1));
+  ASSERT_FALSE(index.IsDeleted(kRowCount));
 }
 
 TEST_F(DeleteLoaderTest, LoadPositionDeletesRejectsDV) {
