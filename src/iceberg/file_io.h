@@ -151,8 +151,26 @@ class ICEBERG_EXPORT FileIO {
   ///
   /// \param file_location The location of the file to delete.
   /// \return void if the delete succeeded, an error code if the delete failed.
-  virtual Status DeleteFile(const std::string& file_location) {
+  virtual Status DeleteFile(const std::string&) {
     return NotImplemented("DeleteFile not implemented");
+  }
+
+  /// \brief Delete files at the given locations.
+  ///
+  /// Implementations that can delete multiple files efficiently should override this
+  /// method. The default implementation deletes files sequentially using DeleteFile
+  /// and returns the first error encountered.
+  ///
+  /// \param file_locations The locations of the files to delete.
+  /// \return void if all deletes succeeded, an error code if any delete failed.
+  virtual Status DeleteFiles(std::span<const std::string> file_locations) {
+    for (const auto& file_location : file_locations) {
+      auto status = DeleteFile(file_location);
+      if (!status.has_value()) {
+        return status;
+      }
+    }
+    return {};
   }
 };
 

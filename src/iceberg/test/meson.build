@@ -88,6 +88,7 @@ iceberg_tests = {
             'data_file_set_test.cc',
             'decimal_test.cc',
             'endian_test.cc',
+            'file_io_test.cc',
             'formatter_test.cc',
             'lazy_test.cc',
             'location_util_test.cc',
