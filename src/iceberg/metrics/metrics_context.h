@@ -45,7 +45,7 @@ class ICEBERG_EXPORT MetricsContext {
 
   /// \brief Get or create a named Counter.
   virtual std::shared_ptr<Counter> GetCounter(std::string_view name,
-                                              CounterUnit unit = CounterUnit::kCount) = 0;
+                                              CounterUnit unit) = 0;
 
   /// \brief Get or create a named Timer (nanosecond precision).
   virtual std::shared_ptr<Timer> GetTimer(std::string_view name) = 0;
@@ -66,8 +66,7 @@ class ICEBERG_EXPORT MetricsContext {
 /// during single-threaded setup).
 class ICEBERG_EXPORT DefaultMetricsContext : public MetricsContext {
  public:
-  std::shared_ptr<Counter> GetCounter(std::string_view name,
-                                      CounterUnit unit = CounterUnit::kCount) override;
+  std::shared_ptr<Counter> GetCounter(std::string_view name, CounterUnit unit) override;
 
   std::shared_ptr<Timer> GetTimer(std::string_view name) override;
 

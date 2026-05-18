@@ -104,7 +104,7 @@ constexpr std::string_view kProcessedManifestEntriesCount =
 void SetCounterField(nlohmann::json& json, std::string_view key, int64_t value,
                      CounterUnit unit) {
   if (value == 0) return;
-  json[key] = ToJson(CounterResult{unit, value});
+  json[key] = ToJson(CounterResult{.unit = unit, .value = value});
 }
 
 // Helper: parse optional int64 counter field (returns 0 if absent)
@@ -156,7 +156,7 @@ nlohmann::json ToJson(const TimerResult& timer) {
 Result<TimerResult> TimerResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto count, GetJsonValue<int64_t>(json, kCount));
   ICEBERG_ASSIGN_OR_RAISE(auto total, GetJsonValue<int64_t>(json, kTotalDuration));
-  return TimerResult{count, std::chrono::nanoseconds{total}};
+  return TimerResult{.count = count, .total_duration = std::chrono::nanoseconds{total}};
 }
 
 // ---------------------------------------------------------------------------

@@ -238,7 +238,7 @@ TEST(CommitMetricsTest, TimerAndAttemptsPopulated) {
 // ---------------------------------------------------------------------------
 
 TEST(CounterResultSerdeTest, RoundTrip) {
-  CounterResult original{CounterUnit::kBytes, 1024};
+  CounterResult original{.unit = CounterUnit::kBytes, .value = 1024};
   auto json = ToJson(original);
   auto result = CounterResultFromJson(json);
   ASSERT_TRUE(result.has_value());
@@ -247,7 +247,7 @@ TEST(CounterResultSerdeTest, RoundTrip) {
 }
 
 TEST(TimerResultSerdeTest, RoundTrip) {
-  TimerResult original{3, std::chrono::nanoseconds{9876}};
+  TimerResult original{.count = 3, .total_duration = std::chrono::nanoseconds{9876}};
   auto json = ToJson(original);
   auto result = TimerResultFromJson(json);
   ASSERT_TRUE(result.has_value());
@@ -267,7 +267,7 @@ TEST(ScanReportSerdeTest, RoundTrip) {
   report.scan_metrics.result_data_files = 7;
   report.scan_metrics.total_file_size_in_bytes = 8192;
   report.scan_metrics.total_planning_duration =
-      TimerResult{1, std::chrono::nanoseconds{100000}};
+      TimerResult{.count = 1, .total_duration = std::chrono::nanoseconds{100000}};
   report.projected_field_ids = {1, 2};
   report.projected_field_names = {"id", "name"};
 
@@ -317,7 +317,8 @@ TEST(CommitReportSerdeTest, RoundTrip) {
   report.snapshot_id = 99;
   report.sequence_number = 5;
   report.operation = "append";
-  report.commit_metrics.total_duration = TimerResult{1, std::chrono::nanoseconds{200000}};
+  report.commit_metrics.total_duration =
+      TimerResult{.count = 1, .total_duration = std::chrono::nanoseconds{200000}};
   report.commit_metrics.attempts = 1;
   report.commit_metrics.added_data_files = 3;
   report.commit_metrics.added_records = 1000;

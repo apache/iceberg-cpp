@@ -24,16 +24,17 @@ namespace iceberg {
 CommitMetrics CommitMetrics::Of(MetricsContext& context) {
   CommitMetrics m;
   m.total_duration = context.GetTimer("totalDuration");
-  m.attempts = context.GetCounter("attempts");
+  m.attempts = context.GetCounter("attempts", CounterUnit::kCount);
   return m;
 }
 
 CommitMetrics CommitMetrics::Noop() { return CommitMetrics::Of(MetricsContext::Null()); }
 
 void CommitMetrics::PopulateResult(CommitMetricsResult& result) const {
-  result.total_duration = total_duration ? TimerResult{total_duration->Count(),
-                                                       total_duration->TotalDuration()}
-                                         : TimerResult{};
+  result.total_duration =
+      total_duration ? TimerResult{.count = total_duration->Count(),
+                                   .total_duration = total_duration->TotalDuration()}
+                     : TimerResult{};
   result.attempts = attempts ? attempts->Value() : 0;
 }
 

@@ -24,24 +24,31 @@ namespace iceberg {
 ScanMetrics ScanMetrics::Of(MetricsContext& context) {
   ScanMetrics m;
   m.total_planning_duration = context.GetTimer("totalPlanningDuration");
-  m.result_data_files = context.GetCounter("resultDataFiles");
-  m.result_delete_files = context.GetCounter("resultDeleteFiles");
-  m.scanned_data_manifests = context.GetCounter("scannedDataManifests");
-  m.scanned_delete_manifests = context.GetCounter("scannedDeleteManifests");
-  m.total_data_manifests = context.GetCounter("totalDataManifests");
-  m.total_delete_manifests = context.GetCounter("totalDeleteManifests");
+  m.result_data_files = context.GetCounter("resultDataFiles", CounterUnit::kCount);
+  m.result_delete_files = context.GetCounter("resultDeleteFiles", CounterUnit::kCount);
+  m.scanned_data_manifests =
+      context.GetCounter("scannedDataManifests", CounterUnit::kCount);
+  m.scanned_delete_manifests =
+      context.GetCounter("scannedDeleteManifests", CounterUnit::kCount);
+  m.total_data_manifests = context.GetCounter("totalDataManifests", CounterUnit::kCount);
+  m.total_delete_manifests =
+      context.GetCounter("totalDeleteManifests", CounterUnit::kCount);
   m.total_file_size_in_bytes =
       context.GetCounter("totalFileSizeInBytes", CounterUnit::kBytes);
   m.total_delete_file_size_in_bytes =
       context.GetCounter("totalDeleteFileSizeInBytes", CounterUnit::kBytes);
-  m.skipped_data_manifests = context.GetCounter("skippedDataManifests");
-  m.skipped_delete_manifests = context.GetCounter("skippedDeleteManifests");
-  m.skipped_data_files = context.GetCounter("skippedDataFiles");
-  m.skipped_delete_files = context.GetCounter("skippedDeleteFiles");
-  m.indexed_delete_files = context.GetCounter("indexedDeleteFiles");
-  m.equality_delete_files = context.GetCounter("equalityDeleteFiles");
-  m.positional_delete_files = context.GetCounter("positionalDeleteFiles");
-  m.dvs = context.GetCounter("dvs");
+  m.skipped_data_manifests =
+      context.GetCounter("skippedDataManifests", CounterUnit::kCount);
+  m.skipped_delete_manifests =
+      context.GetCounter("skippedDeleteManifests", CounterUnit::kCount);
+  m.skipped_data_files = context.GetCounter("skippedDataFiles", CounterUnit::kCount);
+  m.skipped_delete_files = context.GetCounter("skippedDeleteFiles", CounterUnit::kCount);
+  m.indexed_delete_files = context.GetCounter("indexedDeleteFiles", CounterUnit::kCount);
+  m.equality_delete_files =
+      context.GetCounter("equalityDeleteFiles", CounterUnit::kCount);
+  m.positional_delete_files =
+      context.GetCounter("positionalDeleteFiles", CounterUnit::kCount);
+  m.dvs = context.GetCounter("dvs", CounterUnit::kCount);
   return m;
 }
 
@@ -49,10 +56,11 @@ ScanMetrics ScanMetrics::Noop() { return ScanMetrics::Of(MetricsContext::Null())
 
 ScanMetricsResult ScanMetrics::ToResult() const {
   ScanMetricsResult r;
-  r.total_planning_duration = total_planning_duration
-                                  ? TimerResult{total_planning_duration->Count(),
-                                                total_planning_duration->TotalDuration()}
-                                  : TimerResult{};
+  r.total_planning_duration =
+      total_planning_duration
+          ? TimerResult{.count = total_planning_duration->Count(),
+                        .total_duration = total_planning_duration->TotalDuration()}
+          : TimerResult{};
   r.result_data_files = result_data_files ? result_data_files->Value() : 0;
   r.result_delete_files = result_delete_files ? result_delete_files->Value() : 0;
   r.scanned_data_manifests = scanned_data_manifests ? scanned_data_manifests->Value() : 0;
