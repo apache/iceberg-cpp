@@ -18,6 +18,9 @@
  */
 
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
@@ -26,6 +29,7 @@
 #include <arrow/record_batch.h>
 #include <arrow/table.h>
 #include <arrow/type.h>
+#include <arrow/util/compression.h>
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
@@ -122,6 +126,27 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
   ASSERT_EQ(read_metadata, metadata);
 
   ASSERT_TRUE(out != nullptr) << "Reader.Next() returned no data";
+}
+
+struct ParquetCodec {
+  std::string name;
+  ::arrow::Compression::type compression;
+};
+
+std::optional<ParquetCodec> UnavailableParquetCodec() {
+  const std::vector<ParquetCodec> codecs = {
+      {.name = "snappy", .compression = ::arrow::Compression::SNAPPY},
+      {.name = "gzip", .compression = ::arrow::Compression::GZIP},
+      {.name = "brotli", .compression = ::arrow::Compression::BROTLI},
+      {.name = "lz4", .compression = ::arrow::Compression::LZ4},
+      {.name = "zstd", .compression = ::arrow::Compression::ZSTD},
+  };
+  for (const auto& codec : codecs) {
+    if (!::arrow::util::Codec::IsAvailable(codec.compression)) {
+      return codec;
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -459,6 +484,29 @@ TEST_F(ParquetReadWrite, EmptyStruct) {
 
   ASSERT_THAT(WriteArray(array, {.path = basePath, .schema = schema, .io = file_io}),
               IsError(ErrorKind::kNotImplemented));
+}
+
+TEST_F(ParquetReadWrite, RejectsUnavailableCompressionCodec) {
+  auto unavailable_codec = UnavailableParquetCodec();
+  if (!unavailable_codec.has_value()) {
+    GTEST_SKIP() << "All optional Parquet compression codecs are available";
+  }
+
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression, unavailable_codec->name);
+
+  auto writer = WriterFactoryRegistry::Open(
+      FileFormatType::kParquet, {.path = "unavailable_codec.parquet",
+                                 .schema = schema,
+                                 .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO(),
+                                 .properties = std::move(writer_properties)});
+
+  EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(writer,
+              HasErrorMessage("Parquet compression codec " + unavailable_codec->name +
+                              " is not available in the current build"));
 }
 
 TEST_F(ParquetReadWrite, SimpleStructRoundTrip) {

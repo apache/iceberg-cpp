@@ -20,9 +20,11 @@
 #include "iceberg/parquet/parquet_writer.h"
 
 #include <memory>
+#include <string_view>
 
 #include <arrow/c/bridge.h>
 #include <arrow/record_batch.h>
+#include <arrow/util/compression.h>
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/arrow/writer.h>
@@ -45,21 +47,31 @@ Result<std::shared_ptr<::arrow::io::OutputStream>> OpenOutputStream(
 
 Result<::arrow::Compression::type> ParseCompression(const WriterProperties& properties) {
   const auto& compression_name = properties.Get(WriterProperties::kParquetCompression);
+  ::arrow::Compression::type compression;
   if (compression_name == "uncompressed") {
-    return ::arrow::Compression::UNCOMPRESSED;
+    compression = ::arrow::Compression::UNCOMPRESSED;
   } else if (compression_name == "snappy") {
-    return ::arrow::Compression::SNAPPY;
+    compression = ::arrow::Compression::SNAPPY;
   } else if (compression_name == "gzip") {
-    return ::arrow::Compression::GZIP;
+    compression = ::arrow::Compression::GZIP;
   } else if (compression_name == "brotli") {
-    return ::arrow::Compression::BROTLI;
+    compression = ::arrow::Compression::BROTLI;
   } else if (compression_name == "lz4") {
-    return ::arrow::Compression::LZ4;
+    compression = ::arrow::Compression::LZ4;
   } else if (compression_name == "zstd") {
-    return ::arrow::Compression::ZSTD;
+    compression = ::arrow::Compression::ZSTD;
   } else {
     return InvalidArgument("Unsupported Parquet compression codec: {}", compression_name);
   }
+  return compression;
+}
+
+Status CheckCompressionAvailable(std::string_view compression_name,
+                                 ::arrow::Compression::type compression) {
+  ICEBERG_PRECHECK(::arrow::util::Codec::IsAvailable(compression),
+                   "Parquet compression codec {} is not available in the current build",
+                   compression_name);
+  return {};
 }
 
 Result<std::optional<int32_t>> ParseCodecLevel(const WriterProperties& properties) {
@@ -97,6 +109,9 @@ class ParquetWriter::Impl {
                                           *arrow_writer_properties, &schema_descriptor));
     auto schema_node = std::static_pointer_cast<::parquet::schema::GroupNode>(
         schema_descriptor->schema_root());
+
+    ICEBERG_RETURN_UNEXPECTED(CheckCompressionAvailable(
+        options.properties.Get(WriterProperties::kParquetCompression), compression));
 
     ICEBERG_ASSIGN_OR_RAISE(output_stream_, OpenOutputStream(options));
     auto file_writer = ::parquet::ParquetFileWriter::Open(
