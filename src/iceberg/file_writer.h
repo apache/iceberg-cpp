@@ -30,6 +30,7 @@
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
 #include "iceberg/metrics.h"
+#include "iceberg/metrics_config.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/config.h"
@@ -77,6 +78,8 @@ struct ICEBERG_EXPORT WriterOptions {
   std::shared_ptr<class FileIO> io;
   /// \brief Metadata to write to the file.
   std::unordered_map<std::string, std::string> metadata;
+  /// \brief Metrics configuration.
+  std::shared_ptr<MetricsConfig> metrics_config = MetricsConfig::Default();
   /// \brief Format-specific or implementation-specific properties.
   WriterProperties properties;
 };

@@ -30,6 +30,35 @@
 
 namespace iceberg {
 
+/// \brief Field-level metrics for a single column.
+///
+/// This structure captures value counts, null counts, NaN counts, and optional
+/// lower/upper bounds for a specific field identified by its field_id.
+struct ICEBERG_EXPORT FieldMetrics {
+  /// \brief The field ID this metrics belongs to.
+  int32_t field_id;
+
+  /// \brief The total number of values (including nulls) for this field.
+  /// A negative value indicates the count is unknown.
+  int64_t value_count = -1;
+
+  /// \brief The number of null values for this field.
+  /// A negative value indicates the count is unknown.
+  int64_t null_value_count = -1;
+
+  /// \brief The number of NaN values for this field.
+  /// A negative value indicates the count is unknown.
+  int64_t nan_value_count = -1;
+
+  /// \brief The lower bound value as a Literal.
+  /// Empty if no lower bound is available.
+  std::optional<Literal> lower_bound = std::nullopt;
+
+  /// \brief The upper bound value as a Literal.
+  /// Empty if no upper bound is available.
+  std::optional<Literal> upper_bound = std::nullopt;
+};
+
 /// \brief Iceberg file format metrics
 struct ICEBERG_EXPORT Metrics {
   std::optional<int64_t> row_count;

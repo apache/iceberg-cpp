@@ -113,6 +113,30 @@ class ICEBERG_EXPORT TruncateUtils {
   /// or the smallest Literal greater than the truncated prefix, or an error if no such
   /// value exists or cannot be represented.
   static Result<Literal> TruncateLiteralMax(const Literal& value, int32_t width);
+
+  /// \brief Truncate the lower bound of a string or binary value.
+  ///
+  /// For string/binary types, truncates to the given length. For other types, returns the
+  /// value unchanged.
+  ///
+  /// \param type The Iceberg primitive type.
+  /// \param value The lower bound literal value.
+  /// \param width The width to truncate to.
+  /// \return The truncated lower bound literal.
+  static Result<Literal> TruncateLowerBound(const PrimitiveType& type,
+                                            const Literal& value, int32_t width);
+
+  /// \brief Truncate the upper bound of a string or binary value.
+  ///
+  /// For string/binary types, truncates to the smallest value greater than the truncated
+  /// prefix. For other types, returns the value unchanged.
+  ///
+  /// \param type The Iceberg primitive type.
+  /// \param value The upper bound literal value.
+  /// \param width The width to truncate to.
+  /// \return The truncated upper bound literal.
+  static Result<Literal> TruncateUpperBound(const PrimitiveType& type,
+                                            const Literal& value, int32_t width);
 };
 
 }  // namespace iceberg

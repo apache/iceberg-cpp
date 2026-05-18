@@ -52,6 +52,11 @@ struct ICEBERG_EXPORT MetricsMode {
 
   Kind kind;
   std::variant<std::monostate, int32_t> length;
+
+  /// \brief Get the truncate length from this MetricsMode.
+  /// \return 0 for None/Counts modes, the truncate length for Truncate mode,
+  ///         or INT_MAX for Full mode.
+  int32_t TruncateLength() const;
 };
 
 /// \brief Configuration for collecting column metrics for an Iceberg table.
@@ -62,6 +67,12 @@ class ICEBERG_EXPORT MetricsConfig {
 
   /// \brief Creates a metrics config from a table.
   static Result<std::shared_ptr<MetricsConfig>> Make(const Table& table);
+
+  /// \brief Creates a metrics config from properties (for testing)
+  /// \param properties Map of property key-value pairs
+  /// \return A shared pointer to the created MetricsConfig
+  static Result<std::shared_ptr<MetricsConfig>> Make(
+      std::unordered_map<std::string, std::string> properties);
 
   /// \brief Get `limit` num of primitive field ids from schema
   static Result<std::unordered_set<int32_t>> LimitFieldIds(const Schema& schema,

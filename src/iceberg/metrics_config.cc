@@ -19,6 +19,7 @@
 
 #include "iceberg/metrics_config.h"
 
+#include <limits>
 #include <string>
 #include <unordered_map>
 
@@ -100,6 +101,19 @@ Result<MetricsMode> MetricsMode::FromString(std::string_view mode) {
   return InvalidArgument("Invalid metrics mode: {}", mode);
 }
 
+int32_t MetricsMode::TruncateLength() const {
+  switch (kind) {
+    case Kind::kNone:
+    case Kind::kCounts:
+      return 0;
+    case Kind::kTruncate:
+      return std::get<int32_t>(length);
+    case Kind::kFull:
+      return std::numeric_limits<int32_t>::max();
+  }
+  return 0;
+}
+
 MetricsConfig::MetricsConfig(ColumnModeMap column_modes, MetricsMode default_mode)
     : column_modes_(std::move(column_modes)), default_mode_(default_mode) {}
 
@@ -114,6 +128,14 @@ Result<std::shared_ptr<MetricsConfig>> MetricsConfig::Make(const Table& table) {
   auto sort_order = table.sort_order();
   return MakeInternal(table.properties(), *schema,
                       *sort_order.value_or(SortOrder::Unsorted()));
+}
+
+Result<std::shared_ptr<MetricsConfig>> MetricsConfig::Make(
+    std::unordered_map<std::string, std::string> properties) {
+  // Create a minimal TableProperties wrapper for the properties
+  TableProperties props = TableProperties::FromMap(std::move(properties));
+
+  return MakeInternal(props, Schema({}), *SortOrder::Unsorted());
 }
 
 Result<std::shared_ptr<MetricsConfig>> MetricsConfig::MakeInternal(
