@@ -20,11 +20,13 @@
 #include "iceberg/update/expire_snapshots.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -40,6 +42,7 @@
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
+#include "iceberg/util/thread_pool_internal.h"
 
 namespace iceberg {
 
@@ -54,12 +57,28 @@ Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
   return ManifestReader::Make(manifest, file_io, std::move(schema), std::move(spec));
 }
 
+/// \brief Cap on per-strategy worker concurrency.
+///
+/// Java's RemoveSnapshots takes ExecutorServices from the table operations layer.
+/// C++ has no shared executor today, so each strategy owns a private ThreadPool.
+/// Cap concurrency to avoid swamping FileIO with hundreds of in-flight requests
+/// on hosts with very high core counts.
+constexpr std::size_t kMaxParallelism = 8;
+
+std::size_t WorkerCount() {
+  std::size_t hw = std::thread::hardware_concurrency();
+  if (hw == 0) hw = 2;
+  return std::min(kMaxParallelism, hw);
+}
+
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
 class FileCleanupStrategy {
  public:
   FileCleanupStrategy(std::shared_ptr<FileIO> file_io,
                       std::function<void(const std::string&)> delete_func)
-      : file_io_(std::move(file_io)), delete_func_(std::move(delete_func)) {}
+      : file_io_(std::move(file_io)),
+        delete_func_(std::move(delete_func)),
+        pool_(WorkerCount()) {}
 
   virtual ~FileCleanupStrategy() = default;
 
@@ -75,24 +94,57 @@ class FileCleanupStrategy {
                             CleanupLevel level) = 0;
 
  protected:
-  /// \brief Delete a single file
+  /// Number of attempts for a single best-effort delete. Mirrors Java's
+  /// Tasks.foreach(...).retry(3).
+  static constexpr int kDeleteMaxAttempts = 3;
+
+  /// \brief Delete a file, suppressing errors (best-effort) with bounded retries.
+  ///
+  /// Uses the custom delete function if set, otherwise FileIO::DeleteFile. Retries
+  /// up to kDeleteMaxAttempts times on transient FileIO errors; stops immediately
+  /// when the underlying status is kNotFound (matching Java's stopRetryOn
+  /// NotFoundException). Custom delete callbacks are invoked exactly once -- caller
+  /// retry policy is opaque to us.
   void DeleteFile(const std::string& path) {
-    try {
-      if (delete_func_) {
+    if (delete_func_) {
+      try {
         delete_func_(path);
-      } else {
-        std::ignore = file_io_->DeleteFile(path);
+      } catch (...) {
+        // Suppress all exceptions during file cleanup to match Java's
+        // suppressFailureWhenFinished behavior.
       }
-    } catch (...) {
-      /// TODO(shangxinli): add retry
+      return;
+    }
+
+    for (int attempt = 1; attempt <= kDeleteMaxAttempts; ++attempt) {
+      try {
+        auto status = file_io_->DeleteFile(path);
+        if (status.has_value()) return;
+        if (status.error().kind == ErrorKind::kNotFound) return;
+        if (attempt == kDeleteMaxAttempts) return;
+      } catch (...) {
+        if (attempt == kDeleteMaxAttempts) return;
+      }
+      // Linear backoff (10ms, 20ms). Tiny on purpose -- this is best-effort cleanup,
+      // not a critical write path; we just want to ride out a transient blip.
+      std::this_thread::sleep_for(std::chrono::milliseconds(10 * attempt));
     }
   }
 
-  /// TODO(shangxinli): Add bulk deletion
+  /// \brief Delete a batch of files in parallel via the strategy's worker pool.
+  ///
+  /// TODO(shangxinli): When FileIO grows a SupportsBulkOperations-style
+  /// `DeleteFiles(span<string>)` API, prefer the bulk path here (mirroring
+  /// Java's FileCleanupStrategy.deleteFiles).
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
-    for (const auto& path : paths) {
-      DeleteFile(path);
+    if (paths.empty()) return;
+    if (paths.size() == 1) {
+      DeleteFile(*paths.begin());
+      return;
     }
+    std::vector<std::string> as_vec(paths.begin(), paths.end());
+    pool_.RunAndWait<std::string>(std::span<const std::string>(as_vec),
+                                  [this](const std::string& p) { DeleteFile(p); });
   }
 
   bool HasAnyStatisticsFiles(const TableMetadata& metadata) const {
@@ -134,6 +186,13 @@ class FileCleanupStrategy {
 
   std::shared_ptr<FileIO> file_io_;
   std::function<void(const std::string&)> delete_func_;
+  // Worker pool for parallel best-effort deletion. Must be declared after the
+  // members it does NOT touch -- the pool's worker threads only run tasks
+  // submitted via Submit/RunAndWait, which capture `this` and dereference
+  // file_io_ / delete_func_, so those members must outlive the pool. Since
+  // destruction order is reverse declaration order, listing pool_ last ensures
+  // workers are joined before file_io_ and delete_func_ are destroyed.
+  ThreadPool pool_;
 };
 
 /// \brief File cleanup strategy that determines safe deletions via full reachability.
@@ -142,7 +201,7 @@ class FileCleanupStrategy {
 /// still referenced by retained snapshots, then deletes orphaned manifests, data
 /// files, and manifest lists.
 ///
-/// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
+/// TODO(shangxinli): Add multi-threaded manifest reading.
 class ReachableFileCleanup : public FileCleanupStrategy {
  public:
   using FileCleanupStrategy::FileCleanupStrategy;
