@@ -180,6 +180,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    delete_file_index_test.cc
                    manifest_group_test.cc
                    manifest_list_versions_test.cc
+                   manifest_merge_manager_test.cc
                    manifest_reader_stats_test.cc
                    manifest_reader_test.cc
                    manifest_writer_versions_test.cc
@@ -205,6 +206,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    SOURCES
                    expire_snapshots_test.cc
                    fast_append_test.cc
+                   manifest_filter_manager_test.cc
                    name_mapping_update_test.cc
                    snapshot_manager_test.cc
                    transaction_test.cc

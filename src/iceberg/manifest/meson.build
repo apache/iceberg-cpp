@@ -18,8 +18,10 @@
 install_headers(
     [
         'manifest_entry.h',
+        'manifest_filter_manager.h',
         'manifest_group.h',
         'manifest_list.h',
+        'manifest_merge_manager.h',
         'manifest_reader.h',
         'manifest_writer.h',
         'rolling_manifest_writer.h',

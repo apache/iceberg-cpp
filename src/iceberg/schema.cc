@@ -40,6 +40,8 @@ Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id)
       schema_id_(schema_id),
       cache_(std::make_unique<SchemaCache>(this)) {}
 
+Schema::~Schema() = default;
+
 Result<std::unique_ptr<Schema>> Schema::Make(std::vector<SchemaField> fields,
                                              int32_t schema_id,
                                              std::vector<int32_t> identifier_field_ids) {
