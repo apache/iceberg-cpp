@@ -150,6 +150,10 @@ Result<Literal> LiteralCaster::CastFromLong(
       return Literal::Timestamp(long_val);
     case TypeId::kTimestampTz:
       return Literal::TimestampTz(long_val);
+    case TypeId::kTimestampNs:
+      return Literal::TimestampNs(long_val);
+    case TypeId::kTimestampTzNs:
+      return Literal::TimestampTzNs(long_val);
     default:
       return NotSupported("Cast from Long to {} is not supported",
                           target_type->ToString());
@@ -215,6 +219,15 @@ Result<Literal> LiteralCaster::CastFromString(
                               TransformUtil::ParseTimestampWithZone(str_val));
       return Literal::TimestampTz(micros);
     }
+    case TypeId::kTimestampNs: {
+      ICEBERG_ASSIGN_OR_RAISE(auto nanos, TransformUtil::ParseTimestampNs(str_val));
+      return Literal::TimestampNs(nanos);
+    }
+    case TypeId::kTimestampTzNs: {
+      ICEBERG_ASSIGN_OR_RAISE(auto nanos,
+                              TransformUtil::ParseTimestampNsWithZone(str_val));
+      return Literal::TimestampTzNs(nanos);
+    }
     case TypeId::kBinary: {
       ICEBERG_ASSIGN_OR_RAISE(auto bytes, StringUtils::HexStringToBytes(str_val));
       return Literal::Binary(std::move(bytes));
@@ -250,14 +263,27 @@ Result<Literal> LiteralCaster::CastFromString(
 Result<Literal> LiteralCaster::CastFromTimestamp(
     const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
   auto timestamp_val = std::get<int64_t>(literal.value_);
+  const auto& source_timestamp =
+      internal::checked_cast<const TimestampBase&>(*literal.type());
+  const bool source_is_nanos = source_timestamp.time_unit() == TimeUnit::kNanosecond;
 
   switch (target_type->type_id()) {
     case TypeId::kDate: {
       ICEBERG_ASSIGN_OR_RAISE(auto days, TemporalUtils::ExtractDay(literal));
       return Literal::Date(std::get<int32_t>(days.value()));
     }
+    case TypeId::kTimestamp:
+      return source_is_nanos ? Literal::Timestamp(timestamp_val / 1000)
+                             : Literal::Timestamp(timestamp_val);
     case TypeId::kTimestampTz:
-      return Literal::TimestampTz(timestamp_val);
+      return source_is_nanos ? Literal::TimestampTz(timestamp_val / 1000)
+                             : Literal::TimestampTz(timestamp_val);
+    case TypeId::kTimestampNs:
+      return source_is_nanos ? Literal::TimestampNs(timestamp_val)
+                             : Literal::TimestampNs(timestamp_val * 1000);
+    case TypeId::kTimestampTzNs:
+      return source_is_nanos ? Literal::TimestampTzNs(timestamp_val)
+                             : Literal::TimestampTzNs(timestamp_val * 1000);
     default:
       return NotSupported("Cast from Timestamp to {} is not supported",
                           target_type->ToString());
@@ -266,15 +292,28 @@ Result<Literal> LiteralCaster::CastFromTimestamp(
 
 Result<Literal> LiteralCaster::CastFromTimestampTz(
     const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
-  auto micros = std::get<int64_t>(literal.value_);
+  auto timestamp_val = std::get<int64_t>(literal.value_);
+  const auto& source_timestamp =
+      internal::checked_cast<const TimestampBase&>(*literal.type());
+  const bool source_is_nanos = source_timestamp.time_unit() == TimeUnit::kNanosecond;
 
   switch (target_type->type_id()) {
     case TypeId::kDate: {
       ICEBERG_ASSIGN_OR_RAISE(auto days, TemporalUtils::ExtractDay(literal));
       return Literal::Date(std::get<int32_t>(days.value()));
     }
+    case TypeId::kTimestampTz:
+      return source_is_nanos ? Literal::TimestampTz(timestamp_val / 1000)
+                             : Literal::TimestampTz(timestamp_val);
     case TypeId::kTimestamp:
-      return Literal::Timestamp(micros);
+      return source_is_nanos ? Literal::Timestamp(timestamp_val / 1000)
+                             : Literal::Timestamp(timestamp_val);
+    case TypeId::kTimestampNs:
+      return source_is_nanos ? Literal::TimestampNs(timestamp_val)
+                             : Literal::TimestampNs(timestamp_val * 1000);
+    case TypeId::kTimestampTzNs:
+      return source_is_nanos ? Literal::TimestampTzNs(timestamp_val)
+                             : Literal::TimestampTzNs(timestamp_val * 1000);
     default:
       return NotSupported("Cast from TimestampTz to {} is not supported",
                           target_type->ToString());
@@ -328,6 +367,10 @@ Literal Literal::Time(int64_t value) { return {Value{value}, time()}; }
 Literal Literal::Timestamp(int64_t value) { return {Value{value}, timestamp()}; }
 
 Literal Literal::TimestampTz(int64_t value) { return {Value{value}, timestamp_tz()}; }
+
+Literal Literal::TimestampNs(int64_t value) { return {Value{value}, timestamp_ns()}; }
+
+Literal Literal::TimestampTzNs(int64_t value) { return {Value{value}, timestamptz_ns()}; }
 
 Literal Literal::Float(float value) { return {Value{value}, float32()}; }
 
@@ -395,8 +438,11 @@ bool Comparable(TypeId lhs, TypeId rhs) {
     case TypeId::kLong:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
       return rhs == TypeId::kLong || rhs == TypeId::kTimestamp ||
-             rhs == TypeId::kTimestampTz;
+             rhs == TypeId::kTimestampTz || rhs == TypeId::kTimestampNs ||
+             rhs == TypeId::kTimestampTzNs;
     default:
       return lhs == rhs;
   }
@@ -439,7 +485,9 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     case TypeId::kLong:
     case TypeId::kTime:
     case TypeId::kTimestamp:
-    case TypeId::kTimestampTz: {
+    case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs: {
       auto this_val = std::get<int64_t>(value_);
       auto other_val = std::get<int64_t>(other.value_);
       return this_val <=> other_val;
@@ -548,7 +596,9 @@ std::string Literal::ToString() const {
     }
     case TypeId::kTime:
     case TypeId::kTimestamp:
-    case TypeId::kTimestampTz: {
+    case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs: {
       return std::to_string(std::get<int64_t>(value_));
     }
     case TypeId::kDate: {
@@ -612,6 +662,10 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
     case TypeId::kTimestamp:
       return CastFromTimestamp(literal, target_type);
     case TypeId::kTimestampTz:
+      return CastFromTimestampTz(literal, target_type);
+    case TypeId::kTimestampNs:
+      return CastFromTimestamp(literal, target_type);
+    case TypeId::kTimestampTzNs:
       return CastFromTimestampTz(literal, target_type);
     default:
       break;

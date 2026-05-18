@@ -194,6 +194,24 @@ Status ToAvroNodeVisitor::Visit(const TimestampTzType& type, ::avro::NodePtr* no
   return {};
 }
 
+Status ToAvroNodeVisitor::Visit(const TimestampNsType& type, ::avro::NodePtr* node) {
+  *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_LONG);
+  (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::TIMESTAMP_NANOS});
+  ::avro::CustomAttributes attributes;
+  attributes.addAttribute(std::string(kAdjustToUtcProp), "false", /*addQuotes=*/false);
+  (*node)->addCustomAttributesForField(attributes);
+  return {};
+}
+
+Status ToAvroNodeVisitor::Visit(const TimestampTzNsType& type, ::avro::NodePtr* node) {
+  *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_LONG);
+  (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::TIMESTAMP_NANOS});
+  ::avro::CustomAttributes attributes;
+  attributes.addAttribute(std::string(kAdjustToUtcProp), "true", /*addQuotes=*/false);
+  (*node)->addCustomAttributesForField(attributes);
+  return {};
+}
+
 Status ToAvroNodeVisitor::Visit(const StringType& type, ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_STRING);
   return {};
@@ -544,6 +562,20 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
     case TypeId::kTimestampTz:
       if (avro_node->type() == ::avro::AVRO_LONG &&
           HasLogicalType(avro_node, ::avro::LogicalType::TIMESTAMP_MICROS) &&
+          GetAdjustToUtc(avro_node).value_or("false") == "true") {
+        return {};
+      }
+      break;
+    case TypeId::kTimestampNs:
+      if (avro_node->type() == ::avro::AVRO_LONG &&
+          HasLogicalType(avro_node, ::avro::LogicalType::TIMESTAMP_NANOS) &&
+          GetAdjustToUtc(avro_node).value_or("false") == "false") {
+        return {};
+      }
+      break;
+    case TypeId::kTimestampTzNs:
+      if (avro_node->type() == ::avro::AVRO_LONG &&
+          HasLogicalType(avro_node, ::avro::LogicalType::TIMESTAMP_NANOS) &&
           GetAdjustToUtc(avro_node).value_or("false") == "true") {
         return {};
       }

@@ -46,6 +46,8 @@ enum class TypeId {
   kTime,
   kTimestamp,
   kTimestampTz,
+  kTimestampNs,
+  kTimestampTzNs,
   kString,
   kUuid,
   kFixed,
@@ -55,6 +57,7 @@ enum class TypeId {
 /// \brief The time unit.  In Iceberg V3 nanoseconds are also supported.
 enum class TimeUnit {
   kMicrosecond,
+  kNanosecond,
 };
 
 /// \brief Data type family.
@@ -77,6 +80,8 @@ class TimeType;
 class TimestampBase;
 class TimestampType;
 class TimestampTzType;
+class TimestampNsType;
+class TimestampTzNsType;
 class Type;
 class UuidType;
 

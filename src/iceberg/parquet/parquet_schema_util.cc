@@ -125,6 +125,26 @@ Status ValidateParquetSchemaEvolution(
         }
       }
       break;
+    case TypeId::kTimestampNs:
+      if (arrow_type->id() == ::arrow::Type::TIMESTAMP) {
+        const auto& timestamp_type =
+            internal::checked_cast<const ::arrow::TimestampType&>(*arrow_type);
+        if (timestamp_type.unit() == ::arrow::TimeUnit::NANO &&
+            timestamp_type.timezone().empty()) {
+          return {};
+        }
+      }
+      break;
+    case TypeId::kTimestampTzNs:
+      if (arrow_type->id() == ::arrow::Type::TIMESTAMP) {
+        const auto& timestamp_type =
+            internal::checked_cast<const ::arrow::TimestampType&>(*arrow_type);
+        if (timestamp_type.unit() == ::arrow::TimeUnit::NANO &&
+            !timestamp_type.timezone().empty()) {
+          return {};
+        }
+      }
+      break;
     case TypeId::kString:
       if (arrow_type->id() == ::arrow::Type::STRING) {
         return {};

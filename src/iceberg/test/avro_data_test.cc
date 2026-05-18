@@ -299,6 +299,30 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
             R"([{"a": 1672531200000000}, {"a": 1672531201000000}, {"a": 1672531202000000}])",
     },
     {
+        .name = "TimestampNs",
+        .projected_type = iceberg::timestamp_ns(),
+        .source_type = iceberg::timestamp_ns(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              datum.value<::avro::GenericRecord>().fieldAt(0).value<int64_t>() =
+                  1672531200000000000LL + i * 1000000000LL + i;
+            },
+        .expected_json =
+            R"([{"a": 1672531200000000000}, {"a": 1672531201000000001}, {"a": 1672531202000000002}])",
+    },
+    {
+        .name = "TimestampTzNs",
+        .projected_type = iceberg::timestamptz_ns(),
+        .source_type = iceberg::timestamptz_ns(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              datum.value<::avro::GenericRecord>().fieldAt(0).value<int64_t>() =
+                  1672531200000000000LL + i * 1000000000LL + i;
+            },
+        .expected_json =
+            R"([{"a": 1672531200000000000}, {"a": 1672531201000000001}, {"a": 1672531202000000002}])",
+    },
+    {
         .name = "IntToLongPromotion",
         .projected_type = iceberg::int64(),
         .source_type = iceberg::int32(),
@@ -946,6 +970,30 @@ const std::vector<ExtractDatumParam> kExtractDatumTestCases = {
               const auto& record = datum.value<::avro::GenericRecord>();
               EXPECT_EQ(record.fieldAt(0).value<int64_t>(),
                         1672531200000000LL + i * 1000000LL);
+            },
+    },
+    {
+        .name = "TimestampNs",
+        .iceberg_type = timestamp_ns(),
+        .arrow_json =
+            R"([{"a": 1672531200000000000}, {"a": 1672531201000000001}, {"a": 1672531202000000002}])",
+        .value_verifier =
+            [](const ::avro::GenericDatum& datum, int i) {
+              const auto& record = datum.value<::avro::GenericRecord>();
+              EXPECT_EQ(record.fieldAt(0).value<int64_t>(),
+                        1672531200000000000LL + i * 1000000000LL + i);
+            },
+    },
+    {
+        .name = "TimestampTzNs",
+        .iceberg_type = timestamptz_ns(),
+        .arrow_json =
+            R"([{"a": 1672531200000000000}, {"a": 1672531201000000001}, {"a": 1672531202000000002}])",
+        .value_verifier =
+            [](const ::avro::GenericDatum& datum, int i) {
+              const auto& record = datum.value<::avro::GenericRecord>();
+              EXPECT_EQ(record.fieldAt(0).value<int64_t>(),
+                        1672531200000000000LL + i * 1000000000LL + i);
             },
     },
 };

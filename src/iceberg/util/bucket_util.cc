@@ -64,6 +64,16 @@ int32_t HashLiteral<TypeId::kTimestampTz>(const Literal& literal) {
 }
 
 template <>
+int32_t HashLiteral<TypeId::kTimestampNs>(const Literal& literal) {
+  return BucketUtils::HashLong(std::get<int64_t>(literal.value()));
+}
+
+template <>
+int32_t HashLiteral<TypeId::kTimestampTzNs>(const Literal& literal) {
+  return BucketUtils::HashLong(std::get<int64_t>(literal.value()));
+}
+
+template <>
 int32_t HashLiteral<TypeId::kDecimal>(const Literal& literal) {
   const auto& decimal = std::get<Decimal>(literal.value());
   return BucketUtils::HashBytes(decimal.ToBigEndian());
@@ -131,6 +141,8 @@ Result<int32_t> BucketUtils::BucketIndex(const Literal& literal, int32_t num_buc
     DISPATCH_HASH_LITERAL(TypeId::kTime)
     DISPATCH_HASH_LITERAL(TypeId::kTimestamp)
     DISPATCH_HASH_LITERAL(TypeId::kTimestampTz)
+    DISPATCH_HASH_LITERAL(TypeId::kTimestampNs)
+    DISPATCH_HASH_LITERAL(TypeId::kTimestampTzNs)
     DISPATCH_HASH_LITERAL(TypeId::kDecimal)
     DISPATCH_HASH_LITERAL(TypeId::kString)
     DISPATCH_HASH_LITERAL(TypeId::kUuid)

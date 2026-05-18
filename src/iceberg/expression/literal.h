@@ -73,6 +73,8 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   static Literal Time(int64_t value);
   static Literal Timestamp(int64_t value);
   static Literal TimestampTz(int64_t value);
+  static Literal TimestampNs(int64_t value);
+  static Literal TimestampTzNs(int64_t value);
   static Literal Float(float value);
   static Literal Double(double value);
   static Literal String(std::string value);
@@ -199,6 +201,8 @@ DEFINE_LITERAL_TRAIT(kLong, int64_t)
 DEFINE_LITERAL_TRAIT(kTime, int64_t)
 DEFINE_LITERAL_TRAIT(kTimestamp, int64_t)
 DEFINE_LITERAL_TRAIT(kTimestampTz, int64_t)
+DEFINE_LITERAL_TRAIT(kTimestampNs, int64_t)
+DEFINE_LITERAL_TRAIT(kTimestampTzNs, int64_t)
 DEFINE_LITERAL_TRAIT(kFloat, float)
 DEFINE_LITERAL_TRAIT(kDouble, double)
 DEFINE_LITERAL_TRAIT(kDecimal, Decimal)

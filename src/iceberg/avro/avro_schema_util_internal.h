@@ -52,6 +52,8 @@ class ToAvroNodeVisitor {
   Status Visit(const TimeType& type, ::avro::NodePtr* node);
   Status Visit(const TimestampType& type, ::avro::NodePtr* node);
   Status Visit(const TimestampTzType& type, ::avro::NodePtr* node);
+  Status Visit(const TimestampNsType& type, ::avro::NodePtr* node);
+  Status Visit(const TimestampTzNsType& type, ::avro::NodePtr* node);
   Status Visit(const StringType& type, ::avro::NodePtr* node);
   Status Visit(const UuidType& type, ::avro::NodePtr* node);
   Status Visit(const FixedType& type, ::avro::NodePtr* node);

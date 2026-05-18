@@ -92,8 +92,14 @@ INSTANTIATE_TEST_SUITE_P(
                            .arrow_type = ::arrow::time64(arrow::TimeUnit::MICRO)},
         ToArrowSchemaParam{.iceberg_type = iceberg::timestamp(),
                            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO)},
-        ToArrowSchemaParam{.iceberg_type = iceberg::timestamp(),
-                           .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO)},
+        ToArrowSchemaParam{
+            .iceberg_type = iceberg::timestamp_tz(),
+            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO, "UTC")},
+        ToArrowSchemaParam{.iceberg_type = iceberg::timestamp_ns(),
+                           .arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO)},
+        ToArrowSchemaParam{
+            .iceberg_type = iceberg::timestamptz_ns(),
+            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO, "UTC")},
         ToArrowSchemaParam{.iceberg_type = iceberg::string(),
                            .arrow_type = ::arrow::utf8()},
         ToArrowSchemaParam{.iceberg_type = iceberg::binary(),
@@ -289,6 +295,11 @@ INSTANTIATE_TEST_SUITE_P(
         FromArrowSchemaParam{
             .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO, "UTC"),
             .iceberg_type = std::make_shared<TimestampTzType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO),
+                             .iceberg_type = iceberg::timestamp_ns()},
+        FromArrowSchemaParam{
+            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO, "UTC"),
+            .iceberg_type = iceberg::timestamptz_ns()},
         FromArrowSchemaParam{.arrow_type = ::arrow::utf8(),
                              .iceberg_type = iceberg::string()},
         FromArrowSchemaParam{.arrow_type = ::arrow::binary(),

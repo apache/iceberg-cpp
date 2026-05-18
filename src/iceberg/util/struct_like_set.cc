@@ -276,6 +276,8 @@ Status ValidateScalarAgainstType(const Scalar& scalar, const Type& type) {
     case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
       ICEBERG_PRECHECK(std::holds_alternative<int64_t>(scalar), "Expected {} but got {}",
                        type.ToString(), ScalarTypeName(scalar));
       return {};

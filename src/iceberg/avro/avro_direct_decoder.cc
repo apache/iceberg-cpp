@@ -562,6 +562,20 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       return {};
     }
 
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs: {
+      if (avro_node->type() != ::avro::AVRO_LONG ||
+          avro_node->logicalType().type() != ::avro::LogicalType::TIMESTAMP_NANOS) {
+        return InvalidArgument(
+            "Expected Avro long with TIMESTAMP_NANOS for timestamp field, got: {}",
+            ToString(avro_node));
+      }
+      auto* builder = internal::checked_cast<::arrow::TimestampBuilder*>(array_builder);
+      int64_t value = decoder.decodeLong();
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
+      return {};
+    }
+
     default:
       return InvalidArgument("Unsupported primitive type {} to decode from avro node {}",
                              projected_field.type()->ToString(), ToString(avro_node));

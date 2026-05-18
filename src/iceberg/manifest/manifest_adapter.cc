@@ -222,6 +222,8 @@ Status ManifestEntryAdapter::AppendPartitionValues(
       case TypeId::kTime:
       case TypeId::kTimestamp:
       case TypeId::kTimestampTz:
+      case TypeId::kTimestampNs:
+      case TypeId::kTimestampTzNs:
         ICEBERG_RETURN_UNEXPECTED(
             AppendField(child_array, std::get<int64_t>(partition_value.value())));
         break;

@@ -431,6 +431,19 @@ Status AppendPrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       return {};
     }
 
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs: {
+      if (avro_node->type() != ::avro::AVRO_LONG ||
+          avro_node->logicalType().type() != ::avro::LogicalType::TIMESTAMP_NANOS) {
+        return InvalidArgument(
+            "Expected Avro long with TIMESTAMP_NANOS for timestamp field, got: {}",
+            ToString(avro_node));
+      }
+      auto* builder = internal::checked_cast<::arrow::TimestampBuilder*>(array_builder);
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(avro_datum.value<int64_t>()));
+      return {};
+    }
+
     default:
       return InvalidArgument("Unsupported primitive type {} to append avro node {}",
                              projected_field.type()->ToString(), ToString(avro_node));

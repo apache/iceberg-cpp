@@ -363,6 +363,10 @@ nlohmann::json ToJson(const Type& type) {
       return "timestamp";
     case TypeId::kTimestampTz:
       return "timestamptz";
+    case TypeId::kTimestampNs:
+      return "timestamp_ns";
+    case TypeId::kTimestampTzNs:
+      return "timestamptz_ns";
     case TypeId::kString:
       return "string";
     case TypeId::kBinary:
@@ -488,6 +492,10 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
       return std::make_unique<TimestampType>();
     } else if (type_str == "timestamptz") {
       return std::make_unique<TimestampTzType>();
+    } else if (type_str == "timestamp_ns") {
+      return std::make_unique<TimestampNsType>();
+    } else if (type_str == "timestamptz_ns") {
+      return std::make_unique<TimestampTzNsType>();
     } else if (type_str == "string") {
       return std::make_unique<StringType>();
     } else if (type_str == "binary") {

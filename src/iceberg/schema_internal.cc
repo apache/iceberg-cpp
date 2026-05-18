@@ -123,6 +123,15 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(
           schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_MICRO, "UTC"));
     } break;
+    case TypeId::kTimestampNs: {
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(schema, NANOARROW_TYPE_TIMESTAMP,
+                                                         NANOARROW_TIME_UNIT_NANO,
+                                                         /*timezone=*/nullptr));
+    } break;
+    case TypeId::kTimestampTzNs: {
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(
+          schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_NANO, "UTC"));
+    } break;
     case TypeId::kString:
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_STRING));
       break;
@@ -270,9 +279,17 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
     case NANOARROW_TYPE_TIMESTAMP: {
       bool with_timezone =
           schema_view.timezone != nullptr && std::strlen(schema_view.timezone) > 0;
-      if (schema_view.time_unit != NANOARROW_TIME_UNIT_MICRO) {
+      if (schema_view.time_unit != NANOARROW_TIME_UNIT_MICRO &&
+          schema_view.time_unit != NANOARROW_TIME_UNIT_NANO) {
         return InvalidSchema("Unsupported time unit for Arrow timestamp type: {}",
                              static_cast<int>(schema_view.time_unit));
+      }
+      if (schema_view.time_unit == NANOARROW_TIME_UNIT_NANO) {
+        if (with_timezone) {
+          return iceberg::timestamptz_ns();
+        } else {
+          return iceberg::timestamp_ns();
+        }
       }
       if (with_timezone) {
         return iceberg::timestamp_tz();

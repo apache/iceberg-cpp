@@ -57,6 +57,8 @@ Result<Scalar> PartitionValues::GetField(size_t pos) const {
     case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
       return Scalar{std::get<int64_t>(literal.value())};
     case TypeId::kFloat:
       return Scalar{std::get<float>(literal.value())};

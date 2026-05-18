@@ -199,6 +199,26 @@ TEST(ToAvroNodeVisitorTest, TimestampTzType) {
   EXPECT_EQ(node->customAttributesAt(0).getAttribute("adjust-to-utc"), "true");
 }
 
+TEST(ToAvroNodeVisitorTest, TimestampNsType) {
+  ::avro::NodePtr node;
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(TimestampNsType{}, &node), IsOk());
+  EXPECT_EQ(node->type(), ::avro::AVRO_LONG);
+  EXPECT_EQ(node->logicalType().type(), ::avro::LogicalType::TIMESTAMP_NANOS);
+
+  ASSERT_EQ(node->customAttributes(), 1);
+  EXPECT_EQ(node->customAttributesAt(0).getAttribute("adjust-to-utc"), "false");
+}
+
+TEST(ToAvroNodeVisitorTest, TimestampTzNsType) {
+  ::avro::NodePtr node;
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(TimestampTzNsType{}, &node), IsOk());
+  EXPECT_EQ(node->type(), ::avro::AVRO_LONG);
+  EXPECT_EQ(node->logicalType().type(), ::avro::LogicalType::TIMESTAMP_NANOS);
+
+  ASSERT_EQ(node->customAttributes(), 1);
+  EXPECT_EQ(node->customAttributesAt(0).getAttribute("adjust-to-utc"), "true");
+}
+
 TEST(ToAvroNodeVisitorTest, StringType) {
   ::avro::NodePtr node;
   EXPECT_THAT(ToAvroNodeVisitor{}.Visit(StringType{}, &node), IsOk());
@@ -1021,6 +1041,30 @@ TEST(AvroSchemaProjectionTest, ProjectMapType) {
   ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
   ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
   ASSERT_EQ(projection.fields[0].children.size(), 2);
+}
+
+TEST(AvroSchemaProjectionTest, RejectTimestampNsFromMicrosType) {
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "ts", iceberg::timestamp_ns()),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "ts", "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros",
+        "adjust-to-utc": false
+      }, "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
 }
 
 TEST(AvroSchemaProjectionTest, ProjectMapTypeWithNonStringKey) {

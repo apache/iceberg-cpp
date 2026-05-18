@@ -109,6 +109,8 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const PrimitiveType& type,
     DISPATCH_LITERAL_TO_BYTES(TypeId::kTime)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kTimestamp)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kTimestampTz)
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kTimestampNs)
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kTimestampTzNs)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kFloat)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kDouble)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kDecimal)
@@ -158,7 +160,9 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
     case TypeId::kLong:
     case TypeId::kTime:
     case TypeId::kTimestamp:
-    case TypeId::kTimestampTz: {
+    case TypeId::kTimestampTz:
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs: {
       int64_t value;
       if (data.size() < 8) {
         // Type was promoted from int to long

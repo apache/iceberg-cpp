@@ -32,6 +32,8 @@ namespace iceberg {
   ACTION(Time);                                \
   ACTION(Timestamp);                           \
   ACTION(TimestampTz);                         \
+  ACTION(TimestampNs);                         \
+  ACTION(TimestampTzNs);                       \
   ACTION(String);                              \
   ACTION(Uuid);                                \
   ACTION(Fixed);                               \
