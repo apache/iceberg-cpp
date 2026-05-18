@@ -129,15 +129,15 @@ TEST(NoopTimerTest, IsNoopAndAlwaysZero) {
 
 TEST(DefaultMetricsContextTest, SameNameReturnsSameObject) {
   DefaultMetricsContext ctx;
-  auto c1 = ctx.GetCounter("foo");
-  auto c2 = ctx.GetCounter("foo");
+  auto c1 = ctx.GetCounter("foo", CounterUnit::kCount);
+  auto c2 = ctx.GetCounter("foo", CounterUnit::kCount);
   EXPECT_EQ(c1.get(), c2.get());
 }
 
 TEST(DefaultMetricsContextTest, DifferentNamesReturnDifferentObjects) {
   DefaultMetricsContext ctx;
-  auto c1 = ctx.GetCounter("a");
-  auto c2 = ctx.GetCounter("b");
+  auto c1 = ctx.GetCounter("a", CounterUnit::kCount);
+  auto c2 = ctx.GetCounter("b", CounterUnit::kCount);
   EXPECT_NE(c1.get(), c2.get());
 }
 
@@ -150,15 +150,15 @@ TEST(DefaultMetricsContextTest, TimerSameNameReturnsSameObject) {
 
 TEST(NullMetricsContextTest, ReturnsNoopInstances) {
   MetricsContext& null_ctx = MetricsContext::Null();
-  EXPECT_TRUE(null_ctx.GetCounter("x")->IsNoop());
+  EXPECT_TRUE(null_ctx.GetCounter("x", CounterUnit::kCount)->IsNoop());
   EXPECT_TRUE(null_ctx.GetTimer("y")->IsNoop());
 }
 
 TEST(NullMetricsContextTest, ReturnsSameSharedPtrEachCall) {
   // Verify the static-shared_ptr fix: no new control block per call.
   MetricsContext& null_ctx = MetricsContext::Null();
-  auto c1 = null_ctx.GetCounter("a");
-  auto c2 = null_ctx.GetCounter("b");
+  auto c1 = null_ctx.GetCounter("a", CounterUnit::kCount);
+  auto c2 = null_ctx.GetCounter("b", CounterUnit::kCount);
   EXPECT_EQ(c1.get(), c2.get());  // same noop singleton
   auto t1 = null_ctx.GetTimer("x");
   auto t2 = null_ctx.GetTimer("y");
