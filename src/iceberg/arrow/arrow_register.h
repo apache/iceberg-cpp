@@ -19,16 +19,16 @@
 
 #pragma once
 
-/// \file iceberg/arrow/arrow_io_register.h
-/// \brief Provide functions to register Arrow FileIO implementations.
+/// \file iceberg/arrow/arrow_register.h
+/// \brief Provide functions to register Arrow bundle integrations.
 
 #include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg::arrow {
 
-/// \brief Register built-in Arrow FileIO implementations into the FileIORegistry.
+/// \brief Register Arrow FileIOs and Arrow-backed C Data utilities.
 ///
 /// This operation is idempotent and safe to call multiple times.
-ICEBERG_BUNDLE_EXPORT void EnsureArrowFileIOsRegistered();
+ICEBERG_BUNDLE_EXPORT void RegisterAll();
 
 }  // namespace iceberg::arrow

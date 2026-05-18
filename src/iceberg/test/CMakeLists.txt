@@ -219,9 +219,11 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(data_test
                    USE_BUNDLE
                    SOURCES
+                   arrow_c_data_util_test.cc
                    data_writer_test.cc
                    delete_filter_test.cc
-                   delete_loader_test.cc)
+                   delete_loader_test.cc
+                   file_scan_task_reader_test.cc)
 
 endif()
 

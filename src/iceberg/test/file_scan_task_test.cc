@@ -28,6 +28,7 @@
 #include <parquet/metadata.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/data/file_scan_task_reader.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -109,6 +110,20 @@ class FileScanTaskTest : public TempFileTestBase {
     return data_file;
   }
 
+  Result<ArrowArrayStream> OpenTask(const FileScanTask& task,
+                                    std::shared_ptr<Schema> projected_schema) {
+    auto current_schema = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                                 SchemaField::MakeOptional(2, "name", string())});
+    FileScanTaskReader::Options options{
+        .io = file_io_,
+        .table_schema = current_schema,
+        .projected_schema = std::move(projected_schema),
+    };
+    ICEBERG_ASSIGN_OR_RAISE(auto reader, FileScanTaskReader::Make(std::move(options)));
+    return reader->Open(task);
+  }
+
   // Helper method to verify the content of the next batch from an ArrowArrayStream.
   void VerifyStreamNextBatch(struct ArrowArrayStream* stream,
                              std::string_view expected_json) {
@@ -154,9 +169,7 @@ TEST_F(FileScanTaskTest, ReadFullSchema) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(file_io_, projected_schema);
-  ASSERT_THAT(stream_result, IsOk());
-  auto stream = std::move(stream_result.value());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, OpenTask(task, projected_schema));
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyStreamNextBatch(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
@@ -171,9 +184,7 @@ TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(file_io_, projected_schema);
-  ASSERT_THAT(stream_result, IsOk());
-  auto stream = std::move(stream_result.value());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, OpenTask(task, projected_schema));
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyStreamNextBatch(&stream, R"([["Foo", null], ["Bar", null], ["Baz", null]])"));
@@ -188,9 +199,7 @@ TEST_F(FileScanTaskTest, ReadEmptyFile) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(file_io_, projected_schema);
-  ASSERT_THAT(stream_result, IsOk());
-  auto stream = std::move(stream_result.value());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, OpenTask(task, projected_schema));
 
   // The stream should be immediately exhausted
   ASSERT_NO_FATAL_FAILURE(VerifyStreamExhausted(&stream));

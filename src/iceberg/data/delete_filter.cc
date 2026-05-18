@@ -20,6 +20,7 @@
 #include "iceberg/data/delete_filter.h"
 
 #include <algorithm>
+#include <limits>
 #include <map>
 #include <optional>
 #include <set>
@@ -745,7 +746,10 @@ Result<AliveRowSelection> DeleteFilter::ComputeAliveRows(const ArrowSchema& batc
     return result;
   }
 
-  result.indices.reserve(batch.length);
+  ICEBERG_PRECHECK(
+      batch.length <= static_cast<int64_t>(std::numeric_limits<int32_t>::max()),
+      "Batch length {} exceeds int32_t row index capacity", batch.length);
+  result.indices.reserve(static_cast<size_t>(batch.length));
   ICEBERG_ASSIGN_OR_RAISE(auto row, ArrowArrayStructLike::Make(batch_schema, batch));
 
   for (int64_t i = 0; i < batch.length; ++i) {

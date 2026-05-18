@@ -41,6 +41,7 @@ configure_file(
 iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
+    'arrow_c_data_util.cc',
     'catalog/memory/in_memory_catalog.cc',
     'delete_file_index.cc',
     'expression/aggregate.cc',
@@ -145,6 +146,7 @@ iceberg_data_sources = files(
     'data/delete_filter.cc',
     'data/delete_loader.cc',
     'data/equality_delete_writer.cc',
+    'data/file_scan_task_reader.cc',
     'data/position_delete_writer.cc',
     'data/writer.cc',
     'deletes/position_delete_index.cc',

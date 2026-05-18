@@ -27,7 +27,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_metadata.h"
@@ -86,16 +85,6 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   int64_t size_bytes() const override;
   int32_t files_count() const override;
   int64_t estimated_row_count() const override;
-
-  /// TODO(gangwu): move it to iceberg/data/task_scanner.h
-  ///
-  /// \brief Returns a C-ABI compatible ArrowArrayStream to read the data for this task.
-  ///
-  /// \param io The FileIO instance for accessing the file data.
-  /// \param projected_schema The projected schema for reading the data.
-  /// \return A Result containing an ArrowArrayStream, or an error on failure.
-  Result<ArrowArrayStream> ToArrow(const std::shared_ptr<FileIO>& io,
-                                   std::shared_ptr<Schema> projected_schema) const;
 
  private:
   std::shared_ptr<DataFile> data_file_;

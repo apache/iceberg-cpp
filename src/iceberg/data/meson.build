@@ -21,6 +21,7 @@ install_headers(
         'delete_filter.h',
         'delete_loader.h',
         'equality_delete_writer.h',
+        'file_scan_task_reader.h',
         'position_delete_writer.h',
         'writer.h',
     ],
