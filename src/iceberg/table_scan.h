@@ -23,6 +23,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -35,6 +36,17 @@
 #include "iceberg/util/error_collector.h"
 
 namespace iceberg {
+
+/// \brief Status of a server-side scan planning operation.
+enum class PlanStatus {
+  kSubmitted,
+  kCompleted,
+  kCancelled,
+  kFailed,
+};
+
+ICEBERG_EXPORT std::string_view ToString(PlanStatus status);
+ICEBERG_EXPORT Result<PlanStatus> PlanStatusFromString(std::string_view status_str);
 
 /// \brief An abstract scan task.
 class ICEBERG_EXPORT ScanTask {

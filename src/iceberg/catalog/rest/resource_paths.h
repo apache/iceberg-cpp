@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
@@ -82,6 +83,15 @@ class ICEBERG_REST_EXPORT ResourcePaths {
 
   /// \brief Get the /v1/{prefix}/transactions/commit endpoint path.
   Result<std::string> CommitTransaction() const;
+
+  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan endpoint
+  /// path, or /plan/{plan_id} if plan_id is provided.
+  Result<std::string> Plan(const TableIdentifier& ident,
+                           std::optional<std::string> plan_id = std::nullopt) const;
+
+  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks endpoint
+  /// path.
+  Result<std::string> FetchScanTasks(const TableIdentifier& ident) const;
 
  private:
   ResourcePaths(std::string base_uri, const std::string& prefix,

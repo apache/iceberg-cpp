@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 
 #include <format>
+#include <optional>
 
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/table_identifier.h"
@@ -112,6 +113,26 @@ Result<std::string> ResourcePaths::Credentials(const TableIdentifier& ident) con
 
 Result<std::string> ResourcePaths::CommitTransaction() const {
   return std::format("{}/v1/{}transactions/commit", base_uri_, prefix_);
+}
+
+Result<std::string> ResourcePaths::Plan(const TableIdentifier& ident,
+                                            std::optional<std::string> plan_id) const {
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_namespace, EncodeNamespace(ident.ns));
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_table_name, EncodeString(ident.name));
+  if (plan_id.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(std::string encoded_plan_id, EncodeString(plan_id.value()));
+    return std::format("{}/v1/{}namespaces/{}/tables/{}/plan/{}", base_uri_, prefix_,
+                       encoded_namespace, encoded_table_name, encoded_plan_id);
+  }
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/plan", base_uri_, prefix_,
+                     encoded_namespace, encoded_table_name);
+}
+
+Result<std::string> ResourcePaths::FetchScanTasks(const TableIdentifier& ident) const {
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_namespace, EncodeNamespace(ident.ns));
+  ICEBERG_ASSIGN_OR_RAISE(std::string encoded_table_name, EncodeString(ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/tasks", base_uri_, prefix_,
+                     encoded_namespace, encoded_table_name);
 }
 
 }  // namespace iceberg::rest
