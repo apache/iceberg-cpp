@@ -54,7 +54,8 @@ TEST(FileIOTest, DeleteFilesFallsBackToDeleteFileForEachPath) {
   std::vector<std::string> paths = {"file-a.avro", "file-b.avro"};
 
   EXPECT_THAT(file_io.DeleteFiles(paths), IsOk());
-  EXPECT_THAT(file_io.deleted_paths, ::testing::ElementsAre("file-a.avro", "file-b.avro"));
+  EXPECT_THAT(file_io.deleted_paths,
+              ::testing::ElementsAre("file-a.avro", "file-b.avro"));
 }
 
 TEST(FileIOTest, DeleteFilesReturnsFirstDeleteFileError) {
@@ -65,7 +66,8 @@ TEST(FileIOTest, DeleteFilesReturnsFirstDeleteFileError) {
 
   EXPECT_THAT(status, IsError(ErrorKind::kIOError));
   EXPECT_THAT(status, HasErrorMessage("failed to delete file-b.avro"));
-  EXPECT_THAT(file_io.deleted_paths, ::testing::ElementsAre("file-a.avro", "file-b.avro"));
+  EXPECT_THAT(file_io.deleted_paths,
+              ::testing::ElementsAre("file-a.avro", "file-b.avro"));
 }
 
 }  // namespace
