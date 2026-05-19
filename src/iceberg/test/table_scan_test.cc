@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -203,6 +204,30 @@ TEST_P(TableScanTest, TableScanBuilderOptions) {
   ICEBERG_UNWRAP_OR_FAIL(auto ref_scan, builder3->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, ref_scan->snapshot());
   EXPECT_EQ(snapshot->snapshot_id, 1000L);
+}
+
+TEST_P(TableScanTest, UseRefPreservesInt64SnapshotIds) {
+  constexpr int64_t kLargeSnapshotId =
+      static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 42;
+  table_metadata_->snapshots.push_back(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = kLargeSnapshotId,
+               .parent_snapshot_id = table_metadata_->current_snapshot_id,
+               .sequence_number = 2L,
+               .timestamp_ms = TimePointMsFromUnixMs(1609459201000L),
+               .manifest_list = "/tmp/metadata/snap-large-2-manifest-list.avro",
+               .schema_id = schema_->schema_id()}));
+  table_metadata_->refs["branch-with-large-snapshot-id"] = std::make_shared<SnapshotRef>(
+      SnapshotRef{.snapshot_id = kLargeSnapshotId, .retention = SnapshotRef::Branch{}});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
+  builder->UseRef("branch-with-large-snapshot-id");
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+
+  ASSERT_TRUE(scan->context().snapshot_id.has_value());
+  EXPECT_EQ(scan->context().snapshot_id.value(), kLargeSnapshotId);
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, scan->snapshot());
+  EXPECT_EQ(snapshot->snapshot_id, kLargeSnapshotId);
 }
 
 TEST_P(TableScanTest, TableScanBuilderValidationErrors) {

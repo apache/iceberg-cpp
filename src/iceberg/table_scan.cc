@@ -430,7 +430,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string
   auto iter = metadata_->refs.find(ref);
   ICEBERG_BUILDER_CHECK(iter != metadata_->refs.end(), "Cannot find ref {}", ref);
   ICEBERG_BUILDER_CHECK(iter->second != nullptr, "Ref {} is null", ref);
-  int32_t snapshot_id = iter->second->snapshot_id;
+  const int64_t snapshot_id = iter->second->snapshot_id;
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
 
