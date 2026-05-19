@@ -27,18 +27,17 @@
 
 #include "iceberg/test/matchers.h"
 
-namespace iceberg {
 namespace {
 
-class RecordingFileIO : public FileIO {
+class RecordingFileIO : public iceberg::FileIO {
  public:
   explicit RecordingFileIO(std::string failure_path = "")
       : failure_path_(std::move(failure_path)) {}
 
-  Status DeleteFile(const std::string& file_location) override {
+  iceberg::Status DeleteFile(const std::string& file_location) override {
     deleted_paths.push_back(file_location);
     if (file_location == failure_path_) {
-      return IOError("failed to delete {}", file_location);
+      return iceberg::IOError("failed to delete {}", file_location);
     }
     return {};
   }
@@ -49,11 +48,13 @@ class RecordingFileIO : public FileIO {
   std::string failure_path_;
 };
 
+}  // namespace
+
 TEST(FileIOTest, DeleteFilesFallsBackToDeleteFileForEachPath) {
   RecordingFileIO file_io;
   std::vector<std::string> paths = {"file-a.avro", "file-b.avro"};
 
-  EXPECT_THAT(file_io.DeleteFiles(paths), IsOk());
+  EXPECT_THAT(file_io.DeleteFiles(paths), iceberg::IsOk());
   EXPECT_THAT(file_io.deleted_paths,
               ::testing::ElementsAre("file-a.avro", "file-b.avro"));
 }
@@ -64,11 +65,8 @@ TEST(FileIOTest, DeleteFilesReturnsFirstDeleteFileError) {
 
   auto status = file_io.DeleteFiles(paths);
 
-  EXPECT_THAT(status, IsError(ErrorKind::kIOError));
-  EXPECT_THAT(status, HasErrorMessage("failed to delete file-b.avro"));
+  EXPECT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kIOError));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("failed to delete file-b.avro"));
   EXPECT_THAT(file_io.deleted_paths,
               ::testing::ElementsAre("file-a.avro", "file-b.avro"));
 }
-
-}  // namespace
-}  // namespace iceberg

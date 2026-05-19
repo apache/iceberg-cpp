@@ -98,23 +98,19 @@ class FileCleanupStrategy {
     return expired;
   }
 
-  /// \brief Delete a single file
-  void DeleteFile(const std::string& path) {
+  /// \brief Delete files at the given locations.
+  void DeleteFiles(const std::unordered_set<std::string>& paths) {
     try {
       if (delete_func_) {
-        delete_func_(path);
+        for (const auto& path : paths) {
+          delete_func_(path);
+        }
       } else {
-        std::ignore = file_io_->DeleteFile(path);
+        std::vector<std::string> path_list(paths.begin(), paths.end());
+        std::ignore = file_io_->DeleteFiles(path_list);
       }
     } catch (...) {
       // TODO(shangxinli): add retry
-    }
-  }
-
-  // TODO(shangxinli): Add bulk deletion
-  void DeleteFiles(const std::unordered_set<std::string>& paths) {
-    for (const auto& path : paths) {
-      DeleteFile(path);
     }
   }
 

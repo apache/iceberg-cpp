@@ -151,7 +151,7 @@ class ICEBERG_EXPORT FileIO {
   ///
   /// \param file_location The location of the file to delete.
   /// \return void if the delete succeeded, an error code if the delete failed.
-  virtual Status DeleteFile(const std::string&) {
+  virtual Status DeleteFile(const std::string& file_location) {
     return NotImplemented("DeleteFile not implemented");
   }
 
