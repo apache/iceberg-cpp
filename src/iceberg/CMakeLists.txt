@@ -170,7 +170,9 @@ set(ICEBERG_DATA_SOURCES
     deletes/roaring_position_bitmap.cc
     puffin/file_metadata.cc
     puffin/json_serde.cc
-    puffin/puffin_format.cc)
+    puffin/puffin_format.cc
+    puffin/puffin_reader.cc
+    puffin/puffin_writer.cc)
 
 set(ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS)

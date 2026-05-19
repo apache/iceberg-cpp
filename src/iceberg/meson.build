@@ -152,6 +152,8 @@ iceberg_data_sources = files(
     'puffin/file_metadata.cc',
     'puffin/json_serde.cc',
     'puffin/puffin_format.cc',
+    'puffin/puffin_reader.cc',
+    'puffin/puffin_writer.cc',
 )
 
 # CRoaring does not export symbols, so on Windows it must
