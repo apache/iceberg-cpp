@@ -31,6 +31,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -331,6 +332,309 @@ class ReachableFileCleanup : public FileCleanupStrategy {
   }
 };
 
+/// \brief Incremental file cleanup strategy for simple linear-ancestry expirations.
+///
+/// Mirrors Java's IncrementalFileCleanup. Only safe when:
+///   * No snapshot IDs were explicitly listed for expiration.
+///   * No removed snapshots lived outside the current main ancestry.
+///   * No retained snapshots live outside the current main ancestry.
+///
+/// Each manifest is attributed to its writer snapshot via added_snapshot_id, so
+/// two snapshot passes are enough -- one over retained snapshots to learn which
+/// manifests are still live, one over expired snapshots to learn which manifests,
+/// manifest lists, and data files to drop. Cherry-pick protection via
+/// SnapshotSummaryFields::kSourceSnapshotId prevents removing data that was
+/// logically introduced by a snapshot whose changes are still present in the
+/// current state under a different id.
+///
+/// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
+class IncrementalFileCleanup : public FileCleanupStrategy {
+ public:
+  using FileCleanupStrategy::FileCleanupStrategy;
+
+  Status CleanFiles(const TableMetadata& metadata_before_expiration,
+                    const TableMetadata& metadata_after_expiration,
+                    const std::unordered_set<int64_t>& expired_snapshot_ids,
+                    CleanupLevel level) override {
+    if (expired_snapshot_ids.empty()) {
+      return {};
+    }
+
+    std::unordered_set<int64_t> valid_ids;
+    valid_ids.reserve(metadata_after_expiration.snapshots.size());
+    for (const auto& snapshot : metadata_after_expiration.snapshots) {
+      if (snapshot) {
+        valid_ids.insert(snapshot->snapshot_id);
+      }
+    }
+
+    auto current_result = metadata_before_expiration.SnapshotById(
+        metadata_before_expiration.current_snapshot_id);
+    if (!current_result.has_value() || current_result.value() == nullptr) {
+      return {};
+    }
+
+    // Ancestors of the current table state. Files deleted in a non-ancestor
+    // snapshot may still belong to the current state (rolled-back commits),
+    // so we only physically delete files removed by ancestor snapshots.
+    auto ancestors_result = SnapshotUtil::AncestorsOf(
+        current_result.value()->snapshot_id, [&metadata_before_expiration](int64_t id) {
+          return metadata_before_expiration.SnapshotById(id);
+        });
+    if (!ancestors_result.has_value()) {
+      return {};
+    }
+    std::unordered_set<int64_t> ancestor_ids;
+    ancestor_ids.reserve(ancestors_result.value().size());
+    for (const auto& ancestor : ancestors_result.value()) {
+      if (ancestor) ancestor_ids.insert(ancestor->snapshot_id);
+    }
+
+    // Cherry-pick protection: snapshots whose changes were picked into the
+    // current ancestry under a different snapshot id should not be cleaned up.
+    // Iterate the ancestor pointers we already have rather than re-looking-up
+    // each snapshot by id.
+    std::unordered_set<int64_t> picked_ancestor_snapshot_ids;
+    for (const auto& ancestor : ancestors_result.value()) {
+      if (!ancestor) continue;
+      const auto& summary = ancestor->summary;
+      auto it = summary.find(SnapshotSummaryFields::kSourceSnapshotId);
+      if (it == summary.end()) continue;
+      try {
+        picked_ancestor_snapshot_ids.insert(std::stoll(it->second));
+      } catch (...) {
+        return InvalidArgument(
+            "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
+            "protection during incremental cleanup",
+            SnapshotSummaryFields::kSourceSnapshotId, it->second, ancestor->snapshot_id);
+      }
+    }
+
+    // Find manifests still referenced by a valid snapshot but written by an
+    // expired snapshot. Their deleted entries point at data files now safe to
+    // remove and become candidates for manifests_to_scan below.
+    std::unordered_set<std::string> valid_manifests;
+    std::vector<ManifestFile> manifests_to_scan;
+    for (const auto& snapshot : metadata_after_expiration.snapshots) {
+      if (!snapshot) continue;
+      SnapshotCache snapshot_cache(snapshot.get());
+      auto manifests_result = snapshot_cache.Manifests(file_io_);
+      if (!manifests_result.has_value()) continue;  // best-effort
+      for (const auto& manifest : manifests_result.value()) {
+        valid_manifests.insert(manifest.manifest_path);
+
+        int64_t writer_id = manifest.added_snapshot_id;
+        bool from_valid_snapshots = valid_ids.contains(writer_id);
+        bool is_from_ancestor = ancestor_ids.contains(writer_id);
+        bool is_picked = picked_ancestor_snapshot_ids.contains(writer_id);
+        if (!from_valid_snapshots && (is_from_ancestor || is_picked) &&
+            manifest.has_deleted_files()) {
+          manifests_to_scan.push_back(manifest);
+        }
+      }
+    }
+
+    // Find manifests that were only referenced by snapshots that have expired,
+    // and split them by what kind of cleanup they need:
+    //   - manifests_to_delete: not referenced by any retained snapshot;
+    //   - manifests_to_scan: from a current-state ancestor and has deleted
+    //     entries (data files now safe to drop);
+    //   - manifests_to_revert: written by an expiring non-ancestor snapshot
+    //     and contains added entries -- those data files were never adopted.
+    std::unordered_set<std::string> manifest_lists_to_delete;
+    std::unordered_set<std::string> manifests_to_delete;
+    std::vector<ManifestFile> manifests_to_revert;
+    for (const auto& snapshot : metadata_before_expiration.snapshots) {
+      if (!snapshot) continue;
+      int64_t snapshot_id = snapshot->snapshot_id;
+      if (valid_ids.contains(snapshot_id)) continue;
+
+      // Skip cherry-picked snapshots; the picked snapshot owns its cleanup.
+      if (picked_ancestor_snapshot_ids.contains(snapshot_id)) {
+        continue;
+      }
+
+      int64_t source_snapshot_id = -1;
+      auto src_it = snapshot->summary.find(SnapshotSummaryFields::kSourceSnapshotId);
+      if (src_it != snapshot->summary.end()) {
+        try {
+          source_snapshot_id = std::stoll(src_it->second);
+        } catch (...) {
+          return InvalidArgument(
+              "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
+              "protection during incremental cleanup",
+              SnapshotSummaryFields::kSourceSnapshotId, src_it->second, snapshot_id);
+        }
+      }
+      // If this commit was cherry-picked from a still-live snapshot, skip --
+      // removing its data files would revert additions still in the table.
+      if (ancestor_ids.contains(source_snapshot_id) ||
+          picked_ancestor_snapshot_ids.contains(source_snapshot_id)) {
+        continue;
+      }
+
+      SnapshotCache snapshot_cache(snapshot.get());
+      auto manifests_result = snapshot_cache.Manifests(file_io_);
+      if (manifests_result.has_value()) {
+        for (const auto& manifest : manifests_result.value()) {
+          if (valid_manifests.contains(manifest.manifest_path)) continue;
+          manifests_to_delete.insert(manifest.manifest_path);
+
+          int64_t writer_id = manifest.added_snapshot_id;
+          bool is_from_ancestor = ancestor_ids.contains(writer_id);
+          bool is_from_expiring_snapshot = expired_snapshot_ids.contains(writer_id);
+
+          if (is_from_ancestor && manifest.has_deleted_files()) {
+            manifests_to_scan.push_back(manifest);
+          }
+          if (!is_from_ancestor && is_from_expiring_snapshot &&
+              manifest.has_added_files()) {
+            // Files added in this manifest never made it into the current
+            // ancestry. The is_from_expiring_snapshot guard ensures full
+            // ancestry between when the manifest was written and now is
+            // known -- otherwise missing history could hide that the
+            // snapshot is in fact an ancestor.
+            manifests_to_revert.push_back(manifest);
+          }
+        }
+      }
+
+      if (!snapshot->manifest_list.empty()) {
+        manifest_lists_to_delete.insert(snapshot->manifest_list);
+      }
+    }
+
+    // Deleting data files
+    if (level == CleanupLevel::kAll) {
+      // Manifests may reference partition specs that were pruned during expiration
+      // when CleanExpiredMetadata is enabled, so resolve schemas/specs against the
+      // pre-expiration metadata. Mirrors Java's findFilesToDelete which is called
+      // with beforeExpiration.specsById().
+      auto files_to_delete = FindFilesToDelete(
+          metadata_before_expiration, manifests_to_scan, manifests_to_revert, valid_ids);
+      DeleteFiles(files_to_delete);
+    }
+
+    // Deleting manifest files
+    DeleteFiles(manifests_to_delete);
+
+    // Deleting manifest-list files
+    DeleteFiles(manifest_lists_to_delete);
+
+    // Deleting statistics files
+    if (HasAnyStatisticsFiles(metadata_before_expiration) ||
+        HasAnyStatisticsFiles(metadata_after_expiration)) {
+      DeleteFiles(
+          StatisticsFilesToDelete(metadata_before_expiration, metadata_after_expiration));
+    }
+
+    return {};
+  }
+
+ private:
+  /// \brief Resolve the data files that the incremental pass identified for deletion.
+  ///
+  /// For manifests_to_scan: read DELETED entries whose snapshot id is no longer
+  /// valid -- those are files an expired-but-ancestral snapshot removed.
+  /// For manifests_to_revert: read every ADDED entry -- those are files a
+  /// non-ancestral expired snapshot introduced and the current state never adopted.
+  std::unordered_set<std::string> FindFilesToDelete(
+      const TableMetadata& metadata, const std::vector<ManifestFile>& manifests_to_scan,
+      const std::vector<ManifestFile>& manifests_to_revert,
+      const std::unordered_set<int64_t>& valid_ids) {
+    std::unordered_set<std::string> files_to_delete;
+
+    for (const auto& manifest : manifests_to_scan) {
+      auto reader_result = MakeManifestReader(manifest, file_io_, metadata);
+      if (!reader_result.has_value()) continue;
+      auto entries_result = reader_result.value()->Entries();
+      if (!entries_result.has_value()) continue;
+      for (const auto& entry : entries_result.value()) {
+        if (entry.status == ManifestStatus::kDeleted && entry.snapshot_id.has_value() &&
+            !valid_ids.contains(entry.snapshot_id.value()) && entry.data_file) {
+          files_to_delete.insert(entry.data_file->file_path);
+        }
+      }
+    }
+
+    for (const auto& manifest : manifests_to_revert) {
+      auto reader_result = MakeManifestReader(manifest, file_io_, metadata);
+      if (!reader_result.has_value()) continue;
+      auto entries_result = reader_result.value()->Entries();
+      if (!entries_result.has_value()) continue;
+      for (const auto& entry : entries_result.value()) {
+        if (entry.status == ManifestStatus::kAdded && entry.data_file) {
+          files_to_delete.insert(entry.data_file->file_path);
+        }
+      }
+    }
+
+    return files_to_delete;
+  }
+};
+
+/// \brief True if any retained snapshot sits outside the current main ancestry.
+/// Mirrors Java's RemoveSnapshots::hasNonMainSnapshots.
+bool HasNonMainSnapshots(const TableMetadata& metadata) {
+  auto current_result = metadata.SnapshotById(metadata.current_snapshot_id);
+  if (!current_result.has_value() || current_result.value() == nullptr) {
+    return !metadata.snapshots.empty();
+  }
+  auto ancestors_result = SnapshotUtil::AncestorsOf(
+      current_result.value()->snapshot_id,
+      [&metadata](int64_t id) { return metadata.SnapshotById(id); });
+  if (!ancestors_result.has_value()) {
+    return true;
+  }
+  std::unordered_set<int64_t> main_ancestors;
+  for (const auto& a : ancestors_result.value()) {
+    if (a) main_ancestors.insert(a->snapshot_id);
+  }
+  for (const auto& snapshot : metadata.snapshots) {
+    if (snapshot && !main_ancestors.contains(snapshot->snapshot_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/// \brief True if any expired snapshot lived outside the current main ancestry.
+/// Mirrors Java's RemoveSnapshots::hasRemovedNonMainAncestors.
+///
+/// When `before` has no current snapshot, the main-ancestor set is empty (matching
+/// Java's mainAncestors()); any removed snapshot then counts as "non-main" and
+/// returns true. This guards the dispatch in Finalize() against picking incremental
+/// cleanup when before-state has snapshots but no current pointer.
+bool HasRemovedNonMainAncestors(const TableMetadata& before, const TableMetadata& after) {
+  std::unordered_set<int64_t> main_ancestors;
+  auto current_result = before.SnapshotById(before.current_snapshot_id);
+  if (current_result.has_value() && current_result.value() != nullptr) {
+    auto ancestors_result = SnapshotUtil::AncestorsOf(
+        current_result.value()->snapshot_id,
+        [&before](int64_t id) { return before.SnapshotById(id); });
+    if (!ancestors_result.has_value()) {
+      return true;
+    }
+    for (const auto& a : ancestors_result.value()) {
+      if (a) main_ancestors.insert(a->snapshot_id);
+    }
+  }
+  std::unordered_set<int64_t> after_ids;
+  after_ids.reserve(after.snapshots.size());
+  for (const auto& s : after.snapshots) {
+    if (s) after_ids.insert(s->snapshot_id);
+  }
+  for (const auto& snapshot : before.snapshots) {
+    if (!snapshot) continue;
+    bool removed = !after_ids.contains(snapshot->snapshot_id);
+    bool in_main = main_ancestors.contains(snapshot->snapshot_id);
+    if (removed && !in_main) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 Result<std::shared_ptr<ExpireSnapshots>> ExpireSnapshots::Make(
@@ -613,11 +917,23 @@ Status ExpireSnapshots::Finalize(Result<const TableMetadata*> commit_result) {
   apply_result_.reset();
 
   // File cleanup is best-effort: log and continue on individual file deletion failures
-  ReachableFileCleanup strategy(ctx_->table->io(), delete_func_);
-  return strategy.CleanFiles(metadata_before_expiration, metadata_after_expiration,
-                             expired_ids, cleanup_level_);
-}
+  // Pick incremental cleanup when the expiration is a simple linear-ancestry walk:
+  // no explicit snapshot IDs, no removed snapshots outside main ancestry, and no
+  // retained snapshots outside main ancestry. Mirrors Java RemoveSnapshots's
+  // dispatch in cleanExpiredSnapshots().
+  bool can_use_incremental = !specified_snapshot_id_ &&
+                             !HasRemovedNonMainAncestors(metadata_before_expiration,
+                                                         metadata_after_expiration) &&
+                             !HasNonMainSnapshots(metadata_after_expiration);
 
-// TODO(shangxinli): add IncrementalFileCleanup strategy for linear ancestry optimization.
+  std::unique_ptr<FileCleanupStrategy> strategy;
+  if (can_use_incremental) {
+    strategy = std::make_unique<IncrementalFileCleanup>(ctx_->table->io(), delete_func_);
+  } else {
+    strategy = std::make_unique<ReachableFileCleanup>(ctx_->table->io(), delete_func_);
+  }
+  return strategy->CleanFiles(metadata_before_expiration, metadata_after_expiration,
+                              expired_ids, cleanup_level_);
+}
 
 }  // namespace iceberg
