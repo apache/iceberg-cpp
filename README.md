@@ -96,6 +96,7 @@ cmake --install build
 | `ICEBERG_BUILD_BUNDLE` | `ON` | Build the battery-included library |
 | `ICEBERG_BUILD_REST` | `ON` | Build REST catalog client |
 | `ICEBERG_BUILD_REST_INTEGRATION_TESTS` | `OFF` | Build REST catalog integration tests |
+| `ICEBERG_BUILD_HIVE` | `OFF` | Build Hive (HMS) catalog client |
 | `ICEBERG_ENABLE_ASAN` | `OFF` | Enable Address Sanitizer |
 | `ICEBERG_ENABLE_UBSAN` | `OFF` | Enable Undefined Behavior Sanitizer |
 
