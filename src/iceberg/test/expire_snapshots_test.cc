@@ -28,6 +28,7 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
@@ -580,11 +581,8 @@ TEST_F(ExpireSnapshotsCleanupTest, KeepsReusedPartitionStats) {
   EXPECT_THAT(deleted_files, testing::Not(testing::Contains(reused_statistics_path)));
 }
 
-// Linear-ancestry, no specified ID: dispatch must pick IncrementalFileCleanup.
-// Since the expired snapshot is an ancestor and the expired manifest only
-// contains ADDED entries (no DELETED), incremental correctly preserves the
-// data file (matches Java IncrementalFileCleanup semantics) and only removes
-// the manifest, manifest list, and (if any) delete manifest.
+// No explicit snapshot id selects the incremental path, which preserves data
+// files added by ancestors and removes only the expired manifest + manifest list.
 TEST_F(ExpireSnapshotsCleanupTest, IncrementalDispatchPreservesAncestorAddedFiles) {
   const auto expired_data_file_path = table_location_ + "/data/expired-data.parquet";
   const auto expired_data_manifest_path = table_location_ + "/metadata/expired-data.avro";
@@ -649,6 +647,36 @@ TEST_F(ExpireSnapshotsCleanupTest, ReachableDispatchDeletesUnreachableData) {
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
                                                            expired_data_manifest_path,
                                                            expired_manifest_list_path));
+}
+
+// Commit() must surface a malformed source-snapshot-id on an ancestor as an
+// InvalidArgument from the cherry-pick parse path; the older code silently
+// dropped the entry, letting bad metadata flow through successfully.
+TEST_F(ExpireSnapshotsCleanupTest, CommitPropagatesMalformedSourceSnapshotId) {
+  const auto expired_manifest_list_path =
+      table_location_ + "/metadata/expired-malformed-ml.avro";
+  const auto current_manifest_list_path =
+      table_location_ + "/metadata/current-malformed-ml.avro";
+  WriteManifestList(expired_manifest_list_path, kExpiredSnapshotId,
+                    /*parent_snapshot_id=*/0, kExpiredSequenceNumber, {});
+  WriteManifestList(current_manifest_list_path, kCurrentSnapshotId, kExpiredSnapshotId,
+                    kCurrentSequenceNumber, {});
+
+  auto metadata = ReloadMetadata();
+  ASSERT_EQ(metadata->snapshots.size(), 2);
+  metadata->snapshots.at(0)->manifest_list = expired_manifest_list_path;
+  metadata->snapshots.at(1)->manifest_list = current_manifest_list_path;
+  metadata->snapshots.at(1)->summary[SnapshotSummaryFields::kSourceSnapshotId] =
+      "not-a-number";
+  RewriteTable(std::move(metadata));
+
+  std::vector<std::string> deleted_files;
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  update->DeleteWith(
+      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+
+  EXPECT_THAT(update->Commit(), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_TRUE(deleted_files.empty());
 }
 
 }  // namespace iceberg

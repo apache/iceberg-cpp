@@ -41,6 +41,7 @@
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -68,14 +69,29 @@ class FileCleanupStrategy {
   ///
   /// \param metadata_before_expiration Table metadata before expiration.
   /// \param metadata_after_expiration Table metadata after expiration.
-  /// \param expired_snapshot_ids Snapshot IDs that were expired during this operation.
   /// \param level Controls which types of files are eligible for deletion.
   virtual Status CleanFiles(const TableMetadata& metadata_before_expiration,
                             const TableMetadata& metadata_after_expiration,
-                            const std::unordered_set<int64_t>& expired_snapshot_ids,
                             CleanupLevel level) = 0;
 
  protected:
+  /// \brief Snapshot IDs present in `before` but not in `after`.
+  static std::unordered_set<int64_t> ExpiredSnapshotIds(const TableMetadata& before,
+                                                        const TableMetadata& after) {
+    std::unordered_set<int64_t> after_ids;
+    after_ids.reserve(after.snapshots.size());
+    for (const auto& s : after.snapshots) {
+      if (s) after_ids.insert(s->snapshot_id);
+    }
+    std::unordered_set<int64_t> expired;
+    for (const auto& s : before.snapshots) {
+      if (s && !after_ids.contains(s->snapshot_id)) {
+        expired.insert(s->snapshot_id);
+      }
+    }
+    return expired;
+  }
+
   /// \brief Delete a single file
   void DeleteFile(const std::string& path) {
     try {
@@ -150,8 +166,10 @@ class ReachableFileCleanup : public FileCleanupStrategy {
 
   Status CleanFiles(const TableMetadata& metadata_before_expiration,
                     const TableMetadata& metadata_after_expiration,
-                    const std::unordered_set<int64_t>& expired_snapshot_ids,
                     CleanupLevel level) override {
+    const auto expired_snapshot_ids =
+        ExpiredSnapshotIds(metadata_before_expiration, metadata_after_expiration);
+
     std::unordered_set<int64_t> retained_snapshot_ids;
     for (const auto& snapshot : metadata_after_expiration.snapshots) {
       if (snapshot) {
@@ -334,7 +352,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
 
 /// \brief Incremental file cleanup strategy for simple linear-ancestry expirations.
 ///
-/// Mirrors Java's IncrementalFileCleanup. Only safe when:
+/// Only safe when:
 ///   * No snapshot IDs were explicitly listed for expiration.
 ///   * No removed snapshots lived outside the current main ancestry.
 ///   * No retained snapshots live outside the current main ancestry.
@@ -354,8 +372,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
 
   Status CleanFiles(const TableMetadata& metadata_before_expiration,
                     const TableMetadata& metadata_after_expiration,
-                    const std::unordered_set<int64_t>& expired_snapshot_ids,
                     CleanupLevel level) override {
+    const auto expired_snapshot_ids =
+        ExpiredSnapshotIds(metadata_before_expiration, metadata_after_expiration);
     if (expired_snapshot_ids.empty()) {
       return {};
     }
@@ -400,14 +419,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
       const auto& summary = ancestor->summary;
       auto it = summary.find(SnapshotSummaryFields::kSourceSnapshotId);
       if (it == summary.end()) continue;
-      try {
-        picked_ancestor_snapshot_ids.insert(std::stoll(it->second));
-      } catch (...) {
-        return InvalidArgument(
-            "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
-            "protection during incremental cleanup",
-            SnapshotSummaryFields::kSourceSnapshotId, it->second, ancestor->snapshot_id);
-      }
+      ICEBERG_ASSIGN_OR_RAISE(auto source_id,
+                              StringUtils::ParseNumber<int64_t>(it->second));
+      picked_ancestor_snapshot_ids.insert(source_id);
     }
 
     // Find manifests still referenced by a valid snapshot but written by an
@@ -457,14 +471,8 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
       int64_t source_snapshot_id = -1;
       auto src_it = snapshot->summary.find(SnapshotSummaryFields::kSourceSnapshotId);
       if (src_it != snapshot->summary.end()) {
-        try {
-          source_snapshot_id = std::stoll(src_it->second);
-        } catch (...) {
-          return InvalidArgument(
-              "Malformed {} '{}' on snapshot {}; cannot evaluate cherry-pick "
-              "protection during incremental cleanup",
-              SnapshotSummaryFields::kSourceSnapshotId, src_it->second, snapshot_id);
-        }
+        ICEBERG_ASSIGN_OR_RAISE(source_snapshot_id,
+                                StringUtils::ParseNumber<int64_t>(src_it->second));
       }
       // If this commit was cherry-picked from a still-live snapshot, skip --
       // removing its data files would revert additions still in the table.
@@ -508,8 +516,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
     if (level == CleanupLevel::kAll) {
       // Manifests may reference partition specs that were pruned during expiration
       // when CleanExpiredMetadata is enabled, so resolve schemas/specs against the
-      // pre-expiration metadata. Mirrors Java's findFilesToDelete which is called
-      // with beforeExpiration.specsById().
+      // pre-expiration metadata.
       auto files_to_delete = FindFilesToDelete(
           metadata_before_expiration, manifests_to_scan, manifests_to_revert, valid_ids);
       DeleteFiles(files_to_delete);
@@ -574,7 +581,6 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
 };
 
 /// \brief True if any retained snapshot sits outside the current main ancestry.
-/// Mirrors Java's RemoveSnapshots::hasNonMainSnapshots.
 bool HasNonMainSnapshots(const TableMetadata& metadata) {
   auto current_result = metadata.SnapshotById(metadata.current_snapshot_id);
   if (!current_result.has_value() || current_result.value() == nullptr) {
@@ -599,12 +605,11 @@ bool HasNonMainSnapshots(const TableMetadata& metadata) {
 }
 
 /// \brief True if any expired snapshot lived outside the current main ancestry.
-/// Mirrors Java's RemoveSnapshots::hasRemovedNonMainAncestors.
 ///
-/// When `before` has no current snapshot, the main-ancestor set is empty (matching
-/// Java's mainAncestors()); any removed snapshot then counts as "non-main" and
-/// returns true. This guards the dispatch in Finalize() against picking incremental
-/// cleanup when before-state has snapshots but no current pointer.
+/// When `before` has no current snapshot, the main-ancestor set is empty; any
+/// removed snapshot then counts as "non-main" and returns true. This guards the
+/// dispatch in Finalize() against picking incremental cleanup when the before-state
+/// has snapshots but no current pointer.
 bool HasRemovedNonMainAncestors(const TableMetadata& before, const TableMetadata& after) {
   std::unordered_set<int64_t> main_ancestors;
   auto current_result = before.SnapshotById(before.current_snapshot_id);
@@ -912,28 +917,24 @@ Status ExpireSnapshots::Finalize(Result<const TableMetadata*> commit_result) {
   auto metadata_before_expiration_ptr = apply_result_->metadata_before_expiration;
   const TableMetadata& metadata_before_expiration = *metadata_before_expiration_ptr;
   const TableMetadata& metadata_after_expiration = *commit_result.value();
-  std::unordered_set<int64_t> expired_ids(apply_result_->snapshot_ids_to_remove.begin(),
-                                          apply_result_->snapshot_ids_to_remove.end());
   apply_result_.reset();
 
-  // File cleanup is best-effort: log and continue on individual file deletion failures
   // Pick incremental cleanup when the expiration is a simple linear-ancestry walk:
   // no explicit snapshot IDs, no removed snapshots outside main ancestry, and no
-  // retained snapshots outside main ancestry. Mirrors Java RemoveSnapshots's
-  // dispatch in cleanExpiredSnapshots().
-  bool can_use_incremental = !specified_snapshot_id_ &&
-                             !HasRemovedNonMainAncestors(metadata_before_expiration,
-                                                         metadata_after_expiration) &&
-                             !HasNonMainSnapshots(metadata_after_expiration);
+  // retained snapshots outside main ancestry.
+  const bool can_use_incremental =
+      !specified_snapshot_id_ &&
+      !HasRemovedNonMainAncestors(metadata_before_expiration,
+                                  metadata_after_expiration) &&
+      !HasNonMainSnapshots(metadata_after_expiration);
 
-  std::unique_ptr<FileCleanupStrategy> strategy;
   if (can_use_incremental) {
-    strategy = std::make_unique<IncrementalFileCleanup>(ctx_->table->io(), delete_func_);
-  } else {
-    strategy = std::make_unique<ReachableFileCleanup>(ctx_->table->io(), delete_func_);
+    return IncrementalFileCleanup(ctx_->table->io(), delete_func_)
+        .CleanFiles(metadata_before_expiration, metadata_after_expiration,
+                    cleanup_level_);
   }
-  return strategy->CleanFiles(metadata_before_expiration, metadata_after_expiration,
-                              expired_ids, cleanup_level_);
+  return ReachableFileCleanup(ctx_->table->io(), delete_func_)
+      .CleanFiles(metadata_before_expiration, metadata_after_expiration, cleanup_level_);
 }
 
 }  // namespace iceberg

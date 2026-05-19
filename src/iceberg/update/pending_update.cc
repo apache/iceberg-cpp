@@ -47,8 +47,7 @@ Status PendingUpdate::Commit() {
       return std::unexpected(commit_result.error());
     }
 
-    std::ignore = Finalize(commit_result.value()->metadata().get());
-    return {};
+    return Finalize(commit_result.value()->metadata().get());
   }
   auto txn = ctx_->transaction->lock();
   if (!txn) {
