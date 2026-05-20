@@ -26,11 +26,13 @@
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -47,12 +49,50 @@ namespace iceberg {
 
 namespace {
 
+Result<std::shared_ptr<Schema>> SchemaForSpec(const TableMetadata& metadata,
+                                              const ManifestFile& manifest,
+                                              const PartitionSpec& spec) {
+  std::optional<Error> last_error;
+
+  auto snapshot = metadata.SnapshotById(manifest.added_snapshot_id);
+  if (snapshot.has_value() && snapshot.value() != nullptr &&
+      snapshot.value()->schema_id.has_value()) {
+    auto schema = metadata.SchemaById(snapshot.value()->schema_id.value());
+    if (schema.has_value()) {
+      auto partition_type = spec.PartitionType(*schema.value());
+      if (partition_type.has_value()) {
+        return schema.value();
+      }
+      last_error = partition_type.error();
+    } else {
+      last_error = schema.error();
+    }
+  }
+
+  for (const auto& schema : metadata.schemas) {
+    if (schema == nullptr) {
+      continue;
+    }
+
+    auto partition_type = spec.PartitionType(*schema);
+    if (partition_type.has_value()) {
+      return schema;
+    }
+    last_error = partition_type.error();
+  }
+
+  if (last_error.has_value()) {
+    return std::unexpected(last_error.value());
+  }
+  return InvalidSchema("Cannot find a schema for partition spec {}", spec.spec_id());
+}
+
 Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
     const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
     const TableMetadata& metadata) {
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           metadata.PartitionSpecById(manifest.partition_spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, SchemaForSpec(metadata, manifest, *spec));
   return ManifestReader::Make(manifest, file_io, std::move(schema), std::move(spec));
 }
 
@@ -84,6 +124,7 @@ class FileCleanupStrategy {
       if (s) after_ids.insert(s->snapshot_id);
     }
     std::unordered_set<int64_t> expired;
+    expired.reserve(before.snapshots.size());
     for (const auto& s : before.snapshots) {
       if (s && !after_ids.contains(s->snapshot_id)) {
         expired.insert(s->snapshot_id);
@@ -101,11 +142,11 @@ class FileCleanupStrategy {
         std::ignore = file_io_->DeleteFile(path);
       }
     } catch (...) {
-      /// TODO(shangxinli): add retry
+      // TODO(shangxinli): add retry
     }
   }
 
-  /// TODO(shangxinli): Add bulk deletion
+  // TODO(shangxinli): Add bulk deletion
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
     for (const auto& path : paths) {
       DeleteFile(path);
@@ -201,7 +242,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
         if (level == CleanupLevel::kAll) {
           // Deleting data files
           auto data_files_to_delete = FindDataFilesToDelete(
-              metadata_after_expiration, manifests_to_delete, current_manifests);
+              metadata_before_expiration, manifests_to_delete, current_manifests);
           DeleteFiles(data_files_to_delete);
         }
 
@@ -214,8 +255,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
     DeleteFiles(manifest_lists_to_delete);
 
     // Deleting statistics files
-    if (HasAnyStatisticsFiles(metadata_before_expiration) ||
-        HasAnyStatisticsFiles(metadata_after_expiration)) {
+    if (HasAnyStatisticsFiles(metadata_before_expiration)) {
       DeleteFiles(
           StatisticsFilesToDelete(metadata_before_expiration, metadata_after_expiration));
     }
@@ -281,7 +321,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
                      "Cannot read data file paths from a delete manifest: {}",
                      manifest.manifest_path);
 
-    /// TODO(shangxinli): optimize by only reading file paths
+    // TODO(shangxinli): optimize by only reading file paths
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             MakeManifestReader(manifest, file_io_, metadata));
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
@@ -393,9 +433,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
       return {};
     }
 
-    // Ancestors of the current table state. Files deleted in a non-ancestor
-    // snapshot may still belong to the current state (rolled-back commits),
-    // so we only physically delete files removed by ancestor snapshots.
+    // Only delete files removed by ancestors of the current table state.
     auto ancestors_result = SnapshotUtil::AncestorsOf(
         current_result.value()->snapshot_id, [&metadata_before_expiration](int64_t id) {
           return metadata_before_expiration.SnapshotById(id);
@@ -409,11 +447,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
       if (ancestor) ancestor_ids.insert(ancestor->snapshot_id);
     }
 
-    // Cherry-pick protection: snapshots whose changes were picked into the
-    // current ancestry under a different snapshot id should not be cleaned up.
-    // Iterate the ancestor pointers we already have rather than re-looking-up
-    // each snapshot by id.
+    // Protect snapshots whose changes were picked into the current ancestry.
     std::unordered_set<int64_t> picked_ancestor_snapshot_ids;
+    picked_ancestor_snapshot_ids.reserve(ancestor_ids.size());
     for (const auto& ancestor : ancestors_result.value()) {
       if (!ancestor) continue;
       const auto& summary = ancestor->summary;
@@ -429,12 +465,14 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
     // remove and become candidates for manifests_to_scan below.
     std::unordered_set<std::string> valid_manifests;
     std::vector<ManifestFile> manifests_to_scan;
+    manifests_to_scan.reserve(expired_snapshot_ids.size());
     for (const auto& snapshot : metadata_after_expiration.snapshots) {
       if (!snapshot) continue;
       SnapshotCache snapshot_cache(snapshot.get());
       auto manifests_result = snapshot_cache.Manifests(file_io_);
       if (!manifests_result.has_value()) continue;  // best-effort
-      for (const auto& manifest : manifests_result.value()) {
+      auto manifests = std::move(manifests_result).value();
+      for (auto& manifest : manifests) {
         valid_manifests.insert(manifest.manifest_path);
 
         int64_t writer_id = manifest.added_snapshot_id;
@@ -443,7 +481,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
         bool is_picked = picked_ancestor_snapshot_ids.contains(writer_id);
         if (!from_valid_snapshots && (is_from_ancestor || is_picked) &&
             manifest.has_deleted_files()) {
-          manifests_to_scan.push_back(manifest);
+          manifests_to_scan.push_back(std::move(manifest));
         }
       }
     }
@@ -456,8 +494,11 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
     //   - manifests_to_revert: written by an expiring non-ancestor snapshot
     //     and contains added entries -- those data files were never adopted.
     std::unordered_set<std::string> manifest_lists_to_delete;
+    manifest_lists_to_delete.reserve(expired_snapshot_ids.size());
     std::unordered_set<std::string> manifests_to_delete;
+    manifests_to_delete.reserve(expired_snapshot_ids.size());
     std::vector<ManifestFile> manifests_to_revert;
+    manifests_to_revert.reserve(expired_snapshot_ids.size());
     for (const auto& snapshot : metadata_before_expiration.snapshots) {
       if (!snapshot) continue;
       int64_t snapshot_id = snapshot->snapshot_id;
@@ -471,11 +512,14 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
       int64_t source_snapshot_id = -1;
       auto src_it = snapshot->summary.find(SnapshotSummaryFields::kSourceSnapshotId);
       if (src_it != snapshot->summary.end()) {
-        ICEBERG_ASSIGN_OR_RAISE(source_snapshot_id,
-                                StringUtils::ParseNumber<int64_t>(src_it->second));
+        auto source_snapshot_id_result =
+            StringUtils::ParseNumber<int64_t>(src_it->second);
+        if (!source_snapshot_id_result.has_value()) {
+          continue;
+        }
+        source_snapshot_id = source_snapshot_id_result.value();
       }
-      // If this commit was cherry-picked from a still-live snapshot, skip --
-      // removing its data files would revert additions still in the table.
+      // If this commit was cherry-picked from a still-live snapshot, skip it.
       if (ancestor_ids.contains(source_snapshot_id) ||
           picked_ancestor_snapshot_ids.contains(source_snapshot_id)) {
         continue;
@@ -483,30 +527,28 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
 
       SnapshotCache snapshot_cache(snapshot.get());
       auto manifests_result = snapshot_cache.Manifests(file_io_);
-      if (manifests_result.has_value()) {
-        for (const auto& manifest : manifests_result.value()) {
-          if (valid_manifests.contains(manifest.manifest_path)) continue;
-          manifests_to_delete.insert(manifest.manifest_path);
-
-          int64_t writer_id = manifest.added_snapshot_id;
-          bool is_from_ancestor = ancestor_ids.contains(writer_id);
-          bool is_from_expiring_snapshot = expired_snapshot_ids.contains(writer_id);
-
-          if (is_from_ancestor && manifest.has_deleted_files()) {
-            manifests_to_scan.push_back(manifest);
-          }
-          if (!is_from_ancestor && is_from_expiring_snapshot &&
-              manifest.has_added_files()) {
-            // Files added in this manifest never made it into the current
-            // ancestry. The is_from_expiring_snapshot guard ensures full
-            // ancestry between when the manifest was written and now is
-            // known -- otherwise missing history could hide that the
-            // snapshot is in fact an ancestor.
-            manifests_to_revert.push_back(manifest);
-          }
-        }
+      if (!manifests_result.has_value()) {
+        continue;
       }
 
+      auto manifests = std::move(manifests_result).value();
+      for (auto& manifest : manifests) {
+        if (valid_manifests.contains(manifest.manifest_path)) continue;
+        manifests_to_delete.insert(manifest.manifest_path);
+
+        int64_t writer_id = manifest.added_snapshot_id;
+        bool is_from_ancestor = ancestor_ids.contains(writer_id);
+        bool is_from_expiring_snapshot = expired_snapshot_ids.contains(writer_id);
+
+        if (is_from_ancestor && manifest.has_deleted_files()) {
+          manifests_to_scan.push_back(std::move(manifest));
+        } else if (!is_from_ancestor && is_from_expiring_snapshot &&
+                   manifest.has_added_files()) {
+          // The writer must be known-expired so missing history cannot make
+          // an ancestor look like a reverted snapshot.
+          manifests_to_revert.push_back(std::move(manifest));
+        }
+      }
       if (!snapshot->manifest_list.empty()) {
         manifest_lists_to_delete.insert(snapshot->manifest_list);
       }
@@ -529,8 +571,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
     DeleteFiles(manifest_lists_to_delete);
 
     // Deleting statistics files
-    if (HasAnyStatisticsFiles(metadata_before_expiration) ||
-        HasAnyStatisticsFiles(metadata_after_expiration)) {
+    if (HasAnyStatisticsFiles(metadata_before_expiration)) {
       DeleteFiles(
           StatisticsFilesToDelete(metadata_before_expiration, metadata_after_expiration));
     }
@@ -541,10 +582,8 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
  private:
   /// \brief Resolve the data files that the incremental pass identified for deletion.
   ///
-  /// For manifests_to_scan: read DELETED entries whose snapshot id is no longer
-  /// valid -- those are files an expired-but-ancestral snapshot removed.
-  /// For manifests_to_revert: read every ADDED entry -- those are files a
-  /// non-ancestral expired snapshot introduced and the current state never adopted.
+  /// For manifests_to_scan, read DELETED entries whose snapshot id is no longer valid.
+  /// For manifests_to_revert, read every ADDED entry.
   std::unordered_set<std::string> FindFilesToDelete(
       const TableMetadata& metadata, const std::vector<ManifestFile>& manifests_to_scan,
       const std::vector<ManifestFile>& manifests_to_revert,
@@ -773,7 +812,7 @@ Result<std::unordered_set<int64_t>> ExpireSnapshots::UnreferencedSnapshotIdsToRe
   for (const auto& snapshot : base().snapshots) {
     ICEBERG_DCHECK(snapshot != nullptr, "Snapshot is null");
     if (!referenced_ids.contains(snapshot->snapshot_id) &&
-        snapshot->timestamp_ms > default_expire_older_than_) {
+        snapshot->timestamp_ms >= default_expire_older_than_) {
       // unreferenced and not old enough to be expired
       ids_to_retain.insert(snapshot->snapshot_id);
     }
@@ -837,6 +876,8 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
     ICEBERG_PRECHECK(!retained_id_to_refs.contains(id),
                      "Cannot expire {}. Still referenced by refs", id);
   }
+  std::unordered_set<int64_t> explicit_snapshot_ids(snapshot_ids_to_expire_.begin(),
+                                                    snapshot_ids_to_expire_.end());
   ICEBERG_ASSIGN_OR_RAISE(auto all_branch_snapshot_ids,
                           ComputeAllBranchSnapshotIdsToRetain(retained_refs));
   ICEBERG_ASSIGN_OR_RAISE(auto unreferenced_snapshot_ids,
@@ -853,8 +894,10 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
       result.refs_to_remove.push_back(key_to_ref.first);
     }
   });
-  std::ranges::for_each(base.snapshots, [&ids_to_retain, &result](const auto& snapshot) {
-    if (snapshot && !ids_to_retain.contains(snapshot->snapshot_id)) {
+  std::ranges::for_each(base.snapshots, [&explicit_snapshot_ids, &ids_to_retain,
+                                         &result](const auto& snapshot) {
+    if (snapshot && (explicit_snapshot_ids.contains(snapshot->snapshot_id) ||
+                     !ids_to_retain.contains(snapshot->snapshot_id))) {
       result.snapshot_ids_to_remove.push_back(snapshot->snapshot_id);
     }
   });
