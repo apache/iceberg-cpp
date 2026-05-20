@@ -26,6 +26,7 @@
 #include <functional>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/row/struct_like.h"
 
@@ -95,6 +96,26 @@ class ICEBERG_EXPORT ManifestFileStructLike : public StructLike {
  private:
   std::reference_wrapper<const ManifestFile> manifest_file_;
   mutable std::shared_ptr<PartitionFieldSummaryArrayLike> summaries_;
+};
+
+/// \brief StructLike wrapper for DataFile metadata.
+class ICEBERG_EXPORT DataFileStructLike : public StructLike {
+ public:
+  explicit DataFileStructLike(const DataFile& file) : data_file_(file) {}
+  ~DataFileStructLike() override = default;
+
+  DataFileStructLike(const DataFileStructLike&) = delete;
+  DataFileStructLike& operator=(const DataFileStructLike&) = delete;
+
+  Result<Scalar> GetField(size_t pos) const override;
+
+  size_t num_fields() const override;
+
+  void Reset(const DataFile& file) { data_file_ = std::cref(file); }
+
+ private:
+  std::reference_wrapper<const DataFile> data_file_;
+  mutable std::shared_ptr<StructLike> partition_;
 };
 
 }  // namespace iceberg

@@ -19,17 +19,54 @@
 
 #include "iceberg/row/manifest_wrapper.h"
 
+#include <iterator>
+#include <map>
+#include <memory>
+#include <type_traits>
+#include <vector>
+
 #include "iceberg/manifest/manifest_reader_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 namespace {
+
+enum class DataFileFieldPosition : size_t {
+  kContent = 0,
+  kFilePath = 1,
+  kFileFormat = 2,
+  kPartition = 3,
+  kRecordCount = 4,
+  kFileSize = 5,
+  kColumnSizes = 6,
+  kValueCounts = 7,
+  kNullValueCounts = 8,
+  kNanValueCounts = 9,
+  kLowerBounds = 10,
+  kUpperBounds = 11,
+  kKeyMetadata = 12,
+  kSplitOffsets = 13,
+  kEqualityIds = 14,
+  kSortOrderId = 15,
+  kFirstRowId = 16,
+  kReferencedDataFile = 17,
+  kContentOffset = 18,
+  kContentSize = 19,
+  kNextUnusedId = 20,
+};
+
 template <typename T>
   requires std::is_same_v<T, std::vector<uint8_t>> || std::is_same_v<T, std::string>
 std::string_view ToView(const T& value) {
   return {reinterpret_cast<const char*>(value.data()), value.size()};  // NOLINT
 }
+
+Scalar ToScalar(const int32_t value) { return value; }
+
+Scalar ToScalar(const int64_t value) { return value; }
+
+Scalar ToScalar(const std::vector<uint8_t>& value) { return ToView(value); }
 
 template <typename T>
 Result<Scalar> FromOptional(const std::optional<T>& value) {
@@ -38,6 +75,56 @@ Result<Scalar> FromOptional(const std::optional<T>& value) {
   }
   return std::monostate{};
 }
+
+Result<Scalar> FromOptionalString(const std::optional<std::string>& value) {
+  if (value.has_value()) {
+    return ToView(value.value());
+  }
+  return std::monostate{};
+}
+
+template <typename T>
+class VectorArrayLike : public ArrayLike {
+ public:
+  explicit VectorArrayLike(const std::vector<T>& values) : values_(values) {}
+
+  Result<Scalar> GetElement(size_t pos) const override {
+    if (pos >= size()) {
+      return InvalidArgument("Invalid array index: {}", pos);
+    }
+    return ToScalar(values_.get()[pos]);
+  }
+
+  size_t size() const override { return values_.get().size(); }
+
+ private:
+  std::reference_wrapper<const std::vector<T>> values_;
+};
+
+template <typename V>
+class IntMapLike : public MapLike {
+ public:
+  explicit IntMapLike(const std::map<int32_t, V>& values) : values_(values) {}
+
+  Result<Scalar> GetKey(size_t pos) const override {
+    if (pos >= size()) {
+      return InvalidArgument("Invalid map index: {}", pos);
+    }
+    return std::next(values_.get().cbegin(), pos)->first;
+  }
+
+  Result<Scalar> GetValue(size_t pos) const override {
+    if (pos >= size()) {
+      return InvalidArgument("Invalid map index: {}", pos);
+    }
+    return ToScalar(std::next(values_.get().cbegin(), pos)->second);
+  }
+
+  size_t size() const override { return values_.get().size(); }
+
+ private:
+  std::reference_wrapper<const std::map<int32_t, V>> values_;
+};
 
 }  // namespace
 
@@ -132,6 +219,65 @@ size_t ManifestFileStructLike::num_fields() const {
 
 std::unique_ptr<StructLike> FromManifestFile(const ManifestFile& file) {
   return std::make_unique<ManifestFileStructLike>(file);
+}
+
+Result<Scalar> DataFileStructLike::GetField(size_t pos) const {
+  if (pos >= num_fields()) {
+    return InvalidArgument("Invalid data file field index: {}", pos);
+  }
+
+  const auto& data_file = data_file_.get();
+  switch (static_cast<DataFileFieldPosition>(pos)) {
+    case DataFileFieldPosition::kContent:
+      return static_cast<int32_t>(data_file.content);
+    case DataFileFieldPosition::kFilePath:
+      return ToView(data_file.file_path);
+    case DataFileFieldPosition::kFileFormat:
+      return ToString(data_file.file_format);
+    case DataFileFieldPosition::kPartition: {
+      partition_ = std::make_shared<PartitionValues>(data_file.partition);
+      return partition_;
+    }
+    case DataFileFieldPosition::kRecordCount:
+      return data_file.record_count;
+    case DataFileFieldPosition::kFileSize:
+      return data_file.file_size_in_bytes;
+    case DataFileFieldPosition::kColumnSizes:
+      return std::make_shared<IntMapLike<int64_t>>(data_file.column_sizes);
+    case DataFileFieldPosition::kValueCounts:
+      return std::make_shared<IntMapLike<int64_t>>(data_file.value_counts);
+    case DataFileFieldPosition::kNullValueCounts:
+      return std::make_shared<IntMapLike<int64_t>>(data_file.null_value_counts);
+    case DataFileFieldPosition::kNanValueCounts:
+      return std::make_shared<IntMapLike<int64_t>>(data_file.nan_value_counts);
+    case DataFileFieldPosition::kLowerBounds:
+      return std::make_shared<IntMapLike<std::vector<uint8_t>>>(data_file.lower_bounds);
+    case DataFileFieldPosition::kUpperBounds:
+      return std::make_shared<IntMapLike<std::vector<uint8_t>>>(data_file.upper_bounds);
+    case DataFileFieldPosition::kKeyMetadata:
+      return ToView(data_file.key_metadata);
+    case DataFileFieldPosition::kSplitOffsets:
+      return std::make_shared<VectorArrayLike<int64_t>>(data_file.split_offsets);
+    case DataFileFieldPosition::kEqualityIds:
+      return std::make_shared<VectorArrayLike<int32_t>>(data_file.equality_ids);
+    case DataFileFieldPosition::kSortOrderId:
+      return FromOptional(data_file.sort_order_id);
+    case DataFileFieldPosition::kFirstRowId:
+      return FromOptional(data_file.first_row_id);
+    case DataFileFieldPosition::kReferencedDataFile:
+      return FromOptionalString(data_file.referenced_data_file);
+    case DataFileFieldPosition::kContentOffset:
+      return FromOptional(data_file.content_offset);
+    case DataFileFieldPosition::kContentSize:
+      return FromOptional(data_file.content_size_in_bytes);
+    case DataFileFieldPosition::kNextUnusedId:
+      return InvalidArgument("Invalid data file field index: {}", pos);
+  }
+  return InvalidArgument("Invalid data file field index: {}", pos);
+}
+
+size_t DataFileStructLike::num_fields() const {
+  return static_cast<size_t>(DataFileFieldPosition::kNextUnusedId);
 }
 
 }  // namespace iceberg

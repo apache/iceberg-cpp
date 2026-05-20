@@ -76,13 +76,14 @@ class ManifestGroupTest : public testing::TestWithParam<int8_t> {
 
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path,
                                          const PartitionValues& partition,
-                                         int32_t spec_id, int64_t record_count = 1) {
+                                         int32_t spec_id, int64_t record_count = 1,
+                                         int64_t file_size_in_bytes = 10) {
     return std::make_shared<DataFile>(DataFile{
         .file_path = path,
         .file_format = FileFormatType::kParquet,
         .partition = partition,
         .record_count = record_count,
-        .file_size_in_bytes = 10,
+        .file_size_in_bytes = file_size_in_bytes,
         .sort_order_id = 0,
         .partition_spec_id = spec_id,
     });
@@ -402,6 +403,133 @@ TEST_P(ManifestGroupTest, CustomManifestEntriesFilter) {
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data3.parquet"));
+}
+
+TEST_P(ManifestGroupTest, FilterFilesByRecordCount) {
+  auto version = GetParam();
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+
+  std::vector<ManifestEntry> data_entries{
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/small.parquet", part_value,
+                             partitioned_spec_->spec_id(), /*record_count=*/5)),
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/boundary.parquet", part_value,
+                             partitioned_spec_->spec_id(), /*record_count=*/10)),
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/large.parquet", part_value,
+                             partitioned_spec_->spec_id(), /*record_count=*/15))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
+
+  std::vector<ManifestFile> manifests = {data_manifest};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
+  group->FilterFiles(Expressions::GreaterThanOrEqual("record_count", Literal::Long(10)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
+  EXPECT_THAT(GetEntryPaths(entries),
+              testing::UnorderedElementsAre("/path/to/boundary.parquet",
+                                            "/path/to/large.parquet"));
+}
+
+TEST_P(ManifestGroupTest, FilterFilesByPartitionMetadata) {
+  auto version = GetParam();
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto partition_bucket_0 = PartitionValues({Literal::Int(0)});
+  const auto partition_bucket_1 = PartitionValues({Literal::Int(1)});
+
+  std::vector<ManifestEntry> data_entries{
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/bucket0.parquet", partition_bucket_0,
+                             partitioned_spec_->spec_id())),
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/bucket1.parquet", partition_bucket_1,
+                             partitioned_spec_->spec_id()))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
+
+  std::vector<ManifestFile> manifests = {data_manifest};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
+  group->FilterFiles(Expressions::Equal("partition.data_bucket_16_2", Literal::Int(1)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
+  EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/bucket1.parquet"));
+}
+
+TEST_P(ManifestGroupTest, FilterFilesReadsFilteredColumnsWhenSelected) {
+  auto version = GetParam();
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+
+  std::vector<ManifestEntry> data_entries{
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/too-small.parquet", part_value,
+                             partitioned_spec_->spec_id(), /*record_count=*/1,
+                             /*file_size_in_bytes=*/5)),
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/matching.parquet", part_value,
+                             partitioned_spec_->spec_id(), /*record_count=*/1,
+                             /*file_size_in_bytes=*/20))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
+
+  std::vector<ManifestFile> manifests = {data_manifest};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
+  group->Select({"file_path"})
+      .FilterFiles(Expressions::GreaterThan("file_size_in_bytes", Literal::Long(10)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
+  EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/matching.parquet"));
+}
+
+TEST_P(ManifestGroupTest, FilterFilesReadsPartitionMetadataWhenSelected) {
+  auto version = GetParam();
+
+  std::shared_ptr<PartitionSpec> multi_field_spec;
+  ICEBERG_UNWRAP_OR_FAIL(
+      multi_field_spec,
+      PartitionSpec::Make(
+          /*spec_id=*/2, {PartitionField(/*source_id=*/1, /*field_id=*/1001,
+                                         "id_identity", Transform::Identity()),
+                          PartitionField(/*source_id=*/2, /*field_id=*/1002,
+                                         "data_identity", Transform::Identity())}));
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto keep_partition = PartitionValues({Literal::Int(1), Literal::String("keep")});
+  const auto drop_partition = PartitionValues({Literal::Int(2), Literal::String("drop")});
+
+  std::vector<ManifestEntry> data_entries{
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/drop.parquet", drop_partition,
+                             multi_field_spec->spec_id())),
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/keep.parquet", keep_partition,
+                             multi_field_spec->spec_id()))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), multi_field_spec);
+
+  auto specs_by_id = GetSpecsById();
+  specs_by_id[multi_field_spec->spec_id()] = multi_field_spec;
+  std::vector<ManifestFile> manifests = {data_manifest};
+  ICEBERG_UNWRAP_OR_FAIL(auto group,
+                         ManifestGroup::Make(file_io_, schema_, std::move(specs_by_id),
+                                             std::move(manifests)));
+  group->Select({"file_path"})
+      .FilterFiles(
+          Expressions::Equal("partition.data_identity", Literal::String("keep")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
+  EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/keep.parquet"));
 }
 
 TEST_P(ManifestGroupTest, EmptyManifestGroup) {
