@@ -102,6 +102,8 @@ TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
       {iceberg::SchemaField(1, "timestamp_ns", iceberg::timestamp_ns(), false)});
   iceberg::Schema timestamptz_ns_schema(
       {iceberg::SchemaField(1, "timestamptz_ns", iceberg::timestamptz_ns(), false)});
+  iceberg::Schema unknown_schema(
+      {iceberg::SchemaField(1, "unknown", iceberg::unknown(), true)});
 
   auto status = timestamp_ns_schema.Validate(2);
   ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
@@ -115,12 +117,42 @@ TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
                           "Invalid type for timestamptz_ns: timestamptz_ns is not "
                           "supported until v3"));
 
+  status = unknown_schema.Validate(2);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage(
+                          "Invalid type for unknown: unknown is not supported until v3"));
+
   EXPECT_THAT(
       timestamp_ns_schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
       iceberg::IsOk());
   EXPECT_THAT(timestamptz_ns_schema.Validate(
                   iceberg::TableMetadata::kSupportedTableFormatVersion),
               iceberg::IsOk());
+  EXPECT_THAT(
+      unknown_schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+      iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateRejectsInvalidUnknownFields) {
+  iceberg::Schema required_unknown_schema(
+      {iceberg::SchemaField(1, "mystery", iceberg::unknown(), false)});
+  auto status = required_unknown_schema.Validate(
+      iceberg::TableMetadata::kSupportedTableFormatVersion);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidArgument));
+  EXPECT_THAT(status,
+              iceberg::HasErrorMessage("Unknown type field 'mystery' must be optional"));
+
+  iceberg::Schema map_key_unknown_schema({iceberg::SchemaField::MakeOptional(
+      1, "properties",
+      std::make_shared<iceberg::MapType>(
+          iceberg::SchemaField::MakeRequired(2, iceberg::MapType::kKeyName,
+                                             iceberg::unknown()),
+          iceberg::SchemaField::MakeOptional(3, iceberg::MapType::kValueName,
+                                             iceberg::string())))});
+  status = map_key_unknown_schema.Validate(
+      iceberg::TableMetadata::kSupportedTableFormatVersion);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidArgument));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("Map 'key' cannot be unknown type"));
 }
 
 TEST(SchemaTest, IdentifierFields) {

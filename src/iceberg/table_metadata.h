@@ -80,6 +80,7 @@ struct ICEBERG_EXPORT TableMetadata {
   static inline const std::unordered_map<TypeId, int8_t> kMinFormatVersions = {
       {TypeId::kTimestampNs, 3},
       {TypeId::kTimestampTzNs, 3},
+      {TypeId::kUnknown, 3},
   };
 
   /// An integer version number for the format

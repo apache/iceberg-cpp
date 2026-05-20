@@ -31,7 +31,7 @@ namespace iceberg {
 /// This is not a complete data type by itself because some types are nested
 /// and/or parameterized.
 ///
-/// Iceberg V3 types are not currently supported.
+/// Iceberg V3's `unknown` type is supported as a null-only placeholder type.
 enum class TypeId {
   kStruct,
   kList,
@@ -52,6 +52,7 @@ enum class TypeId {
   kUuid,
   kFixed,
   kBinary,
+  kUnknown,
 };
 
 /// \brief The time unit.  In Iceberg V3 nanoseconds are also supported.
@@ -83,6 +84,7 @@ class TimestampTzType;
 class TimestampNsType;
 class TimestampTzNsType;
 class Type;
+class UnknownType;
 class UuidType;
 
 /// \brief Data values.

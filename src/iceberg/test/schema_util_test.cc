@@ -226,6 +226,132 @@ TEST(SchemaUtilTest, ProjectSchemaEvolutionFloatToDouble) {
   AssertProjectedField(projection.fields[0], 0);
 }
 
+TEST(SchemaUtilTest, ProjectSchemaEvolutionUnknownToPrimitive) {
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::unknown())});
+  Schema expected_schema(
+      {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::string())});
+
+  auto projection_result =
+      Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  AssertProjectedField(projection.fields[0], 0);
+}
+
+TEST(SchemaUtilTest, RejectSchemaEvolutionUnknownToRequiredPrimitive) {
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::unknown())});
+  Schema expected_schema(
+      {SchemaField::MakeRequired(/*field_id=*/2, "value", iceberg::string())});
+
+  auto projection_result =
+      Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result,
+              HasErrorMessage("Cannot project required field with id 2 as null"));
+}
+
+TEST(SchemaUtilTest, ProjectSchemaEvolutionNestedFieldsToUnknown) {
+  Schema source_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/201, "mystery", iceberg::int32()),
+              SchemaField::MakeOptional(/*field_id=*/202, "name", iceberg::string()),
+          })),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "items",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/301, "element", iceberg::int32()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/4, "attributes",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/401, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/402, "value", iceberg::int32()))),
+  });
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/201, "mystery", iceberg::unknown()),
+              SchemaField::MakeOptional(/*field_id=*/202, "name", iceberg::string()),
+          })),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "items",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/301, "element", iceberg::unknown()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/4, "attributes",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/401, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/402, "value", iceberg::unknown()))),
+  });
+
+  for (bool prune_source : {false, true}) {
+    auto projection_result = Project(expected_schema, source_schema, prune_source);
+    ASSERT_THAT(projection_result, IsOk());
+
+    const auto& projection = *projection_result;
+    ASSERT_EQ(projection.fields.size(), 3);
+    AssertProjectedField(projection.fields[0], 0);
+    AssertProjectedField(projection.fields[1], 1);
+    AssertProjectedField(projection.fields[2], 2);
+
+    ASSERT_EQ(projection.fields[0].children.size(), 2);
+    ASSERT_EQ(projection.fields[0].children[0].kind, FieldProjection::Kind::kNull);
+    AssertProjectedField(projection.fields[0].children[1], prune_source ? 0 : 1);
+
+    ASSERT_EQ(projection.fields[1].children.size(), 1);
+    ASSERT_EQ(projection.fields[1].children[0].kind, FieldProjection::Kind::kNull);
+
+    ASSERT_EQ(projection.fields[2].children.size(), 2);
+    AssertProjectedField(projection.fields[2].children[0], 0);
+    ASSERT_EQ(projection.fields[2].children[1].kind, FieldProjection::Kind::kNull);
+  }
+}
+
+TEST(SchemaUtilTest, ProjectSchemaEvolutionUnknownToNestedAsNull) {
+  Schema source_schema({
+      SchemaField::MakeOptional(/*field_id=*/2, "profile", iceberg::unknown()),
+      SchemaField::MakeOptional(/*field_id=*/3, "items", iceberg::unknown()),
+      SchemaField::MakeOptional(/*field_id=*/4, "attributes", iceberg::unknown()),
+  });
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/2, "profile", CreateNestedStruct()),
+      SchemaField::MakeOptional(/*field_id=*/3, "items", CreateListOfStruct()),
+      SchemaField::MakeOptional(/*field_id=*/4, "attributes", CreateMapWithStructValue()),
+  });
+
+  for (bool prune_source : {false, true}) {
+    auto projection_result = Project(expected_schema, source_schema, prune_source);
+    ASSERT_THAT(projection_result, IsOk());
+
+    const auto& projection = *projection_result;
+    ASSERT_EQ(projection.fields.size(), 3);
+    ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kNull);
+    ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kNull);
+    ASSERT_EQ(projection.fields[2].kind, FieldProjection::Kind::kNull);
+  }
+}
+
+TEST(SchemaUtilTest, RejectSchemaEvolutionUnknownToRequiredNested) {
+  Schema source_schema({
+      SchemaField::MakeOptional(/*field_id=*/2, "profile", iceberg::unknown()),
+  });
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/2, "profile", CreateNestedStruct()),
+  });
+
+  auto projection_result =
+      Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result,
+              HasErrorMessage("Cannot project required field with id 2 as null"));
+}
+
 TEST(SchemaUtilTest, ProjectSchemaEvolutionDecimalCompatible) {
   Schema source_schema(
       {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::decimal(9, 2))});

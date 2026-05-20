@@ -80,7 +80,7 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
     return EncodeArrowToAvro(branches.value_node, encoder, type, array, row_index, ctx);
   }
 
-  if (is_null) {
+  if (is_null && avro_node->type() != ::avro::AVRO_NULL) {
     return InvalidArgument("Null value in non-nullable field");
   }
 

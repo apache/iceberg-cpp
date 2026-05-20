@@ -177,6 +177,7 @@ ICEBERG_EXPORT Result<std::shared_ptr<Schema>> AssignFreshIds(
 /// \brief Check if type promotion from one type to another is allowed.
 ///
 /// Type promotion rules:
+/// - unknown -> any type
 /// - int -> long
 /// - float -> double
 /// - decimal(P,S) -> decimal(P',S) where P' > P

@@ -49,6 +49,44 @@ namespace iceberg {
 namespace {
 constexpr int32_t kTableRootId = -1;
 
+Status ValidateUnknownFieldsOptional(const Type& type) {
+  switch (type.type_id()) {
+    case TypeId::kStruct: {
+      const auto& struct_type = internal::checked_cast<const StructType&>(type);
+      for (const auto& field : struct_type.fields()) {
+        ICEBERG_CHECK(field.optional() || field.type()->type_id() != TypeId::kUnknown,
+                      "Unknown type field '{}' must be optional", field.name());
+        ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*field.type()));
+      }
+      break;
+    }
+    case TypeId::kList: {
+      const auto& list_type = internal::checked_cast<const ListType&>(type);
+      const auto& element = list_type.element();
+      ICEBERG_CHECK(element.optional() || element.type()->type_id() != TypeId::kUnknown,
+                    "Unknown type field '{}' must be optional", element.name());
+      ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*element.type()));
+      break;
+    }
+    case TypeId::kMap: {
+      const auto& map_type = internal::checked_cast<const MapType&>(type);
+      const auto& key = map_type.key();
+      const auto& value = map_type.value();
+      ICEBERG_CHECK(key.type()->type_id() != TypeId::kUnknown,
+                    "Map 'key' cannot be unknown type");
+      ICEBERG_CHECK(value.optional() || value.type()->type_id() != TypeId::kUnknown,
+                    "Unknown type field '{}' must be optional", value.name());
+      ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*key.type()));
+      ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*value.type()));
+      break;
+    }
+    default:
+      break;
+  }
+
+  return {};
+}
+
 /// \brief Visitor for applying schema changes recursively to nested types
 class ApplyChangesVisitor {
  public:
@@ -375,7 +413,8 @@ UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> pa
 }
 
 UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
-                                         std::shared_ptr<PrimitiveType> new_type) {
+                                         std::shared_ptr<Type> new_type) {
+  ICEBERG_BUILDER_CHECK(new_type != nullptr, "Cannot update column to null type");
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot update missing column: {}", name);
 
@@ -393,8 +432,15 @@ UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
                         "Cannot change column type: {}: {} -> {}", name,
                         field.type()->ToString(), new_type->ToString());
 
-  updates_[field_id] = std::make_shared<SchemaField>(
-      field.field_id(), field.name(), new_type, field.optional(), field.doc());
+  auto replacement_type = std::move(new_type);
+  if (field.type()->type_id() == TypeId::kUnknown && replacement_type->is_nested()) {
+    AssignFreshIdVisitor id_assigner([this]() { return AssignNewColumnId(); });
+    replacement_type = id_assigner.Visit(replacement_type);
+  }
+
+  updates_[field_id] = std::make_shared<SchemaField>(field.field_id(), field.name(),
+                                                     std::move(replacement_type),
+                                                     field.optional(), field.doc());
 
   return *this;
 }
@@ -578,6 +624,8 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
   auto new_struct_type = internal::checked_pointer_cast<StructType>(new_type);
 
   auto temp_schema = new_struct_type->ToSchema();
+  ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*temp_schema));
+
   std::vector<int32_t> fresh_identifier_ids;
   for (const auto& name : identifier_field_names_) {
     ICEBERG_ASSIGN_OR_RAISE(auto field_opt,
@@ -593,6 +641,7 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto new_schema,
       Schema::Make(std::move(new_fields), schema_->schema_id(), fresh_identifier_ids));
+  ICEBERG_RETURN_UNEXPECTED(new_schema->Validate(base().format_version));
 
   std::unordered_map<std::string, std::string> updated_props;
   const auto& base_metadata = base();

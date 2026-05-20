@@ -64,6 +64,7 @@ INSTANTIATE_TEST_SUITE_P(
         SchemaJsonParam{.json = "\"string\"", .type = iceberg::string()},
         SchemaJsonParam{.json = "\"binary\"", .type = iceberg::binary()},
         SchemaJsonParam{.json = "\"uuid\"", .type = iceberg::uuid()},
+        SchemaJsonParam{.json = "\"unknown\"", .type = iceberg::unknown()},
         SchemaJsonParam{.json = "\"fixed[8]\"", .type = iceberg::fixed(8)},
         SchemaJsonParam{.json = "\"decimal(10,2)\"", .type = iceberg::decimal(10, 2)},
         SchemaJsonParam{.json = "\"date\"", .type = iceberg::date()},
@@ -134,6 +135,127 @@ TEST(SchemaJsonTest, RoundTrip) {
 
   auto dumped_json = ToJson(*schema).dump();
   ASSERT_EQ(dumped_json, json);
+}
+
+TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"name":"mystery","required":false,"type":"unknown"}],"schema-id":1,"type":"struct"})";
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(nlohmann::json::parse(json)));
+  ASSERT_EQ(schema->fields().size(), 1);
+
+  const auto& field = schema->fields()[0];
+  ASSERT_EQ(field.field_id(), 1);
+  ASSERT_EQ(field.name(), "mystery");
+  ASSERT_EQ(field.type()->type_id(), TypeId::kUnknown);
+  ASSERT_TRUE(field.optional());
+  ASSERT_EQ(ToJson(*schema).dump(), json);
+}
+
+TEST(SchemaJsonTest, NestedUnknownFieldsRoundTrip) {
+  constexpr std::string_view json =
+      R"({
+        "fields": [
+          {
+            "id": 1,
+            "name": "profile",
+            "required": false,
+            "type": {
+              "fields": [
+                {"id": 2, "name": "mystery", "required": false, "type": "unknown"}
+              ],
+              "type": "struct"
+            }
+          },
+          {
+            "id": 3,
+            "name": "mysteries",
+            "required": false,
+            "type": {
+              "element": "unknown",
+              "element-id": 4,
+              "element-required": false,
+              "type": "list"
+            }
+          },
+          {
+            "id": 5,
+            "name": "properties",
+            "required": false,
+            "type": {
+              "key": "string",
+              "key-id": 6,
+              "type": "map",
+              "value": "unknown",
+              "value-id": 7,
+              "value-required": false
+            }
+          }
+        ],
+        "schema-id": 1,
+        "type": "struct"
+      })";
+  const auto parsed_json = nlohmann::json::parse(json);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(parsed_json));
+  ASSERT_EQ(schema->fields().size(), 3);
+
+  const auto* profile = dynamic_cast<const StructType*>(schema->fields()[0].type().get());
+  ASSERT_NE(profile, nullptr);
+  ASSERT_EQ(profile->fields().size(), 1);
+  ASSERT_EQ(profile->fields()[0].type()->type_id(), TypeId::kUnknown);
+  ASSERT_TRUE(profile->fields()[0].optional());
+
+  const auto* mysteries = dynamic_cast<const ListType*>(schema->fields()[1].type().get());
+  ASSERT_NE(mysteries, nullptr);
+  ASSERT_EQ(mysteries->fields()[0].type()->type_id(), TypeId::kUnknown);
+  ASSERT_TRUE(mysteries->fields()[0].optional());
+
+  const auto* properties = dynamic_cast<const MapType*>(schema->fields()[2].type().get());
+  ASSERT_NE(properties, nullptr);
+  ASSERT_EQ(properties->value().type()->type_id(), TypeId::kUnknown);
+  ASSERT_TRUE(properties->value().optional());
+
+  ASSERT_EQ(ToJson(*schema), parsed_json);
+}
+
+TEST(SchemaJsonTest, RejectRequiredUnknownField) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"name":"mystery","required":true,"type":"unknown"}],"schema-id":1,"type":"struct"})";
+
+  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
+  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
+  ASSERT_THAT(schema_result,
+              HasErrorMessage("Unknown type field 'mystery' must be optional"));
+}
+
+TEST(SchemaJsonTest, RejectRequiredUnknownListElement) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"name":"mysteries","required":false,"type":{"element":"unknown","element-id":2,"element-required":true,"type":"list"}}],"schema-id":1,"type":"struct"})";
+
+  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
+  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
+  ASSERT_THAT(schema_result,
+              HasErrorMessage("Unknown type field 'element' must be optional"));
+}
+
+TEST(SchemaJsonTest, RejectUnknownMapKey) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"name":"mysteries","required":false,"type":{"key":"unknown","key-id":2,"type":"map","value":"string","value-id":3,"value-required":false}}],"schema-id":1,"type":"struct"})";
+
+  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
+  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
+  ASSERT_THAT(schema_result, HasErrorMessage("Map 'key' cannot be unknown type"));
+}
+
+TEST(SchemaJsonTest, RejectRequiredUnknownMapValue) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"name":"mysteries","required":false,"type":{"key":"string","key-id":2,"type":"map","value":"unknown","value-id":3,"value-required":true}}],"schema-id":1,"type":"struct"})";
+
+  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
+  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
+  ASSERT_THAT(schema_result,
+              HasErrorMessage("Unknown type field 'value' must be optional"));
 }
 
 TEST(SchemaJsonTest, IdentifierFieldIds) {

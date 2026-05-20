@@ -140,6 +140,12 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
     projected_arrays.emplace_back(std::move(projected_array));
   }
 
+  if (projected_arrays.empty()) {
+    return std::make_shared<::arrow::StructArray>(
+        output_struct_type, struct_array->length(), projected_arrays,
+        struct_array->null_bitmap(), struct_array->null_count(), struct_array->offset());
+  }
+
   ICEBERG_ARROW_ASSIGN_OR_RETURN(
       auto output_array,
       ::arrow::StructArray::Make(projected_arrays, output_struct_type->fields(),
@@ -166,7 +172,14 @@ Result<std::shared_ptr<::arrow::Array>> ProjectListArrayImpl(
   const auto& output_element_type = output_list_type->value_type();
 
   std::shared_ptr<::arrow::Array> projected_values;
-  if (element_field.type()->is_nested()) {
+  if (element_projection.kind == FieldProjection::Kind::kNull) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        projected_values,
+        MakeNullArray(output_element_type, list_array->values()->length(), pool));
+  } else if (element_projection.kind != FieldProjection::Kind::kProjected) {
+    return NotImplemented("Unsupported list element projection kind: {}",
+                          ToString(element_projection.kind));
+  } else if (element_field.type()->is_nested()) {
     const auto& nested_type =
         internal::checked_cast<const NestedType&>(*element_field.type());
     ICEBERG_ASSIGN_OR_RAISE(
@@ -219,7 +232,14 @@ Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
 
   // Project keys
   std::shared_ptr<::arrow::Array> projected_keys;
-  if (key_type->is_nested()) {
+  if (key_projection.kind == FieldProjection::Kind::kNull) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        projected_keys,
+        MakeNullArray(output_map_type->key_type(), map_array->keys()->length(), pool));
+  } else if (key_projection.kind != FieldProjection::Kind::kProjected) {
+    return NotImplemented("Unsupported map key projection kind: {}",
+                          ToString(key_projection.kind));
+  } else if (key_type->is_nested()) {
     const auto& nested_type = internal::checked_cast<const NestedType&>(*key_type);
     ICEBERG_ASSIGN_OR_RAISE(
         projected_keys,
@@ -233,7 +253,14 @@ Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
 
   // Project values
   std::shared_ptr<::arrow::Array> projected_items;
-  if (value_type->is_nested()) {
+  if (value_projection.kind == FieldProjection::Kind::kNull) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        projected_items,
+        MakeNullArray(output_map_type->item_type(), map_array->items()->length(), pool));
+  } else if (value_projection.kind != FieldProjection::Kind::kProjected) {
+    return NotImplemented("Unsupported map value projection kind: {}",
+                          ToString(value_projection.kind));
+  } else if (value_type->is_nested()) {
     const auto& nested_type = internal::checked_cast<const NestedType&>(*value_type);
     ICEBERG_ASSIGN_OR_RAISE(
         projected_items,

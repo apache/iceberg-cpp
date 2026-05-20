@@ -35,6 +35,45 @@
 
 namespace iceberg {
 
+namespace {
+
+Status ValidateUnknownFieldsOptional(const Type& type) {
+  switch (type.type_id()) {
+    case TypeId::kStruct: {
+      const auto& struct_type = static_cast<const StructType&>(type);
+      for (const auto& field : struct_type.fields()) {
+        ICEBERG_PRECHECK(field.optional() || field.type()->type_id() != TypeId::kUnknown,
+                         "Unknown type field '{}' must be optional", field.name());
+        ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*field.type()));
+      }
+      return {};
+    }
+    case TypeId::kList: {
+      const auto& list_type = static_cast<const ListType&>(type);
+      const auto& element = list_type.element();
+      ICEBERG_PRECHECK(
+          element.optional() || element.type()->type_id() != TypeId::kUnknown,
+          "Unknown type field '{}' must be optional", element.name());
+      return ValidateUnknownFieldsOptional(*element.type());
+    }
+    case TypeId::kMap: {
+      const auto& map_type = static_cast<const MapType&>(type);
+      const auto& key = map_type.key();
+      const auto& value = map_type.value();
+      ICEBERG_PRECHECK(key.type()->type_id() != TypeId::kUnknown,
+                       "Map 'key' cannot be unknown type");
+      ICEBERG_PRECHECK(value.optional() || value.type()->type_id() != TypeId::kUnknown,
+                       "Unknown type field '{}' must be optional", value.name());
+      ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*key.type()));
+      return ValidateUnknownFieldsOptional(*value.type());
+    }
+    default:
+      return {};
+  }
+}
+
+}  // namespace
+
 Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id)
     : StructType(std::move(fields)),
       schema_id_(schema_id),
@@ -282,6 +321,8 @@ bool Schema::SameSchema(const Schema& other) const {
 }
 
 Status Schema::Validate(int32_t format_version) const {
+  ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*this));
+
   // Get all fields including nested ones
   ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, cache_->GetIdToFieldMap());
 

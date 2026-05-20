@@ -44,6 +44,8 @@ Result<Scalar> ExtractValue(const ArrowSchema* schema, const ArrowArray* array,
   }
 
   switch (array_view->storage_type) {
+    case NANOARROW_TYPE_NA:
+      return std::monostate{};
     case NANOARROW_TYPE_BOOL:
       return static_cast<bool>(ArrowArrayViewGetIntUnsafe(array_view, index));
     case NANOARROW_TYPE_INT32:

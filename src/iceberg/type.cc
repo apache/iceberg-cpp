@@ -350,6 +350,10 @@ TypeId UuidType::type_id() const { return kTypeId; }
 std::string UuidType::ToString() const { return "uuid"; }
 bool UuidType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
+TypeId UnknownType::type_id() const { return kTypeId; }
+std::string UnknownType::ToString() const { return "unknown"; }
+bool UnknownType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
+
 FixedType::FixedType(int32_t length) : length_(length) {
   ICEBERG_CHECK_OR_DIE(length >= 0, "FixedType: length must be >= 0, was {}", length);
 }
@@ -392,6 +396,7 @@ TYPE_FACTORY(timestamptz_ns, TimestampTzNsType)
 TYPE_FACTORY(binary, BinaryType)
 TYPE_FACTORY(string, StringType)
 TYPE_FACTORY(uuid, UuidType)
+TYPE_FACTORY(unknown, UnknownType)
 
 #undef TYPE_FACTORY
 
@@ -455,6 +460,8 @@ std::string_view ToString(TypeId id) {
       return "fixed";
     case TypeId::kBinary:
       return "binary";
+    case TypeId::kUnknown:
+      return "unknown";
   }
 
   std::unreachable();

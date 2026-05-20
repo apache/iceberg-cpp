@@ -237,6 +237,11 @@ Status ToAvroNodeVisitor::Visit(const BinaryType& type, ::avro::NodePtr* node) {
   return {};
 }
 
+Status ToAvroNodeVisitor::Visit(const UnknownType&, ::avro::NodePtr* node) {
+  *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_NULL);
+  return {};
+}
+
 Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodeRecord>();
 
@@ -338,7 +343,7 @@ Status ToAvroNodeVisitor::Visit(const SchemaField& field, ::avro::NodePtr* node)
   field_ids_.push(field.field_id());
   ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*field.type(), /*visitor=*/this, node));
 
-  if (field.optional()) {
+  if (field.optional() && (*node)->type() != ::avro::AVRO_NULL) {
     ::avro::MultiLeaves union_types;
     union_types.add(std::make_shared<::avro::NodePrimitive>(::avro::AVRO_NULL));
     union_types.add(std::move(*node));
@@ -383,8 +388,8 @@ Status HasIdVisitor::Visit(const ::avro::NodePtr& node) {
     case ::avro::AVRO_STRING:
     case ::avro::AVRO_BYTES:
     case ::avro::AVRO_FIXED:
-      return {};
     case ::avro::AVRO_NULL:
+      return {};
     case ::avro::AVRO_ENUM:
     default:
       return InvalidSchema("Unsupported Avro type: {}", static_cast<int>(node->type()));
@@ -512,6 +517,10 @@ Result<int32_t> GetFieldId(const ::avro::NodePtr& node, size_t field_idx) {
 
 Status ValidateAvroSchemaEvolution(const Type& expected_type,
                                    const ::avro::NodePtr& avro_node) {
+  if (avro_node->type() == ::avro::AVRO_NULL) {
+    return {};
+  }
+
   switch (expected_type.type_id()) {
     case TypeId::kBoolean:
       if (avro_node->type() == ::avro::AVRO_BOOL) {
@@ -615,6 +624,8 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
         return {};
       }
       break;
+    case TypeId::kUnknown:
+      return {};
     default:
       break;
   }
@@ -649,6 +660,35 @@ Status UnwrapUnion(const ::avro::NodePtr& node, ::avro::NodePtr* result) {
 Result<FieldProjection> ProjectNested(const Type& expected_type,
                                       const ::avro::NodePtr& avro_node,
                                       bool prune_source);
+
+Result<FieldProjection> ProjectField(const SchemaField& expected_field,
+                                     const ::avro::NodePtr& avro_node,
+                                     size_t source_index, bool prune_source) {
+  const Type& expected_type = *expected_field.type();
+  ::avro::NodePtr field_node;
+  ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(avro_node, &field_node));
+
+  FieldProjection projection;
+  if (expected_type.type_id() == TypeId::kUnknown ||
+      field_node->type() == ::avro::AVRO_NULL) {
+    if (!expected_field.optional()) {
+      return InvalidSchema("Cannot project required field with ID: {} as null",
+                           expected_field.field_id());
+    }
+    projection.kind = FieldProjection::Kind::kNull;
+    return projection;
+  }
+
+  if (expected_type.is_nested()) {
+    ICEBERG_ASSIGN_OR_RAISE(projection,
+                            ProjectNested(expected_type, field_node, prune_source));
+  } else {
+    ICEBERG_RETURN_UNEXPECTED(ValidateAvroSchemaEvolution(expected_type, field_node));
+  }
+  projection.from = source_index;
+  projection.kind = FieldProjection::Kind::kProjected;
+  return projection;
+}
 
 Result<FieldProjection> ProjectStruct(const StructType& struct_type,
                                       const ::avro::NodePtr& avro_node,
@@ -685,18 +725,9 @@ Result<FieldProjection> ProjectStruct(const StructType& struct_type,
     FieldProjection child_projection;
 
     if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
-      ::avro::NodePtr field_node;
-      ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(iter->second.field_node, &field_node));
-      if (expected_field.type()->is_nested()) {
-        ICEBERG_ASSIGN_OR_RAISE(
-            child_projection,
-            ProjectNested(*expected_field.type(), field_node, prune_source));
-      } else {
-        ICEBERG_RETURN_UNEXPECTED(
-            ValidateAvroSchemaEvolution(*expected_field.type(), field_node));
-      }
-      child_projection.from = iter->second.local_index;
-      child_projection.kind = FieldProjection::Kind::kProjected;
+      ICEBERG_ASSIGN_OR_RAISE(child_projection,
+                              ProjectField(expected_field, iter->second.field_node,
+                                           iter->second.local_index, prune_source));
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
     } else if (expected_field.optional()) {
@@ -733,20 +764,9 @@ Result<FieldProjection> ProjectList(const ListType& list_type,
   }
 
   FieldProjection element_projection;
-  ::avro::NodePtr element_node;
-  ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(avro_node->leafAt(0), &element_node));
-  if (expected_element_field.type()->is_nested()) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        element_projection,
-        ProjectNested(*expected_element_field.type(), element_node, prune_source));
-  } else {
-    ICEBERG_RETURN_UNEXPECTED(
-        ValidateAvroSchemaEvolution(*expected_element_field.type(), element_node));
-  }
-
-  // Set the element projection metadata but preserve its children
-  element_projection.kind = FieldProjection::Kind::kProjected;
-  element_projection.from = size_t{0};
+  ICEBERG_ASSIGN_OR_RAISE(element_projection,
+                          ProjectField(expected_element_field, avro_node->leafAt(0),
+                                       size_t{0}, prune_source));
 
   FieldProjection result;
   result.children.emplace_back(std::move(element_projection));
@@ -802,18 +822,10 @@ Result<FieldProjection> ProjectMap(const MapType& map_type,
 
   for (size_t i = 0; i < map_node->leaves(); ++i) {
     FieldProjection sub_projection;
-    ::avro::NodePtr sub_node;
-    ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(map_node->leafAt(i), &sub_node));
     const auto& expected_sub_field = map_type.fields()[i];
-    if (expected_sub_field.type()->is_nested()) {
-      ICEBERG_ASSIGN_OR_RAISE(sub_projection, ProjectNested(*expected_sub_field.type(),
-                                                            sub_node, prune_source));
-    } else {
-      ICEBERG_RETURN_UNEXPECTED(
-          ValidateAvroSchemaEvolution(*expected_sub_field.type(), sub_node));
-    }
-    sub_projection.kind = FieldProjection::Kind::kProjected;
-    sub_projection.from = i;
+    ICEBERG_ASSIGN_OR_RAISE(
+        sub_projection,
+        ProjectField(expected_sub_field, map_node->leafAt(i), i, prune_source));
     result.children.emplace_back(std::move(sub_projection));
   }
 
@@ -1049,9 +1061,9 @@ Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original
     case ::avro::AVRO_STRING:
     case ::avro::AVRO_BYTES:
     case ::avro::AVRO_FIXED:
+    case ::avro::AVRO_NULL:
       // For primitive types, just return a copy
       return original_node;
-    case ::avro::AVRO_NULL:
     case ::avro::AVRO_ENUM:
     default:
       return InvalidSchema("Unsupported Avro type for field ID application: {}",

@@ -250,6 +250,12 @@ TEST(ToAvroNodeVisitorTest, BinaryType) {
   EXPECT_EQ(node->type(), ::avro::AVRO_BYTES);
 }
 
+TEST(ToAvroNodeVisitorTest, UnknownType) {
+  ::avro::NodePtr node;
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(UnknownType{}, &node), IsOk());
+  EXPECT_EQ(node->type(), ::avro::AVRO_NULL);
+}
+
 TEST(ToAvroNodeVisitorTest, StructType) {
   StructType struct_type{{SchemaField{/*field_id=*/1, "bool_field", iceberg::boolean(),
                                       /*optional=*/false},
@@ -274,6 +280,70 @@ TEST(ToAvroNodeVisitorTest, StructType) {
   ASSERT_EQ(node->leafAt(1)->leaves(), 2);
   EXPECT_EQ(node->leafAt(1)->leafAt(0)->type(), ::avro::AVRO_NULL);
   EXPECT_EQ(node->leafAt(1)->leafAt(1)->type(), ::avro::AVRO_INT);
+}
+
+TEST(ToAvroNodeVisitorTest, OptionalUnknownField) {
+  StructType struct_type{{SchemaField{/*field_id=*/1, "mystery", iceberg::unknown(),
+                                      /*optional=*/true}}};
+
+  ::avro::NodePtr node;
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(struct_type, &node), IsOk());
+
+  ASSERT_EQ(node->leaves(), 1);
+  EXPECT_EQ(node->leafAt(0)->type(), ::avro::AVRO_NULL);
+  ASSERT_EQ(node->customAttributes(), 1);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/0, /*field_id=*/1));
+}
+
+TEST(ToAvroNodeVisitorTest, NestedUnknownFields) {
+  StructType struct_type{
+      {SchemaField::MakeOptional(
+           /*field_id=*/1, "profile",
+           std::make_shared<StructType>(std::vector<SchemaField>{
+               SchemaField::MakeOptional(/*field_id=*/2, "mystery", iceberg::unknown()),
+           })),
+       SchemaField::MakeOptional(
+           /*field_id=*/3, "mysteries",
+           std::make_shared<ListType>(SchemaField::MakeOptional(
+               /*field_id=*/4, "element", iceberg::unknown()))),
+       SchemaField::MakeOptional(
+           /*field_id=*/5, "properties",
+           std::make_shared<MapType>(
+               SchemaField::MakeRequired(/*field_id=*/6, "key", iceberg::string()),
+               SchemaField::MakeOptional(/*field_id=*/7, "value", iceberg::unknown())))}};
+
+  ::avro::NodePtr node;
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(struct_type, &node), IsOk());
+
+  ASSERT_EQ(node->leaves(), 3);
+  auto profile_union = node->leafAt(0);
+  ASSERT_EQ(profile_union->type(), ::avro::AVRO_UNION);
+  auto profile_node = profile_union->leafAt(1);
+  ASSERT_EQ(profile_node->type(), ::avro::AVRO_RECORD);
+  ASSERT_EQ(profile_node->leaves(), 1);
+  EXPECT_EQ(profile_node->leafAt(0)->type(), ::avro::AVRO_NULL);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(profile_node, /*index=*/0, /*field_id=*/2));
+
+  auto list_union = node->leafAt(1);
+  ASSERT_EQ(list_union->type(), ::avro::AVRO_UNION);
+  auto list_node = list_union->leafAt(1);
+  ASSERT_EQ(list_node->type(), ::avro::AVRO_ARRAY);
+  ASSERT_EQ(list_node->leaves(), 1);
+  EXPECT_EQ(list_node->leafAt(0)->type(), ::avro::AVRO_NULL);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(list_node, /*index=*/0, /*field_id=*/4,
+                                         /*key=*/"element-id"));
+
+  auto map_union = node->leafAt(2);
+  ASSERT_EQ(map_union->type(), ::avro::AVRO_UNION);
+  auto map_node = map_union->leafAt(1);
+  ASSERT_EQ(map_node->type(), ::avro::AVRO_MAP);
+  ASSERT_EQ(map_node->leaves(), 2);
+  EXPECT_EQ(map_node->leafAt(0)->type(), ::avro::AVRO_STRING);
+  EXPECT_EQ(map_node->leafAt(1)->type(), ::avro::AVRO_NULL);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(map_node, /*index=*/0, /*field_id=*/6,
+                                         /*key=*/"key-id"));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(map_node, /*index=*/0, /*field_id=*/7,
+                                         /*key=*/"value-id"));
 }
 
 TEST(ToAvroNodeVisitorTest, StructTypeWithFieldNames) {
@@ -476,6 +546,13 @@ TEST(ToAvroNodeVisitorTest, NestedTypes) {
 TEST(HasIdVisitorTest, HasNoIds) {
   HasIdVisitor visitor;
   EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString("\"string\"")), IsOk());
+  EXPECT_TRUE(visitor.HasNoIds());
+  EXPECT_FALSE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, NullType) {
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString("\"null\"")), IsOk());
   EXPECT_TRUE(visitor.HasNoIds());
   EXPECT_FALSE(visitor.AllHaveIds());
 }
@@ -897,6 +974,146 @@ TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble) {
   ASSERT_EQ(projection.fields.size(), 1);
   ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
   ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectUnknownExpectedFieldAsNull) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "mystery", iceberg::unknown()),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "mystery", "type": "int", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kNull);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectNestedUnknownExpectedFieldsAsNull) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/3, "mystery", iceberg::unknown()),
+          })),
+      SchemaField::MakeOptional(
+          /*field_id=*/4, "mysteries",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/5, "element", iceberg::unknown()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/6, "properties",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/7, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/8, "value", iceberg::unknown()))),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "profile", "type": ["null", {
+        "type": "record",
+        "name": "profile_record",
+        "fields": [
+          {"name": "name", "type": ["null", "string"], "field-id": 2},
+          {"name": "mystery", "type": ["null", "int"], "field-id": 3}
+        ]
+      }], "field-id": 1},
+      {"name": "mysteries", "type": ["null", {
+        "type": "array",
+        "items": ["null", "int"],
+        "element-id": 5
+      }], "field-id": 4},
+      {"name": "properties", "type": ["null", {
+        "type": "map",
+        "values": ["null", "int"],
+        "key-id": 7,
+        "value-id": 8
+      }], "field-id": 6}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 3);
+
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(projection.fields[0].children.size(), 2);
+  ASSERT_EQ(projection.fields[0].children[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(projection.fields[0].children[1].kind, FieldProjection::Kind::kNull);
+
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(projection.fields[1].children.size(), 1);
+  ASSERT_EQ(projection.fields[1].children[0].kind, FieldProjection::Kind::kNull);
+
+  ASSERT_EQ(projection.fields[2].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(projection.fields[2].children.size(), 2);
+  ASSERT_EQ(projection.fields[2].children[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(projection.fields[2].children[1].kind, FieldProjection::Kind::kNull);
+}
+
+TEST(AvroSchemaProjectionTest, RejectNullLeafForRequiredField) {
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "value", iceberg::int32()),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "value", "type": "null", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result,
+              HasErrorMessage("Cannot project required field with ID: 1 as null"));
+}
+
+TEST(AvroSchemaProjectionTest, RejectNullListElementForRequiredElement) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeRequired(
+              /*field_id=*/101, "element", iceberg::int32()))),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "numbers", "type": ["null", {
+        "type": "array",
+        "items": "null",
+        "element-id": 101
+      }], "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result,
+              HasErrorMessage("Cannot project required field with ID: 101 as null"));
 }
 
 TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIncompatibleTypes) {

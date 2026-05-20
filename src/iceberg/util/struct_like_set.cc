@@ -263,6 +263,8 @@ Status ValidateScalarAgainstType(const Scalar& scalar, const Type& type) {
   }
 
   switch (type.type_id()) {
+    case TypeId::kUnknown:
+      return InvalidArgument("Expected unknown but got {}", ScalarTypeName(scalar));
     case TypeId::kBoolean:
       ICEBERG_PRECHECK(std::holds_alternative<bool>(scalar),
                        "Expected boolean but got {}", ScalarTypeName(scalar));

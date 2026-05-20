@@ -503,6 +503,21 @@ class ICEBERG_EXPORT UuidType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
+/// \brief A null-only placeholder type used when a more specific type is not known.
+class ICEBERG_EXPORT UnknownType : public PrimitiveType {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kUnknown;
+
+  UnknownType() = default;
+  ~UnknownType() override = default;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+};
+
 /// @}
 
 /// \defgroup type-factories Factory functions for creating primitive data types
@@ -538,6 +553,8 @@ ICEBERG_EXPORT const std::shared_ptr<BinaryType>& binary();
 ICEBERG_EXPORT const std::shared_ptr<StringType>& string();
 /// \brief Return a UuidType instance.
 ICEBERG_EXPORT const std::shared_ptr<UuidType>& uuid();
+/// \brief Return an UnknownType instance.
+ICEBERG_EXPORT const std::shared_ptr<UnknownType>& unknown();
 
 /// \brief Create a DecimalType with the given precision and scale.
 /// \param precision The number of decimal digits (max 38).

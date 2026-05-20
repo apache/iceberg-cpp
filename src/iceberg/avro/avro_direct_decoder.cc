@@ -588,6 +588,12 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
                             const SchemaField& projected_field,
                             const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx) {
+  if (projection.kind == FieldProjection::Kind::kNull) {
+    ICEBERG_RETURN_UNEXPECTED(SkipAvroValue(avro_node, decoder));
+    ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
+    return {};
+  }
+
   if (avro_node->type() == ::avro::AVRO_UNION) {
     const size_t branch_index = decoder.decodeUnionIndex();
 

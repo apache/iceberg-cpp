@@ -33,6 +33,7 @@
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
+#include <parquet/file_reader.h>
 #include <parquet/metadata.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -461,6 +462,78 @@ TEST_F(ParquetReaderTest, ReadMetadataOnlyProjection) {
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, kExpectedJson));
 }
 
+TEST_F(ParquetReaderTest, ReadNestedUnknownProjection) {
+  temp_parquet_file_ = "nested_unknown.parquet";
+  auto write_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(2, "name", string()),
+                                    SchemaField::MakeOptional(3, "mystery", int32()),
+                                })),
+      SchemaField::MakeOptional(
+          4, "mysteries",
+          std::make_shared<ListType>(SchemaField::MakeOptional(5, "element", int32()))),
+      SchemaField::MakeOptional(
+          6, "properties",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
+                                    SchemaField::MakeOptional(8, "value", int32()))),
+      SchemaField::MakeOptional(9, "wrapper",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(10, "mystery", int32()),
+                                })),
+  });
+  auto read_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(2, "name", string()),
+                                    SchemaField::MakeOptional(3, "mystery", unknown()),
+                                })),
+      SchemaField::MakeOptional(
+          4, "mysteries",
+          std::make_shared<ListType>(SchemaField::MakeOptional(5, "element", unknown()))),
+      SchemaField::MakeOptional(
+          6, "properties",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
+                                    SchemaField::MakeOptional(8, "value", unknown()))),
+      SchemaField::MakeOptional(9, "wrapper",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(10, "mystery", unknown()),
+                                })),
+  });
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*write_schema, &arrow_c_schema), IsOk());
+  auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  auto array = ::arrow::json::ArrayFromJSONString(arrow_type,
+                                                  R"([
+                     {"profile": {"name": "Person0", "mystery": 10}, "mysteries": [1, 2], "properties": [["a", 100], ["b", 200]], "wrapper": {"mystery": 300}},
+                     {"profile": {"name": "Person1", "mystery": null}, "mysteries": [], "properties": [], "wrapper": {"mystery": null}}
+                   ])")
+                   .ValueOrDie();
+
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression,
+                        std::string("uncompressed"));
+  ASSERT_THAT(WriteArray(array, {.path = temp_parquet_file_,
+                                 .schema = write_schema,
+                                 .io = file_io_,
+                                 .properties = std::move(writer_properties)}),
+              IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = temp_parquet_file_, .io = file_io_, .projection = read_schema}));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader,
+                                          R"([
+        {"profile": {"name": "Person0", "mystery": null}, "mysteries": [null, null], "properties": [["a", null], ["b", null]], "wrapper": {"mystery": null}},
+        {"profile": {"name": "Person1", "mystery": null}, "mysteries": [], "properties": [], "wrapper": {"mystery": null}}
+      ])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
 class ParquetReadWrite : public ::testing::Test {
  protected:
   static void SetUpTestSuite() { parquet::RegisterAll(); }
@@ -507,6 +580,220 @@ TEST_F(ParquetReadWrite, RejectsUnavailableCompressionCodec) {
   EXPECT_THAT(writer,
               HasErrorMessage("Parquet compression codec " + unavailable_codec->name +
                               " is not available in the current build"));
+}
+
+TEST_F(ParquetReadWrite, RejectsUnknownInsideListOrMapOnWrite) {
+  std::vector<std::shared_ptr<Schema>> schemas = {
+      std::make_shared<Schema>(std::vector<SchemaField>{
+          SchemaField::MakeOptional(1, "mysteries",
+                                    std::make_shared<ListType>(SchemaField::MakeOptional(
+                                        2, ListType::kElementName, iceberg::unknown()))),
+      }),
+      std::make_shared<Schema>(std::vector<SchemaField>{
+          SchemaField::MakeOptional(
+              1, "properties",
+              std::make_shared<MapType>(
+                  SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::string()),
+                  SchemaField::MakeOptional(3, MapType::kValueName, iceberg::unknown()))),
+      }),
+  };
+
+  for (const auto& schema : schemas) {
+    auto writer = WriterFactoryRegistry::Open(
+        FileFormatType::kParquet, {.path = "unknown_nested.parquet",
+                                   .schema = schema,
+                                   .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO()});
+
+    EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(writer, HasErrorMessage("physical Parquet representation"));
+  }
+}
+
+TEST_F(ParquetReadWrite, RejectsRequiredUnknownOnWrite) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(1, "mystery", unknown(),
+                                           /*optional=*/false)});
+
+  auto writer = WriterFactoryRegistry::Open(
+      FileFormatType::kParquet, {.path = "required_unknown.parquet",
+                                 .schema = schema,
+                                 .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO()});
+
+  EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(writer, HasErrorMessage("Unknown type field 'mystery' must be optional"));
+}
+
+TEST_F(ParquetReadWrite, RejectsUnknownOnlyStructOnWrite) {
+  std::vector<std::shared_ptr<Schema>> schemas = {
+      std::make_shared<Schema>(std::vector<SchemaField>{
+          SchemaField::MakeOptional(1, "wrapper",
+                                    std::make_shared<StructType>(std::vector<SchemaField>{
+                                        SchemaField::MakeOptional(2, "secret", unknown()),
+                                    })),
+      }),
+      std::make_shared<Schema>(std::vector<SchemaField>{
+          SchemaField::MakeOptional(
+              1, "wrappers",
+              std::make_shared<ListType>(SchemaField::MakeOptional(
+                  2, ListType::kElementName,
+                  std::make_shared<StructType>(std::vector<SchemaField>{
+                      SchemaField::MakeOptional(3, "secret", unknown()),
+                  })))),
+      }),
+      std::make_shared<Schema>(std::vector<SchemaField>{
+          SchemaField::MakeOptional(
+              1, "properties",
+              std::make_shared<MapType>(
+                  SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::string()),
+                  SchemaField::MakeOptional(
+                      3, MapType::kValueName,
+                      std::make_shared<StructType>(std::vector<SchemaField>{
+                          SchemaField::MakeOptional(4, "secret", unknown()),
+                      })))),
+      }),
+  };
+
+  for (const auto& schema : schemas) {
+    auto writer = WriterFactoryRegistry::Open(
+        FileFormatType::kParquet, {.path = "unknown_only_struct.parquet",
+                                   .schema = schema,
+                                   .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO()});
+
+    EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(writer, HasErrorMessage("all child fields are unknown"));
+  }
+}
+
+TEST_F(ParquetReadWrite, WritesUnknownFieldsNestedInsideListOrMapStructs) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "id", int32()),
+      SchemaField::MakeOptional(2, "events",
+                                std::make_shared<ListType>(SchemaField::MakeOptional(
+                                    3, ListType::kElementName,
+                                    std::make_shared<StructType>(std::vector<SchemaField>{
+                                        SchemaField::MakeOptional(4, "name", string()),
+                                        SchemaField::MakeOptional(5, "secret", unknown()),
+                                    })))),
+      SchemaField::MakeOptional(
+          6, "properties",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(7, MapType::kKeyName, iceberg::string()),
+              SchemaField::MakeOptional(
+                  8, MapType::kValueName,
+                  std::make_shared<StructType>(std::vector<SchemaField>{
+                      SchemaField::MakeOptional(9, "label", string()),
+                      SchemaField::MakeOptional(10, "secret", unknown()),
+                  })))),
+  });
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+  auto array =
+      ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                         R"([
+                      {"id": 1, "events": [{"name": "open", "secret": null}, {"name": "close", "secret": null}], "properties": [["a", {"label": "A", "secret": null}]]},
+                      {"id": 2, "events": [], "properties": []}
+                    ])")
+          .ValueOrDie();
+
+  std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  const std::string basePath = "nested_unknown_fields.parquet";
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression,
+                        std::string("uncompressed"));
+  ASSERT_THAT(WriteArray(array, {.path = basePath,
+                                 .schema = schema,
+                                 .io = file_io,
+                                 .properties = std::move(writer_properties)}),
+              IsOk());
+
+  auto& arrow_file_io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io);
+  auto input_file = arrow_file_io.fs()->OpenInputFile(basePath).ValueOrDie();
+  auto parquet_reader = ::parquet::ParquetFileReader::Open(input_file);
+  auto parquet_schema = parquet_reader->metadata()->schema();
+
+  std::vector<int32_t> field_ids;
+  for (int i = 0; i < parquet_schema->num_columns(); ++i) {
+    field_ids.push_back(parquet_schema->Column(i)->schema_node()->field_id());
+  }
+  EXPECT_THAT(field_ids, ::testing::UnorderedElementsAre(1, 4, 7, 9));
+
+  std::shared_ptr<::arrow::Array> out;
+  ASSERT_THAT(ReadArray(out, {.path = basePath, .io = file_io, .projection = schema},
+                        /*metadata=*/nullptr),
+              IsOk());
+  auto expected =
+      ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                         R"([
+                      {"id": 1, "events": [{"name": "open", "secret": null}, {"name": "close", "secret": null}], "properties": [["a", {"label": "A", "secret": null}]]},
+                      {"id": 2, "events": [], "properties": []}
+                    ])")
+          .ValueOrDie();
+  ASSERT_TRUE(out->Equals(*expected)) << "actual:\n"
+                                      << out->ToString() << "expected:\n"
+                                      << expected->ToString();
+}
+
+TEST_F(ParquetReadWrite, DoesNotMaterializeUnknownFieldsOnWrite) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "id", int32()),
+      SchemaField::MakeOptional(2, "mystery", unknown()),
+      SchemaField::MakeOptional(3, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(4, "name", string()),
+                                    SchemaField::MakeOptional(5, "secret", unknown()),
+                                })),
+  });
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+  auto array =
+      ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                         R"([
+                      [1, null, {"name": "Person0", "secret": null}],
+                      [2, null, {"name": "Person1", "secret": null}]
+                    ])")
+          .ValueOrDie();
+
+  std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  const std::string basePath = "unknown_fields.parquet";
+
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression,
+                        std::string("uncompressed"));
+  ASSERT_THAT(WriteArray(array, {.path = basePath,
+                                 .schema = schema,
+                                 .io = file_io,
+                                 .properties = std::move(writer_properties)}),
+              IsOk());
+
+  auto& arrow_file_io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io);
+  auto input_file = arrow_file_io.fs()->OpenInputFile(basePath).ValueOrDie();
+  auto parquet_reader = ::parquet::ParquetFileReader::Open(input_file);
+  auto parquet_schema = parquet_reader->metadata()->schema();
+
+  ASSERT_EQ(parquet_schema->num_columns(), 2);
+  EXPECT_EQ(parquet_schema->Column(0)->schema_node()->field_id(), 1);
+  EXPECT_EQ(parquet_schema->Column(1)->schema_node()->field_id(), 4);
+
+  std::shared_ptr<::arrow::Array> out;
+  ASSERT_THAT(ReadArray(out, {.path = basePath, .io = file_io, .projection = schema},
+                        /*metadata=*/nullptr),
+              IsOk());
+  auto expected =
+      ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                         R"([
+                      [1, null, {"name": "Person0", "secret": null}],
+                      [2, null, {"name": "Person1", "secret": null}]
+                    ])")
+          .ValueOrDie();
+  ASSERT_TRUE(out->Equals(*expected)) << "actual:\n"
+                                      << out->ToString() << "expected:\n"
+                                      << expected->ToString();
 }
 
 TEST_F(ParquetReadWrite, SimpleStructRoundTrip) {

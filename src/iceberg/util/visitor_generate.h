@@ -38,6 +38,7 @@ namespace iceberg {
   ACTION(Uuid);                                \
   ACTION(Fixed);                               \
   ACTION(Binary);                              \
+  ACTION(Unknown);                             \
   ACTION(Struct);                              \
   ACTION(List);                                \
   ACTION(Map);

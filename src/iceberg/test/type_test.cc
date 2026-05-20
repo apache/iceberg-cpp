@@ -90,7 +90,7 @@ TEST_P(TypeTest, StdFormat) {
   ASSERT_EQ(test_case.repr, std::format("{}", *test_case.type));
 }
 
-const static std::array<TypeTestCase, 18> kPrimitiveTypes = {{
+const static std::array<TypeTestCase, 19> kPrimitiveTypes = {{
     {
         .name = "boolean",
         .type = iceberg::boolean(),
@@ -216,6 +216,13 @@ const static std::array<TypeTestCase, 18> kPrimitiveTypes = {{
         .type_id = iceberg::TypeId::kUuid,
         .primitive = true,
         .repr = "uuid",
+    },
+    {
+        .name = "unknown",
+        .type = iceberg::unknown(),
+        .type_id = iceberg::TypeId::kUnknown,
+        .primitive = true,
+        .repr = "unknown",
     },
 }};
 

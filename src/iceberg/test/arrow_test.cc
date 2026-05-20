@@ -107,7 +107,9 @@ INSTANTIATE_TEST_SUITE_P(
         ToArrowSchemaParam{.iceberg_type = iceberg::uuid(),
                            .arrow_type = ::arrow::extension::uuid()},
         ToArrowSchemaParam{.iceberg_type = iceberg::fixed(20),
-                           .arrow_type = ::arrow::fixed_size_binary(20)}));
+                           .arrow_type = ::arrow::fixed_size_binary(20)},
+        ToArrowSchemaParam{.iceberg_type = iceberg::unknown(),
+                           .arrow_type = ::arrow::null()}));
 
 namespace {
 
@@ -233,6 +235,81 @@ TEST(ToArrowSchemaTest, MapType) {
                                           /*nullable=*/true, kValueFieldId));
 }
 
+TEST(ToArrowSchemaTest, NestedUnknownFieldsRoundTrip) {
+  Schema schema(
+      {
+          SchemaField::MakeOptional(
+              /*field_id=*/1, "profile",
+              std::make_shared<StructType>(std::vector<SchemaField>{
+                  SchemaField::MakeOptional(/*field_id=*/2, "mystery",
+                                            iceberg::unknown()),
+              })),
+          SchemaField::MakeOptional(
+              /*field_id=*/3, "mysteries",
+              std::make_shared<ListType>(SchemaField::MakeOptional(
+                  /*field_id=*/4, "element", iceberg::unknown()))),
+          SchemaField::MakeOptional(
+              /*field_id=*/5, "properties",
+              std::make_shared<MapType>(
+                  SchemaField::MakeRequired(/*field_id=*/6, "key", iceberg::string()),
+                  SchemaField::MakeOptional(/*field_id=*/7, "value",
+                                            iceberg::unknown()))),
+      },
+      /*schema_id=*/0);
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(schema, &arrow_c_schema), IsOk());
+
+  auto imported_schema = ::arrow::ImportSchema(&arrow_c_schema).ValueOrDie();
+  ASSERT_EQ(imported_schema->num_fields(), 3);
+
+  auto profile_type =
+      std::static_pointer_cast<::arrow::StructType>(imported_schema->field(0)->type());
+  ASSERT_EQ(profile_type->num_fields(), 1);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*profile_type->field(0), ::arrow::Type::NA,
+                                          "mystery", /*nullable=*/true,
+                                          /*field_id=*/2));
+
+  auto mysteries_type =
+      std::static_pointer_cast<::arrow::ListType>(imported_schema->field(1)->type());
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*mysteries_type->value_field(),
+                                          ::arrow::Type::NA, "element",
+                                          /*nullable=*/true, /*field_id=*/4));
+
+  auto properties_type =
+      std::static_pointer_cast<::arrow::MapType>(imported_schema->field(2)->type());
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*properties_type->key_field(),
+                                          ::arrow::Type::STRING, "key",
+                                          /*nullable=*/false, /*field_id=*/6));
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*properties_type->item_field(),
+                                          ::arrow::Type::NA, "value",
+                                          /*nullable=*/true, /*field_id=*/7));
+
+  ArrowSchema exported_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*imported_schema, &exported_schema).ok());
+  auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
+  ASSERT_THAT(schema_result, IsOk());
+  ArrowSchemaRelease(&exported_schema);
+
+  const auto& round_tripped_schema = *schema_result.value();
+  ASSERT_EQ(round_tripped_schema.fields().size(), 3);
+
+  const auto* profile =
+      dynamic_cast<const StructType*>(round_tripped_schema.fields()[0].type().get());
+  ASSERT_NE(profile, nullptr);
+  ASSERT_EQ(profile->fields()[0].type()->type_id(), TypeId::kUnknown);
+
+  const auto* mysteries =
+      dynamic_cast<const ListType*>(round_tripped_schema.fields()[1].type().get());
+  ASSERT_NE(mysteries, nullptr);
+  ASSERT_EQ(mysteries->fields()[0].type()->type_id(), TypeId::kUnknown);
+
+  const auto* properties =
+      dynamic_cast<const MapType*>(round_tripped_schema.fields()[2].type().get());
+  ASSERT_NE(properties, nullptr);
+  ASSERT_EQ(properties->value().type()->type_id(), TypeId::kUnknown);
+}
+
 struct FromArrowSchemaParam {
   std::shared_ptr<arrow::DataType> arrow_type;
   bool optional = true;
@@ -307,7 +384,51 @@ INSTANTIATE_TEST_SUITE_P(
         FromArrowSchemaParam{.arrow_type = ::arrow::extension::uuid(),
                              .iceberg_type = iceberg::uuid()},
         FromArrowSchemaParam{.arrow_type = ::arrow::fixed_size_binary(20),
-                             .iceberg_type = iceberg::fixed(20)}));
+                             .iceberg_type = iceberg::fixed(20)},
+        FromArrowSchemaParam{.arrow_type = ::arrow::null(),
+                             .iceberg_type = iceberg::unknown()}));
+
+TEST(FromArrowSchemaTest, RejectRequiredNullFieldAsUnknown) {
+  auto metadata =
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kParquetFieldIdKey), "1"}});
+  auto arrow_schema = ::arrow::schema({::arrow::field(
+      "mystery", ::arrow::null(), /*nullable=*/false, std::move(metadata))});
+
+  ArrowSchema exported_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+  auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
+  ArrowSchemaRelease(&exported_schema);
+
+  ASSERT_THAT(schema_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(schema_result,
+              HasErrorMessage("Arrow null field 'mystery' must be nullable"));
+}
+
+TEST(FromArrowSchemaTest, RejectRequiredNullListElementAsUnknown) {
+  auto list_metadata =
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kParquetFieldIdKey), "1"}});
+  auto element_metadata =
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kParquetFieldIdKey), "2"}});
+  auto element_field = ::arrow::field("element", ::arrow::null(), /*nullable=*/false,
+                                      std::move(element_metadata));
+  auto arrow_schema =
+      ::arrow::schema({::arrow::field("mysteries", ::arrow::list(element_field),
+                                      /*nullable=*/true, std::move(list_metadata))});
+
+  ArrowSchema exported_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+  auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
+  ArrowSchemaRelease(&exported_schema);
+
+  ASSERT_THAT(schema_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(schema_result,
+              HasErrorMessage("Arrow null field 'element' must be nullable"));
+}
 
 TEST(FromArrowSchemaTest, StructType) {
   constexpr int32_t kStructFieldId = 1;

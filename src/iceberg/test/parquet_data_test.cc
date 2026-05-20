@@ -316,6 +316,50 @@ TEST(ProjectRecordBatchTest, MapStringToInt) {
       VerifyProjectRecordBatch(iceberg_schema, iceberg_schema, input_json, input_json));
 }
 
+TEST(ProjectRecordBatchTest, NestedUnknownFields) {
+  Schema projected_schema({
+      SchemaField::MakeRequired(1, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeRequired(2, "name", string()),
+                                    SchemaField::MakeOptional(3, "mystery", unknown()),
+                                })),
+      SchemaField::MakeRequired(
+          4, "mysteries",
+          std::make_shared<ListType>(SchemaField::MakeOptional(5, "element", unknown()))),
+      SchemaField::MakeRequired(
+          6, "properties",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
+                                    SchemaField::MakeOptional(8, "value", unknown()))),
+  });
+
+  Schema source_schema({
+      SchemaField::MakeRequired(1, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeRequired(2, "name", string()),
+                                    SchemaField::MakeOptional(3, "mystery", int32()),
+                                })),
+      SchemaField::MakeRequired(
+          4, "mysteries",
+          std::make_shared<ListType>(SchemaField::MakeOptional(5, "element", int32()))),
+      SchemaField::MakeRequired(
+          6, "properties",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
+                                    SchemaField::MakeOptional(8, "value", int32()))),
+  });
+
+  const std::string input_json = R"([
+    {"profile": {"name": "Person0", "mystery": 10}, "mysteries": [1, 2], "properties": [["a", 100], ["b", 200]]},
+    {"profile": {"name": "Person1", "mystery": null}, "mysteries": [], "properties": []}
+  ])";
+  const std::string expected_json = R"([
+    {"profile": {"name": "Person0", "mystery": null}, "mysteries": [null, null], "properties": [["a", null], ["b", null]]},
+    {"profile": {"name": "Person1", "mystery": null}, "mysteries": [], "properties": []}
+  ])";
+
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(projected_schema, source_schema,
+                                                   input_json, expected_json));
+}
+
 TEST(ProjectRecordBatchTest, MapStringToStruct) {
   Schema iceberg_schema({
       SchemaField::MakeRequired(

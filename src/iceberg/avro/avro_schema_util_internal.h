@@ -58,6 +58,7 @@ class ToAvroNodeVisitor {
   Status Visit(const UuidType& type, ::avro::NodePtr* node);
   Status Visit(const FixedType& type, ::avro::NodePtr* node);
   Status Visit(const BinaryType& type, ::avro::NodePtr* node);
+  Status Visit(const UnknownType&, ::avro::NodePtr*);
   Status Visit(const StructType& type, ::avro::NodePtr* node);
   Status Visit(const ListType& type, ::avro::NodePtr* node);
   Status Visit(const MapType& type, ::avro::NodePtr* node);

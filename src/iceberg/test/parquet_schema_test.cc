@@ -17,7 +17,12 @@
  * under the License.
  */
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include <arrow/type.h>
+#include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/schema.h>
@@ -121,6 +126,30 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
     throw std::runtime_error("Failed to create SchemaManifest: " + status.ToString());
   }
   return manifest;
+}
+
+::parquet::arrow::SchemaField MakeNullSchemaField(const std::string& name, int field_id) {
+  ::parquet::arrow::SchemaField schema_field;
+  schema_field.field =
+      ::arrow::field(name, ::arrow::null())
+          ->WithMetadata(::arrow::key_value_metadata({std::string(kParquetFieldIdKey)},
+                                                     {std::to_string(field_id)}));
+  return schema_field;
+}
+
+::parquet::arrow::SchemaField MakeListSchemaFieldWithNullElement(const std::string& name,
+                                                                 int field_id,
+                                                                 int element_field_id) {
+  ::parquet::arrow::SchemaField element_field =
+      MakeNullSchemaField("element", element_field_id);
+
+  ::parquet::arrow::SchemaField schema_field;
+  schema_field.field =
+      ::arrow::field(name, ::arrow::list(element_field.field))
+          ->WithMetadata(::arrow::key_value_metadata({std::string(kParquetFieldIdKey)},
+                                                     {std::to_string(field_id)}));
+  schema_field.children = {std::move(element_field)};
+  return schema_field;
 }
 
 #define ASSERT_PROJECTED_FIELD(field_projection, index)                \
@@ -301,6 +330,213 @@ TEST(ParquetSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble) {
   const auto& projection = *projection_result;
   ASSERT_EQ(projection.fields.size(), 1);
   ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+}
+
+TEST(ParquetSchemaProjectionTest, ValidateSchemaEvolutionAllowsNullPhysicalType) {
+  ::parquet::arrow::SchemaField parquet_field;
+  parquet_field.field = ::arrow::field("value", ::arrow::null());
+
+  auto status = ValidateParquetSchemaEvolution(*iceberg::int32(), parquet_field);
+  ASSERT_THAT(status, IsOk());
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectNullPhysicalFieldsAsNull) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "age", iceberg::int32()),
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeRequired(/*field_id=*/201, "name", iceberg::string()),
+          })),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeRequired(
+              /*field_id=*/301, "element", iceberg::int32()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/4, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/401, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/402, "value", iceberg::int32()))),
+  });
+
+  ::parquet::arrow::SchemaManifest schema_manifest;
+  schema_manifest.schema_fields = {
+      MakeNullSchemaField("age", /*field_id=*/1),
+      MakeNullSchemaField("profile", /*field_id=*/2),
+      MakeNullSchemaField("numbers", /*field_id=*/3),
+      MakeNullSchemaField("counts", /*field_id=*/4),
+  };
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 4);
+  for (const auto& field_projection : projection.fields) {
+    ASSERT_PROJECTED_NULL_FIELD(field_projection);
+    ASSERT_TRUE(field_projection.children.empty());
+  }
+
+  ASSERT_TRUE(SelectedColumnIndices(projection).empty());
+}
+
+TEST(ParquetSchemaProjectionTest, RejectNullPhysicalFieldForRequiredField) {
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "age", iceberg::int32()),
+  });
+
+  ::parquet::arrow::SchemaManifest schema_manifest;
+  schema_manifest.schema_fields = {
+      MakeNullSchemaField("age", /*field_id=*/1),
+  };
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result,
+              HasErrorMessage("Cannot project required field with id 1 as null"));
+}
+
+TEST(ParquetSchemaProjectionTest, RejectNullPhysicalListElementForRequiredElement) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeRequired(
+              /*field_id=*/101, "element", iceberg::int32()))),
+  });
+
+  ::parquet::arrow::SchemaManifest schema_manifest;
+  schema_manifest.schema_fields = {
+      MakeListSchemaFieldWithNullElement("numbers", /*field_id=*/1,
+                                         /*element_field_id=*/101),
+  };
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result,
+              HasErrorMessage("Cannot project required field with id 101 as null"));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectUnknownExpectedFieldAsNull) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "mystery", iceberg::unknown()),
+  });
+
+  auto parquet_schema =
+      MakeGroupNode("iceberg_schema", {MakeInt32Node("mystery", /*field_id=*/1)});
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[0]);
+  ASSERT_TRUE(SelectedColumnIndices(projection).empty());
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectNullPhysicalFieldToNestedAsNull) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+          })),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "items",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/4, "element", iceberg::string()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/5, "properties",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/6, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/7, "value", iceberg::string()))),
+  });
+
+  ::parquet::arrow::SchemaManifest schema_manifest;
+  schema_manifest.schema_fields = {
+      MakeNullSchemaField("profile", /*field_id=*/1),
+      MakeNullSchemaField("items", /*field_id=*/3),
+      MakeNullSchemaField("properties", /*field_id=*/5),
+  };
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 3);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[0]);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[1]);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[2]);
+  ASSERT_TRUE(SelectedColumnIndices(projection).empty());
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectNestedUnknownExpectedFieldsAsNull) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/3, "mystery", iceberg::unknown()),
+          })),
+      SchemaField::MakeOptional(
+          /*field_id=*/4, "mysteries",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/5, "element", iceberg::unknown()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/6, "properties",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/7, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/8, "value", iceberg::unknown()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/9, "wrapper",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/10, "mystery", iceberg::unknown()),
+          })),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {
+          MakeGroupNode("profile",
+                        {MakeStringNode("name", /*field_id=*/2),
+                         MakeInt32Node("mystery", /*field_id=*/3)},
+                        /*field_id=*/1),
+          MakeListNode("mysteries", MakeInt32Node("element", /*field_id=*/5),
+                       /*field_id=*/4),
+          MakeMapNode("properties",
+                      MakeStringNode("key", /*field_id=*/7, /*optional=*/false),
+                      MakeInt32Node("value", /*field_id=*/8),
+                      /*field_id=*/6),
+          MakeGroupNode("wrapper", {MakeInt32Node("mystery", /*field_id=*/10)},
+                        /*field_id=*/9),
+      });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 4);
+
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  ASSERT_EQ(projection.fields[0].children.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[0].children[0], 0);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[0].children[1]);
+
+  ASSERT_PROJECTED_FIELD(projection.fields[1], 1);
+  ASSERT_EQ(projection.fields[1].children.size(), 1);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[1].children[0]);
+
+  ASSERT_PROJECTED_FIELD(projection.fields[2], 2);
+  ASSERT_EQ(projection.fields[2].children.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[2].children[0], 0);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[2].children[1]);
+
+  ASSERT_PROJECTED_FIELD(projection.fields[3], 3);
+  ASSERT_EQ(projection.fields[3].children.size(), 1);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[3].children[0]);
+
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 2, 3, 4, 5}));
 }
 
 TEST(ParquetSchemaProjectionTest, ProjectSchemaEvolutionIncompatibleTypes) {

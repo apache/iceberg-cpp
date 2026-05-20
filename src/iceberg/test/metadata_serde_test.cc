@@ -21,7 +21,9 @@
 #include <string>
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -402,6 +404,57 @@ TEST(MetadataSerdeTest, DeserializePartitionStatisticsFiles) {
 TEST(MetadataSerdeTest, DeserializeUnsupportedVersion) {
   ReadTableMetadataExpectError("TableMetadataUnsupportedVersion.json",
                                "Cannot read unsupported version");
+}
+
+TEST(MetadataSerdeTest, DeserializeRejectsUnknownSchemaBeforeFormatV3) {
+  auto v1_metadata_json = nlohmann::json::parse(R"({
+    "format-version": 1,
+    "location": "s3://bucket/test/location",
+    "last-column-id": 1,
+    "last-updated-ms": 1602638573874,
+    "schema": {
+      "type": "struct",
+      "schema-id": 0,
+      "fields": [
+        {"id": 1, "name": "mystery", "type": "unknown", "required": false}
+      ]
+    },
+    "partition-spec": []
+  })");
+
+  auto result = TableMetadataFromJson(v1_metadata_json);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage(
+                          "Invalid type for mystery: unknown is not supported until v3"));
+
+  auto v2_metadata_json = nlohmann::json::parse(R"({
+    "format-version": 2,
+    "table-uuid": "9c12d441-03fe-4693-9a96-a0705ddf69c1",
+    "location": "s3://bucket/test/location",
+    "last-sequence-number": 0,
+    "last-column-id": 1,
+    "last-updated-ms": 1602638573874,
+    "schemas": [
+      {
+        "type": "struct",
+        "schema-id": 0,
+        "fields": [
+          {"id": 1, "name": "mystery", "type": "unknown", "required": false}
+        ]
+      }
+    ],
+    "current-schema-id": 0,
+    "partition-specs": [{"spec-id": 0, "fields": []}],
+    "default-spec-id": 0,
+    "last-partition-id": 999,
+    "sort-orders": [{"order-id": 0, "fields": []}],
+    "default-sort-order-id": 0
+  })");
+
+  result = TableMetadataFromJson(v2_metadata_json);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage(
+                          "Invalid type for mystery: unknown is not supported until v3"));
 }
 
 TEST(MetadataSerdeTest, DeserializeV1MissingSchemaType) {

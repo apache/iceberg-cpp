@@ -1241,6 +1241,27 @@ TEST(ExtractDatumFromArrayTest, NullHandling) {
   EXPECT_EQ(record2.fieldAt(0).type(), ::avro::AVRO_NULL);
 }
 
+TEST(ExtractDatumFromArrayTest, UnknownType) {
+  Schema iceberg_schema({SchemaField::MakeOptional(1, "a", unknown())});
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(iceberg_schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportSchema(&arrow_c_schema).ValueOrDie();
+  auto arrow_struct_type = std::make_shared<::arrow::StructType>(arrow_schema->fields());
+
+  auto arrow_array =
+      ::arrow::json::ArrayFromJSONString(arrow_struct_type, R"([{"a": null}])")
+          .ValueOrDie();
+
+  ::avro::GenericDatum datum(avro_node);
+  ASSERT_THAT(ExtractDatumFromArray(*arrow_array, 0, &datum), IsOk());
+
+  const auto& record = datum.value<::avro::GenericRecord>();
+  EXPECT_EQ(record.fieldAt(0).type(), ::avro::AVRO_NULL);
+}
+
 struct RoundTripParam {
   std::string name;
   std::shared_ptr<Schema> iceberg_schema;

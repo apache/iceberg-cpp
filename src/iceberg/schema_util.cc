@@ -49,6 +49,9 @@ Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_typ
   if (expected_type == source_type) {
     return {};
   }
+  if (source_type.type_id() == TypeId::kUnknown && expected_type.is_primitive()) {
+    return {};
+  }
 
   switch (expected_type.type_id()) {
     case TypeId::kLong: {
@@ -77,6 +80,50 @@ Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_typ
       break;
   }
   return NotSupported("Cannot read {} from {}", expected_type, source_type);
+}
+
+Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& source_type,
+                                      bool prune_source);
+
+Result<FieldProjection> ProjectField(const SchemaField& expected_field,
+                                     const SchemaField& source_field, size_t source_index,
+                                     bool prune_source) {
+  FieldProjection projection;
+
+  if (expected_field.type()->type_id() == TypeId::kUnknown) {
+    if (!expected_field.optional()) {
+      return InvalidSchema("Cannot project required field with id {} as null",
+                           expected_field.field_id());
+    }
+    projection.kind = FieldProjection::Kind::kNull;
+    return projection;
+  }
+
+  if (source_field.type()->type_id() == TypeId::kUnknown && !expected_field.optional()) {
+    return InvalidSchema("Cannot project required field with id {} as null",
+                         expected_field.field_id());
+  }
+  if (source_field.type()->type_id() == TypeId::kUnknown &&
+      expected_field.type()->is_nested()) {
+    projection.kind = FieldProjection::Kind::kNull;
+    return projection;
+  }
+
+  if (expected_field.type()->is_nested()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        projection,
+        ProjectNested(*expected_field.type(), *source_field.type(), prune_source));
+  } else {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateSchemaEvolution(*expected_field.type(), *source_field.type()));
+  }
+
+  // If `prune_source` is false, all fields will be read so the local index is exactly
+  // the position to read data. Otherwise, the local index is computed by pruning all
+  // non-projected fields.
+  projection.from = source_index;
+  projection.kind = FieldProjection::Kind::kProjected;
+  return projection;
 }
 
 Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& source_type,
@@ -120,19 +167,9 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
     FieldProjection child_projection;
 
     if (auto iter = source_field_map.find(field_id); iter != source_field_map.cend()) {
-      if (expected_field.type()->is_nested()) {
-        ICEBERG_ASSIGN_OR_RAISE(child_projection,
-                                ProjectNested(*expected_field.type(),
-                                              *iter->second.field->type(), prune_source));
-      } else {
-        ICEBERG_RETURN_UNEXPECTED(
-            ValidateSchemaEvolution(*expected_field.type(), *iter->second.field->type()));
-      }
-      // If `prune_source` is false, all fields will be read so the local index
-      // is exactly the position to read data. Otherwise, the local index is computed
-      // by pruning all non-projected fields
-      child_projection.from = iter->second.local_index;
-      child_projection.kind = FieldProjection::Kind::kProjected;
+      ICEBERG_ASSIGN_OR_RAISE(child_projection,
+                              ProjectField(expected_field, *iter->second.field,
+                                           iter->second.local_index, prune_source));
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
     } else if (expected_field.optional()) {

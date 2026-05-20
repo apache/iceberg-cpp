@@ -377,6 +377,8 @@ nlohmann::json ToJson(const Type& type) {
     }
     case TypeId::kUuid:
       return "uuid";
+    case TypeId::kUnknown:
+      return "unknown";
   }
   std::unreachable();
 }
@@ -441,12 +443,22 @@ Result<std::unique_ptr<Type>> StructTypeFromJson(const nlohmann::json& json) {
   return std::make_unique<StructType>(std::move(fields));
 }
 
+Status ValidateUnknownFieldOptional(const Type& type, bool optional,
+                                    std::string_view field_name) {
+  if (type.type_id() == TypeId::kUnknown && !optional) {
+    return JsonParseError("Unknown type field '{}' must be optional", field_name);
+  }
+  return {};
+}
+
 Result<std::unique_ptr<Type>> ListTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto element_type, TypeFromJson(json[kElement]));
   ICEBERG_ASSIGN_OR_RAISE(auto element_id, GetJsonValue<int32_t>(json, kElementId));
   ICEBERG_ASSIGN_OR_RAISE(auto element_required,
                           GetJsonValue<bool>(json, kElementRequired));
 
+  ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldOptional(*element_type, !element_required,
+                                                         ListType::kElementName));
   return std::make_unique<ListType>(
       SchemaField(element_id, std::string(ListType::kElementName),
                   std::move(element_type), !element_required));
@@ -462,6 +474,11 @@ Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto value_id, GetJsonValue<int32_t>(json, kValueId));
   ICEBERG_ASSIGN_OR_RAISE(auto value_required, GetJsonValue<bool>(json, kValueRequired));
 
+  if (key_type->type_id() == TypeId::kUnknown) {
+    return JsonParseError("Map 'key' cannot be unknown type");
+  }
+  ICEBERG_RETURN_UNEXPECTED(
+      ValidateUnknownFieldOptional(*value_type, !value_required, MapType::kValueName));
   SchemaField key_field(key_id, std::string(MapType::kKeyName), std::move(key_type),
                         /*optional=*/false);
   SchemaField value_field(value_id, std::string(MapType::kValueName),
@@ -502,6 +519,8 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
       return std::make_unique<BinaryType>();
     } else if (type_str == "uuid") {
       return std::make_unique<UuidType>();
+    } else if (type_str == "unknown") {
+      return std::make_unique<UnknownType>();
     } else if (type_str.starts_with("fixed")) {
       std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
       std::smatch match;
@@ -548,6 +567,7 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto required, GetJsonValue<bool>(json, kRequired));
   ICEBERG_ASSIGN_OR_RAISE(auto doc, GetJsonValueOrDefault<std::string>(json, kDoc));
 
+  ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldOptional(*type, !required, name));
   return std::make_unique<SchemaField>(field_id, std::move(name), std::move(type),
                                        !required, doc);
 }
@@ -949,6 +969,7 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
     for (const auto& schema_json : schema_array) {
       ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<Schema> schema,
                               SchemaFromJson(schema_json));
+      ICEBERG_RETURN_UNEXPECTED(schema->Validate(format_version));
       if (schema->schema_id() == current_schema_id) {
         current_schema = schema;
       }
@@ -965,6 +986,7 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
     ICEBERG_ASSIGN_OR_RAISE(auto schema_json,
                             GetJsonValue<nlohmann::json>(json, kSchema));
     ICEBERG_ASSIGN_OR_RAISE(current_schema, SchemaFromJson(schema_json));
+    ICEBERG_RETURN_UNEXPECTED(current_schema->Validate(format_version));
     current_schema_id = current_schema->schema_id();
     schemas.push_back(current_schema);
   }

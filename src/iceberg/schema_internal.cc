@@ -150,6 +150,9 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
           ArrowMetadataBuilderAppend(&metadata_buffer, ArrowCharView(kArrowExtensionName),
                                      ArrowCharView(kArrowUuidExtensionName)));
     } break;
+    case TypeId::kUnknown:
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA));
+      break;
   }
 
   if (!name.empty()) {
@@ -217,6 +220,9 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
 
     auto field_id = GetFieldId(schema);
     bool is_optional = (schema.flags & ARROW_FLAG_NULLABLE) != 0;
+    if (field_type->type_id() == TypeId::kUnknown && !is_optional) {
+      return InvalidSchema("Arrow null field '{}' must be nullable", schema.name);
+    }
     return std::make_unique<SchemaField>(field_id, schema.name, std::move(field_type),
                                          is_optional);
   };
@@ -312,6 +318,8 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
       }
       return iceberg::fixed(schema_view.fixed_size);
     }
+    case NANOARROW_TYPE_NA:
+      return iceberg::unknown();
     default:
       return InvalidSchema("Unsupported Arrow type: {}",
                            ArrowTypeString(schema_view.type));

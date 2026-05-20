@@ -418,13 +418,17 @@ bool IsPromotionAllowed(const std::shared_ptr<Type>& from_type,
     return true;
   }
 
-  // Both must be primitive types for promotion
+  TypeId from_id = from_type->type_id();
+  TypeId to_id = to_type->type_id();
+
+  if (from_id == TypeId::kUnknown) {
+    return true;
+  }
+
+  // Other promotions must stay within primitive types.
   if (!from_type->is_primitive() || !to_type->is_primitive()) {
     return false;
   }
-
-  TypeId from_id = from_type->type_id();
-  TypeId to_id = to_type->type_id();
 
   // int -> long
   if (from_id == TypeId::kInt && to_id == TypeId::kLong) {
