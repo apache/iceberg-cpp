@@ -111,6 +111,8 @@ TEST(TransformUtilTest, HumanTimestamp) {
   // precision with 1 microsecond
   EXPECT_EQ("2026-01-01T00:00:01.000001",
             TransformUtil::HumanTimestamp(1767225601000001L));
+  // pre-epoch timestamp with fractional microseconds
+  EXPECT_EQ("1969-12-31T23:59:59.123456", TransformUtil::HumanTimestamp(-876544));
 }
 
 TEST(TransformUtilTest, HumanTimestampWithZone) {
@@ -132,12 +134,16 @@ TEST(TransformUtilTest, HumanTimestampWithZone) {
   // precision with 1 microsecond
   EXPECT_EQ("2026-01-01T00:00:01.000001+00:00",
             TransformUtil::HumanTimestampWithZone(1767225601000001L));
+  // pre-epoch timestamp with fractional microseconds
+  EXPECT_EQ("1969-12-31T23:59:59.123456+00:00",
+            TransformUtil::HumanTimestampWithZone(-876544));
 }
 
 TEST(TransformUtilTest, HumanTimestampNs) {
   EXPECT_EQ("1970-01-01T00:00:00.000000001", TransformUtil::HumanTimestampNs(1));
   EXPECT_EQ("2026-01-01T00:00:01.000001001",
             TransformUtil::HumanTimestampNs(1767225601000001001L));
+  EXPECT_EQ("1969-12-31T23:59:59.123456789", TransformUtil::HumanTimestampNs(-876543211));
 }
 
 TEST(TransformUtilTest, HumanTimestampNsWithZone) {
@@ -145,12 +151,19 @@ TEST(TransformUtilTest, HumanTimestampNsWithZone) {
             TransformUtil::HumanTimestampNsWithZone(1));
   EXPECT_EQ("2026-01-01T00:00:01.000001001+00:00",
             TransformUtil::HumanTimestampNsWithZone(1767225601000001001L));
+  EXPECT_EQ("1969-12-31T23:59:59.123456789+00:00",
+            TransformUtil::HumanTimestampNsWithZone(-876543211));
 }
 
 TEST(TransformUtilTest, ParseTimestampNs) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto nanos, TransformUtil::ParseTimestampNs("2026-01-01T00:00:01.000001001"));
   EXPECT_EQ(nanos, 1767225601000001001L);
+  ICEBERG_UNWRAP_OR_FAIL(auto pre_epoch_nanos, TransformUtil::ParseTimestampNs(
+                                                   "1969-12-31T23:59:59.123456789"));
+  EXPECT_EQ(pre_epoch_nanos, -876543211);
+  EXPECT_EQ(TransformUtil::HumanTimestampNs(pre_epoch_nanos),
+            "1969-12-31T23:59:59.123456789");
 }
 
 TEST(TransformUtilTest, ParseTimestampNsRejectsMoreThanNineFractionalDigits) {

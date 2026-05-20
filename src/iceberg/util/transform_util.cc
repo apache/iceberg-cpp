@@ -187,9 +187,14 @@ std::string TransformUtil::HumanTime(int64_t micros_from_midnight) {
 }
 
 std::string TransformUtil::HumanTimestamp(int64_t timestamp_micros) {
+  const auto micros_since_epoch = std::chrono::microseconds{timestamp_micros};
+  const auto seconds_since_epoch =
+      std::chrono::floor<std::chrono::seconds>(micros_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
-      std::chrono::seconds(timestamp_micros / kMicrosPerSecond)};
-  auto micros = timestamp_micros % kMicrosPerSecond;
+      seconds_since_epoch};
+  auto micros = std::chrono::duration_cast<std::chrono::microseconds>(micros_since_epoch -
+                                                                      seconds_since_epoch)
+                    .count();
   if (micros == 0) {
     return std::format("{:%FT%T}", tp);
   } else if (micros % kMicrosPerMillis == 0) {
@@ -200,9 +205,14 @@ std::string TransformUtil::HumanTimestamp(int64_t timestamp_micros) {
 }
 
 std::string TransformUtil::HumanTimestampNs(int64_t timestamp_nanos) {
+  const auto nanos_since_epoch = std::chrono::nanoseconds{timestamp_nanos};
+  const auto seconds_since_epoch =
+      std::chrono::floor<std::chrono::seconds>(nanos_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
-      std::chrono::seconds(timestamp_nanos / kNanosPerSecond)};
-  auto nanos = timestamp_nanos % kNanosPerSecond;
+      seconds_since_epoch};
+  auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(nanos_since_epoch -
+                                                                    seconds_since_epoch)
+                   .count();
   if (nanos == 0) {
     return std::format("{:%FT%T}", tp);
   } else if (nanos % kNanosPerMillis == 0) {
@@ -215,9 +225,14 @@ std::string TransformUtil::HumanTimestampNs(int64_t timestamp_nanos) {
 }
 
 std::string TransformUtil::HumanTimestampWithZone(int64_t timestamp_micros) {
+  const auto micros_since_epoch = std::chrono::microseconds{timestamp_micros};
+  const auto seconds_since_epoch =
+      std::chrono::floor<std::chrono::seconds>(micros_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
-      std::chrono::seconds(timestamp_micros / kMicrosPerSecond)};
-  auto micros = timestamp_micros % kMicrosPerSecond;
+      seconds_since_epoch};
+  auto micros = std::chrono::duration_cast<std::chrono::microseconds>(micros_since_epoch -
+                                                                      seconds_since_epoch)
+                    .count();
   if (micros == 0) {
     return std::format("{:%FT%T}+00:00", tp);
   } else if (micros % kMicrosPerMillis == 0) {
@@ -228,9 +243,14 @@ std::string TransformUtil::HumanTimestampWithZone(int64_t timestamp_micros) {
 }
 
 std::string TransformUtil::HumanTimestampNsWithZone(int64_t timestamp_nanos) {
+  const auto nanos_since_epoch = std::chrono::nanoseconds{timestamp_nanos};
+  const auto seconds_since_epoch =
+      std::chrono::floor<std::chrono::seconds>(nanos_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
-      std::chrono::seconds(timestamp_nanos / kNanosPerSecond)};
-  auto nanos = timestamp_nanos % kNanosPerSecond;
+      seconds_since_epoch};
+  auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(nanos_since_epoch -
+                                                                    seconds_since_epoch)
+                   .count();
   if (nanos == 0) {
     return std::format("{:%FT%T}+00:00", tp);
   } else if (nanos % kNanosPerMillis == 0) {

@@ -23,6 +23,7 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/util/decimal.h"
 #include "iceberg/util/uuid.h"
@@ -105,6 +106,61 @@ TEST(BucketUtilsTest, HashHelper) {
   // fixed & binary
   std::vector<uint8_t> fixed = {0, 1, 2, 3};
   EXPECT_EQ(BucketUtils::HashBytes(fixed), -188683207);
+}
+
+TEST(BucketUtilsTest, BucketTimestampNanosMatchesMicros) {
+  constexpr int32_t kNumBuckets = 1000;
+  const auto ts_micros = TemporalTestHelper::CreateTimestamp({.year = 2017,
+                                                              .month = 11,
+                                                              .day = 16,
+                                                              .hour = 22,
+                                                              .minute = 31,
+                                                              .second = 8,
+                                                              .microsecond = 1});
+  const auto ts_nanos = TemporalTestHelper::CreateTimestampNanos({.year = 2017,
+                                                                  .month = 11,
+                                                                  .day = 16,
+                                                                  .hour = 22,
+                                                                  .minute = 31,
+                                                                  .second = 8,
+                                                                  .nanosecond = 1000});
+
+  const auto micros_bucket =
+      BucketUtils::BucketIndex(Literal::Timestamp(ts_micros), kNumBuckets);
+  const auto nanos_bucket =
+      BucketUtils::BucketIndex(Literal::TimestampNs(ts_nanos), kNumBuckets);
+
+  ASSERT_TRUE(micros_bucket.has_value());
+  ASSERT_TRUE(nanos_bucket.has_value());
+  EXPECT_EQ(micros_bucket.value(), nanos_bucket.value());
+
+  const auto ts_tz_micros =
+      TemporalTestHelper::CreateTimestampTz({.year = 2017,
+                                             .month = 11,
+                                             .day = 16,
+                                             .hour = 14,
+                                             .minute = 31,
+                                             .second = 8,
+                                             .microsecond = 1,
+                                             .tz_offset_minutes = -480});
+  const auto ts_tz_nanos =
+      TemporalTestHelper::CreateTimestampTzNanos({.year = 2017,
+                                                  .month = 11,
+                                                  .day = 16,
+                                                  .hour = 14,
+                                                  .minute = 31,
+                                                  .second = 8,
+                                                  .nanosecond = 1000,
+                                                  .tz_offset_minutes = -480});
+
+  const auto tz_micros_bucket =
+      BucketUtils::BucketIndex(Literal::TimestampTz(ts_tz_micros), kNumBuckets);
+  const auto tz_nanos_bucket =
+      BucketUtils::BucketIndex(Literal::TimestampTzNs(ts_tz_nanos), kNumBuckets);
+
+  ASSERT_TRUE(tz_micros_bucket.has_value());
+  ASSERT_TRUE(tz_nanos_bucket.has_value());
+  EXPECT_EQ(tz_micros_bucket.value(), tz_nanos_bucket.value());
 }
 
 }  // namespace iceberg

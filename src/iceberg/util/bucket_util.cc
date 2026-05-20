@@ -65,12 +65,12 @@ int32_t HashLiteral<TypeId::kTimestampTz>(const Literal& literal) {
 
 template <>
 int32_t HashLiteral<TypeId::kTimestampNs>(const Literal& literal) {
-  return BucketUtils::HashLong(std::get<int64_t>(literal.value()));
+  return BucketUtils::HashLong(std::get<int64_t>(literal.value()) / 1000);
 }
 
 template <>
 int32_t HashLiteral<TypeId::kTimestampTzNs>(const Literal& literal) {
-  return BucketUtils::HashLong(std::get<int64_t>(literal.value()));
+  return BucketUtils::HashLong(std::get<int64_t>(literal.value()) / 1000);
 }
 
 template <>
