@@ -220,6 +220,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    data_writer_test.cc
+                   delete_filter_test.cc
                    delete_loader_test.cc)
 
 endif()

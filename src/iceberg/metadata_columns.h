@@ -50,7 +50,7 @@ struct ICEBERG_EXPORT MetadataColumns {
 
   constexpr static int32_t kIsDeletedColumnId = kInt32Max - 3;
   inline static const SchemaField kIsDeleted = SchemaField::MakeRequired(
-      kIsDeletedColumnId, "_deleted", binary(), "Whether the row has been deleted");
+      kIsDeletedColumnId, "_deleted", boolean(), "Whether the row has been deleted");
 
   constexpr static int32_t kSpecIdColumnId = kInt32Max - 4;
   inline static const SchemaField kSpecId =

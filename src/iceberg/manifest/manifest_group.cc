@@ -262,14 +262,8 @@ Result<std::vector<ManifestEntry>> ManifestGroup::Entries() {
 
 Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
     const ManifestFile& manifest) {
-  auto spec_it = specs_by_id_.find(manifest.partition_spec_id);
-  if (spec_it == specs_by_id_.end()) {
-    return InvalidArgument("Partition spec {} not found for manifest {}",
-                           manifest.partition_spec_id, manifest.manifest_path);
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                          ManifestReader::Make(manifest, io_, schema_, spec_it->second));
+                          ManifestReader::Make(manifest, io_, schema_, specs_by_id_));
 
   reader->FilterRows(data_filter_)
       .FilterPartitions(partition_filter_)

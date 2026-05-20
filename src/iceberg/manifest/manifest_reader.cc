@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <type_traits>
 #include <unordered_set>
@@ -996,6 +997,19 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
       manifest.manifest_path, manifest.manifest_length, std::move(file_io),
       std::move(schema), std::move(spec), std::move(inheritable_metadata),
       manifest.first_row_id);
+}
+
+Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
+    const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
+    std::shared_ptr<Schema> schema,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id) {
+  auto spec_it = specs_by_id.find(manifest.partition_spec_id);
+  if (spec_it == specs_by_id.end() || spec_it->second == nullptr) {
+    return InvalidArgument("Partition spec {} not found for manifest {}",
+                           manifest.partition_spec_id, manifest.manifest_path);
+  }
+  auto spec = spec_it->second;
+  return Make(manifest, std::move(file_io), std::move(schema), std::move(spec));
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(

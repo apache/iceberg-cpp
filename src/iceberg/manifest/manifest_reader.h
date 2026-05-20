@@ -92,6 +92,17 @@ class ICEBERG_EXPORT ManifestReader {
       const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec);
 
+  /// \brief Creates a reader for a manifest file using specs keyed by ID.
+  /// \param manifest A ManifestFile object containing metadata about the manifest.
+  /// \param file_io File IO implementation to use.
+  /// \param schema Schema used to bind the partition type.
+  /// \param specs_by_id Mapping of partition spec ID to PartitionSpec.
+  /// \return A Result containing the reader or an error.
+  static Result<std::unique_ptr<ManifestReader>> Make(
+      const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<Schema> schema,
+      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id);
+
   /// \brief Creates a reader for a manifest file.
   /// \param manifest_location Path to the manifest file.
   /// \param manifest_length Length of the manifest file.

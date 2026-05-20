@@ -23,8 +23,8 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
-#include <optional>
 #include <string>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -32,7 +32,6 @@
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -49,51 +48,17 @@ namespace iceberg {
 
 namespace {
 
-Result<std::shared_ptr<Schema>> SchemaForSpec(const TableMetadata& metadata,
-                                              const ManifestFile& manifest,
-                                              const PartitionSpec& spec) {
-  std::optional<Error> last_error;
-
-  auto snapshot = metadata.SnapshotById(manifest.added_snapshot_id);
-  if (snapshot.has_value() && snapshot.value() != nullptr &&
-      snapshot.value()->schema_id.has_value()) {
-    auto schema = metadata.SchemaById(snapshot.value()->schema_id.value());
-    if (schema.has_value()) {
-      auto partition_type = spec.PartitionType(*schema.value());
-      if (partition_type.has_value()) {
-        return schema.value();
-      }
-      last_error = partition_type.error();
-    } else {
-      last_error = schema.error();
-    }
-  }
-
-  for (const auto& schema : metadata.schemas) {
-    if (schema == nullptr) {
-      continue;
-    }
-
-    auto partition_type = spec.PartitionType(*schema);
-    if (partition_type.has_value()) {
-      return schema;
-    }
-    last_error = partition_type.error();
-  }
-
-  if (last_error.has_value()) {
-    return std::unexpected(last_error.value());
-  }
-  return InvalidSchema("Cannot find a schema for partition spec {}", spec.spec_id());
-}
-
-Result<std::shared_ptr<ManifestReader>> MakeManifestReader(
+Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
     const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
     const TableMetadata& metadata) {
-  ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                          metadata.PartitionSpecById(manifest.partition_spec_id));
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, SchemaForSpec(metadata, manifest, *spec));
-  return ManifestReader::Make(manifest, file_io, std::move(schema), std::move(spec));
+  // TODO(gangwu): Build manifest file schemas from PartitionSpec::RawPartitionType
+  // with UnknownType for dropped source fields instead of requiring the table schema
+  // to bind every partition source field. Until then, cleanup fails closed when
+  // historical specs cannot bind to the metadata schema.
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  TableMetadataCache metadata_cache(&metadata);
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
+  return ManifestReader::Make(manifest, file_io, std::move(schema), specs_by_id.get());
 }
 
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
@@ -464,7 +429,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
     // expired snapshot. Their deleted entries point at data files now safe to
     // remove and become candidates for manifests_to_scan below.
     std::unordered_set<std::string> valid_manifests;
-    std::vector<ManifestFile> manifests_to_scan;
+    std::unordered_set<ManifestFile> manifests_to_scan;
     manifests_to_scan.reserve(expired_snapshot_ids.size());
     for (const auto& snapshot : metadata_after_expiration.snapshots) {
       if (!snapshot) continue;
@@ -481,7 +446,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
         bool is_picked = picked_ancestor_snapshot_ids.contains(writer_id);
         if (!from_valid_snapshots && (is_from_ancestor || is_picked) &&
             manifest.has_deleted_files()) {
-          manifests_to_scan.push_back(std::move(manifest));
+          manifests_to_scan.insert(std::move(manifest));
         }
       }
     }
@@ -497,7 +462,7 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
     manifest_lists_to_delete.reserve(expired_snapshot_ids.size());
     std::unordered_set<std::string> manifests_to_delete;
     manifests_to_delete.reserve(expired_snapshot_ids.size());
-    std::vector<ManifestFile> manifests_to_revert;
+    std::unordered_set<ManifestFile> manifests_to_revert;
     manifests_to_revert.reserve(expired_snapshot_ids.size());
     for (const auto& snapshot : metadata_before_expiration.snapshots) {
       if (!snapshot) continue;
@@ -541,12 +506,12 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
         bool is_from_expiring_snapshot = expired_snapshot_ids.contains(writer_id);
 
         if (is_from_ancestor && manifest.has_deleted_files()) {
-          manifests_to_scan.push_back(std::move(manifest));
+          manifests_to_scan.insert(std::move(manifest));
         } else if (!is_from_ancestor && is_from_expiring_snapshot &&
                    manifest.has_added_files()) {
           // The writer must be known-expired so missing history cannot make
           // an ancestor look like a reverted snapshot.
-          manifests_to_revert.push_back(std::move(manifest));
+          manifests_to_revert.insert(std::move(manifest));
         }
       }
       if (!snapshot->manifest_list.empty()) {
@@ -585,8 +550,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
   /// For manifests_to_scan, read DELETED entries whose snapshot id is no longer valid.
   /// For manifests_to_revert, read every ADDED entry.
   std::unordered_set<std::string> FindFilesToDelete(
-      const TableMetadata& metadata, const std::vector<ManifestFile>& manifests_to_scan,
-      const std::vector<ManifestFile>& manifests_to_revert,
+      const TableMetadata& metadata,
+      const std::unordered_set<ManifestFile>& manifests_to_scan,
+      const std::unordered_set<ManifestFile>& manifests_to_revert,
       const std::unordered_set<int64_t>& valid_ids) {
     std::unordered_set<std::string> files_to_delete;
 
