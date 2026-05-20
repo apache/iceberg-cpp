@@ -31,7 +31,6 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_filter_manager.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
@@ -284,9 +283,8 @@ TEST_F(ManifestMergeManagerTest, MixedContentUsesFirstManifestPerContent) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto del1, WriteManifest(kSpecId0, 1, /*size=*/100, ManifestContent::kDeletes));
 
-  // Java applies minCountToMerge independently in DataFileMergeManager and
-  // DeleteFileMergeManager. With mixed input, each content type's newest manifest must
-  // be protected by the threshold independently.
+  // Each content type's newest manifest must be protected by the threshold
+  // independently.
   ManifestMergeManager mgr(/*target=*/1024, /*min_count=*/3, /*enabled=*/true);
   ICEBERG_UNWRAP_OR_FAIL(
       auto result, mgr.MergeManifests({d0, del0}, {d1, del1}, kSnapshotId, *metadata_,
@@ -329,8 +327,8 @@ TEST_F(ManifestMergeManagerTest, DeleteManifestsMerged) {
 
 TEST_F(ManifestMergeManagerTest, PackEndOlderManifestsMergedNotNewest) {
   // packEnd semantics: for [m0_new, m1_old, m2_old] with target=250 (pairs fit but
-  // triples don't), Java packs from the end so m1+m2 (the older pair) get merged and
-  // m0 (the newest) is left in its own under-filled bin at the front of the output.
+  // triples don't), packing from the end merges m1+m2 (the older pair) and leaves
+  // m0 (the newest) in its own under-filled bin at the front of the output.
   // This is the opposite of naive forward packing, which would merge m0+m1.
   ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId0, 1, /*size=*/100));
   ICEBERG_UNWRAP_OR_FAIL(auto m2, WriteManifest(kSpecId0, 1, /*size=*/100));

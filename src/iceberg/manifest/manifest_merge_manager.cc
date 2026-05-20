@@ -20,6 +20,8 @@
 #include "iceberg/manifest/manifest_merge_manager.h"
 
 #include <algorithm>
+#include <array>
+#include <iterator>
 #include <map>
 #include <ranges>
 #include <utility>
@@ -43,70 +45,76 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeManifests(
     const std::vector<ManifestFile>& new_manifests, int64_t snapshot_id,
     const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
     const ManifestWriterFactory& writer_factory) {
-  // Combine new then existing (new-first ordering is preserved in output)
-  std::vector<ManifestFile> all;
+  // Combine new then existing (new-first ordering is preserved in output).
+  auto to_manifest_ptr = [](const ManifestFile& manifest) { return &manifest; };
+  auto manifest_ranges = std::array{
+      new_manifests | std::views::transform(to_manifest_ptr),
+      existing_manifests | std::views::transform(to_manifest_ptr),
+  };
+
+  std::vector<const ManifestFile*> all;
   all.reserve(new_manifests.size() + existing_manifests.size());
-  all.insert(all.end(), new_manifests.begin(), new_manifests.end());
-  all.insert(all.end(), existing_manifests.begin(), existing_manifests.end());
+  std::ranges::copy(manifest_ranges | std::views::join, std::back_inserter(all));
 
   if (all.empty() || !merge_enabled_) {
-    return all;
+    return all |
+           std::views::transform([](const ManifestFile* manifest) { return *manifest; }) |
+           std::ranges::to<std::vector<ManifestFile>>();
   }
 
-  // Match Java's separate DataFileMergeManager/DeleteFileMergeManager behavior by
-  // tracking the first (newest) manifest independently per content type.
+  // Track the first (newest) manifest independently per content type.
   std::map<ManifestContent, const ManifestFile*> first_by_content;
-  for (const auto& manifest : all) {
-    first_by_content.try_emplace(manifest.content, &manifest);
-  }
+  std::ranges::for_each(all, [&first_by_content](const ManifestFile* manifest) {
+    first_by_content.try_emplace(manifest->content, manifest);
+  });
 
-  // Group manifests by (partition_spec_id, content) — never merge across specs or
-  // content types.  Use reverse spec ordering to match Java's reverse-TreeMap behaviour,
-  // which is observable in v3 tables where first-row IDs are assigned in output order.
+  // Group manifests by (partition_spec_id, content), never merging across specs or
+  // content types. Reverse spec ordering preserves v3 first-row-id assignment order.
   using GroupKey = std::pair<int32_t, ManifestContent>;
-  std::map<GroupKey, std::vector<ManifestFile>, std::greater<>> by_spec;
-  for (const auto& m : all) {
-    by_spec[{m.partition_spec_id, m.content}].push_back(m);
-  }
+  auto group_key = [](const ManifestFile* manifest) {
+    return GroupKey{manifest->partition_spec_id, manifest->content};
+  };
+
+  std::map<GroupKey, std::vector<const ManifestFile*>, std::greater<>> by_spec;
+  std::ranges::for_each(all, [&by_spec, &group_key](const ManifestFile* manifest) {
+    by_spec[group_key(manifest)].push_back(manifest);
+  });
 
   std::vector<ManifestFile> result;
   result.reserve(all.size());
   for (auto& [key, group] : by_spec) {
     const auto* first = first_by_content.at(key.second);
-    ICEBERG_ASSIGN_OR_RAISE(auto merged, MergeGroup(group, *first, snapshot_id, metadata,
+    ICEBERG_ASSIGN_OR_RAISE(auto merged, MergeGroup(group, first, snapshot_id, metadata,
                                                     file_io, writer_factory));
-    result.insert(result.end(), std::make_move_iterator(merged.begin()),
-                  std::make_move_iterator(merged.end()));
+    std::ranges::move(merged, std::back_inserter(result));
   }
   return result;
 }
 
 Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
-    const std::vector<ManifestFile>& group, const ManifestFile& first,
+    const std::vector<const ManifestFile*>& group, const ManifestFile* first,
     int64_t snapshot_id, const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
     const ManifestWriterFactory& writer_factory) {
-  // Mirror Java's ListPacker.packEnd(group, ManifestFile::length) with lookback 1:
+  // Match packEnd(group, ManifestFile::length) with lookback 1:
   //   1. Process manifests in reverse order (oldest-first).
   //   2. Greedy forward-pack with lookback=1: emit the current bin when the next item
   //      doesn't fit, then start a new bin.
   //   3. Reverse each bin (restoring original item order within a bin).
   //   4. Reverse the bin list (newest manifest's bin ends up first).
-  // Effect: the newest manifest is in the first, possibly under-filled, bin — exactly
-  // what Java's comment describes ("the manifest that gets under-filled is the first one,
-  // which will be merged the next time").
-  std::vector<std::vector<ManifestFile>> bins;
-  std::vector<ManifestFile> current_bin;
+  // Effect: the newest manifest is in the first, possibly under-filled, bin.
+  std::vector<std::vector<const ManifestFile*>> bins;
+  std::vector<const ManifestFile*> current_bin;
   int64_t bin_size = 0;
 
-  for (const auto& manifest : std::views::reverse(group)) {
+  for (const auto* manifest : std::views::reverse(group)) {
     if (!current_bin.empty() &&
-        bin_size + manifest.manifest_length > target_size_bytes_) {
+        bin_size + manifest->manifest_length > target_size_bytes_) {
       bins.push_back(std::move(current_bin));
       current_bin.clear();
       bin_size = 0;
     }
     current_bin.push_back(manifest);
-    bin_size += manifest.manifest_length;
+    bin_size += manifest->manifest_length;
   }
   if (!current_bin.empty()) {
     bins.push_back(std::move(current_bin));
@@ -118,13 +126,17 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
   std::ranges::reverse(bins);
 
   // Process each bin: if the bin contains the newest manifest and is too small,
-  // pass its contents through unchanged (mirrors Java's minCountToMerge logic).
+  // pass its contents through unchanged.
   std::vector<ManifestFile> result;
   result.reserve(group.size());
+  // TODO(Guotao): Flush independent bins in parallel and cache successful merged bins
+  // for commit retries.
   for (auto& bin : bins) {
     bool contains_first = std::ranges::find(bin, first) != bin.end();
     if (contains_first && std::cmp_less(bin.size(), min_count_to_merge_)) {
-      result.insert(result.end(), bin.begin(), bin.end());
+      for (const auto* manifest : bin) {
+        result.push_back(*manifest);
+      }
     } else {
       ICEBERG_ASSIGN_OR_RAISE(
           auto merged, FlushBin(bin, snapshot_id, metadata, file_io, writer_factory));
@@ -136,13 +148,13 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
 }
 
 Result<ManifestFile> ManifestMergeManager::FlushBin(
-    const std::vector<ManifestFile>& bin, int64_t snapshot_id,
+    const std::vector<const ManifestFile*>& bin, int64_t snapshot_id,
     const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
     const ManifestWriterFactory& writer_factory) {
   // A single-manifest bin requires no merging.
-  if (bin.size() == 1) return bin[0];
+  if (bin.size() == 1) return *bin[0];
 
-  const ManifestFile& first = bin[0];
+  const ManifestFile& first = *bin[0];
   int32_t spec_id = first.partition_spec_id;
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
@@ -150,9 +162,9 @@ Result<ManifestFile> ManifestMergeManager::FlushBin(
 
   ICEBERG_ASSIGN_OR_RAISE(auto writer, writer_factory(spec_id, first.content));
 
-  for (const auto& manifest : bin) {
+  for (const auto* manifest : bin) {
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                            ManifestReader::Make(manifest, file_io, schema, spec));
+                            ManifestReader::Make(*manifest, file_io, schema, spec));
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
     for (const auto& entry : entries) {
       bool is_current =
@@ -175,4 +187,5 @@ Result<ManifestFile> ManifestMergeManager::FlushBin(
   ICEBERG_RETURN_UNEXPECTED(writer->Close());
   return writer->ToManifestFile();
 }
+
 }  // namespace iceberg

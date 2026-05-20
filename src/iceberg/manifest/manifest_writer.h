@@ -22,6 +22,7 @@
 /// \file iceberg/manifest/manifest_writer.h
 /// Data writer interface for manifest files and manifest list files.
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -162,6 +163,10 @@ class ICEBERG_EXPORT ManifestWriter {
   std::optional<int64_t> min_sequence_number_{std::nullopt};
   std::unique_ptr<PartitionSummary> partition_summary_;
 };
+
+/// \brief Factory type for creating ManifestWriter instances.
+using ManifestWriterFactory = std::function<Result<std::unique_ptr<ManifestWriter>>(
+    int32_t spec_id, ManifestContent content)>;
 
 /// \brief Write manifest files to a manifest list file.
 class ICEBERG_EXPORT ManifestListWriter {

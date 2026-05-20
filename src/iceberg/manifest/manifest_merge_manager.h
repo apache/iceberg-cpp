@@ -27,8 +27,8 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest/manifest_filter_manager.h"
 #include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -64,10 +64,10 @@ class ICEBERG_EXPORT ManifestMergeManager {
   /// manifest for that content type is protected by min_count_to_merge: if it has fewer
   /// than that many items it is passed through unchanged.
   ///
-  /// \note Java's ManifestMergeManager additionally exposes replacedManifestsCount()
-  /// and cleanUncommitted(committed) for retry / rollback support.  In this C++
-  /// implementation those responsibilities are handled by the caller
-  /// (MergingSnapshotUpdate in PR2) via a tracked ManifestWriterFactory wrapper.
+  /// \note Retry and rollback cleanup are handled by the caller that owns created
+  /// manifest paths.
+  /// TODO(Guotao): Add explicit replaced-manifest tracking here if callers need direct
+  /// access.
   ///
   /// \param existing_manifests Manifests already in the base snapshot
   /// \param new_manifests Newly written manifests to incorporate
@@ -90,7 +90,7 @@ class ICEBERG_EXPORT ManifestMergeManager {
   /// \param first The overall first (newest) manifest across all groups, used to
   ///   apply the min_count_to_merge threshold on the bin that contains it.
   Result<std::vector<ManifestFile>> MergeGroup(
-      const std::vector<ManifestFile>& group, const ManifestFile& first,
+      const std::vector<const ManifestFile*>& group, const ManifestFile* first,
       int64_t snapshot_id, const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
       const ManifestWriterFactory& writer_factory);
 
@@ -101,8 +101,8 @@ class ICEBERG_EXPORT ManifestMergeManager {
   /// - DELETED from snapshot_id → WriteDeletedEntry (preserve tombstone)
   /// - DELETED from older snapshots → dropped (stale tombstones are not carried forward)
   /// - All other entries          → WriteExistingEntry
-  Result<ManifestFile> FlushBin(const std::vector<ManifestFile>& bin, int64_t snapshot_id,
-                                const TableMetadata& metadata,
+  Result<ManifestFile> FlushBin(const std::vector<const ManifestFile*>& bin,
+                                int64_t snapshot_id, const TableMetadata& metadata,
                                 std::shared_ptr<FileIO> file_io,
                                 const ManifestWriterFactory& writer_factory);
 

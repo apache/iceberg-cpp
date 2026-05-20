@@ -23,17 +23,13 @@
 /// Filters an existing snapshot's manifest list, marking data files as DELETED
 /// or EXISTING based on row-filter expressions, exact path deletes, and partition drops.
 
-#include <functional>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "iceberg/expression/inclusive_metrics_evaluator.h"
-#include "iceberg/expression/manifest_evaluator.h"
-#include "iceberg/expression/residual_evaluator.h"
-#include "iceberg/expression/strict_metrics_evaluator.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_writer.h"
@@ -43,15 +39,6 @@
 #include "iceberg/util/partition_value_util.h"
 
 namespace iceberg {
-
-/// \brief Factory type for creating ManifestWriter instances during filtering/merging.
-///
-/// The factory receives the partition spec ID (to look up the spec) and the manifest
-/// content type, and returns a new ManifestWriter ready for writing.  The caller
-/// (i.e. MergingSnapshotUpdate in PR2) captures metadata, FileIO, and snapshot ID
-/// inside the lambda.
-using ManifestWriterFactory = std::function<Result<std::unique_ptr<ManifestWriter>>(
-    int32_t spec_id, ManifestContent content)>;
 
 /// \brief Filters an existing snapshot's manifest list.
 ///
@@ -63,15 +50,16 @@ using ManifestWriterFactory = std::function<Result<std::unique_ptr<ManifestWrite
 /// The manager is content-agnostic: pass ManifestContent::kData to process data
 /// manifests, or ManifestContent::kDeletes to process delete manifests.
 ///
-/// \note For ManifestContent::kDeletes, this implementation applies
-/// path/partition/row-filter/object-level deletes.  Java's additional cleanup
-/// semantics (dropDeleteFilesOlderThan, removeDanglingDeletesFor / DV cleanup)
-/// are not yet implemented and are planned for a later layer.
+/// TODO(Guotao): For ManifestContent::kDeletes, implement cleanup for orphan delete files
+/// and dangling deletion vectors.
 ///
 /// \note This class is non-copyable and non-movable.
 class ICEBERG_EXPORT ManifestFilterManager {
  public:
+  using PartitionSpecsById = std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>;
+
   ManifestFilterManager(ManifestContent content, std::shared_ptr<FileIO> file_io);
+  ~ManifestFilterManager();
 
   ManifestFilterManager(const ManifestFilterManager&) = delete;
   ManifestFilterManager& operator=(const ManifestFilterManager&) = delete;
@@ -82,7 +70,7 @@ class ICEBERG_EXPORT ManifestFilterManager {
   /// expression will be marked DELETED.
   ///
   /// \param expr The expression to match files against
-  void DeleteByRowFilter(std::shared_ptr<Expression> expr);
+  Status DeleteByRowFilter(std::shared_ptr<Expression> expr);
 
   /// \brief Set whether row-filter field binding is case-sensitive.
   void CaseSensitive(bool case_sensitive);
@@ -98,11 +86,11 @@ class ICEBERG_EXPORT ManifestFilterManager {
   ///
   /// Any manifest entry whose file_path matches file->file_path will be marked
   /// DELETED.  The file object is retained in FilesToBeDeleted(), allowing callers
-  /// (e.g. RowDelta in PR5) to enumerate deleted file objects for DV cleanup.
+  /// to enumerate deleted file objects for follow-up delete-file cleanup.
   /// Duplicate registrations (same path) are silently ignored.
   ///
   /// \param file The data/delete file to delete (must not be null)
-  void DeleteFile(std::shared_ptr<DataFile> file);
+  Status DeleteFile(std::shared_ptr<DataFile> file);
 
   /// \brief Returns the set of file objects marked for deletion by this manager.
   ///
@@ -126,9 +114,6 @@ class ICEBERG_EXPORT ManifestFilterManager {
 
   /// \brief Set a flag that makes FilterManifests() return an error if any
   /// manifest entry matches a delete condition.
-  ///
-  /// Used by conflict-detection logic (e.g. OverwriteFiles in PR4) to detect
-  /// whether a concurrent delete would invalidate a set of newly written files.
   void FailAnyDelete();
 
   /// \brief Returns true if any delete condition has been registered.
@@ -147,47 +132,87 @@ class ICEBERG_EXPORT ManifestFilterManager {
       const TableMetadata& metadata, const std::shared_ptr<Snapshot>& base_snapshot,
       const ManifestWriterFactory& writer_factory);
 
- private:
-  struct DeleteExpr {
-    std::shared_ptr<Expression> expr;
-  };
+  /// \brief Apply all accumulated delete conditions to the provided manifests.
+  ///
+  /// This overload accepts only the context needed for filtering.  It is intended for
+  /// callers that already have the active schema, partition specs, and manifest list.
+  ///
+  /// \param schema Active schema to bind row-filter expressions and metrics evaluators
+  /// \param specs_by_id All partition specs keyed by spec ID
+  /// \param manifests Manifest descriptors to filter
+  /// \param writer_factory Factory to create new ManifestWriter instances
+  /// \return The filtered manifest list, or an error
+  Result<std::vector<ManifestFile>> FilterManifests(
+      const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
+      const std::vector<const ManifestFile*>& manifests,
+      const ManifestWriterFactory& writer_factory);
 
+ private:
   /// \brief Returns true if the manifest might contain files matching any expression.
-  bool CanContainExpressionDeletes(const ManifestFile& manifest,
-                                   const TableMetadata& metadata);
+  Result<bool> CanContainExpressionDeletes(const ManifestFile& manifest,
+                                           const std::shared_ptr<Schema>& schema,
+                                           const PartitionSpecsById& specs_by_id);
 
   /// \brief Returns true if the manifest might contain files in a dropped partition.
   ///
   /// Checks whether the manifest's partition_spec_id matches any spec_id registered
   /// via DropPartition().  Manifests from a different spec cannot contain the dropped
-  /// partition values.  A more precise implementation could also compare
-  /// partition_summaries bounds, but that requires decoding binary bounds against the
-  /// PartitionSpec, which is not yet available at this call site.
-  bool CanContainDroppedPartitions(const ManifestFile& manifest);
+  /// partition values.
+  Result<bool> CanContainDroppedPartitions(const ManifestFile& manifest) const;
 
   /// \brief Returns true if the manifest might contain path-deleted files.
-  bool CanContainDroppedFiles() const;
+  Result<bool> CanContainDroppedFiles(const ManifestFile& manifest) const;
 
   /// \brief Returns true if the manifest possibly contains any deleted file.
-  bool CanContainDeletedFiles(const ManifestFile& manifest,
-                              const TableMetadata& metadata);
+  Result<bool> CanContainDeletedFiles(const ManifestFile& manifest,
+                                      const std::shared_ptr<Schema>& schema,
+                                      const PartitionSpecsById& specs_by_id,
+                                      bool trust_manifest_references);
 
-  /// \brief Get or create a ManifestEvaluator for the given spec and expression.
-  Result<ManifestEvaluator*> GetManifestEvaluator(const TableMetadata& metadata,
-                                                  int32_t spec_id, const DeleteExpr& de);
+  bool CanTrustManifestReferences(
+      const std::vector<const ManifestFile*>& manifests) const;
 
-  /// \brief Get or create a ResidualEvaluator for the given spec and expression.
-  Result<ResidualEvaluator*> GetResidualEvaluator(const TableMetadata& metadata,
-                                                  int32_t spec_id, const DeleteExpr& de);
+  Result<ManifestFile> FilterManifest(const std::shared_ptr<Schema>& schema,
+                                      const PartitionSpecsById& specs_by_id,
+                                      const ManifestFile& manifest,
+                                      bool trust_manifest_references,
+                                      const ManifestWriterFactory& writer_factory,
+                                      std::unordered_set<std::string>& found_paths);
+
+  Result<bool> ManifestHasDeletedFiles(const std::vector<ManifestEntry>& entries,
+                                       const std::shared_ptr<Schema>& schema,
+                                       const PartitionSpecsById& specs_by_id,
+                                       int32_t manifest_spec_id);
+
+  Result<ManifestFile> FilterManifestWithDeletedFiles(
+      const std::vector<ManifestEntry>& entries, int32_t manifest_spec_id,
+      const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
+      const ManifestWriterFactory& writer_factory,
+      std::unordered_set<std::string>& found_paths);
+
+  Status ValidateRequiredDeletes(
+      const std::unordered_set<std::string>& found_paths) const;
+
+  /// \brief Get or create a ManifestEvaluator for the given spec.
+  Result<ManifestEvaluator*> GetManifestEvaluator(const std::shared_ptr<Schema>& schema,
+                                                  const PartitionSpecsById& specs_by_id,
+                                                  int32_t spec_id);
+
+  /// \brief Get or create a ResidualEvaluator for the given spec.
+  Result<ResidualEvaluator*> GetResidualEvaluator(const std::shared_ptr<Schema>& schema,
+                                                  const PartitionSpecsById& specs_by_id,
+                                                  int32_t spec_id);
 
   /// \brief Check whether a single entry should be deleted.
-  Result<bool> ShouldDelete(const ManifestEntry& entry, const TableMetadata& metadata,
+  Result<bool> ShouldDelete(const ManifestEntry& entry,
+                            const std::shared_ptr<Schema>& schema,
+                            const PartitionSpecsById& specs_by_id,
                             int32_t manifest_spec_id);
 
   const ManifestContent manifest_content_;
   std::shared_ptr<FileIO> file_io_;
 
-  std::vector<DeleteExpr> delete_exprs_;
+  std::shared_ptr<Expression> delete_expr_;
   std::unordered_set<std::string> delete_paths_;
   DataFileSet delete_files_;
   PartitionSet drop_partitions_;
@@ -195,11 +220,9 @@ class ICEBERG_EXPORT ManifestFilterManager {
   bool fail_any_delete_{false};
   bool case_sensitive_{true};
 
-  // Cache: (spec_id, expr_index) → ManifestEvaluator
-  std::unordered_map<int32_t, std::vector<std::unique_ptr<ManifestEvaluator>>>
+  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>>
       manifest_evaluator_cache_;
-  // Cache: (spec_id, expr_index) → ResidualEvaluator
-  std::unordered_map<int32_t, std::vector<std::unique_ptr<ResidualEvaluator>>>
+  std::unordered_map<int32_t, std::unique_ptr<ResidualEvaluator>>
       residual_evaluator_cache_;
 };
 
