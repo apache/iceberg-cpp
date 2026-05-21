@@ -612,7 +612,7 @@ TEST(OAuth2AuthSessionTest, CloseStopsRefresh) {
   token_response.token_type = "bearer";
   token_response.expires_in_secs = 1;  // Expires in 1 second
 
-  auto session = AuthSession::MakeOAuth2(token_response, "http://localhost:9999/tokens",
+  auto session = AuthSession::MakeOAuth2(token_response, "http://127.0.0.1:1/tokens",
                                          "id", "secret", "catalog", true, {}, client);
 
   // Close immediately — should cancel the scheduled refresh
@@ -670,9 +670,9 @@ TEST(OAuth2AuthSessionTest, RefreshFailureKeepsLastToken) {
   token_response.token_type = "bearer";
   token_response.expires_in_secs = 1;  // Very short — will trigger refresh soon
 
-  auto session = AuthSession::MakeOAuth2(
-      token_response, "http://localhost:9999/nonexistent",  // Will fail
-      "id", "secret", "catalog", true, {}, client);
+  auto session =
+      AuthSession::MakeOAuth2(token_response, "http://127.0.0.1:1/tokens",  // Will fail
+                              "id", "secret", "catalog", true, {}, client);
 
   // Wait for refresh to be attempted and fail (all retries)
   // With non-blocking retries: 200ms + 400ms + 800ms + 1600ms ≈ 3s total
