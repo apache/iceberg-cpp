@@ -23,7 +23,7 @@
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 
-#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
@@ -212,7 +212,7 @@ void MetricsTestBase::MetricsForRepeatedValues() {
   AssertCounts(1, 2, 0, metrics);
   AssertCounts(2, 2, 0, metrics);
   AssertCounts(3, 2, 1, metrics);
-  // TODO() Assert NaN metrics
+  // TODO(WZhuo) Assert NaN metrics
   AssertCounts(4, 2, 0, metrics);  // floatCol has 2 NaN values
   AssertCounts(5, 2, 0, metrics);
   AssertCounts(6, 2, 1, metrics);
@@ -353,7 +353,7 @@ void MetricsTestBase::MetricsForNestedStructFields() {
   AssertBounds<std::vector<uint8_t>>(6, binary(), std::vector<uint8_t>{'A'},
                                      std::vector<uint8_t>{'A'}, metrics);
 
-  // TODO() Assert NaN metrics
+  // TODO(WZhuo) Assert NaN metrics
   AssertCounts(7, 1L, 0L, metrics);
   AssertBounds<double>(7, float64(), std::nullopt, std::nullopt, metrics);
 }
@@ -526,7 +526,7 @@ void MetricsTestBase::MetricsForNaNColumns() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 2);
-  // TODO() Assert NaN metrics
+  // TODO(WZhuo) Assert NaN metrics
   AssertCounts(1, 2, 0, metrics);
   AssertCounts(2, 2, 0, metrics);
 
@@ -565,7 +565,7 @@ void MetricsTestBase::ColumnBoundsWithNaNValueAtFront() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 3);
-  // TODO() Assert NaN metrics
+  // TODO(WZhuo) Assert NaN metrics
   AssertCounts(1, 3, 0, metrics);
   AssertCounts(2, 3, 0, metrics);
 
