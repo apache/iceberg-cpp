@@ -100,4 +100,11 @@ Status FileIO::WriteFile(const std::string& file_location, std::string_view cont
   return FinishWithCloseStatus(std::move(status), stream->Close());
 }
 
+Status FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
+  for (const auto& file_location : file_locations) {
+    ICEBERG_RETURN_UNEXPECTED(DeleteFile(file_location));
+  }
+  return {};
+}
+
 }  // namespace iceberg

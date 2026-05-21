@@ -22,6 +22,7 @@
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <vector>
 
 #include <arrow/buffer.h>
 #include <arrow/filesystem/localfs.h>
@@ -565,6 +566,18 @@ Result<std::unique_ptr<OutputFile>> ArrowFileSystemFileIO::NewOutputFile(
 Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
   ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
   ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(path));
+  return {};
+}
+
+Status ArrowFileSystemFileIO::DeleteFiles(
+    const std::vector<std::string>& file_locations) {
+  std::vector<std::string> paths;
+  paths.reserve(file_locations.size());
+  for (const auto& file_location : file_locations) {
+    ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
+    paths.push_back(std::move(path));
+  }
+  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFiles(paths));
   return {};
 }
 

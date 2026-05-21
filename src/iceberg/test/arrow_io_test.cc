@@ -21,6 +21,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <arrow/filesystem/localfs.h>
 #include <arrow/result.h>
@@ -339,6 +340,20 @@ TEST_F(LocalFileIOTest, DeleteFile) {
   del_res = file_io_->DeleteFile(temp_filepath_);
   EXPECT_THAT(del_res, IsError(ErrorKind::kIOError));
   EXPECT_THAT(del_res, HasErrorMessage("Cannot delete file"));
+}
+
+TEST_F(LocalFileIOTest, DeleteFiles) {
+  auto first_path = CreateNewTempFilePath();
+  auto second_path = CreateNewTempFilePath();
+  ASSERT_THAT(file_io_->WriteFile(first_path, "hello"), IsOk());
+  ASSERT_THAT(file_io_->WriteFile(second_path, "world"), IsOk());
+
+  std::vector<std::string> paths = {first_path, second_path};
+  EXPECT_THAT(file_io_->DeleteFiles(paths), IsOk());
+
+  EXPECT_THAT(file_io_->ReadFile(first_path, std::nullopt), IsError(ErrorKind::kIOError));
+  EXPECT_THAT(file_io_->ReadFile(second_path, std::nullopt),
+              IsError(ErrorKind::kIOError));
 }
 
 void VerifyReadFullyReadsFromAbsolutePosition(const std::shared_ptr<FileIO>& file_io,

@@ -23,6 +23,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include <arrow/filesystem/type_fwd.h>
 #include <arrow/io/type_fwd.h>
@@ -76,6 +77,9 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
 
   /// \brief Delete a file at the given location.
   Status DeleteFile(const std::string& file_location) override;
+
+  /// \brief Delete files at the given locations.
+  Status DeleteFiles(const std::vector<std::string>& file_locations) override;
 
   /// \brief Get the Arrow file system.
   const std::shared_ptr<::arrow::fs::FileSystem>& fs() const { return arrow_fs_; }

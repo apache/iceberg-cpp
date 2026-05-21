@@ -26,6 +26,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -163,15 +164,7 @@ class ICEBERG_EXPORT FileIO {
   ///
   /// \param file_locations The locations of the files to delete.
   /// \return void if all deletes succeeded, an error code if any delete failed.
-  virtual Status DeleteFiles(std::span<const std::string> file_locations) {
-    for (const auto& file_location : file_locations) {
-      auto status = DeleteFile(file_location);
-      if (!status.has_value()) {
-        return status;
-      }
-    }
-    return {};
-  }
+  virtual Status DeleteFiles(const std::vector<std::string>& file_locations);
 };
 
 }  // namespace iceberg
