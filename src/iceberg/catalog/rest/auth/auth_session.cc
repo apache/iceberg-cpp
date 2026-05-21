@@ -60,6 +60,7 @@ class OAuth2AuthSession : public AuthSession,
     std::string client_id;
     std::string client_secret;
     std::string scope;
+    std::unordered_map<std::string, std::string> optional_oauth_params;
     bool keep_refreshed;
   };
 
@@ -75,7 +76,7 @@ class OAuth2AuthSession : public AuthSession,
   Status Authenticate(std::unordered_map<std::string, std::string>& headers) override {
     std::shared_lock lock(mutex_);
     for (const auto& [key, value] : headers_) {
-      headers.insert_or_assign(key, value);
+      headers.try_emplace(key, value);
     }
     return {};
   }
@@ -139,6 +140,9 @@ class OAuth2AuthSession : public AuthSession,
     props.Set(AuthProperties::kCredential, credential);
     props.Set(AuthProperties::kScope, config_.scope);
     props.Set(AuthProperties::kOAuth2ServerUri, config_.token_endpoint);
+    for (const auto& [key, value] : config_.optional_oauth_params) {
+      props.mutable_configs()[key] = value;
+    }
 
     auto result = FetchToken(client_, *empty_session, props);
     if (result.has_value()) {
@@ -149,7 +153,9 @@ class OAuth2AuthSession : public AuthSession,
         headers_ = {
             {std::string(kAuthorizationHeader), std::string(kBearerPrefix) + token_}};
 
-        // Update expiration
+        // Reset before deriving new expiry
+        expires_at_ = std::chrono::steady_clock::time_point{};
+
         if (response.expires_in_secs.has_value()) {
           expires_at_ = std::chrono::steady_clock::now() +
                         std::chrono::seconds(*response.expires_in_secs);
@@ -238,13 +244,16 @@ std::shared_ptr<AuthSession> AuthSession::MakeDefault(
 std::shared_ptr<AuthSession> AuthSession::MakeOAuth2(
     const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
     const std::string& client_id, const std::string& client_secret,
-    const std::string& scope, HttpClient& client) {
+    const std::string& scope, bool keep_refreshed,
+    const std::unordered_map<std::string, std::string>& optional_oauth_params,
+    HttpClient& client) {
   OAuth2AuthSession::Config config{
       .token_endpoint = token_endpoint,
       .client_id = client_id,
       .client_secret = client_secret,
       .scope = scope,
-      .keep_refreshed = true,
+      .optional_oauth_params = optional_oauth_params,
+      .keep_refreshed = keep_refreshed,
   };
   return OAuth2AuthSession::Create(initial_token, std::move(config), client);
 }

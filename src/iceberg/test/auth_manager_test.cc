@@ -568,8 +568,9 @@ TEST(OAuth2AuthSessionTest, InitialTokenIsUsed) {
 
   // Create session (refresh will fail since there's no real server, but
   // initial token should work)
-  auto session = AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
-                                         "client_id", "client_secret", "catalog", client);
+  auto session =
+      AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
+                              "client_id", "client_secret", "catalog", true, {}, client);
 
   std::unordered_map<std::string, std::string> headers;
   ASSERT_THAT(session->Authenticate(headers), IsOk());
@@ -587,7 +588,7 @@ TEST(OAuth2AuthSessionTest, NoExpirationNoRefresh) {
   // No expires_in_secs set — token is not a JWT either
 
   auto session = AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
-                                         "id", "secret", "catalog", client);
+                                         "id", "secret", "catalog", true, {}, client);
 
   std::unordered_map<std::string, std::string> headers;
   ASSERT_THAT(session->Authenticate(headers), IsOk());
@@ -612,7 +613,7 @@ TEST(OAuth2AuthSessionTest, CloseStopsRefresh) {
   token_response.expires_in_secs = 1;  // Expires in 1 second
 
   auto session = AuthSession::MakeOAuth2(token_response, "http://localhost:9999/tokens",
-                                         "id", "secret", "catalog", client);
+                                         "id", "secret", "catalog", true, {}, client);
 
   // Close immediately — should cancel the scheduled refresh
   session->Close();
@@ -635,7 +636,7 @@ TEST(OAuth2AuthSessionTest, ConcurrentAuthenticate) {
   token_response.expires_in_secs = 3600;
 
   auto session = AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
-                                         "id", "secret", "catalog", client);
+                                         "id", "secret", "catalog", true, {}, client);
 
   // Launch multiple threads calling Authenticate concurrently
   std::vector<std::thread> threads;
@@ -671,7 +672,7 @@ TEST(OAuth2AuthSessionTest, RefreshFailureKeepsLastToken) {
 
   auto session = AuthSession::MakeOAuth2(
       token_response, "http://localhost:9999/nonexistent",  // Will fail
-      "id", "secret", "catalog", client);
+      "id", "secret", "catalog", true, {}, client);
 
   // Wait for refresh to be attempted and fail (all retries)
   // With non-blocking retries: 200ms + 400ms + 800ms + 1600ms ≈ 3s total
