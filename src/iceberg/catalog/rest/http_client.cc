@@ -71,12 +71,16 @@ namespace {
 constexpr std::string_view kRestExceptionType = "RESTException";
 
 /// \brief Merge default headers with per-request headers (per-request wins).
-std::unordered_map<std::string, std::string> MergeHeaders(
+HttpHeaders MergeHeaders(
     const std::unordered_map<std::string, std::string>& default_headers,
     const std::unordered_map<std::string, std::string>& request_headers) {
-  std::unordered_map<std::string, std::string> merged(default_headers);
+  HttpHeaders merged;
+  merged.reserve(default_headers.size() + request_headers.size());
+  for (const auto& [key, val] : default_headers) {
+    merged.try_emplace(key, val);
+  }
   for (const auto& [key, val] : request_headers) {
-    merged.insert_or_assign(key, val);
+    merged[key] = val;
   }
   return merged;
 }

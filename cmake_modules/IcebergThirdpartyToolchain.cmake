@@ -643,6 +643,11 @@ function(resolve_aws_sdk_dependency)
   set(ICEBERG_SYSTEM_DEPENDENCIES
       ${ICEBERG_SYSTEM_DEPENDENCIES}
       PARENT_SCOPE)
+  # Forwarded to find_dependency(AWSSDK ...) in iceberg-config.cmake.in so
+  # downstream installed builds load aws-cpp-sdk-core via AWSSDK_FIND_COMPONENTS.
+  set(ICEBERG_FIND_EXTRA_ARGS_AWSSDK
+      "COMPONENTS;core"
+      PARENT_SCOPE)
 endfunction()
 
 if(ICEBERG_SIGV4)

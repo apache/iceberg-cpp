@@ -29,6 +29,7 @@
 #  include "iceberg/catalog/rest/auth/auth_properties.h"
 #  include "iceberg/catalog/rest/auth/auth_session.h"
 #  include "iceberg/catalog/rest/auth/aws_sdk.h"
+#  include "iceberg/catalog/rest/auth/session_context.h"
 #  include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
 #  include "iceberg/catalog/rest/http_client.h"
 #  include "iceberg/table_identifier.h"
@@ -186,6 +187,23 @@ TEST_F(SigV4AuthTest, CustomSigningNameAndRegion) {
   ASSERT_NE(auth_it, headers.end());
   EXPECT_TRUE(auth_it->second.find("eu-west-1") != std::string::npos);
   EXPECT_TRUE(auth_it->second.find("custom-service") != std::string::npos);
+}
+
+TEST_F(SigV4AuthTest, LegacySigV4EnabledFlagSelectsSigV4) {
+  auto properties = MakeSigV4Properties();
+  properties.erase(AuthProperties::kAuthType);
+  properties[AuthProperties::kSigV4Enabled] = "true";
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+
+  auto session_result = manager_result.value()->CatalogSession(client_, properties);
+  ASSERT_THAT(session_result, IsOk());
+
+  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
+  auto auth_result = session_result.value()->Authenticate(request);
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_TRUE(
+      auth_result.value().headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
 }
 
 TEST_F(SigV4AuthTest, AuthTypeCaseInsensitive) {
@@ -431,11 +449,10 @@ TEST_F(SigV4AuthTest, ContextualSessionOverridesProperties) {
   auto catalog_session = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(catalog_session, IsOk());
 
-  // Context overrides region and credentials
-  std::unordered_map<std::string, std::string> context = {
-      {AuthProperties::kSigV4AccessKeyId, "id2"},
-      {AuthProperties::kSigV4SecretAccessKey, "secret2"},
-      {AuthProperties::kSigV4SigningRegion, "eu-west-1"},
+  SessionContext context{
+      .properties = {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}},
+      .credentials = {{AuthProperties::kSigV4AccessKeyId, "id2"},
+                      {AuthProperties::kSigV4SecretAccessKey, "secret2"}},
   };
 
   auto ctx_session =
@@ -503,7 +520,8 @@ TEST_F(SigV4AuthTest, TableSessionIgnoresContextualOverrides) {
   ASSERT_THAT(catalog_session, IsOk());
 
   auto ctx_session = manager_result.value()->ContextualSession(
-      {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}}, catalog_session.value());
+      SessionContext{.properties = {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}}},
+      catalog_session.value());
   ASSERT_THAT(ctx_session, IsOk());
 
   iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"db1"}}, .name = "table1"};

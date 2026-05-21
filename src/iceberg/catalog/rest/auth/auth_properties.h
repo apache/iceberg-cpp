@@ -54,6 +54,9 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
 
   // ---- SigV4 entries ----
 
+  /// Deprecated: `rest.sigv4-enabled=true` selects SigV4 regardless of
+  /// `rest.auth.type`.
+  inline static const std::string kSigV4Enabled = "rest.sigv4-enabled";
   inline static const std::string kSigV4DelegateAuthType =
       "rest.auth.sigv4.delegate-auth-type";
   inline static const std::string kSigV4SigningRegion = "rest.signing-region";

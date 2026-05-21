@@ -23,6 +23,7 @@ install_headers(
         'auth_session.h',
         'aws_sdk.h',
         'oauth2_util.h',
+        'session_context.h',
     ],
     subdir: 'iceberg/catalog/rest/auth',
 )

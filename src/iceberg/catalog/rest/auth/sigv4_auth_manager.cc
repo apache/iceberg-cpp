@@ -37,6 +37,7 @@
 
 #  include "iceberg/catalog/rest/auth/auth_managers.h"
 #  include "iceberg/catalog/rest/auth/auth_properties.h"
+#  include "iceberg/catalog/rest/auth/oauth2_util.h"
 #  include "iceberg/util/macros.h"
 #  include "iceberg/util/string_util.h"
 
@@ -66,10 +67,10 @@ class AwsSdkLifecycle {
   Status Finalize() {
     std::lock_guard<std::mutex> lock(mutex_);
     if (state_.load() != State::kInitialized) return {};
-    auto live = active_session_count_.load();
-    if (live != 0) {
+    if (active_session_count_ != 0) {
       return Invalid(
-          "Cannot finalize AWS SDK while {} SigV4 auth session(s) are still alive", live);
+          "Cannot finalize AWS SDK while {} SigV4 auth session(s) are still alive",
+          active_session_count_);
     }
     Aws::ShutdownAPI(options_);
     state_.store(State::kFinalized);
@@ -84,11 +85,21 @@ class AwsSdkLifecycle {
   bool IsInitialized() const { return state_.load() == State::kInitialized; }
   bool IsFinalized() const { return state_.load() == State::kFinalized; }
 
-  void IncrementSessionCount() {
-    active_session_count_.fetch_add(1, std::memory_order_relaxed);
+  // Holds the mutex while incrementing, so Finalize() can never observe a
+  // stale 0 between its count check and Aws::ShutdownAPI.
+  Status RegisterSession() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (state_.load() != State::kInitialized) {
+      return InvalidArgument(
+          "AWS SDK is not initialized; cannot create a SigV4AuthSession");
+    }
+    ++active_session_count_;
+    return {};
   }
-  void DecrementSessionCount() {
-    active_session_count_.fetch_sub(1, std::memory_order_relaxed);
+
+  void UnregisterSession() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    --active_session_count_;
   }
 
  private:
@@ -99,7 +110,7 @@ class AwsSdkLifecycle {
   std::atomic<State> state_{State::kUninitialized};
   std::mutex mutex_;
   Aws::SDKOptions options_;
-  std::atomic<size_t> active_session_count_{0};
+  size_t active_session_count_{0};  // guarded by mutex_
 };
 
 Aws::Http::HttpMethod ToAwsMethod(HttpMethod method) {
@@ -157,13 +168,9 @@ SigV4AuthSession::SigV4AuthSession(
       signing_name_(std::move(signing_name)),
       credentials_provider_(std::move(credentials_provider)),
       signer_(std::make_unique<RestSigV4Signer>(
-          credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {
-  AwsSdkLifecycle::Instance().IncrementSessionCount();
-}
+          credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {}
 
-SigV4AuthSession::~SigV4AuthSession() {
-  AwsSdkLifecycle::Instance().DecrementSessionCount();
-}
+SigV4AuthSession::~SigV4AuthSession() { AwsSdkLifecycle::Instance().UnregisterSession(); }
 
 Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_request, delegate_->Authenticate(request));
@@ -171,7 +178,7 @@ Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
 
   std::unordered_map<std::string, std::string> signing_headers;
   for (const auto& [name, value] : original_headers) {
-    if (StringUtils::EqualsIgnoreCase(name, "Authorization")) {
+    if (StringUtils::EqualsIgnoreCase(name, kAuthorizationHeader)) {
       signing_headers[std::string(kRelocatedHeaderPrefix) + name] = value;
     } else {
       signing_headers[name] = value;
@@ -204,21 +211,34 @@ Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
                                         .message = "SigV4 signing failed"});
   }
 
+  // Build a case-insensitive index of original headers once so the outer
+  // loop over signed headers below is O(N + M) instead of O(N * M).
+  std::unordered_map<std::string, std::vector<const std::string*>> originals_by_name;
+  for (const auto& [orig_name, orig_value] : original_headers) {
+    originals_by_name[StringUtils::ToLower(orig_name)].push_back(&orig_value);
+  }
+
   HttpRequest signed_request{.method = delegate_request.method,
                              .url = std::move(delegate_request.url),
                              .headers = {},
                              .body = std::move(delegate_request.body)};
+  signed_request.headers.reserve(aws_request->GetHeaders().size() +
+                                 original_headers.size());
   for (const auto& [aws_name, aws_value] : aws_request->GetHeaders()) {
     std::string name(aws_name.c_str(), aws_name.size());
     std::string value(aws_value.c_str(), aws_value.size());
-    for (const auto& [orig_name, orig_value] : original_headers) {
-      if (StringUtils::EqualsIgnoreCase(orig_name, name) && orig_value != value) {
-        signed_request.headers[std::string(kRelocatedHeaderPrefix) + orig_name] =
-            orig_value;
-        break;
+    if (auto it = originals_by_name.find(StringUtils::ToLower(name));
+        it != originals_by_name.end()) {
+      // Preserve every original entry with this name whose value the signer
+      // didn't produce, matching Java updateRequestHeaders.
+      for (const auto* orig_value : it->second) {
+        if (*orig_value != value) {
+          signed_request.headers.add(std::string(kRelocatedHeaderPrefix) + name,
+                                     *orig_value);
+        }
       }
     }
-    signed_request.headers[std::move(name)] = std::move(value);
+    signed_request.headers.add(std::move(name), std::move(value));
   }
 
   return signed_request;
@@ -252,14 +272,11 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
   return WrapSession(std::move(delegate_session), properties);
 }
 
-// Contextual and table sessions both merge against the stored catalog
-// properties, matching Java's RESTSigV4AuthManager. Contextual overrides do
-// not propagate into child table sessions; the two derivations are
-// independent dimensions on top of the catalog baseline.
+// Both derived sessions merge against the stored catalog_properties_, so
+// contextual overrides do not propagate into child table sessions.
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
-    const std::unordered_map<std::string, std::string>& context,
-    std::shared_ptr<AuthSession> parent) {
+    const SessionContext& context, std::shared_ptr<AuthSession> parent) {
   auto sigv4_parent = std::dynamic_pointer_cast<SigV4AuthSession>(std::move(parent));
   ICEBERG_PRECHECK(sigv4_parent != nullptr,
                    "SigV4AuthManager parent must be a SigV4AuthSession");
@@ -267,8 +284,12 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session, delegate_->ContextualSession(
                                                      context, sigv4_parent->delegate()));
 
-  auto merged = MergeProperties(catalog_properties_, context);
-  return WrapSession(std::move(delegate_session), merged);
+  // Merge context.credentials into properties so credential overrides aren't
+  // dropped.
+  auto merged = MergeProperties(catalog_properties_,
+                                MergeProperties(context.properties, context.credentials));
+  return WrapSession(std::move(delegate_session), merged,
+                     sigv4_parent->credentials_provider());
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
@@ -284,7 +305,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
       delegate_->TableSession(table, properties, sigv4_parent->delegate()));
 
   auto merged = MergeProperties(catalog_properties_, properties);
-  return WrapSession(std::move(delegate_session), merged);
+  return WrapSession(std::move(delegate_session), merged,
+                     sigv4_parent->credentials_provider());
 }
 
 Status SigV4AuthManager::Close() { return delegate_->Close(); }
@@ -322,10 +344,12 @@ std::string SigV4AuthManager::ResolveSigningRegion(
       it != properties.end() && !it->second.empty()) {
     return it->second;
   }
-  // Delegates the full resolution chain (AWS_DEFAULT_REGION / AWS_REGION env,
-  // ~/.aws/config profile, EC2/ECS IMDS, fallback us-east-1) to the AWS SDK.
-  // Set AWS_EC2_METADATA_DISABLED=true to skip IMDS on non-EC2 hosts.
-  return {Aws::Client::ClientConfiguration().region.c_str()};
+  // ClientConfiguration() walks env / profile / IMDS / us-east-1; the IMDS
+  // step can block for seconds on non-EC2 hosts. Resolve once per process
+  // (set AWS_EC2_METADATA_DISABLED=true to skip IMDS).
+  static const std::string kSdkResolvedRegion =
+      std::string(Aws::Client::ClientConfiguration().region.c_str());
+  return kSdkResolvedRegion;
 }
 
 std::string SigV4AuthManager::ResolveSigningName(
@@ -337,15 +361,56 @@ std::string SigV4AuthManager::ResolveSigningName(
   return AuthProperties::kSigV4SigningNameDefault;
 }
 
+namespace {
+
+// RAII guard so any throw between RegisterSession() and the successful
+// SigV4AuthSession construction unwinds the session count.
+class SessionSlot {
+ public:
+  static Result<SessionSlot> Reserve() {
+    ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().RegisterSession());
+    return SessionSlot{};
+  }
+  SessionSlot(SessionSlot&& other) noexcept : armed_(other.armed_) {
+    other.armed_ = false;
+  }
+  SessionSlot& operator=(SessionSlot&&) = delete;
+  ~SessionSlot() {
+    if (armed_) AwsSdkLifecycle::Instance().UnregisterSession();
+  }
+  void Release() noexcept { armed_ = false; }
+
+ private:
+  SessionSlot() = default;
+  bool armed_ = true;
+};
+
+}  // namespace
+
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
     std::shared_ptr<AuthSession> delegate_session,
-    const std::unordered_map<std::string, std::string>& properties) {
+    const std::unordered_map<std::string, std::string>& properties,
+    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> reuse_credentials) {
+  ICEBERG_ASSIGN_OR_RAISE(auto slot, SessionSlot::Reserve());
   auto region = ResolveSigningRegion(properties);
   auto service = ResolveSigningName(properties);
-  ICEBERG_ASSIGN_OR_RAISE(auto credentials, MakeCredentialsProvider(properties));
-  return std::make_shared<SigV4AuthSession>(std::move(delegate_session),
-                                            std::move(region), std::move(service),
-                                            std::move(credentials));
+
+  // Reuse the parent's provider unless properties override keys, avoiding a
+  // fresh DefaultAWSCredentialsProviderChain (can hit IMDS) per derivation.
+  auto explicit_keys = properties.find(AuthProperties::kSigV4AccessKeyId);
+  bool has_explicit_keys =
+      explicit_keys != properties.end() && !explicit_keys->second.empty();
+  std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials;
+  if (reuse_credentials && !has_explicit_keys) {
+    credentials = std::move(reuse_credentials);
+  } else {
+    ICEBERG_ASSIGN_OR_RAISE(credentials, MakeCredentialsProvider(properties));
+  }
+  auto session =
+      std::make_shared<SigV4AuthSession>(std::move(delegate_session), std::move(region),
+                                         std::move(service), std::move(credentials));
+  slot.Release();
+  return session;
 }
 
 Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
@@ -366,6 +431,8 @@ Result<std::unique_ptr<AuthManager>> MakeSigV4AuthManager(
 
   auto delegate_props = properties;
   delegate_props[AuthProperties::kAuthType] = delegate_type;
+  // Strip the legacy flag so the recursive Load doesn't bounce back to SigV4.
+  delegate_props.erase(AuthProperties::kSigV4Enabled);
   ICEBERG_ASSIGN_OR_RAISE(auto delegate, AuthManagers::Load(name, delegate_props));
   return std::make_unique<SigV4AuthManager>(std::move(delegate));
 }

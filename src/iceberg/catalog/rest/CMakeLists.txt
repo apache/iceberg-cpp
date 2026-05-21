@@ -29,6 +29,7 @@ set(ICEBERG_REST_SOURCES
     endpoint.cc
     error_handlers.cc
     http_client.cc
+    http_request.cc
     json_serde.cc
     resource_paths.cc
     rest_catalog.cc

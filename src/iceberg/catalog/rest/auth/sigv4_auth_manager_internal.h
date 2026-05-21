@@ -71,6 +71,12 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
 
   const std::shared_ptr<AuthSession>& delegate() const { return delegate_; }
 
+  /// Exposed so derived sessions can reuse the chain instead of constructing
+  /// a fresh DefaultAWSCredentialsProviderChain per derivation.
+  const std::shared_ptr<Aws::Auth::AWSCredentialsProvider>& credentials_provider() const {
+    return credentials_provider_;
+  }
+
  private:
   std::shared_ptr<AuthSession> delegate_;
   std::string signing_region_;
@@ -96,8 +102,7 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
       const std::unordered_map<std::string, std::string>& properties) override;
 
   Result<std::shared_ptr<AuthSession>> ContextualSession(
-      const std::unordered_map<std::string, std::string>& context,
-      std::shared_ptr<AuthSession> parent) override;
+      const SessionContext& context, std::shared_ptr<AuthSession> parent) override;
 
   Result<std::shared_ptr<AuthSession>> TableSession(
       const TableIdentifier& table,
@@ -113,9 +118,12 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
       const std::unordered_map<std::string, std::string>& properties);
   static std::string ResolveSigningName(
       const std::unordered_map<std::string, std::string>& properties);
+  /// \param reuse_credentials If non-null and `properties` has no explicit
+  /// access keys, this provider is reused instead of building a new one.
   Result<std::shared_ptr<AuthSession>> WrapSession(
       std::shared_ptr<AuthSession> delegate_session,
-      const std::unordered_map<std::string, std::string>& properties);
+      const std::unordered_map<std::string, std::string>& properties,
+      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> reuse_credentials = nullptr);
 
   std::unique_ptr<AuthManager> delegate_;
   std::unordered_map<std::string, std::string> catalog_properties_;

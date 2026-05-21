@@ -15,8 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# S3-backed tests against MinIO (Linux and macOS only).
-name: S3 Tests
+# AWS-related tests. ICEBERG_S3 (Arrow's bundled AWS SDK) and ICEBERG_SIGV4
+# (vcpkg-installed aws-cpp-sdk-core) are tested in separate jobs: linking
+# both into one binary causes ODR conflicts on the shared AWS SDK symbols.
+name: AWS Tests
 
 on:
   push:
@@ -39,21 +41,31 @@ env:
   ICEBERG_HOME: /tmp/iceberg
 
 jobs:
-  s3-minio:
+  aws:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: S3 (${{ matrix.title }})
+    name: AWS (${{ matrix.title }})
     runs-on: ${{ matrix.runs-on }}
-    timeout-minutes: 35
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         include:
-          - title: AMD64 Ubuntu 24.04
+          - title: AMD64 Ubuntu 24.04, S3
             runs-on: ubuntu-24.04
             CC: gcc-14
             CXX: g++-14
-          - title: AArch64 macOS 26
+            s3: "ON"
+            sigv4: "OFF"
+          - title: AMD64 Ubuntu 24.04, SigV4
+            runs-on: ubuntu-24.04
+            CC: gcc-14
+            CXX: g++-14
+            s3: "OFF"
+            sigv4: "ON"
+          - title: AArch64 macOS 26, S3
             runs-on: macos-26
+            s3: "ON"
+            sigv4: "OFF"
     env:
       ICEBERG_TEST_S3_URI: s3://iceberg-test
       AWS_ACCESS_KEY_ID: minio
@@ -70,14 +82,28 @@ jobs:
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+      - name: Cache vcpkg packages
+        if: ${{ matrix.sigv4 == 'ON' }}
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: vcpkg-cache
+        with:
+          path: /usr/local/share/vcpkg/installed
+          key: vcpkg-x64-linux-aws-sdk-cpp-core-${{ hashFiles('.github/workflows/aws_test.yml') }}
+      - name: Install AWS SDK via vcpkg
+        if: ${{ matrix.sigv4 == 'ON' && steps.vcpkg-cache.outputs.cache-hit != 'true' }}
+        shell: bash
+        run: vcpkg install aws-sdk-cpp[core]:x64-linux
       - name: Set Ubuntu Compilers
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         run: |
           echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
       - name: Start MinIO
+        if: ${{ matrix.s3 == 'ON' }}
         shell: bash
         run: bash ci/scripts/start_minio.sh
-      - name: Build and test Iceberg with S3
+      - name: Build and test Iceberg
         shell: bash
-        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF OFF ON
+        env:
+          CMAKE_TOOLCHAIN_FILE: ${{ matrix.sigv4 == 'ON' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
+        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF OFF ${{ matrix.s3 }} ${{ matrix.sigv4 }}

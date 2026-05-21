@@ -61,9 +61,6 @@ if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
 else
     CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Debug")
-    if [[ -n "${CMAKE_TOOLCHAIN_FILE:-}" ]]; then
-        CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
-    fi
 fi
 
 if [[ "${build_enable_sccache}" == "ON" ]]; then

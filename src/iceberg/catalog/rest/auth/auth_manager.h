@@ -23,6 +23,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "iceberg/catalog/rest/auth/session_context.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -70,13 +71,12 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// This method is used by SessionCatalog to create sessions for different contexts
   /// (e.g., different users or tenants).
   ///
-  /// \param context Context properties (e.g., user credentials, tenant info).
+  /// \param context Per-session properties and credentials.
   /// \param parent Catalog session to inherit from or return as-is.
   /// \return A context-specific session, or the parent session if no context-specific
   /// session is needed, or an error if session creation fails.
   virtual Result<std::shared_ptr<AuthSession>> ContextualSession(
-      const std::unordered_map<std::string, std::string>& context,
-      std::shared_ptr<AuthSession> parent);
+      const SessionContext& context, std::shared_ptr<AuthSession> parent);
 
   /// \brief Create or reuse a session scoped to a single table/view.
   ///
