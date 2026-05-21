@@ -163,7 +163,7 @@ class ICEBERG_EXPORT FileIO {
   /// and returns the first error encountered.
   ///
   /// \param file_locations The locations of the files to delete.
-  /// \return void if all deletes succeeded, an error code if any delete failed.
+  /// \return void if all deletes succeed, or an error code if any delete fails.
   virtual Status DeleteFiles(const std::vector<std::string>& file_locations);
 };
 
