@@ -19,6 +19,8 @@
 
 #include "iceberg/util/transform_util.h"
 
+#include <limits>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/test/matchers.h"
@@ -166,6 +168,21 @@ TEST(TransformUtilTest, ParseTimestampNs) {
             "1969-12-31T23:59:59.123456789");
 }
 
+TEST(TransformUtilTest, ParseTimestampNsChecksInt64Bounds) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto max_nanos, TransformUtil::ParseTimestampNs("2262-04-11T23:47:16.854775807"));
+  EXPECT_EQ(max_nanos, std::numeric_limits<int64_t>::max());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto min_nanos, TransformUtil::ParseTimestampNs("1677-09-21T00:12:43.145224192"));
+  EXPECT_EQ(min_nanos, std::numeric_limits<int64_t>::min());
+
+  EXPECT_THAT(TransformUtil::ParseTimestampNs("2262-04-11T23:47:16.854775808"),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(TransformUtil::ParseTimestampNs("1677-09-21T00:12:43.145224191"),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
 TEST(TransformUtilTest, ParseTimestampNsRejectsMoreThanNineFractionalDigits) {
   EXPECT_THAT(TransformUtil::ParseTimestampNs("2026-01-01T00:00:01.0000010011"),
               IsError(ErrorKind::kInvalidArgument));
@@ -175,6 +192,23 @@ TEST(TransformUtilTest, ParseTimestampNsWithZone) {
   ICEBERG_UNWRAP_OR_FAIL(auto nanos, TransformUtil::ParseTimestampNsWithZone(
                                          "2026-01-01T00:00:01.000001001+00:00"));
   EXPECT_EQ(nanos, 1767225601000001001L);
+}
+
+TEST(TransformUtilTest, ParseTimestampNsWithZoneChecksInt64BoundsAfterOffset) {
+  ICEBERG_UNWRAP_OR_FAIL(auto max_nanos, TransformUtil::ParseTimestampNsWithZone(
+                                             "2262-04-12T00:47:16.854775807+01:00"));
+  EXPECT_EQ(max_nanos, std::numeric_limits<int64_t>::max());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto min_nanos, TransformUtil::ParseTimestampNsWithZone(
+                                             "1677-09-20T23:12:43.145224192-01:00"));
+  EXPECT_EQ(min_nanos, std::numeric_limits<int64_t>::min());
+
+  EXPECT_THAT(
+      TransformUtil::ParseTimestampNsWithZone("2262-04-11T23:47:16.854775807-00:01"),
+      IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(
+      TransformUtil::ParseTimestampNsWithZone("1677-09-21T00:12:43.145224192+00:01"),
+      IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST(TransformUtilTest, ParseTimestampNsWithZoneRejectsOffsetPastPlusMinus1800) {

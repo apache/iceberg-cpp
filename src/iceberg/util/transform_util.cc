@@ -21,7 +21,9 @@
 
 #include <array>
 #include <chrono>
+#include <limits>
 
+#include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -82,6 +84,23 @@ Result<std::pair<std::string_view, int64_t>> ParseTimestampWithZoneSuffix(
   }
 
   return std::make_pair(timestamp_part, offset_micros);
+}
+
+Result<int64_t> TimestampFromDayTime(int32_t days, int64_t time_units,
+                                     int64_t units_per_day, int64_t offset_micros,
+                                     int64_t units_per_micro) {
+  const auto offset_units =
+      static_cast<int128_t>(offset_micros) * static_cast<int128_t>(units_per_micro);
+  const auto timestamp =
+      static_cast<int128_t>(days) * static_cast<int128_t>(units_per_day) +
+      static_cast<int128_t>(time_units) - offset_units;
+
+  if (timestamp > std::numeric_limits<int64_t>::max() ||
+      timestamp < std::numeric_limits<int64_t>::min()) [[unlikely]] {
+    return InvalidArgument("Timestamp value is out of int64 range");
+  }
+
+  return static_cast<int64_t>(timestamp);
 }
 
 /// Parse fractional seconds (after '.') and return micros.
@@ -309,7 +328,8 @@ Result<int64_t> TransformUtil::ParseTimestamp(std::string_view str) {
   ICEBERG_ASSIGN_OR_RAISE(auto days, ParseDay(str.substr(0, t_pos)));
   ICEBERG_ASSIGN_OR_RAISE(auto time_micros, ParseTime(str.substr(t_pos + 1)));
 
-  return static_cast<int64_t>(days) * kMicrosPerDay + time_micros;
+  return TimestampFromDayTime(days, time_micros, kMicrosPerDay, /*offset_micros=*/0,
+                              /*units_per_micro=*/1);
 }
 
 Result<int64_t> TransformUtil::ParseTimestampNs(std::string_view str) {
@@ -321,21 +341,42 @@ Result<int64_t> TransformUtil::ParseTimestampNs(std::string_view str) {
   ICEBERG_ASSIGN_OR_RAISE(auto days, ParseDay(str.substr(0, t_pos)));
   ICEBERG_ASSIGN_OR_RAISE(auto time_nanos, ParseTimeNs(str.substr(t_pos + 1)));
 
-  return static_cast<int64_t>(days) * kNanosPerDay + time_nanos;
+  return TimestampFromDayTime(days, time_nanos, kNanosPerDay, /*offset_micros=*/0,
+                              /*units_per_micro=*/1'000);
 }
 
 Result<int64_t> TransformUtil::ParseTimestampWithZone(std::string_view str) {
   ICEBERG_ASSIGN_OR_RAISE(auto timestamp_with_offset, ParseTimestampWithZoneSuffix(str));
   const auto [timestamp_part, offset_micros] = timestamp_with_offset;
-  ICEBERG_ASSIGN_OR_RAISE(auto local_micros, ParseTimestamp(timestamp_part));
-  return local_micros - offset_micros;
+
+  auto t_pos = timestamp_part.find('T');
+  if (t_pos == std::string_view::npos) [[unlikely]] {
+    return InvalidArgument("Invalid timestamp string (missing 'T'): '{}'",
+                           timestamp_part);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto days, ParseDay(timestamp_part.substr(0, t_pos)));
+  ICEBERG_ASSIGN_OR_RAISE(auto time_micros, ParseTime(timestamp_part.substr(t_pos + 1)));
+
+  return TimestampFromDayTime(days, time_micros, kMicrosPerDay, offset_micros,
+                              /*units_per_micro=*/1);
 }
 
 Result<int64_t> TransformUtil::ParseTimestampNsWithZone(std::string_view str) {
   ICEBERG_ASSIGN_OR_RAISE(auto timestamp_with_offset, ParseTimestampWithZoneSuffix(str));
   const auto [timestamp_part, offset_micros] = timestamp_with_offset;
-  ICEBERG_ASSIGN_OR_RAISE(auto local_nanos, ParseTimestampNs(timestamp_part));
-  return local_nanos - offset_micros * 1000;
+
+  auto t_pos = timestamp_part.find('T');
+  if (t_pos == std::string_view::npos) [[unlikely]] {
+    return InvalidArgument("Invalid timestamp string (missing 'T'): '{}'",
+                           timestamp_part);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto days, ParseDay(timestamp_part.substr(0, t_pos)));
+  ICEBERG_ASSIGN_OR_RAISE(auto time_nanos, ParseTimeNs(timestamp_part.substr(t_pos + 1)));
+
+  return TimestampFromDayTime(days, time_nanos, kNanosPerDay, offset_micros,
+                              /*units_per_micro=*/1'000);
 }
 
 std::string TransformUtil::Base64Encode(std::string_view str_to_encode) {
