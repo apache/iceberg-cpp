@@ -84,6 +84,10 @@ class ICEBERG_EXPORT ManifestMergeManager {
       const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
       const ManifestWriterFactory& writer_factory);
 
+  /// \brief Returns the number of manifests replaced (consumed into merged outputs)
+  /// by the last MergeManifests() call.
+  int32_t ReplacedManifestsCount() const { return replaced_manifests_count_; }
+
  private:
   /// \brief Merge a group of manifests sharing the same spec_id.
   ///
@@ -109,6 +113,7 @@ class ICEBERG_EXPORT ManifestMergeManager {
   const int64_t target_size_bytes_;
   const int32_t min_count_to_merge_;
   const bool merge_enabled_;
+  int32_t replaced_manifests_count_{0};
 };
 
 }  // namespace iceberg

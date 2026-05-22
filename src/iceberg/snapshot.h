@@ -338,6 +338,15 @@ class ICEBERG_EXPORT SnapshotSummaryBuilder {
   /// \param value Property value
   void Set(const std::string& property, const std::string& value);
 
+  /// \brief Set manifest count summary fields.
+  ///
+  /// Records how many manifests were created, kept, and replaced in this snapshot.
+  ///
+  /// \param created Manifests written by this snapshot
+  /// \param kept Manifests carried over unchanged from the previous snapshot
+  /// \param replaced Manifests rewritten or merged away
+  void SetManifestCounts(int32_t created, int32_t kept, int32_t replaced);
+
   /// \brief Merge another builder's metrics into this one
   ///
   /// \param other The builder to merge from
@@ -359,6 +368,10 @@ class ICEBERG_EXPORT SnapshotSummaryBuilder {
   int32_t max_changed_partitions_for_summaries_{0};
   int64_t deleted_duplicate_files_{0};
   bool trust_partition_metrics_{true};
+  bool manifests_counts_set_{false};
+  int32_t manifests_created_{0};
+  int32_t manifests_kept_{0};
+  int32_t manifests_replaced_{0};
 };
 
 /// \brief Data operation that produce snapshots.

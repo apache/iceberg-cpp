@@ -41,6 +41,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/update/fast_append.h"
+#include "iceberg/util/data_file_set.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -375,6 +376,188 @@ TEST_F(ManifestFilterManagerTest, MultipleRowFiltersUseCombinedExpression) {
   ICEBERG_UNWRAP_OR_FAIL(auto result, mgr.FilterManifests(*metadata, snap, factory));
   ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
 
+  ASSERT_EQ(entries.size(), 1U);
+  EXPECT_EQ(entries[0].status, ManifestStatus::kDeleted);
+}
+
+// Helper: write one or more delete-file entries to a new manifest.
+// Each entry is (DataFile, data_sequence_number).
+using DeleteManifestEntry = std::pair<std::shared_ptr<DataFile>, int64_t>;
+static Result<ManifestFile> WriteDeleteManifest(
+    const std::vector<DeleteManifestEntry>& files, std::shared_ptr<FileIO> file_io,
+    const TableMetadata& metadata, const std::string& path) {
+  if (files.empty()) {
+    return InvalidArgument("WriteDeleteManifest requires at least one entry");
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  int32_t spec_id = files[0].first->partition_spec_id.value_or(0);
+  ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata.PartitionSpecById(spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      ManifestWriter::MakeWriter(metadata.format_version, /*snapshot_id=*/1L, path,
+                                 file_io, spec, schema, ManifestContent::kDeletes));
+  for (auto& [file, seq] : files) {
+    ManifestEntry entry;
+    entry.status = ManifestStatus::kAdded;
+    entry.snapshot_id = 1L;
+    entry.sequence_number = seq;
+    entry.data_file = file;
+    ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(entry));
+  }
+  ICEBERG_RETURN_UNEXPECTED(writer->Close());
+  return writer->ToManifestFile();
+}
+
+// Convenience overload for a single entry.
+static Result<ManifestFile> WriteDeleteManifest(std::shared_ptr<DataFile> delete_file,
+                                                int64_t data_sequence_number,
+                                                std::shared_ptr<FileIO> file_io,
+                                                const TableMetadata& metadata,
+                                                const std::string& path) {
+  return WriteDeleteManifest({{delete_file, data_sequence_number}}, file_io, metadata,
+                             path);
+}
+
+TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThan) {
+  auto* metadata = table_->metadata().get();
+  auto factory = MakeWriterFactory(*metadata);
+
+  // Create a position-delete file with data_sequence_number = 2 (below threshold 5).
+  auto del_file = std::make_shared<DataFile>();
+  del_file->content = DataFile::Content::kPositionDeletes;
+  del_file->file_path = table_location_ + "/delete/del_old.parquet";
+  del_file->file_format = FileFormatType::kParquet;
+  del_file->partition = PartitionValues(std::vector<Literal>{Literal::Long(1L)});
+  del_file->file_size_in_bytes = 512;
+  del_file->record_count = 10;
+  del_file->partition_spec_id = spec_->spec_id();
+
+  auto manifest_path = std::format("{}/metadata/del-manifest-{}.avro", table_location_,
+                                   manifest_counter_++);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto del_manifest,
+      WriteDeleteManifest(del_file, /*data_seq=*/2L, file_io_, *metadata, manifest_path));
+
+  ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
+  // Drop delete files older than sequence number 5: entry (seq=2) should be dropped.
+  mgr.DropDeleteFilesOlderThan(5);
+
+  std::vector<const ManifestFile*> manifests{&del_manifest};
+  auto specs = SpecsById(*metadata);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, metadata->Schema());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result,
+                         mgr.FilterManifests(schema, specs, manifests, factory));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
+  ASSERT_EQ(entries.size(), 1U);
+  EXPECT_EQ(entries[0].status, ManifestStatus::kDeleted);
+}
+
+TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThanKeepsNewerEntries) {
+  auto* metadata = table_->metadata().get();
+  auto factory = MakeWriterFactory(*metadata);
+
+  // Two entries in the same manifest: old (seq=2, below threshold) and new (seq=10,
+  // above).
+  auto make_del_file = [&](const std::string& path) {
+    auto f = std::make_shared<DataFile>();
+    f->content = DataFile::Content::kPositionDeletes;
+    f->file_path = path;
+    f->file_format = FileFormatType::kParquet;
+    f->partition = PartitionValues(std::vector<Literal>{Literal::Long(1L)});
+    f->file_size_in_bytes = 512;
+    f->record_count = 10;
+    f->partition_spec_id = spec_->spec_id();
+    return f;
+  };
+  auto old_file = make_del_file(table_location_ + "/delete/del_old.parquet");
+  auto new_file = make_del_file(table_location_ + "/delete/del_new.parquet");
+
+  auto manifest_path = std::format("{}/metadata/del-manifest-{}.avro", table_location_,
+                                   manifest_counter_++);
+  ICEBERG_UNWRAP_OR_FAIL(auto del_manifest,
+                         WriteDeleteManifest({{old_file, 2L}, {new_file, 10L}}, file_io_,
+                                             *metadata, manifest_path));
+
+  ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
+  // Threshold=5: old entry dropped, new entry survives as kExisting.
+  mgr.DropDeleteFilesOlderThan(5);
+
+  std::vector<const ManifestFile*> manifests{&del_manifest};
+  auto specs = SpecsById(*metadata);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, metadata->Schema());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result,
+                         mgr.FilterManifests(schema, specs, manifests, factory));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
+  ASSERT_EQ(entries.size(), 2U);
+  // The old entry should be dropped; the new entry should survive.
+  auto deleted = std::count_if(
+      entries.begin(), entries.end(),
+      [](const ManifestEntry& e) { return e.status == ManifestStatus::kDeleted; });
+  auto existing = std::count_if(
+      entries.begin(), entries.end(),
+      [](const ManifestEntry& e) { return e.status == ManifestStatus::kExisting; });
+  EXPECT_EQ(deleted, 1);
+  EXPECT_EQ(existing, 1);
+  // Verify which entry survived.
+  for (const auto& e : entries) {
+    if (e.status == ManifestStatus::kExisting) {
+      EXPECT_EQ(e.data_file->file_path, new_file->file_path);
+    } else {
+      EXPECT_EQ(e.data_file->file_path, old_file->file_path);
+    }
+  }
+}
+
+TEST_F(ManifestFilterManagerTest, RemoveDanglingDeletesForFiltersDanglingDV) {
+  auto* metadata = table_->metadata().get();
+  auto factory = MakeWriterFactory(*metadata);
+
+  const std::string data_file_path = table_location_ + "/data/referenced.parquet";
+
+  // Create a DV (position-delete, puffin format) referencing the data file.
+  auto dv_file = std::make_shared<DataFile>();
+  dv_file->content = DataFile::Content::kPositionDeletes;
+  dv_file->file_path = table_location_ + "/delete/dv.puffin";
+  dv_file->file_format = FileFormatType::kPuffin;
+  dv_file->referenced_data_file = data_file_path;
+  dv_file->partition = PartitionValues(std::vector<Literal>{Literal::Long(1L)});
+  dv_file->file_size_in_bytes = 256;
+  dv_file->record_count = 5;
+  dv_file->partition_spec_id = spec_->spec_id();
+
+  auto manifest_path = std::format("{}/metadata/dv-manifest-{}.avro", table_location_,
+                                   manifest_counter_++);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_manifest,
+      WriteDeleteManifest(dv_file, /*data_seq=*/3L, file_io_, *metadata, manifest_path));
+
+  // Register the referenced data file as deleted.
+  auto deleted_data_file = std::make_shared<DataFile>();
+  deleted_data_file->content = DataFile::Content::kData;
+  deleted_data_file->file_path = data_file_path;
+  deleted_data_file->partition = PartitionValues(std::vector<Literal>{Literal::Long(1L)});
+  deleted_data_file->file_size_in_bytes = 1024;
+  deleted_data_file->record_count = 50;
+  deleted_data_file->partition_spec_id = spec_->spec_id();
+
+  DataFileSet deleted_files;
+  deleted_files.insert(deleted_data_file);
+
+  ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
+  mgr.RemoveDanglingDeletesFor(deleted_files);
+
+  std::vector<const ManifestFile*> manifests{&dv_manifest};
+  auto specs = SpecsById(*metadata);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, metadata->Schema());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result,
+                         mgr.FilterManifests(schema, specs, manifests, factory));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
   ASSERT_EQ(entries.size(), 1U);
   EXPECT_EQ(entries[0].status, ManifestStatus::kDeleted);
 }

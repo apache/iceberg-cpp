@@ -89,6 +89,7 @@ set(ICEBERG_SOURCES
     type.cc
     update/expire_snapshots.cc
     update/fast_append.cc
+    update/merging_snapshot_update.cc
     update/pending_update.cc
     update/set_snapshot.cc
     update/snapshot_manager.cc

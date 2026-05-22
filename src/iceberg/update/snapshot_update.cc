@@ -41,7 +41,7 @@ namespace iceberg {
 
 namespace {
 
-// The Java impl skips updating total if parsing fails. Here we choose to be strict.
+// Skips updating total if parsing fails would be lenient; here we choose to be strict.
 Status UpdateTotal(std::unordered_map<std::string, std::string>& summary,
                    const std::unordered_map<std::string, std::string>& previous_summary,
                    const std::string& total_property, const std::string& added_property,
@@ -398,14 +398,10 @@ void SnapshotUpdate::CleanAll() {
 }
 
 Status SnapshotUpdate::DeleteFile(const std::string& path) {
-  static const auto kDefaultDeleteFunc = [this](const std::string& path) {
-    return this->ctx_->table->io()->DeleteFile(path);
-  };
   if (delete_func_) {
     return delete_func_(path);
-  } else {
-    return kDefaultDeleteFunc(path);
   }
+  return ctx_->table->io()->DeleteFile(path);
 }
 
 std::string SnapshotUpdate::ManifestListPath() {

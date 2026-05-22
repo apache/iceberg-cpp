@@ -116,8 +116,35 @@ class ICEBERG_EXPORT ManifestFilterManager {
   /// manifest entry matches a delete condition.
   void FailAnyDelete();
 
+  /// \brief Returns the number of manifests rewritten (replaced) by the last
+  /// FilterManifests() call. A manifest is replaced when it contained deleted entries
+  /// and was rewritten with those entries marked DELETED.
+  int32_t ReplacedManifestsCount() const { return replaced_manifests_count_; }
+
   /// \brief Returns true if any delete condition has been registered.
   bool ContainsDeletes() const;
+
+  /// \brief Set the minimum data sequence number for delete files to retain.
+  ///
+  /// Only valid for ManifestContent::kDeletes managers.  Delete entries whose
+  /// data_sequence_number is positive and less than \p sequence_number will be
+  /// marked DELETED.  This continuously removes delete files that cannot match
+  /// any remaining data rows (i.e. all data written before that sequence number
+  /// has itself been deleted).
+  ///
+  /// \param sequence_number the inclusive lower bound; delete files older than
+  ///        this value are dropped
+  void DropDeleteFilesOlderThan(int64_t sequence_number);
+
+  /// \brief Register data files that have been removed so their dangling DVs
+  ///        can be cleaned up.
+  ///
+  /// Only valid for ManifestContent::kDeletes managers.  For each DV whose
+  /// referenced_data_file path appears in \p deleted_files, the DV entry is
+  /// marked DELETED because the data file it targets no longer exists.
+  ///
+  /// \param deleted_files set of data files that have been marked for deletion
+  void RemoveDanglingDeletesFor(const DataFileSet& deleted_files);
 
   /// \brief Apply all accumulated delete conditions to the base snapshot's manifests.
   ///
@@ -219,6 +246,13 @@ class ICEBERG_EXPORT ManifestFilterManager {
   bool fail_missing_delete_paths_{false};
   bool fail_any_delete_{false};
   bool case_sensitive_{true};
+
+  int32_t replaced_manifests_count_{0};
+
+  // minimum data sequence number; delete entries older than this are dropped
+  int64_t min_sequence_number_{0};
+  // paths of data files that were removed; DVs referencing these are dangling
+  std::unordered_set<std::string> removed_data_file_paths_;
 
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>>
       manifest_evaluator_cache_;

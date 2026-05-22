@@ -57,6 +57,7 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeManifests(
   std::ranges::copy(manifest_ranges | std::views::join, std::back_inserter(all));
 
   if (all.empty() || !merge_enabled_) {
+    replaced_manifests_count_ = 0;
     return all |
            std::views::transform([](const ManifestFile* manifest) { return *manifest; }) |
            std::ranges::to<std::vector<ManifestFile>>();
@@ -82,6 +83,7 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeManifests(
 
   std::vector<ManifestFile> result;
   result.reserve(all.size());
+  replaced_manifests_count_ = 0;
   for (auto& [key, group] : by_spec) {
     const auto* first = first_by_content.at(key.second);
     ICEBERG_ASSIGN_OR_RAISE(auto merged, MergeGroup(group, first, snapshot_id, metadata,
@@ -140,6 +142,8 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
     } else {
       ICEBERG_ASSIGN_OR_RAISE(
           auto merged, FlushBin(bin, snapshot_id, metadata, file_io, writer_factory));
+      // Each manifest consumed into the merged output (beyond the 1 output) is replaced.
+      replaced_manifests_count_ += static_cast<int32_t>(bin.size()) - 1;
       result.push_back(std::move(merged));
     }
   }

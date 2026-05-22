@@ -117,12 +117,24 @@ bool ManifestFilterManager::ContainsDeletes() const {
          !drop_partitions_.empty();
 }
 
+void ManifestFilterManager::DropDeleteFilesOlderThan(int64_t sequence_number) {
+  min_sequence_number_ = sequence_number;
+}
+
+void ManifestFilterManager::RemoveDanglingDeletesFor(const DataFileSet& deleted_files) {
+  for (const auto& file : deleted_files) {
+    removed_data_file_paths_.insert(file->file_path);
+  }
+}
+
 Result<bool> ManifestFilterManager::CanContainDroppedFiles(const ManifestFile&) const {
   // TODO(Guotao): Use the manifest descriptor to skip unrelated object-delete
   // manifests once object-delete partitions are tracked separately.
   // Currently, DeleteFile(std::shared_ptr<DataFile>) degrades to a path-based delete,
   // which forces scanning all manifests.
-  return !delete_paths_.empty();
+  // Also open delete manifests when a minimum sequence number is set for cleanup.
+  return !delete_paths_.empty() || !removed_data_file_paths_.empty() ||
+         (manifest_content_ == ManifestContent::kDeletes && min_sequence_number_ > 0);
 }
 
 Result<bool> ManifestFilterManager::CanContainDroppedPartitions(
@@ -217,6 +229,25 @@ Result<bool> ManifestFilterManager::ShouldDelete(const ManifestEntry& entry,
       return InvalidArgument("Operation would delete existing data: {}", partition_path);
     }
     return true;
+  }
+
+  // Delete-manifest-specific cleanup (only for ManifestContent::kDeletes).
+  if (manifest_content_ == ManifestContent::kDeletes) {
+    // Drop delete files whose data sequence number is older than the minimum
+    // retained by the table (they can no longer match any live data rows).
+    // seq == 0 (kInitialSequenceNumber / nullopt) is intentionally excluded:
+    // those entries predate sequence number assignment and must not be pruned.
+    int64_t seq = entry.sequence_number.value_or(0);
+    if (min_sequence_number_ > 0 && seq > 0 && seq < min_sequence_number_) {
+      return true;
+    }
+
+    // Drop DVs that reference a data file that has been removed (dangling DV).
+    if (!removed_data_file_paths_.empty() && file.IsDeletionVector() &&
+        file.referenced_data_file.has_value() &&
+        removed_data_file_paths_.count(*file.referenced_data_file)) {
+      return true;
+    }
   }
 
   if (HasRowFilterExpression(delete_expr_)) {
@@ -403,6 +434,7 @@ Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
   bool trust_manifest_references = CanTrustManifestReferences(manifests);
   manifest_evaluator_cache_.clear();
   residual_evaluator_cache_.clear();
+  replaced_manifests_count_ = 0;
 
   // TODO(Guotao): Parallelize manifest filtering with per-manifest results, then
   // merge found paths and deleted files after the loop.
@@ -413,6 +445,9 @@ Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
         auto filtered_manifest,
         FilterManifest(schema, specs_by_id, *manifest_ptr, trust_manifest_references,
                        writer_factory, found_paths));
+    if (filtered_manifest.manifest_path != manifest_ptr->manifest_path) {
+      ++replaced_manifests_count_;
+    }
     filtered.push_back(std::move(filtered_manifest));
   }
 

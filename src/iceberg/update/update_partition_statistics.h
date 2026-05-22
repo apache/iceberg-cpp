@@ -65,9 +65,8 @@ class ICEBERG_EXPORT UpdatePartitionStatistics : public PendingUpdate {
 
   /// \brief Partition statistics updates are intentionally not retried today.
   ///
-  /// This matches the current Java `SetPartitionStatistics` behavior, which commits
-  /// directly without a retry loop. Keep this conservative until we add explicit replay
-  /// coverage for this update type.
+  /// Commits directly without a retry loop. Keep this conservative until we add
+  /// explicit replay coverage for this update type.
   bool IsRetryable() const override { return false; }
 
   struct ApplyResult {
