@@ -141,7 +141,7 @@ class OAuth2AuthSession : public AuthSession,
     props.Set(AuthProperties::kScope, config_.scope);
     props.Set(AuthProperties::kOAuth2ServerUri, config_.token_endpoint);
     for (const auto& [key, value] : config_.optional_oauth_params) {
-      props.mutable_configs()[key] = value;
+      props.mutable_configs().insert_or_assign(key, value);
     }
 
     auto result = FetchToken(client_, *empty_session, props);
