@@ -248,6 +248,11 @@ function(resolve_avro_dependency)
     set(AVRO_VENDORED TRUE)
     set_target_properties(avrocpp_s PROPERTIES OUTPUT_NAME "iceberg_vendored_avrocpp")
     set_target_properties(avrocpp_s PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+      # Work around AppleClang 21 rejecting fmt's consteval format-string checks
+      # while compiling vendored avro-cpp in C++23 mode.
+      target_compile_definitions(avrocpp_s PUBLIC FMT_USE_CONSTEVAL=0)
+    endif()
     install(TARGETS avrocpp_s
             EXPORT iceberg_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
