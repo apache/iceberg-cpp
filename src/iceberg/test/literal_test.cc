@@ -91,9 +91,21 @@ TEST_P(CastLiteralTest, CastTest) {
 TEST(LiteralTest, CrossTypeComparison) {
   auto int_literal = Literal::Int(42);
   auto string_literal = Literal::String("42");
+  auto long_literal = Literal::Long(42);
+  auto timestamp_literal = Literal::Timestamp(42);
+  auto timestamp_tz_literal = Literal::TimestampTz(42);
+  auto timestamp_ns_literal = Literal::TimestampNs(42);
+  auto timestamp_tz_ns_literal = Literal::TimestampTzNs(42);
 
   // Different types should return unordered
   EXPECT_EQ(int_literal <=> string_literal, std::partial_ordering::unordered);
+  EXPECT_EQ(long_literal <=> timestamp_literal, std::partial_ordering::unordered);
+  EXPECT_EQ(timestamp_literal <=> timestamp_ns_literal, std::partial_ordering::unordered);
+  EXPECT_EQ(int_literal <=> Literal::Date(42), std::partial_ordering::equivalent);
+  EXPECT_EQ(timestamp_literal <=> timestamp_tz_literal,
+            std::partial_ordering::equivalent);
+  EXPECT_EQ(timestamp_ns_literal <=> timestamp_tz_ns_literal,
+            std::partial_ordering::equivalent);
 }
 
 // Overflow tests
@@ -148,6 +160,18 @@ TEST(LiteralTest, CastToError) {
 
   // Cast to Fixed with different length should fail
   EXPECT_THAT(fixed_literal.CastTo(fixed(5)), IsError(ErrorKind::kNotSupported));
+
+  constexpr auto max_micros = std::numeric_limits<int64_t>::max() / 1000;
+  EXPECT_THAT(Literal::Timestamp(max_micros + 1).CastTo(timestamp_ns()),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(Literal::Timestamp(max_micros + 1).CastTo(timestamptz_ns()),
+              IsError(ErrorKind::kInvalidArgument));
+
+  constexpr auto min_micros = std::numeric_limits<int64_t>::min() / 1000;
+  EXPECT_THAT(Literal::TimestampTz(min_micros - 1).CastTo(timestamp_ns()),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(Literal::TimestampTz(min_micros - 1).CastTo(timestamptz_ns()),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 // Special value tests
@@ -663,7 +687,15 @@ INSTANTIATE_TEST_SUITE_P(
         ComparisonLiteralTestParam{.test_name = "TimestampTz",
                                    .small_literal = Literal::TimestampTz(1000000LL),
                                    .large_literal = Literal::TimestampTz(2000000LL),
-                                   .equal_literal = Literal::TimestampTz(1000000LL)}),
+                                   .equal_literal = Literal::TimestampTz(1000000LL)},
+        ComparisonLiteralTestParam{.test_name = "TimestampNs",
+                                   .small_literal = Literal::TimestampNs(1000000LL),
+                                   .large_literal = Literal::TimestampNs(2000000LL),
+                                   .equal_literal = Literal::TimestampNs(1000000LL)},
+        ComparisonLiteralTestParam{.test_name = "TimestampTzNs",
+                                   .small_literal = Literal::TimestampTzNs(1000000LL),
+                                   .large_literal = Literal::TimestampTzNs(2000000LL),
+                                   .equal_literal = Literal::TimestampTzNs(1000000LL)}),
     [](const ::testing::TestParamInfo<ComparisonLiteralTestParam>& info) {
       return info.param.test_name;
     });
@@ -713,6 +745,14 @@ INSTANTIATE_TEST_SUITE_P(
                              .source_literal = Literal::Long(42L),
                              .target_type = timestamp_tz(),
                              .expected_literal = Literal::TimestampTz(42L)},
+        CastLiteralTestParam{.test_name = "LongToTimestampNs",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = timestamp_ns(),
+                             .expected_literal = Literal::TimestampNs(42L)},
+        CastLiteralTestParam{.test_name = "LongToTimestampTzNs",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = timestamptz_ns(),
+                             .expected_literal = Literal::TimestampTzNs(42L)},
         CastLiteralTestParam{
             .test_name = "TimestampToDate",
             .source_literal =
@@ -758,6 +798,30 @@ INSTANTIATE_TEST_SUITE_P(
                                                                       .second = 59})),
                              .target_type = date(),
                              .expected_literal = Literal::Date(-1)},
+        CastLiteralTestParam{.test_name = "TimestampNsToTimestampBeforeEpoch",
+                             .source_literal = Literal::TimestampNs(-876543211),
+                             .target_type = timestamp(),
+                             .expected_literal = Literal::Timestamp(-876544)},
+        CastLiteralTestParam{.test_name = "TimestampNsToTimestampTzBeforeEpoch",
+                             .source_literal = Literal::TimestampNs(-876543211),
+                             .target_type = timestamp_tz(),
+                             .expected_literal = Literal::TimestampTz(-876544)},
+        CastLiteralTestParam{.test_name = "TimestampToTimestampNsBeforeEpoch",
+                             .source_literal = Literal::Timestamp(-876544),
+                             .target_type = timestamp_ns(),
+                             .expected_literal = Literal::TimestampNs(-876544000)},
+        CastLiteralTestParam{.test_name = "TimestampToTimestampTzNsBeforeEpoch",
+                             .source_literal = Literal::Timestamp(-876544),
+                             .target_type = timestamptz_ns(),
+                             .expected_literal = Literal::TimestampTzNs(-876544000)},
+        CastLiteralTestParam{.test_name = "TimestampTzNsToTimestampTzBeforeEpoch",
+                             .source_literal = Literal::TimestampTzNs(-876543211),
+                             .target_type = timestamp_tz(),
+                             .expected_literal = Literal::TimestampTz(-876544)},
+        CastLiteralTestParam{.test_name = "TimestampTzToTimestampTzNsBeforeEpoch",
+                             .source_literal = Literal::TimestampTz(-876544),
+                             .target_type = timestamptz_ns(),
+                             .expected_literal = Literal::TimestampTzNs(-876544000)},
         // Float cast tests
         CastLiteralTestParam{.test_name = "FloatToDouble",
                              .source_literal = Literal::Float(2.0f),
@@ -812,6 +876,16 @@ INSTANTIATE_TEST_SUITE_P(
             .source_literal = Literal::String("2026-01-01T00:00:01.500+00:00"),
             .target_type = timestamp_tz(),
             .expected_literal = Literal::TimestampTz(1767225601500000L)},
+        CastLiteralTestParam{
+            .test_name = "StringToTimestampNsBeforeEpoch",
+            .source_literal = Literal::String("1969-12-31T23:59:59.123456789"),
+            .target_type = timestamp_ns(),
+            .expected_literal = Literal::TimestampNs(-876543211)},
+        CastLiteralTestParam{
+            .test_name = "StringToTimestampTzNsBeforeEpoch",
+            .source_literal = Literal::String("1969-12-31T23:59:59.123456789+00:00"),
+            .target_type = timestamptz_ns(),
+            .expected_literal = Literal::TimestampTzNs(-876543211)},
         CastLiteralTestParam{.test_name = "StringToBinary",
                              .source_literal = Literal::String("010203FF"),
                              .target_type = binary(),

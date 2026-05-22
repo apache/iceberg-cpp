@@ -161,6 +161,24 @@ TEST(BucketUtilsTest, BucketTimestampNanosMatchesMicros) {
   ASSERT_TRUE(tz_micros_bucket.has_value());
   ASSERT_TRUE(tz_nanos_bucket.has_value());
   EXPECT_EQ(tz_micros_bucket.value(), tz_nanos_bucket.value());
+
+  const auto pre_epoch_micros_bucket =
+      BucketUtils::BucketIndex(Literal::Timestamp(-876544), kNumBuckets);
+  const auto pre_epoch_nanos_bucket =
+      BucketUtils::BucketIndex(Literal::TimestampNs(-876543211), kNumBuckets);
+
+  ASSERT_TRUE(pre_epoch_micros_bucket.has_value());
+  ASSERT_TRUE(pre_epoch_nanos_bucket.has_value());
+  EXPECT_EQ(pre_epoch_micros_bucket.value(), pre_epoch_nanos_bucket.value());
+
+  const auto pre_epoch_tz_micros_bucket =
+      BucketUtils::BucketIndex(Literal::TimestampTz(-876544), kNumBuckets);
+  const auto pre_epoch_tz_nanos_bucket =
+      BucketUtils::BucketIndex(Literal::TimestampTzNs(-876543211), kNumBuckets);
+
+  ASSERT_TRUE(pre_epoch_tz_micros_bucket.has_value());
+  ASSERT_TRUE(pre_epoch_tz_nanos_bucket.has_value());
+  EXPECT_EQ(pre_epoch_tz_micros_bucket.value(), pre_epoch_tz_nanos_bucket.value());
 }
 
 }  // namespace iceberg

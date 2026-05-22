@@ -273,17 +273,27 @@ Result<Literal> LiteralCaster::CastFromTimestamp(
       return Literal::Date(std::get<int32_t>(days.value()));
     }
     case TypeId::kTimestamp:
-      return source_is_nanos ? Literal::Timestamp(timestamp_val / 1000)
-                             : Literal::Timestamp(timestamp_val);
+      return source_is_nanos
+                 ? Literal::Timestamp(TemporalUtils::NanosToMicros(timestamp_val))
+                 : Literal::Timestamp(timestamp_val);
     case TypeId::kTimestampTz:
-      return source_is_nanos ? Literal::TimestampTz(timestamp_val / 1000)
-                             : Literal::TimestampTz(timestamp_val);
-    case TypeId::kTimestampNs:
-      return source_is_nanos ? Literal::TimestampNs(timestamp_val)
-                             : Literal::TimestampNs(timestamp_val * 1000);
-    case TypeId::kTimestampTzNs:
-      return source_is_nanos ? Literal::TimestampTzNs(timestamp_val)
-                             : Literal::TimestampTzNs(timestamp_val * 1000);
+      return source_is_nanos
+                 ? Literal::TimestampTz(TemporalUtils::NanosToMicros(timestamp_val))
+                 : Literal::TimestampTz(timestamp_val);
+    case TypeId::kTimestampNs: {
+      if (source_is_nanos) {
+        return Literal::TimestampNs(timestamp_val);
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto nanos, TemporalUtils::MicrosToNanos(timestamp_val));
+      return Literal::TimestampNs(nanos);
+    }
+    case TypeId::kTimestampTzNs: {
+      if (source_is_nanos) {
+        return Literal::TimestampTzNs(timestamp_val);
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto nanos, TemporalUtils::MicrosToNanos(timestamp_val));
+      return Literal::TimestampTzNs(nanos);
+    }
     default:
       return NotSupported("Cast from Timestamp to {} is not supported",
                           target_type->ToString());
@@ -303,17 +313,27 @@ Result<Literal> LiteralCaster::CastFromTimestampTz(
       return Literal::Date(std::get<int32_t>(days.value()));
     }
     case TypeId::kTimestampTz:
-      return source_is_nanos ? Literal::TimestampTz(timestamp_val / 1000)
-                             : Literal::TimestampTz(timestamp_val);
+      return source_is_nanos
+                 ? Literal::TimestampTz(TemporalUtils::NanosToMicros(timestamp_val))
+                 : Literal::TimestampTz(timestamp_val);
     case TypeId::kTimestamp:
-      return source_is_nanos ? Literal::Timestamp(timestamp_val / 1000)
-                             : Literal::Timestamp(timestamp_val);
-    case TypeId::kTimestampNs:
-      return source_is_nanos ? Literal::TimestampNs(timestamp_val)
-                             : Literal::TimestampNs(timestamp_val * 1000);
-    case TypeId::kTimestampTzNs:
-      return source_is_nanos ? Literal::TimestampTzNs(timestamp_val)
-                             : Literal::TimestampTzNs(timestamp_val * 1000);
+      return source_is_nanos
+                 ? Literal::Timestamp(TemporalUtils::NanosToMicros(timestamp_val))
+                 : Literal::Timestamp(timestamp_val);
+    case TypeId::kTimestampNs: {
+      if (source_is_nanos) {
+        return Literal::TimestampNs(timestamp_val);
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto nanos, TemporalUtils::MicrosToNanos(timestamp_val));
+      return Literal::TimestampNs(nanos);
+    }
+    case TypeId::kTimestampTzNs: {
+      if (source_is_nanos) {
+        return Literal::TimestampTzNs(timestamp_val);
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto nanos, TemporalUtils::MicrosToNanos(timestamp_val));
+      return Literal::TimestampTzNs(nanos);
+    }
     default:
       return NotSupported("Cast from TimestampTz to {} is not supported",
                           target_type->ToString());
@@ -431,21 +451,19 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
 namespace {
 
 bool Comparable(TypeId lhs, TypeId rhs) {
-  switch (lhs) {
-    case TypeId::kInt:
-    case TypeId::kDate:
-      return rhs == TypeId::kInt || rhs == TypeId::kDate;
-    case TypeId::kLong:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-    case TypeId::kTimestampNs:
-    case TypeId::kTimestampTzNs:
-      return rhs == TypeId::kLong || rhs == TypeId::kTimestamp ||
-             rhs == TypeId::kTimestampTz || rhs == TypeId::kTimestampNs ||
-             rhs == TypeId::kTimestampTzNs;
-    default:
-      return lhs == rhs;
+  if (lhs == rhs) {
+    return true;
   }
+  if ((lhs == TypeId::kInt || lhs == TypeId::kDate) &&
+      (rhs == TypeId::kInt || rhs == TypeId::kDate)) {
+    return true;
+  }
+  if ((lhs == TypeId::kTimestamp || lhs == TypeId::kTimestampTz) &&
+      (rhs == TypeId::kTimestamp || rhs == TypeId::kTimestampTz)) {
+    return true;
+  }
+  return (lhs == TypeId::kTimestampNs || lhs == TypeId::kTimestampTzNs) &&
+         (rhs == TypeId::kTimestampNs || rhs == TypeId::kTimestampTzNs);
 }
 
 }  // namespace
@@ -454,8 +472,8 @@ bool Literal::operator==(const Literal& other) const { return (*this <=> other) 
 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {
-  // If types are different, comparison is unordered
-  // (Int & Date) (Timestamp & Long) were excluded from this check to allow comparison
+  // Allow date/int comparisons for transformed date bounds. Otherwise, comparisons
+  // are limited to identical logical values.
   if (!Comparable(type_->type_id(), other.type_->type_id())) {
     return std::partial_ordering::unordered;
   }

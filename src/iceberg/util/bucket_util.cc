@@ -24,6 +24,7 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/util/endian.h"
 #include "iceberg/util/murmurhash3_internal.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -65,12 +66,14 @@ int32_t HashLiteral<TypeId::kTimestampTz>(const Literal& literal) {
 
 template <>
 int32_t HashLiteral<TypeId::kTimestampNs>(const Literal& literal) {
-  return BucketUtils::HashLong(std::get<int64_t>(literal.value()) / 1000);
+  return BucketUtils::HashLong(
+      TemporalUtils::NanosToMicros(std::get<int64_t>(literal.value())));
 }
 
 template <>
 int32_t HashLiteral<TypeId::kTimestampTzNs>(const Literal& literal) {
-  return BucketUtils::HashLong(std::get<int64_t>(literal.value()) / 1000);
+  return BucketUtils::HashLong(
+      TemporalUtils::NanosToMicros(std::get<int64_t>(literal.value())));
 }
 
 template <>

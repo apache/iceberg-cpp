@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -27,6 +29,12 @@ namespace iceberg {
 
 class ICEBERG_EXPORT TemporalUtils {
  public:
+  /// \brief Convert nanoseconds since epoch to microseconds using floor division.
+  static int64_t NanosToMicros(int64_t nanos);
+
+  /// \brief Convert microseconds since epoch to nanoseconds, failing on overflow.
+  static Result<int64_t> MicrosToNanos(int64_t micros);
+
   /// \brief Extract a date or timestamp year, as years from 1970
   static Result<Literal> ExtractYear(const Literal& literal);
 

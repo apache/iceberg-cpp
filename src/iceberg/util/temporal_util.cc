@@ -21,9 +21,11 @@
 
 #include <chrono>
 #include <cstdint>
+#include <limits>
 #include <utility>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/util/int128.h"
 
 namespace iceberg {
 
@@ -31,8 +33,27 @@ namespace {
 
 using namespace std::chrono;  // NOLINT
 
+constexpr int64_t kNanosPerMicro = 1000;
+
 constexpr auto kEpochYmd = year{1970} / January / 1;
 constexpr auto kEpochDays = sys_days(kEpochYmd);
+
+inline constexpr int64_t FloorDiv(int64_t dividend, int64_t divisor) {
+  const auto quotient = dividend / divisor;
+  if ((dividend ^ divisor) < 0 && quotient * divisor != dividend) {
+    return quotient - 1;
+  }
+  return quotient;
+}
+
+Result<int64_t> MultiplyExact(int64_t lhs, int64_t rhs) {
+  const auto result = static_cast<int128_t>(lhs) * static_cast<int128_t>(rhs);
+  if (result > std::numeric_limits<int64_t>::max() ||
+      result < std::numeric_limits<int64_t>::min()) [[unlikely]] {
+    return InvalidArgument("Long overflow when multiplying {} by {}", lhs, rhs);
+  }
+  return static_cast<int64_t>(result);
+}
 
 inline constexpr year_month_day DateToYmd(int32_t days_since_epoch) {
   return {kEpochDays + days{days_since_epoch}};
@@ -204,6 +225,14 @@ Result<Literal> ExtractHourImpl<TypeId::kTimestampTzNs>(const Literal& literal) 
 }
 
 }  // namespace
+
+int64_t TemporalUtils::NanosToMicros(int64_t nanos) {
+  return FloorDiv(nanos, kNanosPerMicro);
+}
+
+Result<int64_t> TemporalUtils::MicrosToNanos(int64_t micros) {
+  return MultiplyExact(micros, kNanosPerMicro);
+}
 
 #define DISPATCH_EXTRACT_YEAR(type_id) \
   case type_id:                        \
