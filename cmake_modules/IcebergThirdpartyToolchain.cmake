@@ -193,6 +193,17 @@ endfunction()
 function(resolve_avro_dependency)
   prepare_fetchcontent()
 
+  # Provide fmt 11.x before avro-cpp to fix constexpr errors with
+  # fmt 10.2.1 on Clang 20+ (Xcode 26) in C++23 mode.
+  find_package(fmt 11 QUIET)
+  if(NOT fmt_FOUND)
+    fetchcontent_declare(fmt
+                         ${FC_DECLARE_COMMON_OPTIONS}
+                         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+                         GIT_TAG 11.1.4)
+    fetchcontent_makeavailable(fmt)
+  endif()
+
   set(AVRO_USE_BOOST
       OFF
       CACHE BOOL "" FORCE)
