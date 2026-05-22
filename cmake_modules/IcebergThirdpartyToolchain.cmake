@@ -251,7 +251,7 @@ function(resolve_avro_dependency)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
       # Work around AppleClang 21 rejecting fmt's consteval format-string checks
       # while compiling vendored avro-cpp in C++23 mode.
-      target_compile_definitions(avrocpp_s PRIVATE FMT_CONSTEVAL=)
+      target_compile_definitions(avrocpp_s PUBLIC FMT_CONSTEVAL=)
     endif()
     install(TARGETS avrocpp_s
             EXPORT iceberg_targets
