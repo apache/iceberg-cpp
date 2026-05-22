@@ -27,6 +27,7 @@
 
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
@@ -94,6 +95,32 @@ TEST(SchemaTest, Equality) {
   ASSERT_NE(schema4, schema1);
   ASSERT_EQ(schema1, schema5);
   ASSERT_EQ(schema5, schema1);
+}
+
+TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
+  iceberg::Schema timestamp_ns_schema(
+      {iceberg::SchemaField(1, "timestamp_ns", iceberg::timestamp_ns(), false)});
+  iceberg::Schema timestamptz_ns_schema(
+      {iceberg::SchemaField(1, "timestamptz_ns", iceberg::timestamptz_ns(), false)});
+
+  auto status = timestamp_ns_schema.Validate(2);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage(
+                          "Invalid type for timestamp_ns: timestamp_ns is not "
+                          "supported until v3"));
+
+  status = timestamptz_ns_schema.Validate(2);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage(
+                          "Invalid type for timestamptz_ns: timestamptz_ns is not "
+                          "supported until v3"));
+
+  EXPECT_THAT(
+      timestamp_ns_schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+      iceberg::IsOk());
+  EXPECT_THAT(timestamptz_ns_schema.Validate(
+                  iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
 }
 
 TEST(SchemaTest, IdentifierFields) {
