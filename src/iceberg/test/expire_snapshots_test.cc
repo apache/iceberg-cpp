@@ -19,8 +19,12 @@
 
 #include "iceberg/update/expire_snapshots.h"
 
+#include <atomic>
+#include <chrono>
+#include <mutex>
 #include <optional>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -38,9 +42,19 @@
 
 namespace iceberg {
 
-class ExpireSnapshotsTest : public UpdateTestBase {};
+class ExpireSnapshotsTest : public UpdateTestBase {
+ protected:
+  void RecordDeletedFile(std::vector<std::string>& deleted_files,
+                         const std::string& path) {
+    std::lock_guard lock(deleted_files_mutex_);
+    deleted_files.push_back(path);
+  }
 
-class ExpireSnapshotsCleanupTest : public UpdateTestBase {
+ private:
+  std::mutex deleted_files_mutex_;
+};
+
+class ExpireSnapshotsCleanupTest : public ExpireSnapshotsTest {
  protected:
   static constexpr int64_t kExpiredSnapshotId = 3051729675574597004;
   static constexpr int64_t kCurrentSnapshotId = 3055729675574597004;
@@ -289,8 +303,9 @@ TEST_F(ExpireSnapshotsCleanupTest, RetainsUnreferencedSnapshotAtExpireThreshold)
 TEST_F(ExpireSnapshotsTest, FinalizeRequiresCommittedMetadata) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   // Apply first so apply_result_ is cached
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
@@ -308,8 +323,9 @@ TEST_F(ExpireSnapshotsTest, CleanupNoneSkipsDeletion) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->CleanupLevel(CleanupLevel::kNone);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
@@ -323,8 +339,9 @@ TEST_F(ExpireSnapshotsTest, CleanupNoneSkipsDeletion) {
 TEST_F(ExpireSnapshotsTest, FinalizeSkippedOnCommitError) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
@@ -340,8 +357,9 @@ TEST_F(ExpireSnapshotsTest, FinalizeSkipsWhenNothingExpired) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->RetainLast(2);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_TRUE(result.snapshot_ids_to_remove.empty());
@@ -395,8 +413,9 @@ TEST_F(ExpireSnapshotsCleanupTest, IgnoresExpiredDeleteManifestReadFailures) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   // Force the reachable path.
   update->ExpireSnapshotId(kExpiredSnapshotId);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
@@ -434,10 +453,65 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredFiles) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->ExpireSnapshotId(kExpiredSnapshotId);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
+                                                           expired_data_manifest_path,
+                                                           expired_delete_manifest_path,
+                                                           expired_manifest_list_path));
+}
+
+TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredFilesInParallel) {
+  const auto expired_data_file_path = table_location_ + "/data/expired-data.parquet";
+  const auto expired_delete_file_path = table_location_ + "/data/expired-delete.parquet";
+  const auto expired_data_manifest_path = table_location_ + "/metadata/expired-data.avro";
+  const auto expired_delete_manifest_path =
+      table_location_ + "/metadata/expired-delete.avro";
+  const auto expired_manifest_list_path =
+      table_location_ + "/metadata/expired-manifest-list.avro";
+  const auto current_manifest_list_path =
+      table_location_ + "/metadata/current-manifest-list.avro";
+
+  auto expired_data_manifest = WriteDataManifest(
+      expired_data_manifest_path, kExpiredSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId, kExpiredSequenceNumber,
+                 MakeDataFile(expired_data_file_path))});
+  auto expired_delete_manifest = WriteDeleteManifest(
+      expired_delete_manifest_path, kExpiredSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId, kExpiredSequenceNumber,
+                 MakePositionDeleteFile(expired_delete_file_path))});
+  WriteManifestList(expired_manifest_list_path, kExpiredSnapshotId,
+                    /*parent_snapshot_id=*/0, kExpiredSequenceNumber,
+                    {expired_data_manifest, expired_delete_manifest});
+  WriteManifestList(current_manifest_list_path, kCurrentSnapshotId, kExpiredSnapshotId,
+                    kCurrentSequenceNumber, {});
+  RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
+
+  std::atomic<int> active_deletes{0};
+  std::atomic<int> max_active_deletes{0};
+  std::vector<std::string> deleted_files;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  update->ExpireSnapshotId(kExpiredSnapshotId);
+  update->DeleteWith([this, &active_deletes, &max_active_deletes,
+                      &deleted_files](const std::string& path) {
+    int active = active_deletes.fetch_add(1) + 1;
+    int observed = max_active_deletes.load();
+    while (active > observed &&
+           !max_active_deletes.compare_exchange_weak(observed, active)) {
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    RecordDeletedFile(deleted_files, path);
+    active_deletes.fetch_sub(1);
+  });
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_GT(max_active_deletes.load(), 1);
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
                                                            expired_data_manifest_path,
                                                            expired_delete_manifest_path,
@@ -473,8 +547,9 @@ TEST_F(ExpireSnapshotsCleanupTest, MetadataOnlySkipsDataDeletion) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->CleanupLevel(CleanupLevel::kMetadataOnly);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_manifest_path,
@@ -510,8 +585,9 @@ TEST_F(ExpireSnapshotsCleanupTest, RetainedDeleteManifestSkipsDataDeletion) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_manifest_path,
@@ -535,8 +611,9 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredStats) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Contains(expired_statistics_path));
@@ -561,8 +638,9 @@ TEST_F(ExpireSnapshotsCleanupTest, KeepsReusedStats) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Not(testing::Contains(reused_statistics_path)));
@@ -586,8 +664,9 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredPartitionStats) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Contains(expired_statistics_path));
@@ -612,8 +691,9 @@ TEST_F(ExpireSnapshotsCleanupTest, KeepsReusedPartitionStats) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Not(testing::Contains(reused_statistics_path)));
@@ -640,8 +720,9 @@ TEST_F(ExpireSnapshotsCleanupTest, IncrementalDispatchPreservesAncestorAddedFile
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Contains(expired_data_manifest_path));
@@ -673,8 +754,9 @@ TEST_F(ExpireSnapshotsCleanupTest, IncrementalDeletesExpiredDeletedEntries) {
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::Contains(deleted_data_file_path));
@@ -704,8 +786,9 @@ TEST_F(ExpireSnapshotsCleanupTest, ReachableDispatchDeletesUnreachableData) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->ExpireSnapshotId(kExpiredSnapshotId);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
@@ -742,8 +825,9 @@ TEST_F(ExpireSnapshotsCleanupTest, IncrementalSkipsCherryPickedSnapshotCleanup) 
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_TRUE(deleted_files.empty());
@@ -792,8 +876,9 @@ TEST_F(ExpireSnapshotsCleanupTest, ReachableCleanupFailsClosedOnUnbindableExpire
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->ExpireSnapshotId(kExpiredSnapshotId);
   update->CleanExpiredMetadata(true);
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_manifest_path,
@@ -821,8 +906,9 @@ TEST_F(ExpireSnapshotsCleanupTest, CommitIgnoresMalformedSourceSnapshotIdCleanup
 
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  update->DeleteWith(
-      [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
+  update->DeleteWith([this, &deleted_files](const std::string& path) {
+    RecordDeletedFile(deleted_files, path);
+  });
 
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_TRUE(deleted_files.empty());

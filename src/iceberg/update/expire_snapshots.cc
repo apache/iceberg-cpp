@@ -24,6 +24,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <thread>
 #include <tuple>
 #include <unordered_set>
 #include <utility>
@@ -47,6 +48,8 @@
 namespace iceberg {
 
 namespace {
+
+constexpr size_t kDefaultDeleteParallelism = 4;
 
 Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
     const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
@@ -100,13 +103,39 @@ class FileCleanupStrategy {
 
   /// \brief Delete files at the given locations.
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
+    if (paths.empty()) {
+      return;
+    }
+
+    std::vector<std::string> path_list(paths.begin(), paths.end());
+    auto parallelism = std::min(kDefaultDeleteParallelism, path_list.size());
+    if (parallelism <= 1) {
+      DeleteFileRange(path_list, 0, path_list.size());
+      return;
+    }
+
+    std::vector<std::thread> workers;
+    workers.reserve(parallelism);
+    const size_t chunk_size = (path_list.size() + parallelism - 1) / parallelism;
+    for (size_t begin = 0; begin < path_list.size(); begin += chunk_size) {
+      const size_t end = std::min(begin + chunk_size, path_list.size());
+      workers.emplace_back(
+          [this, &path_list, begin, end] { DeleteFileRange(path_list, begin, end); });
+    }
+
+    for (auto& worker : workers) {
+      worker.join();
+    }
+  }
+
+  void DeleteFileRange(const std::vector<std::string>& paths, size_t begin, size_t end) {
     try {
       if (delete_func_) {
-        for (const auto& path : paths) {
-          delete_func_(path);
+        for (size_t i = begin; i < end; ++i) {
+          delete_func_(paths[i]);
         }
       } else {
-        std::vector<std::string> path_list(paths.begin(), paths.end());
+        std::vector<std::string> path_list(paths.begin() + begin, paths.begin() + end);
         std::ignore = file_io_->DeleteFiles(path_list);
       }
     } catch (...) {
