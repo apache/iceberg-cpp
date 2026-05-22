@@ -436,20 +436,15 @@ TEST_P(ManifestGroupTest, FilterFilesByRecordCount) {
                                             "/path/to/large.parquet"));
 }
 
-TEST_P(ManifestGroupTest, FilterFilesByPartitionMetadata) {
+TEST_P(ManifestGroupTest, FilterFilesRejectsPartitionMetadata) {
   auto version = GetParam();
 
   constexpr int64_t kSnapshotId = 1000L;
-  const auto partition_bucket_0 = PartitionValues({Literal::Int(0)});
-  const auto partition_bucket_1 = PartitionValues({Literal::Int(1)});
+  const auto part_value = PartitionValues({Literal::Int(0)});
 
-  std::vector<ManifestEntry> data_entries{
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/bucket0.parquet", partition_bucket_0,
-                             partitioned_spec_->spec_id())),
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/bucket1.parquet", partition_bucket_1,
-                             partitioned_spec_->spec_id()))};
+  std::vector<ManifestEntry> data_entries{MakeEntry(
+      ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+      MakeDataFile("/path/to/data.parquet", part_value, partitioned_spec_->spec_id()))};
   auto data_manifest =
       WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
 
@@ -459,8 +454,9 @@ TEST_P(ManifestGroupTest, FilterFilesByPartitionMetadata) {
       ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
   group->FilterFiles(Expressions::Equal("partition.data_bucket_16_2", Literal::Int(1)));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
-  EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/bucket1.parquet"));
+  auto result = group->Entries();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
+  EXPECT_THAT(result, HasErrorMessage("Cannot find field 'partition.data_bucket_16_2'"));
 }
 
 TEST_P(ManifestGroupTest, FilterFilesReadsFilteredColumnsWhenSelected) {
@@ -492,44 +488,38 @@ TEST_P(ManifestGroupTest, FilterFilesReadsFilteredColumnsWhenSelected) {
   EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/matching.parquet"));
 }
 
-TEST_P(ManifestGroupTest, FilterFilesReadsPartitionMetadataWhenSelected) {
+TEST_P(ManifestGroupTest, FilterFilesBySpecIdWhenSelected) {
   auto version = GetParam();
 
-  std::shared_ptr<PartitionSpec> multi_field_spec;
-  ICEBERG_UNWRAP_OR_FAIL(
-      multi_field_spec,
-      PartitionSpec::Make(
-          /*spec_id=*/2, {PartitionField(/*source_id=*/1, /*field_id=*/1001,
-                                         "id_identity", Transform::Identity()),
-                          PartitionField(/*source_id=*/2, /*field_id=*/1002,
-                                         "data_identity", Transform::Identity())}));
-
   constexpr int64_t kSnapshotId = 1000L;
-  const auto keep_partition = PartitionValues({Literal::Int(1), Literal::String("keep")});
-  const auto drop_partition = PartitionValues({Literal::Int(2), Literal::String("drop")});
+  const auto unpartitioned_value = PartitionValues(std::vector<Literal>{});
+  const auto partitioned_value = PartitionValues({Literal::Int(1)});
 
-  std::vector<ManifestEntry> data_entries{
+  std::vector<ManifestEntry> unpartitioned_entries{
       MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/drop.parquet", drop_partition,
-                             multi_field_spec->spec_id())),
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/keep.parquet", keep_partition,
-                             multi_field_spec->spec_id()))};
-  auto data_manifest =
-      WriteDataManifest(version, kSnapshotId, std::move(data_entries), multi_field_spec);
+                MakeDataFile("/path/to/unpartitioned.parquet", unpartitioned_value,
+                             unpartitioned_spec_->spec_id()))};
+  auto unpartitioned_manifest = WriteDataManifest(
+      version, kSnapshotId, std::move(unpartitioned_entries), unpartitioned_spec_);
 
-  auto specs_by_id = GetSpecsById();
-  specs_by_id[multi_field_spec->spec_id()] = multi_field_spec;
-  std::vector<ManifestFile> manifests = {data_manifest};
-  ICEBERG_UNWRAP_OR_FAIL(auto group,
-                         ManifestGroup::Make(file_io_, schema_, std::move(specs_by_id),
-                                             std::move(manifests)));
+  std::vector<ManifestEntry> partitioned_entries{
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/partitioned.parquet", partitioned_value,
+                             partitioned_spec_->spec_id()))};
+  auto partitioned_manifest = WriteDataManifest(
+      version, kSnapshotId, std::move(partitioned_entries), partitioned_spec_);
+
+  std::vector<ManifestFile> manifests = {unpartitioned_manifest, partitioned_manifest};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
   group->Select({"file_path"})
       .FilterFiles(
-          Expressions::Equal("partition.data_identity", Literal::String("keep")));
+          Expressions::Equal("spec_id", Literal::Int(partitioned_spec_->spec_id())));
 
   ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
-  EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/keep.parquet"));
+  EXPECT_THAT(GetEntryPaths(entries),
+              testing::ElementsAre("/path/to/partitioned.parquet"));
 }
 
 TEST_P(ManifestGroupTest, EmptyManifestGroup) {

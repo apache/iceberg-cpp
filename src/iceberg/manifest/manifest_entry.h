@@ -193,6 +193,10 @@ struct ICEBERG_EXPORT DataFile {
       SchemaField::MakeRequired(kFileFormatFieldId, "file_format", string(),
                                 "File format name: avro, orc, or parquet");
 
+  static constexpr int32_t kSpecIdFieldId = 141;
+  inline static const SchemaField kSpecId =
+      SchemaField::MakeOptional(kSpecIdFieldId, "spec_id", int32(), "Partition spec ID");
+
   static constexpr int32_t kPartitionFieldId = 102;
   inline static const std::string kPartitionField = "partition";
   inline static const std::string kPartitionDoc =

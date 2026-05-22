@@ -22,6 +22,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <span>
 #include <type_traits>
 #include <vector>
 
@@ -36,24 +37,25 @@ enum class DataFileFieldPosition : size_t {
   kContent = 0,
   kFilePath = 1,
   kFileFormat = 2,
-  kPartition = 3,
-  kRecordCount = 4,
-  kFileSize = 5,
-  kColumnSizes = 6,
-  kValueCounts = 7,
-  kNullValueCounts = 8,
-  kNanValueCounts = 9,
-  kLowerBounds = 10,
-  kUpperBounds = 11,
-  kKeyMetadata = 12,
-  kSplitOffsets = 13,
-  kEqualityIds = 14,
-  kSortOrderId = 15,
-  kFirstRowId = 16,
-  kReferencedDataFile = 17,
-  kContentOffset = 18,
-  kContentSize = 19,
-  kNextUnusedId = 20,
+  kSpecId = 3,
+  kPartition = 4,
+  kRecordCount = 5,
+  kFileSize = 6,
+  kColumnSizes = 7,
+  kValueCounts = 8,
+  kNullValueCounts = 9,
+  kNanValueCounts = 10,
+  kLowerBounds = 11,
+  kUpperBounds = 12,
+  kKeyMetadata = 13,
+  kSplitOffsets = 14,
+  kEqualityIds = 15,
+  kSortOrderId = 16,
+  kFirstRowId = 17,
+  kReferencedDataFile = 18,
+  kContentOffset = 19,
+  kContentSize = 20,
+  kNextUnusedId = 21,
 };
 
 template <typename T>
@@ -86,19 +88,19 @@ Result<Scalar> FromOptionalString(const std::optional<std::string>& value) {
 template <typename T>
 class VectorArrayLike : public ArrayLike {
  public:
-  explicit VectorArrayLike(const std::vector<T>& values) : values_(values) {}
+  explicit VectorArrayLike(std::span<const T> values) : values_(values) {}
 
   Result<Scalar> GetElement(size_t pos) const override {
     if (pos >= size()) {
       return InvalidArgument("Invalid array index: {}", pos);
     }
-    return ToScalar(values_.get()[pos]);
+    return ToScalar(values_[pos]);
   }
 
-  size_t size() const override { return values_.get().size(); }
+  size_t size() const override { return values_.size(); }
 
  private:
-  std::reference_wrapper<const std::vector<T>> values_;
+  std::span<const T> values_;
 };
 
 template <typename V>
@@ -125,6 +127,29 @@ class IntMapLike : public MapLike {
  private:
   std::reference_wrapper<const std::map<int32_t, V>> values_;
 };
+
+template <typename V>
+Result<Scalar> FromOptionalMap(const std::map<int32_t, V>& values) {
+  if (values.empty()) {
+    return std::monostate{};
+  }
+  return std::make_shared<IntMapLike<V>>(values);
+}
+
+template <typename T>
+Result<Scalar> FromOptionalVector(const std::vector<T>& values) {
+  if (values.empty()) {
+    return std::monostate{};
+  }
+  return std::make_shared<VectorArrayLike<T>>(values);
+}
+
+Result<Scalar> FromOptionalBytes(const std::vector<uint8_t>& value) {
+  if (value.empty()) {
+    return std::monostate{};
+  }
+  return ToView(value);
+}
 
 }  // namespace
 
@@ -234,6 +259,8 @@ Result<Scalar> DataFileStructLike::GetField(size_t pos) const {
       return ToView(data_file.file_path);
     case DataFileFieldPosition::kFileFormat:
       return ToString(data_file.file_format);
+    case DataFileFieldPosition::kSpecId:
+      return FromOptional(data_file.partition_spec_id);
     case DataFileFieldPosition::kPartition: {
       partition_ = std::make_shared<PartitionValues>(data_file.partition);
       return partition_;
@@ -243,23 +270,23 @@ Result<Scalar> DataFileStructLike::GetField(size_t pos) const {
     case DataFileFieldPosition::kFileSize:
       return data_file.file_size_in_bytes;
     case DataFileFieldPosition::kColumnSizes:
-      return std::make_shared<IntMapLike<int64_t>>(data_file.column_sizes);
+      return FromOptionalMap(data_file.column_sizes);
     case DataFileFieldPosition::kValueCounts:
-      return std::make_shared<IntMapLike<int64_t>>(data_file.value_counts);
+      return FromOptionalMap(data_file.value_counts);
     case DataFileFieldPosition::kNullValueCounts:
-      return std::make_shared<IntMapLike<int64_t>>(data_file.null_value_counts);
+      return FromOptionalMap(data_file.null_value_counts);
     case DataFileFieldPosition::kNanValueCounts:
-      return std::make_shared<IntMapLike<int64_t>>(data_file.nan_value_counts);
+      return FromOptionalMap(data_file.nan_value_counts);
     case DataFileFieldPosition::kLowerBounds:
-      return std::make_shared<IntMapLike<std::vector<uint8_t>>>(data_file.lower_bounds);
+      return FromOptionalMap(data_file.lower_bounds);
     case DataFileFieldPosition::kUpperBounds:
-      return std::make_shared<IntMapLike<std::vector<uint8_t>>>(data_file.upper_bounds);
+      return FromOptionalMap(data_file.upper_bounds);
     case DataFileFieldPosition::kKeyMetadata:
-      return ToView(data_file.key_metadata);
+      return FromOptionalBytes(data_file.key_metadata);
     case DataFileFieldPosition::kSplitOffsets:
-      return std::make_shared<VectorArrayLike<int64_t>>(data_file.split_offsets);
+      return FromOptionalVector(data_file.split_offsets);
     case DataFileFieldPosition::kEqualityIds:
-      return std::make_shared<VectorArrayLike<int32_t>>(data_file.equality_ids);
+      return FromOptionalVector(data_file.equality_ids);
     case DataFileFieldPosition::kSortOrderId:
       return FromOptional(data_file.sort_order_id);
     case DataFileFieldPosition::kFirstRowId:

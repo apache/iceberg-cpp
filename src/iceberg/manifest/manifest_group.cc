@@ -20,9 +20,11 @@
 #include "iceberg/manifest/manifest_group.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/evaluator.h"
@@ -36,11 +38,43 @@
 #include "iceberg/row/manifest_wrapper.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+namespace {
+
+std::shared_ptr<Schema> DataFileFilterSchema() {
+  auto empty_partition_type = std::make_shared<StructType>(std::vector<SchemaField>{});
+  return std::make_shared<Schema>(std::vector<SchemaField>{
+      DataFile::kContent,
+      DataFile::kFilePath,
+      DataFile::kFileFormat,
+      DataFile::kSpecId,
+      SchemaField::MakeRequired(DataFile::kPartitionFieldId, DataFile::kPartitionField,
+                                std::move(empty_partition_type), DataFile::kPartitionDoc),
+      DataFile::kRecordCount,
+      DataFile::kFileSize,
+      DataFile::kColumnSizes,
+      DataFile::kValueCounts,
+      DataFile::kNullValueCounts,
+      DataFile::kNanValueCounts,
+      DataFile::kLowerBounds,
+      DataFile::kUpperBounds,
+      DataFile::kKeyMetadata,
+      DataFile::kSplitOffsets,
+      DataFile::kEqualityIds,
+      DataFile::kSortOrderId,
+      DataFile::kFirstRowId,
+      DataFile::kReferencedDataFile,
+      DataFile::kContentOffset,
+      DataFile::kContentSize});
+}
+
+}  // namespace
 
 Result<std::unique_ptr<ManifestGroup>> ManifestGroup::Make(
     std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
@@ -274,13 +308,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
   if (file_filter_ && file_filter_->op() != Expression::Operation::kTrue &&
       !columns.empty() &&
       std::ranges::find(columns, Schema::kAllColumns) == columns.end()) {
-    auto spec_iter = specs_by_id_.find(manifest.partition_spec_id);
-    ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
-                  "Cannot find partition spec for ID {}", manifest.partition_spec_id);
-
-    ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
-                            spec_iter->second->PartitionType(*schema_));
-    auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();
+    auto data_file_schema = DataFileFilterSchema();
     ICEBERG_ASSIGN_OR_RAISE(
         auto bound_file_filter,
         Binder::Bind(*data_file_schema, file_filter_, case_sensitive_));
@@ -289,13 +317,13 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
 
     std::unordered_set<std::string> selected_columns(columns.cbegin(), columns.cend());
     for (const auto field_id : referenced_field_ids) {
+      if (field_id == DataFile::kSpecIdFieldId) {
+        continue;
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto column_name,
                               data_file_schema->FindColumnNameById(field_id));
       if (column_name.has_value()) {
         std::string column_name_str(column_name.value());
-        if (column_name_str.starts_with(DataFile::kPartitionField + ".")) {
-          column_name_str = DataFile::kPartitionField;
-        }
         if (selected_columns.contains(column_name_str)) {
           continue;
         }
@@ -341,28 +369,20 @@ ManifestGroup::ReadEntries() {
 
   const bool has_file_filter =
       file_filter_ && file_filter_->op() != Expression::Operation::kTrue;
-  std::unordered_map<int32_t, std::unique_ptr<Evaluator>> data_file_eval_cache;
-  auto get_data_file_evaluator = [&](int32_t spec_id) -> Result<Evaluator*> {
+  std::unique_ptr<Evaluator> data_file_evaluator;
+  auto get_data_file_evaluator = [&]() -> Result<Evaluator*> {
     if (!has_file_filter) {
       return nullptr;
     }
-    if (data_file_eval_cache.contains(spec_id)) {
-      return data_file_eval_cache[spec_id].get();
+    if (data_file_evaluator != nullptr) {
+      return data_file_evaluator.get();
     }
 
-    auto spec_iter = specs_by_id_.find(spec_id);
-    ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
-                  "Cannot find partition spec for ID {}", spec_id);
-
-    ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
-                            spec_iter->second->PartitionType(*schema_));
-    auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();
     ICEBERG_ASSIGN_OR_RAISE(
-        auto data_file_evaluator,
-        Evaluator::Make(*data_file_schema, file_filter_, case_sensitive_));
-    data_file_eval_cache[spec_id] = std::move(data_file_evaluator);
+        data_file_evaluator,
+        Evaluator::Make(*DataFileFilterSchema(), file_filter_, case_sensitive_));
 
-    return data_file_eval_cache[spec_id].get();
+    return data_file_evaluator.get();
   };
 
   std::unordered_map<int32_t, std::vector<ManifestEntry>> result;
@@ -396,7 +416,7 @@ ManifestGroup::ReadEntries() {
     ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
     ICEBERG_ASSIGN_OR_RAISE(auto entries,
                             ignore_deleted_ ? reader->LiveEntries() : reader->Entries());
-    ICEBERG_ASSIGN_OR_RAISE(auto data_file_evaluator, get_data_file_evaluator(spec_id));
+    ICEBERG_ASSIGN_OR_RAISE(auto data_file_evaluator, get_data_file_evaluator());
 
     for (auto& entry : entries) {
       if (ignore_existing_ && entry.status == ManifestStatus::kExisting) {
