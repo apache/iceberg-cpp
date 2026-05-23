@@ -459,6 +459,42 @@ TEST_P(ManifestGroupTest, FilterFilesRejectsPartitionMetadata) {
   EXPECT_THAT(result, HasErrorMessage("Cannot find field 'partition.data_bucket_16_2'"));
 }
 
+TEST_P(ManifestGroupTest, FilterFilesRejectsPartitionMetadataWhenEmpty) {
+  std::vector<ManifestFile> manifests;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
+  group->FilterFiles(Expressions::Equal("partition.data_bucket_16_2", Literal::Int(1)));
+
+  auto result = group->Entries();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
+  EXPECT_THAT(result, HasErrorMessage("Cannot find field 'partition.data_bucket_16_2'"));
+}
+
+TEST_P(ManifestGroupTest, FilterFilesRejectsPartitionMetadataBeforeManifestPruning) {
+  auto version = GetParam();
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+
+  std::vector<ManifestEntry> data_entries{MakeEntry(
+      ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+      MakeDataFile("/path/to/data.parquet", part_value, partitioned_spec_->spec_id()))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
+
+  std::vector<ManifestFile> manifests = {data_manifest};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
+  group->FilterPartitions(Expressions::Equal("data_bucket_16_2", Literal::Int(1)))
+      .FilterFiles(Expressions::Equal("partition.data_bucket_16_2", Literal::Int(1)));
+
+  auto result = group->Entries();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
+  EXPECT_THAT(result, HasErrorMessage("Cannot find field 'partition.data_bucket_16_2'"));
+}
+
 TEST_P(ManifestGroupTest, FilterFilesReadsFilteredColumnsWhenSelected) {
   auto version = GetParam();
 
@@ -486,6 +522,34 @@ TEST_P(ManifestGroupTest, FilterFilesReadsFilteredColumnsWhenSelected) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
   EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/matching.parquet"));
+}
+
+TEST_P(ManifestGroupTest, FilterFilesHonorsCaseInsensitiveMatchingWhenSelected) {
+  auto version = GetParam();
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+
+  std::vector<ManifestEntry> data_entries{
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/small.parquet", part_value,
+                             partitioned_spec_->spec_id(), /*record_count=*/5)),
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                MakeDataFile("/path/to/large.parquet", part_value,
+                             partitioned_spec_->spec_id(), /*record_count=*/15))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
+
+  std::vector<ManifestFile> manifests = {data_manifest};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
+  group->CaseSensitive(false)
+      .Select({"FILE_PATH"})
+      .FilterFiles(Expressions::GreaterThanOrEqual("RECORD_COUNT", Literal::Long(10)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
+  EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/large.parquet"));
 }
 
 TEST_P(ManifestGroupTest, FilterFilesBySpecIdWhenSelected) {

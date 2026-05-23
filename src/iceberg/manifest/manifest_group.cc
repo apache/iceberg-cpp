@@ -370,20 +370,11 @@ ManifestGroup::ReadEntries() {
   const bool has_file_filter =
       file_filter_ && file_filter_->op() != Expression::Operation::kTrue;
   std::unique_ptr<Evaluator> data_file_evaluator;
-  auto get_data_file_evaluator = [&]() -> Result<Evaluator*> {
-    if (!has_file_filter) {
-      return nullptr;
-    }
-    if (data_file_evaluator != nullptr) {
-      return data_file_evaluator.get();
-    }
-
+  if (has_file_filter) {
     ICEBERG_ASSIGN_OR_RAISE(
         data_file_evaluator,
         Evaluator::Make(*DataFileFilterSchema(), file_filter_, case_sensitive_));
-
-    return data_file_evaluator.get();
-  };
+  }
 
   std::unordered_map<int32_t, std::vector<ManifestEntry>> result;
 
@@ -416,7 +407,6 @@ ManifestGroup::ReadEntries() {
     ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
     ICEBERG_ASSIGN_OR_RAISE(auto entries,
                             ignore_deleted_ ? reader->LiveEntries() : reader->Entries());
-    ICEBERG_ASSIGN_OR_RAISE(auto data_file_evaluator, get_data_file_evaluator());
 
     for (auto& entry : entries) {
       if (ignore_existing_ && entry.status == ManifestStatus::kExisting) {
