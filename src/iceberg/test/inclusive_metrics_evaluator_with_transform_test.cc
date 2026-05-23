@@ -30,6 +30,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -38,9 +39,8 @@ constexpr bool kRowsMightMatch = true;
 constexpr bool kRowCannotMatch = false;
 constexpr int64_t kIntMinValue = 30;
 constexpr int64_t kIntMaxValue = 79;
-constexpr int64_t kMicrosPerDay = 86'400'000'000LL;
-constexpr int64_t kTsMinValue = 30 * kMicrosPerDay;
-constexpr int64_t kTsMaxValue = 79 * kMicrosPerDay;
+constexpr int64_t kTsMinValue = 30 * internal::kMicrosPerDay;
+constexpr int64_t kTsMaxValue = 79 * internal::kMicrosPerDay;
 
 std::shared_ptr<UnboundTerm<BoundTransform>> ToBoundTransform(
     const std::shared_ptr<UnboundTransform>& transform) {

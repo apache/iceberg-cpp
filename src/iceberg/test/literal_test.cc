@@ -29,6 +29,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/type.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -676,10 +677,11 @@ INSTANTIATE_TEST_SUITE_P(
                                    .small_literal = Literal::Date(100),
                                    .large_literal = Literal::Date(200),
                                    .equal_literal = Literal::Date(100)},
-        ComparisonLiteralTestParam{.test_name = "Time",
-                                   .small_literal = Literal::Time(43200000000LL),
-                                   .large_literal = Literal::Time(86400000000LL),
-                                   .equal_literal = Literal::Time(43200000000LL)},
+        ComparisonLiteralTestParam{
+            .test_name = "Time",
+            .small_literal = Literal::Time(internal::kMicrosPerDay / 2),
+            .large_literal = Literal::Time(internal::kMicrosPerDay),
+            .equal_literal = Literal::Time(internal::kMicrosPerDay / 2)},
         ComparisonLiteralTestParam{.test_name = "Timestamp",
                                    .small_literal = Literal::Timestamp(1000000LL),
                                    .large_literal = Literal::Timestamp(2000000LL),

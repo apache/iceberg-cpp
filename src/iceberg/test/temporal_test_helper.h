@@ -22,6 +22,8 @@
 #include <chrono>
 #include <cstdint>
 
+#include "iceberg/util/temporal_util.h"
+
 namespace iceberg {
 
 using namespace std::chrono;  // NOLINT
@@ -64,13 +66,12 @@ struct TimestampNanosParts {
 };
 
 class TemporalTestHelper {
-  static constexpr auto kEpochDays = sys_days(year{1970} / January / 1);
-
  public:
   /// \brief Construct a Calendar date without timezone or time
   static int32_t CreateDate(const DateParts& parts) {
     return static_cast<int32_t>(
-        (sys_days(year{parts.year} / month{parts.month} / day{parts.day}) - kEpochDays)
+        (sys_days(year{parts.year} / month{parts.month} / day{parts.day}) -
+         internal::kEpochDays)
             .count());
   }
 

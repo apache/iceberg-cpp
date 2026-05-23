@@ -32,7 +32,6 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 #include "iceberg/util/temporal_util.h"
-#include "iceberg/util/transform_util.h"
 
 namespace iceberg {
 
@@ -203,29 +202,29 @@ Result<Literal> LiteralCaster::CastFromString(
       return Literal::UUID(uuid);
     }
     case TypeId::kDate: {
-      ICEBERG_ASSIGN_OR_RAISE(auto days, TransformUtil::ParseDay(str_val));
+      ICEBERG_ASSIGN_OR_RAISE(auto days, TemporalUtils::ParseDay(str_val));
       return Literal::Date(days);
     }
     case TypeId::kTime: {
-      ICEBERG_ASSIGN_OR_RAISE(auto micros, TransformUtil::ParseTime(str_val));
+      ICEBERG_ASSIGN_OR_RAISE(auto micros, TemporalUtils::ParseTime(str_val));
       return Literal::Time(micros);
     }
     case TypeId::kTimestamp: {
-      ICEBERG_ASSIGN_OR_RAISE(auto micros, TransformUtil::ParseTimestamp(str_val));
+      ICEBERG_ASSIGN_OR_RAISE(auto micros, TemporalUtils::ParseTimestamp(str_val));
       return Literal::Timestamp(micros);
     }
     case TypeId::kTimestampTz: {
       ICEBERG_ASSIGN_OR_RAISE(auto micros,
-                              TransformUtil::ParseTimestampWithZone(str_val));
+                              TemporalUtils::ParseTimestampWithZone(str_val));
       return Literal::TimestampTz(micros);
     }
     case TypeId::kTimestampNs: {
-      ICEBERG_ASSIGN_OR_RAISE(auto nanos, TransformUtil::ParseTimestampNs(str_val));
+      ICEBERG_ASSIGN_OR_RAISE(auto nanos, TemporalUtils::ParseTimestampNs(str_val));
       return Literal::TimestampNs(nanos);
     }
     case TypeId::kTimestampTzNs: {
       ICEBERG_ASSIGN_OR_RAISE(auto nanos,
-                              TransformUtil::ParseTimestampNsWithZone(str_val));
+                              TemporalUtils::ParseTimestampNsWithZone(str_val));
       return Literal::TimestampTzNs(nanos);
     }
     case TypeId::kBinary: {

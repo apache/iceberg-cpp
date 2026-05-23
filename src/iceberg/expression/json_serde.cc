@@ -33,6 +33,7 @@
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/temporal_util.h"
 #include "iceberg/util/transform_util.h"
 
 namespace iceberg {
@@ -363,7 +364,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
         return JsonParseError("Cannot parse {} as a date value", SafeDumpJson(json));
       }
       ICEBERG_ASSIGN_OR_RAISE(auto days,
-                              TransformUtil::ParseDay(json.get<std::string>()));
+                              TemporalUtils::ParseDay(json.get<std::string>()));
       return Literal::Date(days);
     }
 
@@ -372,7 +373,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
         return JsonParseError("Cannot parse {} as a time value", SafeDumpJson(json));
       }
       ICEBERG_ASSIGN_OR_RAISE(auto micros,
-                              TransformUtil::ParseTime(json.get<std::string>()));
+                              TemporalUtils::ParseTime(json.get<std::string>()));
       return Literal::Time(micros);
     }
 
@@ -381,7 +382,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
         return JsonParseError("Cannot parse {} as a timestamp value", SafeDumpJson(json));
       }
       ICEBERG_ASSIGN_OR_RAISE(auto micros,
-                              TransformUtil::ParseTimestamp(json.get<std::string>()));
+                              TemporalUtils::ParseTimestamp(json.get<std::string>()));
       return Literal::Timestamp(micros);
     }
 
@@ -391,7 +392,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
                               SafeDumpJson(json));
       }
       ICEBERG_ASSIGN_OR_RAISE(
-          auto micros, TransformUtil::ParseTimestampWithZone(json.get<std::string>()));
+          auto micros, TemporalUtils::ParseTimestampWithZone(json.get<std::string>()));
       return Literal::TimestampTz(micros);
     }
 
@@ -401,7 +402,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
                               SafeDumpJson(json));
       }
       ICEBERG_ASSIGN_OR_RAISE(auto nanos,
-                              TransformUtil::ParseTimestampNs(json.get<std::string>()));
+                              TemporalUtils::ParseTimestampNs(json.get<std::string>()));
       return Literal::TimestampNs(nanos);
     }
 
@@ -411,7 +412,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
                               SafeDumpJson(json));
       }
       ICEBERG_ASSIGN_OR_RAISE(
-          auto nanos, TransformUtil::ParseTimestampNsWithZone(json.get<std::string>()));
+          auto nanos, TemporalUtils::ParseTimestampNsWithZone(json.get<std::string>()));
       return Literal::TimestampTzNs(nanos);
     }
 

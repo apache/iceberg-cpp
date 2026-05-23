@@ -32,6 +32,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/projection_util_internal.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/temporal_util.h"
 #include "iceberg/util/transform_util.h"
 
 namespace iceberg {

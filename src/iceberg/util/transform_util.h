@@ -19,11 +19,11 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
+#include <string_view>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
-#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
@@ -126,74 +126,6 @@ class ICEBERG_EXPORT TransformUtil {
   /// \param timestamp_nanos the timestamp in nanoseconds.
   /// \return a string representation of this timestamp.
   static std::string HumanTimestampNsWithZone(int64_t timestamp_nanos);
-
-  /// \brief Parses a date string in "[+-]yyyy-MM-dd" format into days since epoch.
-  ///
-  /// Supports an optional '+' or '-' prefix for extended years beyond 9999.
-  ///
-  /// \param str The date string to parse.
-  /// \return The number of days since 1970-01-01, or an error.
-  static Result<int32_t> ParseDay(std::string_view str);
-
-  /// \brief Parses a time string into microseconds from midnight.
-  ///
-  /// Accepts ISO-8601 local time formats: "HH:mm", "HH:mm:ss", or
-  /// "HH:mm:ss.f" where the fractional part can be 1-9 digits.
-  /// Digits beyond 6 (microsecond precision) are truncated.
-  ///
-  /// \param str The time string to parse.
-  /// \return The number of microseconds from midnight, or an error.
-  static Result<int64_t> ParseTime(std::string_view str);
-
-  /// \brief Parses a time string into nanoseconds from midnight.
-  ///
-  /// Accepts ISO-8601 local time formats: "HH:mm", "HH:mm:ss", or
-  /// "HH:mm:ss.f" where the fractional part can be 1-9 digits.
-  /// Digits beyond 9 (nanosecond precision) are truncated.
-  ///
-  /// \param str The time string to parse.
-  /// \return The number of nanoseconds from midnight, or an error.
-  static Result<int64_t> ParseTimeNs(std::string_view str);
-
-  /// \brief Parses a timestamp string into microseconds since epoch.
-  ///
-  /// Accepts ISO-8601 local date-time formats: "yyyy-MM-ddTHH:mm",
-  /// "yyyy-MM-ddTHH:mm:ss", or "yyyy-MM-ddTHH:mm:ss.f" where the
-  /// fractional part can be 1-9 digits (truncated to microseconds).
-  ///
-  /// \param str The timestamp string to parse.
-  /// \return The number of microseconds since epoch, or an error.
-  static Result<int64_t> ParseTimestamp(std::string_view str);
-
-  /// \brief Parses a timestamp string into nanoseconds since epoch.
-  ///
-  /// Accepts ISO-8601 local date-time formats: "yyyy-MM-ddTHH:mm",
-  /// "yyyy-MM-ddTHH:mm:ss", or "yyyy-MM-ddTHH:mm:ss.f" where the
-  /// fractional part can be 1-9 digits.
-  ///
-  /// \param str The timestamp string to parse.
-  /// \return The number of nanoseconds since epoch, or an error.
-  static Result<int64_t> ParseTimestampNs(std::string_view str);
-
-  /// \brief Parses a timestamp-with-zone string into microseconds since epoch (UTC).
-  ///
-  /// Accepts the same formats as ParseTimestamp, with a timezone suffix:
-  /// "Z", "+HH:mm", or "-HH:mm". Non-UTC offsets are converted to UTC.
-  /// The seconds and fractional parts are optional (e.g. "yyyy-MM-ddTHH:mm+00:00").
-  ///
-  /// \param str The timestamp string to parse.
-  /// \return The number of microseconds since epoch (UTC), or an error.
-  static Result<int64_t> ParseTimestampWithZone(std::string_view str);
-
-  /// \brief Parses a timestamp-with-zone string into nanoseconds since epoch (UTC).
-  ///
-  /// Accepts the same formats as ParseTimestampNs, with a timezone suffix:
-  /// "Z", "+HH:mm", or "-HH:mm". Non-UTC offsets are converted to UTC.
-  /// The seconds and fractional parts are optional (e.g. "yyyy-MM-ddTHH:mm+00:00").
-  ///
-  /// \param str The timestamp string to parse.
-  /// \return The number of nanoseconds since epoch (UTC), or an error.
-  static Result<int64_t> ParseTimestampNsWithZone(std::string_view str);
 
   /// \brief Base64 encode a string
   static std::string Base64Encode(std::string_view str_to_encode);
