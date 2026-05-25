@@ -25,7 +25,7 @@
 
 #include "iceberg/test/matchers.h"
 
-namespace iceberg::internal {
+namespace iceberg {
 
 TEST(MathUtilInternalTest, FloorDiv) {
   EXPECT_EQ(0, FloorDiv(0, 1000));
@@ -53,4 +53,4 @@ TEST(MathUtilInternalTest, MultiplyExact) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
-}  // namespace iceberg::internal
+}  // namespace iceberg

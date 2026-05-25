@@ -336,11 +336,11 @@ Result<Literal> ExtractHourImpl<TypeId::kTimestampTzNs>(const Literal& literal) 
 }  // namespace
 
 int64_t TemporalUtils::NanosToMicros(int64_t nanos) {
-  return internal::FloorDiv(nanos, internal::kNanosPerMicro);
+  return FloorDiv(nanos, internal::kNanosPerMicro);
 }
 
 Result<int64_t> TemporalUtils::MicrosToNanos(int64_t micros) {
-  return internal::MultiplyExact(micros, internal::kNanosPerMicro);
+  return MultiplyExact(micros, internal::kNanosPerMicro);
 }
 
 Result<int32_t> TemporalUtils::ParseDay(std::string_view str) {

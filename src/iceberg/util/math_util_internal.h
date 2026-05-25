@@ -25,7 +25,7 @@
 #include "iceberg/result.h"
 #include "iceberg/util/int128.h"
 
-namespace iceberg::internal {
+namespace iceberg {
 
 inline constexpr int64_t FloorDiv(int64_t dividend, int64_t divisor) {
   const auto quotient = dividend / divisor;
@@ -44,4 +44,4 @@ inline Result<int64_t> MultiplyExact(int64_t lhs, int64_t rhs) {
   return static_cast<int64_t>(result);
 }
 
-}  // namespace iceberg::internal
+}  // namespace iceberg
