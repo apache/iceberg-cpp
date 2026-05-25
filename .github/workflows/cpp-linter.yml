@@ -19,6 +19,7 @@ name: C++ Linter
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
       - '.github/**'
       - 'ci/**'
