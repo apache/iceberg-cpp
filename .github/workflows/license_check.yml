@@ -24,6 +24,7 @@ permissions:
 
 jobs:
   license-check:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: "License Check"
     runs-on: ubuntu-slim
     steps:

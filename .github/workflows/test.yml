@@ -38,6 +38,7 @@ env:
 
 jobs:
   ubuntu:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: AMD64 Ubuntu 24.04
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -64,6 +65,7 @@ jobs:
           CXX: g++-14
         run: ci/scripts/build_example.sh $(pwd)/example
   macos:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: AArch64 macOS 26
     runs-on: macos-26
     timeout-minutes: 30
@@ -81,6 +83,7 @@ jobs:
         shell: bash
         run: ci/scripts/build_example.sh $(pwd)/example
   windows:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: AMD64 Windows 2025
     runs-on: windows-2025
     timeout-minutes: 60
@@ -116,6 +119,7 @@ jobs:
           $ErrorActionPreference = "Stop"
           bash -lc 'ci/scripts/build_example.sh $(pwd)/example'
   meson:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: Meson - ${{ matrix.title }}
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 30

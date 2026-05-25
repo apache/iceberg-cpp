@@ -39,6 +39,7 @@ env:
 
 jobs:
   s3-minio:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: S3 (${{ matrix.title }})
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 35
