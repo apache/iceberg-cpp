@@ -20,6 +20,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -71,9 +72,10 @@ class ICEBERG_EXPORT TruncateUtils {
   /// \param source The input string to truncate.
   /// \param L The maximum number of code points allowed in the output string.
   /// \return A Result containing the original string (if no truncation is
-  /// needed), or the smallest string greater than the truncated prefix, or an
-  /// error if no such value exists or the input is invalid UTF-8.
-  static Result<std::string> TruncateUTF8Max(const std::string& source, size_t L);
+  /// needed), the smallest string greater than the truncated prefix, or nullopt if no
+  /// safe upper bound can be represented. Invalid UTF-8 is returned as an error.
+  static Result<std::optional<std::string>> TruncateUTF8Max(const std::string& source,
+                                                            size_t L);
 
   /// \brief Truncate an integer v, either int32_t or int64_t, to v - (v % W).
   ///
@@ -109,10 +111,11 @@ class ICEBERG_EXPORT TruncateUtils {
   ///
   /// \param value The input Literal maximum value to truncate.
   /// \param width The width to truncate to.
-  /// \return A Result containing either the original Literal (if no truncation is needed)
-  /// or the smallest Literal greater than the truncated prefix, or an error if no such
-  /// value exists or cannot be represented.
-  static Result<Literal> TruncateLiteralMax(const Literal& value, int32_t width);
+  /// \return A Result containing either the original Literal (if no truncation is
+  /// needed), the smallest Literal greater than the truncated prefix, or nullopt if no
+  /// safe upper bound can be represented.
+  static Result<std::optional<Literal>> TruncateLiteralMax(const Literal& value,
+                                                           int32_t width);
 
   /// \brief Truncate the lower bound of a string or binary value.
   ///
@@ -134,9 +137,11 @@ class ICEBERG_EXPORT TruncateUtils {
   /// \param type The Iceberg primitive type.
   /// \param value The upper bound literal value.
   /// \param width The width to truncate to.
-  /// \return The truncated upper bound literal.
-  static Result<Literal> TruncateUpperBound(const PrimitiveType& type,
-                                            const Literal& value, int32_t width);
+  /// \return The truncated upper bound literal, or nullopt if no safe upper bound can be
+  /// represented.
+  static Result<std::optional<Literal>> TruncateUpperBound(const PrimitiveType& type,
+                                                           const Literal& value,
+                                                           int32_t width);
 };
 
 }  // namespace iceberg

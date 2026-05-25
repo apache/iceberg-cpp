@@ -164,6 +164,7 @@ class ParquetWriter::Impl {
     if (!metadata_) {
       return Metrics();
     }
+    // TODO(WZhuo): collect write-side FieldMetrics to support NaN value counts.
     return ParquetMetrics::GetMetrics(*schema_, *parquet_schema_, *metrics_config_,
                                       *metadata_, {});
   }

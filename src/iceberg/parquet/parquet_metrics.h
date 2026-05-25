@@ -43,6 +43,7 @@ class ICEBERG_BUNDLE_EXPORT ParquetMetrics {
   ///
   /// This function extracts metrics including row count, column sizes, value counts,
   /// null value counts, and lower/upper bounds from Parquet file metadata.
+  /// NaN value counts are not currently collected from Parquet metadata.
   /// The metrics are computed according to the provided MetricsConfig, which determines
   /// which columns to collect metrics for and at what granularity (counts only, truncated
   /// bounds, or full bounds).
