@@ -101,12 +101,14 @@ class ICEBERG_EXPORT MetricsConfig {
   ///
   /// \param props will be read for metrics overrides (write.metadata.metrics.column.*)
   /// and default(write.metadata.metrics.default)
-  /// \param schema table schema
-  /// \param order sort order columns, will be promoted to truncate(16)
+  /// \param schema table schema, or nullptr when only properties are available
+  /// \param order table sort order, or nullptr when unavailable. If provided, sorted
+  /// columns use at least the default truncate metrics mode (`truncate(16)`) when
+  /// the default mode is `none` or `counts`; explicit column overrides still win.
   /// \return metrics configuration
   static Result<std::shared_ptr<MetricsConfig>> MakeInternal(const TableProperties& props,
-                                                             const Schema& schema,
-                                                             const SortOrder& order);
+                                                             const Schema* schema,
+                                                             const SortOrder* order);
 
   ColumnModeMap column_modes_;
   MetricsMode default_mode_;

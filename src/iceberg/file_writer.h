@@ -60,6 +60,9 @@ class ICEBERG_EXPORT WriterProperties : public ConfigBase<WriterProperties> {
                                                        "zstd"};
   inline static Entry<std::string> kParquetCompressionLevel{
       "write.parquet.compression-level", ""};
+  /// \brief Maximum number of rows in each Parquet row group.
+  inline static Entry<int64_t> kParquetMaxRowGroupRows{"write.parquet.max-row-group-rows",
+                                                       1024 * 1024};
 
   /// TODO(gangwu): add table properties with write.avro|parquet|orc.*
 

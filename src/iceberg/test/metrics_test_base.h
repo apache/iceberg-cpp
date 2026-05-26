@@ -22,6 +22,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include <arrow/array.h>
 
@@ -66,6 +67,9 @@ class MetricsTestBase {
   void AssertCounts(int field_id, std::optional<int64_t> expected_value_count,
                     std::optional<int64_t> expected_null_count,
                     std::optional<int64_t> expected_nan_count, const Metrics& metrics);
+
+  void AssertColumnSizeFields(std::vector<int32_t> expected_field_ids,
+                              const Metrics& metrics);
 
   template <typename T>
   void AssertBounds(int field_id, std::shared_ptr<PrimitiveType> type,

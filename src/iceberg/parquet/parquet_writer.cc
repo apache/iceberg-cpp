@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include <arrow/c/bridge.h>
 #include <arrow/record_batch.h>
@@ -33,7 +34,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
-#include "iceberg/parquet/parquet_metrics.h"
+#include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
 
@@ -94,6 +95,11 @@ class ParquetWriter::Impl {
 
     auto properties_builder = ::parquet::WriterProperties::Builder();
     properties_builder.compression(compression);
+    auto max_row_group_rows =
+        options.properties.Get(WriterProperties::kParquetMaxRowGroupRows);
+    ICEBERG_PRECHECK(max_row_group_rows > 0,
+                     "Parquet max row group rows must be greater than 0");
+    properties_builder.max_row_group_length(max_row_group_rows);
     if (compression_level.has_value()) {
       properties_builder.compression_level(compression_level.value());
     }
@@ -142,12 +148,11 @@ class ParquetWriter::Impl {
     }
 
     ICEBERG_ARROW_RETURN_NOT_OK(writer_->Close());
-    auto& metadata = writer_->metadata();
-    split_offsets_.reserve(metadata->num_row_groups());
-    for (int i = 0; i < metadata->num_row_groups(); ++i) {
-      split_offsets_.push_back(metadata->RowGroup(i)->file_offset());
-    }
     metadata_ = writer_->metadata();
+    split_offsets_.reserve(metadata_->num_row_groups());
+    for (int i = 0; i < metadata_->num_row_groups(); ++i) {
+      split_offsets_.push_back(metadata_->RowGroup(i)->file_offset());
+    }
     writer_.reset();
 
     ICEBERG_ARROW_ASSIGN_OR_RETURN(total_bytes_, output_stream_->Tell());
@@ -171,15 +176,12 @@ class ParquetWriter::Impl {
   std::vector<int64_t> split_offsets() const { return split_offsets_; }
 
   Result<Metrics> metrics() {
-    if (writer_) {
-      return Invalid("Cannot return metrics for unclosed writer");
-    }
-    if (!metadata_) {
-      return Metrics();
-    }
+    ICEBERG_PRECHECK(writer_ == nullptr, "Cannot return metrics for unclosed writer");
+    ICEBERG_PRECHECK(metadata_ != nullptr,
+                     "Cannot return metrics because Parquet metadata is not available");
     // TODO(WZhuo): collect write-side FieldMetrics to support NaN value counts.
     return ParquetMetrics::GetMetrics(*schema_, *parquet_schema_, *metrics_config_,
-                                      *metadata_, {});
+                                      *metadata_);
   }
 
  private:

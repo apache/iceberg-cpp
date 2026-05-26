@@ -36,7 +36,7 @@ namespace iceberg {
 /// lower/upper bounds for a specific field identified by its field_id.
 struct ICEBERG_EXPORT FieldMetrics {
   /// \brief The field ID this metrics belongs to.
-  int32_t field_id;
+  int32_t field_id = -1;
 
   /// \brief The total number of values (including nulls) for this field.
   /// A negative value indicates the count is unknown.

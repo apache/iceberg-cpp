@@ -179,7 +179,7 @@ Result<std::optional<Literal>> TruncateLiteralMaxImpl<TypeId::kString>(
   if (!truncated.has_value()) {
     return std::nullopt;
   }
-  return std::optional<Literal>(Literal::String(std::move(truncated.value())));
+  return Literal::String(std::move(*truncated));
 }
 
 template <>
@@ -187,7 +187,7 @@ Result<std::optional<Literal>> TruncateLiteralMaxImpl<TypeId::kBinary>(
     const Literal& literal, int32_t width) {
   const auto& data = std::get<std::vector<uint8_t>>(literal.value());
   if (static_cast<int32_t>(data.size()) <= width) {
-    return std::optional<Literal>(literal);
+    return literal;
   }
 
   std::vector<uint8_t> truncated(data.begin(), data.begin() + width);
@@ -195,7 +195,7 @@ Result<std::optional<Literal>> TruncateLiteralMaxImpl<TypeId::kBinary>(
     if (*it < 0xFF) {
       ++(*it);
       truncated.resize(truncated.size() - std::distance(truncated.rbegin(), it));
-      return std::optional<Literal>(Literal::Binary(std::move(truncated)));
+      return Literal::Binary(std::move(truncated));
     }
   }
   return std::nullopt;
@@ -207,7 +207,7 @@ Result<std::optional<std::string>> TruncateUtils::TruncateUTF8Max(
     const std::string& source, size_t L) {
   std::string truncated = TruncateUTF8(source, L);
   if (truncated == source) {
-    return std::optional<std::string>(std::move(truncated));
+    return truncated;
   }
 
   // Try incrementing code points from the end
@@ -236,7 +236,7 @@ Result<std::optional<std::string>> TruncateUtils::TruncateUTF8Max(
       if (next_code_point <= kUtf8MaxCodePoint) {
         truncated.resize(cp_start);
         AppendUtf8CodePoint(next_code_point, truncated);
-        return std::optional<std::string>(std::move(truncated));
+        return truncated;
       }
     }
     last_cp_start = cp_start;
@@ -282,7 +282,7 @@ Result<std::optional<Literal>> TruncateUtils::TruncateLiteralMax(const Literal& 
                                                                  int32_t width) {
   if (literal.IsNull()) [[unlikely]] {
     // Return null as is
-    return std::optional<Literal>(literal);
+    return literal;
   }
 
   if (literal.IsAboveMax() || literal.IsBelowMin()) [[unlikely]] {
@@ -316,7 +316,7 @@ Result<std::optional<Literal>> TruncateUtils::TruncateUpperBound(
     case TypeId::kBinary:
       return TruncateLiteralMax(value, length);
     default:
-      return std::optional<Literal>(value);
+      return value;
   }
 }
 

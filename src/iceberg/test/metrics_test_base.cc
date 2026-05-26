@@ -22,6 +22,7 @@
 #include <arrow/builder.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
+#include <gmock/gmock.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
@@ -80,6 +81,17 @@ void MetricsTestBase::AssertCounts(int field_id,
   }
 }
 
+void MetricsTestBase::AssertColumnSizeFields(std::vector<int32_t> expected_field_ids,
+                                             const Metrics& metrics) {
+  std::vector<int32_t> actual_field_ids;
+  actual_field_ids.reserve(metrics.column_sizes.size());
+  for (const auto& [field_id, size] : metrics.column_sizes) {
+    EXPECT_GT(size, 0) << "Field " << field_id << " should have a positive size";
+    actual_field_ids.push_back(field_id);
+  }
+  EXPECT_THAT(actual_field_ids, testing::UnorderedElementsAreArray(expected_field_ids));
+}
+
 template <typename T>
 void MetricsTestBase::AssertBounds(int field_id, std::shared_ptr<PrimitiveType> type,
                                    std::optional<T> expected_lower,
@@ -91,6 +103,8 @@ void MetricsTestBase::AssertBounds(int field_id, std::shared_ptr<PrimitiveType> 
     const auto& literal = metrics.lower_bounds.at(field_id);
     ASSERT_FALSE(literal.IsNull())
         << "Field " << field_id << " lower bound literal should not be null";
+    EXPECT_EQ(*literal.type(), *type)
+        << "Field " << field_id << " lower bound literal type mismatch";
     EXPECT_EQ(std::get<T>(literal.value()), expected_lower.value())
         << "Field " << field_id << " lower bound mismatch";
   } else {
@@ -103,6 +117,8 @@ void MetricsTestBase::AssertBounds(int field_id, std::shared_ptr<PrimitiveType> 
     const auto& literal = metrics.upper_bounds.at(field_id);
     ASSERT_FALSE(literal.IsNull())
         << "Field " << field_id << " upper bound literal should not be null";
+    EXPECT_EQ(*literal.type(), *type)
+        << "Field " << field_id << " upper bound literal type mismatch";
     EXPECT_EQ(std::get<T>(literal.value()), expected_upper.value())
         << "Field " << field_id << " upper bound mismatch";
   } else {
@@ -208,12 +224,12 @@ void MetricsTestBase::MetricsForRepeatedValues() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 2);
+  AssertColumnSizeFields({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}, metrics);
 
   AssertCounts(1, 2, 0, metrics);
   AssertCounts(2, 2, 0, metrics);
   AssertCounts(3, 2, 1, metrics);
-  // TODO(WZhuo) Assert NaN metrics
-  AssertCounts(4, 2, 0, metrics);  // floatCol has 2 NaN values
+  AssertCounts(4, 2, 0, metrics);
   AssertCounts(5, 2, 0, metrics);
   AssertCounts(6, 2, 1, metrics);
   AssertCounts(7, 2, 0, metrics);
@@ -317,17 +333,13 @@ void MetricsTestBase::MetricsForDecimals() {
   EXPECT_EQ(*metrics.row_count, 1);
 
   AssertCounts(1, 1, 0, metrics);
-  // For decimals, bounds exist but we just check they're present
-  EXPECT_TRUE(metrics.lower_bounds.contains(1));
-  EXPECT_TRUE(metrics.upper_bounds.contains(1));
+  AssertBounds<Decimal>(1, decimal(4, 2), Decimal(255), Decimal(255), metrics);
 
   AssertCounts(2, 1, 0, metrics);
-  EXPECT_TRUE(metrics.lower_bounds.contains(2));
-  EXPECT_TRUE(metrics.upper_bounds.contains(2));
+  AssertBounds<Decimal>(2, decimal(14, 2), Decimal(475), Decimal(475), metrics);
 
   AssertCounts(3, 1, 0, metrics);
-  EXPECT_TRUE(metrics.lower_bounds.contains(3));
-  EXPECT_TRUE(metrics.upper_bounds.contains(3));
+  AssertBounds<Decimal>(3, decimal(22, 2), Decimal(580), Decimal(580), metrics);
 }
 
 void MetricsTestBase::MetricsForNestedStructFields() {
@@ -338,6 +350,7 @@ void MetricsTestBase::MetricsForNestedStructFields() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 1);
+  AssertColumnSizeFields({1, 3, 5, 6, 7}, metrics);
 
   AssertCounts(1, 1, 0, metrics);
   AssertBounds<int32_t>(1, int32(), std::numeric_limits<int32_t>::min(),
@@ -353,7 +366,6 @@ void MetricsTestBase::MetricsForNestedStructFields() {
   AssertBounds<std::vector<uint8_t>>(6, binary(), std::vector<uint8_t>{'A'},
                                      std::vector<uint8_t>{'A'}, metrics);
 
-  // TODO(WZhuo) Assert NaN metrics
   AssertCounts(7, 1L, 0L, metrics);
   AssertBounds<double>(7, float64(), std::nullopt, std::nullopt, metrics);
 }
@@ -373,6 +385,7 @@ void MetricsTestBase::MetricsModeForNestedStructFields() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 1);
+  AssertColumnSizeFields({3}, metrics);
 
   // Only field 3 (nestedStructCol.longCol) should have bounds
   EXPECT_EQ(metrics.lower_bounds.size(), 1);
@@ -460,6 +473,7 @@ void MetricsTestBase::MetricsForListAndMapElements() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 1);
+  AssertColumnSizeFields({}, metrics);
 
   // For list and map elements, metrics should not be collected
   // Field IDs: 1 (leafIntCol), 2 (leafStringCol), 4 (list element), 6 (map key), 7 (map
@@ -468,6 +482,7 @@ void MetricsTestBase::MetricsForListAndMapElements() {
   AssertCounts(2, std::nullopt, std::nullopt, metrics);
   AssertCounts(4, std::nullopt, std::nullopt, metrics);
   AssertCounts(6, std::nullopt, std::nullopt, metrics);
+  AssertCounts(7, std::nullopt, std::nullopt, metrics);
 
   AssertBounds<int32_t>(1, int32(), std::nullopt, std::nullopt, metrics);
   AssertBounds<std::string>(2, string(), std::nullopt, std::nullopt, metrics);
@@ -526,7 +541,6 @@ void MetricsTestBase::MetricsForNaNColumns() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 2);
-  // TODO(WZhuo) Assert NaN metrics
   AssertCounts(1, 2, 0, metrics);
   AssertCounts(2, 2, 0, metrics);
 
@@ -565,7 +579,6 @@ void MetricsTestBase::ColumnBoundsWithNaNValueAtFront() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 3);
-  // TODO(WZhuo) Assert NaN metrics
   AssertCounts(1, 3, 0, metrics);
   AssertCounts(2, 3, 0, metrics);
 
@@ -664,6 +677,8 @@ void MetricsTestBase::MetricsForTopLevelWithMultipleRowGroup() {
   if (SupportsSmallRowGroups()) {
     ICEBERG_UNWRAP_OR_FAIL(auto split_count, GetSplitCount());
     EXPECT_EQ(split_count, 3);
+  } else {
+    FAIL() << "This test must force multiple row groups";
   }
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
@@ -694,6 +709,8 @@ void MetricsTestBase::MetricsForNestedStructFieldsWithMultipleRowGroup() {
   if (SupportsSmallRowGroups()) {
     ICEBERG_UNWRAP_OR_FAIL(auto split_count, GetSplitCount());
     EXPECT_EQ(split_count, 3);
+  } else {
+    FAIL() << "This test must force multiple row groups";
   }
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 201);
@@ -732,7 +749,7 @@ void MetricsTestBase::NoneMetricsMode() {
   EXPECT_EQ(*metrics.row_count, 1);
 
   // In None mode, column_sizes should be empty
-  EXPECT_TRUE(metrics.column_sizes.empty());
+  AssertColumnSizeFields({}, metrics);
 
   // All counts should be null
   AssertCounts(1, std::nullopt, std::nullopt, metrics);
@@ -761,7 +778,7 @@ void MetricsTestBase::CountsMetricsMode() {
   EXPECT_EQ(*metrics.row_count, 1);
 
   // In Counts mode, column_sizes should not be empty
-  EXPECT_FALSE(metrics.column_sizes.empty());
+  AssertColumnSizeFields({1, 3, 5, 6, 7}, metrics);
 
   // Counts should be present but bounds should be null
   AssertCounts(1, 1, 0, metrics);
@@ -790,7 +807,7 @@ void MetricsTestBase::FullMetricsMode() {
   EXPECT_EQ(*metrics.row_count, 1);
 
   // In Full mode, column_sizes should not be empty
-  EXPECT_FALSE(metrics.column_sizes.empty());
+  AssertColumnSizeFields({1, 3, 5, 6, 7}, metrics);
 
   // Both counts and bounds should be present
   AssertCounts(1, 1, 0, metrics);

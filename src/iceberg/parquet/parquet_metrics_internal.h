@@ -19,14 +19,13 @@
 
 #pragma once
 
-/// \file iceberg/parquet/parquet_metrics.h
+/// \file iceberg/parquet/parquet_metrics_internal.h
 /// \brief Utilities for extracting metrics from Parquet files.
 
 #include <unordered_map>
 
 #include <parquet/metadata.h>
 
-#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/metrics.h"
 #include "iceberg/metrics_config.h"
 #include "iceberg/result.h"
@@ -35,7 +34,7 @@
 namespace iceberg::parquet {
 
 /// \brief Utility class for computing metrics from Parquet files.
-class ICEBERG_BUNDLE_EXPORT ParquetMetrics {
+class ParquetMetrics {
  public:
   ParquetMetrics() = delete;
 

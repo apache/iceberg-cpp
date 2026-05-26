@@ -17,13 +17,15 @@
  * under the License.
  */
 
-#include "iceberg/parquet/parquet_metrics.h"
-
+#include <cstdint>
 #include <limits>
 #include <optional>
 #include <ranges>
+#include <span>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <parquet/column_reader.h>
 #include <parquet/schema.h>
@@ -31,12 +33,14 @@
 #include <parquet/types.h>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
-#include "iceberg/util/conversions.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/truncate_util.h"
+#include "iceberg/util/uuid.h"
 #include "iceberg/util/visit_type.h"
 
 namespace iceberg::parquet {
@@ -65,6 +69,163 @@ std::optional<int32_t> FindColumnIndex(const ::parquet::SchemaDescriptor& parque
     return column_field_id.has_value() && column_field_id.value() == field_id;
   });
   return it != columns.end() ? std::optional(*it) : std::nullopt;
+}
+
+int64_t CollectColumnSize(const ::parquet::FileMetaData& metadata, int32_t column_idx) {
+  int64_t size = 0;
+  for (int rg = 0; rg < metadata.num_row_groups(); ++rg) {
+    size += metadata.RowGroup(rg)->ColumnChunk(column_idx)->total_compressed_size();
+  }
+  return size;
+}
+
+template <typename StatsType, typename Converter>
+Result<Literal> TypedStatsLiteral(const ::parquet::Statistics& stats, bool is_min,
+                                  Converter&& converter) {
+  const auto& typed_stats = internal::checked_cast<const StatsType&>(stats);
+  return converter(is_min ? typed_stats.min() : typed_stats.max());
+}
+
+std::vector<uint8_t> BytesFromByteArray(const ::parquet::ByteArray& value) {
+  return std::vector<uint8_t>{value.ptr, value.ptr + value.len};
+}
+
+std::vector<uint8_t> BytesFromFLBA(const ::parquet::FixedLenByteArray& value,
+                                   int32_t length) {
+  return std::vector<uint8_t>{value.ptr, value.ptr + length};
+}
+
+Literal DecimalLiteral(int128_t value, const PrimitiveType& iceberg_type) {
+  const auto& decimal_type = internal::checked_cast<const DecimalType&>(iceberg_type);
+  return Literal::Decimal(value, decimal_type.precision(), decimal_type.scale());
+}
+
+Result<Literal> DecimalLiteralFromBytes(std::span<const uint8_t> bytes,
+                                        const PrimitiveType& iceberg_type) {
+  ICEBERG_ASSIGN_OR_RAISE(auto decimal,
+                          Decimal::FromBigEndian(bytes.data(), bytes.size()));
+  return DecimalLiteral(decimal.value(), iceberg_type);
+}
+
+Result<Literal> BinaryStatsLiteral(std::vector<uint8_t> bytes,
+                                   const PrimitiveType& iceberg_type) {
+  switch (iceberg_type.type_id()) {
+    case TypeId::kString:
+      return Literal::String(std::string(bytes.begin(), bytes.end()));
+    case TypeId::kBinary:
+      return Literal::Binary(std::move(bytes));
+    case TypeId::kFixed:
+      return Literal::Fixed(std::move(bytes));
+    case TypeId::kUuid: {
+      ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromBytes(bytes));
+      return Literal::UUID(std::move(uuid));
+    }
+    case TypeId::kDecimal:
+      return DecimalLiteralFromBytes(bytes, iceberg_type);
+    default:
+      return InvalidArgument(
+          "Cannot convert Parquet binary statistics to Iceberg type {}",
+          iceberg_type.ToString());
+  }
+}
+
+Result<Literal> Int32StatsLiteral(int32_t value, const PrimitiveType& iceberg_type) {
+  switch (iceberg_type.type_id()) {
+    case TypeId::kInt:
+      return Literal::Int(value);
+    case TypeId::kLong:
+      return Literal::Long(value);
+    case TypeId::kDate:
+      return Literal::Date(value);
+    case TypeId::kDecimal:
+      return DecimalLiteral(value, iceberg_type);
+    default:
+      return InvalidArgument("Cannot convert Parquet INT32 statistics to Iceberg type {}",
+                             iceberg_type.ToString());
+  }
+}
+
+Result<Literal> Int64StatsLiteral(int64_t value, const PrimitiveType& iceberg_type) {
+  switch (iceberg_type.type_id()) {
+    case TypeId::kLong:
+      return Literal::Long(value);
+    case TypeId::kTime:
+      return Literal::Time(value);
+    case TypeId::kTimestamp:
+      return Literal::Timestamp(value);
+    case TypeId::kTimestampTz:
+      return Literal::TimestampTz(value);
+    case TypeId::kTimestampNs:
+      return Literal::TimestampNs(value);
+    case TypeId::kTimestampTzNs:
+      return Literal::TimestampTzNs(value);
+    case TypeId::kDecimal:
+      return DecimalLiteral(value, iceberg_type);
+    default:
+      return InvalidArgument("Cannot convert Parquet INT64 statistics to Iceberg type {}",
+                             iceberg_type.ToString());
+  }
+}
+
+Result<Literal> FloatStatsLiteral(float value, const PrimitiveType& iceberg_type) {
+  switch (iceberg_type.type_id()) {
+    case TypeId::kFloat:
+      return Literal::Float(value);
+    case TypeId::kDouble:
+      return Literal::Double(value);
+    default:
+      return InvalidArgument("Cannot convert Parquet FLOAT statistics to Iceberg type {}",
+                             iceberg_type.ToString());
+  }
+}
+
+bool IsFloatingType(const PrimitiveType& type) {
+  return type.type_id() == TypeId::kFloat || type.type_id() == TypeId::kDouble;
+}
+
+bool NeedsBoundTruncation(const PrimitiveType& type) {
+  return type.type_id() == TypeId::kString || type.type_id() == TypeId::kBinary;
+}
+
+Result<Literal> StatsValueToLiteral(const ::parquet::ColumnDescriptor& column,
+                                    const PrimitiveType& iceberg_type,
+                                    const ::parquet::Statistics& stats, bool is_min) {
+  switch (column.physical_type()) {
+    case ::parquet::Type::BOOLEAN:
+      return TypedStatsLiteral<::parquet::BoolStatistics>(
+          stats, is_min, [](bool value) { return Literal::Boolean(value); });
+    case ::parquet::Type::INT32:
+      return TypedStatsLiteral<::parquet::Int32Statistics>(
+          stats, is_min,
+          [&](int32_t value) { return Int32StatsLiteral(value, iceberg_type); });
+    case ::parquet::Type::INT64:
+      return TypedStatsLiteral<::parquet::Int64Statistics>(
+          stats, is_min,
+          [&](int64_t value) { return Int64StatsLiteral(value, iceberg_type); });
+    case ::parquet::Type::FLOAT:
+      return TypedStatsLiteral<::parquet::FloatStatistics>(
+          stats, is_min,
+          [&](float value) { return FloatStatsLiteral(value, iceberg_type); });
+    case ::parquet::Type::DOUBLE:
+      return TypedStatsLiteral<::parquet::DoubleStatistics>(
+          stats, is_min, [](double value) { return Literal::Double(value); });
+    case ::parquet::Type::BYTE_ARRAY:
+      return TypedStatsLiteral<::parquet::ByteArrayStatistics>(
+          stats, is_min, [&](const ::parquet::ByteArray& value) {
+            return BinaryStatsLiteral(BytesFromByteArray(value), iceberg_type);
+          });
+    case ::parquet::Type::FIXED_LEN_BYTE_ARRAY:
+      return TypedStatsLiteral<::parquet::FLBAStatistics>(
+          stats, is_min, [&](const ::parquet::FixedLenByteArray& value) {
+            return BinaryStatsLiteral(BytesFromFLBA(value, column.type_length()),
+                                      iceberg_type);
+          });
+    case ::parquet::Type::INT96:
+    case ::parquet::Type::UNDEFINED:
+      return NotSupported("Cannot convert Parquet statistics for physical type {}",
+                          static_cast<int>(column.physical_type()));
+  }
+  std::unreachable();
 }
 
 /// \brief Collect counts (value count and null count) from footer statistics.
@@ -105,6 +266,7 @@ Result<std::optional<FieldMetrics>> CollectBounds(
     int32_t field_id, std::shared_ptr<PrimitiveType> iceberg_type,
     const ::parquet::FileMetaData& metadata, int32_t column_idx,
     int32_t truncate_length) {
+  auto column_desc = metadata.schema()->Column(column_idx);
   int64_t null_count = 0;
   int64_t value_count = 0;
   std::optional<Literal> lower_bound;
@@ -122,28 +284,24 @@ Result<std::optional<FieldMetrics>> CollectBounds(
     value_count += column_chunk->num_values();
 
     if (stats->HasMinMax()) {
-      auto min_bytes = stats->EncodeMin();
-      auto min_span = std::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(min_bytes.data()), min_bytes.size());
       ICEBERG_ASSIGN_OR_RAISE(auto min_value,
-                              Conversions::FromBytes(iceberg_type, min_span));
+                              StatsValueToLiteral(*column_desc, *iceberg_type, *stats,
+                                                  /*is_min=*/true));
       if (!lower_bound.has_value() || min_value < lower_bound.value()) {
         lower_bound = std::move(min_value);
       }
 
-      auto max_bytes = stats->EncodeMax();
-      auto max_span = std::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(max_bytes.data()), max_bytes.size());
       ICEBERG_ASSIGN_OR_RAISE(auto max_value,
-                              Conversions::FromBytes(iceberg_type, max_span));
+                              StatsValueToLiteral(*column_desc, *iceberg_type, *stats,
+                                                  /*is_min=*/false));
       if (!upper_bound.has_value() || max_value > upper_bound.value()) {
         upper_bound = std::move(max_value);
       }
     }
   }
 
-  if (!lower_bound.has_value() || !upper_bound.has_value() || lower_bound->IsNaN() ||
-      upper_bound->IsNaN()) {
+  if (!lower_bound.has_value() || !upper_bound.has_value() ||
+      (IsFloatingType(*iceberg_type) && (lower_bound->IsNaN() || upper_bound->IsNaN()))) {
     return FieldMetrics{
         .field_id = field_id,
         .value_count = value_count,
@@ -151,19 +309,21 @@ Result<std::optional<FieldMetrics>> CollectBounds(
     };
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto truncated_lower,
-                          TruncateUtils::TruncateLowerBound(
-                              *iceberg_type, lower_bound.value(), truncate_length));
-  ICEBERG_ASSIGN_OR_RAISE(auto truncated_upper,
-                          TruncateUtils::TruncateUpperBound(
-                              *iceberg_type, upper_bound.value(), truncate_length));
+  if (NeedsBoundTruncation(*iceberg_type)) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        lower_bound, TruncateUtils::TruncateLowerBound(*iceberg_type, lower_bound.value(),
+                                                       truncate_length));
+    ICEBERG_ASSIGN_OR_RAISE(
+        upper_bound, TruncateUtils::TruncateUpperBound(*iceberg_type, upper_bound.value(),
+                                                       truncate_length));
+  }
 
   return FieldMetrics{
       .field_id = field_id,
       .value_count = value_count,
       .null_value_count = null_count,
-      .lower_bound = std::move(truncated_lower),
-      .upper_bound = std::move(truncated_upper),
+      .lower_bound = std::move(lower_bound),
+      .upper_bound = std::move(upper_bound),
   };
 }
 
@@ -187,19 +347,27 @@ Result<std::optional<FieldMetrics>> MetricsFromFieldMetrics(
                       .null_value_count = fm.null_value_count,
                       .nan_value_count = fm.nan_value_count};
 
-  if (truncate_length > 0) {
-    if (fm.lower_bound.has_value()) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto lower, TruncateUtils::TruncateLowerBound(
-                          *primitive_type, fm.lower_bound.value(), truncate_length));
-      result.lower_bound = std::move(lower);
-    }
-    if (fm.upper_bound.has_value()) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto upper, TruncateUtils::TruncateUpperBound(
-                          *primitive_type, fm.upper_bound.value(), truncate_length));
-      result.upper_bound = std::move(upper);
-    }
+  if (truncate_length <= 0) {
+    return result;
+  }
+
+  if (!NeedsBoundTruncation(*primitive_type)) {
+    result.lower_bound = fm.lower_bound;
+    result.upper_bound = fm.upper_bound;
+    return result;
+  }
+
+  if (fm.lower_bound.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        result.lower_bound,
+        TruncateUtils::TruncateLowerBound(*primitive_type, fm.lower_bound.value(),
+                                          truncate_length));
+  }
+  if (fm.upper_bound.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        result.upper_bound,
+        TruncateUtils::TruncateUpperBound(*primitive_type, fm.upper_bound.value(),
+                                          truncate_length));
   }
 
   return result;
@@ -279,6 +447,10 @@ class CollectMetricsVisitor {
     int32_t truncate_length = mode.TruncateLength();
     const auto& primitive_type =
         internal::checked_pointer_cast<PrimitiveType>(field.type());
+    auto column_idx = FindColumnIndex(parquet_schema_, field_id);
+    if (column_idx.has_value()) {
+      metrics_.column_sizes[field_id] = CollectColumnSize(metadata_, column_idx.value());
+    }
 
     ICEBERG_ASSIGN_OR_RAISE(auto field_metrics,
                             MetricsFromFieldMetrics(field_id, field_metrics_,
@@ -330,36 +502,10 @@ Result<Metrics> ParquetMetrics::GetMetrics(
     const std::unordered_map<int32_t, FieldMetrics>& field_metrics) {
   Metrics metrics;
 
-  // Collect row count and column sizes
-  int64_t row_count = 0;
-  for (int rg = 0; rg < metadata.num_row_groups(); ++rg) {
-    auto row_group = metadata.RowGroup(rg);
-    row_count += row_group->num_rows();
-    for (int col = 0; col < row_group->num_columns(); ++col) {
-      auto column_chunk = row_group->ColumnChunk(col);
-      auto field_id_opt = GetFieldId(*parquet_schema.Column(col));
-      if (!field_id_opt.has_value()) {
-        continue;
-      }
-      int32_t field_id = field_id_opt.value();
+  metrics.row_count = metadata.num_rows();
 
-      ICEBERG_ASSIGN_OR_RAISE(auto field_name, schema.FindColumnNameById(field_id));
-      if (!field_name.has_value()) {
-        continue;
-      }
-
-      MetricsMode mode = metrics_config.ColumnMode(field_name.value());
-      if (mode.kind != MetricsMode::Kind::kNone) {
-        metrics.column_sizes[field_id] =
-            metrics.column_sizes.contains(field_id)
-                ? metrics.column_sizes[field_id] + column_chunk->total_compressed_size()
-                : column_chunk->total_compressed_size();
-      }
-    }
-  }
-  metrics.row_count = row_count;
-
-  // Collect metrics for all primitive fields
+  // Apply MetricsConfig while visiting schema fields, then collect footer metrics only
+  // for fields whose mode is not `none`.
   CollectMetricsVisitor visitor(parquet_schema, metrics_config, metadata, field_metrics,
                                 metrics);
   ICEBERG_RETURN_UNEXPECTED(visitor.VisitStruct(schema, ""));
