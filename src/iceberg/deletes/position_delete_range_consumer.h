@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "iceberg/iceberg_data_export.h"
 
@@ -32,11 +33,12 @@ class PositionDeleteIndex;
 /// to calling `target.Delete(pos)` for each entry. Out-of-range positions
 /// are silently ignored. Sorted, mostly-contiguous input is fastest.
 ///
-/// \warning Not safe to call recursively or interleaved on the same thread:
-///     the bulk dispatch path uses a thread-local staging buffer that a
-///     nested invocation would corrupt. Concurrent calls on different
-///     threads are safe with disjoint `target`.
+/// \param scratch Caller-owned reusable buffer for the bulk dispatch path.
+///     Cleared and reused per key group; retain across calls to amortize
+///     allocations. Pass a distinct `scratch` per thread when calling
+///     concurrently with disjoint `target`.
 void ICEBERG_DATA_EXPORT ForEachPositionDelete(std::span<const int64_t> positions,
-                                               PositionDeleteIndex& target);
+                                               PositionDeleteIndex& target,
+                                               std::vector<uint32_t>& scratch);
 
 }  // namespace iceberg

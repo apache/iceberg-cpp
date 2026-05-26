@@ -115,6 +115,9 @@ Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteInde
 
   // Filter-path staging buffer; reused across batches via `clear()`.
   std::vector<int64_t> positions;
+  // Scratch buffer for `ForEachPositionDelete`'s bulk dispatch path;
+  // reused across batches and across both routing branches.
+  std::vector<uint32_t> bulk_scratch;
 
   while (true) {
     ICEBERG_ASSIGN_OR_RAISE(auto batch_opt, reader->Next());
@@ -147,7 +150,8 @@ Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteInde
     const int64_t* pos_data = Int64ValuesBuffer(pos_view);
 
     if (use_referenced_data_file_fast_path) {
-      ForEachPositionDelete(std::span<const int64_t>(pos_data, length), index);
+      ForEachPositionDelete(std::span<const int64_t>(pos_data, length), index,
+                            bulk_scratch);
       continue;
     }
 
@@ -160,7 +164,7 @@ Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteInde
         positions.push_back(pos_data[i]);
       }
     }
-    ForEachPositionDelete(positions, index);
+    ForEachPositionDelete(positions, index, bulk_scratch);
   }
 
   return reader->Close();

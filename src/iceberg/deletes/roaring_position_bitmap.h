@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <span>
 #include <string>
 #include <string_view>
 
@@ -116,7 +117,7 @@ class ICEBERG_DATA_EXPORT RoaringPositionBitmap {
   // Bulk-add positions sharing high-32-bit `key`. Internal hook for
   // `PositionDeleteIndex::BulkAddForKey`; per-key grouping is the caller's
   // job, keeping this a thin wrapper around CRoaring's `addMany`.
-  void AddManyForKey(int32_t key, const uint32_t* positions, size_t n);
+  void AddManyForKey(int32_t key, std::span<const uint32_t> positions);
   friend class PositionDeleteIndex;
 };
 

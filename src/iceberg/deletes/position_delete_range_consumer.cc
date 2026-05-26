@@ -90,7 +90,7 @@ void CoalesceIntoRanges(std::span<const int64_t> positions, PositionDeleteIndex&
 }  // namespace
 
 void ForEachPositionDelete(std::span<const int64_t> positions,
-                           PositionDeleteIndex& target) {
+                           PositionDeleteIndex& target, std::vector<uint32_t>& scratch) {
   if (positions.empty()) {
     return;
   }
@@ -116,10 +116,8 @@ void ForEachPositionDelete(std::span<const int64_t> positions,
   // boundaries / (sniff - 1) > kBulkThresholdPercent / 100, without FP.
   if (boundaries * 100 > (sniff - 1) * kBulkThresholdPercent) {
     // Bulk path: group by high-32-bit key, flush each group via CRoaring's
-    // `addMany` (through `BulkAddForKey`). The thread-local buffer is
-    // reused across calls; nested invocations on the same thread would
-    // corrupt it -- see `\warning` on `ForEachPositionDelete`.
-    thread_local std::vector<uint32_t> bulk_key_positions;
+    // `addMany` (through `BulkAddForKey`). Reuses the caller-owned `scratch`
+    // vector across key groups -- cleared between groups, capacity retained.
     const size_t n = positions.size();
     size_t i = 0;
     while (i < n) {
@@ -130,13 +128,13 @@ void ForEachPositionDelete(std::span<const int64_t> positions,
         break;
       }
       const int32_t key = HighKeyFromPosition(positions[i]);
-      bulk_key_positions.clear();
+      scratch.clear();
       while (i < n && IsValidPosition(positions[i]) &&
              HighKeyFromPosition(positions[i]) == key) {
-        bulk_key_positions.push_back(static_cast<uint32_t>(positions[i] & 0xFFFFFFFFu));
+        scratch.push_back(static_cast<uint32_t>(positions[i] & 0xFFFFFFFFu));
         ++i;
       }
-      target.BulkAddForKey(key, bulk_key_positions.data(), bulk_key_positions.size());
+      target.BulkAddForKey(key, scratch);
     }
     return;
   }

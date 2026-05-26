@@ -105,10 +105,10 @@ void RoaringPositionBitmap::Add(int64_t pos) {
   impl_->bitmaps[key].add(pos32);
 }
 
-void RoaringPositionBitmap::AddManyForKey(int32_t key, const uint32_t* positions,
-                                          size_t n) {
+void RoaringPositionBitmap::AddManyForKey(int32_t key,
+                                          std::span<const uint32_t> positions) {
   impl_->AllocateBitmapsIfNeeded(key + 1);
-  impl_->bitmaps[key].addMany(n, positions);
+  impl_->bitmaps[key].addMany(positions.size(), positions.data());
 }
 
 void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {

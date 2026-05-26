@@ -49,7 +49,8 @@ std::set<int64_t> ExpectedValidSet(const std::vector<int64_t>& positions) {
 // Weaker checks would miss divergences at the 32-bit key boundary.
 void AssertMatchesBaseline(const std::vector<int64_t>& positions) {
   PositionDeleteIndex index;
-  ForEachPositionDelete(std::span<const int64_t>(positions), index);
+  std::vector<uint32_t> scratch;
+  ForEachPositionDelete(std::span<const int64_t>(positions), index, scratch);
   const auto expected = ExpectedValidSet(positions);
   ASSERT_EQ(index.Cardinality(), static_cast<int64_t>(expected.size()))
       << "input size=" << positions.size();

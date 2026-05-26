@@ -39,9 +39,9 @@ void PositionDeleteIndex::Merge(const PositionDeleteIndex& other) {
   bitmap_.Or(other.bitmap_);
 }
 
-void PositionDeleteIndex::BulkAddForKey(int32_t key, const uint32_t* positions,
-                                        size_t n) {
-  bitmap_.AddManyForKey(key, positions, n);
+void PositionDeleteIndex::BulkAddForKey(int32_t key,
+                                        std::span<const uint32_t> positions) {
+  bitmap_.AddManyForKey(key, positions);
 }
 
 }  // namespace iceberg
