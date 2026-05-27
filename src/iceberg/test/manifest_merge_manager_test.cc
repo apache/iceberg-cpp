@@ -192,6 +192,34 @@ TEST_F(ManifestMergeManagerTest, MergeOccursAtThreshold) {
   EXPECT_EQ(count1, 3);
 }
 
+TEST_F(ManifestMergeManagerTest, ReplacedManifestCountTracksPreviousSnapshotInputs) {
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1, /*size=*/100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId0, 1, /*size=*/100));
+  m0.added_snapshot_id = kSnapshotId - 1;
+  m1.added_snapshot_id = kSnapshotId - 2;
+
+  ManifestMergeManager mgr(/*target=*/1024, /*min_count=*/2, /*enabled=*/true);
+  ICEBERG_UNWRAP_OR_FAIL(auto result,
+                         mgr.MergeManifests({m0, m1}, {}, kSnapshotId, *metadata_, file_io_,
+                                            MakeWriterFactory()));
+
+  EXPECT_EQ(result.size(), 1U);
+  EXPECT_EQ(mgr.ReplacedManifestsCount(), 2);
+}
+
+TEST_F(ManifestMergeManagerTest, ReplacedManifestCountIgnoresCurrentSnapshotInputs) {
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1, /*size=*/100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId0, 1, /*size=*/100));
+
+  ManifestMergeManager mgr(/*target=*/1024, /*min_count=*/2, /*enabled=*/true);
+  ICEBERG_UNWRAP_OR_FAIL(auto result,
+                         mgr.MergeManifests({}, {m0, m1}, kSnapshotId, *metadata_, file_io_,
+                                            MakeWriterFactory()));
+
+  EXPECT_EQ(result.size(), 1U);
+  EXPECT_EQ(mgr.ReplacedManifestsCount(), 0);
+}
+
 TEST_F(ManifestMergeManagerTest, OversizedManifestPassedThrough) {
   // m_large exceeds target → must not be merged; m_small fits
   ICEBERG_UNWRAP_OR_FAIL(auto m_large, WriteManifest(kSpecId0, 2, /*size=*/2000));

@@ -122,6 +122,11 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   Status Finalize(Result<const TableMetadata*> commit_result) override;
 
  protected:
+  struct DeleteManifestEntry {
+    std::shared_ptr<DataFile> file;
+    std::optional<int64_t> data_sequence_number;
+  };
+
   explicit SnapshotUpdate(std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Write data manifests for the given data files
@@ -142,6 +147,10 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \return A vector of manifest files
   Result<std::vector<ManifestFile>> WriteDeleteManifests(
       std::span<const std::shared_ptr<DataFile>> files,
+      const std::shared_ptr<PartitionSpec>& spec);
+
+  Result<std::vector<ManifestFile>> WriteDeleteManifests(
+      std::span<const DeleteManifestEntry> files,
       const std::shared_ptr<PartitionSpec>& spec);
 
   const std::string& target_branch() const { return target_branch_; }

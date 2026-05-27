@@ -85,19 +85,16 @@ class ICEBERG_EXPORT ManifestFilterManager {
   /// \brief Register a file object for deletion.
   ///
   /// Any manifest entry whose file_path matches file->file_path will be marked
-  /// DELETED.  The file object is retained in FilesToBeDeleted(), allowing callers
-  /// to enumerate deleted file objects for follow-up delete-file cleanup.
-  /// Duplicate registrations (same path) are silently ignored.
+  /// DELETED. Duplicate registrations (same path) are silently ignored.
   ///
   /// \param file The data/delete file to delete (must not be null)
   Status DeleteFile(std::shared_ptr<DataFile> file);
 
   /// \brief Returns the set of file objects marked for deletion by this manager.
   ///
-  /// This includes files registered via DeleteFile(DataFile) and files discovered
-  /// during FilterManifests() that were deleted by path, partition, or row-filter
-  /// matching.  Used by higher-level operations (e.g. RowDelta) to enumerate the
-  /// deleted data files for delete-file cleanup.
+  /// This is populated by the most recent FilterManifests() call and contains only
+  /// files that were actually deleted from filtered manifests. Used by higher-level
+  /// operations (e.g. RowDelta) to enumerate deleted data files for follow-up cleanup.
   const DataFileSet& FilesToBeDeleted() const;
 
   /// \brief Register a partition for dropping.
@@ -157,6 +154,15 @@ class ICEBERG_EXPORT ManifestFilterManager {
   /// \return The filtered manifest list, or an error
   Result<std::vector<ManifestFile>> FilterManifests(
       const TableMetadata& metadata, const std::shared_ptr<Snapshot>& base_snapshot,
+      const ManifestWriterFactory& writer_factory);
+
+  /// \brief Apply all accumulated delete conditions using an explicit schema.
+  ///
+  /// This overload is used when callers need row-filter evaluation bound against a
+  /// schema other than metadata.Schema(), such as the schema at a branch head.
+  Result<std::vector<ManifestFile>> FilterManifests(
+      const std::shared_ptr<Schema>& schema, const TableMetadata& metadata,
+      const std::shared_ptr<Snapshot>& base_snapshot,
       const ManifestWriterFactory& writer_factory);
 
   /// \brief Apply all accumulated delete conditions to the provided manifests.

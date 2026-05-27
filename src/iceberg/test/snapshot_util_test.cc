@@ -301,10 +301,20 @@ TEST_F(SnapshotUtilTest, SchemaForBranch) {
   ICEBERG_UNWRAP_OR_FAIL(auto initial_schema, table_->schema());
   ASSERT_NE(initial_schema, nullptr);
 
+  auto branch_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               SchemaField::MakeRequired(2, "data", string()),
+                               SchemaField::MakeOptional(3, "branch_only", string())},
+      1);
+  table_->metadata()->schemas.push_back(branch_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto branch_snapshot, table_->SnapshotById(branch_snapshot_id_));
+  branch_snapshot->schema_id = branch_schema->schema_id();
+
   std::string branch = "b1";
   ICEBERG_UNWRAP_OR_FAIL(auto schema, SnapshotUtil::SchemaFor(*table_, branch));
-  // Branch should return current schema (not snapshot schema)
-  EXPECT_EQ(schema->fields().size(), initial_schema->fields().size());
+  EXPECT_EQ(schema->schema_id(), branch_schema->schema_id());
+  EXPECT_EQ(schema->fields().size(), branch_schema->fields().size());
+  EXPECT_NE(schema->fields().size(), initial_schema->fields().size());
 }
 
 TEST_F(SnapshotUtilTest, SchemaForTag) {

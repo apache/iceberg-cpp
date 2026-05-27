@@ -92,15 +92,13 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   /// \brief Stage a delete file with an explicit data sequence number.
   ///
-  /// \note Not yet implemented; returns NotImplemented error.
   Status AddDeleteFile(std::shared_ptr<DataFile> file, int64_t data_sequence_number);
 
   /// \brief Add all files in a pre-existing data manifest to the new snapshot.
   ///
-  /// The manifest must contain only DATA content and only ADDED entries (no
-  /// existing or deleted files). If snapshot ID inheritance is enabled and the
-  /// manifest has no snapshot ID assigned, it is used directly; otherwise it is
-  /// copied with the current snapshot ID.
+  /// The manifest must contain DATA content. If snapshot ID inheritance is
+  /// enabled and the manifest has no snapshot ID assigned, it is used directly;
+  /// otherwise it is copied with the current snapshot ID.
   Status AddManifest(ManifestFile manifest);
 
   /// \brief Register a data file (by object) to be deleted from the table.
@@ -177,7 +175,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// added a data file in any partition of the given partition set.
   ///
-  /// \note Not yet implemented; returns NotImplemented error.
   static Status ValidateAddedDataFiles(const TableMetadata& metadata,
                                        int64_t starting_snapshot_id,
                                        const PartitionSet& partition_set,
@@ -228,7 +225,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// added a delete file matching the data filter that covers a file in replaced_files.
   ///
-  /// \note Not yet implemented; returns NotImplemented error.
   static Status ValidateNoNewDeletesForDataFiles(const TableMetadata& metadata,
                                                  int64_t starting_snapshot_id,
                                                  std::shared_ptr<Expression> data_filter,
@@ -239,7 +235,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// added a delete file matching the given row filter.
   ///
-  /// \note Not yet implemented; returns NotImplemented error.
   static Status ValidateNoNewDeleteFiles(const TableMetadata& metadata,
                                          int64_t starting_snapshot_id,
                                          std::shared_ptr<Expression> data_filter,
@@ -249,7 +244,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// added a delete file matching any partition in the given partition set.
   ///
-  /// \note Not yet implemented; returns NotImplemented error.
   static Status ValidateNoNewDeleteFiles(const TableMetadata& metadata,
                                          int64_t starting_snapshot_id,
                                          const PartitionSet& partition_set,
@@ -259,7 +253,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// deleted a data file matching the given row filter.
   ///
-  /// \note Not yet implemented; returns NotImplemented error.
   static Status ValidateDeletedDataFiles(const TableMetadata& metadata,
                                          int64_t starting_snapshot_id,
                                          std::shared_ptr<Expression> data_filter,
@@ -269,7 +262,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// deleted a data file in any partition of the given partition set.
   ///
-  /// \note Not yet implemented; returns NotImplemented error.
   static Status ValidateDeletedDataFiles(const TableMetadata& metadata,
                                          int64_t starting_snapshot_id,
                                          const PartitionSet& partition_set,
@@ -295,13 +287,21 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                                  std::shared_ptr<FileIO> io);
 
  private:
+  struct PendingDeleteFile {
+    std::shared_ptr<DataFile> file;
+    std::optional<int64_t> data_sequence_number;
+  };
+
   /// \brief Create a ManifestWriterFactory that records every path it creates in
   /// all_written_manifests_.
-  ManifestWriterFactory MakeTrackedWriterFactory();
+  ManifestWriterFactory MakeTrackedWriterFactory(const std::shared_ptr<Schema>& schema);
 
   /// \brief Copy a manifest with the current snapshot ID, for use when snapshot
   /// ID inheritance is not possible.
   Result<ManifestFile> CopyManifest(const ManifestFile& manifest);
+
+  Status AddDeleteFile(std::shared_ptr<DataFile> file,
+                       std::optional<int64_t> data_sequence_number);
 
   /// \brief Write new data manifests for staged data files; caches the result.
   Result<std::vector<ManifestFile>> WriteNewDataManifests();
@@ -326,7 +326,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   ManifestMergeManager delete_merge_manager_;
 
   std::unordered_map<int32_t, DataFileSet> new_data_files_by_spec_;
-  std::vector<std::shared_ptr<DataFile>> new_delete_files_;
+  std::vector<PendingDeleteFile> new_delete_files_;
   std::optional<int64_t> new_data_files_data_seq_number_;
 
   // Manifests passed via AddManifest(): inherit path (no copy needed) and

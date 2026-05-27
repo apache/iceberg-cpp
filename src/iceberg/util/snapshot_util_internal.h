@@ -306,9 +306,9 @@ class ICEBERG_EXPORT SnapshotUtil {
 
   /// \brief Return the schema of the snapshot at a given ref.
   ///
-  /// If the ref does not exist or the ref is a branch, the table schema is returned
-  /// because it will be the schema when the new branch is created. If the ref is a tag,
-  /// then the snapshot schema is returned.
+  /// If the ref does not exist, the current table schema is returned. If the ref exists
+  /// and points to a snapshot (branch or tag), the schema recorded for that snapshot is
+  /// returned.
   ///
   /// \param table The table
   /// \param ref Ref name of the table (empty string means main branch)
@@ -318,9 +318,9 @@ class ICEBERG_EXPORT SnapshotUtil {
 
   /// \brief Return the schema of the snapshot at a given ref.
   ///
-  /// If the ref does not exist or the ref is a branch, the table schema is returned
-  /// because it will be the schema when the new branch is created. If the ref is a tag,
-  /// then the snapshot schema is returned.
+  /// If the ref does not exist, the current table schema is returned. If the ref exists
+  /// and points to a snapshot (branch or tag), the schema recorded for that snapshot is
+  /// returned.
   ///
   /// \param metadata The table metadata
   /// \param ref Ref name of the table (empty string means main branch)

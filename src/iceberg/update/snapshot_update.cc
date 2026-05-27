@@ -194,6 +194,19 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
 Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
     std::span<const std::shared_ptr<DataFile>> files,
     const std::shared_ptr<PartitionSpec>& spec) {
+  std::vector<DeleteManifestEntry> delete_entries;
+  delete_entries.reserve(files.size());
+  for (const auto& file : files) {
+    delete_entries.push_back(
+        DeleteManifestEntry{.file = file, .data_sequence_number = std::nullopt});
+  }
+  return WriteDeleteManifests(delete_entries, spec);
+}
+
+// TODO(xxx): write manifests in parallel
+Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
+    std::span<const DeleteManifestEntry> files,
+    const std::shared_ptr<PartitionSpec>& spec) {
   if (files.empty()) {
     return std::vector<ManifestFile>{};
   }
@@ -208,10 +221,9 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
       },
       target_manifest_size_bytes_);
 
-  for (const auto& file : files) {
-    // FIXME: Java impl wrap it with `PendingDeleteFile` and deals with
-    // file->data_sequence_number
-    ICEBERG_RETURN_UNEXPECTED(rolling_writer.WriteAddedEntry(file));
+  for (const auto& entry : files) {
+    ICEBERG_RETURN_UNEXPECTED(
+        rolling_writer.WriteAddedEntry(entry.file, entry.data_sequence_number));
   }
   ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
   return rolling_writer.ToManifestFiles();

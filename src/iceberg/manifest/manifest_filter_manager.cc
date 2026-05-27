@@ -94,7 +94,6 @@ void ManifestFilterManager::DeleteFile(std::string_view path) {
 Status ManifestFilterManager::DeleteFile(std::shared_ptr<DataFile> file) {
   ICEBERG_PRECHECK(file != nullptr, "Cannot delete file: null");
   delete_paths_.insert(file->file_path);
-  delete_files_.insert(std::move(file));
   return {};
 }
 
@@ -132,9 +131,7 @@ Result<bool> ManifestFilterManager::CanContainDroppedFiles(const ManifestFile&) 
   // manifests once object-delete partitions are tracked separately.
   // Currently, DeleteFile(std::shared_ptr<DataFile>) degrades to a path-based delete,
   // which forces scanning all manifests.
-  // Also open delete manifests when a minimum sequence number is set for cleanup.
-  return !delete_paths_.empty() || !removed_data_file_paths_.empty() ||
-         (manifest_content_ == ManifestContent::kDeletes && min_sequence_number_ > 0);
+  return !delete_paths_.empty() || !removed_data_file_paths_.empty();
 }
 
 Result<bool> ManifestFilterManager::CanContainDroppedPartitions(
@@ -385,6 +382,16 @@ Status ManifestFilterManager::ValidateRequiredDeletes(
 Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
     const TableMetadata& metadata, const std::shared_ptr<Snapshot>& base_snapshot,
     const ManifestWriterFactory& writer_factory) {
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  return FilterManifests(schema, metadata, base_snapshot, writer_factory);
+}
+
+Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
+    const std::shared_ptr<Schema>& schema, const TableMetadata& metadata,
+    const std::shared_ptr<Snapshot>& base_snapshot,
+    const ManifestWriterFactory& writer_factory) {
+  delete_files_.clear();
+  replaced_manifests_count_ = 0;
   if (!base_snapshot) {
     ICEBERG_RETURN_UNEXPECTED(ValidateRequiredDeletes({}));
     return std::vector<ManifestFile>{};
@@ -402,7 +409,6 @@ Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
     manifests.push_back(&manifest);
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
   TableMetadataCache metadata_cache(&metadata);
   ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
 
@@ -426,7 +432,9 @@ Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
   }
 
   std::unordered_set<std::string> found_paths;
+  delete_files_.clear();
   if (manifests.empty()) {
+    replaced_manifests_count_ = 0;
     ICEBERG_RETURN_UNEXPECTED(ValidateRequiredDeletes(found_paths));
     return std::vector<ManifestFile>{};
   }

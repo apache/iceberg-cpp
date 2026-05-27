@@ -418,7 +418,7 @@ static Result<ManifestFile> WriteDeleteManifest(std::shared_ptr<DataFile> delete
                              path);
 }
 
-TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThan) {
+TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThanDoesNotRewriteOnItsOwn) {
   auto* metadata = table_->metadata().get();
   auto factory = MakeWriterFactory(*metadata);
 
@@ -439,7 +439,6 @@ TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThan) {
       WriteDeleteManifest(del_file, /*data_seq=*/2L, file_io_, *metadata, manifest_path));
 
   ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
-  // Drop delete files older than sequence number 5: entry (seq=2) should be dropped.
   mgr.DropDeleteFilesOlderThan(5);
 
   std::vector<const ManifestFile*> manifests{&del_manifest};
@@ -449,17 +448,16 @@ TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThan) {
   ICEBERG_UNWRAP_OR_FAIL(auto result,
                          mgr.FilterManifests(schema, specs, manifests, factory));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
-  ASSERT_EQ(entries.size(), 1U);
-  EXPECT_EQ(entries[0].status, ManifestStatus::kDeleted);
+  ASSERT_EQ(result.size(), 1U);
+  EXPECT_EQ(result[0].manifest_path, del_manifest.manifest_path);
 }
 
-TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThanKeepsNewerEntries) {
+TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThanDuringDeleteManifestRewrite) {
   auto* metadata = table_->metadata().get();
   auto factory = MakeWriterFactory(*metadata);
 
-  // Two entries in the same manifest: old (seq=2, below threshold) and new (seq=10,
-  // above).
+  // Three entries in the same manifest: old (seq=2, below threshold), targeted
+  // (explicit path delete), and keep (survives the rewrite).
   auto make_del_file = [&](const std::string& path) {
     auto f = std::make_shared<DataFile>();
     f->content = DataFile::Content::kPositionDeletes;
@@ -472,16 +470,18 @@ TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThanKeepsNewerEntries) {
     return f;
   };
   auto old_file = make_del_file(table_location_ + "/delete/del_old.parquet");
-  auto new_file = make_del_file(table_location_ + "/delete/del_new.parquet");
+  auto targeted_file = make_del_file(table_location_ + "/delete/del_targeted.parquet");
+  auto keep_file = make_del_file(table_location_ + "/delete/del_keep.parquet");
 
   auto manifest_path = std::format("{}/metadata/del-manifest-{}.avro", table_location_,
                                    manifest_counter_++);
   ICEBERG_UNWRAP_OR_FAIL(auto del_manifest,
-                         WriteDeleteManifest({{old_file, 2L}, {new_file, 10L}}, file_io_,
-                                             *metadata, manifest_path));
+                         WriteDeleteManifest(
+                             {{old_file, 2L}, {targeted_file, 10L}, {keep_file, 10L}},
+                             file_io_, *metadata, manifest_path));
 
   ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
-  // Threshold=5: old entry dropped, new entry survives as kExisting.
+  mgr.DeleteFile(targeted_file->file_path);
   mgr.DropDeleteFilesOlderThan(5);
 
   std::vector<const ManifestFile*> manifests{&del_manifest};
@@ -492,22 +492,22 @@ TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThanKeepsNewerEntries) {
                          mgr.FilterManifests(schema, specs, manifests, factory));
 
   ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, *metadata));
-  ASSERT_EQ(entries.size(), 2U);
-  // The old entry should be dropped; the new entry should survive.
+  ASSERT_EQ(entries.size(), 3U);
   auto deleted = std::count_if(
       entries.begin(), entries.end(),
       [](const ManifestEntry& e) { return e.status == ManifestStatus::kDeleted; });
   auto existing = std::count_if(
       entries.begin(), entries.end(),
       [](const ManifestEntry& e) { return e.status == ManifestStatus::kExisting; });
-  EXPECT_EQ(deleted, 1);
+  EXPECT_EQ(deleted, 2);
   EXPECT_EQ(existing, 1);
-  // Verify which entry survived.
   for (const auto& e : entries) {
     if (e.status == ManifestStatus::kExisting) {
-      EXPECT_EQ(e.data_file->file_path, new_file->file_path);
+      EXPECT_EQ(e.data_file->file_path, keep_file->file_path);
     } else {
-      EXPECT_EQ(e.data_file->file_path, old_file->file_path);
+      EXPECT_THAT(e.data_file->file_path,
+                  ::testing::AnyOf(old_file->file_path, targeted_file->file_path));
+      EXPECT_EQ(e.status, ManifestStatus::kDeleted);
     }
   }
 }

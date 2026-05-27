@@ -142,8 +142,12 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
     } else {
       ICEBERG_ASSIGN_OR_RAISE(
           auto merged, FlushBin(bin, snapshot_id, metadata, file_io, writer_factory));
-      // Each manifest consumed into the merged output (beyond the 1 output) is replaced.
-      replaced_manifests_count_ += static_cast<int32_t>(bin.size()) - 1;
+      if (bin.size() > 1) {
+        replaced_manifests_count_ += static_cast<int32_t>(std::ranges::count_if(
+            bin, [snapshot_id](const ManifestFile* manifest) {
+              return manifest->added_snapshot_id != snapshot_id;
+            }));
+      }
       result.push_back(std::move(merged));
     }
   }
