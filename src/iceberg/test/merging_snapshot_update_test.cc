@@ -452,7 +452,7 @@ TEST_F(MergingSnapshotUpdateTest, AddDeleteFileWithExplicitSequenceWritesSequenc
   EXPECT_THAT(op->AddDelete(del_file, 17), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), nullptr));
   auto delete_manifest_it =
-      std::find_if(manifests.begin(), manifests.end(), [](const ManifestFile& manifest) {
+      std::ranges::find_if(manifests, [](const ManifestFile& manifest) {
         return manifest.content == ManifestContent::kDeletes;
       });
   ASSERT_NE(delete_manifest_it, manifests.end());

@@ -50,7 +50,7 @@ namespace {
 bool MatchesOperation(std::optional<std::string_view> operation,
                       std::initializer_list<std::string_view> expected) {
   return operation.has_value() &&
-         std::find(expected.begin(), expected.end(), operation.value()) != expected.end();
+         std::ranges::find(expected, operation.value()) != expected.end();
 }
 
 struct ValidationHistoryResult {
