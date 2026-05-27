@@ -199,9 +199,9 @@ TEST_F(ManifestMergeManagerTest, ReplacedManifestCountTracksPreviousSnapshotInpu
   m1.added_snapshot_id = kSnapshotId - 2;
 
   ManifestMergeManager mgr(/*target=*/1024, /*min_count=*/2, /*enabled=*/true);
-  ICEBERG_UNWRAP_OR_FAIL(auto result,
-                         mgr.MergeManifests({m0, m1}, {}, kSnapshotId, *metadata_, file_io_,
-                                            MakeWriterFactory()));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto result, mgr.MergeManifests({m0, m1}, {}, kSnapshotId, *metadata_, file_io_,
+                                      MakeWriterFactory()));
 
   EXPECT_EQ(result.size(), 1U);
   EXPECT_EQ(mgr.ReplacedManifestsCount(), 2);
@@ -212,9 +212,9 @@ TEST_F(ManifestMergeManagerTest, ReplacedManifestCountIgnoresCurrentSnapshotInpu
   ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId0, 1, /*size=*/100));
 
   ManifestMergeManager mgr(/*target=*/1024, /*min_count=*/2, /*enabled=*/true);
-  ICEBERG_UNWRAP_OR_FAIL(auto result,
-                         mgr.MergeManifests({}, {m0, m1}, kSnapshotId, *metadata_, file_io_,
-                                            MakeWriterFactory()));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto result, mgr.MergeManifests({}, {m0, m1}, kSnapshotId, *metadata_, file_io_,
+                                      MakeWriterFactory()));
 
   EXPECT_EQ(result.size(), 1U);
   EXPECT_EQ(mgr.ReplacedManifestsCount(), 0);

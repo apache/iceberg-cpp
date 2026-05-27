@@ -475,10 +475,10 @@ TEST_F(ManifestFilterManagerTest, DropDeleteFilesOlderThanDuringDeleteManifestRe
 
   auto manifest_path = std::format("{}/metadata/del-manifest-{}.avro", table_location_,
                                    manifest_counter_++);
-  ICEBERG_UNWRAP_OR_FAIL(auto del_manifest,
-                         WriteDeleteManifest(
-                             {{old_file, 2L}, {targeted_file, 10L}, {keep_file, 10L}},
-                             file_io_, *metadata, manifest_path));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto del_manifest,
+      WriteDeleteManifest({{old_file, 2L}, {targeted_file, 10L}, {keep_file, 10L}},
+                          file_io_, *metadata, manifest_path));
 
   ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
   mgr.DeleteFile(targeted_file->file_path);

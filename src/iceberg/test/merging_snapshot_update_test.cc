@@ -107,31 +107,35 @@ class TestMergeAppend : public MergingSnapshotUpdate {
         metadata, starting_snapshot_id, std::move(data_filter), replaced_files, parent,
         std::move(io));
   }
-  static Status ValidateNoNewDeleteFilesForTest(
-      const TableMetadata& metadata, int64_t starting_snapshot_id,
-      std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
-      std::shared_ptr<FileIO> io) {
+  static Status ValidateNoNewDeleteFilesForTest(const TableMetadata& metadata,
+                                                int64_t starting_snapshot_id,
+                                                std::shared_ptr<Expression> data_filter,
+                                                const std::shared_ptr<Snapshot>& parent,
+                                                std::shared_ptr<FileIO> io) {
     return MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
         metadata, starting_snapshot_id, std::move(data_filter), parent, std::move(io));
   }
-  static Status ValidateNoNewDeleteFilesForTest(
-      const TableMetadata& metadata, int64_t starting_snapshot_id,
-      const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
-      std::shared_ptr<FileIO> io) {
+  static Status ValidateNoNewDeleteFilesForTest(const TableMetadata& metadata,
+                                                int64_t starting_snapshot_id,
+                                                const PartitionSet& partition_set,
+                                                const std::shared_ptr<Snapshot>& parent,
+                                                std::shared_ptr<FileIO> io) {
     return MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
         metadata, starting_snapshot_id, partition_set, parent, std::move(io));
   }
-  static Status ValidateDeletedDataFilesForTest(
-      const TableMetadata& metadata, int64_t starting_snapshot_id,
-      std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
-      std::shared_ptr<FileIO> io) {
+  static Status ValidateDeletedDataFilesForTest(const TableMetadata& metadata,
+                                                int64_t starting_snapshot_id,
+                                                std::shared_ptr<Expression> data_filter,
+                                                const std::shared_ptr<Snapshot>& parent,
+                                                std::shared_ptr<FileIO> io) {
     return MergingSnapshotUpdate::ValidateDeletedDataFiles(
         metadata, starting_snapshot_id, std::move(data_filter), parent, std::move(io));
   }
-  static Status ValidateDeletedDataFilesForTest(
-      const TableMetadata& metadata, int64_t starting_snapshot_id,
-      const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
-      std::shared_ptr<FileIO> io) {
+  static Status ValidateDeletedDataFilesForTest(const TableMetadata& metadata,
+                                                int64_t starting_snapshot_id,
+                                                const PartitionSet& partition_set,
+                                                const std::shared_ptr<Snapshot>& parent,
+                                                std::shared_ptr<FileIO> io) {
     return MergingSnapshotUpdate::ValidateDeletedDataFiles(
         metadata, starting_snapshot_id, partition_set, parent, std::move(io));
   }
@@ -147,30 +151,30 @@ class TestMergeAppend : public MergingSnapshotUpdate {
 
 class TestOverwriteUpdate : public MergingSnapshotUpdate {
  public:
- static Result<std::unique_ptr<TestOverwriteUpdate>> Make(
-     std::string table_name, std::shared_ptr<Table> table) {
-   ICEBERG_ASSIGN_OR_RAISE(
-       auto ctx, TransactionContext::Make(std::move(table), TransactionKind::kUpdate));
-   return std::unique_ptr<TestOverwriteUpdate>(
-       new TestOverwriteUpdate(std::move(table_name), std::move(ctx)));
- }
+  static Result<std::unique_ptr<TestOverwriteUpdate>> Make(std::string table_name,
+                                                           std::shared_ptr<Table> table) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto ctx, TransactionContext::Make(std::move(table), TransactionKind::kUpdate));
+    return std::unique_ptr<TestOverwriteUpdate>(
+        new TestOverwriteUpdate(std::move(table_name), std::move(ctx)));
+  }
 
- std::string operation() override { return DataOperation::kOverwrite; }
- int64_t GeneratedSnapshotId() { return SnapshotId(); }
+  std::string operation() override { return DataOperation::kOverwrite; }
+  int64_t GeneratedSnapshotId() { return SnapshotId(); }
 
- Status AddDelete(std::shared_ptr<DataFile> file) {
-   return AddDeleteFile(std::move(file));
- }
- Status AddDelete(std::shared_ptr<DataFile> file, int64_t data_sequence_number) {
-   return AddDeleteFile(std::move(file), data_sequence_number);
- }
- Status RemoveDataFile(std::shared_ptr<DataFile> file) {
-   return DeleteDataFile(std::move(file));
- }
+  Status AddDelete(std::shared_ptr<DataFile> file) {
+    return AddDeleteFile(std::move(file));
+  }
+  Status AddDelete(std::shared_ptr<DataFile> file, int64_t data_sequence_number) {
+    return AddDeleteFile(std::move(file), data_sequence_number);
+  }
+  Status RemoveDataFile(std::shared_ptr<DataFile> file) {
+    return DeleteDataFile(std::move(file));
+  }
 
  private:
- TestOverwriteUpdate(std::string table_name, std::shared_ptr<TransactionContext> ctx)
-     : MergingSnapshotUpdate(std::move(table_name), std::move(ctx)) {}
+  TestOverwriteUpdate(std::string table_name, std::shared_ptr<TransactionContext> ctx)
+      : MergingSnapshotUpdate(std::move(table_name), std::move(ctx)) {}
 };
 
 class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
@@ -268,8 +272,8 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
       std::string operation, int64_t snapshot_id,
       std::optional<int64_t> parent_snapshot_id, int64_t sequence_number,
       const std::vector<ManifestFile>& manifests) {
-    auto manifest_list_path =
-        table_location_ + "/metadata/manifest-list-" + std::to_string(snapshot_id) + ".avro";
+    auto manifest_list_path = table_location_ + "/metadata/manifest-list-" +
+                              std::to_string(snapshot_id) + ".avro";
     ICEBERG_ASSIGN_OR_RAISE(
         auto writer,
         ManifestListWriter::MakeWriter(table_->metadata()->format_version, snapshot_id,
@@ -452,9 +456,9 @@ TEST_F(MergingSnapshotUpdateTest, AddDeleteFileWithExplicitSequenceWritesSequenc
         return manifest.content == ManifestContent::kDeletes;
       });
   ASSERT_NE(delete_manifest_it, manifests.end());
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto entries, ReadAllEntries(std::vector<ManifestFile>{*delete_manifest_it},
-                                   *table_->metadata()));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries,
+                         ReadAllEntries(std::vector<ManifestFile>{*delete_manifest_it},
+                                        *table_->metadata()));
   ASSERT_EQ(entries.size(), 1U);
   ASSERT_TRUE(entries[0].sequence_number.has_value());
   EXPECT_EQ(entries[0].sequence_number.value(), 17);
@@ -888,7 +892,8 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesFailsForTruncatedHistory
   metadata->current_schema_id = 0;
   metadata->schemas.push_back(schema_);
 
-  auto make_snapshot = [](int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id) {
+  auto make_snapshot = [](int64_t snapshot_id,
+                          std::optional<int64_t> parent_snapshot_id) {
     return std::make_shared<Snapshot>(Snapshot{
         .snapshot_id = snapshot_id,
         .parent_snapshot_id = parent_snapshot_id,
@@ -928,7 +933,8 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesWithPartitionSetDetectsC
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeletesForDataFilesWithFilterDetectsConflict) {
+TEST_F(MergingSnapshotUpdateTest,
+       ValidateNoNewDeletesForDataFilesWithFilterDetectsConflict) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
 
@@ -951,8 +957,8 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeletesForDataFilesWithFilterDete
   DataFileSet replaced_files;
   replaced_files.insert(file_a_);
   EXPECT_THAT(TestMergeAppend::ValidateNoNewDeletesForDataFilesForTest(
-                  *metadata, first_snapshot->snapshot_id,
-                  Expressions::AlwaysTrue(), replaced_files, second_snapshot, file_io_),
+                  *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
+                  replaced_files, second_snapshot, file_io_),
               IsError(ErrorKind::kInvalidArgument));
 }
 
@@ -977,12 +983,13 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeleteFilesWithExpressionDetectsC
   metadata->last_sequence_number = second_snapshot->sequence_number;
 
   EXPECT_THAT(TestMergeAppend::ValidateNoNewDeleteFilesForTest(
-                  *metadata, first_snapshot->snapshot_id,
-                  Expressions::AlwaysTrue(), second_snapshot, file_io_),
+                  *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
+                  second_snapshot, file_io_),
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeleteFilesWithPartitionSetDetectsConflict) {
+TEST_F(MergingSnapshotUpdateTest,
+       ValidateNoNewDeleteFilesWithPartitionSetDetectsConflict) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
 
@@ -1005,8 +1012,8 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeleteFilesWithPartitionSetDetect
   PartitionSet partition_set;
   ASSERT_TRUE(partition_set.add(spec_->spec_id(), del_file->partition));
   EXPECT_THAT(TestMergeAppend::ValidateNoNewDeleteFilesForTest(
-                  *metadata, first_snapshot->snapshot_id, partition_set,
-                  second_snapshot, file_io_),
+                  *metadata, first_snapshot->snapshot_id, partition_set, second_snapshot,
+                  file_io_),
               IsError(ErrorKind::kInvalidArgument));
 }
 
@@ -1030,12 +1037,13 @@ TEST_F(MergingSnapshotUpdateTest, ValidateDeletedDataFilesWithExpressionDetectsC
   metadata->last_sequence_number = second_snapshot->sequence_number;
 
   EXPECT_THAT(TestMergeAppend::ValidateDeletedDataFilesForTest(
-                  *metadata, first_snapshot->snapshot_id,
-                  Expressions::AlwaysTrue(), second_snapshot, file_io_),
+                  *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
+                  second_snapshot, file_io_),
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST_F(MergingSnapshotUpdateTest, ValidateDeletedDataFilesWithPartitionSetDetectsConflict) {
+TEST_F(MergingSnapshotUpdateTest,
+       ValidateDeletedDataFilesWithPartitionSetDetectsConflict) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
 
@@ -1057,8 +1065,8 @@ TEST_F(MergingSnapshotUpdateTest, ValidateDeletedDataFilesWithPartitionSetDetect
   PartitionSet partition_set;
   ASSERT_TRUE(partition_set.add(spec_->spec_id(), file_a_->partition));
   EXPECT_THAT(TestMergeAppend::ValidateDeletedDataFilesForTest(
-                  *metadata, first_snapshot->snapshot_id, partition_set,
-                  second_snapshot, file_io_),
+                  *metadata, first_snapshot->snapshot_id, partition_set, second_snapshot,
+                  file_io_),
               IsError(ErrorKind::kInvalidArgument));
 }
 
