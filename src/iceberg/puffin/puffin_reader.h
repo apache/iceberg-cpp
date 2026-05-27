@@ -32,11 +32,7 @@
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/result.h"
-
-namespace iceberg {
-class InputFile;
-class SeekableInputStream;
-}  // namespace iceberg
+#include "iceberg/type_fwd.h"
 
 namespace iceberg::puffin {
 
@@ -48,9 +44,11 @@ class ICEBERG_DATA_EXPORT PuffinReader {
   /// \brief Create a PuffinReader for the given input file.
   /// \param input_file The input file to read from.
   /// \param footer_size Optional known footer size hint to avoid an extra seek.
+  /// \param file_size Optional known file size hint to avoid fetching size.
   static Result<std::unique_ptr<PuffinReader>> Make(
       std::unique_ptr<InputFile> input_file,
-      std::optional<int64_t> footer_size = std::nullopt);
+      std::optional<int64_t> footer_size = std::nullopt,
+      std::optional<int64_t> file_size = std::nullopt);
 
   ~PuffinReader();
 
@@ -68,9 +66,16 @@ class ICEBERG_DATA_EXPORT PuffinReader {
   Result<std::vector<std::pair<BlobMetadata, std::vector<std::byte>>>> ReadAll(
       const std::vector<BlobMetadata>& blobs);
 
+  /// \brief Close the underlying input stream.
+  Status Close();
+
  private:
   PuffinReader(std::unique_ptr<SeekableInputStream> stream, int64_t file_size,
                std::optional<int64_t> known_footer_size);
+
+  Result<std::vector<std::byte>> ReadBytes(int64_t offset, int64_t length);
+  Result<int64_t> FooterSize();
+  Result<std::vector<std::byte>> ReadFooter(int64_t footer_size);
 
   /// Opened input stream.
   std::unique_ptr<SeekableInputStream> stream_;
@@ -78,8 +83,8 @@ class ICEBERG_DATA_EXPORT PuffinReader {
   int64_t file_size_;
   /// Known footer size hint (avoids one seek if provided).
   std::optional<int64_t> known_footer_size_;
-
-  Result<std::vector<std::byte>> ReadBytes(int64_t offset, int64_t length);
+  /// Whether the reader has been closed.
+  bool closed_ = false;
 };
 
 }  // namespace iceberg::puffin

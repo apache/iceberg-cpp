@@ -33,11 +33,7 @@
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/result.h"
-
-namespace iceberg {
-class OutputFile;
-class PositionOutputStream;
-}  // namespace iceberg
+#include "iceberg/type_fwd.h"
 
 namespace iceberg::puffin {
 
@@ -65,42 +61,47 @@ class ICEBERG_DATA_EXPORT PuffinWriter {
   /// \brief Finalize the file by writing the footer and closing the stream.
   Status Finish();
 
+  /// \brief Close the writer, finalizing the file if needed.
+  Status Close();
+
   /// \brief Get metadata for all blobs written so far.
   const std::vector<BlobMetadata>& written_blobs_metadata() const;
 
-  /// \brief Get the footer size. Returns error if Finish() has not been called.
-  Result<int64_t> footer_size() const;
+  /// \brief Get the footer size. Returns error if the footer has not been written.
+  Result<int64_t> FooterSize() const;
 
-  /// \brief Get the total file size. Returns error if Finish() has not been called.
-  Result<int64_t> file_size() const;
+  /// \brief Get the total file size. Returns error if Finish() has not succeeded.
+  Result<int64_t> FileSize() const;
 
  private:
   PuffinWriter(std::unique_ptr<PositionOutputStream> stream,
                std::unordered_map<std::string, std::string> properties,
                PuffinCompressionCodec default_codec, bool compress_footer);
 
+  Status WriteBytes(std::span<const std::byte> data);
+  Status WriteHeader();
+  Status WriteMagic();
+
   /// Output stream.
   std::unique_ptr<PositionOutputStream> stream_;
   /// File-level properties to include in the footer.
   std::unordered_map<std::string, std::string> properties_;
   /// Default compression codec for blobs without explicit compression.
-  PuffinCompressionCodec default_codec_;
+  const PuffinCompressionCodec default_codec_;
   /// Whether to compress the footer payload.
-  bool compress_footer_;
+  const bool compress_footer_;
   /// Metadata for all blobs written so far.
   std::vector<BlobMetadata> written_blobs_metadata_;
   /// Whether the header magic has been written.
   bool header_written_ = false;
-  /// Whether Finish() has been called.
+  /// Whether the footer has been written.
+  bool footer_written_ = false;
+  /// Whether Finish() has succeeded.
   bool finished_ = false;
-  /// Footer size, set after Finish().
+  /// Footer size, set after the footer is written.
   int64_t footer_size_ = -1;
   /// Total file size, set after Finish().
   int64_t file_size_ = -1;
-
-  Status WriteBytes(std::span<const std::byte> data);
-  Status WriteHeader();
-  Status WriteMagic();
 };
 
 }  // namespace iceberg::puffin

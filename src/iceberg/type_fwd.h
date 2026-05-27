@@ -188,6 +188,11 @@ class FileIO;
 class Reader;
 class Writer;
 
+class InputFile;
+class OutputFile;
+class PositionOutputStream;
+class SeekableInputStream;
+
 /// \brief Row-based data structures.
 class ArrayLike;
 class MapLike;
