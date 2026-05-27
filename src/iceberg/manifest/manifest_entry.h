@@ -374,7 +374,7 @@ struct ICEBERG_EXPORT ManifestEntry {
   ManifestEntry AsAdded() const {
     ManifestEntry copy = *this;
     copy.status = ManifestStatus::kAdded;
-    if (copy.data_file->first_row_id.has_value()) {
+    if (copy.data_file != nullptr && copy.data_file->first_row_id.has_value()) {
       copy.data_file = std::make_unique<DataFile>(*copy.data_file);
       copy.data_file->first_row_id = std::nullopt;
     }

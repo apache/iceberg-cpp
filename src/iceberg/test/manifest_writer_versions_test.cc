@@ -435,6 +435,20 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
                           "Cannot write equality_deletes file to data manifest file"));
 }
 
+TEST_F(ManifestWriterVersionsTest, TestWriteAddedEntryRejectsMissingDataFile) {
+  const std::string manifest_path = CreateManifestPath();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer, ManifestWriter::MakeWriter(/*format_version=*/2, kSnapshotId,
+                                              manifest_path, file_io_, spec_, schema_));
+
+  ManifestEntry entry;
+  entry.snapshot_id = kSnapshotId;
+
+  auto status = writer->WriteAddedEntry(entry);
+  EXPECT_THAT(status, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(status, HasErrorMessage("Data file cannot be null"));
+}
+
 TEST_F(ManifestWriterVersionsTest, TestV1WriteWithInheritance) {
   auto manifests =
       WriteAndReadManifests({WriteManifest(/*format_version=*/1, {data_file_})}, 1);
