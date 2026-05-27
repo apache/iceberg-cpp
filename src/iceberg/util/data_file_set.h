@@ -26,7 +26,7 @@
 #include <iterator>
 #include <memory>
 #include <span>
-#include <string_view>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -102,7 +102,7 @@ class ICEBERG_EXPORT DataFileSet {
 
   // Vector to preserve insertion order
   std::vector<value_type> elements_;
-  std::unordered_map<std::string_view, size_t, StringHash, StringEqual> index_by_path_;
+  std::unordered_map<std::string, size_t, StringHash, StringEqual> index_by_path_;
 };
 
 }  // namespace iceberg
