@@ -36,6 +36,7 @@ install_headers(
         'property_util.h',
         'retry_util.h',
         'string_util.h',
+        'struct_like_set.h',
         'temporal_util.h',
         'timepoint.h',
         'transform_util.h',

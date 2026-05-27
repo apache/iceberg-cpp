@@ -258,6 +258,7 @@ install_headers(
         'table.h',
         'table_identifier.h',
         'table_metadata.h',
+        'table_properties.h',
         'table_requirement.h',
         'table_requirements.h',
         'table_scan.h',

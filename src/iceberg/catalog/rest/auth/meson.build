@@ -17,9 +17,11 @@
 
 install_headers(
     [
-        'position_delete_index.h',
-        'position_delete_range_consumer.h',
-        'roaring_position_bitmap.h',
+        'auth_manager.h',
+        'auth_managers.h',
+        'auth_properties.h',
+        'auth_session.h',
+        'oauth2_util.h',
     ],
-    subdir: 'iceberg/deletes',
+    subdir: 'iceberg/catalog/rest/auth',
 )

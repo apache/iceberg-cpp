@@ -80,13 +80,4 @@ install_headers(
     subdir: 'iceberg/catalog/rest',
 )
 
-install_headers(
-    [
-        'auth/auth_manager.h',
-        'auth/auth_managers.h',
-        'auth/auth_properties.h',
-        'auth/auth_session.h',
-        'auth/oauth2_util.h',
-    ],
-    subdir: 'iceberg/catalog/rest/auth',
-)
+subdir('auth')
