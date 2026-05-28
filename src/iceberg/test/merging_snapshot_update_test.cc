@@ -608,8 +608,8 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestCopiesManifestWithAssignedSnapshotI
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1U);
   EXPECT_NE(data_manifests[0].manifest_path, path);
 }
@@ -625,8 +625,8 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestCopiesManifestWithFirstRowId) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1U);
   EXPECT_NE(data_manifests[0].manifest_path, path);
 }
@@ -645,10 +645,10 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestEmptyTable) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  SnapshotCache snapshot_cache(snapshot.get());
 
   // In v2 with snapshot ID inheritance, the manifest path is reused directly.
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1);
 
   EXPECT_EQ(snapshot->summary.at("added-data-files"), "2");
@@ -667,8 +667,8 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestWithDataFiles) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   // Written manifest (file_b_) + appended manifest (file_a_, file_b_)
   EXPECT_EQ(data_manifests.size(), 2);
   EXPECT_EQ(snapshot->summary.at("added-data-files"), "3");
@@ -695,8 +695,8 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestMergeWithMinCountOne) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   // Both manifests merged into one.
   EXPECT_EQ(data_manifests.size(), 1);
   EXPECT_EQ(snapshot->summary.at("added-data-files"), "3");
@@ -725,8 +725,8 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestDoNotMergeMinCount) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   // Below min-count-to-merge threshold — all 3 pass through unchanged.
   EXPECT_EQ(data_manifests.size(), 3);
   EXPECT_EQ(snapshot->summary.at("added-data-files"), "3");
@@ -753,8 +753,8 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeMergesIntoOne) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 1);
   EXPECT_EQ(snapshot->summary.at("total-data-files"), "2");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsReplaced), "1");
@@ -770,8 +770,8 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeDoesNotMergeWhenBelowMinCount) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 2);
   EXPECT_EQ(snapshot->summary.at("total-data-files"), "2");
 }
@@ -791,8 +791,8 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeDoesNotMergeWhenSizeTargetTooSmal
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
-                         SnapshotCache(snapshot.get()).DataManifests(file_io_));
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 2);
 }
 
