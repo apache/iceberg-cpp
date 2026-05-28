@@ -40,6 +40,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/transaction.h"
+#include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 
@@ -201,7 +202,7 @@ Status MergingSnapshotUpdate::ValidateNewDeleteFile(const DataFile& file) {
                            file.file_path);
   }
   const int8_t format_version = base().format_version;
-  const bool is_dv = file.referenced_data_file.has_value();
+  const bool is_dv = ContentFileUtil::IsDV(file);
   switch (format_version) {
     case 1:
       return InvalidArgument("Deletes are supported in V2 and above");
@@ -336,8 +337,11 @@ Status MergingSnapshotUpdate::AddManifest(ManifestFile manifest) {
   if (manifest.content != ManifestContent::kData) {
     return InvalidArgument("Cannot append delete manifest: {}", manifest.manifest_path);
   }
-  if (can_inherit_snapshot_id() && manifest.added_snapshot_id == kInvalidSnapshotId &&
-      !manifest.first_row_id.has_value()) {
+  if (can_inherit_snapshot_id() && manifest.added_snapshot_id == kInvalidSnapshotId) {
+    if (manifest.first_row_id.has_value()) {
+      return InvalidArgument("Cannot append manifest with assigned first row ID: {}",
+                             manifest.manifest_path);
+    }
     appended_manifests_summary_.AddedManifest(manifest);
     append_manifests_.push_back(std::move(manifest));
   } else {
@@ -831,8 +835,9 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
     return {};
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto deletes, AddedDeleteFiles(metadata, starting_snapshot_id,
-                                                         nullptr, nullptr, parent, io));
+  ICEBERG_ASSIGN_OR_RAISE(auto deletes,
+                          AddedDeleteFiles(metadata, starting_snapshot_id,
+                                           std::move(data_filter), nullptr, parent, io));
   if (deletes->empty()) {
     return {};
   }
@@ -843,24 +848,10 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
     starting_seq = snap_result.value()->sequence_number;
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-  std::unique_ptr<InclusiveMetricsEvaluator> evaluator;
-  if (data_filter != nullptr) {
-    ICEBERG_ASSIGN_OR_RAISE(evaluator,
-                            InclusiveMetricsEvaluator::Make(data_filter, *schema,
-                                                            /*case_sensitive=*/true));
-  }
-
   for (const auto& data_file : replaced_files) {
     ICEBERG_ASSIGN_OR_RAISE(auto delete_files,
                             deletes->ForDataFile(starting_seq, *data_file));
     for (const auto& delete_file : delete_files) {
-      if (evaluator != nullptr) {
-        ICEBERG_ASSIGN_OR_RAISE(bool matches, evaluator->Evaluate(*delete_file));
-        if (!matches) {
-          continue;
-        }
-      }
       return InvalidArgument("Cannot commit, found new delete for replaced data file: {}",
                              data_file->file_path);
     }
@@ -872,25 +863,12 @@ Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
     const TableMetadata& metadata, int64_t starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
-  ICEBERG_ASSIGN_OR_RAISE(auto deletes, AddedDeleteFiles(metadata, starting_snapshot_id,
-                                                         nullptr, nullptr, parent, io));
+  ICEBERG_ASSIGN_OR_RAISE(auto deletes,
+                          AddedDeleteFiles(metadata, starting_snapshot_id,
+                                           std::move(data_filter), nullptr, parent, io));
   auto referenced_delete_files = deletes->ReferencedDeleteFiles();
 
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-  std::unique_ptr<InclusiveMetricsEvaluator> evaluator;
-  if (data_filter != nullptr) {
-    ICEBERG_ASSIGN_OR_RAISE(evaluator,
-                            InclusiveMetricsEvaluator::Make(data_filter, *schema,
-                                                            /*case_sensitive=*/true));
-  }
-
   for (const auto& delete_file : referenced_delete_files) {
-    if (evaluator != nullptr) {
-      ICEBERG_ASSIGN_OR_RAISE(bool matches, evaluator->Evaluate(*delete_file));
-      if (!matches) {
-        continue;
-      }
-    }
     return InvalidArgument("Found new conflicting delete files: {}",
                            delete_file->file_path);
   }

@@ -543,10 +543,17 @@ TEST_F(MergingSnapshotUpdateV1Test, ValidateNewDeleteFileV1Rejected) {
   EXPECT_THAT(op->AddDelete(del_file), IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV2RejectsDeletionVector) {
-  // Position delete with referenced_data_file set = deletion vector, not allowed in v2.
+TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV2AllowsReferencedPositionDelete) {
   auto del_file = MakeDeleteFile("/delete/del_a.parquet", 1L);
   del_file->referenced_data_file = table_location_ + "/data/file_a.parquet";
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  EXPECT_THAT(op->AddDelete(del_file), IsOk());
+}
+
+TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV2RejectsDeletionVector) {
+  auto del_file = MakeDeleteFile("/delete/dv_a.puffin", 1L);
+  del_file->file_format = FileFormatType::kPuffin;
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file), IsError(ErrorKind::kInvalidArgument));
@@ -614,21 +621,13 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestCopiesManifestWithAssignedSnapshotI
   EXPECT_NE(data_manifests[0].manifest_path, path);
 }
 
-TEST_F(MergingSnapshotUpdateTest, AddManifestCopiesManifestWithFirstRowId) {
+TEST_F(MergingSnapshotUpdateTest, AddManifestRejectsManifestWithFirstRowId) {
   auto path = table_location_ + "/metadata/rowid.avro";
   ICEBERG_UNWRAP_OR_FAIL(auto manifest, WriteManifest(path, {file_a_}));
   manifest.first_row_id = 0;
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
-  EXPECT_THAT(op->AppendManifest(manifest), IsOk());
-  EXPECT_THAT(op->Commit(), IsOk());
-
-  EXPECT_THAT(table_->Refresh(), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
-  ASSERT_EQ(data_manifests.size(), 1U);
-  EXPECT_NE(data_manifests[0].manifest_path, path);
+  EXPECT_THAT(op->AppendManifest(manifest), IsError(ErrorKind::kInvalidArgument));
 }
 
 // -------------------------------------------------------------------------
@@ -962,6 +961,35 @@ TEST_F(MergingSnapshotUpdateTest,
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST_F(MergingSnapshotUpdateTest,
+       ValidateNoNewDeletesForDataFilesWithFilterSkipsNonMatchingDeletes) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto del_file = MakeEqualityDeleteFile("/delete/del_a.parquet", 1L);
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
+  EXPECT_THAT(op->AddDelete(del_file), IsOk());
+  const int64_t second_snapshot_id = op->GeneratedSnapshotId();
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second_snapshot,
+      MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
+                            first_snapshot->snapshot_id,
+                            first_snapshot->sequence_number + 1, manifests));
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+  metadata->snapshots.push_back(second_snapshot);
+  metadata->current_snapshot_id = second_snapshot->snapshot_id;
+  metadata->last_sequence_number = second_snapshot->sequence_number;
+
+  DataFileSet replaced_files;
+  replaced_files.insert(file_a_);
+  EXPECT_THAT(TestMergeAppend::ValidateNoNewDeletesForDataFilesForTest(
+                  *metadata, first_snapshot->snapshot_id, Expressions::AlwaysFalse(),
+                  replaced_files, second_snapshot, file_io_),
+              IsOk());
+}
+
 TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeleteFilesWithExpressionDetectsConflict) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
@@ -986,6 +1014,33 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeleteFilesWithExpressionDetectsC
                   *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
                   second_snapshot, file_io_),
               IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(MergingSnapshotUpdateTest,
+       ValidateNoNewDeleteFilesWithExpressionSkipsNonMatchingDeletes) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto del_file = MakeEqualityDeleteFile("/delete/del_a.parquet", 1L);
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
+  EXPECT_THAT(op->AddDelete(del_file), IsOk());
+  const int64_t second_snapshot_id = op->GeneratedSnapshotId();
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second_snapshot,
+      MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
+                            first_snapshot->snapshot_id,
+                            first_snapshot->sequence_number + 1, manifests));
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+  metadata->snapshots.push_back(second_snapshot);
+  metadata->current_snapshot_id = second_snapshot->snapshot_id;
+  metadata->last_sequence_number = second_snapshot->sequence_number;
+
+  EXPECT_THAT(TestMergeAppend::ValidateNoNewDeleteFilesForTest(
+                  *metadata, first_snapshot->snapshot_id, Expressions::AlwaysFalse(),
+                  second_snapshot, file_io_),
+              IsOk());
 }
 
 TEST_F(MergingSnapshotUpdateTest,
