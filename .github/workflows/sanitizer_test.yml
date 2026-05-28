@@ -58,9 +58,9 @@ jobs:
       - name: Run Tests
         working-directory: build
         env:
-          ASAN_OPTIONS: log_path=out.log:detect_leaks=1:symbolize=1:strict_string_checks=1:halt_on_error=1:detect_container_overflow=0
+          ASAN_OPTIONS: log_path=${{ github.workspace }}/asan.log:detect_leaks=1:symbolize=1:strict_string_checks=1:halt_on_error=1:detect_container_overflow=0
           LSAN_OPTIONS: suppressions=${{ github.workspace }}/.github/lsan-suppressions.txt
-          UBSAN_OPTIONS: log_path=out.log:halt_on_error=1:print_stacktrace=1:suppressions=${{ github.workspace }}/.github/ubsan-suppressions.txt
+          UBSAN_OPTIONS: log_path=${{ github.workspace }}/ubsan.log:halt_on_error=1:print_stacktrace=1:suppressions=${{ github.workspace }}/.github/ubsan-suppressions.txt
         run: |
           ctest --output-on-failure
       - name: Save the test output
@@ -68,4 +68,8 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-output
-          path: build/test/out.log*
+          path: |
+            asan.log*
+            ubsan.log*
+            build/Testing/Temporary/LastTest.log
+            build/Testing/Temporary/LastTestsFailed.log
