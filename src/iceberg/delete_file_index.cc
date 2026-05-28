@@ -215,7 +215,7 @@ Status EqualityDeletes::Add(ManifestEntry&& entry) {
   ICEBERG_PRECHECK(entry.sequence_number.has_value(),
                    "Missing sequence number from equality delete: {}",
                    entry.data_file->file_path);
-  files_.emplace_back(schema_.get(), std::move(entry));
+  files_.emplace_back(&schema_, std::move(entry));
   indexed_ = false;
   return {};
 }
@@ -720,7 +720,7 @@ Status DeleteFileIndex::Builder::AddEqualityDelete(
     if (existing.has_value()) {
       ICEBERG_RETURN_UNEXPECTED(existing->get()->Add(std::move(entry)));
     } else {
-      auto deletes = std::make_unique<internal::EqualityDeletes>(schema_);
+      auto deletes = std::make_unique<internal::EqualityDeletes>(*schema_);
       ICEBERG_RETURN_UNEXPECTED(deletes->Add(std::move(entry)));
       deletes_by_partition.put(spec_id, partition, std::move(deletes));
     }
@@ -738,7 +738,7 @@ Result<std::unique_ptr<DeleteFileIndex>> DeleteFileIndex::Builder::Build() {
   }
 
   // Build index structures
-  auto global_deletes = std::make_unique<internal::EqualityDeletes>(schema_);
+  auto global_deletes = std::make_unique<internal::EqualityDeletes>(*schema_);
   auto eq_deletes_by_partition =
       std::make_unique<PartitionMap<std::unique_ptr<internal::EqualityDeletes>>>();
   auto pos_deletes_by_partition =

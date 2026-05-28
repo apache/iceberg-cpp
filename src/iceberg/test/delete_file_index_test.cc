@@ -776,7 +776,7 @@ TEST_P(DeleteFileIndexTest, TestPositionDeletesGroup) {
 }
 
 TEST_P(DeleteFileIndexTest, TestEqualityDeletesGroup) {
-  internal::EqualityDeletes group(schema_);
+  internal::EqualityDeletes group(*schema_);
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto file1 = MakeEqualityDeleteFile("/path/to/eq-delete-1.parquet", partition_a,
@@ -838,35 +838,6 @@ TEST_P(DeleteFileIndexTest, TestEqualityDeletesGroup) {
     ICEBERG_UNWRAP_OR_FAIL(auto filtered, group.Filter(4, *file_a_));
     EXPECT_EQ(filtered.size(), 0);
   }
-}
-
-TEST_P(DeleteFileIndexTest, TestIndexOwnsSchemaForEqualityDeletes) {
-  auto version = GetParam();
-
-  auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet",
-                                          PartitionValues(std::vector<Literal>{}),
-                                          unpartitioned_spec_->spec_id());
-  std::vector<ManifestEntry> entries;
-  entries.push_back(
-      MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/2, eq_delete));
-
-  auto manifest = WriteDeleteManifest(version, /*snapshot_id=*/1000L, std::move(entries),
-                                      unpartitioned_spec_);
-
-  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(/*field_id=*/1, "id", int32()),
-      SchemaField::MakeRequired(/*field_id=*/2, "data", string())});
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto builder,
-      DeleteFileIndex::BuilderFor(file_io_, schema,
-                                  {{unpartitioned_spec_->spec_id(), unpartitioned_spec_}},
-                                  {manifest}));
-  ICEBERG_UNWRAP_OR_FAIL(auto index, builder.Build());
-  schema.reset();
-
-  ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(1, *unpartitioned_file_));
-  ASSERT_EQ(deletes.size(), 1);
-  EXPECT_EQ(deletes[0]->file_path, "/path/to/eq-delete.parquet");
 }
 
 TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {

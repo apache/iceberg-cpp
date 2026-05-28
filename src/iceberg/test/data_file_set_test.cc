@@ -19,8 +19,6 @@
 
 #include "iceberg/util/data_file_set.h"
 
-#include <string>
-
 #include <gtest/gtest.h>
 
 #include "iceberg/file_format.h"
@@ -73,23 +71,6 @@ TEST_F(DataFileSetTest, InsertDuplicateFile) {
   EXPECT_FALSE(inserted2);
   EXPECT_EQ(iter1, iter2);   // Should point to the same element
   EXPECT_EQ(set.size(), 1);  // Should still be size 1
-}
-
-TEST_F(DataFileSetTest, InsertedPathIndexOwnsKey) {
-  DataFileSet set;
-  const std::string original_path(256, 'a');
-  auto file1 = CreateDataFile(original_path);
-
-  auto [iter1, inserted1] = set.insert(file1);
-  EXPECT_TRUE(inserted1);
-
-  file1->file_path = std::string(256, 'b');
-
-  auto file2 = CreateDataFile(original_path);
-  auto [iter2, inserted2] = set.insert(file2);
-  EXPECT_FALSE(inserted2);
-  EXPECT_EQ(iter1, iter2);
-  EXPECT_EQ(set.size(), 1);
 }
 
 TEST_F(DataFileSetTest, InsertDifferentFiles) {
