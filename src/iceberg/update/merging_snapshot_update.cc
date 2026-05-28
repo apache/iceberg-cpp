@@ -975,8 +975,8 @@ Result<std::unique_ptr<DeleteFileIndex>> MergingSnapshotUpdate::AddedDeleteFiles
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
 
   if (parent == nullptr || metadata.format_version < 2) {
-    ICEBERG_ASSIGN_OR_RAISE(auto specs_ref,
-                            TableMetadataCache(&metadata).GetPartitionSpecsById());
+    TableMetadataCache metadata_cache(&metadata);
+    ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, metadata_cache.GetPartitionSpecsById());
     std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id(
         specs_ref.get().begin(), specs_ref.get().end());
     ICEBERG_ASSIGN_OR_RAISE(auto builder, DeleteFileIndex::BuilderFor(
@@ -996,8 +996,8 @@ Result<std::unique_ptr<DeleteFileIndex>> MergingSnapshotUpdate::AddedDeleteFiles
     starting_seq = snap_result.value()->sequence_number;
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto specs_ref,
-                          TableMetadataCache(&metadata).GetPartitionSpecsById());
+  TableMetadataCache metadata_cache(&metadata);
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, metadata_cache.GetPartitionSpecsById());
   std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id(
       specs_ref.get().begin(), specs_ref.get().end());
 
