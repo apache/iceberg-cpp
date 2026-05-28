@@ -27,6 +27,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "iceberg/expression/literal.h"
@@ -184,7 +185,8 @@ class ICEBERG_EXPORT PositionDeletes {
 /// data sequence number (i.e., apply_sequence_number = data_sequence_number - 1).
 class ICEBERG_EXPORT EqualityDeletes {
  public:
-  explicit EqualityDeletes(const Schema& schema) : schema_(schema) {}
+  explicit EqualityDeletes(std::shared_ptr<const Schema> schema)
+      : schema_(std::move(schema)) {}
 
   /// \brief Add an equality delete file to this group.
   [[nodiscard]] Status Add(ManifestEntry&& entry);
@@ -206,7 +208,7 @@ class ICEBERG_EXPORT EqualityDeletes {
  private:
   void IndexIfNeeded();
 
-  const Schema& schema_;
+  std::shared_ptr<const Schema> schema_;
   std::vector<EqualityDeleteFile> files_;
   std::vector<int64_t> seqs_;
   bool indexed_ = false;
