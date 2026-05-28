@@ -562,4 +562,84 @@ TEST_F(ManifestFilterManagerTest, RemoveDanglingDeletesForFiltersDanglingDV) {
   EXPECT_EQ(entries[0].status, ManifestStatus::kDeleted);
 }
 
+TEST_F(ManifestFilterManagerTest, DeleteFileObjectMatchesDeletionVectorByContent) {
+  auto metadata = *table_->metadata();
+  metadata.format_version = 3;
+  auto factory = MakeWriterFactory(metadata);
+
+  auto make_dv = [&](int64_t offset) {
+    auto f = std::make_shared<DataFile>();
+    f->content = DataFile::Content::kPositionDeletes;
+    f->file_path = table_location_ + "/delete/dv.puffin";
+    f->file_format = FileFormatType::kPuffin;
+    f->referenced_data_file =
+        std::format("{}/data/referenced-{}.parquet", table_location_, offset);
+    f->content_offset = offset;
+    f->content_size_in_bytes = 10;
+    f->partition = PartitionValues(std::vector<Literal>{Literal::Long(1L)});
+    f->file_size_in_bytes = 256;
+    f->record_count = 5;
+    f->partition_spec_id = spec_->spec_id();
+    return f;
+  };
+  auto dv0 = make_dv(0);
+  auto dv1 = make_dv(10);
+
+  auto manifest_path = std::format("{}/metadata/dv-manifest-{}.avro", table_location_,
+                                   manifest_counter_++);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manifest,
+      WriteDeleteManifest({{dv0, 3L}, {dv1, 3L}}, file_io_, metadata, manifest_path));
+
+  ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
+  EXPECT_THAT(mgr.DeleteFile(dv0), IsOk());
+
+  std::vector<const ManifestFile*> manifests{&manifest};
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, metadata.Schema());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto result, mgr.FilterManifests(schema, SpecsById(metadata), manifests, factory));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(result, metadata));
+  ASSERT_EQ(entries.size(), 2U);
+  for (const auto& entry : entries) {
+    ASSERT_NE(entry.data_file, nullptr);
+    if (entry.data_file->content_offset == 0) {
+      EXPECT_EQ(entry.status, ManifestStatus::kDeleted);
+    } else {
+      EXPECT_EQ(entry.status, ManifestStatus::kExisting);
+    }
+  }
+}
+
+TEST_F(ManifestFilterManagerTest, DuplicateDeletesCountRepeatedDeletedFiles) {
+  auto* metadata = table_->metadata().get();
+  auto factory = MakeWriterFactory(*metadata);
+
+  auto del_file = std::make_shared<DataFile>();
+  del_file->content = DataFile::Content::kPositionDeletes;
+  del_file->file_path = table_location_ + "/delete/duplicate.parquet";
+  del_file->file_format = FileFormatType::kParquet;
+  del_file->partition = PartitionValues(std::vector<Literal>{Literal::Long(1L)});
+  del_file->file_size_in_bytes = 512;
+  del_file->record_count = 10;
+  del_file->partition_spec_id = spec_->spec_id();
+
+  auto manifest_path = std::format("{}/metadata/dup-manifest-{}.avro", table_location_,
+                                   manifest_counter_++);
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest,
+                         WriteDeleteManifest({{del_file, 3L}, {del_file, 3L}}, file_io_,
+                                             *metadata, manifest_path));
+
+  ManifestFilterManager mgr(ManifestContent::kDeletes, file_io_);
+  EXPECT_THAT(mgr.DeleteFile(del_file), IsOk());
+
+  std::vector<const ManifestFile*> manifests{&manifest};
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, metadata->Schema());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto result, mgr.FilterManifests(schema, SpecsById(*metadata), manifests, factory));
+
+  EXPECT_EQ(mgr.DeletedFiles().size(), 1U);
+  EXPECT_EQ(mgr.DuplicateDeletesCount(), 1);
+}
+
 }  // namespace iceberg

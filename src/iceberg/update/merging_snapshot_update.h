@@ -279,7 +279,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// added a deletion vector that conflicts with DVs being written.
   ///
-  /// \note Deletion vectors (format v3) are not yet supported; returns NotImplemented.
   static Status ValidateAddedDVs(const TableMetadata& metadata,
                                  int64_t starting_snapshot_id,
                                  std::shared_ptr<Expression> conflict_filter,
@@ -302,6 +301,8 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   Status AddDeleteFile(std::shared_ptr<DataFile> file,
                        std::optional<int64_t> data_sequence_number);
+
+  Result<std::vector<PendingDeleteFile>> NormalizeNewDeleteFiles() const;
 
   /// \brief Write new data manifests for staged data files; caches the result.
   Result<std::vector<ManifestFile>> WriteNewDataManifests();

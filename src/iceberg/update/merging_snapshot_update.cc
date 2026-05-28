@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <span>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/constants.h"
@@ -58,6 +59,33 @@ struct ValidationHistoryResult {
   std::vector<ManifestFile> manifests;
   std::unordered_set<int64_t> snapshot_ids;
 };
+
+struct DeleteFileObjectKey {
+  std::string path;
+  std::optional<int64_t> content_offset;
+  std::optional<int64_t> content_size_in_bytes;
+
+  bool operator==(const DeleteFileObjectKey& other) const = default;
+};
+
+struct DeleteFileObjectKeyHash {
+  size_t operator()(const DeleteFileObjectKey& key) const {
+    size_t hash = std::hash<std::string>{}(key.path);
+    auto combine = [&hash](const auto& value) {
+      size_t value_hash = value.has_value() ? std::hash<int64_t>{}(*value) : 0;
+      hash ^= value_hash + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+    };
+    combine(key.content_offset);
+    combine(key.content_size_in_bytes);
+    return hash;
+  }
+};
+
+DeleteFileObjectKey MakeDeleteFileObjectKey(const DataFile& file) {
+  return DeleteFileObjectKey{.path = file.file_path,
+                             .content_offset = file.content_offset,
+                             .content_size_in_bytes = file.content_size_in_bytes};
+}
 
 Result<std::vector<std::shared_ptr<Snapshot>>> ValidationAncestorsBetween(
     const TableMetadata& metadata, int64_t latest_snapshot_id,
@@ -248,7 +276,7 @@ Status MergingSnapshotUpdate::AddDeleteFile(std::shared_ptr<DataFile> file,
   }
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           base().PartitionSpecById(file->partition_spec_id.value()));
-  ICEBERG_RETURN_UNEXPECTED(added_delete_files_summary_.AddedFile(*spec, *file));
+  (void)spec;
   has_new_delete_files_ = true;
   new_delete_files_.push_back(PendingDeleteFile{
       .file = std::move(file), .data_sequence_number = std::move(data_sequence_number)});
@@ -430,6 +458,41 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDataManifests()
   return result;
 }
 
+Result<std::vector<MergingSnapshotUpdate::PendingDeleteFile>>
+MergingSnapshotUpdate::NormalizeNewDeleteFiles() const {
+  std::vector<PendingDeleteFile> result;
+  result.reserve(new_delete_files_.size());
+
+  std::unordered_set<DeleteFileObjectKey, DeleteFileObjectKeyHash> seen_delete_files;
+  std::unordered_map<std::string, DeleteFileObjectKey> dv_by_referenced_data_file;
+
+  for (const auto& pending_file : new_delete_files_) {
+    const auto& file = pending_file.file;
+    ICEBERG_PRECHECK(file != nullptr, "Cannot add a null delete file");
+
+    auto key = MakeDeleteFileObjectKey(*file);
+    if (!seen_delete_files.insert(key).second) {
+      continue;
+    }
+
+    if (ContentFileUtil::IsDV(*file)) {
+      ICEBERG_PRECHECK(file->referenced_data_file.has_value(),
+                       "DV must have a referenced data file: {}", file->file_path);
+      auto [it, inserted] =
+          dv_by_referenced_data_file.emplace(*file->referenced_data_file, key);
+      if (!inserted && it->second != key) {
+        return NotImplemented(
+            "Cannot merge multiple deletion vectors for referenced data file: {}",
+            *file->referenced_data_file);
+      }
+    }
+
+    result.push_back(pending_file);
+  }
+
+  return result;
+}
+
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests() {
   // If new files were staged after the cache was populated (commit retry), invalidate.
   if (has_new_delete_files_ && cached_new_delete_manifests_.has_value()) {
@@ -481,6 +544,16 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   for (const auto& pending_file : new_delete_files_) {
     ICEBERG_RETURN_UNEXPECTED(ValidateNewDeleteFile(*pending_file.file));
   }
+  ICEBERG_ASSIGN_OR_RAISE(auto normalized_delete_files, NormalizeNewDeleteFiles());
+  new_delete_files_ = std::move(normalized_delete_files);
+
+  added_delete_files_summary_.Clear();
+  for (const auto& pending_file : new_delete_files_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata_to_update.PartitionSpecById(
+                                           *pending_file.file->partition_spec_id));
+    ICEBERG_RETURN_UNEXPECTED(
+        added_delete_files_summary_.AddedFile(*spec, *pending_file.file));
+  }
 
   // Rebuild summary from stable sub-builders so that commit retries don't double-count.
   summary_builder().Clear();
@@ -498,7 +571,7 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
                                                   snapshot, tracked_factory));
 
   // Track deleted data files in the summary builder.
-  for (const auto& file : data_filter_manager_.FilesToBeDeleted()) {
+  for (const auto& file : data_filter_manager_.DeletedFiles()) {
     if (!file->partition_spec_id.has_value()) {
       continue;
     }
@@ -506,6 +579,8 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
         auto spec, metadata_to_update.PartitionSpecById(*file->partition_spec_id));
     ICEBERG_RETURN_UNEXPECTED(summary_builder().DeletedFile(*spec, *file));
   }
+  summary_builder().IncrementDuplicateDeletes(
+      data_filter_manager_.DuplicateDeletesCount());
 
   // Step 2: Compute min data sequence number; set up delete filter cleanup.
   // Use last_sequence_number as the initial value so that an empty filtered list
@@ -531,7 +606,7 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
                                                      snapshot, tracked_factory));
 
   // Track deleted delete files in the summary builder.
-  for (const auto& file : delete_filter_manager_.FilesToBeDeleted()) {
+  for (const auto& file : delete_filter_manager_.DeletedFiles()) {
     if (!file->partition_spec_id.has_value()) {
       continue;
     }
@@ -539,6 +614,8 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
         auto spec, metadata_to_update.PartitionSpecById(*file->partition_spec_id));
     ICEBERG_RETURN_UNEXPECTED(summary_builder().DeletedFile(*spec, *file));
   }
+  summary_builder().IncrementDuplicateDeletes(
+      delete_filter_manager_.DuplicateDeletesCount());
 
   // Drop manifests with no live files — they carry no data and should not be merged
   // into the new snapshot. Manifests written by the current snapshot are always kept
@@ -879,15 +956,12 @@ Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
     const TableMetadata& metadata, int64_t starting_snapshot_id,
     const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
-  ICEBERG_ASSIGN_OR_RAISE(auto deletes, AddedDeleteFiles(metadata, starting_snapshot_id,
-                                                         nullptr, nullptr, parent, io));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto deletes,
+      AddedDeleteFiles(metadata, starting_snapshot_id, nullptr,
+                       std::make_shared<PartitionSet>(partition_set), parent, io));
   auto referenced_delete_files = deletes->ReferencedDeleteFiles();
   for (const auto& delete_file : referenced_delete_files) {
-    if (!delete_file->partition_spec_id.has_value() ||
-        !partition_set.contains(delete_file->partition_spec_id.value(),
-                                delete_file->partition)) {
-      continue;
-    }
     return InvalidArgument(
         "Found new conflicting delete files in validated partitions: {}",
         delete_file->file_path);
@@ -994,11 +1068,23 @@ Result<std::unique_ptr<DeleteFileIndex>> MergingSnapshotUpdate::AddedDeleteFiles
 }
 
 Status MergingSnapshotUpdate::ValidateAddedDVs(
-    const TableMetadata& /*metadata*/, int64_t /*starting_snapshot_id*/,
-    std::shared_ptr<Expression> /*conflict_filter*/,
-    const std::shared_ptr<Snapshot>& /*parent*/, std::shared_ptr<FileIO> /*io*/) {
-  return NotImplemented(
-      "ValidateAddedDVs is not yet supported (deletion vectors require format v3)");
+    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    std::shared_ptr<Expression> conflict_filter, const std::shared_ptr<Snapshot>& parent,
+    std::shared_ptr<FileIO> io) {
+  if (parent == nullptr || metadata.format_version < 3) {
+    return {};
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto deletes, AddedDeleteFiles(metadata, starting_snapshot_id,
+                                     std::move(conflict_filter), nullptr, parent, io));
+  for (const auto& delete_file : deletes->ReferencedDeleteFiles()) {
+    if (ContentFileUtil::IsDV(*delete_file)) {
+      return InvalidArgument("Cannot commit, found new deletion vector: {}",
+                             ContentFileUtil::DVDesc(*delete_file));
+    }
+  }
+  return {};
 }
 
 }  // namespace iceberg
