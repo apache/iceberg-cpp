@@ -142,7 +142,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightNotMatch;
     }
 
-    if (CanContainNulls(id) || CanContainNaNs(id)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nans, CanContainNaNs(id));
+    if (has_nulls || has_nans) {
       return kRowsMightNotMatch;
     }
 
@@ -168,7 +170,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightNotMatch;
     }
 
-    if (CanContainNulls(id) || CanContainNaNs(id)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nans, CanContainNaNs(id));
+    if (has_nulls || has_nans) {
       return kRowsMightNotMatch;
     }
 
@@ -194,7 +198,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightNotMatch;
     }
 
-    if (CanContainNulls(id) || CanContainNaNs(id)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nans, CanContainNaNs(id));
+    if (has_nulls || has_nans) {
       return kRowsMightNotMatch;
     }
 
@@ -226,7 +232,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightNotMatch;
     }
 
-    if (CanContainNulls(id) || CanContainNaNs(id)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nans, CanContainNaNs(id));
+    if (has_nulls || has_nans) {
       return kRowsMightNotMatch;
     }
 
@@ -258,7 +266,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightNotMatch;
     }
 
-    if (CanContainNulls(id) || CanContainNaNs(id)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nans, CanContainNaNs(id));
+    if (has_nulls || has_nans) {
       return kRowsMightNotMatch;
     }
     auto lower_it = data_file_.lower_bounds.find(id);
@@ -330,7 +340,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightNotMatch;
     }
 
-    if (CanContainNulls(id) || CanContainNaNs(id)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nans, CanContainNaNs(id));
+    if (has_nulls || has_nans) {
       return kRowsMightNotMatch;
     }
     auto lower_it = data_file_.lower_bounds.find(id);
@@ -435,19 +447,43 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     return Literal::Deserialize(stats, primitive_type);
   }
 
-  bool CanContainNulls(int32_t id) {
+  Result<bool> CanContainNulls(int32_t id) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field_opt, schema_.FindFieldById(id));
+    if (field_opt.has_value() && !field_opt->get().optional()) {
+      return false;
+    }
+
+    // When null_value_counts is not empty, the evaluator expects all fields to be
+    // present. A missing entry indicates that the field's null count is unknown.
     if (data_file_.null_value_counts.empty()) {
       return true;
     }
     auto it = data_file_.null_value_counts.find(id);
-    return it != data_file_.null_value_counts.cend() && it->second > 0;
+    if (it == data_file_.null_value_counts.cend()) {
+      return true;
+    }
+    return it->second > 0;
   }
 
-  bool CanContainNaNs(int32_t id) {
+  Result<bool> CanContainNaNs(int32_t id) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field_opt, schema_.FindFieldById(id));
+    if (field_opt.has_value()) {
+      auto type_id = field_opt->get().type()->type_id();
+      if (type_id != TypeId::kFloat && type_id != TypeId::kDouble) {
+        return false;
+      }
+    }
+
     // nan counts might be null for early version writers when nan counters are not
     // populated.
+    if (data_file_.nan_value_counts.empty()) {
+      return true;
+    }
     auto it = data_file_.nan_value_counts.find(id);
-    return it != data_file_.nan_value_counts.cend() && it->second > 0;
+    if (it == data_file_.nan_value_counts.cend()) {
+      return true;
+    }
+    return it->second > 0;
   }
 
   bool ContainsNullsOnly(int32_t id) {
