@@ -19,6 +19,7 @@
 
 #include "iceberg/metrics/metrics_reporters.h"
 
+#include <mutex>
 #include <shared_mutex>
 
 namespace iceberg {

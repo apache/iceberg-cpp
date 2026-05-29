@@ -20,6 +20,8 @@
 #include "iceberg/metrics/metrics_context.h"
 
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 
 namespace iceberg {
 
