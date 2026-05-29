@@ -50,6 +50,8 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
     return MetadataTableType::kSnapshots;
   }
 
+  std::shared_ptr<Schema> GetSchema() const override;
+
  private:
   explicit SnapshotsTable(std::shared_ptr<Table> table);
 

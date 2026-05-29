@@ -31,8 +31,12 @@
 namespace iceberg {
 
 SnapshotsTable::SnapshotsTable(std::shared_ptr<Table> table)
-    : MetadataTable(table, CreateName(table->name())) {
-  this->schema_ = std::make_shared<Schema>(
+    : MetadataTable(table, CreateName(table->name())) {}
+
+SnapshotsTable::~SnapshotsTable() = default;
+
+std::shared_ptr<Schema> SnapshotsTable::GetSchema() const {
+  return std::make_shared<Schema>(
       std::vector<SchemaField>{
           SchemaField::MakeRequired(1, "committed_at", timestamp_tz()),
           SchemaField::MakeRequired(2, "snapshot_id", int64()),
@@ -45,10 +49,7 @@ SnapshotsTable::SnapshotsTable(std::shared_ptr<Table> table)
                   SchemaField::MakeRequired(7, "key", string()),
                   SchemaField::MakeRequired(8, "value", string())))},
       1);
-  this->schemas_[schema_->schema_id()] = schema_;
 }
-
-SnapshotsTable::~SnapshotsTable() = default;
 
 TableIdentifier SnapshotsTable::CreateName(const TableIdentifier& source_name) {
   return TableIdentifier{source_name.ns, source_name.name + ".snapshots"};
