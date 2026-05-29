@@ -88,7 +88,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// - Format v1: deletes are not supported.
   /// - Format v2: position deletes must NOT be deletion vectors (DVs).
   /// - Format v3+: position deletes MUST be deletion vectors (DVs).
-  Status ValidateNewDeleteFile(const DataFile& file);
+  Status ValidateNewDeleteFile(const TableMetadata& metadata, const DataFile& file);
 
   /// \brief Stage a delete file with an explicit data sequence number.
   ///
@@ -163,34 +163,36 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Returns all data files staged for addition.
   std::vector<std::shared_ptr<DataFile>> AddedDataFiles() const;
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a data file matching the given filter expression.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a data file matching the given filter expression.
   static Status ValidateAddedDataFiles(const TableMetadata& metadata,
-                                       int64_t starting_snapshot_id,
+                                       std::optional<int64_t> starting_snapshot_id,
                                        std::shared_ptr<Expression> filter,
                                        const std::shared_ptr<Snapshot>& parent,
                                        std::shared_ptr<FileIO> io,
                                        bool case_sensitive = true);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a data file in any partition of the given partition set.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a data file in any partition of the given partition
+  /// set.
   ///
   static Status ValidateAddedDataFiles(const TableMetadata& metadata,
-                                       int64_t starting_snapshot_id,
+                                       std::optional<int64_t> starting_snapshot_id,
                                        const PartitionSet& partition_set,
                                        const std::shared_ptr<Snapshot>& parent,
                                        std::shared_ptr<FileIO> io);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// removed a file whose path is in file_paths (and allow_deletes is false).
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, removed a file whose path is in file_paths (and
+  /// allow_deletes is false).
   static Status ValidateDataFilesExist(
-      const TableMetadata& metadata, int64_t starting_snapshot_id,
+      const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
       const std::unordered_set<std::string>& file_paths, bool allow_deletes,
       std::shared_ptr<Expression> filter, const std::shared_ptr<Snapshot>& parent,
       std::shared_ptr<FileIO> io, bool case_sensitive = true);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a delete file that covers a file in replaced_files.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a delete file that covers a file in replaced_files.
   ///
   /// Whether equality deletes are checked is derived automatically from whether
   /// a custom data sequence number was set via SetNewDataFilesDataSequenceNumber():
@@ -199,7 +201,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   ///
   /// Subclasses should prefer this overload over the static one.
   Status ValidateNoNewDeletesForDataFiles(const TableMetadata& metadata,
-                                          int64_t starting_snapshot_id,
+                                          std::optional<int64_t> starting_snapshot_id,
                                           const DataFileSet& replaced_files,
                                           const std::shared_ptr<Snapshot>& parent,
                                           std::shared_ptr<FileIO> io) const {
@@ -208,79 +210,79 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                                             new_data_files_data_seq_number_.has_value());
   }
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a delete file that covers a file in replaced_files.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a delete file that covers a file in replaced_files.
   ///
   /// \param ignore_equality_deletes If true, only position deletes are checked.
   ///   Set to true when replaced data files have the same sequence number as the
   ///   new files (e.g. RewriteFiles), so equality deletes at higher sequence numbers
   ///   still apply and are not a conflict.
-  static Status ValidateNoNewDeletesForDataFiles(const TableMetadata& metadata,
-                                                 int64_t starting_snapshot_id,
-                                                 const DataFileSet& replaced_files,
-                                                 const std::shared_ptr<Snapshot>& parent,
-                                                 std::shared_ptr<FileIO> io,
-                                                 bool ignore_equality_deletes = false);
+  static Status ValidateNoNewDeletesForDataFiles(
+      const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
+      const DataFileSet& replaced_files, const std::shared_ptr<Snapshot>& parent,
+      std::shared_ptr<FileIO> io, bool ignore_equality_deletes = false);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a delete file matching the data filter that covers a file in replaced_files.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a delete file matching the data filter that covers a
+  /// file in replaced_files.
   ///
-  static Status ValidateNoNewDeletesForDataFiles(const TableMetadata& metadata,
-                                                 int64_t starting_snapshot_id,
-                                                 std::shared_ptr<Expression> data_filter,
-                                                 const DataFileSet& replaced_files,
-                                                 const std::shared_ptr<Snapshot>& parent,
-                                                 std::shared_ptr<FileIO> io);
+  static Status ValidateNoNewDeletesForDataFiles(
+      const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
+      std::shared_ptr<Expression> data_filter, const DataFileSet& replaced_files,
+      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a delete file matching the given row filter.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a delete file matching the given row filter.
   ///
   static Status ValidateNoNewDeleteFiles(const TableMetadata& metadata,
-                                         int64_t starting_snapshot_id,
+                                         std::optional<int64_t> starting_snapshot_id,
                                          std::shared_ptr<Expression> data_filter,
                                          const std::shared_ptr<Snapshot>& parent,
                                          std::shared_ptr<FileIO> io);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a delete file matching any partition in the given partition set.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a delete file matching any partition in the given
+  /// partition set.
   ///
   static Status ValidateNoNewDeleteFiles(const TableMetadata& metadata,
-                                         int64_t starting_snapshot_id,
+                                         std::optional<int64_t> starting_snapshot_id,
                                          const PartitionSet& partition_set,
                                          const std::shared_ptr<Snapshot>& parent,
                                          std::shared_ptr<FileIO> io);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// deleted a data file matching the given row filter.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, deleted a data file matching the given row filter.
   ///
   static Status ValidateDeletedDataFiles(const TableMetadata& metadata,
-                                         int64_t starting_snapshot_id,
+                                         std::optional<int64_t> starting_snapshot_id,
                                          std::shared_ptr<Expression> data_filter,
                                          const std::shared_ptr<Snapshot>& parent,
                                          std::shared_ptr<FileIO> io);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// deleted a data file in any partition of the given partition set.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, deleted a data file in any partition of the given partition
+  /// set.
   ///
   static Status ValidateDeletedDataFiles(const TableMetadata& metadata,
-                                         int64_t starting_snapshot_id,
+                                         std::optional<int64_t> starting_snapshot_id,
                                          const PartitionSet& partition_set,
                                          const std::shared_ptr<Snapshot>& parent,
                                          std::shared_ptr<FileIO> io);
 
   /// \brief Build a DeleteFileIndex of delete files added since starting_snapshot_id.
   static Result<std::unique_ptr<DeleteFileIndex>> AddedDeleteFiles(
-      const TableMetadata& metadata, int64_t starting_snapshot_id,
+      const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
       std::shared_ptr<Expression> data_filter,
       std::shared_ptr<PartitionSet> partition_set,
       const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
       bool case_sensitive = true);
 
-  /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
-  /// added a deletion vector that conflicts with DVs being written.
+  /// \brief Return an error if any snapshot after starting_snapshot_id, or from
+  /// the beginning if unset, added a deletion vector that conflicts with DVs being
+  /// written.
   ///
   static Status ValidateAddedDVs(
-      const TableMetadata& metadata, int64_t starting_snapshot_id,
+      const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
       std::shared_ptr<Expression> conflict_filter,
       const std::unordered_set<std::string>& referenced_data_files,
       const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io);
@@ -302,7 +304,8 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   Status AddDeleteFile(std::shared_ptr<DataFile> file,
                        std::optional<int64_t> data_sequence_number);
 
-  Status ValidateAddedDVs(const TableMetadata& metadata, int64_t starting_snapshot_id,
+  Status ValidateAddedDVs(const TableMetadata& metadata,
+                          std::optional<int64_t> starting_snapshot_id,
                           std::shared_ptr<Expression> conflict_filter,
                           const std::shared_ptr<Snapshot>& parent,
                           std::shared_ptr<FileIO> io) const;

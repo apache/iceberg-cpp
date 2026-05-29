@@ -41,7 +41,7 @@ namespace iceberg {
 
 namespace {
 
-// Skips updating total if parsing fails would be lenient; here we choose to be strict.
+// Java skips updating totals if parsing fails; C++ treats parse failures as errors.
 Status UpdateTotal(std::unordered_map<std::string, std::string>& summary,
                    const std::unordered_map<std::string, std::string>& previous_summary,
                    const std::string& total_property, const std::string& added_property,

@@ -85,7 +85,7 @@ class TestMergeAppend : public MergingSnapshotUpdate {
   int64_t GeneratedSnapshotId() { return SnapshotId(); }
   void SetDataSeqNumber(int64_t seq) { SetNewDataFilesDataSequenceNumber(seq); }
   static Status ValidateAddedDataFilesForTest(const TableMetadata& metadata,
-                                              int64_t starting_snapshot_id,
+                                              std::optional<int64_t> starting_snapshot_id,
                                               const std::shared_ptr<Snapshot>& parent,
                                               std::shared_ptr<FileIO> io) {
     return MergingSnapshotUpdate::ValidateAddedDataFiles(metadata, starting_snapshot_id,
@@ -234,6 +234,10 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     return TestOverwriteUpdate::Make(TableName(), table_);
   }
 
+  void SetTableFormatVersion(int8_t format_version) {
+    table_->metadata()->format_version = format_version;
+  }
+
   // Commit file_a_ with FastAppend and refresh the table.
   void CommitFileA() {
     ICEBERG_UNWRAP_OR_FAIL(auto fa, table_->NewFastAppend());
@@ -277,19 +281,37 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     return writer->ToManifestFile();
   }
 
-  Result<ManifestFile> WriteDeleteManifest(
+  Result<ManifestFile> WriteDataManifest(
       const TableMetadata& metadata, const std::string& path,
-      const std::vector<std::shared_ptr<DataFile>>& files, int64_t sequence_number) {
+      const std::vector<std::shared_ptr<DataFile>>& files, int64_t snapshot_id,
+      int64_t sequence_number) {
     ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
     ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata.PartitionSpecById(spec_->spec_id()));
     ICEBERG_ASSIGN_OR_RAISE(
         auto writer,
-        ManifestWriter::MakeWriter(metadata.format_version, /*snapshot_id=*/1L, path,
-                                   file_io_, spec, schema, ManifestContent::kDeletes));
+        ManifestWriter::MakeWriter(metadata.format_version, snapshot_id, path, file_io_,
+                                   spec, schema, ManifestContent::kData));
+    for (const auto& f : files) {
+      ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(f, sequence_number));
+    }
+    ICEBERG_RETURN_UNEXPECTED(writer->Close());
+    return writer->ToManifestFile();
+  }
+
+  Result<ManifestFile> WriteDeleteManifest(
+      const TableMetadata& metadata, const std::string& path,
+      const std::vector<std::shared_ptr<DataFile>>& files, int64_t snapshot_id,
+      int64_t sequence_number) {
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+    ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata.PartitionSpecById(spec_->spec_id()));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto writer,
+        ManifestWriter::MakeWriter(metadata.format_version, snapshot_id, path, file_io_,
+                                   spec, schema, ManifestContent::kDeletes));
     for (const auto& f : files) {
       ManifestEntry entry;
       entry.status = ManifestStatus::kAdded;
-      entry.snapshot_id = 1L;
+      entry.snapshot_id = snapshot_id;
       entry.sequence_number = sequence_number;
       entry.data_file = f;
       ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(entry));
@@ -621,6 +643,39 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV2AllowsEqualityDelete) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(eq_del), IsOk());
+}
+
+TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV3RejectsNonDVPositionDelete) {
+  SetTableFormatVersion(3);
+
+  auto del_file = MakeDeleteFile("/delete/del_a.parquet", 1L);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  EXPECT_THAT(op->AddDelete(del_file), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV3AllowsDeletionVector) {
+  SetTableFormatVersion(3);
+
+  auto del_file = MakeDeleteFile("/delete/dv_a.puffin", 1L);
+  del_file->file_format = FileFormatType::kPuffin;
+  del_file->referenced_data_file = file_a_->file_path;
+  del_file->content_offset = 0;
+  del_file->content_size_in_bytes = 10;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  EXPECT_THAT(op->AddDelete(del_file), IsOk());
+}
+
+TEST_F(MergingSnapshotUpdateTest, ApplyRejectsV2StagedPositionDeleteAfterV3Upgrade) {
+  auto del_file = MakeDeleteFile("/delete/del_a.parquet", 1L);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  EXPECT_THAT(op->AddDelete(del_file), IsOk());
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+  metadata->format_version = 3;
+  EXPECT_THAT(op->Apply(*metadata, nullptr), IsError(ErrorKind::kInvalidArgument));
 }
 
 // -------------------------------------------------------------------------
@@ -970,6 +1025,42 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesFailsForTruncatedHistory
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST_F(MergingSnapshotUpdateTest,
+       ValidateAddedDataFilesWithNoStartingSnapshotFailsForTruncatedHistory) {
+  auto metadata = std::make_shared<TableMetadata>();
+  metadata->format_version = 2;
+  metadata->location = table_location_;
+  metadata->current_schema_id = 0;
+  metadata->schemas.push_back(schema_);
+
+  auto snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 2,
+      .parent_snapshot_id = 1,
+      .sequence_number = 2,
+      .timestamp_ms = TimePointMs{},
+      .manifest_list = "",
+      .summary = {},
+      .schema_id = 0,
+  });
+  metadata->snapshots = {snapshot};
+
+  EXPECT_THAT(TestMergeAppend::ValidateAddedDataFilesForTest(*metadata, std::nullopt,
+                                                             snapshot, file_io_),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesWithNoStartingSnapshotChecksAll) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+
+  EXPECT_THAT(TestMergeAppend::ValidateAddedDataFilesForTest(
+                  *table_->metadata(), std::nullopt, snapshot, file_io_),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(TestMergeAppend::ValidateAddedDataFilesForTest(
+                  *table_->metadata(), snapshot->snapshot_id, snapshot, file_io_),
+              IsOk());
+}
+
 TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesWithPartitionSetDetectsConflict) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
@@ -986,6 +1077,36 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesWithPartitionSetDetectsC
                   *table_->metadata(), first_snapshot->snapshot_id, partition_set,
                   second_snapshot, file_io_),
               IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesIgnoresOldEntrySnapshotId) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+
+  constexpr int64_t kSecondSnapshotId = 123456;
+  auto manifest_path = table_location_ + "/metadata/old-entry-data.avro";
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manifest,
+      WriteDataManifest(*metadata, manifest_path, {file_b_}, first_snapshot->snapshot_id,
+                        first_snapshot->sequence_number));
+  manifest.added_snapshot_id = kSecondSnapshotId;
+  manifest.sequence_number = first_snapshot->sequence_number + 1;
+  manifest.min_sequence_number = first_snapshot->sequence_number;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second_snapshot,
+      MakeSyntheticSnapshot(DataOperation::kAppend, kSecondSnapshotId,
+                            first_snapshot->snapshot_id,
+                            first_snapshot->sequence_number + 1, {manifest}));
+
+  metadata->snapshots.push_back(second_snapshot);
+  metadata->current_snapshot_id = second_snapshot->snapshot_id;
+  metadata->last_sequence_number = second_snapshot->sequence_number;
+
+  EXPECT_THAT(TestMergeAppend::ValidateAddedDataFilesForTest(
+                  *metadata, first_snapshot->snapshot_id, second_snapshot, file_io_),
+              IsOk());
 }
 
 TEST_F(MergingSnapshotUpdateTest,
@@ -1143,9 +1264,10 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDVsDetectsConflict) {
 
   constexpr int64_t kSecondSnapshotId = 123456;
   auto manifest_path = table_location_ + "/metadata/dv-conflict.avro";
-  ICEBERG_UNWRAP_OR_FAIL(auto manifest,
-                         WriteDeleteManifest(*metadata, manifest_path, {dv_file},
-                                             first_snapshot->sequence_number + 1));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manifest,
+      WriteDeleteManifest(*metadata, manifest_path, {dv_file}, kSecondSnapshotId,
+                          first_snapshot->sequence_number + 1));
   manifest.added_snapshot_id = kSecondSnapshotId;
   manifest.sequence_number = first_snapshot->sequence_number + 1;
   manifest.min_sequence_number = first_snapshot->sequence_number + 1;
@@ -1181,9 +1303,10 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDVsIgnoresUnrelatedDVs) {
 
   constexpr int64_t kSecondSnapshotId = 123456;
   auto manifest_path = table_location_ + "/metadata/dv-unrelated.avro";
-  ICEBERG_UNWRAP_OR_FAIL(auto manifest,
-                         WriteDeleteManifest(*metadata, manifest_path, {dv_file},
-                                             first_snapshot->sequence_number + 1));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manifest,
+      WriteDeleteManifest(*metadata, manifest_path, {dv_file}, kSecondSnapshotId,
+                          first_snapshot->sequence_number + 1));
   manifest.added_snapshot_id = kSecondSnapshotId;
   manifest.sequence_number = first_snapshot->sequence_number + 1;
   manifest.min_sequence_number = first_snapshot->sequence_number + 1;
@@ -1198,6 +1321,45 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDVsIgnoresUnrelatedDVs) {
   metadata->last_sequence_number = second_snapshot->sequence_number;
 
   const std::unordered_set<std::string> referenced_data_files{file_b_->file_path};
+  EXPECT_THAT(TestMergeAppend::ValidateAddedDVsForTest(
+                  *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
+                  referenced_data_files, second_snapshot, file_io_),
+              IsOk());
+}
+
+TEST_F(MergingSnapshotUpdateTest, ValidateAddedDVsIgnoresOldEntrySnapshotId) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+  metadata->format_version = 3;
+
+  auto dv_file = MakeDeleteFile("/delete/dv_a.puffin", 1L);
+  dv_file->file_format = FileFormatType::kPuffin;
+  dv_file->referenced_data_file = file_a_->file_path;
+  dv_file->content_offset = 0;
+  dv_file->content_size_in_bytes = 10;
+
+  constexpr int64_t kSecondSnapshotId = 123456;
+  auto manifest_path = table_location_ + "/metadata/old-entry-dv.avro";
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manifest,
+      WriteDeleteManifest(*metadata, manifest_path, {dv_file},
+                          first_snapshot->snapshot_id, first_snapshot->sequence_number));
+  manifest.added_snapshot_id = kSecondSnapshotId;
+  manifest.sequence_number = first_snapshot->sequence_number + 1;
+  manifest.min_sequence_number = first_snapshot->sequence_number;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second_snapshot,
+      MakeSyntheticSnapshot(DataOperation::kOverwrite, kSecondSnapshotId,
+                            first_snapshot->snapshot_id,
+                            first_snapshot->sequence_number + 1, {manifest}));
+
+  metadata->snapshots.push_back(second_snapshot);
+  metadata->current_snapshot_id = second_snapshot->snapshot_id;
+  metadata->last_sequence_number = second_snapshot->sequence_number;
+
+  const std::unordered_set<std::string> referenced_data_files{file_a_->file_path};
   EXPECT_THAT(TestMergeAppend::ValidateAddedDVsForTest(
                   *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
                   referenced_data_files, second_snapshot, file_io_),

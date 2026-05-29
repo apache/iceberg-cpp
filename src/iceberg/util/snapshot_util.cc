@@ -375,7 +375,7 @@ Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const Table& table,
 
   const auto& metadata = table.metadata();
   auto it = metadata->refs.find(ref);
-  if (it == metadata->refs.cend()) {
+  if (it == metadata->refs.cend() || it->second->type() == SnapshotRefType::kBranch) {
     return table.schema();
   }
 
@@ -389,7 +389,7 @@ Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const TableMetadata& met
   }
 
   auto it = metadata.refs.find(ref);
-  if (it == metadata.refs.end()) {
+  if (it == metadata.refs.end() || it->second->type() == SnapshotRefType::kBranch) {
     return metadata.Schema();
   }
 

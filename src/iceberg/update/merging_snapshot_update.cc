@@ -89,34 +89,46 @@ DeleteFileObjectKey MakeDeleteFileObjectKey(const DataFile& file) {
 
 Result<std::vector<std::shared_ptr<Snapshot>>> ValidationAncestorsBetween(
     const TableMetadata& metadata, int64_t latest_snapshot_id,
-    int64_t starting_snapshot_id) {
+    std::optional<int64_t> starting_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ancestors,
       SnapshotUtil::AncestorsBetween(metadata, latest_snapshot_id, starting_snapshot_id));
-  if (latest_snapshot_id == starting_snapshot_id) {
+  if (!starting_snapshot_id.has_value()) {
+    if (!ancestors.empty()) {
+      const auto& oldest_checked = ancestors.back();
+      if (oldest_checked == nullptr || oldest_checked->parent_snapshot_id.has_value()) {
+        return InvalidArgument(
+            "Cannot validate history: cannot determine complete history for snapshot {}",
+            latest_snapshot_id);
+      }
+    }
+    return ancestors;
+  }
+
+  if (latest_snapshot_id == starting_snapshot_id.value()) {
     return ancestors;
   }
   if (ancestors.empty()) {
     return InvalidArgument(
         "Cannot validate history: starting snapshot {} is not an ancestor "
         "of snapshot {}",
-        starting_snapshot_id, latest_snapshot_id);
+        starting_snapshot_id.value(), latest_snapshot_id);
   }
 
   const auto& oldest_checked = ancestors.back();
   if (oldest_checked == nullptr || !oldest_checked->parent_snapshot_id.has_value() ||
-      oldest_checked->parent_snapshot_id.value() != starting_snapshot_id) {
+      oldest_checked->parent_snapshot_id.value() != starting_snapshot_id.value()) {
     return InvalidArgument(
         "Cannot validate history: starting snapshot {} is not an ancestor "
         "of snapshot {}",
-        starting_snapshot_id, latest_snapshot_id);
+        starting_snapshot_id.value(), latest_snapshot_id);
   }
   return ancestors;
 }
 
 Result<ValidationHistoryResult> ValidationHistory(
     const TableMetadata& metadata, int64_t latest_snapshot_id,
-    int64_t starting_snapshot_id,
+    std::optional<int64_t> starting_snapshot_id,
     std::initializer_list<std::string_view> matching_operations, ManifestContent content,
     const std::shared_ptr<FileIO>& io) {
   ICEBERG_ASSIGN_OR_RAISE(
@@ -146,9 +158,9 @@ Result<ValidationHistoryResult> ValidationHistory(
 
 Result<std::optional<std::string>> FindMatchingDataFile(
     const TableMetadata& metadata, const std::vector<ManifestFile>& manifests,
-    ManifestStatus status, std::shared_ptr<Expression> filter,
-    const PartitionSet* partition_set, const std::shared_ptr<FileIO>& io,
-    bool case_sensitive) {
+    const std::unordered_set<int64_t>& snapshot_ids, ManifestStatus status,
+    std::shared_ptr<Expression> filter, const PartitionSet* partition_set,
+    const std::shared_ptr<FileIO>& io, bool case_sensitive) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
   auto partition_filter = partition_set != nullptr
                               ? std::make_shared<PartitionSet>(*partition_set)
@@ -169,6 +181,10 @@ Result<std::optional<std::string>> FindMatchingDataFile(
 
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
     for (const auto& entry : entries) {
+      if (!entry.snapshot_id.has_value() ||
+          !snapshot_ids.contains(entry.snapshot_id.value())) {
+        continue;
+      }
       if (entry.status == status && entry.data_file != nullptr) {
         return entry.data_file->file_path;
       }
@@ -224,12 +240,13 @@ Status MergingSnapshotUpdate::AddDataFile(std::shared_ptr<DataFile> file) {
   return {};
 }
 
-Status MergingSnapshotUpdate::ValidateNewDeleteFile(const DataFile& file) {
+Status MergingSnapshotUpdate::ValidateNewDeleteFile(const TableMetadata& metadata,
+                                                    const DataFile& file) {
   if (file.content == DataFile::Content::kData) {
     return InvalidArgument("Expected a delete file but got a data file: {}",
                            file.file_path);
   }
-  const int8_t format_version = base().format_version;
+  const int8_t format_version = metadata.format_version;
   const bool is_dv = ContentFileUtil::IsDV(file);
   switch (format_version) {
     case 1:
@@ -270,7 +287,7 @@ Status MergingSnapshotUpdate::AddDeleteFile(std::shared_ptr<DataFile> file,
   if (!file) {
     return InvalidArgument("Cannot add a null delete file");
   }
-  ICEBERG_RETURN_UNEXPECTED(ValidateNewDeleteFile(*file));
+  ICEBERG_RETURN_UNEXPECTED(ValidateNewDeleteFile(base(), *file));
   if (!file->partition_spec_id.has_value()) {
     return InvalidArgument("Delete file must have a partition spec ID");
   }
@@ -542,7 +559,8 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   // Re-validate buffered delete files against the current format version. A format
   // upgrade between staging and commit could make previously-valid files invalid.
   for (const auto& pending_file : new_delete_files_) {
-    ICEBERG_RETURN_UNEXPECTED(ValidateNewDeleteFile(*pending_file.file));
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateNewDeleteFile(metadata_to_update, *pending_file.file));
   }
   ICEBERG_ASSIGN_OR_RAISE(auto normalized_delete_files, NormalizeNewDeleteFiles());
   new_delete_files_ = std::move(normalized_delete_files);
@@ -734,7 +752,7 @@ std::unordered_map<std::string, std::string> MergingSnapshotUpdate::Summary() {
 // -------------------------------------------------------------------------
 
 Status MergingSnapshotUpdate::ValidateAddedDataFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io, bool case_sensitive) {
   if (parent == nullptr) {
@@ -747,8 +765,8 @@ Status MergingSnapshotUpdate::ValidateAddedDataFiles(
                                       ManifestContent::kData, io));
   ICEBERG_ASSIGN_OR_RAISE(
       auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, ManifestStatus::kAdded, filter,
-                           nullptr, io, case_sensitive));
+      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
+                           ManifestStatus::kAdded, filter, nullptr, io, case_sensitive));
   if (conflict_path.has_value()) {
     return InvalidArgument(
         "Found conflicting files that can contain rows matching {}: {}",
@@ -758,7 +776,7 @@ Status MergingSnapshotUpdate::ValidateAddedDataFiles(
 }
 
 Status MergingSnapshotUpdate::ValidateDataFilesExist(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     const std::unordered_set<std::string>& file_paths, bool allow_deletes,
     std::shared_ptr<Expression> filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io, bool case_sensitive) {
@@ -811,6 +829,10 @@ Status MergingSnapshotUpdate::ValidateDataFilesExist(
       ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
 
       for (const auto& entry : entries) {
+        if (!entry.snapshot_id.has_value() ||
+            !matching_snapshot_ids.contains(entry.snapshot_id.value())) {
+          continue;
+        }
         if (entry.status != ManifestStatus::kDeleted) {
           continue;
         }
@@ -835,7 +857,7 @@ Status MergingSnapshotUpdate::ValidateDataFilesExist(
 }
 
 Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     const DataFileSet& replaced_files, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io, bool ignore_equality_deletes) {
   if (parent == nullptr || replaced_files.empty() || metadata.format_version < 2) {
@@ -854,9 +876,11 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
 
   // Compute the starting sequence number for the data file check.
   int64_t starting_seq = TableMetadata::kInitialSequenceNumber;
-  if (auto snap_result = metadata.SnapshotById(starting_snapshot_id);
-      snap_result.has_value()) {
-    starting_seq = snap_result.value()->sequence_number;
+  if (starting_snapshot_id.has_value()) {
+    if (auto snap_result = metadata.SnapshotById(starting_snapshot_id.value());
+        snap_result.has_value()) {
+      starting_seq = snap_result.value()->sequence_number;
+    }
   }
 
   for (const auto& data_file : replaced_files) {
@@ -884,7 +908,7 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
 }
 
 Status MergingSnapshotUpdate::ValidateAddedDataFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
   if (parent == nullptr) {
@@ -897,8 +921,9 @@ Status MergingSnapshotUpdate::ValidateAddedDataFiles(
                                       ManifestContent::kData, io));
   ICEBERG_ASSIGN_OR_RAISE(
       auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, ManifestStatus::kAdded, nullptr,
-                           &partition_set, io, /*case_sensitive=*/true));
+      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
+                           ManifestStatus::kAdded, nullptr, &partition_set, io,
+                           /*case_sensitive=*/true));
   if (conflict_path.has_value()) {
     return InvalidArgument(
         "Found conflicting files that can contain rows in validated partitions: {}",
@@ -908,7 +933,7 @@ Status MergingSnapshotUpdate::ValidateAddedDataFiles(
 }
 
 Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, const DataFileSet& replaced_files,
     const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io) {
   if (parent == nullptr || replaced_files.empty() || metadata.format_version < 2) {
@@ -923,9 +948,11 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
   }
 
   int64_t starting_seq = TableMetadata::kInitialSequenceNumber;
-  if (auto snap_result = metadata.SnapshotById(starting_snapshot_id);
-      snap_result.has_value()) {
-    starting_seq = snap_result.value()->sequence_number;
+  if (starting_snapshot_id.has_value()) {
+    if (auto snap_result = metadata.SnapshotById(starting_snapshot_id.value());
+        snap_result.has_value()) {
+      starting_seq = snap_result.value()->sequence_number;
+    }
   }
 
   for (const auto& data_file : replaced_files) {
@@ -940,7 +967,7 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
 }
 
 Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
   ICEBERG_ASSIGN_OR_RAISE(auto deletes,
@@ -956,7 +983,7 @@ Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
 }
 
 Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
   ICEBERG_ASSIGN_OR_RAISE(
@@ -973,7 +1000,7 @@ Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
 }
 
 Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
   if (parent == nullptr) {
@@ -987,8 +1014,9 @@ Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
                                       ManifestContent::kData, io));
   ICEBERG_ASSIGN_OR_RAISE(
       auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, ManifestStatus::kDeleted,
-                           data_filter, nullptr, io, /*case_sensitive=*/true));
+      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
+                           ManifestStatus::kDeleted, data_filter, nullptr, io,
+                           /*case_sensitive=*/true));
   if (conflict_path.has_value()) {
     return InvalidArgument(
         "Found conflicting deleted files that can contain rows matching {}: {}",
@@ -999,7 +1027,7 @@ Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
 }
 
 Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
   if (parent == nullptr) {
@@ -1013,8 +1041,9 @@ Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
                                       ManifestContent::kData, io));
   ICEBERG_ASSIGN_OR_RAISE(
       auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, ManifestStatus::kDeleted, nullptr,
-                           &partition_set, io, /*case_sensitive=*/true));
+      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
+                           ManifestStatus::kDeleted, nullptr, &partition_set, io,
+                           /*case_sensitive=*/true));
   if (conflict_path.has_value()) {
     return InvalidArgument("Found conflicting deleted files in validated partitions: {}",
                            conflict_path.value());
@@ -1023,7 +1052,7 @@ Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
 }
 
 Result<std::unique_ptr<DeleteFileIndex>> MergingSnapshotUpdate::AddedDeleteFiles(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, std::shared_ptr<PartitionSet> partition_set,
     const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
     bool case_sensitive) {
@@ -1046,9 +1075,11 @@ Result<std::unique_ptr<DeleteFileIndex>> MergingSnapshotUpdate::AddedDeleteFiles
 
   // Compute the starting sequence number from the starting snapshot.
   int64_t starting_seq = TableMetadata::kInitialSequenceNumber;
-  if (auto snap_result = metadata.SnapshotById(starting_snapshot_id);
-      snap_result.has_value()) {
-    starting_seq = snap_result.value()->sequence_number;
+  if (starting_snapshot_id.has_value()) {
+    if (auto snap_result = metadata.SnapshotById(starting_snapshot_id.value());
+        snap_result.has_value()) {
+      starting_seq = snap_result.value()->sequence_number;
+    }
   }
 
   TableMetadataCache metadata_cache(&metadata);
@@ -1071,7 +1102,7 @@ Result<std::unique_ptr<DeleteFileIndex>> MergingSnapshotUpdate::AddedDeleteFiles
 }
 
 Status MergingSnapshotUpdate::ValidateAddedDVs(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> conflict_filter,
     const std::unordered_set<std::string>& referenced_data_files,
     const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io) {
@@ -1097,6 +1128,10 @@ Status MergingSnapshotUpdate::ValidateAddedDVs(
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
 
     for (const auto& entry : entries) {
+      if (!entry.snapshot_id.has_value() ||
+          !history.snapshot_ids.contains(entry.snapshot_id.value())) {
+        continue;
+      }
       if (entry.data_file == nullptr || !ContentFileUtil::IsDV(*entry.data_file) ||
           !entry.data_file->referenced_data_file.has_value()) {
         continue;
@@ -1111,7 +1146,7 @@ Status MergingSnapshotUpdate::ValidateAddedDVs(
 }
 
 Status MergingSnapshotUpdate::ValidateAddedDVs(
-    const TableMetadata& metadata, int64_t starting_snapshot_id,
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> conflict_filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) const {
   std::unordered_set<std::string> referenced_data_files;
