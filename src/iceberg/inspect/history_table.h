@@ -48,6 +48,8 @@ class ICEBERG_EXPORT HistoryTable : public MetadataTable {
 
   MetadataTableType type() const noexcept override { return MetadataTableType::kHistory; }
 
+  std::shared_ptr<Schema> GetSchema() const override;
+
  private:
   explicit HistoryTable(std::shared_ptr<Table> table);
 

@@ -26,10 +26,13 @@
 #include "iceberg/file_io.h"
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/snapshots_table.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/type.h"
 #include "iceberg/type_fwd.h"
@@ -43,7 +46,30 @@ MetadataTable::MetadataTable(std::shared_ptr<Table> source_table,
                   std::string(source_table->metadata_file_location()), source_table->io(),
                   source_table->catalog()),
       source_table_(std::move(source_table)) {
-  uuid_ = Uuid::GenerateV4().ToString();
+  auto schema = GetSchema();
+  if (!schema) {
+    schema = std::make_shared<Schema>(std::vector<SchemaField>{}, 1);
+  }
+
+  auto builder =
+      TableMetadataBuilder::BuildFromEmpty(TableMetadata::kDefaultTableFormatVersion);
+  auto result = builder->AssignUUID(Uuid::GenerateV4().ToString())
+                    .SetLocation(std::string(source_table_->location()))
+                    .SetCurrentSchema(schema, schema->schema_id())
+                    .SetDefaultSortOrder(SortOrder::Unsorted())
+                    .SetDefaultPartitionSpec(PartitionSpec::Unpartitioned())
+                    .SetProperties({})
+                    .Build();
+
+  if (!result.has_value()) {
+    // If metadata building fails, keep the original metadata from source_table
+    return;
+  }
+
+  std::shared_ptr<TableMetadata> built_metadata = std::move(result.value());
+
+  metadata_ = built_metadata;
+  metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
 }
 
 MetadataTable::~MetadataTable() = default;
@@ -54,14 +80,16 @@ Result<std::unique_ptr<TableScanBuilder>> MetadataTable::NewScan() const {
   return NotSupported("TODO: Scanning metadata tables is not yet supported");
 };
 
-Result<std::unique_ptr<SnapshotsTable>> MetadataTableFactory::GetSnapshotsTable(
-    std::shared_ptr<Table> table) {
-  return SnapshotsTable::Make(table);
-}
+Result<std::unique_ptr<MetadataTable>> MetadataTableFactory::CreateMetadataTable(
+    std::shared_ptr<Table> table, MetadataTableType type) {
+  switch (type) {
+    case MetadataTableType::kSnapshots:
+      return SnapshotsTable::Make(table);
+    case MetadataTableType::kHistory:
+      return HistoryTable::Make(table);
+  }
 
-Result<std::unique_ptr<HistoryTable>> MetadataTableFactory::GetHistoryTable(
-    std::shared_ptr<Table> table) {
-  return HistoryTable::Make(table);
+  return Invalid("Unsupported metadata table type");
 }
 
 }  // namespace iceberg

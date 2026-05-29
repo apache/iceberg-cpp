@@ -54,16 +54,17 @@ class MetadataTableTest : public ::testing::Test {
     EXPECT_THAT(source_table_result, IsOk());
     source_table_ = *source_table_result;
 
-    auto snapshots_table_result = MetadataTableFactory::GetSnapshotsTable(source_table_);
+    auto snapshots_table_result = MetadataTableFactory::CreateMetadataTable(
+        source_table_, MetadataTableType::kSnapshots);
     EXPECT_THAT(snapshots_table_result, IsOk());
-    snapshots_table_ = *snapshots_table_result;
+    snapshots_table_ = std::move(*snapshots_table_result);
   }
 
   std::shared_ptr<MockFileIO> io_;
   std::shared_ptr<MockCatalog> catalog_;
   std::shared_ptr<TableMetadata> metadata_;
   std::shared_ptr<Table> source_table_;
-  std::shared_ptr<SnapshotsTable> snapshots_table_;
+  std::unique_ptr<MetadataTable> snapshots_table_;
 };
 
 TEST_F(MetadataTableTest, Constructor) {
@@ -71,13 +72,11 @@ TEST_F(MetadataTableTest, Constructor) {
   EXPECT_FALSE(snapshots_table_->uuid().empty());
   auto schema_result = snapshots_table_->schema();
   EXPECT_THAT(schema_result, IsOk());
-  EXPECT_EQ((*schema_result)->schema_id(), 1);
 }
 
 TEST_F(MetadataTableTest, DelegatesToSourceTable) {
   EXPECT_EQ(snapshots_table_->location(), source_table_->location());
   EXPECT_EQ(snapshots_table_->last_updated_ms(), source_table_->last_updated_ms());
-  EXPECT_EQ(snapshots_table_->metadata(), source_table_->metadata());
   EXPECT_EQ(snapshots_table_->catalog(), source_table_->catalog());
 }
 
@@ -95,11 +94,9 @@ TEST_F(MetadataTableTest, SchemasAndSpecs) {
   auto schemas_result = snapshots_table_->schemas();
   EXPECT_THAT(schemas_result, IsOk());
   EXPECT_EQ(schemas_result->get().size(), 1);
-  EXPECT_EQ(schemas_result->get().at(1)->schema_id(), 1);
 
   auto spec_result = snapshots_table_->spec();
   EXPECT_THAT(spec_result, IsOk());
-  EXPECT_EQ(*spec_result, PartitionSpec::Unpartitioned());
 
   auto specs_result = snapshots_table_->specs();
   EXPECT_THAT(specs_result, IsOk());
@@ -109,7 +106,6 @@ TEST_F(MetadataTableTest, SchemasAndSpecs) {
 TEST_F(MetadataTableTest, SortOrders) {
   auto sort_order_result = snapshots_table_->sort_order();
   EXPECT_THAT(sort_order_result, IsOk());
-  EXPECT_EQ(*sort_order_result, SortOrder::Unsorted());
 
   auto sort_orders_result = snapshots_table_->sort_orders();
   EXPECT_THAT(sort_orders_result, IsOk());

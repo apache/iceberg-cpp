@@ -45,46 +45,7 @@ enum class MetadataTableType {
 /// support. They provide read-only access to metadata.
 class ICEBERG_EXPORT MetadataTable : public StaticTable {
  public:
-  /// \brief Returns the identifier of this table
-  const TableIdentifier& name() const override { return identifier_; }
-
   virtual MetadataTableType type() const noexcept = 0;
-
-  /// \brief Returns the UUID of the table
-  const std::string& uuid() const { return uuid_; }
-
-  /// \brief Returns the schema for this table, return NotFoundError if not found
-  Result<std::shared_ptr<Schema>> schema() const { return schema_; }
-
-  /// \brief Returns a map of schema for this table
-  Result<
-      std::reference_wrapper<const std::unordered_map<int32_t, std::shared_ptr<Schema>>>>
-  schemas() const {
-    return schemas_;
-  }
-
-  /// \brief Returns the partition spec for this table, return NotFoundError if not found
-  Result<std::shared_ptr<PartitionSpec>> spec() const { return partition_spec; };
-
-  /// \brief Returns a map of partition specs for this table
-  Result<std::reference_wrapper<
-      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>>
-  specs() const {
-    return partition_specs_;
-  }
-
-  /// \brief Returns the sort order for this table, return NotFoundError if not found
-  Result<std::shared_ptr<SortOrder>> sort_order() const { return sort_order_; }
-
-  /// \brief Returns a map of sort order IDs to sort orders for this table
-  Result<std::reference_wrapper<
-      const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>>
-  sort_orders() const {
-    return sort_orders_;
-  }
-
-  /// \brief Returns the properties of this table
-  const TableProperties& properties() const { return properties_; }
 
   /// \brief Returns the table's metadata file location
   std::string_view metadata_file_location() const {
@@ -120,12 +81,6 @@ class ICEBERG_EXPORT MetadataTable : public StaticTable {
     return source_table_->history();
   }
 
-  /// \brief Returns the current metadata for this table
-  const std::shared_ptr<TableMetadata>& metadata() const {
-    // TODO: or should we return an empty TableMetadata?
-    return source_table_->metadata();
-  }
-
   /// \brief Returns the catalog that this table belongs to
   const std::shared_ptr<Catalog>& catalog() const { return source_table_->catalog(); }
 
@@ -141,24 +96,23 @@ class ICEBERG_EXPORT MetadataTable : public StaticTable {
   ///
   /// Once a table scan builder is created, it can be refined to project columns and
   /// filter data.
-  Result<std::unique_ptr<TableScanBuilder>> NewScan() const;
+  Result<std::unique_ptr<TableScanBuilder>> NewScan() const override;
+
+  ~MetadataTable();
 
  protected:
   explicit MetadataTable(std::shared_ptr<Table> source_table, TableIdentifier identifier);
 
-  ~MetadataTable();
+  /// \brief Returns the schema for this metadata table
+  ///
+  /// Subclasses override this method to provide their custom schema during
+  /// MetadataTable construction. The returned schema is used to initialize
+  /// the underlying TableMetadata.
+  ///
+  /// \return The schema for this metadata table, or nullptr for default schema
+  virtual std::shared_ptr<Schema> GetSchema() const { return nullptr; }
 
   std::shared_ptr<Table> source_table_;
-  std::string uuid_;
-  std::shared_ptr<Schema> schema_;
-  std::unordered_map<int32_t, std::shared_ptr<Schema>> schemas_;
-  TableProperties properties_ = TableProperties();
-  const std::shared_ptr<SortOrder> sort_order_ = SortOrder::Unsorted();
-  const std::unordered_map<int32_t, std::shared_ptr<SortOrder>> sort_orders_ = {
-      {sort_order_->order_id(), sort_order_}};
-  const std::shared_ptr<PartitionSpec> partition_spec = PartitionSpec::Unpartitioned();
-  const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_specs_ = {
-      {partition_spec->spec_id(), partition_spec}};
 };
 
 /// \brief Metadata table factory and inspector
@@ -168,24 +122,20 @@ class ICEBERG_EXPORT MetadataTable : public StaticTable {
 /// table's metadata as a scannable Iceberg table.
 ///
 /// Usage:
-///   auto snapshots = ICEBERG_TRY(MetadataTable::GetSnapshotsTable(table));
-///   auto scan = ICEBERG_TRY(snapshots->NewScan());
-///   // ... scan and read snapshot data
+///   auto metadata_table = ICEBERG_TRY(
+///       MetadataTableFactory::CreateMetadataTable(
+///           table, MetadataTableType::kSnapshots));
+///   auto scan = ICEBERG_TRY(metadata_table->NewScan());
+///   // ... scan and read metadata table data
 class ICEBERG_EXPORT MetadataTableFactory {
  public:
-  /// \brief Create a SnapshotsTable from a table
+  /// \brief Create a metadata table from a table
   ///
   /// \param table The source table
-  /// \return A SnapshotsTable exposing all snapshots or error status
-  static Result<std::unique_ptr<SnapshotsTable>> GetSnapshotsTable(
-      std::shared_ptr<Table> table);
-
-  /// \brief Create a HistoryTable from a table
-  ///
-  /// \param table The source table
-  /// \return A HistoryTable exposing snapshot history or error status
-  static Result<std::unique_ptr<HistoryTable>> GetHistoryTable(
-      std::shared_ptr<Table> table);
+  /// \param type The metadata table type to create
+  /// \return A MetadataTable instance or error status
+  static Result<std::unique_ptr<MetadataTable>> CreateMetadataTable(
+      std::shared_ptr<Table> table, MetadataTableType type);
 };
 
 }  // namespace iceberg
