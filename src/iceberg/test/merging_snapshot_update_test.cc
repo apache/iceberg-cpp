@@ -139,14 +139,14 @@ class TestMergeAppend : public MergingSnapshotUpdate {
     return MergingSnapshotUpdate::ValidateDeletedDataFiles(
         metadata, starting_snapshot_id, partition_set, parent, std::move(io));
   }
-  static Status ValidateAddedDVsForTest(const TableMetadata& metadata,
-                                        int64_t starting_snapshot_id,
-                                        std::shared_ptr<Expression> conflict_filter,
-                                        const std::shared_ptr<Snapshot>& parent,
-                                        std::shared_ptr<FileIO> io) {
-    return MergingSnapshotUpdate::ValidateAddedDVs(metadata, starting_snapshot_id,
-                                                   std::move(conflict_filter), parent,
-                                                   std::move(io));
+  static Status ValidateAddedDVsForTest(
+      const TableMetadata& metadata, int64_t starting_snapshot_id,
+      std::shared_ptr<Expression> conflict_filter,
+      const std::unordered_set<std::string>& referenced_data_files,
+      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io) {
+    return MergingSnapshotUpdate::ValidateAddedDVs(
+        metadata, starting_snapshot_id, std::move(conflict_filter), referenced_data_files,
+        parent, std::move(io));
   }
 
   bool HasDataFiles() const { return AddsDataFiles(); }
@@ -371,8 +371,8 @@ TEST_F(MergingSnapshotUpdateTest, CommitNewDataFile) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "1");
-  EXPECT_EQ(snapshot->summary.at("added-records"), "100");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedRecords), "100");
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitMultipleDataFiles) {
@@ -383,8 +383,8 @@ TEST_F(MergingSnapshotUpdateTest, CommitMultipleDataFiles) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "2");
-  EXPECT_EQ(snapshot->summary.at("added-records"), "200");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedRecords), "200");
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitDataFileAndDeleteFile) {
@@ -398,7 +398,7 @@ TEST_F(MergingSnapshotUpdateTest, CommitDataFileAndDeleteFile) {
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   // Data file summary
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "1");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitPreservesExistingManifests) {
@@ -413,7 +413,7 @@ TEST_F(MergingSnapshotUpdateTest, CommitPreservesExistingManifests) {
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   // Both data files should be visible — 1 existing + 1 new
-  EXPECT_EQ(snapshot->summary.at("total-data-files"), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitDeletesDataFile) {
@@ -426,8 +426,8 @@ TEST_F(MergingSnapshotUpdateTest, CommitDeletesDataFile) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  EXPECT_EQ(snapshot->summary.at("total-data-files"), "0");
-  EXPECT_EQ(snapshot->summary.at("deleted-data-files"), "1");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "0");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
 }
 
 TEST_F(MergingSnapshotUpdateTest, SetNewDataFilesDataSequenceNumber) {
@@ -438,7 +438,19 @@ TEST_F(MergingSnapshotUpdateTest, SetNewDataFilesDataSequenceNumber) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "1");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
+}
+
+TEST_F(MergingSnapshotUpdateTest, CustomSummaryPropertySurvivesApplyRebuild) {
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->Set("custom-prop", "custom-value");
+  EXPECT_THAT(op->AddFile(file_a_), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(snapshot->summary.at("custom-prop"), "custom-value");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
 }
 
 // -------------------------------------------------------------------------
@@ -694,8 +706,8 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestEmptyTable) {
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1);
 
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "2");
-  EXPECT_EQ(snapshot->summary.at("total-data-files"), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
 }
 
 TEST_F(MergingSnapshotUpdateTest, AppendManifestWithDataFiles) {
@@ -714,7 +726,7 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestWithDataFiles) {
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   // Written manifest (file_b_) + appended manifest (file_a_, file_b_)
   EXPECT_EQ(data_manifests.size(), 2);
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "3");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "3");
 }
 
 // -------------------------------------------------------------------------
@@ -742,7 +754,7 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestMergeWithMinCountOne) {
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   // Both manifests merged into one.
   EXPECT_EQ(data_manifests.size(), 1);
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "3");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "3");
 }
 
 TEST_F(MergingSnapshotUpdateTest, AppendManifestDoNotMergeMinCount) {
@@ -772,7 +784,7 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestDoNotMergeMinCount) {
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   // Below min-count-to-merge threshold — all 3 pass through unchanged.
   EXPECT_EQ(data_manifests.size(), 3);
-  EXPECT_EQ(snapshot->summary.at("added-data-files"), "3");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "3");
 }
 
 // -------------------------------------------------------------------------
@@ -799,7 +811,7 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeMergesIntoOne) {
   SnapshotCache snapshot_cache(snapshot.get());
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 1);
-  EXPECT_EQ(snapshot->summary.at("total-data-files"), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsReplaced), "1");
 }
 
@@ -816,7 +828,7 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeDoesNotMergeWhenBelowMinCount) {
   SnapshotCache snapshot_cache(snapshot.get());
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 2);
-  EXPECT_EQ(snapshot->summary.at("total-data-files"), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
 }
 
 TEST_F(MergingSnapshotUpdateTest, ManifestMergeDoesNotMergeWhenSizeTargetTooSmall) {
@@ -1147,10 +1159,49 @@ TEST_F(MergingSnapshotUpdateTest, ValidateAddedDVsDetectsConflict) {
   metadata->current_snapshot_id = second_snapshot->snapshot_id;
   metadata->last_sequence_number = second_snapshot->sequence_number;
 
+  const std::unordered_set<std::string> referenced_data_files{file_a_->file_path};
   EXPECT_THAT(TestMergeAppend::ValidateAddedDVsForTest(
                   *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
-                  second_snapshot, file_io_),
+                  referenced_data_files, second_snapshot, file_io_),
               IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(MergingSnapshotUpdateTest, ValidateAddedDVsIgnoresUnrelatedDVs) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+  metadata->format_version = 3;
+
+  auto dv_file = MakeDeleteFile("/delete/dv_a.puffin", 1L);
+  dv_file->file_format = FileFormatType::kPuffin;
+  dv_file->referenced_data_file = file_a_->file_path;
+  dv_file->content_offset = 0;
+  dv_file->content_size_in_bytes = 10;
+
+  constexpr int64_t kSecondSnapshotId = 123456;
+  auto manifest_path = table_location_ + "/metadata/dv-unrelated.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest,
+                         WriteDeleteManifest(*metadata, manifest_path, {dv_file},
+                                             first_snapshot->sequence_number + 1));
+  manifest.added_snapshot_id = kSecondSnapshotId;
+  manifest.sequence_number = first_snapshot->sequence_number + 1;
+  manifest.min_sequence_number = first_snapshot->sequence_number + 1;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second_snapshot,
+      MakeSyntheticSnapshot(DataOperation::kOverwrite, kSecondSnapshotId,
+                            first_snapshot->snapshot_id,
+                            first_snapshot->sequence_number + 1, {manifest}));
+
+  metadata->snapshots.push_back(second_snapshot);
+  metadata->current_snapshot_id = second_snapshot->snapshot_id;
+  metadata->last_sequence_number = second_snapshot->sequence_number;
+
+  const std::unordered_set<std::string> referenced_data_files{file_b_->file_path};
+  EXPECT_THAT(TestMergeAppend::ValidateAddedDVsForTest(
+                  *metadata, first_snapshot->snapshot_id, Expressions::AlwaysTrue(),
+                  referenced_data_files, second_snapshot, file_io_),
+              IsOk());
 }
 
 TEST_F(MergingSnapshotUpdateTest, ValidateDeletedDataFilesWithExpressionDetectsConflict) {

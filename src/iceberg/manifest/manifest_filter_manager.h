@@ -133,7 +133,7 @@ class ICEBERG_EXPORT ManifestFilterManager {
   /// \brief Set the minimum data sequence number for delete files to retain.
   ///
   /// Only valid for ManifestContent::kDeletes managers.  Delete entries whose
-  /// data_sequence_number is positive and less than \p sequence_number will be
+  /// data_sequence_number is positive and less than sequence_number will be
   /// marked DELETED.  This continuously removes delete files that cannot match
   /// any remaining data rows (i.e. all data written before that sequence number
   /// has itself been deleted).
@@ -146,7 +146,7 @@ class ICEBERG_EXPORT ManifestFilterManager {
   ///        can be cleaned up.
   ///
   /// Only valid for ManifestContent::kDeletes managers.  For each DV whose
-  /// referenced_data_file path appears in \p deleted_files, the DV entry is
+  /// referenced_data_file path appears in deleted_files, the DV entry is
   /// marked DELETED because the data file it targets no longer exists.
   ///
   /// \param deleted_files set of data files that have been marked for deletion

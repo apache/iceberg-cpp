@@ -279,11 +279,11 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot in [starting_snapshot_id+1, parent]
   /// added a deletion vector that conflicts with DVs being written.
   ///
-  static Status ValidateAddedDVs(const TableMetadata& metadata,
-                                 int64_t starting_snapshot_id,
-                                 std::shared_ptr<Expression> conflict_filter,
-                                 const std::shared_ptr<Snapshot>& parent,
-                                 std::shared_ptr<FileIO> io);
+  static Status ValidateAddedDVs(
+      const TableMetadata& metadata, int64_t starting_snapshot_id,
+      std::shared_ptr<Expression> conflict_filter,
+      const std::unordered_set<std::string>& referenced_data_files,
+      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io);
 
  private:
   struct PendingDeleteFile {
@@ -301,6 +301,11 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   Status AddDeleteFile(std::shared_ptr<DataFile> file,
                        std::optional<int64_t> data_sequence_number);
+
+  Status ValidateAddedDVs(const TableMetadata& metadata, int64_t starting_snapshot_id,
+                          std::shared_ptr<Expression> conflict_filter,
+                          const std::shared_ptr<Snapshot>& parent,
+                          std::shared_ptr<FileIO> io) const;
 
   Result<std::vector<PendingDeleteFile>> NormalizeNewDeleteFiles() const;
 
@@ -320,6 +325,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   SnapshotSummaryBuilder added_data_files_summary_;
   SnapshotSummaryBuilder added_delete_files_summary_;
   SnapshotSummaryBuilder appended_manifests_summary_;
+  std::unordered_map<std::string, std::string> custom_summary_properties_;
 
   ManifestFilterManager data_filter_manager_;
   ManifestFilterManager delete_filter_manager_;
