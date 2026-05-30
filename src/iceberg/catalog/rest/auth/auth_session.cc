@@ -65,8 +65,8 @@ class OAuth2AuthSession : public AuthSession,
   };
 
   /// \brief Create an OAuth2 session and optionally schedule refresh.
-  static std::shared_ptr<OAuth2AuthSession> Create(
-      const OAuthTokenResponse& initial_token, Config config, HttpClient& client) {
+  static std::shared_ptr<OAuth2AuthSession> Make(const OAuthTokenResponse& initial_token,
+                                                 Config config, HttpClient& client) {
     auto session = std::shared_ptr<OAuth2AuthSession>(
         new OAuth2AuthSession(std::move(config), client));
     session->SetInitialToken(initial_token);
@@ -255,7 +255,7 @@ std::shared_ptr<AuthSession> AuthSession::MakeOAuth2(
       .optional_oauth_params = optional_oauth_params,
       .keep_refreshed = keep_refreshed,
   };
-  return OAuth2AuthSession::Create(initial_token, std::move(config), client);
+  return OAuth2AuthSession::Make(initial_token, std::move(config), client);
 }
 
 }  // namespace iceberg::rest::auth

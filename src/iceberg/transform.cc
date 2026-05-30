@@ -28,6 +28,7 @@
 #include "iceberg/result.h"
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
+#include "iceberg/util/base64.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/projection_util_internal.h"
@@ -437,7 +438,7 @@ Result<std::string> Transform::ToHumanString(const Literal& value) {
         case TypeId::kFixed:
         case TypeId::kBinary: {
           const auto& binary_data = std::get<std::vector<uint8_t>>(value.value());
-          return TransformUtil::Base64Encode(
+          return Base64::Encode(
               {reinterpret_cast<const char*>(binary_data.data()), binary_data.size()});
         }
         case TypeId::kDecimal: {

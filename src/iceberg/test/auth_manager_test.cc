@@ -34,6 +34,7 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/base64.h"
 
 namespace iceberg::rest::auth {
 
@@ -364,32 +365,11 @@ TEST_F(AuthManagerTest, OAuthTokenResponseNATokenType) {
 // JWT = base64url(header) + "." + base64url(payload) + "." + base64url(signature)
 namespace {
 
-// Base64url encode (no padding) for test token construction
-std::string Base64UrlEncode(std::string_view input) {
-  static constexpr std::string_view kChars =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-  std::string output;
-  uint32_t buffer = 0;
-  int bits = 0;
-  for (uint8_t c : input) {
-    buffer = (buffer << 8) | c;
-    bits += 8;
-    while (bits >= 6) {
-      bits -= 6;
-      output.push_back(kChars[(buffer >> bits) & 0x3F]);
-    }
-  }
-  if (bits > 0) {
-    output.push_back(kChars[(buffer << (6 - bits)) & 0x3F]);
-  }
-  return output;
-}
-
 std::string MakeJwt(const std::string& payload_json) {
   std::string header = R"({"alg":"HS256","typ":"JWT"})";
   std::string signature = "test-signature";
-  return Base64UrlEncode(header) + "." + Base64UrlEncode(payload_json) + "." +
-         Base64UrlEncode(signature);
+  return Base64::UrlEncode(header) + "." + Base64::UrlEncode(payload_json) + "." +
+         Base64::UrlEncode(signature);
 }
 
 }  // namespace
@@ -470,7 +450,7 @@ TEST_F(AuthManagerTest, ExpiresAtMillisInvalidJson) {
   std::string header = R"({"alg":"HS256"})";
   std::string invalid_json = "this is not json";
   std::string token =
-      Base64UrlEncode(header) + "." + Base64UrlEncode(invalid_json) + "." + "sig";
+      Base64::UrlEncode(header) + "." + Base64::UrlEncode(invalid_json) + "." + "sig";
   auto result = ExpiresAtMillis(token);
   EXPECT_FALSE(result.has_value());
 }

@@ -25,8 +25,8 @@
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
+#include "iceberg/util/base64.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/util/transform_util.h"
 
 namespace iceberg::rest::auth {
 
@@ -83,8 +83,7 @@ class BasicAuthManager : public AuthManager {
                      "Missing required property '{}'", AuthProperties::kBasicPassword);
     std::string credential = username_it->second + ":" + password_it->second;
     return AuthSession::MakeDefault(
-        {{std::string(kAuthorizationHeader),
-          "Basic " + TransformUtil::Base64Encode(credential)}});
+        {{std::string(kAuthorizationHeader), "Basic " + Base64::Encode(credential)}});
   }
 };
 

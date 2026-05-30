@@ -19,7 +19,6 @@
 
 #include "iceberg/util/transform_util.h"
 
-#include <array>
 #include <chrono>
 #include <format>
 
@@ -137,127 +136,6 @@ std::string TransformUtil::HumanTimestampNsWithZone(int64_t timestamp_nanos) {
   } else {
     return std::format("{:%FT%T}.{:09d}+00:00", tp, nanos);
   }
-}
-
-std::string TransformUtil::Base64Encode(std::string_view str_to_encode) {
-  static constexpr std::string_view kBase64Chars =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  int32_t i = 0;
-  int32_t j = 0;
-  std::array<unsigned char, 3> char_array_3;
-  std::array<unsigned char, 4> char_array_4;
-
-  std::string encoded;
-  encoded.reserve((str_to_encode.size() + 2) * 4 / 3);
-
-  for (unsigned char byte : str_to_encode) {
-    char_array_3[i++] = byte;
-    if (i == 3) {
-      char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-      char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-      char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-      char_array_4[3] = char_array_3[2] & 0x3f;
-
-      for (j = 0; j < 4; j++) {
-        encoded += kBase64Chars[char_array_4[j]];
-      }
-
-      i = 0;
-    }
-  }
-
-  if (i) {
-    for (j = i; j < 3; j++) {
-      char_array_3[j] = '\0';
-    }
-
-    char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-    char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-    char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-    char_array_4[3] = char_array_3[2] & 0x3f;
-
-    for (j = 0; j < i + 1; j++) {
-      encoded += kBase64Chars[char_array_4[j]];
-    }
-
-    while (i++ < 3) {
-      encoded += '=';
-    }
-  }
-
-  return encoded;
-}
-
-namespace {
-
-// Shared base64 decode logic. The decode table maps ASCII char -> 6-bit value.
-// 0xFF means invalid character.
-Result<std::string> Base64DecodeWithTable(std::string_view input,
-                                          const std::array<uint8_t, 256>& table) {
-  // Strip trailing padding
-  while (!input.empty() && input.back() == '=') {
-    input.remove_suffix(1);
-  }
-  if (input.empty()) {
-    return std::string{};
-  }
-
-  std::string output;
-  output.reserve((input.size() * 3) / 4);
-
-  uint32_t buffer = 0;
-  int bits_collected = 0;
-
-  for (char c : input) {
-    uint8_t val = table[static_cast<uint8_t>(c)];
-    if (val == 0xFF) {
-      return InvalidArgument("Invalid base64 character: '{}'", c);
-    }
-    buffer = (buffer << 6) | val;
-    bits_collected += 6;
-    if (bits_collected >= 8) {
-      bits_collected -= 8;
-      output.push_back(static_cast<char>((buffer >> bits_collected) & 0xFF));
-    }
-  }
-
-  return output;
-}
-
-// Standard base64 decode table: A-Z=0-25, a-z=26-51, 0-9=52-61, +=62, /=63
-constexpr std::array<uint8_t, 256> kBase64DecodeTable = [] {
-  std::array<uint8_t, 256> table{};
-  table.fill(0xFF);
-  for (int i = 0; i < 26; ++i) {
-    table[static_cast<size_t>('A' + i)] = static_cast<uint8_t>(i);
-    table[static_cast<size_t>('a' + i)] = static_cast<uint8_t>(26 + i);
-  }
-  for (int i = 0; i < 10; ++i) {
-    table[static_cast<size_t>('0' + i)] = static_cast<uint8_t>(52 + i);
-  }
-  table[static_cast<size_t>('+')] = 62;
-  table[static_cast<size_t>('/')] = 63;
-  return table;
-}();
-
-// Base64url decode table: same as standard but '-'=62, '_'=63 (RFC 4648 §5)
-constexpr std::array<uint8_t, 256> kBase64UrlDecodeTable = [] {
-  auto table = kBase64DecodeTable;
-  table[static_cast<size_t>('+')] = 0xFF;  // '+' is invalid in base64url
-  table[static_cast<size_t>('/')] = 0xFF;  // '/' is invalid in base64url
-  table[static_cast<size_t>('-')] = 62;
-  table[static_cast<size_t>('_')] = 63;
-  return table;
-}();
-
-}  // namespace
-
-Result<std::string> TransformUtil::Base64Decode(std::string_view encoded) {
-  return Base64DecodeWithTable(encoded, kBase64DecodeTable);
-}
-
-Result<std::string> TransformUtil::Base64UrlDecode(std::string_view encoded) {
-  return Base64DecodeWithTable(encoded, kBase64UrlDecodeTable);
 }
 
 }  // namespace iceberg

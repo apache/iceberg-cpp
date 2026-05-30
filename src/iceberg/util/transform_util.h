@@ -21,10 +21,8 @@
 
 #include <cstdint>
 #include <string>
-#include <string_view>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -127,22 +125,6 @@ class ICEBERG_EXPORT TransformUtil {
   /// \param timestamp_nanos the timestamp in nanoseconds.
   /// \return a string representation of this timestamp.
   static std::string HumanTimestampNsWithZone(int64_t timestamp_nanos);
-
-  /// \brief Base64 encode a string
-  static std::string Base64Encode(std::string_view str_to_encode);
-
-  /// \brief Base64 decode a string (standard alphabet: +/).
-  ///
-  /// Handles optional padding ('=').
-  /// \return Decoded string, or an error if the input contains invalid characters.
-  static Result<std::string> Base64Decode(std::string_view encoded);
-
-  /// \brief Base64url decode a string (URL-safe alphabet: -_).
-  ///
-  /// Handles optional padding ('='). This variant uses '-' and '_' instead of
-  /// '+' and '/' per RFC 4648 §5.
-  /// \return Decoded string, or an error if the input contains invalid characters.
-  static Result<std::string> Base64UrlDecode(std::string_view encoded);
 };
 
 }  // namespace iceberg

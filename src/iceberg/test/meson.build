@@ -83,6 +83,7 @@ iceberg_tests = {
     },
     'util_test': {
         'sources': files(
+            'base64_test.cc',
             'bucket_util_test.cc',
             'config_test.cc',
             'data_file_set_test.cc',

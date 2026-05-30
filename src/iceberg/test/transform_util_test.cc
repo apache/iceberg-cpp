@@ -21,8 +21,6 @@
 
 #include <gtest/gtest.h>
 
-#include "iceberg/test/matchers.h"
-
 namespace iceberg {
 
 TEST(TransformUtilTest, HumanYear) {
@@ -153,93 +151,5 @@ TEST(TransformUtilTest, HumanTimestampNsWithZone) {
             TransformUtil::HumanTimestampNsWithZone(1767225601000001001L));
   EXPECT_EQ("1969-12-31T23:59:59.123456789+00:00",
             TransformUtil::HumanTimestampNsWithZone(-876543211));
-}
-
-TEST(TransformUtilTest, Base64Encode) {
-  // Empty string
-  EXPECT_EQ("", TransformUtil::Base64Encode(""));
-
-  // Single character
-  EXPECT_EQ("YQ==", TransformUtil::Base64Encode("a"));
-  EXPECT_EQ("YWI=", TransformUtil::Base64Encode("ab"));
-  EXPECT_EQ("YWJj", TransformUtil::Base64Encode("abc"));
-
-  // Multiple of 3 characters
-  EXPECT_EQ("YWJjZGU=", TransformUtil::Base64Encode("abcde"));
-  EXPECT_EQ("YWJjZGVm", TransformUtil::Base64Encode("abcdef"));
-
-  // Common strings
-  EXPECT_EQ("U29tZSBkYXRhIHdpdGggY2hhcmFjdGVycw==",
-            TransformUtil::Base64Encode("Some data with characters"));
-  EXPECT_EQ("aGVsbG8=", TransformUtil::Base64Encode("hello"));
-  EXPECT_EQ("dGVzdCBzdHJpbmc=", TransformUtil::Base64Encode("test string"));
-
-  // Unicode
-  EXPECT_EQ("8J+EgA==", TransformUtil::Base64Encode("\xF0\x9F\x84\x80"));
-  // Null byte
-  EXPECT_EQ("AA==", TransformUtil::Base64Encode({"\x00", 1}));
-}
-
-TEST(TransformUtilTest, Base64Decode) {
-  // Empty string
-  ICEBERG_UNWRAP_OR_FAIL(auto empty, TransformUtil::Base64Decode(""));
-  EXPECT_EQ("", empty);
-
-  // Round-trip with Base64Encode
-  ICEBERG_UNWRAP_OR_FAIL(auto a, TransformUtil::Base64Decode("YQ=="));
-  EXPECT_EQ("a", a);
-  ICEBERG_UNWRAP_OR_FAIL(auto ab, TransformUtil::Base64Decode("YWI="));
-  EXPECT_EQ("ab", ab);
-  ICEBERG_UNWRAP_OR_FAIL(auto abc, TransformUtil::Base64Decode("YWJj"));
-  EXPECT_EQ("abc", abc);
-  ICEBERG_UNWRAP_OR_FAIL(auto abcde, TransformUtil::Base64Decode("YWJjZGU="));
-  EXPECT_EQ("abcde", abcde);
-  ICEBERG_UNWRAP_OR_FAIL(auto abcdef, TransformUtil::Base64Decode("YWJjZGVm"));
-  EXPECT_EQ("abcdef", abcdef);
-  ICEBERG_UNWRAP_OR_FAIL(auto hello, TransformUtil::Base64Decode("aGVsbG8="));
-  EXPECT_EQ("hello", hello);
-  ICEBERG_UNWRAP_OR_FAIL(auto test_str, TransformUtil::Base64Decode("dGVzdCBzdHJpbmc="));
-  EXPECT_EQ("test string", test_str);
-
-  // Without padding (should still work)
-  ICEBERG_UNWRAP_OR_FAIL(auto a2, TransformUtil::Base64Decode("YQ"));
-  EXPECT_EQ("a", a2);
-  ICEBERG_UNWRAP_OR_FAIL(auto ab2, TransformUtil::Base64Decode("YWI"));
-  EXPECT_EQ("ab", ab2);
-
-  // Invalid characters return error
-  EXPECT_THAT(TransformUtil::Base64Decode("!!!"), IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(TransformUtilTest, Base64UrlDecode) {
-  // Empty string
-  ICEBERG_UNWRAP_OR_FAIL(auto empty, TransformUtil::Base64UrlDecode(""));
-  EXPECT_EQ("", empty);
-
-  // Standard cases (same as Base64Decode for alphanumeric)
-  ICEBERG_UNWRAP_OR_FAIL(auto hello, TransformUtil::Base64UrlDecode("aGVsbG8"));
-  EXPECT_EQ("hello", hello);
-  ICEBERG_UNWRAP_OR_FAIL(auto abc, TransformUtil::Base64UrlDecode("YWJj"));
-  EXPECT_EQ("abc", abc);
-
-  // URL-safe characters: '-' and '_' instead of '+' and '/'
-  // bytes {0xFB, 0xFF, 0xFE} encode to "+//+" in standard base64, "-__-" in base64url
-  ICEBERG_UNWRAP_OR_FAIL(auto decoded, TransformUtil::Base64UrlDecode("-__-"));
-  EXPECT_EQ(3u, decoded.size());
-  EXPECT_EQ('\xFB', decoded[0]);
-  EXPECT_EQ('\xFF', decoded[1]);
-  EXPECT_EQ('\xFE', decoded[2]);
-
-  // Standard base64 chars '+' and '/' should be invalid in base64url
-  EXPECT_THAT(TransformUtil::Base64UrlDecode("+//+"),
-              IsError(ErrorKind::kInvalidArgument));
-
-  // With padding (should handle gracefully)
-  ICEBERG_UNWRAP_OR_FAIL(auto hello2, TransformUtil::Base64UrlDecode("aGVsbG8="));
-  EXPECT_EQ("hello", hello2);
-
-  // Invalid characters return error
-  EXPECT_THAT(TransformUtil::Base64UrlDecode("!!!invalid!!!"),
-              IsError(ErrorKind::kInvalidArgument));
 }
 }  // namespace iceberg

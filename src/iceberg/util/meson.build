@@ -17,6 +17,7 @@
 
 install_headers(
     [
+        'base64.h',
         'bucket_util.h',
         'checked_cast.h',
         'config.h',

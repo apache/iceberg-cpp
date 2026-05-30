@@ -41,6 +41,11 @@ namespace iceberg::rest::auth {
 /// (a single HTTP POST to refresh a token), so one thread is sufficient.
 ///
 /// Thread safety: All public methods are thread-safe.
+///
+/// TODO(lishuxu): Migrate to the shared thread pool abstraction once available
+/// (see https://github.com/apache/iceberg-cpp/pull/646#discussion_r3304315308).
+/// The current single-thread design means a slow refresh request can starve all
+/// other pending refresh tasks.
 class ICEBERG_REST_EXPORT TokenRefreshScheduler {
  public:
   /// \brief Get the global singleton instance.
