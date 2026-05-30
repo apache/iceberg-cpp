@@ -24,6 +24,7 @@
 #include <string_view>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 

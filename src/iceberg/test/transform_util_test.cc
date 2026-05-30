@@ -21,6 +21,8 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/test/matchers.h"
+
 namespace iceberg {
 
 TEST(TransformUtilTest, HumanYear) {
