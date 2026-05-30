@@ -44,15 +44,13 @@ namespace iceberg::rest::auth {
 ///
 /// TODO(lishuxu): Migrate to the shared thread pool abstraction once available
 /// (see https://github.com/apache/iceberg-cpp/pull/646#discussion_r3304315308).
-/// The current single-thread design means a slow refresh request can starve all
-/// other pending refresh tasks.
 class ICEBERG_REST_EXPORT TokenRefreshScheduler {
  public:
   /// \brief Get the global singleton instance.
   ///
-  /// The instance is created on first access (lazy initialization) and lives
-  /// until process exit. The background thread is a daemon thread that will
-  /// be joined on destruction.
+  /// Lazily created on first access and intentionally leaked: the worker
+  /// thread is reclaimed by the OS at process exit. Tests needing
+  /// deterministic shutdown should use a local instance.
   static TokenRefreshScheduler& Instance();
 
   /// \brief Schedule a callback to run after a delay.

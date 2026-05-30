@@ -25,8 +25,9 @@
 namespace iceberg::rest::auth {
 
 TokenRefreshScheduler& TokenRefreshScheduler::Instance() {
-  static TokenRefreshScheduler instance;
-  return instance;
+  // Intentionally leaked to avoid destruction-order races at process exit.
+  static auto* instance = new TokenRefreshScheduler();
+  return *instance;
 }
 
 TokenRefreshScheduler::TokenRefreshScheduler() : worker_([this] { Run(); }) {}
