@@ -99,7 +99,7 @@ You must install the following to run the script:
     * `shasum` or `sha512sum`
     * `tar`
     * `cmake` (3.25 or higher)
-    * C++23 compliant compiler (GCC 14+, Clang 16+, MSVC 2022+)
+    * C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+)
 
 To verify a RC, run the following:
 

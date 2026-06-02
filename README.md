@@ -31,7 +31,7 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 
 **Required:**
 
-- C++23 compliant compiler (GCC 14+, Clang 16+, MSVC 2022+)
+- C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+)
 - CMake 3.25+ or Meson 1.5+
 - [Ninja](https://ninja-build.org/) (recommended build backend)
 
