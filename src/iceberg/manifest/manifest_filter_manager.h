@@ -24,8 +24,8 @@
 /// or EXISTING based on row-filter expressions, exact path deletes, and partition drops.
 
 #include <cstdint>
+#include <functional>
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -35,6 +35,7 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/result.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/data_file_set.h"
 #include "iceberg/util/partition_value_util.h"
@@ -48,9 +49,6 @@ namespace iceberg {
 /// entries are returned unchanged (no I/O).  Manifests that do contain deleted
 /// entries are rewritten with those entries marked DELETED.
 ///
-/// The manager is content-agnostic: pass ManifestContent::kData to process data
-/// manifests, or ManifestContent::kDeletes to process delete manifests.
-///
 /// TODO(Guotao): For ManifestContent::kDeletes, implement cleanup for orphan delete files
 /// and dangling deletion vectors.
 ///
@@ -59,7 +57,9 @@ class ICEBERG_EXPORT ManifestFilterManager {
  public:
   using PartitionSpecsById = std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>;
 
-  ManifestFilterManager(ManifestContent content, std::shared_ptr<FileIO> file_io);
+  static Result<std::unique_ptr<ManifestFilterManager>> Make(
+      ManifestContent content, std::shared_ptr<FileIO> file_io,
+      std::function<Status(const std::string&)> delete_file = {});
   ~ManifestFilterManager();
 
   ManifestFilterManager(const ManifestFilterManager&) = delete;
@@ -81,7 +81,7 @@ class ICEBERG_EXPORT ManifestFilterManager {
   /// Any manifest entry whose file_path matches this path will be marked DELETED.
   ///
   /// \param path The exact file path to delete
-  void DeleteFile(std::string_view path);
+  Status DeleteFile(std::string_view path);
 
   /// \brief Register a file object for deletion.
   ///
@@ -93,9 +93,8 @@ class ICEBERG_EXPORT ManifestFilterManager {
 
   /// \brief Returns the set of file objects marked for deletion by this manager.
   ///
-  /// This is populated by the most recent FilterManifests() call and contains only
-  /// files that were actually deleted from filtered manifests. Used by higher-level
-  /// operations (e.g. RowDelta) to enumerate deleted data files for follow-up cleanup.
+  /// Includes file objects explicitly registered for deletion plus files deleted while
+  /// filtering manifests.
   const DataFileSet& FilesToBeDeleted() const;
 
   /// \brief Returns content-file objects deleted by the most recent
@@ -106,13 +105,19 @@ class ICEBERG_EXPORT ManifestFilterManager {
   /// FilterManifests() call.
   int32_t DuplicateDeletesCount() const { return duplicate_deletes_count_; }
 
+  /// \brief Build a snapshot-summary fragment from filtered manifests.
+  ///
+  Result<SnapshotSummaryBuilder> BuildSummary(
+      const std::vector<ManifestFile>& manifests,
+      const PartitionSpecsById& specs_by_id) const;
+
   /// \brief Register a partition for dropping.
   ///
   /// Any manifest entry whose (spec_id, partition) pair matches will be marked DELETED.
   ///
   /// \param spec_id The partition spec ID
   /// \param partition The partition values to drop
-  void DropPartition(int32_t spec_id, PartitionValues partition);
+  Status DropPartition(int32_t spec_id, PartitionValues partition);
 
   /// \brief Set a flag that makes FilterManifests() fail if any registered
   /// delete path was not found in any manifest entry.
@@ -140,7 +145,7 @@ class ICEBERG_EXPORT ManifestFilterManager {
   ///
   /// \param sequence_number the inclusive lower bound; delete files older than
   ///        this value are dropped
-  void DropDeleteFilesOlderThan(int64_t sequence_number);
+  Status DropDeleteFilesOlderThan(int64_t sequence_number);
 
   /// \brief Register data files that have been removed so their dangling DVs
   ///        can be cleaned up.
@@ -189,7 +194,14 @@ class ICEBERG_EXPORT ManifestFilterManager {
       const std::vector<const ManifestFile*>& manifests,
       const ManifestWriterFactory& writer_factory);
 
+  /// \brief Delete cached filtered manifests that were not committed and roll back
+  /// replaced-manifest accounting.
+  Status CleanUncommitted(const std::unordered_set<std::string>& committed);
+
  private:
+  ManifestFilterManager(ManifestContent content, std::shared_ptr<FileIO> file_io,
+                        std::function<Status(const std::string&)> delete_file);
+
   /// \brief Returns true if the manifest might contain files matching any expression.
   Result<bool> CanContainExpressionDeletes(const ManifestFile& manifest,
                                            const std::shared_ptr<Schema>& schema,
@@ -214,31 +226,16 @@ class ICEBERG_EXPORT ManifestFilterManager {
   bool CanTrustManifestReferences(
       const std::vector<const ManifestFile*>& manifests) const;
 
-  struct DeleteFileKey {
-    std::string path;
-    std::optional<int64_t> content_offset;
-    std::optional<int64_t> content_size_in_bytes;
-
-    bool operator==(const DeleteFileKey& other) const = default;
+  struct FilteredManifestDeletes {
+    std::vector<std::shared_ptr<DataFile>> files;
+    int32_t duplicate_deletes_count = 0;
   };
-
-  struct DeleteFileKeyHash {
-    size_t operator()(const DeleteFileKey& key) const;
-  };
-
-  struct FoundDeletes {
-    std::unordered_set<std::string> paths;
-    std::unordered_set<DeleteFileKey, DeleteFileKeyHash> files;
-  };
-
-  static DeleteFileKey MakeDeleteFileKey(const DataFile& file);
 
   Result<ManifestFile> FilterManifest(const std::shared_ptr<Schema>& schema,
                                       const PartitionSpecsById& specs_by_id,
                                       const ManifestFile& manifest,
                                       bool trust_manifest_references,
-                                      const ManifestWriterFactory& writer_factory,
-                                      FoundDeletes& found_deletes);
+                                      const ManifestWriterFactory& writer_factory);
 
   Result<bool> ManifestHasDeletedFiles(const std::vector<ManifestEntry>& entries,
                                        const std::shared_ptr<Schema>& schema,
@@ -248,9 +245,12 @@ class ICEBERG_EXPORT ManifestFilterManager {
   Result<ManifestFile> FilterManifestWithDeletedFiles(
       const std::vector<ManifestEntry>& entries, int32_t manifest_spec_id,
       const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
-      const ManifestWriterFactory& writer_factory, FoundDeletes& found_deletes);
+      const ManifestWriterFactory& writer_factory);
 
-  Status ValidateRequiredDeletes(const FoundDeletes& found_deletes) const;
+  Status ValidateRequiredDeletes() const;
+
+  Status InvalidateFilteredCache();
+  void ResetDeletedFiles();
 
   /// \brief Get or create a ManifestEvaluator for the given spec.
   Result<ManifestEvaluator*> GetManifestEvaluator(const std::shared_ptr<Schema>& schema,
@@ -270,25 +270,39 @@ class ICEBERG_EXPORT ManifestFilterManager {
 
   const ManifestContent manifest_content_;
   std::shared_ptr<FileIO> file_io_;
+  std::function<Status(const std::string&)> delete_file_;
 
   std::shared_ptr<Expression> delete_expr_;
   std::unordered_set<std::string> delete_paths_;
-  std::unordered_set<DeleteFileKey, DeleteFileKeyHash> delete_file_keys_;
-  DataFileSet delete_files_;
+  // Delete files explicitly registered for deletion by object identity.
+  DeleteFileSet delete_files_to_delete_;
+  // Data files explicitly registered for deletion by object identity.
+  DataFileSet data_files_to_delete_;
+  // Data files to remove: explicit object deletes plus files found while filtering.
+  DataFileSet data_files_;
+  // Delete files to remove: explicit object deletes plus files found while filtering.
+  DeleteFileSet delete_files_;
+  std::unordered_map<ManifestFile, FilteredManifestDeletes>
+      filtered_manifest_to_deleted_files_;
+  // Ordered files deleted by the latest filter pass, used for summaries.
   std::vector<std::shared_ptr<DataFile>> deleted_files_;
-  std::unordered_set<DeleteFileKey, DeleteFileKeyHash> deleted_file_keys_;
+  // Data-file identity set for latest-pass dedup and required-delete validation.
+  DataFileSet deleted_data_file_set_;
+  // Delete-file identity set for latest-pass dedup and required-delete validation.
+  DeleteFileSet deleted_delete_file_set_;
   PartitionSet drop_partitions_;
   bool fail_missing_delete_paths_{false};
   bool fail_any_delete_{false};
   bool case_sensitive_{true};
   int32_t duplicate_deletes_count_{0};
-
   int32_t replaced_manifests_count_{0};
 
   // minimum data sequence number; delete entries older than this are dropped
   int64_t min_sequence_number_{0};
   // paths of data files that were removed; DVs referencing these are dangling
   std::unordered_set<std::string> removed_data_file_paths_;
+
+  std::unordered_map<ManifestFile, ManifestFile> filtered_manifests_;
 
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>>
       manifest_evaluator_cache_;

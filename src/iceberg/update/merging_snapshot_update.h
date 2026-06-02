@@ -56,6 +56,11 @@ namespace iceberg {
 ///   6. Merge data manifests (via data_merge_manager_)
 ///   7. Merge delete manifests (via delete_merge_manager_)
 ///
+/// TODO(Guotao): Java MergingSnapshotProducer overrides updateEvent() to return a
+/// CreateSnapshotEvent(tableName, operation, snapshotId, sequenceNumber, summary)
+/// for commit listeners. The C++ update framework does not yet have an event
+/// notification mechanism, so this is intentionally not implemented here. Add it
+/// once an equivalent CreateSnapshotEvent / listener facility exists.
 class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
  public:
   ~MergingSnapshotUpdate() override = default;
@@ -65,12 +70,9 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
       const TableMetadata& metadata_to_update,
       const std::shared_ptr<Snapshot>& snapshot) override;
 
-  void CleanUncommitted(const std::unordered_set<std::string>& committed) override;
+  Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
 
   std::unordered_map<std::string, std::string> Summary() override;
-
-  /// \brief Set a custom property in the snapshot summary.
-  void Set(const std::string& property, const std::string& value);
 
  protected:
   /// \brief Constructor; reads merge configuration from table properties.
@@ -110,7 +112,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Register a data file path to be deleted from the table.
   ///
   /// \note Only applies to data files. To remove delete files, use DeleteDeleteFile().
-  void DeleteByPath(std::string_view path);
+  Status DeleteByPath(std::string_view path);
 
   /// \brief Register an expression to delete matching rows.
   ///
@@ -122,7 +124,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   ///
   /// Both data and delete filter managers receive the partition drop, since dropping
   /// data in a partition also drops all delete files in that partition.
-  void DropPartition(int32_t spec_id, PartitionValues partition);
+  Status DropPartition(int32_t spec_id, PartitionValues partition);
 
   /// \brief Fail if any registered delete path is not found in any manifest.
   void FailMissingDeletePaths();
@@ -175,7 +177,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, added a data file in any partition of the given partition
   /// set.
-  ///
   static Status ValidateAddedDataFiles(const TableMetadata& metadata,
                                        std::optional<int64_t> starting_snapshot_id,
                                        const PartitionSet& partition_set,
@@ -184,10 +185,10 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, removed a file whose path is in file_paths (and
-  /// allow_deletes is false).
+  /// skip_deletes is false).
   static Status ValidateDataFilesExist(
       const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
-      const std::unordered_set<std::string>& file_paths, bool allow_deletes,
+      const std::unordered_set<std::string>& file_paths, bool skip_deletes,
       std::shared_ptr<Expression> filter, const std::shared_ptr<Snapshot>& parent,
       std::shared_ptr<FileIO> io, bool case_sensitive = true);
 
@@ -205,9 +206,10 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                                           const DataFileSet& replaced_files,
                                           const std::shared_ptr<Snapshot>& parent,
                                           std::shared_ptr<FileIO> io) const {
+    const bool ignore_equality_deletes = new_data_files_data_seq_number_.has_value();
     return ValidateNoNewDeletesForDataFiles(metadata, starting_snapshot_id,
                                             replaced_files, parent, io,
-                                            new_data_files_data_seq_number_.has_value());
+                                            ignore_equality_deletes);
   }
 
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
@@ -225,11 +227,11 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, added a delete file matching the data filter that covers a
   /// file in replaced_files.
-  ///
   static Status ValidateNoNewDeletesForDataFiles(
       const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
       std::shared_ptr<Expression> data_filter, const DataFileSet& replaced_files,
-      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io);
+      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
+      bool case_sensitive = true);
 
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, added a delete file matching the given row filter.
@@ -238,12 +240,12 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                                          std::optional<int64_t> starting_snapshot_id,
                                          std::shared_ptr<Expression> data_filter,
                                          const std::shared_ptr<Snapshot>& parent,
-                                         std::shared_ptr<FileIO> io);
+                                         std::shared_ptr<FileIO> io,
+                                         bool case_sensitive = true);
 
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, added a delete file matching any partition in the given
   /// partition set.
-  ///
   static Status ValidateNoNewDeleteFiles(const TableMetadata& metadata,
                                          std::optional<int64_t> starting_snapshot_id,
                                          const PartitionSet& partition_set,
@@ -252,17 +254,16 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, deleted a data file matching the given row filter.
-  ///
   static Status ValidateDeletedDataFiles(const TableMetadata& metadata,
                                          std::optional<int64_t> starting_snapshot_id,
                                          std::shared_ptr<Expression> data_filter,
                                          const std::shared_ptr<Snapshot>& parent,
-                                         std::shared_ptr<FileIO> io);
+                                         std::shared_ptr<FileIO> io,
+                                         bool case_sensitive = true);
 
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, deleted a data file in any partition of the given partition
   /// set.
-  ///
   static Status ValidateDeletedDataFiles(const TableMetadata& metadata,
                                          std::optional<int64_t> starting_snapshot_id,
                                          const PartitionSet& partition_set,
@@ -280,12 +281,12 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, added a deletion vector that conflicts with DVs being
   /// written.
-  ///
   static Status ValidateAddedDVs(
       const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
       std::shared_ptr<Expression> conflict_filter,
       const std::unordered_set<std::string>& referenced_data_files,
-      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io);
+      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
+      bool case_sensitive = true);
 
  private:
   struct PendingDeleteFile {
@@ -293,9 +294,27 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
     std::optional<int64_t> data_sequence_number;
   };
 
-  /// \brief Create a ManifestWriterFactory that records every path it creates in
-  /// all_written_manifests_.
-  ManifestWriterFactory MakeTrackedWriterFactory(const std::shared_ptr<Schema>& schema);
+  /// \brief Ordered map from referenced data file path to pending DVs.
+  ///
+  /// Mirrors Java's LinkedHashMap-backed dvsByReferencedFile: lookup is by
+  /// referenced data file, and iteration preserves the first-seen key order.
+  struct PendingDeleteFilesByReferencedFile {
+    struct Entry {
+      std::string referenced_file;
+      std::vector<PendingDeleteFile> files;
+    };
+
+    void Add(std::string referenced_file, PendingDeleteFile file);
+    bool empty() const { return entries_.empty(); }
+    size_t size() const { return entries_.size(); }
+    const std::vector<Entry>& entries() const { return entries_; }
+
+   private:
+    std::vector<Entry> entries_;
+    std::unordered_map<std::string, size_t> index_by_referenced_file_;
+  };
+
+  ManifestWriterFactory MakeWriterFactory(const std::shared_ptr<Schema>& schema);
 
   /// \brief Copy a manifest with the current snapshot ID, for use when snapshot
   /// ID inheritance is not possible.
@@ -310,13 +329,22 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                           const std::shared_ptr<Snapshot>& parent,
                           std::shared_ptr<FileIO> io) const;
 
-  Result<std::vector<PendingDeleteFile>> NormalizeNewDeleteFiles() const;
+  Status ManagersReady() const;
+
+  void SetSummaryProperty(const std::string& property, const std::string& value) override;
+
+  Result<std::vector<PendingDeleteFile>> MergeDVs() const;
 
   /// \brief Write new data manifests for staged data files; caches the result.
   Result<std::vector<ManifestFile>> WriteNewDataManifests();
 
   /// \brief Write new delete manifests for staged delete files; caches the result.
   Result<std::vector<ManifestFile>> WriteNewDeleteManifests();
+
+  Status CleanUncommittedAppends(const std::unordered_set<std::string>& committed);
+
+  Status DeleteUncommitted(std::vector<ManifestFile>& manifests,
+                           const std::unordered_set<std::string>& committed, bool clear);
 
   // Used for commit event notifications and diagnostic log messages.
   std::string table_name_;
@@ -330,13 +358,14 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   SnapshotSummaryBuilder appended_manifests_summary_;
   std::unordered_map<std::string, std::string> custom_summary_properties_;
 
-  ManifestFilterManager data_filter_manager_;
-  ManifestFilterManager delete_filter_manager_;
-  ManifestMergeManager data_merge_manager_;
-  ManifestMergeManager delete_merge_manager_;
+  std::unique_ptr<ManifestFilterManager> data_filter_manager_;
+  std::unique_ptr<ManifestFilterManager> delete_filter_manager_;
+  std::unique_ptr<ManifestMergeManager> data_merge_manager_;
+  std::unique_ptr<ManifestMergeManager> delete_merge_manager_;
 
   std::unordered_map<int32_t, DataFileSet> new_data_files_by_spec_;
-  std::vector<PendingDeleteFile> new_delete_files_;
+  std::vector<PendingDeleteFile> v2_deletes_;
+  PendingDeleteFilesByReferencedFile dvs_by_referenced_file_;
   std::optional<int64_t> new_data_files_data_seq_number_;
 
   // Manifests passed via AddManifest(): inherit path (no copy needed) and
@@ -349,12 +378,8 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   bool has_new_data_files_ = false;
   bool has_new_delete_files_ = false;
 
-  std::optional<std::vector<ManifestFile>> cached_new_data_manifests_;
-  std::optional<std::vector<ManifestFile>> cached_new_delete_manifests_;
-
-  /// Tracks every manifest path created via MakeTrackedWriterFactory, plus the
-  /// paths in cached_new_*_manifests_. Used by CleanUncommitted().
-  std::unordered_set<std::string> all_written_manifests_;
+  std::vector<ManifestFile> cached_new_data_manifests_;
+  std::vector<ManifestFile> cached_new_delete_manifests_;
 };
 
 }  // namespace iceberg

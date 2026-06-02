@@ -19,6 +19,7 @@ install_headers(
     [
         'expire_snapshots.h',
         'fast_append.h',
+        'merging_snapshot_update.h',
         'pending_update.h',
         'set_snapshot.h',
         'snapshot_manager.h',

@@ -432,7 +432,7 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
 
 Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
                      ArrowArrayView* view, std::optional<int64_t>& first_row_id,
-                     std::vector<ManifestEntry>& manifest_entries) {
+                     bool is_committed, std::vector<ManifestEntry>& manifest_entries) {
   ICEBERG_RETURN_UNEXPECTED(
       AssertViewTypeAndChildren(view, ArrowType::NANOARROW_TYPE_STRUCT,
                                 data_file_schema->fields().size(), "data_file"));
@@ -556,12 +556,14 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
               first_row_id = first_row_id.value() + entry.data_file->record_count;
             }
           });
-        } else {
+        } else if (is_committed) {
           // data file's first_row_id is null when the manifest's first_row_id is null
           std::ranges::for_each(
-              manifest_entries, [](auto& first_row_id) { first_row_id = std::nullopt; },
+              manifest_entries, [](auto& row_id) { row_id = std::nullopt; },
               proj_data_file(&DataFile::first_row_id));
         }
+        // Preserve firstRowId for entries in uncommitted manifests, including EXISTING
+        // entries that may be merged later
         break;
       }
       case DataFile::kReferencedDataFileFieldId:
@@ -589,7 +591,7 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
 
 Result<std::vector<ManifestEntry>> ParseManifestEntry(
     ArrowSchema* arrow_schema, ArrowArray* array, const Schema& schema,
-    std::optional<int64_t>& first_row_id) {
+    std::optional<int64_t>& first_row_id, bool is_committed) {
   ArrowError error;
   ArrowArrayView view;
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
@@ -642,8 +644,8 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
       case ManifestEntry::kDataFileFieldId: {
         auto data_file_schema =
             internal::checked_pointer_cast<StructType>(field->get().type());
-        ICEBERG_RETURN_UNEXPECTED(
-            ParseDataFile(data_file_schema, field_view, first_row_id, manifest_entries));
+        ICEBERG_RETURN_UNEXPECTED(ParseDataFile(
+            data_file_schema, field_view, first_row_id, is_committed, manifest_entries));
         break;
       }
       default:
@@ -727,14 +729,15 @@ ManifestReaderImpl::ManifestReaderImpl(
     std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> schema,
     std::shared_ptr<PartitionSpec> spec,
     std::unique_ptr<InheritableMetadata> inheritable_metadata,
-    std::optional<int64_t> first_row_id)
+    std::optional<int64_t> first_row_id, bool is_committed)
     : manifest_path_(std::move(manifest_path)),
       manifest_length_(manifest_length),
       file_io_(std::move(file_io)),
       schema_(std::move(schema)),
       spec_(std::move(spec)),
       inheritable_metadata_(std::move(inheritable_metadata)),
-      first_row_id_(first_row_id) {}
+      first_row_id_(first_row_id),
+      is_committed_(is_committed) {}
 
 ManifestReader& ManifestReaderImpl::Select(const std::vector<std::string>& columns) {
   columns_ = columns;
@@ -907,8 +910,8 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
 
     internal::ArrowArrayGuard array_guard(&result.value());
     ICEBERG_ASSIGN_OR_RAISE(
-        auto entries,
-        ParseManifestEntry(&arrow_schema, &result.value(), *file_schema_, first_row_id_));
+        auto entries, ParseManifestEntry(&arrow_schema, &result.value(), *file_schema_,
+                                         first_row_id_, is_committed_));
 
     for (auto& entry : entries) {
       ICEBERG_RETURN_UNEXPECTED(inheritable_metadata_->Apply(entry));
@@ -984,7 +987,8 @@ Result<ManifestFileField> ManifestFileFieldFromIndex(int32_t index) {
 
 Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
     const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec) {
+    std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec,
+    bool is_committed) {
   if (file_io == nullptr || schema == nullptr || spec == nullptr) {
     return InvalidArgument(
         "FileIO, Schema, and PartitionSpec cannot be null to create ManifestReader");
@@ -996,20 +1000,22 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
   return std::make_unique<ManifestReaderImpl>(
       manifest.manifest_path, manifest.manifest_length, std::move(file_io),
       std::move(schema), std::move(spec), std::move(inheritable_metadata),
-      manifest.first_row_id);
+      manifest.first_row_id, is_committed);
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
     const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> schema,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id) {
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id,
+    bool is_committed) {
   auto spec_it = specs_by_id.find(manifest.partition_spec_id);
   if (spec_it == specs_by_id.end() || spec_it->second == nullptr) {
     return InvalidArgument("Partition spec {} not found for manifest {}",
                            manifest.partition_spec_id, manifest.manifest_path);
   }
   auto spec = spec_it->second;
-  return Make(manifest, std::move(file_io), std::move(schema), std::move(spec));
+  return Make(manifest, std::move(file_io), std::move(schema), std::move(spec),
+              is_committed);
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
@@ -1017,7 +1023,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
     std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> schema,
     std::shared_ptr<PartitionSpec> spec,
     std::unique_ptr<InheritableMetadata> inheritable_metadata,
-    std::optional<int64_t> first_row_id) {
+    std::optional<int64_t> first_row_id, bool is_committed) {
   ICEBERG_PRECHECK(file_io != nullptr, "FileIO cannot be null to read manifest");
   ICEBERG_PRECHECK(schema != nullptr, "Schema cannot be null to read manifest");
   ICEBERG_PRECHECK(spec != nullptr, "PartitionSpec cannot be null to read manifest");
@@ -1028,7 +1034,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
 
   return std::make_unique<ManifestReaderImpl>(
       std::string(manifest_location), manifest_length, std::move(file_io),
-      std::move(schema), std::move(spec), std::move(inheritable_metadata), first_row_id);
+      std::move(schema), std::move(spec), std::move(inheritable_metadata), first_row_id,
+      is_committed);
 }
 
 Result<std::unique_ptr<ManifestListReader>> ManifestListReader::Make(

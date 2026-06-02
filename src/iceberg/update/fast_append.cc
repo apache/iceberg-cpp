@@ -131,7 +131,7 @@ std::unordered_map<std::string, std::string> FastAppend::Summary() {
   return summary_.Build();
 }
 
-void FastAppend::CleanUncommitted(const std::unordered_set<std::string>& committed) {
+Status FastAppend::CleanUncommitted(const std::unordered_set<std::string>& committed) {
   // Clean up new manifests that were written but not committed
   if (!new_manifests_.empty()) {
     for (const auto& manifest : new_manifests_) {
@@ -152,6 +152,7 @@ void FastAppend::CleanUncommitted(const std::unordered_set<std::string>& committ
       }
     }
   }
+  return {};
 }
 
 bool FastAppend::CleanupAfterCommit() const {

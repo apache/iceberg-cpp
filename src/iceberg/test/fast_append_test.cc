@@ -160,6 +160,18 @@ TEST_F(FastAppendTest, AppendNullFile) {
   EXPECT_THAT(table_->current_snapshot(), HasErrorMessage("No current snapshot"));
 }
 
+TEST_F(FastAppendTest, FinalizeIgnoresCleanupDeleteFailure) {
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  fast_append->AppendFile(file_a_);
+  fast_append->DeleteWith([](const std::string&) { return IOError("delete failed"); });
+
+  EXPECT_THAT(static_cast<SnapshotUpdate&>(*fast_append).Apply(), IsOk());
+  EXPECT_THAT(fast_append->Finalize(Result<const TableMetadata*>(
+                  std::unexpected(CommitFailed("commit failed").error()))),
+              IsOk());
+}
+
 TEST_F(FastAppendTest, AppendDuplicateFile) {
   std::shared_ptr<FastAppend> fast_append;
   ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
@@ -170,7 +182,6 @@ TEST_F(FastAppendTest, AppendDuplicateFile) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  // Should only count the file once
   EXPECT_EQ(snapshot->summary.at("added-data-files"), "1");
   EXPECT_EQ(snapshot->summary.at("added-records"), "100");
 }

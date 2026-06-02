@@ -53,12 +53,13 @@ class ManifestReaderImpl : public ManifestReader {
   /// \param spec Partition spec.
   /// \param inheritable_metadata Metadata inherited from manifest.
   /// \param first_row_id First row ID for V3 manifests.
+  /// \param is_committed Whether the manifest was committed by an older snapshot.
   /// \note ManifestReader::Make() functions should guarantee non-null parameters.
   ManifestReaderImpl(std::string manifest_path, std::optional<int64_t> manifest_length,
                      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> schema,
                      std::shared_ptr<PartitionSpec> spec,
                      std::unique_ptr<InheritableMetadata> inheritable_metadata,
-                     std::optional<int64_t> first_row_id);
+                     std::optional<int64_t> first_row_id, bool is_committed);
 
   Result<std::vector<ManifestEntry>> Entries() override;
 
@@ -106,6 +107,7 @@ class ManifestReaderImpl : public ManifestReader {
   const std::shared_ptr<PartitionSpec> spec_;
   const std::unique_ptr<InheritableMetadata> inheritable_metadata_;
   std::optional<int64_t> first_row_id_;
+  bool is_committed_;
 
   // Configuration fields
   std::vector<std::string> columns_;

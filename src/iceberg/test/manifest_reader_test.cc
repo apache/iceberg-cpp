@@ -190,6 +190,41 @@ TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
   EXPECT_EQ(read_entry.snapshot_id, 1000L);
 }
 
+TEST_P(TestManifestReader, DeletedEntriesDoNotInheritFirstRowId) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "first_row_id is only assigned in V3 manifests";
+  }
+
+  auto deleted_file =
+      MakeDataFile("/path/to/deleted.parquet", PartitionValues({Literal::Int(0)}),
+                   /*record_count=*/10);
+  auto added_file =
+      MakeDataFile("/path/to/added.parquet", PartitionValues({Literal::Int(1)}),
+                   /*record_count=*/5);
+
+  auto deleted_entry =
+      MakeEntry(ManifestStatus::kDeleted, /*snapshot_id=*/1000L, std::move(deleted_file));
+  deleted_entry.sequence_number = 0;
+  deleted_entry.file_sequence_number = 0;
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(std::move(deleted_entry));
+  entries.push_back(
+      MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L, std::move(added_file)));
+  auto manifest = WriteManifest(version, /*snapshot_id=*/1000L, std::move(entries));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto read_entries, reader->Entries());
+
+  ASSERT_EQ(read_entries.size(), 2U);
+  EXPECT_EQ(read_entries[0].status, ManifestStatus::kDeleted);
+  EXPECT_EQ(read_entries[0].data_file->first_row_id, std::nullopt);
+  EXPECT_EQ(read_entries[1].status, ManifestStatus::kAdded);
+  EXPECT_EQ(read_entries[1].data_file->first_row_id, 0);
+}
+
 TEST_P(TestManifestReader, TestReaderWithFilterWithoutSelect) {
   auto version = GetParam();
   auto file_a =

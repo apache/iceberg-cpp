@@ -87,21 +87,26 @@ class ICEBERG_EXPORT ManifestReader {
   /// \param file_io File IO implementation to use.
   /// \param schema Schema used to bind the partition type.
   /// \param spec Partition spec used for this manifest file.
+  /// \param is_committed Whether the manifest was committed by an older snapshot.
   /// \return A Result containing the reader or an error.
-  static Result<std::unique_ptr<ManifestReader>> Make(
-      const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec);
+  static Result<std::unique_ptr<ManifestReader>> Make(const ManifestFile& manifest,
+                                                      std::shared_ptr<FileIO> file_io,
+                                                      std::shared_ptr<Schema> schema,
+                                                      std::shared_ptr<PartitionSpec> spec,
+                                                      bool is_committed = true);
 
   /// \brief Creates a reader for a manifest file using specs keyed by ID.
   /// \param manifest A ManifestFile object containing metadata about the manifest.
   /// \param file_io File IO implementation to use.
   /// \param schema Schema used to bind the partition type.
   /// \param specs_by_id Mapping of partition spec ID to PartitionSpec.
+  /// \param is_committed Whether the manifest was committed by an older snapshot.
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<Schema> schema,
-      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id);
+      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id,
+      bool is_committed = true);
 
   /// \brief Creates a reader for a manifest file.
   /// \param manifest_location Path to the manifest file.
@@ -111,13 +116,14 @@ class ICEBERG_EXPORT ManifestReader {
   /// \param spec Partition spec used for this manifest file.
   /// \param inheritable_metadata Inheritable metadata.
   /// \param first_row_id First row ID to use for the manifest entries.
+  /// \param is_committed Whether the manifest was committed by an older snapshot.
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       std::string_view manifest_location, std::optional<int64_t> manifest_length,
       std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> schema,
       std::shared_ptr<PartitionSpec> spec,
       std::unique_ptr<InheritableMetadata> inheritable_metadata,
-      std::optional<int64_t> first_row_id = std::nullopt);
+      std::optional<int64_t> first_row_id = std::nullopt, bool is_committed = true);
 
   /// \brief Add stats columns to the column list if needed.
   static std::vector<std::string> WithStatsColumns(

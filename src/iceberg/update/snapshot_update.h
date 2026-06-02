@@ -105,7 +105,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param value The property value
   /// \return Reference to this for method chaining
   auto& Set(this auto& self, const std::string& property, const std::string& value) {
-    self.summary_.Set(property, value);
+    static_cast<SnapshotUpdate&>(self).SetSummaryProperty(property, value);
     return self;
   }
 
@@ -122,7 +122,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   Status Finalize(Result<const TableMetadata*> commit_result) override;
 
  protected:
-  struct DeleteManifestEntry {
+  struct ContentFileWithSequenceNumber {
     std::shared_ptr<DataFile> file;
     std::optional<int64_t> data_sequence_number;
   };
@@ -140,17 +140,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
       const std::shared_ptr<PartitionSpec>& spec,
       std::optional<int64_t> data_sequence_number = std::nullopt);
 
-  /// \brief Write delete manifests for the given delete files
-  ///
-  /// \param files Delete files to write
-  /// \param spec The partition spec to use
-  /// \return A vector of manifest files
   Result<std::vector<ManifestFile>> WriteDeleteManifests(
-      std::span<const std::shared_ptr<DataFile>> files,
-      const std::shared_ptr<PartitionSpec>& spec);
-
-  Result<std::vector<ManifestFile>> WriteDeleteManifests(
-      std::span<const DeleteManifestEntry> files,
+      std::span<const ContentFileWithSequenceNumber> files,
       const std::shared_ptr<PartitionSpec>& spec);
 
   const std::string& target_branch() const { return target_branch_; }
@@ -170,7 +161,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// actually committed.
   ///
   /// \param committed A set of manifest paths that were actually committed
-  virtual void CleanUncommitted(const std::unordered_set<std::string>& committed) = 0;
+  virtual Status CleanUncommitted(const std::unordered_set<std::string>& committed) = 0;
 
   /// \brief A string that describes the action that produced the new snapshot.
   ///
@@ -202,6 +193,12 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \return A map of summary properties
   virtual std::unordered_map<std::string, std::string> Summary() = 0;
 
+  /// \brief Set a summary property.
+  ///
+  /// Implementations may override this to retain custom properties across
+  /// retry-safe summary rebuilds.
+  virtual void SetSummaryProperty(const std::string& property, const std::string& value);
+
   /// \brief Check if cleanup should happen after commit
   ///
   /// \return True if cleanup should happen after commit
@@ -226,7 +223,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
       const TableMetadata& previous);
 
   /// \brief Clean up all uncommitted files
-  void CleanAll();
+  Status CleanAll();
 
  protected:
   SnapshotSummaryBuilder summary_;

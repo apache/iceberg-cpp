@@ -41,28 +41,34 @@ namespace iceberg {
 
 namespace {
 
-// Java skips updating totals if parsing fails; C++ treats parse failures as errors.
 Status UpdateTotal(std::unordered_map<std::string, std::string>& summary,
                    const std::unordered_map<std::string, std::string>& previous_summary,
                    const std::string& total_property, const std::string& added_property,
                    const std::string& deleted_property) {
   auto total_it = previous_summary.find(total_property);
   if (total_it != previous_summary.end()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto new_total,
-                            StringUtils::ParseNumber<int64_t>(total_it->second));
+    auto parsed_total = StringUtils::ParseNumber<int64_t>(total_it->second);
+    if (!parsed_total.has_value()) {
+      return {};
+    }
+    int64_t new_total = parsed_total.value();
 
     auto added_it = summary.find(added_property);
     if (new_total >= 0 && added_it != summary.end()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto added_value,
-                              StringUtils::ParseNumber<int64_t>(added_it->second));
-      new_total += added_value;
+      auto parsed_added = StringUtils::ParseNumber<int64_t>(added_it->second);
+      if (!parsed_added.has_value()) {
+        return {};
+      }
+      new_total += parsed_added.value();
     }
 
     auto deleted_it = summary.find(deleted_property);
     if (new_total >= 0 && deleted_it != summary.end()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto deleted_value,
-                              StringUtils::ParseNumber<int64_t>(deleted_it->second));
-      new_total -= deleted_value;
+      auto parsed_deleted = StringUtils::ParseNumber<int64_t>(deleted_it->second);
+      if (!parsed_deleted.has_value()) {
+        return {};
+      }
+      new_total -= parsed_deleted.value();
     }
 
     if (new_total >= 0) {
@@ -163,6 +169,11 @@ SnapshotUpdate::SnapshotUpdate(std::shared_ptr<TransactionContext> ctx)
       target_manifest_size_bytes_(
           base().properties.Get(TableProperties::kManifestTargetSizeBytes)) {}
 
+void SnapshotUpdate::SetSummaryProperty(const std::string& property,
+                                        const std::string& value) {
+  summary_.Set(property, value);
+}
+
 // TODO(xxx): write manifests in parallel
 Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
     std::span<const std::shared_ptr<DataFile>> files,
@@ -178,8 +189,7 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
        snapshot_id = SnapshotId()]() -> Result<std::unique_ptr<ManifestWriter>> {
         return ManifestWriter::MakeWriter(
             base().format_version, snapshot_id, ManifestPath(), ctx_->table->io(),
-            std::move(spec), std::move(schema), ManifestContent::kData,
-            /*first_row_id=*/base().next_row_id);
+            std::move(spec), std::move(schema), ManifestContent::kData);
       },
       target_manifest_size_bytes_);
 
@@ -192,20 +202,7 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
 
 // TODO(xxx): write manifests in parallel
 Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
-    std::span<const std::shared_ptr<DataFile>> files,
-    const std::shared_ptr<PartitionSpec>& spec) {
-  std::vector<DeleteManifestEntry> delete_entries;
-  delete_entries.reserve(files.size());
-  for (const auto& file : files) {
-    delete_entries.push_back(
-        DeleteManifestEntry{.file = file, .data_sequence_number = std::nullopt});
-  }
-  return WriteDeleteManifests(delete_entries, spec);
-}
-
-// TODO(xxx): write manifests in parallel
-Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
-    std::span<const DeleteManifestEntry> files,
+    std::span<const ContentFileWithSequenceNumber> files,
     const std::shared_ptr<PartitionSpec>& spec) {
   if (files.empty()) {
     return std::vector<ManifestFile>{};
@@ -244,7 +241,7 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
       std::ignore = DeleteFile(manifest_list);
     }
     manifest_lists_.clear();
-    CleanUncommitted(std::unordered_set<std::string>{});
+    ICEBERG_RETURN_UNEXPECTED(CleanUncommitted(std::unordered_set<std::string>{}));
 
     staged_snapshot_ = nullptr;
     summary_.Clear();
@@ -257,9 +254,7 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   std::optional<int64_t> parent_snapshot_id =
       parent_snapshot ? std::make_optional(parent_snapshot->snapshot_id) : std::nullopt;
 
-  if (parent_snapshot) {
-    ICEBERG_RETURN_UNEXPECTED(Validate(base(), parent_snapshot));
-  }
+  ICEBERG_RETURN_UNEXPECTED(Validate(base(), parent_snapshot));
 
   ICEBERG_ASSIGN_OR_RAISE(auto manifests, Apply(base(), parent_snapshot));
   for (auto& manifest : manifests) {
@@ -326,7 +321,7 @@ Status SnapshotUpdate::Finalize(Result<const TableMetadata*> commit_result) {
     if (commit_result.error().kind == ErrorKind::kCommitStateUnknown) {
       return {};
     }
-    CleanAll();
+    std::ignore = CleanAll();
     return {};
   }
 
@@ -334,11 +329,14 @@ Status SnapshotUpdate::Finalize(Result<const TableMetadata*> commit_result) {
     ICEBERG_CHECK(staged_snapshot_ != nullptr,
                   "Staged snapshot is null during finalize after commit");
     auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cached_snapshot.Manifests(ctx_->table->io()));
-    CleanUncommitted(manifests | std::views::transform([](const auto& manifest) {
-                       return manifest.manifest_path;
-                     }) |
-                     std::ranges::to<std::unordered_set<std::string>>());
+    if (auto manifests = cached_snapshot.Manifests(ctx_->table->io());
+        manifests.has_value()) {
+      std::ignore = CleanUncommitted(manifests.value() |
+                                     std::views::transform([](const auto& manifest) {
+                                       return manifest.manifest_path;
+                                     }) |
+                                     std::ranges::to<std::unordered_set<std::string>>());
+    }
   }
 
   // Also clean up unused manifest lists created by multiple attempts
@@ -401,12 +399,13 @@ Result<std::unordered_map<std::string, std::string>> SnapshotUpdate::ComputeSumm
   return summary;
 }
 
-void SnapshotUpdate::CleanAll() {
+Status SnapshotUpdate::CleanAll() {
   for (const auto& manifest_list : manifest_lists_) {
     std::ignore = DeleteFile(manifest_list);
   }
   manifest_lists_.clear();
-  CleanUncommitted(std::unordered_set<std::string>{});
+  std::ignore = CleanUncommitted(std::unordered_set<std::string>{});
+  return {};
 }
 
 Status SnapshotUpdate::DeleteFile(const std::string& path) {

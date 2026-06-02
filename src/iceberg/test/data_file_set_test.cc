@@ -38,6 +38,21 @@ class DataFileSetTest : public ::testing::Test {
     file->content = DataFile::Content::kData;
     return file;
   }
+
+  std::shared_ptr<DataFile> CreateDeleteFile(const std::string& path) {
+    auto file = CreateDataFile(path);
+    file->content = DataFile::Content::kPositionDeletes;
+    return file;
+  }
+
+  std::shared_ptr<DataFile> CreateDV(const std::string& path, int64_t offset,
+                                     int64_t size) {
+    auto file = CreateDeleteFile(path);
+    file->file_format = FileFormatType::kPuffin;
+    file->content_offset = offset;
+    file->content_size_in_bytes = size;
+    return file;
+  }
 };
 
 TEST_F(DataFileSetTest, EmptySet) {
@@ -260,12 +275,11 @@ TEST_F(DataFileSetTest, RangeBasedForLoop) {
 TEST_F(DataFileSetTest, CaseSensitivePaths) {
   DataFileSet set;
   auto file1 = CreateDataFile("/path/to/file.parquet");
-  auto file2 = CreateDataFile("/path/to/FILE.parquet");  // Different case
+  auto file2 = CreateDataFile("/path/to/FILE.parquet");
 
   set.insert(file1);
   set.insert(file2);
 
-  // Should be treated as different files
   EXPECT_EQ(set.size(), 2);
 }
 
@@ -273,12 +287,71 @@ TEST_F(DataFileSetTest, MultipleInsertsSameFile) {
   DataFileSet set;
   auto file = CreateDataFile("/path/to/file.parquet");
 
-  // Insert the same file multiple times
   set.insert(file);
   set.insert(file);
   set.insert(file);
 
   EXPECT_EQ(set.size(), 1);
+}
+
+TEST_F(DataFileSetTest, CopyRebuildsDataFileIndex) {
+  DataFileSet original;
+  original.insert(CreateDataFile("/path/to/file1.parquet"));
+  original.insert(CreateDataFile("/path/to/file2.parquet"));
+
+  DataFileSet copy = original;
+  auto duplicate = CreateDataFile("/path/to/file1.parquet");
+
+  auto [iter, inserted] = copy.insert(duplicate);
+  EXPECT_FALSE(inserted);
+  ASSERT_NE(iter, copy.end());
+  EXPECT_EQ((*iter)->file_path, "/path/to/file1.parquet");
+  EXPECT_EQ(copy.size(), 2U);
+}
+
+TEST_F(DataFileSetTest, DeleteFileSetDeduplicatesByPathForRegularDeletes) {
+  DeleteFileSet set;
+  auto first = CreateDeleteFile("/path/to/delete.parquet");
+  auto duplicate = CreateDeleteFile("/path/to/delete.parquet");
+
+  auto [first_iter, first_inserted] = set.insert(first);
+  EXPECT_TRUE(first_inserted);
+  EXPECT_EQ(*first_iter, first);
+
+  auto [duplicate_iter, duplicate_inserted] = set.insert(duplicate);
+  EXPECT_FALSE(duplicate_inserted);
+  EXPECT_EQ(*duplicate_iter, first);
+  EXPECT_EQ(set.size(), 1U);
+  EXPECT_TRUE(set.contains(*duplicate));
+}
+
+TEST_F(DataFileSetTest, DeleteFileSetDistinguishesDeletionVectorContentRanges) {
+  DeleteFileSet set;
+  auto first = CreateDV("/path/to/dv.puffin", /*offset=*/0, /*size=*/10);
+  auto same_range = CreateDV("/path/to/dv.puffin", /*offset=*/0, /*size=*/10);
+  auto different_offset = CreateDV("/path/to/dv.puffin", /*offset=*/10, /*size=*/10);
+  auto different_size = CreateDV("/path/to/dv.puffin", /*offset=*/0, /*size=*/20);
+
+  EXPECT_TRUE(set.insert(first).second);
+  EXPECT_FALSE(set.insert(same_range).second);
+  EXPECT_TRUE(set.insert(different_offset).second);
+  EXPECT_TRUE(set.insert(different_size).second);
+  EXPECT_EQ(set.size(), 3U);
+}
+
+TEST_F(DataFileSetTest, DeleteFileSetCopyRebuildsIndex) {
+  DeleteFileSet original;
+  original.insert(CreateDV("/path/to/dv.puffin", /*offset=*/0, /*size=*/10));
+  original.insert(CreateDV("/path/to/dv.puffin", /*offset=*/10, /*size=*/10));
+
+  DeleteFileSet copy = original;
+  auto duplicate = CreateDV("/path/to/dv.puffin", /*offset=*/0, /*size=*/10);
+
+  auto [iter, inserted] = copy.insert(duplicate);
+  EXPECT_FALSE(inserted);
+  ASSERT_NE(iter, copy.end());
+  EXPECT_EQ((*iter)->content_offset, 0);
+  EXPECT_EQ(copy.size(), 2U);
 }
 
 }  // namespace iceberg

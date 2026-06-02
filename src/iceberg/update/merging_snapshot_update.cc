@@ -20,7 +20,9 @@
 #include "iceberg/update/merging_snapshot_update.h"
 
 #include <algorithm>
+#include <array>
 #include <span>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -28,8 +30,10 @@
 #include "iceberg/constants.h"
 #include "iceberg/delete_file_index.h"
 #include "iceberg/expression/expressions.h"
-#include "iceberg/expression/inclusive_metrics_evaluator.h"
+#include "iceberg/expression/manifest_evaluator.h"
+#include "iceberg/expression/projections.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_group.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_util_internal.h"
@@ -49,8 +53,19 @@ namespace iceberg {
 
 namespace {
 
+const std::array<std::string_view, 2> kValidateAddedFilesOperations = {
+    DataOperation::kAppend, DataOperation::kOverwrite};
+const std::array<std::string_view, 3> kValidateDataFilesExistOperations = {
+    DataOperation::kOverwrite, DataOperation::kReplace, DataOperation::kDelete};
+const std::array<std::string_view, 2> kValidateDataFilesExistSkipDeleteOperations = {
+    DataOperation::kOverwrite, DataOperation::kReplace};
+const std::array<std::string_view, 2> kValidateAddedDeleteFilesOperations = {
+    DataOperation::kOverwrite, DataOperation::kDelete};
+const std::array<std::string_view, 3> kValidateAddedDVsOperations = {
+    DataOperation::kOverwrite, DataOperation::kDelete, DataOperation::kReplace};
+
 bool MatchesOperation(std::optional<std::string_view> operation,
-                      std::initializer_list<std::string_view> expected) {
+                      std::span<const std::string_view> expected) {
   return operation.has_value() &&
          std::ranges::find(expected, operation.value()) != expected.end();
 }
@@ -59,33 +74,6 @@ struct ValidationHistoryResult {
   std::vector<ManifestFile> manifests;
   std::unordered_set<int64_t> snapshot_ids;
 };
-
-struct DeleteFileObjectKey {
-  std::string path;
-  std::optional<int64_t> content_offset;
-  std::optional<int64_t> content_size_in_bytes;
-
-  bool operator==(const DeleteFileObjectKey& other) const = default;
-};
-
-struct DeleteFileObjectKeyHash {
-  size_t operator()(const DeleteFileObjectKey& key) const {
-    size_t hash = std::hash<std::string>{}(key.path);
-    auto combine = [&hash](const auto& value) {
-      size_t value_hash = value.has_value() ? std::hash<int64_t>{}(*value) : 0;
-      hash ^= value_hash + 0x9e3779b9 + (hash << 6) + (hash >> 2);
-    };
-    combine(key.content_offset);
-    combine(key.content_size_in_bytes);
-    return hash;
-  }
-};
-
-DeleteFileObjectKey MakeDeleteFileObjectKey(const DataFile& file) {
-  return DeleteFileObjectKey{.path = file.file_path,
-                             .content_offset = file.content_offset,
-                             .content_size_in_bytes = file.content_size_in_bytes};
-}
 
 Result<std::vector<std::shared_ptr<Snapshot>>> ValidationAncestorsBetween(
     const TableMetadata& metadata, int64_t latest_snapshot_id,
@@ -97,7 +85,7 @@ Result<std::vector<std::shared_ptr<Snapshot>>> ValidationAncestorsBetween(
     if (!ancestors.empty()) {
       const auto& oldest_checked = ancestors.back();
       if (oldest_checked == nullptr || oldest_checked->parent_snapshot_id.has_value()) {
-        return InvalidArgument(
+        return ValidationFailed(
             "Cannot validate history: cannot determine complete history for snapshot {}",
             latest_snapshot_id);
       }
@@ -109,7 +97,7 @@ Result<std::vector<std::shared_ptr<Snapshot>>> ValidationAncestorsBetween(
     return ancestors;
   }
   if (ancestors.empty()) {
-    return InvalidArgument(
+    return ValidationFailed(
         "Cannot validate history: starting snapshot {} is not an ancestor "
         "of snapshot {}",
         starting_snapshot_id.value(), latest_snapshot_id);
@@ -118,7 +106,7 @@ Result<std::vector<std::shared_ptr<Snapshot>>> ValidationAncestorsBetween(
   const auto& oldest_checked = ancestors.back();
   if (oldest_checked == nullptr || !oldest_checked->parent_snapshot_id.has_value() ||
       oldest_checked->parent_snapshot_id.value() != starting_snapshot_id.value()) {
-    return InvalidArgument(
+    return ValidationFailed(
         "Cannot validate history: starting snapshot {} is not an ancestor "
         "of snapshot {}",
         starting_snapshot_id.value(), latest_snapshot_id);
@@ -129,7 +117,7 @@ Result<std::vector<std::shared_ptr<Snapshot>>> ValidationAncestorsBetween(
 Result<ValidationHistoryResult> ValidationHistory(
     const TableMetadata& metadata, int64_t latest_snapshot_id,
     std::optional<int64_t> starting_snapshot_id,
-    std::initializer_list<std::string_view> matching_operations, ManifestContent content,
+    std::span<const std::string_view> matching_operations, ManifestContent content,
     const std::shared_ptr<FileIO>& io) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ancestors,
@@ -156,42 +144,255 @@ Result<ValidationHistoryResult> ValidationHistory(
   return result;
 }
 
-Result<std::optional<std::string>> FindMatchingDataFile(
-    const TableMetadata& metadata, const std::vector<ManifestFile>& manifests,
-    const std::unordered_set<int64_t>& snapshot_ids, ManifestStatus status,
-    std::shared_ptr<Expression> filter, const PartitionSet* partition_set,
-    const std::shared_ptr<FileIO>& io, bool case_sensitive) {
+Result<std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>> PartitionSpecsByIdMap(
+    const TableMetadata& metadata) {
+  TableMetadataCache metadata_cache(&metadata);
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, metadata_cache.GetPartitionSpecsById());
+  return std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>(
+      specs_ref.get().begin(), specs_ref.get().end());
+}
+
+Result<std::unique_ptr<ManifestGroup>> MakeValidationManifestGroup(
+    const TableMetadata& metadata, const std::shared_ptr<FileIO>& io,
+    std::vector<ManifestFile> manifests) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-  auto partition_filter = partition_set != nullptr
-                              ? std::make_shared<PartitionSet>(*partition_set)
-                              : std::shared_ptr<PartitionSet>{};
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, PartitionSpecsByIdMap(metadata));
+  return ManifestGroup::Make(io, std::move(schema), std::move(specs_by_id),
+                             std::move(manifests));
+}
 
-  for (const auto& manifest : manifests) {
-    ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                            metadata.PartitionSpecById(manifest.partition_spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                            ManifestReader::Make(manifest, io, schema, spec));
-    reader->CaseSensitive(case_sensitive);
-    if (filter != nullptr) {
-      reader->FilterRows(filter);
-    }
-    if (partition_filter != nullptr) {
-      reader->FilterPartitions(partition_filter);
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
-    for (const auto& entry : entries) {
-      if (!entry.snapshot_id.has_value() ||
-          !snapshot_ids.contains(entry.snapshot_id.value())) {
-        continue;
-      }
-      if (entry.status == status && entry.data_file != nullptr) {
-        return entry.data_file->file_path;
-      }
+Result<int64_t> StartingSequenceNumber(const TableMetadata& metadata,
+                                       std::optional<int64_t> starting_snapshot_id) {
+  if (starting_snapshot_id.has_value()) {
+    auto snapshot = metadata.SnapshotById(starting_snapshot_id.value());
+    if (snapshot.has_value()) {
+      return snapshot.value()->sequence_number;
     }
   }
+  return TableMetadata::kInitialSequenceNumber;
+}
 
-  return std::optional<std::string>{};
+Result<std::unique_ptr<DeleteFileIndex>> BuildDeleteFileIndex(
+    const TableMetadata& metadata, const std::shared_ptr<FileIO>& io,
+    std::vector<ManifestFile> delete_manifests, int64_t starting_sequence_number,
+    std::shared_ptr<Expression> data_filter, std::shared_ptr<PartitionSet> partition_set,
+    bool case_sensitive) {
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, PartitionSpecsByIdMap(metadata));
+  ICEBERG_ASSIGN_OR_RAISE(auto builder, DeleteFileIndex::BuilderFor(
+                                            io, std::move(schema), std::move(specs_by_id),
+                                            std::move(delete_manifests)));
+  builder.AfterSequenceNumber(starting_sequence_number);
+  builder.CaseSensitive(case_sensitive);
+  if (data_filter != nullptr) {
+    builder.DataFilter(std::move(data_filter));
+  }
+  if (partition_set != nullptr) {
+    builder.FilterPartitions(std::move(partition_set));
+  }
+  return builder.Build();
+}
+
+Result<std::vector<ManifestFile>> FilterManifestsByPartition(
+    const TableMetadata& metadata, std::shared_ptr<Expression> conflict_detection_filter,
+    const std::vector<ManifestFile>& manifests, bool case_sensitive) {
+  if (conflict_detection_filter == nullptr ||
+      conflict_detection_filter->op() == Expression::Operation::kTrue) {
+    return manifests;
+  }
+
+  const int32_t default_spec_id = metadata.default_spec_id;
+  if (std::ranges::any_of(manifests, [default_spec_id](const ManifestFile& manifest) {
+        return manifest.partition_spec_id != default_spec_id;
+      })) {
+    return manifests;
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, PartitionSpecsByIdMap(metadata));
+  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> eval_cache;
+  std::vector<ManifestFile> matching_manifests;
+  for (const auto& manifest : manifests) {
+    auto it = eval_cache.find(manifest.partition_spec_id);
+    if (it == eval_cache.end()) {
+      auto spec_it = specs_by_id.find(manifest.partition_spec_id);
+      if (spec_it == specs_by_id.end()) {
+        return InvalidArgument("Cannot find partition spec ID {}",
+                               manifest.partition_spec_id);
+      }
+
+      auto projector = Projections::Inclusive(*spec_it->second, *schema, case_sensitive);
+      ICEBERG_ASSIGN_OR_RAISE(auto partition_filter,
+                              projector->Project(conflict_detection_filter));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto evaluator,
+          ManifestEvaluator::MakePartitionFilter(
+              std::move(partition_filter), spec_it->second, *schema, case_sensitive));
+      it = eval_cache.emplace(manifest.partition_spec_id, std::move(evaluator)).first;
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto matches, it->second->Evaluate(manifest));
+    if (matches) {
+      matching_manifests.push_back(manifest);
+    }
+  }
+  return matching_manifests;
+}
+
+void FilterManifestEntriesByPartitionSet(ManifestGroup& group,
+                                         const PartitionSet* partition_set) {
+  if (partition_set != nullptr) {
+    auto partitions = std::make_shared<PartitionSet>(*partition_set);
+    group.FilterManifestEntries([partitions](const ManifestEntry& entry) {
+      return entry.data_file != nullptr &&
+             entry.data_file->partition_spec_id.has_value() &&
+             partitions->contains(entry.data_file->partition_spec_id.value(),
+                                  entry.data_file->partition);
+    });
+  }
+}
+
+Result<std::vector<ManifestEntry>> MatchingAddedDataFiles(
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
+    std::shared_ptr<Expression> data_filter, const PartitionSet* partition_set,
+    const std::shared_ptr<Snapshot>& parent, const std::shared_ptr<FileIO>& io,
+    bool case_sensitive) {
+  if (parent == nullptr) {
+    return std::vector<ManifestEntry>{};
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto history,
+      ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
+                        kValidateAddedFilesOperations, ManifestContent::kData, io));
+  auto new_snapshots =
+      std::make_shared<std::unordered_set<int64_t>>(std::move(history.snapshot_ids));
+  ICEBERG_ASSIGN_OR_RAISE(auto group, MakeValidationManifestGroup(
+                                          metadata, io, std::move(history.manifests)));
+  group->CaseSensitive(case_sensitive)
+      .FilterManifestEntries([new_snapshots](const ManifestEntry& entry) {
+        return entry.snapshot_id.has_value() &&
+               new_snapshots->contains(entry.snapshot_id.value()) &&
+               entry.data_file != nullptr;
+      })
+      .IgnoreDeleted()
+      .IgnoreExisting();
+  if (data_filter != nullptr) {
+    group->FilterData(std::move(data_filter));
+  }
+  FilterManifestEntriesByPartitionSet(*group, partition_set);
+  return group->Entries();
+}
+
+Result<std::vector<ManifestEntry>> MatchingDeletedDataFiles(
+    const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
+    std::shared_ptr<Expression> data_filter, const PartitionSet* partition_set,
+    const std::shared_ptr<Snapshot>& parent, const std::shared_ptr<FileIO>& io,
+    bool case_sensitive) {
+  if (parent == nullptr) {
+    return std::vector<ManifestEntry>{};
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto history,
+      ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
+                        kValidateDataFilesExistOperations, ManifestContent::kData, io));
+  auto new_snapshots =
+      std::make_shared<std::unordered_set<int64_t>>(std::move(history.snapshot_ids));
+  ICEBERG_ASSIGN_OR_RAISE(auto group, MakeValidationManifestGroup(
+                                          metadata, io, std::move(history.manifests)));
+  group->CaseSensitive(case_sensitive)
+      .FilterManifestEntries([new_snapshots](const ManifestEntry& entry) {
+        return entry.snapshot_id.has_value() &&
+               new_snapshots->contains(entry.snapshot_id.value());
+      })
+      .FilterManifestEntries([](const ManifestEntry& entry) {
+        return entry.status == ManifestStatus::kDeleted && entry.data_file != nullptr;
+      })
+      .IgnoreExisting();
+  if (data_filter != nullptr) {
+    group->FilterData(std::move(data_filter));
+  }
+  FilterManifestEntriesByPartitionSet(*group, partition_set);
+  return group->Entries();
+}
+
+std::string FormatLocations(std::vector<std::string> locations) {
+  std::string result = "[";
+  for (size_t i = 0; i < locations.size(); ++i) {
+    if (i > 0) {
+      result += ", ";
+    }
+    result += locations[i];
+  }
+  result += "]";
+  return result;
+}
+
+std::vector<std::string> DataFilePaths(const std::vector<ManifestEntry>& entries) {
+  std::vector<std::string> paths;
+  paths.reserve(entries.size());
+  for (const auto& entry : entries) {
+    if (entry.data_file != nullptr) {
+      paths.push_back(entry.data_file->file_path);
+    }
+  }
+  return paths;
+}
+
+std::optional<std::string> DataFileLocations(const std::vector<ManifestEntry>& entries) {
+  auto paths = DataFilePaths(entries);
+  if (paths.empty()) {
+    return std::optional<std::string>{};
+  }
+  return FormatLocations(std::move(paths));
+}
+
+std::optional<std::string> DeleteFileLocations(
+    const std::vector<std::shared_ptr<DataFile>>& delete_files) {
+  std::vector<std::string> paths;
+  paths.reserve(delete_files.size());
+  for (const auto& delete_file : delete_files) {
+    if (delete_file != nullptr) {
+      paths.push_back(delete_file->file_path);
+    }
+  }
+  if (paths.empty()) {
+    return std::optional<std::string>{};
+  }
+  return FormatLocations(std::move(paths));
+}
+
+Status ValidateAddedDVsInManifest(
+    const TableMetadata& metadata, const ManifestFile& manifest,
+    std::shared_ptr<Expression> conflict_detection_filter,
+    const std::unordered_set<int64_t>& new_snapshot_ids,
+    const std::unordered_set<std::string>& referenced_data_files,
+    const std::shared_ptr<FileIO>& io, const std::shared_ptr<Schema>& schema,
+    bool case_sensitive) {
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          metadata.PartitionSpecById(manifest.partition_spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto reader, ManifestReader::Make(manifest, io, schema, spec));
+  reader->CaseSensitive(case_sensitive);
+  reader->FilterRows(std::move(conflict_detection_filter));
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
+
+  for (const auto& entry : entries) {
+    if (!entry.snapshot_id.has_value() ||
+        !new_snapshot_ids.contains(entry.snapshot_id.value())) {
+      continue;
+    }
+    if (entry.data_file == nullptr || !ContentFileUtil::IsDV(*entry.data_file) ||
+        !entry.data_file->referenced_data_file.has_value()) {
+      continue;
+    }
+    if (referenced_data_files.contains(*entry.data_file->referenced_data_file)) {
+      return ValidationFailed("Found concurrently added DV for {}: {}",
+                              *entry.data_file->referenced_data_file,
+                              ContentFileUtil::DVDesc(*entry.data_file));
+    }
+  }
+  return {};
 }
 
 }  // namespace
@@ -200,17 +401,52 @@ MergingSnapshotUpdate::MergingSnapshotUpdate(std::string table_name,
                                              std::shared_ptr<TransactionContext> ctx)
     : SnapshotUpdate(std::move(ctx)),
       table_name_(std::move(table_name)),
-      delete_expression_(Expressions::AlwaysFalse()),
-      data_filter_manager_(ManifestContent::kData, ctx_->table->io()),
-      delete_filter_manager_(ManifestContent::kDeletes, ctx_->table->io()),
-      data_merge_manager_(
-          base().properties.Get(TableProperties::kManifestTargetSizeBytes),
-          base().properties.Get(TableProperties::kManifestMinMergeCount),
-          base().properties.Get(TableProperties::kManifestMergeEnabled)),
-      delete_merge_manager_(
-          base().properties.Get(TableProperties::kManifestTargetSizeBytes),
-          base().properties.Get(TableProperties::kManifestMinMergeCount),
-          base().properties.Get(TableProperties::kManifestMergeEnabled)) {}
+      delete_expression_(Expressions::AlwaysFalse()) {
+  auto file_io = ctx_->table->io();
+  auto data_filter_manager = ManifestFilterManager::Make(
+      ManifestContent::kData, file_io,
+      [this](const std::string& location) { return DeleteFile(location); });
+  if (!data_filter_manager.has_value()) {
+    AddError(data_filter_manager.error());
+  } else {
+    data_filter_manager_ = std::move(data_filter_manager.value());
+  }
+
+  auto delete_filter_manager = ManifestFilterManager::Make(
+      ManifestContent::kDeletes, file_io,
+      [this](const std::string& location) { return DeleteFile(location); });
+  if (!delete_filter_manager.has_value()) {
+    AddError(delete_filter_manager.error());
+  } else {
+    delete_filter_manager_ = std::move(delete_filter_manager.value());
+  }
+
+  const int64_t target_size_bytes =
+      base().properties.Get(TableProperties::kManifestTargetSizeBytes);
+  const int32_t min_count_to_merge =
+      base().properties.Get(TableProperties::kManifestMinMergeCount);
+  const bool merge_enabled =
+      base().properties.Get(TableProperties::kManifestMergeEnabled);
+  auto data_merge_manager = ManifestMergeManager::Make(
+      ManifestContent::kData, target_size_bytes, min_count_to_merge, merge_enabled,
+      file_io, [this] { return SnapshotId(); },
+      [this](const std::string& location) { return DeleteFile(location); });
+  if (!data_merge_manager.has_value()) {
+    AddError(data_merge_manager.error());
+  } else {
+    data_merge_manager_ = std::move(data_merge_manager.value());
+  }
+
+  auto delete_merge_manager = ManifestMergeManager::Make(
+      ManifestContent::kDeletes, target_size_bytes, min_count_to_merge, merge_enabled,
+      file_io, [this] { return SnapshotId(); },
+      [this](const std::string& location) { return DeleteFile(location); });
+  if (!delete_merge_manager.has_value()) {
+    AddError(delete_merge_manager.error());
+  } else {
+    delete_merge_manager_ = std::move(delete_merge_manager.value());
+  }
+}
 
 // -------------------------------------------------------------------------
 // Primitive API
@@ -227,15 +463,16 @@ Status MergingSnapshotUpdate::AddDataFile(std::shared_ptr<DataFile> file) {
   int32_t spec_id = file->partition_spec_id.value();
   ICEBERG_ASSIGN_OR_RAISE(auto spec, base().PartitionSpecById(spec_id));
 
-  // Suppress first_row_id — it will be assigned by the commit, not inherited from the
-  // source file.
-  file->first_row_id = std::nullopt;
+  // Suppress first_row_id in the staged copy. The commit assigns row IDs for newly
+  // added files and must not mutate the caller-owned file object.
+  auto staged_file = std::make_shared<DataFile>(*file);
+  staged_file->first_row_id = std::nullopt;
 
   auto& data_files = new_data_files_by_spec_[spec_id];
-  auto [it, inserted] = data_files.insert(file);
+  auto [it, inserted] = data_files.insert(staged_file);
   if (inserted) {
     has_new_data_files_ = true;
-    ICEBERG_RETURN_UNEXPECTED(added_data_files_summary_.AddedFile(*spec, *file));
+    ICEBERG_RETURN_UNEXPECTED(added_data_files_summary_.AddedFile(*spec, *staged_file));
   }
   return {};
 }
@@ -259,7 +496,8 @@ Status MergingSnapshotUpdate::ValidateNewDeleteFile(const TableMetadata& metadat
       }
       break;
     default:
-      if (format_version >= 3) {
+      if (format_version >= 3 &&
+          format_version <= TableMetadata::kSupportedTableFormatVersion) {
         // Position deletes MUST be DVs in v3+.
         if (file.content == DataFile::Content::kPositionDeletes && !is_dv) {
           return InvalidArgument("Must use DVs for position deletes in V{}: {}",
@@ -282,6 +520,16 @@ Status MergingSnapshotUpdate::AddDeleteFile(std::shared_ptr<DataFile> file,
   return AddDeleteFile(std::move(file), std::optional<int64_t>(data_sequence_number));
 }
 
+void MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Add(
+    std::string referenced_file, PendingDeleteFile file) {
+  auto [iter, inserted] =
+      index_by_referenced_file_.try_emplace(referenced_file, entries_.size());
+  if (inserted) {
+    entries_.push_back(Entry{.referenced_file = std::move(referenced_file), .files = {}});
+  }
+  entries_[iter->second].files.push_back(std::move(file));
+}
+
 Status MergingSnapshotUpdate::AddDeleteFile(std::shared_ptr<DataFile> file,
                                             std::optional<int64_t> data_sequence_number) {
   if (!file) {
@@ -293,8 +541,17 @@ Status MergingSnapshotUpdate::AddDeleteFile(std::shared_ptr<DataFile> file,
   }
   ICEBERG_RETURN_UNEXPECTED(base().PartitionSpecById(file->partition_spec_id.value()));
   has_new_delete_files_ = true;
-  new_delete_files_.push_back(PendingDeleteFile{
-      .file = std::move(file), .data_sequence_number = std::move(data_sequence_number)});
+  PendingDeleteFile pending_file{.file = std::move(file),
+                                 .data_sequence_number = std::move(data_sequence_number)};
+  if (ContentFileUtil::IsDV(*pending_file.file)) {
+    ICEBERG_PRECHECK(pending_file.file->referenced_data_file.has_value(),
+                     "DV must have a referenced data file: {}",
+                     pending_file.file->file_path);
+    auto referenced_data_file = *pending_file.file->referenced_data_file;
+    dvs_by_referenced_file_.Add(std::move(referenced_data_file), std::move(pending_file));
+  } else {
+    v2_deletes_.push_back(std::move(pending_file));
+  }
   return {};
 }
 
@@ -302,42 +559,44 @@ Status MergingSnapshotUpdate::DeleteDataFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot delete a null data file");
   }
-  return data_filter_manager_.DeleteFile(std::move(file));
+  return data_filter_manager_->DeleteFile(std::move(file));
 }
 
 Status MergingSnapshotUpdate::DeleteDeleteFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot delete a null delete file");
   }
-  return delete_filter_manager_.DeleteFile(std::move(file));
+  return delete_filter_manager_->DeleteFile(std::move(file));
 }
 
-void MergingSnapshotUpdate::DeleteByPath(std::string_view path) {
-  data_filter_manager_.DeleteFile(path);
+Status MergingSnapshotUpdate::DeleteByPath(std::string_view path) {
+  return data_filter_manager_->DeleteFile(path);
 }
 
 Status MergingSnapshotUpdate::DeleteByRowFilter(std::shared_ptr<Expression> expr) {
   // If a delete file matches the row filter, it can also be removed because the rows
   // it references will also be deleted. Both filter managers receive the expression.
   delete_expression_ = expr;
-  ICEBERG_RETURN_UNEXPECTED(data_filter_manager_.DeleteByRowFilter(expr));
-  return delete_filter_manager_.DeleteByRowFilter(std::move(expr));
+  ICEBERG_RETURN_UNEXPECTED(data_filter_manager_->DeleteByRowFilter(expr));
+  return delete_filter_manager_->DeleteByRowFilter(std::move(expr));
 }
 
-void MergingSnapshotUpdate::DropPartition(int32_t spec_id, PartitionValues partition) {
+Status MergingSnapshotUpdate::DropPartition(int32_t spec_id, PartitionValues partition) {
   // Dropping data in a partition also drops all delete files in that partition.
-  data_filter_manager_.DropPartition(spec_id, partition);
-  delete_filter_manager_.DropPartition(spec_id, std::move(partition));
+  ICEBERG_RETURN_UNEXPECTED(data_filter_manager_->DropPartition(spec_id, partition));
+  ICEBERG_RETURN_UNEXPECTED(
+      delete_filter_manager_->DropPartition(spec_id, std::move(partition)));
+  return {};
 }
 
 void MergingSnapshotUpdate::FailMissingDeletePaths() {
-  data_filter_manager_.FailMissingDeletePaths();
-  delete_filter_manager_.FailMissingDeletePaths();
+  data_filter_manager_->FailMissingDeletePaths();
+  delete_filter_manager_->FailMissingDeletePaths();
 }
 
 void MergingSnapshotUpdate::FailAnyDelete() {
-  data_filter_manager_.FailAnyDelete();
-  delete_filter_manager_.FailAnyDelete();
+  data_filter_manager_->FailAnyDelete();
+  delete_filter_manager_->FailAnyDelete();
 }
 
 void MergingSnapshotUpdate::SetNewDataFilesDataSequenceNumber(int64_t sequence_number) {
@@ -346,13 +605,14 @@ void MergingSnapshotUpdate::SetNewDataFilesDataSequenceNumber(int64_t sequence_n
 
 void MergingSnapshotUpdate::CaseSensitive(bool case_sensitive) {
   case_sensitive_ = case_sensitive;
-  data_filter_manager_.CaseSensitive(case_sensitive);
-  delete_filter_manager_.CaseSensitive(case_sensitive);
+  data_filter_manager_->CaseSensitive(case_sensitive);
+  delete_filter_manager_->CaseSensitive(case_sensitive);
 }
 
-void MergingSnapshotUpdate::Set(const std::string& property, const std::string& value) {
+void MergingSnapshotUpdate::SetSummaryProperty(const std::string& property,
+                                               const std::string& value) {
   custom_summary_properties_[property] = value;
-  summary_builder().Set(property, value);
+  SnapshotUpdate::SetSummaryProperty(property, value);
 }
 
 Result<std::shared_ptr<PartitionSpec>> MergingSnapshotUpdate::DataSpec() const {
@@ -401,7 +661,6 @@ Result<ManifestFile> MergingSnapshotUpdate::CopyManifest(const ManifestFile& man
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           current.PartitionSpecById(manifest.partition_spec_id));
   std::string path = ManifestPath();
-  all_written_manifests_.insert(path);
   return CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, SnapshotId(), path,
                             current.format_version, &appended_manifests_summary_);
 }
@@ -414,21 +673,34 @@ bool MergingSnapshotUpdate::AddsDataFiles() const {
   return !new_data_files_by_spec_.empty();
 }
 
-bool MergingSnapshotUpdate::AddsDeleteFiles() const { return !new_delete_files_.empty(); }
+bool MergingSnapshotUpdate::AddsDeleteFiles() const {
+  return !v2_deletes_.empty() || !dvs_by_referenced_file_.empty();
+}
 
 bool MergingSnapshotUpdate::DeletesDataFiles() const {
-  return data_filter_manager_.ContainsDeletes();
+  return data_filter_manager_->ContainsDeletes();
 }
 
 bool MergingSnapshotUpdate::DeletesDeleteFiles() const {
-  return delete_filter_manager_.ContainsDeletes();
+  return delete_filter_manager_->ContainsDeletes();
+}
+
+Status MergingSnapshotUpdate::ManagersReady() const {
+  ICEBERG_CHECK(data_filter_manager_ != nullptr,
+                "Data filter manager is not initialized");
+  ICEBERG_CHECK(delete_filter_manager_ != nullptr,
+                "Delete filter manager is not initialized");
+  ICEBERG_CHECK(data_merge_manager_ != nullptr, "Data merge manager is not initialized");
+  ICEBERG_CHECK(delete_merge_manager_ != nullptr,
+                "Delete merge manager is not initialized");
+  return {};
 }
 
 // -------------------------------------------------------------------------
 // Apply pipeline
 // -------------------------------------------------------------------------
 
-ManifestWriterFactory MergingSnapshotUpdate::MakeTrackedWriterFactory(
+ManifestWriterFactory MergingSnapshotUpdate::MakeWriterFactory(
     const std::shared_ptr<Schema>& schema) {
   return
       [this, schema](int32_t spec_id,
@@ -436,7 +708,6 @@ ManifestWriterFactory MergingSnapshotUpdate::MakeTrackedWriterFactory(
         const TableMetadata& meta = base();
         ICEBERG_ASSIGN_OR_RAISE(auto spec, meta.PartitionSpecById(spec_id));
         std::string path = ManifestPath();
-        all_written_manifests_.insert(path);
         return ManifestWriter::MakeWriter(meta.format_version, SnapshotId(),
                                           std::move(path), ctx_->table->io(),
                                           std::move(spec), schema, content);
@@ -445,15 +716,15 @@ ManifestWriterFactory MergingSnapshotUpdate::MakeTrackedWriterFactory(
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDataManifests() {
   // If new files were staged after the cache was populated (commit retry), invalidate.
-  if (has_new_data_files_ && cached_new_data_manifests_.has_value()) {
-    for (const auto& m : *cached_new_data_manifests_) {
+  if (has_new_data_files_ && !cached_new_data_manifests_.empty()) {
+    for (const auto& m : cached_new_data_manifests_) {
       std::ignore = DeleteFile(m.manifest_path);
     }
-    cached_new_data_manifests_.reset();
+    cached_new_data_manifests_.clear();
   }
 
-  if (cached_new_data_manifests_.has_value()) {
-    return *cached_new_data_manifests_;
+  if (!cached_new_data_manifests_.empty()) {
+    return cached_new_data_manifests_;
   }
 
   std::vector<ManifestFile> result;
@@ -462,9 +733,6 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDataManifests()
     ICEBERG_ASSIGN_OR_RAISE(
         auto written,
         WriteDataManifests(data_files.as_span(), spec, new_data_files_data_seq_number_));
-    for (const auto& m : written) {
-      all_written_manifests_.insert(m.manifest_path);
-    }
     result.insert(result.end(), std::make_move_iterator(written.begin()),
                   std::make_move_iterator(written.end()));
   }
@@ -475,36 +743,26 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDataManifests()
 }
 
 Result<std::vector<MergingSnapshotUpdate::PendingDeleteFile>>
-MergingSnapshotUpdate::NormalizeNewDeleteFiles() const {
+MergingSnapshotUpdate::MergeDVs() const {
   std::vector<PendingDeleteFile> result;
-  result.reserve(new_delete_files_.size());
+  result.reserve(dvs_by_referenced_file_.size());
 
-  std::unordered_set<DeleteFileObjectKey, DeleteFileObjectKeyHash> seen_delete_files;
-  std::unordered_map<std::string, DeleteFileObjectKey> dv_by_referenced_data_file;
-
-  for (const auto& pending_file : new_delete_files_) {
-    const auto& file = pending_file.file;
-    ICEBERG_PRECHECK(file != nullptr, "Cannot add a null delete file");
-
-    auto key = MakeDeleteFileObjectKey(*file);
-    if (!seen_delete_files.insert(key).second) {
+  for (const auto& entry : dvs_by_referenced_file_.entries()) {
+    const auto& referenced_file = entry.referenced_file;
+    const auto& dvs = entry.files;
+    if (dvs.empty()) {
       continue;
     }
-
-    if (ContentFileUtil::IsDV(*file)) {
-      ICEBERG_PRECHECK(file->referenced_data_file.has_value(),
-                       "DV must have a referenced data file: {}", file->file_path);
-      auto [it, inserted] =
-          dv_by_referenced_data_file.emplace(*file->referenced_data_file, key);
-      if (!inserted && it->second != key) {
-        return NotImplemented(
-            "Merging multiple deletion vectors is not supported yet for referenced "
-            "data file: {}",
-            *file->referenced_data_file);
-      }
+    if (dvs.size() > 1) {
+      // TODO(Guotao): Merge duplicate DVs for one referenced data file once C++
+      // has DVUtil/Puffin DV rewriting; Java merges them before writing manifests.
+      return NotImplemented(
+          "Merging multiple deletion vectors is not supported yet for referenced "
+          "data file: {}",
+          referenced_file);
     }
 
-    result.push_back(pending_file);
+    result.push_back(dvs.front());
   }
 
   return result;
@@ -512,39 +770,53 @@ MergingSnapshotUpdate::NormalizeNewDeleteFiles() const {
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests() {
   // If new files were staged after the cache was populated (commit retry), invalidate.
-  if (has_new_delete_files_ && cached_new_delete_manifests_.has_value()) {
-    for (const auto& m : *cached_new_delete_manifests_) {
+  if (has_new_delete_files_ && !cached_new_delete_manifests_.empty()) {
+    for (const auto& m : cached_new_delete_manifests_) {
       std::ignore = DeleteFile(m.manifest_path);
     }
-    cached_new_delete_manifests_.reset();
+    cached_new_delete_manifests_.clear();
+    added_delete_files_summary_.Clear();
   }
 
-  if (cached_new_delete_manifests_.has_value()) {
-    return *cached_new_delete_manifests_;
+  if (!cached_new_delete_manifests_.empty()) {
+    return cached_new_delete_manifests_;
   }
 
-  // Group delete files by partition spec ID, mirroring WriteNewDataManifests().
+  ICEBERG_ASSIGN_OR_RAISE(auto merged_dvs, MergeDVs());
+
+  std::vector<PendingDeleteFile> new_delete_files;
+  new_delete_files.reserve(merged_dvs.size() + v2_deletes_.size());
+  new_delete_files.insert(new_delete_files.end(), merged_dvs.begin(), merged_dvs.end());
+
+  DeleteFileSet v2_delete_set;
+  for (const auto& pending_file : v2_deletes_) {
+    if (v2_delete_set.insert(pending_file.file).second) {
+      new_delete_files.push_back(pending_file);
+    }
+  }
+
+  // Group delete files by partition spec ID, mirroring Java newDeleteFilesAsManifests().
   std::unordered_map<int32_t, std::vector<PendingDeleteFile>> delete_files_by_spec;
-  for (const auto& pending_file : new_delete_files_) {
+  for (const auto& pending_file : new_delete_files) {
     delete_files_by_spec[pending_file.file->partition_spec_id.value()].push_back(
         pending_file);
   }
 
   std::vector<ManifestFile> result;
+  added_delete_files_summary_.Clear();
   for (auto& [spec_id, delete_files] : delete_files_by_spec) {
     ICEBERG_ASSIGN_OR_RAISE(auto spec, base().PartitionSpecById(spec_id));
-    std::vector<DeleteManifestEntry> delete_entries;
+    std::vector<ContentFileWithSequenceNumber> delete_entries;
     delete_entries.reserve(delete_files.size());
     for (const auto& pending_file : delete_files) {
-      delete_entries.push_back(DeleteManifestEntry{
+      ICEBERG_RETURN_UNEXPECTED(
+          added_delete_files_summary_.AddedFile(*spec, *pending_file.file));
+      delete_entries.push_back(ContentFileWithSequenceNumber{
           .file = pending_file.file,
           .data_sequence_number = pending_file.data_sequence_number,
       });
     }
     ICEBERG_ASSIGN_OR_RAISE(auto written, WriteDeleteManifests(delete_entries, spec));
-    for (const auto& m : written) {
-      all_written_manifests_.insert(m.manifest_path);
-    }
     result.insert(result.end(), std::make_move_iterator(written.begin()),
                   std::make_move_iterator(written.end()));
   }
@@ -556,89 +828,58 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
     const TableMetadata& metadata_to_update, const std::shared_ptr<Snapshot>& snapshot) {
+  ICEBERG_RETURN_UNEXPECTED(ManagersReady());
+
   // Re-validate buffered delete files against the current format version. A format
   // upgrade between staging and commit could make previously-valid files invalid.
-  for (const auto& pending_file : new_delete_files_) {
+  for (const auto& pending_file : v2_deletes_) {
     ICEBERG_RETURN_UNEXPECTED(
         ValidateNewDeleteFile(metadata_to_update, *pending_file.file));
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto normalized_delete_files, NormalizeNewDeleteFiles());
-  new_delete_files_ = std::move(normalized_delete_files);
-
-  added_delete_files_summary_.Clear();
-  for (const auto& pending_file : new_delete_files_) {
-    ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata_to_update.PartitionSpecById(
-                                           *pending_file.file->partition_spec_id));
-    ICEBERG_RETURN_UNEXPECTED(
-        added_delete_files_summary_.AddedFile(*spec, *pending_file.file));
-  }
-
-  // Rebuild summary from stable sub-builders so that commit retries don't double-count.
-  summary_builder().Clear();
-  summary_builder().Merge(added_data_files_summary_);
-  summary_builder().Merge(added_delete_files_summary_);
-  summary_builder().Merge(appended_manifests_summary_);
-  for (const auto& [property, value] : custom_summary_properties_) {
-    summary_builder().Set(property, value);
+  for (const auto& entry : dvs_by_referenced_file_.entries()) {
+    for (const auto& pending_file : entry.files) {
+      ICEBERG_RETURN_UNEXPECTED(
+          ValidateNewDeleteFile(metadata_to_update, *pending_file.file));
+    }
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto target_schema,
                           SnapshotUtil::SchemaFor(metadata_to_update, target_branch()));
-  auto tracked_factory = MakeTrackedWriterFactory(target_schema);
+  auto writer_factory = MakeWriterFactory(target_schema);
 
   // Step 1: Filter data manifests.
-  ICEBERG_ASSIGN_OR_RAISE(auto filtered_data, data_filter_manager_.FilterManifests(
+  ICEBERG_ASSIGN_OR_RAISE(auto filtered_data, data_filter_manager_->FilterManifests(
                                                   target_schema, metadata_to_update,
-                                                  snapshot, tracked_factory));
-
-  // Track deleted data files in the summary builder.
-  for (const auto& file : data_filter_manager_.DeletedFiles()) {
-    if (!file->partition_spec_id.has_value()) {
-      continue;
-    }
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto spec, metadata_to_update.PartitionSpecById(*file->partition_spec_id));
-    ICEBERG_RETURN_UNEXPECTED(summary_builder().DeletedFile(*spec, *file));
-  }
-  summary_builder().IncrementDuplicateDeletes(
-      data_filter_manager_.DuplicateDeletesCount());
+                                                  snapshot, writer_factory));
 
   // Step 2: Compute min data sequence number; set up delete filter cleanup.
-  // Use last_sequence_number as the initial value so that an empty filtered list
-  // produces a sensible minimum. Skip manifests with kUnassignedSequenceNumber —
-  // those are manifests written in the current Apply() call whose sequence number
-  // hasn't been assigned yet. If all filtered manifests are unassigned (e.g. the
-  // table has no pre-existing data manifests), the fallback to last_sequence_number
-  // is safe: any delete file with seq > 0 and seq <= last_sequence_number can no
-  // longer match live data rows, so cleaning them up is correct.
+  // Skip unassigned manifests written in this Apply() call.
   int64_t min_data_seq = metadata_to_update.last_sequence_number;
   for (const auto& manifest : filtered_data) {
     if (manifest.min_sequence_number != kUnassignedSequenceNumber) {
       min_data_seq = std::min(min_data_seq, manifest.min_sequence_number);
     }
   }
-  delete_filter_manager_.DropDeleteFilesOlderThan(min_data_seq);
-  delete_filter_manager_.RemoveDanglingDeletesFor(
-      data_filter_manager_.FilesToBeDeleted());
+  ICEBERG_RETURN_UNEXPECTED(
+      delete_filter_manager_->DropDeleteFilesOlderThan(min_data_seq));
+  delete_filter_manager_->RemoveDanglingDeletesFor(
+      data_filter_manager_->FilesToBeDeleted());
 
   // Step 3: Filter delete manifests.
-  ICEBERG_ASSIGN_OR_RAISE(auto filtered_deletes, delete_filter_manager_.FilterManifests(
+  ICEBERG_ASSIGN_OR_RAISE(auto filtered_deletes, delete_filter_manager_->FilterManifests(
                                                      target_schema, metadata_to_update,
-                                                     snapshot, tracked_factory));
+                                                     snapshot, writer_factory));
 
-  // Track deleted delete files in the summary builder.
-  for (const auto& file : delete_filter_manager_.DeletedFiles()) {
-    if (!file->partition_spec_id.has_value()) {
-      continue;
-    }
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto spec, metadata_to_update.PartitionSpecById(*file->partition_spec_id));
-    ICEBERG_RETURN_UNEXPECTED(summary_builder().DeletedFile(*spec, *file));
-  }
-  summary_builder().IncrementDuplicateDeletes(
-      delete_filter_manager_.DuplicateDeletesCount());
+  TableMetadataCache metadata_cache(&metadata_to_update);
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto data_filter_summary,
+      data_filter_manager_->BuildSummary(filtered_data, specs_by_id.get()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto delete_filter_summary,
+      delete_filter_manager_->BuildSummary(filtered_deletes, specs_by_id.get()));
 
-  // Drop manifests with no live files — they carry no data and should not be merged
+  // Drop manifests with no live files - they carry no data and should not be merged
   // into the new snapshot. Manifests written by the current snapshot are always kept
   // regardless of live-file counts; the merge stage handles any that are empty.
   int64_t snapshot_id = SnapshotId();
@@ -646,8 +887,6 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
     return m.has_added_files() || m.has_existing_files() ||
            m.added_snapshot_id == snapshot_id;
   };
-  std::erase_if(filtered_data, [&](const ManifestFile& m) { return !should_keep(m); });
-  std::erase_if(filtered_deletes, [&](const ManifestFile& m) { return !should_keep(m); });
 
   // Step 4: Write (or retrieve cached) new data manifests.
   ICEBERG_ASSIGN_OR_RAISE(auto written_data_manifests, WriteNewDataManifests());
@@ -670,17 +909,33 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   // Step 5: Write (or retrieve cached) new delete manifests.
   ICEBERG_ASSIGN_OR_RAISE(auto new_delete_manifests, WriteNewDeleteManifests());
 
+  std::erase_if(new_data_manifests,
+                [&](const ManifestFile& m) { return !should_keep(m); });
+  std::erase_if(filtered_data, [&](const ManifestFile& m) { return !should_keep(m); });
+  std::erase_if(new_delete_manifests,
+                [&](const ManifestFile& m) { return !should_keep(m); });
+  std::erase_if(filtered_deletes, [&](const ManifestFile& m) { return !should_keep(m); });
+
+  // Rebuild summary from stable sub-builders so that commit retries don't double-count.
+  summary_builder().Clear();
+  summary_builder().Merge(added_data_files_summary_);
+  summary_builder().Merge(added_delete_files_summary_);
+  summary_builder().Merge(appended_manifests_summary_);
+  for (const auto& [property, value] : custom_summary_properties_) {
+    summary_builder().Set(property, value);
+  }
+  summary_builder().Merge(data_filter_summary);
+  summary_builder().Merge(delete_filter_summary);
+
   // Step 6: Merge data manifests.
-  ICEBERG_ASSIGN_OR_RAISE(auto merged_data,
-                          data_merge_manager_.MergeManifests(
-                              filtered_data, new_data_manifests, SnapshotId(),
-                              metadata_to_update, ctx_->table->io(), tracked_factory));
+  ICEBERG_ASSIGN_OR_RAISE(auto merged_data, data_merge_manager_->MergeManifests(
+                                                filtered_data, new_data_manifests,
+                                                metadata_to_update, writer_factory));
 
   // Step 7: Merge delete manifests.
-  ICEBERG_ASSIGN_OR_RAISE(auto merged_deletes,
-                          delete_merge_manager_.MergeManifests(
-                              filtered_deletes, new_delete_manifests, SnapshotId(),
-                              metadata_to_update, ctx_->table->io(), tracked_factory));
+  ICEBERG_ASSIGN_OR_RAISE(auto merged_deletes, delete_merge_manager_->MergeManifests(
+                                                   filtered_deletes, new_delete_manifests,
+                                                   metadata_to_update, writer_factory));
 
   std::vector<ManifestFile> result;
   result.reserve(merged_data.size() + merged_deletes.size());
@@ -689,56 +944,74 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   result.insert(result.end(), std::make_move_iterator(merged_deletes.begin()),
                 std::make_move_iterator(merged_deletes.end()));
 
-  // Manifest count summary.
+  // Manifest count summary: unassigned manifests count as neither created nor kept.
   int32_t manifests_created = 0;
   int32_t manifests_kept = 0;
   for (const auto& m : result) {
     if (m.added_snapshot_id == snapshot_id) {
       ++manifests_created;
-    } else {
+    } else if (m.added_snapshot_id != kInvalidSnapshotId) {
       ++manifests_kept;
     }
   }
-  int32_t replaced_manifests_count = data_filter_manager_.ReplacedManifestsCount() +
-                                     delete_filter_manager_.ReplacedManifestsCount() +
-                                     data_merge_manager_.ReplacedManifestsCount() +
-                                     delete_merge_manager_.ReplacedManifestsCount();
-  summary_builder().SetManifestCounts(manifests_created, manifests_kept,
-                                      replaced_manifests_count);
+  int32_t replaced_manifests_count = data_filter_manager_->ReplacedManifestsCount() +
+                                     delete_filter_manager_->ReplacedManifestsCount() +
+                                     data_merge_manager_->ReplacedManifestsCount() +
+                                     delete_merge_manager_->ReplacedManifestsCount();
+  summary_builder().Set(SnapshotSummaryFields::kManifestsCreated,
+                        std::to_string(manifests_created));
+  summary_builder().Set(SnapshotSummaryFields::kManifestsKept,
+                        std::to_string(manifests_kept));
+  summary_builder().Set(SnapshotSummaryFields::kManifestsReplaced,
+                        std::to_string(replaced_manifests_count));
 
   return result;
 }
 
-void MergingSnapshotUpdate::CleanUncommitted(
+Status MergingSnapshotUpdate::CleanUncommitted(
     const std::unordered_set<std::string>& committed) {
-  for (const auto& path : all_written_manifests_) {
-    if (!committed.contains(path)) {
-      std::ignore = DeleteFile(path);
-    }
+  ICEBERG_RETURN_UNEXPECTED(ManagersReady());
+  ICEBERG_RETURN_UNEXPECTED(data_merge_manager_->CleanUncommitted(committed));
+  ICEBERG_RETURN_UNEXPECTED(data_filter_manager_->CleanUncommitted(committed));
+  ICEBERG_RETURN_UNEXPECTED(delete_merge_manager_->CleanUncommitted(committed));
+  ICEBERG_RETURN_UNEXPECTED(delete_filter_manager_->CleanUncommitted(committed));
+  ICEBERG_RETURN_UNEXPECTED(CleanUncommittedAppends(committed));
+  return {};
+}
+
+Status MergingSnapshotUpdate::CleanUncommittedAppends(
+    const std::unordered_set<std::string>& committed) {
+  ICEBERG_RETURN_UNEXPECTED(
+      DeleteUncommitted(cached_new_data_manifests_, committed, /*clear=*/true));
+  ICEBERG_RETURN_UNEXPECTED(
+      DeleteUncommitted(cached_new_delete_manifests_, committed, /*clear=*/true));
+  // rewritten_append_manifests_ are always owned by the table.
+  ICEBERG_RETURN_UNEXPECTED(
+      DeleteUncommitted(rewritten_append_manifests_, committed, /*clear=*/false));
+
+  // append_manifests_ are only owned by the table if the commit succeeded.
+  if (!committed.empty()) {
+    ICEBERG_RETURN_UNEXPECTED(
+        DeleteUncommitted(append_manifests_, committed, /*clear=*/false));
   }
-  all_written_manifests_.clear();
-  cached_new_data_manifests_.reset();
-  cached_new_delete_manifests_.reset();
+
   has_new_data_files_ = false;
   has_new_delete_files_ = false;
+  return {};
+}
 
-  // rewritten_append_manifests_ are always owned by the table (copied by us),
-  // so delete any that were not committed.
-  for (const auto& m : rewritten_append_manifests_) {
-    if (!committed.contains(m.manifest_path)) {
-      std::ignore = DeleteFile(m.manifest_path);
+Status MergingSnapshotUpdate::DeleteUncommitted(
+    std::vector<ManifestFile>& manifests,
+    const std::unordered_set<std::string>& committed, bool clear) {
+  for (const auto& manifest : manifests) {
+    if (!committed.contains(manifest.manifest_path)) {
+      std::ignore = DeleteFile(manifest.manifest_path);
     }
   }
-
-  // append_manifests_ are only owned by the table if the commit succeeded
-  // (i.e., at least one manifest was committed).
-  if (!committed.empty()) {
-    for (const auto& m : append_manifests_) {
-      if (!committed.contains(m.manifest_path)) {
-        std::ignore = DeleteFile(m.manifest_path);
-      }
-    }
+  if (clear) {
+    manifests.clear();
   }
+  return {};
 }
 
 std::unordered_map<std::string, std::string> MergingSnapshotUpdate::Summary() {
@@ -753,105 +1026,57 @@ std::unordered_map<std::string, std::string> MergingSnapshotUpdate::Summary() {
 
 Status MergingSnapshotUpdate::ValidateAddedDataFiles(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
-    std::shared_ptr<Expression> filter, const std::shared_ptr<Snapshot>& parent,
+    std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io, bool case_sensitive) {
-  if (parent == nullptr) {
-    return {};
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(
-      auto history, ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
-                                      {DataOperation::kAppend, DataOperation::kOverwrite},
-                                      ManifestContent::kData, io));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
-                           ManifestStatus::kAdded, filter, nullptr, io, case_sensitive));
-  if (conflict_path.has_value()) {
-    return InvalidArgument(
-        "Found conflicting files that can contain rows matching {}: {}",
-        filter != nullptr ? filter->ToString() : "any expression", conflict_path.value());
+      auto conflict_entries,
+      MatchingAddedDataFiles(metadata, starting_snapshot_id, data_filter,
+                             /*partition_set=*/nullptr, parent, io, case_sensitive));
+  auto conflict_paths = DataFileLocations(conflict_entries);
+  if (conflict_paths.has_value()) {
+    return ValidationFailed(
+        "Found conflicting files that can contain records matching {}: {}",
+        data_filter != nullptr ? data_filter->ToString() : "any expression",
+        conflict_paths.value());
   }
   return {};
 }
 
 Status MergingSnapshotUpdate::ValidateDataFilesExist(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
-    const std::unordered_set<std::string>& file_paths, bool allow_deletes,
-    std::shared_ptr<Expression> filter, const std::shared_ptr<Snapshot>& parent,
-    std::shared_ptr<FileIO> io, bool case_sensitive) {
+    const std::unordered_set<std::string>& file_paths, bool skip_deletes,
+    std::shared_ptr<Expression> conflict_detection_filter,
+    const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
+    bool /*case_sensitive*/) {
   if (parent == nullptr || file_paths.empty()) {
     return {};
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  std::span<const std::string_view> matching_operations =
+      skip_deletes
+          ? std::span<const std::string_view>(kValidateDataFilesExistSkipDeleteOperations)
+          : std::span<const std::string_view>(kValidateDataFilesExistOperations);
   ICEBERG_ASSIGN_OR_RAISE(
-      auto ancestors,
-      ValidationAncestorsBetween(metadata, parent->snapshot_id, starting_snapshot_id));
+      auto history, ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
+                                      matching_operations, ManifestContent::kData, io));
 
-  // Build the full set of matching snapshot IDs first, then scan their manifests.
-  // The full set must be known before filtering manifests, since a manifest may have
-  // been written by a different snapshot in the ancestry range.
-  // Included operations: OVERWRITE and REPLACE always; DELETE when allow_deletes is
-  // false.
-  std::unordered_set<int64_t> matching_snapshot_ids;
-  for (const auto& snap : ancestors) {
-    auto op = snap->Operation();
-    if (op == DataOperation::kOverwrite || op == DataOperation::kReplace) {
-      matching_snapshot_ids.insert(snap->snapshot_id);
-    } else if (!allow_deletes && op == DataOperation::kDelete) {
-      matching_snapshot_ids.insert(snap->snapshot_id);
-    }
+  ICEBERG_ASSIGN_OR_RAISE(auto group, MakeValidationManifestGroup(
+                                          metadata, io, std::move(history.manifests)));
+  group->IgnoreExisting();
+  group->FilterManifestEntries([&history, &file_paths](const ManifestEntry& entry) {
+    return entry.status != ManifestStatus::kAdded && entry.snapshot_id.has_value() &&
+           history.snapshot_ids.contains(entry.snapshot_id.value()) &&
+           entry.data_file != nullptr && file_paths.contains(entry.data_file->file_path);
+  });
+  if (conflict_detection_filter != nullptr) {
+    group->FilterData(std::move(conflict_detection_filter));
   }
 
-  // Build a metrics evaluator for the conflict-detection filter, if provided.
-  std::unique_ptr<InclusiveMetricsEvaluator> evaluator;
-  if (filter != nullptr) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        evaluator, InclusiveMetricsEvaluator::Make(filter, *schema, case_sensitive));
-  }
-
-  for (const auto& snapshot : ancestors) {
-    if (!matching_snapshot_ids.contains(snapshot->snapshot_id)) {
-      continue;
-    }
-    auto cached = SnapshotCache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, cached.DataManifests(io));
-
-    for (const auto& manifest : data_manifests) {
-      if (!matching_snapshot_ids.contains(manifest.added_snapshot_id)) {
-        continue;
-      }
-      ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                              metadata.PartitionSpecById(manifest.partition_spec_id));
-      ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                              ManifestReader::Make(manifest, io, schema, spec));
-      ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
-
-      for (const auto& entry : entries) {
-        if (!entry.snapshot_id.has_value() ||
-            !matching_snapshot_ids.contains(entry.snapshot_id.value())) {
-          continue;
-        }
-        if (entry.status != ManifestStatus::kDeleted) {
-          continue;
-        }
-        if (entry.data_file == nullptr) {
-          continue;
-        }
-        if (!file_paths.contains(entry.data_file->file_path)) {
-          continue;
-        }
-        if (evaluator != nullptr) {
-          ICEBERG_ASSIGN_OR_RAISE(bool matches, evaluator->Evaluate(*entry.data_file));
-          if (!matches) {
-            continue;
-          }
-        }
-        return InvalidArgument("Cannot commit, missing data files: {} in snapshot {}",
-                               entry.data_file->file_path, snapshot->snapshot_id);
-      }
-    }
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, group->Entries());
+  auto deleted_paths = DataFileLocations(entries);
+  if (deleted_paths.has_value()) {
+    return ValidationFailed("Cannot commit, missing data files: {}",
+                            deleted_paths.value());
   }
   return {};
 }
@@ -864,41 +1089,30 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
     return {};
   }
 
-  // Build an index of delete files added since starting_snapshot_id.
-  // Covers both position and equality deletes; the caller controls whether
-  // equality deletes are ignored.
-  ICEBERG_ASSIGN_OR_RAISE(auto deletes, AddedDeleteFiles(metadata, starting_snapshot_id,
-                                                         nullptr, nullptr, parent, io));
+  ICEBERG_ASSIGN_OR_RAISE(auto deletes,
+                          AddedDeleteFiles(metadata, starting_snapshot_id,
+                                           /*data_filter=*/nullptr,
+                                           /*partition_set=*/nullptr, parent, io));
 
-  if (deletes->empty()) {
-    return {};
-  }
-
-  // Compute the starting sequence number for the data file check.
-  int64_t starting_seq = TableMetadata::kInitialSequenceNumber;
-  if (starting_snapshot_id.has_value()) {
-    if (auto snap_result = metadata.SnapshotById(starting_snapshot_id.value());
-        snap_result.has_value()) {
-      starting_seq = snap_result.value()->sequence_number;
-    }
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto starting_sequence_number,
+                          StartingSequenceNumber(metadata, starting_snapshot_id));
 
   for (const auto& data_file : replaced_files) {
     ICEBERG_ASSIGN_OR_RAISE(auto delete_files,
-                            deletes->ForDataFile(starting_seq, *data_file));
+                            deletes->ForDataFile(starting_sequence_number, *data_file));
     if (ignore_equality_deletes) {
       // Only fail on position deletes — equality deletes at higher sequence numbers
       // still apply to the rewritten files and are not a conflict.
       for (const auto& df : delete_files) {
         if (df->content == DataFile::Content::kPositionDeletes) {
-          return InvalidArgument(
+          return ValidationFailed(
               "Cannot commit, found new position delete for replaced data file: {}",
               data_file->file_path);
         }
       }
     } else {
       if (!delete_files.empty()) {
-        return InvalidArgument(
+        return ValidationFailed(
             "Cannot commit, found new delete for replaced data file: {}",
             data_file->file_path);
       }
@@ -911,23 +1125,17 @@ Status MergingSnapshotUpdate::ValidateAddedDataFiles(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
-  if (parent == nullptr) {
-    return {};
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(
-      auto history, ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
-                                      {DataOperation::kAppend, DataOperation::kOverwrite},
-                                      ManifestContent::kData, io));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
-                           ManifestStatus::kAdded, nullptr, &partition_set, io,
-                           /*case_sensitive=*/true));
-  if (conflict_path.has_value()) {
-    return InvalidArgument(
-        "Found conflicting files that can contain rows in validated partitions: {}",
-        conflict_path.value());
+      auto conflict_entries,
+      MatchingAddedDataFiles(metadata, starting_snapshot_id,
+                             /*data_filter=*/nullptr, &partition_set, parent, io,
+                             /*case_sensitive=*/true));
+  auto conflict_paths = DataFileLocations(conflict_entries);
+  if (conflict_paths.has_value()) {
+    return ValidationFailed(
+        "Found conflicting files that can contain records matching validated "
+        "partitions: {}",
+        conflict_paths.value());
   }
   return {};
 }
@@ -935,32 +1143,27 @@ Status MergingSnapshotUpdate::ValidateAddedDataFiles(
 Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, const DataFileSet& replaced_files,
-    const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io) {
+    const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
+    bool case_sensitive) {
   if (parent == nullptr || replaced_files.empty() || metadata.format_version < 2) {
     return {};
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto deletes,
-                          AddedDeleteFiles(metadata, starting_snapshot_id,
-                                           std::move(data_filter), nullptr, parent, io));
-  if (deletes->empty()) {
-    return {};
-  }
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto deletes,
+      AddedDeleteFiles(metadata, starting_snapshot_id, std::move(data_filter),
+                       /*partition_set=*/nullptr, parent, io, case_sensitive));
 
-  int64_t starting_seq = TableMetadata::kInitialSequenceNumber;
-  if (starting_snapshot_id.has_value()) {
-    if (auto snap_result = metadata.SnapshotById(starting_snapshot_id.value());
-        snap_result.has_value()) {
-      starting_seq = snap_result.value()->sequence_number;
-    }
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto starting_sequence_number,
+                          StartingSequenceNumber(metadata, starting_snapshot_id));
 
   for (const auto& data_file : replaced_files) {
     ICEBERG_ASSIGN_OR_RAISE(auto delete_files,
-                            deletes->ForDataFile(starting_seq, *data_file));
-    for (const auto& delete_file : delete_files) {
-      return InvalidArgument("Cannot commit, found new delete for replaced data file: {}",
-                             data_file->file_path);
+                            deletes->ForDataFile(starting_sequence_number, *data_file));
+    if (!delete_files.empty()) {
+      return ValidationFailed(
+          "Cannot commit, found new delete for replaced data file: {}",
+          data_file->file_path);
     }
   }
   return {};
@@ -969,15 +1172,19 @@ Status MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
 Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
-    std::shared_ptr<FileIO> io) {
-  ICEBERG_ASSIGN_OR_RAISE(auto deletes,
-                          AddedDeleteFiles(metadata, starting_snapshot_id,
-                                           std::move(data_filter), nullptr, parent, io));
+    std::shared_ptr<FileIO> io, bool case_sensitive) {
+  std::string data_filter_text =
+      data_filter != nullptr ? data_filter->ToString() : "any expression";
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto deletes,
+      AddedDeleteFiles(metadata, starting_snapshot_id, std::move(data_filter),
+                       /*partition_set=*/nullptr, parent, io, case_sensitive));
   auto referenced_delete_files = deletes->ReferencedDeleteFiles();
-
-  for (const auto& delete_file : referenced_delete_files) {
-    return InvalidArgument("Found new conflicting delete files: {}",
-                           delete_file->file_path);
+  auto delete_paths = DeleteFileLocations(referenced_delete_files);
+  if (delete_paths.has_value()) {
+    return ValidationFailed(
+        "Found new conflicting delete files that can apply to records matching {}: {}",
+        data_filter_text, delete_paths.value());
   }
   return {};
 }
@@ -988,13 +1195,16 @@ Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
     std::shared_ptr<FileIO> io) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto deletes,
-      AddedDeleteFiles(metadata, starting_snapshot_id, nullptr,
+      AddedDeleteFiles(metadata, starting_snapshot_id,
+                       /*data_filter=*/nullptr,
                        std::make_shared<PartitionSet>(partition_set), parent, io));
   auto referenced_delete_files = deletes->ReferencedDeleteFiles();
-  for (const auto& delete_file : referenced_delete_files) {
-    return InvalidArgument(
-        "Found new conflicting delete files in validated partitions: {}",
-        delete_file->file_path);
+  auto delete_paths = DeleteFileLocations(referenced_delete_files);
+  if (delete_paths.has_value()) {
+    return ValidationFailed(
+        "Found new conflicting delete files that can apply to records matching "
+        "validated partitions: {}",
+        delete_paths.value());
   }
   return {};
 }
@@ -1002,26 +1212,17 @@ Status MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
 Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> data_filter, const std::shared_ptr<Snapshot>& parent,
-    std::shared_ptr<FileIO> io) {
-  if (parent == nullptr) {
-    return {};
-  }
-
+    std::shared_ptr<FileIO> io, bool case_sensitive) {
   ICEBERG_ASSIGN_OR_RAISE(
-      auto history, ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
-                                      {DataOperation::kOverwrite, DataOperation::kReplace,
-                                       DataOperation::kDelete},
-                                      ManifestContent::kData, io));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
-                           ManifestStatus::kDeleted, data_filter, nullptr, io,
-                           /*case_sensitive=*/true));
-  if (conflict_path.has_value()) {
-    return InvalidArgument(
-        "Found conflicting deleted files that can contain rows matching {}: {}",
+      auto conflict_entries,
+      MatchingDeletedDataFiles(metadata, starting_snapshot_id, data_filter,
+                               /*partition_set=*/nullptr, parent, io, case_sensitive));
+  auto conflict_paths = DataFileLocations(conflict_entries);
+  if (conflict_paths.has_value()) {
+    return ValidationFailed(
+        "Found conflicting deleted files that can contain records matching {}: {}",
         data_filter != nullptr ? data_filter->ToString() : "any expression",
-        conflict_path.value());
+        conflict_paths.value());
   }
   return {};
 }
@@ -1030,23 +1231,17 @@ Status MergingSnapshotUpdate::ValidateDeletedDataFiles(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     const PartitionSet& partition_set, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) {
-  if (parent == nullptr) {
-    return {};
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(
-      auto history, ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
-                                      {DataOperation::kOverwrite, DataOperation::kReplace,
-                                       DataOperation::kDelete},
-                                      ManifestContent::kData, io));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto conflict_path,
-      FindMatchingDataFile(metadata, history.manifests, history.snapshot_ids,
-                           ManifestStatus::kDeleted, nullptr, &partition_set, io,
-                           /*case_sensitive=*/true));
-  if (conflict_path.has_value()) {
-    return InvalidArgument("Found conflicting deleted files in validated partitions: {}",
-                           conflict_path.value());
+      auto conflict_entries,
+      MatchingDeletedDataFiles(metadata, starting_snapshot_id,
+                               /*data_filter=*/nullptr, &partition_set, parent, io,
+                               /*case_sensitive=*/true));
+  auto conflict_paths = DataFileLocations(conflict_entries);
+  if (conflict_paths.has_value()) {
+    return ValidationFailed(
+        "Found conflicting deleted files that can apply to records matching "
+        "validated partitions: {}",
+        conflict_paths.value());
   }
   return {};
 }
@@ -1056,91 +1251,54 @@ Result<std::unique_ptr<DeleteFileIndex>> MergingSnapshotUpdate::AddedDeleteFiles
     std::shared_ptr<Expression> data_filter, std::shared_ptr<PartitionSet> partition_set,
     const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
     bool case_sensitive) {
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-
   if (parent == nullptr || metadata.format_version < 2) {
-    TableMetadataCache metadata_cache(&metadata);
-    ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, metadata_cache.GetPartitionSpecsById());
-    std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id(
-        specs_ref.get().begin(), specs_ref.get().end());
-    ICEBERG_ASSIGN_OR_RAISE(auto builder, DeleteFileIndex::BuilderFor(
-                                              io, schema, std::move(specs_by_id), {}));
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+    ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, PartitionSpecsByIdMap(metadata));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto builder,
+        DeleteFileIndex::BuilderFor(io, std::move(schema), std::move(specs_by_id),
+                                    /*delete_manifests=*/{}));
     return builder.Build();
   }
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto history, ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
-                                      {DataOperation::kOverwrite, DataOperation::kDelete},
+                                      kValidateAddedDeleteFilesOperations,
                                       ManifestContent::kDeletes, io));
 
-  // Compute the starting sequence number from the starting snapshot.
-  int64_t starting_seq = TableMetadata::kInitialSequenceNumber;
-  if (starting_snapshot_id.has_value()) {
-    if (auto snap_result = metadata.SnapshotById(starting_snapshot_id.value());
-        snap_result.has_value()) {
-      starting_seq = snap_result.value()->sequence_number;
-    }
-  }
-
-  TableMetadataCache metadata_cache(&metadata);
-  ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, metadata_cache.GetPartitionSpecsById());
-  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id(
-      specs_ref.get().begin(), specs_ref.get().end());
-
-  ICEBERG_ASSIGN_OR_RAISE(auto builder,
-                          DeleteFileIndex::BuilderFor(io, schema, std::move(specs_by_id),
-                                                      std::move(history.manifests)));
-  builder.AfterSequenceNumber(starting_seq);
-  builder.CaseSensitive(case_sensitive);
-  if (data_filter != nullptr) {
-    builder.DataFilter(std::move(data_filter));
-  }
-  if (partition_set != nullptr) {
-    builder.FilterPartitions(std::move(partition_set));
-  }
-  return builder.Build();
+  ICEBERG_ASSIGN_OR_RAISE(auto starting_sequence_number,
+                          StartingSequenceNumber(metadata, starting_snapshot_id));
+  return BuildDeleteFileIndex(metadata, io, std::move(history.manifests),
+                              starting_sequence_number, std::move(data_filter),
+                              std::move(partition_set), case_sensitive);
 }
 
 Status MergingSnapshotUpdate::ValidateAddedDVs(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
-    std::shared_ptr<Expression> conflict_filter,
+    std::shared_ptr<Expression> conflict_detection_filter,
     const std::unordered_set<std::string>& referenced_data_files,
-    const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io) {
-  if (parent == nullptr || referenced_data_files.empty() || metadata.format_version < 3) {
+    const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
+    bool case_sensitive) {
+  if (parent == nullptr || referenced_data_files.empty()) {
     return {};
   }
 
   ICEBERG_ASSIGN_OR_RAISE(
-      auto history, ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
-                                      {DataOperation::kOverwrite, DataOperation::kDelete,
-                                       DataOperation::kReplace},
-                                      ManifestContent::kDeletes, io));
+      auto history,
+      ValidationHistory(metadata, parent->snapshot_id, starting_snapshot_id,
+                        kValidateAddedDVsOperations, ManifestContent::kDeletes, io));
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
 
-  for (const auto& manifest : history.manifests) {
-    ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                            metadata.PartitionSpecById(manifest.partition_spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                            ManifestReader::Make(manifest, io, schema, spec));
-    if (conflict_filter != nullptr) {
-      reader->FilterRows(conflict_filter);
+  ICEBERG_ASSIGN_OR_RAISE(auto matching_manifests,
+                          FilterManifestsByPartition(metadata, conflict_detection_filter,
+                                                     history.manifests, case_sensitive));
+  for (const auto& manifest : matching_manifests) {
+    if (!manifest.has_added_files()) {
+      continue;
     }
-    ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
-
-    for (const auto& entry : entries) {
-      if (!entry.snapshot_id.has_value() ||
-          !history.snapshot_ids.contains(entry.snapshot_id.value())) {
-        continue;
-      }
-      if (entry.data_file == nullptr || !ContentFileUtil::IsDV(*entry.data_file) ||
-          !entry.data_file->referenced_data_file.has_value()) {
-        continue;
-      }
-      if (referenced_data_files.contains(*entry.data_file->referenced_data_file)) {
-        return InvalidArgument("Cannot commit, found new deletion vector: {}",
-                               ContentFileUtil::DVDesc(*entry.data_file));
-      }
-    }
+    ICEBERG_RETURN_UNEXPECTED(ValidateAddedDVsInManifest(
+        metadata, manifest, conflict_detection_filter, history.snapshot_ids,
+        referenced_data_files, io, schema, case_sensitive));
   }
   return {};
 }
@@ -1149,19 +1307,19 @@ Status MergingSnapshotUpdate::ValidateAddedDVs(
     const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
     std::shared_ptr<Expression> conflict_filter, const std::shared_ptr<Snapshot>& parent,
     std::shared_ptr<FileIO> io) const {
+  if (parent == nullptr) {
+    return {};
+  }
+
   std::unordered_set<std::string> referenced_data_files;
-  for (const auto& pending_file : new_delete_files_) {
-    if (pending_file.file == nullptr || !ContentFileUtil::IsDV(*pending_file.file) ||
-        !pending_file.file->referenced_data_file.has_value()) {
-      continue;
-    }
-    referenced_data_files.insert(*pending_file.file->referenced_data_file);
+  for (const auto& entry : dvs_by_referenced_file_.entries()) {
+    referenced_data_files.insert(entry.referenced_file);
   }
   if (referenced_data_files.empty()) {
     return {};
   }
   return ValidateAddedDVs(metadata, starting_snapshot_id, std::move(conflict_filter),
-                          referenced_data_files, parent, std::move(io));
+                          referenced_data_files, parent, std::move(io), case_sensitive_);
 }
 
 }  // namespace iceberg

@@ -72,7 +72,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
       const TableMetadata& metadata_to_update,
       const std::shared_ptr<Snapshot>& snapshot) override;
   std::unordered_map<std::string, std::string> Summary() override;
-  void CleanUncommitted(const std::unordered_set<std::string>& committed) override;
+  Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
   bool CleanupAfterCommit() const override;
 
  private:

@@ -21,12 +21,15 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <ranges>
+#include <tuple>
 #include <utility>
 #include <vector>
 
+#include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/table_metadata.h"
@@ -34,60 +37,87 @@
 
 namespace iceberg {
 
-ManifestMergeManager::ManifestMergeManager(int64_t target_size_bytes,
-                                           int32_t min_count_to_merge, bool merge_enabled)
-    : target_size_bytes_(target_size_bytes),
+namespace {
+
+size_t CombineHash(size_t seed, size_t value) {
+  return seed ^ (value + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+}
+
+}  // namespace
+
+ManifestMergeManager::ManifestMergeManager(
+    ManifestContent content, int64_t target_size_bytes, int32_t min_count_to_merge,
+    bool merge_enabled, std::shared_ptr<FileIO> file_io,
+    SnapshotIdSupplier snapshot_id_supplier,
+    std::function<Status(const std::string&)> delete_file)
+    : manifest_content_(content),
+      target_size_bytes_(target_size_bytes),
       min_count_to_merge_(min_count_to_merge),
-      merge_enabled_(merge_enabled) {}
+      merge_enabled_(merge_enabled),
+      file_io_(std::move(file_io)),
+      snapshot_id_supplier_(std::move(snapshot_id_supplier)),
+      delete_file_(std::move(delete_file)) {
+  ICEBERG_DCHECK(file_io_, "FileIO cannot be null");
+  ICEBERG_DCHECK(snapshot_id_supplier_, "Snapshot ID supplier cannot be null");
+  if (delete_file_ == nullptr) {
+    delete_file_ = [this](const std::string& location) {
+      return file_io_->DeleteFile(location);
+    };
+  }
+}
+
+Result<std::unique_ptr<ManifestMergeManager>> ManifestMergeManager::Make(
+    ManifestContent content, int64_t target_size_bytes, int32_t min_count_to_merge,
+    bool merge_enabled, std::shared_ptr<FileIO> file_io,
+    SnapshotIdSupplier snapshot_id_supplier,
+    std::function<Status(const std::string&)> delete_file) {
+  ICEBERG_PRECHECK(file_io != nullptr, "FileIO cannot be null");
+  ICEBERG_PRECHECK(snapshot_id_supplier != nullptr,
+                   "Snapshot ID supplier cannot be null");
+  return std::unique_ptr<ManifestMergeManager>(new ManifestMergeManager(
+      content, target_size_bytes, min_count_to_merge, merge_enabled, std::move(file_io),
+      std::move(snapshot_id_supplier), std::move(delete_file)));
+}
 
 Result<std::vector<ManifestFile>> ManifestMergeManager::MergeManifests(
     const std::vector<ManifestFile>& existing_manifests,
-    const std::vector<ManifestFile>& new_manifests, int64_t snapshot_id,
-    const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
+    const std::vector<ManifestFile>& new_manifests, const TableMetadata& metadata,
     const ManifestWriterFactory& writer_factory) {
-  // Combine new then existing (new-first ordering is preserved in output).
-  auto to_manifest_ptr = [](const ManifestFile& manifest) { return &manifest; };
-  auto manifest_ranges = std::array{
-      new_manifests | std::views::transform(to_manifest_ptr),
-      existing_manifests | std::views::transform(to_manifest_ptr),
+  auto append_manifest = [this](const ManifestFile& manifest,
+                                std::vector<const ManifestFile*>& manifests) -> Status {
+    ICEBERG_PRECHECK(manifest.content == manifest_content_,
+                     "Cannot merge manifest with unexpected content");
+    manifests.push_back(&manifest);
+    return {};
   };
 
   std::vector<const ManifestFile*> all;
   all.reserve(new_manifests.size() + existing_manifests.size());
-  std::ranges::copy(manifest_ranges | std::views::join, std::back_inserter(all));
+  for (const auto& manifest : new_manifests) {
+    ICEBERG_RETURN_UNEXPECTED(append_manifest(manifest, all));
+  }
+  for (const auto& manifest : existing_manifests) {
+    ICEBERG_RETURN_UNEXPECTED(append_manifest(manifest, all));
+  }
 
   if (all.empty() || !merge_enabled_) {
-    replaced_manifests_count_ = 0;
     return all |
            std::views::transform([](const ManifestFile* manifest) { return *manifest; }) |
            std::ranges::to<std::vector<ManifestFile>>();
   }
 
-  // Track the first (newest) manifest independently per content type.
-  std::map<ManifestContent, const ManifestFile*> first_by_content;
-  std::ranges::for_each(all, [&first_by_content](const ManifestFile* manifest) {
-    first_by_content.try_emplace(manifest->content, manifest);
-  });
-
-  // Group manifests by (partition_spec_id, content), never merging across specs or
-  // content types. Reverse spec ordering preserves v3 first-row-id assignment order.
-  using GroupKey = std::pair<int32_t, ManifestContent>;
-  auto group_key = [](const ManifestFile* manifest) {
-    return GroupKey{manifest->partition_spec_id, manifest->content};
-  };
-
-  std::map<GroupKey, std::vector<const ManifestFile*>, std::greater<>> by_spec;
-  std::ranges::for_each(all, [&by_spec, &group_key](const ManifestFile* manifest) {
-    by_spec[group_key(manifest)].push_back(manifest);
+  const auto* first = all.front();
+  std::map<int32_t, std::vector<const ManifestFile*>, std::greater<>> by_spec;
+  std::ranges::for_each(all, [&by_spec](const ManifestFile* manifest) {
+    by_spec[manifest->partition_spec_id].push_back(manifest);
   });
 
   std::vector<ManifestFile> result;
   result.reserve(all.size());
-  replaced_manifests_count_ = 0;
-  for (auto& [key, group] : by_spec) {
-    const auto* first = first_by_content.at(key.second);
-    ICEBERG_ASSIGN_OR_RAISE(auto merged, MergeGroup(group, first, snapshot_id, metadata,
-                                                    file_io, writer_factory));
+  for (auto& [spec_id, group] : by_spec) {
+    std::ignore = spec_id;
+    ICEBERG_ASSIGN_OR_RAISE(auto merged,
+                            MergeGroup(group, first, metadata, writer_factory));
     std::ranges::move(merged, std::back_inserter(result));
   }
   return result;
@@ -95,8 +125,7 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeManifests(
 
 Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
     const std::vector<const ManifestFile*>& group, const ManifestFile* first,
-    int64_t snapshot_id, const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
-    const ManifestWriterFactory& writer_factory) {
+    const TableMetadata& metadata, const ManifestWriterFactory& writer_factory) {
   // Match packEnd(group, ManifestFile::length) with lookback 1:
   //   1. Process manifests in reverse order (oldest-first).
   //   2. Greedy forward-pack with lookback=1: emit the current bin when the next item
@@ -131,24 +160,29 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
   // pass its contents through unchanged.
   std::vector<ManifestFile> result;
   result.reserve(group.size());
-  // TODO(Guotao): Flush independent bins in parallel and cache successful merged bins
-  // for commit retries.
   for (auto& bin : bins) {
-    bool contains_first = std::ranges::find(bin, first) != bin.end();
-    if (contains_first && std::cmp_less(bin.size(), min_count_to_merge_)) {
+    if (bin.size() == 1) {
+      result.push_back(*bin[0]);
+    } else if (bool contains_first = std::ranges::find(bin, first) != bin.end();
+               contains_first && std::cmp_less(bin.size(), min_count_to_merge_)) {
       for (const auto* manifest : bin) {
         result.push_back(*manifest);
       }
     } else {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto merged, FlushBin(bin, snapshot_id, metadata, file_io, writer_factory));
-      if (bin.size() > 1) {
-        replaced_manifests_count_ += static_cast<int32_t>(
-            std::ranges::count_if(bin, [snapshot_id](const ManifestFile* manifest) {
-              return manifest->added_snapshot_id != snapshot_id;
-            }));
+      const auto* cached = merged_manifests_.Find(bin);
+      if (cached != nullptr) {
+        result.push_back(*cached);
+      } else {
+        const int64_t snapshot_id = snapshot_id_supplier_();
+        ICEBERG_ASSIGN_OR_RAISE(auto merged, FlushBin(bin, metadata, writer_factory));
+        merged_manifests_.Add(bin, merged);
+        for (const auto* manifest : bin) {
+          if (manifest->added_snapshot_id != snapshot_id) {
+            ++replaced_manifests_count_;
+          }
+        }
+        result.push_back(std::move(merged));
       }
-      result.push_back(std::move(merged));
     }
   }
 
@@ -156,23 +190,22 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
 }
 
 Result<ManifestFile> ManifestMergeManager::FlushBin(
-    const std::vector<const ManifestFile*>& bin, int64_t snapshot_id,
-    const TableMetadata& metadata, std::shared_ptr<FileIO> file_io,
+    const std::vector<const ManifestFile*>& bin, const TableMetadata& metadata,
     const ManifestWriterFactory& writer_factory) {
-  // A single-manifest bin requires no merging.
-  if (bin.size() == 1) return *bin[0];
-
   const ManifestFile& first = *bin[0];
   int32_t spec_id = first.partition_spec_id;
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
   ICEBERG_ASSIGN_OR_RAISE(auto spec, metadata.PartitionSpecById(spec_id));
 
-  ICEBERG_ASSIGN_OR_RAISE(auto writer, writer_factory(spec_id, first.content));
+  ICEBERG_ASSIGN_OR_RAISE(auto writer, writer_factory(spec_id, manifest_content_));
 
+  const int64_t snapshot_id = snapshot_id_supplier_();
   for (const auto* manifest : bin) {
-    ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                            ManifestReader::Make(*manifest, file_io, schema, spec));
+    bool is_committed = manifest->added_snapshot_id != kInvalidSnapshotId &&
+                        manifest->added_snapshot_id != snapshot_id;
+    ICEBERG_ASSIGN_OR_RAISE(auto reader, ManifestReader::Make(*manifest, file_io_, schema,
+                                                              spec, is_committed));
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
     for (const auto& entry : entries) {
       bool is_current =
@@ -194,6 +227,75 @@ Result<ManifestFile> ManifestMergeManager::FlushBin(
 
   ICEBERG_RETURN_UNEXPECTED(writer->Close());
   return writer->ToManifestFile();
+}
+
+ManifestMergeManager::MergedManifestCache::Key
+ManifestMergeManager::MergedManifestCache::MakeKey(
+    const std::vector<const ManifestFile*>& bin) {
+  Key key;
+  key.bin.reserve(bin.size());
+  for (const auto* manifest : bin) {
+    key.bin.push_back(*manifest);
+  }
+  return key;
+}
+
+const ManifestFile* ManifestMergeManager::MergedManifestCache::Find(
+    const std::vector<const ManifestFile*>& bin) const {
+  auto iter = entries_.find(MakeKey(bin));
+  if (iter == entries_.end()) {
+    return nullptr;
+  }
+  return &iter->second;
+}
+
+void ManifestMergeManager::MergedManifestCache::Add(
+    const std::vector<const ManifestFile*>& bin, const ManifestFile& manifest) {
+  entries_.emplace(MakeKey(bin), manifest);
+}
+
+size_t ManifestMergeManager::MergedManifestCache::KeyHash::operator()(
+    const Key& key) const {
+  size_t hash = 0;
+  for (const auto& manifest : key.bin) {
+    hash = CombineHash(hash, std::hash<std::string>{}(manifest.manifest_path));
+  }
+  return hash;
+}
+
+Result<int32_t> ManifestMergeManager::MergedManifestCache::CleanUncommitted(
+    const std::unordered_set<std::string>& committed, int64_t snapshot_id,
+    const std::function<Status(const std::string&)>& delete_file) {
+  int32_t removed_replaced_manifests_count = 0;
+  auto cached_entries =
+      std::vector<std::pair<Key, ManifestFile>>{entries_.begin(), entries_.end()};
+  for (const auto& [bin, merged] : cached_entries) {
+    if (committed.contains(merged.manifest_path)) {
+      continue;
+    }
+
+    std::ignore = delete_file(merged.manifest_path);
+    for (const auto& manifest : bin.bin) {
+      if (manifest.added_snapshot_id != snapshot_id) {
+        ++removed_replaced_manifests_count;
+      }
+    }
+    entries_.erase(bin);
+  }
+  return removed_replaced_manifests_count;
+}
+
+Status ManifestMergeManager::CleanUncommitted(
+    const std::unordered_set<std::string>& committed) {
+  if (merged_manifests_.empty()) {
+    return {};
+  }
+  const int64_t snapshot_id = snapshot_id_supplier_();
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto removed_replaced_manifests_count,
+      merged_manifests_.CleanUncommitted(committed, snapshot_id, delete_file_));
+  replaced_manifests_count_ -= removed_replaced_manifests_count;
+  return {};
 }
 
 }  // namespace iceberg
