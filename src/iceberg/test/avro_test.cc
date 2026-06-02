@@ -981,43 +981,25 @@ TEST_P(AvroWriterTest, DoesNotMaterializeUnknownFieldsOnWrite) {
   VerifyWrittenData(test_data);
 }
 
-TEST_P(AvroWriterTest, WritesUnknownListElementsAndMapValues) {
-  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(1, "id", int32()),
-      SchemaField::MakeRequired(2, "mysteries",
-                                std::make_shared<ListType>(SchemaField::MakeOptional(
-                                    3, ListType::kElementName, unknown()))),
-      SchemaField::MakeRequired(
-          4, "properties",
-          std::make_shared<MapType>(
-              SchemaField::MakeRequired(5, MapType::kKeyName, string()),
-              SchemaField::MakeOptional(6, MapType::kValueName, unknown()))),
-  });
+TEST_P(AvroWriterTest, RejectsUnknownInsideListOrMapOnWrite) {
+  std::vector<std::shared_ptr<Schema>> schemas = {
+      std::make_shared<Schema>(std::vector<SchemaField>{
+          SchemaField::MakeOptional(1, "mysteries",
+                                    std::make_shared<ListType>(SchemaField::MakeOptional(
+                                        2, ListType::kElementName, iceberg::unknown()))),
+      }),
+      std::make_shared<Schema>(std::vector<SchemaField>{
+          SchemaField::MakeOptional(
+              1, "properties",
+              std::make_shared<MapType>(
+                  SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::string()),
+                  SchemaField::MakeOptional(3, MapType::kValueName, iceberg::unknown()))),
+      }),
+  };
 
-  std::string test_data = R"([
-    [1, [null, null], [["a", null], ["b", null]]],
-    [2, [], []],
-    [3, [null], [["c", null]]]
-  ])";
-
-  WriteAvroFile(schema, test_data);
-
-  auto avro_schema = PhysicalAvroSchema();
-  auto root = avro_schema.root();
-  ASSERT_EQ(root->type(), ::avro::AVRO_RECORD);
-  ASSERT_EQ(root->leaves(), 3);
-
-  auto mysteries = root->leafAt(1);
-  ASSERT_EQ(mysteries->type(), ::avro::AVRO_ARRAY);
-  ASSERT_EQ(mysteries->leaves(), 1);
-  EXPECT_EQ(mysteries->leafAt(0)->type(), ::avro::AVRO_NULL);
-
-  auto properties = root->leafAt(2);
-  ASSERT_EQ(properties->type(), ::avro::AVRO_MAP);
-  ASSERT_EQ(properties->leaves(), 2);
-  EXPECT_EQ(properties->leafAt(1)->type(), ::avro::AVRO_NULL);
-
-  VerifyWrittenData(test_data);
+  for (const auto& schema : schemas) {
+    ExpectOpenFails(schema, "physical Avro representation");
+  }
 }
 
 TEST_P(AvroWriterTest, RejectsUnknownMapKeyOnWrite) {

@@ -766,7 +766,7 @@ Result<FieldProjection> ProjectList(const ListType& list_type,
   FieldProjection element_projection;
   ICEBERG_ASSIGN_OR_RAISE(element_projection,
                           ProjectField(expected_element_field, avro_node->leafAt(0),
-                                       size_t{0}, prune_source));
+                                       /*source_index*/size_t{0}, prune_source));
 
   FieldProjection result;
   result.children.emplace_back(std::move(element_projection));
