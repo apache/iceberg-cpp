@@ -106,14 +106,9 @@ Result<std::optional<SchemaField>> PruneUnknownField(const SchemaField& field,
                      field.name());
     ICEBERG_PRECHECK(field.optional(), "Unknown type field '{}' must be optional",
                      field.name());
-    ICEBERG_PRECHECK(context != FieldContext::kListElement,
-                     "Cannot write list element '{}' of unknown type because it has no "
-                     "physical Avro representation",
-                     field.name());
-    ICEBERG_PRECHECK(context != FieldContext::kMapValue,
-                     "Cannot write map value '{}' of unknown type because it has no "
-                     "physical Avro representation",
-                     field.name());
+    if (context == FieldContext::kListElement || context == FieldContext::kMapValue) {
+      return field;
+    }
     return std::nullopt;
   }
 
