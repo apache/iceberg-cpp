@@ -105,6 +105,7 @@ function(resolve_arrow_dependency)
   set(ARROW_S3 ${ICEBERG_S3})
   set(ARROW_JSON ON)
   set(ARROW_PARQUET ON)
+  set(ARROW_ENABLE_THREADING ON)
   set(ARROW_SIMD_LEVEL "NONE")
   set(ARROW_RUNTIME_SIMD_LEVEL "NONE")
   set(ARROW_POSITION_INDEPENDENT_CODE ON)
@@ -167,8 +168,8 @@ function(resolve_arrow_dependency)
     endif()
 
     # Arrow's exported static target interface may reference system libraries
-    # (e.g. OpenSSL, CURL, ZLIB) that consumers need to find.
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ZLIB)
+    # (e.g. Threads, OpenSSL, CURL, ZLIB) that consumers need to find.
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads ZLIB)
     if(ARROW_S3)
       list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL CURL)
     endif()

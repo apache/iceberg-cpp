@@ -99,6 +99,7 @@ iceberg_tests = {
             'roaring_position_bitmap_test.cc',
             'string_util_test.cc',
             'struct_like_set_test.cc',
+            'task_group_test.cc',
             'temporal_util_test.cc',
             'transform_util_test.cc',
             'truncate_util_test.cc',

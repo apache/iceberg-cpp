@@ -19,39 +19,44 @@
 
 #pragma once
 
-/// \file iceberg/util/lazy.h
-/// Lazy initialization utility.
-
-#include <concepts>
-#include <functional>
-#include <mutex>
+#include <atomic>
+#include <thread>
 #include <utility>
+#include <vector>
 
 #include "iceberg/result.h"
-#include "iceberg/util/macros.h"
+#include "iceberg/util/executor.h"
 
-namespace iceberg {
+namespace iceberg::test {
 
-template <auto InitFunc>
-class Lazy {
-  template <typename R, typename... Args>
-  static R ExtractReturnType(R (*)(Args...));  // only declaration, never defined
-
-  using T = ResultValueT<decltype(ExtractReturnType(InitFunc))>;
-
+class ThreadExecutor final : public Executor {
  public:
-  template <typename... Args>
-    requires std::invocable<decltype(InitFunc), Args...>
-  Result<std::reference_wrapper<T>> Get(Args&&... args) const {
-    std::call_once(
-        flag_, [this, &args...]() { value_ = InitFunc(std::forward<Args>(args)...); });
-    ICEBERG_RETURN_UNEXPECTED(value_);
-    return std::ref(*value_);
+  explicit ThreadExecutor(Status submit_status = {})
+      : submit_status_(std::move(submit_status)) {}
+
+  ~ThreadExecutor() override {
+    for (auto& thread : threads_) {
+      if (thread.joinable()) {
+        thread.join();
+      }
+    }
   }
 
+  Status Submit(ExecutorTask task) override {
+    submit_count_.fetch_add(1, std::memory_order_relaxed);
+    if (!submit_status_.has_value()) {
+      return std::unexpected(submit_status_.error());
+    }
+    threads_.emplace_back(std::move(task));
+    return {};
+  }
+
+  int submit_count() const { return submit_count_.load(std::memory_order_relaxed); }
+
  private:
-  mutable Result<T> value_ = Invalid("Lazy value has not been initialized");
-  mutable std::once_flag flag_;
+  Status submit_status_;
+  std::atomic<int> submit_count_{0};
+  std::vector<std::thread> threads_;
 };
 
-};  // namespace iceberg
+}  // namespace iceberg::test

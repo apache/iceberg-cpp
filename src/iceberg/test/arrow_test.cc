@@ -17,28 +17,39 @@
  * under the License.
  */
 
+#include <functional>
 #include <memory>
+#include <mutex>
+#include <thread>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <arrow/api.h>
 #include <arrow/c/bridge.h>
 #include <arrow/extension/uuid.h>
 #include <arrow/result.h>
 #include <arrow/type_fwd.h>
+#include <arrow/util/config.h>
 #include <arrow/util/key_value_metadata.h>
+#include <arrow/util/thread_pool.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/constants.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/executor.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg {
 
 struct ToArrowSchemaParam {
   std::shared_ptr<Type> iceberg_type;
   bool optional = true;
-  std::shared_ptr<arrow::DataType> arrow_type;
+  std::shared_ptr<::arrow::DataType> arrow_type;
 };
 
 class ToArrowSchemaTest : public ::testing::TestWithParam<ToArrowSchemaParam> {};
@@ -89,17 +100,17 @@ INSTANTIATE_TEST_SUITE_P(
         ToArrowSchemaParam{.iceberg_type = iceberg::date(),
                            .arrow_type = ::arrow::date32()},
         ToArrowSchemaParam{.iceberg_type = iceberg::time(),
-                           .arrow_type = ::arrow::time64(arrow::TimeUnit::MICRO)},
+                           .arrow_type = ::arrow::time64(::arrow::TimeUnit::MICRO)},
         ToArrowSchemaParam{.iceberg_type = iceberg::timestamp(),
-                           .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO)},
+                           .arrow_type = ::arrow::timestamp(::arrow::TimeUnit::MICRO)},
         ToArrowSchemaParam{
             .iceberg_type = iceberg::timestamp_tz(),
-            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO, "UTC")},
+            .arrow_type = ::arrow::timestamp(::arrow::TimeUnit::MICRO, "UTC")},
         ToArrowSchemaParam{.iceberg_type = iceberg::timestamp_ns(),
-                           .arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO)},
+                           .arrow_type = ::arrow::timestamp(::arrow::TimeUnit::NANO)},
         ToArrowSchemaParam{
             .iceberg_type = iceberg::timestamptz_ns(),
-            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO, "UTC")},
+            .arrow_type = ::arrow::timestamp(::arrow::TimeUnit::NANO, "UTC")},
         ToArrowSchemaParam{.iceberg_type = iceberg::string(),
                            .arrow_type = ::arrow::utf8()},
         ToArrowSchemaParam{.iceberg_type = iceberg::binary(),
@@ -234,7 +245,7 @@ TEST(ToArrowSchemaTest, MapType) {
 }
 
 struct FromArrowSchemaParam {
-  std::shared_ptr<arrow::DataType> arrow_type;
+  std::shared_ptr<::arrow::DataType> arrow_type;
   bool optional = true;
   std::shared_ptr<Type> iceberg_type;
 };
@@ -288,17 +299,17 @@ INSTANTIATE_TEST_SUITE_P(
                              .iceberg_type = iceberg::decimal(10, 2)},
         FromArrowSchemaParam{.arrow_type = ::arrow::date32(),
                              .iceberg_type = iceberg::date()},
-        FromArrowSchemaParam{.arrow_type = ::arrow::time64(arrow::TimeUnit::MICRO),
+        FromArrowSchemaParam{.arrow_type = ::arrow::time64(::arrow::TimeUnit::MICRO),
                              .iceberg_type = iceberg::time()},
-        FromArrowSchemaParam{.arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO),
+        FromArrowSchemaParam{.arrow_type = ::arrow::timestamp(::arrow::TimeUnit::MICRO),
                              .iceberg_type = iceberg::timestamp()},
         FromArrowSchemaParam{
-            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO, "UTC"),
+            .arrow_type = ::arrow::timestamp(::arrow::TimeUnit::MICRO, "UTC"),
             .iceberg_type = std::make_shared<TimestampTzType>()},
-        FromArrowSchemaParam{.arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO),
+        FromArrowSchemaParam{.arrow_type = ::arrow::timestamp(::arrow::TimeUnit::NANO),
                              .iceberg_type = iceberg::timestamp_ns()},
         FromArrowSchemaParam{
-            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::NANO, "UTC"),
+            .arrow_type = ::arrow::timestamp(::arrow::TimeUnit::NANO, "UTC"),
             .iceberg_type = iceberg::timestamptz_ns()},
         FromArrowSchemaParam{.arrow_type = ::arrow::utf8(),
                              .iceberg_type = iceberg::string()},
@@ -465,6 +476,52 @@ TEST(FromArrowSchemaTest, MapType) {
   ASSERT_EQ(value.field_id(), kValueFieldId);
   ASSERT_TRUE(value.optional());
   ASSERT_EQ(value.type()->type_id(), TypeId::kInt);
+}
+
+TEST(ArrowExecutorAdapterTest, RunsTaskGroupOnThreadPool) {
+#ifndef ARROW_ENABLE_THREADING
+  GTEST_SKIP() << "Test requires ARROW_ENABLE_THREADING=ON";
+#endif
+
+  class ArrowExecutorAdapter final : public Executor {
+   public:
+    explicit ArrowExecutorAdapter(::arrow::internal::Executor& executor)
+        : executor_(executor) {}
+
+    Status Submit(ExecutorTask task) override {
+      ICEBERG_ARROW_RETURN_NOT_OK(executor_.Spawn(std::move(task)));
+      return {};
+    }
+
+   private:
+    ::arrow::internal::Executor& executor_;
+  };
+
+  auto thread_pool = ::arrow::internal::ThreadPool::Make(2).ValueOrDie();
+  ArrowExecutorAdapter executor(*thread_pool);
+
+  std::mutex mutex;
+  std::vector<std::thread::id> thread_ids;
+
+  auto status = TaskGroup<>()
+                    .SetExecutor(std::ref(executor))
+                    .Submit([&]() -> Status {
+                      std::lock_guard lock(mutex);
+                      thread_ids.push_back(std::this_thread::get_id());
+                      return {};
+                    })
+                    .Submit([&]() -> Status {
+                      std::lock_guard lock(mutex);
+                      thread_ids.push_back(std::this_thread::get_id());
+                      return {};
+                    })
+                    .Run();
+
+  EXPECT_THAT(status, IsOk());
+  EXPECT_EQ(thread_ids.size(), 2);
+  EXPECT_NE(thread_ids[0], std::this_thread::get_id());
+  EXPECT_NE(thread_ids[1], std::this_thread::get_id());
+  EXPECT_TRUE(thread_pool->Shutdown().ok());
 }
 
 }  // namespace iceberg

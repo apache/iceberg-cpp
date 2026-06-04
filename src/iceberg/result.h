@@ -19,9 +19,11 @@
 
 #pragma once
 
+#include <concepts>
 #include <expected>
 #include <format>
 #include <string>
+#include <type_traits>
 
 #include "iceberg/iceberg_export.h"
 
@@ -125,5 +127,12 @@ DEFINE_ERROR_FUNCTION(UnknownError)
 DEFINE_ERROR_FUNCTION(ValidationFailed)
 
 #undef DEFINE_ERROR_FUNCTION
+
+template <typename T>
+concept AsResult = std::derived_from<std::remove_cvref_t<T>,
+                                     Result<typename std::remove_cvref_t<T>::value_type>>;
+
+template <AsResult T>
+using ResultValueT = typename std::remove_cvref_t<T>::value_type;
 
 }  // namespace iceberg

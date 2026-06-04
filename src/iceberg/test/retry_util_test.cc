@@ -27,6 +27,7 @@
 
 #include "iceberg/result.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/retry.h"
 #include "iceberg/util/retry_util_internal.h"
 
 namespace iceberg {
@@ -40,50 +41,16 @@ struct NonResultReturningTask {
   int operator()() const { return 1; }
 };
 
+using test::CommitFailedRetry;
+using test::FakeRetryEnvironment;
+using test::TransientIORetry;
+
 static_assert(detail::RetryTask<ResultReturningTask>);
 static_assert(!detail::RetryTask<NonResultReturningTask>);
-static_assert(requires(RetryRunner runner, ResultReturningTask task) {
+static_assert(requires(RetryRunner<CommitFailedRetry> runner, ResultReturningTask task) {
   { runner.Run(task) } -> std::same_as<Result<int>>;
 });
-
-class FakeRetryEnvironment {
- public:
-  using Duration = RetryTestHooks::Duration;
-  using TimePoint = RetryTestHooks::TimePoint;
-
-  FakeRetryEnvironment() {
-    hooks_.now = [this]() { return now_; };
-    hooks_.sleep_for = [this](Duration duration) {
-      sleep_durations_.push_back(duration);
-      now_ += duration;
-    };
-    hooks_.jitter = [this](int32_t base_delay_ms) {
-      observed_base_delays_ms_.push_back(base_delay_ms);
-      return base_delay_ms + jitter_offset_ms_;
-    };
-  }
-
-  void Advance(Duration duration) { now_ += duration; }
-
-  void SetJitterOffsetMs(int32_t jitter_offset_ms) {
-    jitter_offset_ms_ = jitter_offset_ms;
-  }
-
-  const RetryTestHooks& hooks() const { return hooks_; }
-
-  const std::vector<Duration>& sleep_durations() const { return sleep_durations_; }
-
-  const std::vector<int32_t>& observed_base_delays_ms() const {
-    return observed_base_delays_ms_;
-  }
-
- private:
-  RetryTestHooks hooks_;
-  TimePoint now_{};
-  int32_t jitter_offset_ms_ = 0;
-  std::vector<Duration> sleep_durations_;
-  std::vector<int32_t> observed_base_delays_ms_;
-};
+static_assert(retry::NoRetry::kMode == retry::RetryPolicyMode::kNoRetry);
 
 }  // namespace
 
@@ -91,11 +58,10 @@ TEST(RetryRunnerTest, SuccessOnFirstAttempt) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 3,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 3,
+                                                           .min_wait_ms = 1,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -113,11 +79,10 @@ TEST(RetryRunnerTest, RetryOnceThenSucceed) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 3,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 3,
+                                                           .min_wait_ms = 1,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -138,11 +103,10 @@ TEST(RetryRunnerTest, MaxAttemptsExhausted) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 2,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 2,
+                                                           .min_wait_ms = 1,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -159,11 +123,10 @@ TEST(RetryRunnerTest, OnlyRetryOnFilter) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 3,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 3,
+                                                           .min_wait_ms = 1,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -180,11 +143,10 @@ TEST(RetryRunnerTest, OnlyRetryOnMatchingError) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 2,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 2,
+                                                           .min_wait_ms = 1,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -201,41 +163,15 @@ TEST(RetryRunnerTest, OnlyRetryOnMatchingError) {
   EXPECT_EQ(attempts, 3);
 }
 
-TEST(RetryRunnerTest, OnlyRetryOnTakesPrecedenceOverStopRetryOn) {
-  int call_count = 0;
-  int32_t attempts = 0;
-
-  auto result = RetryRunner(RetryConfig{.num_retries = 2,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
-                    .StopRetryOn(ErrorKind::kCommitFailed)
-                    .Run(
-                        [&]() -> Result<int> {
-                          ++call_count;
-                          if (call_count == 1) {
-                            return CommitFailed("transient");
-                          }
-                          return 100;
-                        },
-                        &attempts);
-
-  EXPECT_THAT(result, IsOk());
-  EXPECT_EQ(*result, 100);
-  EXPECT_EQ(call_count, 2);
-  EXPECT_EQ(attempts, 2);
-}
-
 TEST(RetryRunnerTest, StopRetryOnMatchingError) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 5,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .StopRetryOn(ErrorKind::kCommitStateUnknown)
+  auto result = RetryRunner<retry::StopRetryOn<ErrorKind::kCommitStateUnknown>>(
+                    RetryConfig{.num_retries = 5,
+                                .min_wait_ms = 1,
+                                .max_wait_ms = 10,
+                                .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -252,11 +188,11 @@ TEST(RetryRunnerTest, StopRetryOnNonMatchingErrorAllowsRetry) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 2,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .StopRetryOn({ErrorKind::kCommitStateUnknown})
+  auto result = RetryRunner<retry::StopRetryOn<ErrorKind::kCommitStateUnknown>>(
+                    RetryConfig{.num_retries = 2,
+                                .min_wait_ms = 1,
+                                .max_wait_ms = 10,
+                                .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -277,11 +213,11 @@ TEST(RetryRunnerTest, ZeroRetriesAllowsUnsetPolicyAndSkipsBackoffValidation) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 0,
-                                        .min_wait_ms = 0,
-                                        .max_wait_ms = 0,
-                                        .total_timeout_ms = 5000,
-                                        .scale_factor = 0.5})
+  auto result = RetryRunner<retry::NoRetry>(RetryConfig{.num_retries = 0,
+                                                        .min_wait_ms = 0,
+                                                        .max_wait_ms = 0,
+                                                        .total_timeout_ms = 5000,
+                                                        .scale_factor = 0.5})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -298,10 +234,10 @@ TEST(RetryRunnerTest, NegativeRetriesFailsBeforeTaskRuns) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = -1,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
+  auto result = RetryRunner<retry::NoRetry>(RetryConfig{.num_retries = -1,
+                                                        .min_wait_ms = 1,
+                                                        .max_wait_ms = 10,
+                                                        .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -360,8 +296,7 @@ TEST(RetryRunnerTest, InvalidBackoffConfigFailsBeforeTaskRuns) {
     int call_count = 0;
     int32_t attempts = 0;
 
-    auto result = RetryRunner(test_case.config)
-                      .OnlyRetryOn(ErrorKind::kCommitFailed)
+    auto result = RetryRunner<CommitFailedRetry>(test_case.config)
                       .Run(
                           [&]() -> Result<int> {
                             ++call_count;
@@ -377,36 +312,14 @@ TEST(RetryRunnerTest, InvalidBackoffConfigFailsBeforeTaskRuns) {
   }
 }
 
-TEST(RetryRunnerTest, UnsetRetryPolicyFailsBeforeTaskRuns) {
+TEST(RetryRunnerTest, NoRetryWithRetries) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 1,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .Run(
-                        [&]() -> Result<int> {
-                          ++call_count;
-                          return CommitFailed("fail");
-                        },
-                        &attempts);
-
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("Retry policy must be explicitly configured"));
-  EXPECT_EQ(call_count, 0);
-  EXPECT_EQ(attempts, 0);
-}
-
-TEST(RetryRunnerTest, EmptyOnlyRetryOnPolicyFailsBeforeTaskRuns) {
-  int call_count = 0;
-  int32_t attempts = 0;
-
-  auto result = RetryRunner(RetryConfig{.num_retries = 1,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .OnlyRetryOn(std::initializer_list<ErrorKind>{})
+  auto result = RetryRunner<retry::NoRetry>(RetryConfig{.num_retries = 1,
+                                                        .min_wait_ms = 1,
+                                                        .max_wait_ms = 10,
+                                                        .total_timeout_ms = 5000})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -416,30 +329,7 @@ TEST(RetryRunnerTest, EmptyOnlyRetryOnPolicyFailsBeforeTaskRuns) {
 
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result,
-              HasErrorMessage("Retry policy must include at least one error kind"));
-  EXPECT_EQ(call_count, 0);
-  EXPECT_EQ(attempts, 0);
-}
-
-TEST(RetryRunnerTest, EmptyStopRetryOnPolicyFailsBeforeTaskRuns) {
-  int call_count = 0;
-  int32_t attempts = 0;
-
-  auto result = RetryRunner(RetryConfig{.num_retries = 1,
-                                        .min_wait_ms = 1,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 5000})
-                    .StopRetryOn({})
-                    .Run(
-                        [&]() -> Result<int> {
-                          ++call_count;
-                          return CommitFailed("fail");
-                        },
-                        &attempts);
-
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result,
-              HasErrorMessage("Retry policy must include at least one error kind"));
+              HasErrorMessage("Retry policy must be enabled when num_retries > 0"));
   EXPECT_EQ(call_count, 0);
   EXPECT_EQ(attempts, 0);
 }
@@ -450,11 +340,10 @@ TEST(RetryRunnerTest, TotalTimeoutStopsBeforeStartingAnotherAttempt) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 3,
-                                        .min_wait_ms = 20,
-                                        .max_wait_ms = 20,
-                                        .total_timeout_ms = 15})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 3,
+                                                           .min_wait_ms = 20,
+                                                           .max_wait_ms = 20,
+                                                           .total_timeout_ms = 15})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -478,11 +367,10 @@ TEST(RetryRunnerTest, TotalTimeoutStopsWhenDelayEqualsRemainingBudget) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 3,
-                                        .min_wait_ms = 10,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 20})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 3,
+                                                           .min_wait_ms = 10,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 20})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -504,11 +392,10 @@ TEST(RetryRunnerTest, NonPositiveTotalTimeoutDisablesDeadline) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 2,
-                                        .min_wait_ms = 10,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 0})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 2,
+                                                           .min_wait_ms = 10,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 0})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -537,11 +424,10 @@ TEST(RetryRunnerTest, RetryDelayDoesNotExceedMaxWaitAfterJitter) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result = RetryRunner(RetryConfig{.num_retries = 1,
-                                        .min_wait_ms = 10,
-                                        .max_wait_ms = 10,
-                                        .total_timeout_ms = 0})
-                    .OnlyRetryOn(ErrorKind::kCommitFailed)
+  auto result = RetryRunner<CommitFailedRetry>(RetryConfig{.num_retries = 1,
+                                                           .min_wait_ms = 10,
+                                                           .max_wait_ms = 10,
+                                                           .total_timeout_ms = 0})
                     .Run(
                         [&]() -> Result<int> {
                           ++call_count;
@@ -603,29 +489,77 @@ TEST(RetryRunnerTest, OnlyRetryOnMultipleErrorKinds) {
   int call_count = 0;
   int32_t attempts = 0;
 
-  auto result =
-      RetryRunner(RetryConfig{.num_retries = 5,
-                              .min_wait_ms = 1,
-                              .max_wait_ms = 10,
-                              .total_timeout_ms = 5000})
-          .OnlyRetryOn({ErrorKind::kCommitFailed, ErrorKind::kServiceUnavailable})
-          .Run(
-              [&]() -> Result<int> {
-                ++call_count;
-                if (call_count == 1) {
-                  return CommitFailed("conflict");
-                }
-                if (call_count == 2) {
-                  return ServiceUnavailable("server busy");
-                }
-                return 77;
-              },
-              &attempts);
+  using CommitOrUnavailable =
+      retry::RetryPolicy<retry::RetryPolicyMode::kOnlyRetryOn, ErrorKind::kCommitFailed,
+                         ErrorKind::kServiceUnavailable>;
+
+  auto result = RetryRunner<CommitOrUnavailable>(RetryConfig{.num_retries = 5,
+                                                             .min_wait_ms = 1,
+                                                             .max_wait_ms = 10,
+                                                             .total_timeout_ms = 5000})
+                    .Run(
+                        [&]() -> Result<int> {
+                          ++call_count;
+                          if (call_count == 1) {
+                            return CommitFailed("conflict");
+                          }
+                          if (call_count == 2) {
+                            return ServiceUnavailable("server busy");
+                          }
+                          return 77;
+                        },
+                        &attempts);
 
   EXPECT_THAT(result, IsOk());
   EXPECT_EQ(*result, 77);
   EXPECT_EQ(call_count, 3);
   EXPECT_EQ(attempts, 3);
+}
+
+TEST(RetryRunnerTest, RetriesTransientIO) {
+  int call_count = 0;
+  int32_t attempts = 0;
+
+  auto result = RetryRunner<TransientIORetry>(RetryConfig{.num_retries = 3,
+                                                          .min_wait_ms = 1,
+                                                          .max_wait_ms = 10,
+                                                          .total_timeout_ms = 5000})
+                    .Run(
+                        [&]() -> Status {
+                          ++call_count;
+                          if (call_count == 1) {
+                            return IOError("read failed");
+                          }
+                          if (call_count == 2) {
+                            return ServiceUnavailable("server busy");
+                          }
+                          return {};
+                        },
+                        &attempts);
+
+  EXPECT_THAT(result, IsOk());
+  EXPECT_EQ(call_count, 3);
+  EXPECT_EQ(attempts, 3);
+}
+
+TEST(RetryRunnerTest, DoesNotRetryNotFound) {
+  int call_count = 0;
+  int32_t attempts = 0;
+
+  auto result = RetryRunner<TransientIORetry>(RetryConfig{.num_retries = 3,
+                                                          .min_wait_ms = 1,
+                                                          .max_wait_ms = 10,
+                                                          .total_timeout_ms = 5000})
+                    .Run(
+                        [&]() -> Status {
+                          ++call_count;
+                          return NotFound("missing file");
+                        },
+                        &attempts);
+
+  EXPECT_THAT(result, IsError(ErrorKind::kNotFound));
+  EXPECT_EQ(call_count, 1);
+  EXPECT_EQ(attempts, 1);
 }
 
 }  // namespace iceberg

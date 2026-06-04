@@ -31,6 +31,7 @@
 #include "iceberg/util/retry_util_internal.h"
 
 namespace iceberg {
+
 namespace {
 
 const RetryTestHooks*& ActiveRetryTestHooks() {
@@ -79,7 +80,7 @@ void SetActiveRetryTestHooks(const RetryTestHooks* hooks) {
   ActiveRetryTestHooks() = hooks;
 }
 
-Status RetryRunner::ValidateConfig() const {
+Status detail::RetryRunnerBase::ValidateConfig() const {
   if (config_.num_retries < 0) {
     return InvalidArgument("num_retries must be non-negative, got {}",
                            config_.num_retries);
@@ -103,48 +104,24 @@ Status RetryRunner::ValidateConfig() const {
     return InvalidArgument("scale_factor must be finite and at least 1.0, got {}",
                            config_.scale_factor);
   }
-  if (retry_policy_mode_ == RetryPolicyMode::kUnset) {
-    return InvalidArgument(
-        "Retry policy must be explicitly configured with OnlyRetryOn(...) or "
-        "StopRetryOn(...) when num_retries > 0");
-  }
-  if (retry_error_kinds_.empty()) {
-    return InvalidArgument("Retry policy must include at least one error kind");
-  }
-
   return {};
 }
 
-std::optional<RetryRunner::TimePoint> RetryRunner::ComputeDeadline() const {
+std::optional<detail::RetryRunnerBase::TimePoint>
+detail::RetryRunnerBase::ComputeDeadline() const {
   if (config_.total_timeout_ms <= 0) {
     return std::nullopt;
   }
   return RetryNow() + Duration(config_.total_timeout_ms);
 }
 
-bool RetryRunner::HasTimedOut(const std::optional<TimePoint>& deadline) const {
+bool detail::RetryRunnerBase::HasTimedOut(
+    const std::optional<TimePoint>& deadline) const {
   return deadline.has_value() && RetryNow() >= *deadline;
 }
 
-bool RetryRunner::ShouldRetry(ErrorKind kind) const {
-  const bool policy_contains_kind = std::ranges::contains(retry_error_kinds_, kind);
-  switch (retry_policy_mode_) {
-    case RetryPolicyMode::kOnlyRetryOn:
-      return policy_contains_kind;
-    case RetryPolicyMode::kStopRetryOn:
-      return !policy_contains_kind;
-    case RetryPolicyMode::kUnset:
-      return false;
-  }
-  return false;
-}
-
-bool RetryRunner::CanRetry(ErrorKind kind, int32_t attempt, int32_t max_attempts,
-                           const std::optional<TimePoint>& deadline) const {
-  return attempt < max_attempts && !HasTimedOut(deadline) && ShouldRetry(kind);
-}
-
-std::optional<RetryRunner::Duration> RetryRunner::RetryDelayWithinBudget(
+std::optional<detail::RetryRunnerBase::Duration>
+detail::RetryRunnerBase::RetryDelayWithinBudget(
     int32_t attempt, const std::optional<TimePoint>& deadline) const {
   const auto delay = Duration(CalculateDelay(attempt));
   if (!deadline.has_value()) {
@@ -164,8 +141,8 @@ std::optional<RetryRunner::Duration> RetryRunner::RetryDelayWithinBudget(
   return delay;
 }
 
-bool RetryRunner::WaitForNextAttempt(int32_t attempt,
-                                     const std::optional<TimePoint>& deadline) const {
+bool detail::RetryRunnerBase::WaitForNextAttempt(
+    int32_t attempt, const std::optional<TimePoint>& deadline) const {
   const auto delay = RetryDelayWithinBudget(attempt, deadline);
   if (!delay.has_value()) {
     return false;
@@ -175,7 +152,7 @@ bool RetryRunner::WaitForNextAttempt(int32_t attempt,
   return !HasTimedOut(deadline);
 }
 
-int32_t RetryRunner::CalculateDelay(int32_t attempt) const {
+int32_t detail::RetryRunnerBase::CalculateDelay(int32_t attempt) const {
   const double base_delay =
       config_.min_wait_ms * std::pow(config_.scale_factor, attempt - 1);
   const int32_t delay_ms = static_cast<int32_t>(
