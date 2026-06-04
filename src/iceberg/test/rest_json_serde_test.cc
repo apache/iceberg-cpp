@@ -1394,7 +1394,6 @@ static std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> EmptySpecs() 
 // --- PlanTableScanResponse ---
 
 TEST(PlanTableScanResponseFromJsonTest, SubmittedStatusMissingOptionalFields) {
-  // "submitted" response: only status and plan-id, no tasks
   auto json = nlohmann::json::parse(R"({"status":"submitted","plan-id":"abc-123"})");
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
@@ -1406,7 +1405,6 @@ TEST(PlanTableScanResponseFromJsonTest, SubmittedStatusMissingOptionalFields) {
 }
 
 TEST(PlanTableScanResponseFromJsonTest, CompletedStatusWithPlanTasks) {
-  // "completed" response with plan-tasks but no file-scan-tasks
   auto json = nlohmann::json::parse(
       R"({"status":"completed","plan-id":"abc-123","plan-tasks":["task-1","task-2"],"delete-files":[],"file-scan-tasks":[]})");
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
@@ -1418,20 +1416,78 @@ TEST(PlanTableScanResponseFromJsonTest, CompletedStatusWithPlanTasks) {
   EXPECT_EQ(result->plan_tasks[1], "task-2");
 }
 
-TEST(PlanTableScanResponseFromJsonTest, MissingRequiredStatus) {
-  auto json = nlohmann::json::parse(R"({"plan-id":"abc-123"})");
-  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
-  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Missing 'status'"));
-}
-
 TEST(PlanTableScanResponseFromJsonTest, MissingPlanIdDefaultsToEmptyForFailedStatus) {
-  // plan-id is optional for non-submitted/completed statuses
   auto json = nlohmann::json::parse(R"({"status":"failed"})");
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
   EXPECT_TRUE(result->plan_id.empty());
 }
+
+struct PlanTableScanResponseInvalidParam {
+  std::string test_name;
+  std::string json_str;
+  ErrorKind expected_error_kind;
+  std::string expected_error_msg;
+};
+
+class PlanTableScanResponseInvalidTest
+    : public ::testing::TestWithParam<PlanTableScanResponseInvalidParam> {};
+
+TEST_P(PlanTableScanResponseInvalidTest, InvalidInput) {
+  const auto& param = GetParam();
+  auto result = PlanTableScanResponseFromJson(nlohmann::json::parse(param.json_str),
+                                              EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(param.expected_error_kind));
+  if (!param.expected_error_msg.empty()) {
+    EXPECT_THAT(result, HasErrorMessage(param.expected_error_msg));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PlanTableScanResponseInvalidCases, PlanTableScanResponseInvalidTest,
+    ::testing::Values(
+        PlanTableScanResponseInvalidParam{
+            .test_name = "EmptyJson",
+            .json_str = R"({})",
+            .expected_error_kind = ErrorKind::kJsonParseError,
+            .expected_error_msg = "Missing 'status'"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "UnknownStatus",
+            .json_str = R"({"status":"someStatus"})",
+            .expected_error_kind = ErrorKind::kJsonParseError,
+            .expected_error_msg = "Unknown plan status"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "SubmittedWithoutPlanId",
+            .json_str = R"({"status":"submitted"})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg = "plan id should be defined when status is 'submitted'"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "CancelledStatus",
+            .json_str = R"({"status":"cancelled"})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg = "'cancelled' is not a valid status for planTableScan"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "SubmittedWithTasks",
+            .json_str =
+                R"({"status":"submitted","plan-id":"somePlanId","plan-tasks":["task1","task2"]})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg = "tasks can only be defined when status is 'completed'"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "FailedWithPlanId",
+            .json_str = R"({"status":"failed","plan-id":"somePlanId"})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg =
+                "plan id can only be defined when status is 'submitted' or 'completed'"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "DeleteFilesWithoutFileScanTasks",
+            .json_str =
+                R"({"status":"completed","delete-files":[{"content":"position_deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}],"file-scan-tasks":[]})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg =
+                "deleteFiles should only be returned with fileScanTasks"}),
+    [](const ::testing::TestParamInfo<PlanTableScanResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
 // --- FetchPlanningResultResponse ---
 
@@ -1455,17 +1511,58 @@ TEST(FetchPlanningResultResponseFromJsonTest, CompletedStatusWithPlanTasks) {
   EXPECT_EQ(result->plan_tasks[0], "task-1");
 }
 
-TEST(FetchPlanningResultResponseFromJsonTest, MissingRequiredStatus) {
-  auto json = nlohmann::json::parse(R"({})");
-  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
-  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Missing 'status'"));
+struct FetchPlanningResultResponseInvalidParam {
+  std::string test_name;
+  std::string json_str;
+  ErrorKind expected_error_kind;
+  std::string expected_error_msg;
+};
+
+class FetchPlanningResultResponseInvalidTest
+    : public ::testing::TestWithParam<FetchPlanningResultResponseInvalidParam> {};
+
+TEST_P(FetchPlanningResultResponseInvalidTest, InvalidInput) {
+  const auto& param = GetParam();
+  auto result = FetchPlanningResultResponseFromJson(nlohmann::json::parse(param.json_str),
+                                                    EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(param.expected_error_kind));
+  if (!param.expected_error_msg.empty()) {
+    EXPECT_THAT(result, HasErrorMessage(param.expected_error_msg));
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    FetchPlanningResultResponseInvalidCases, FetchPlanningResultResponseInvalidTest,
+    ::testing::Values(
+        FetchPlanningResultResponseInvalidParam{
+            .test_name = "EmptyJson",
+            .json_str = R"({})",
+            .expected_error_kind = ErrorKind::kJsonParseError,
+            .expected_error_msg = "Missing 'status'"},
+        FetchPlanningResultResponseInvalidParam{
+            .test_name = "UnknownStatus",
+            .json_str = R"({"status":"someStatus"})",
+            .expected_error_kind = ErrorKind::kJsonParseError,
+            .expected_error_msg = "Unknown plan status"},
+        FetchPlanningResultResponseInvalidParam{
+            .test_name = "SubmittedWithTasks",
+            .json_str = R"({"status":"submitted","plan-tasks":["task1","task2"]})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg = "tasks can only be returned in a 'completed' status"},
+        FetchPlanningResultResponseInvalidParam{
+            .test_name = "DeleteFilesWithoutFileScanTasks",
+            .json_str =
+                R"({"status":"submitted","delete-files":[{"content":"position_deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}]})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg =
+                "deleteFiles should only be returned with fileScanTasks"}),
+    [](const ::testing::TestParamInfo<FetchPlanningResultResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
 // --- FetchScanTasksResponse ---
 
 TEST(FetchScanTasksResponseFromJsonTest, WithFileScanTasks) {
-  // One file scan task with a data file and one delete file referenced by index.
   auto json = nlohmann::json::parse(R"({
     "plan-tasks": [],
     "delete-files": [
@@ -1512,12 +1609,91 @@ TEST(FetchScanTasksResponseFromJsonTest, WithPlanTasksOnly) {
   EXPECT_TRUE(result->file_scan_tasks.empty());
 }
 
-TEST(FetchScanTasksResponseFromJsonTest, AllFieldsMissing) {
-  // Both plan-tasks and file-scan-tasks absent → Validate() should fail
-  auto json = nlohmann::json::parse(R"({})");
-  auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
-  ASSERT_THAT(result, IsError(ErrorKind::kValidationFailed));
+struct FetchScanTasksResponseInvalidParam {
+  std::string test_name;
+  std::string json_str;
+  ErrorKind expected_error_kind;
+  std::string expected_error_msg;
+};
+
+class FetchScanTasksResponseInvalidTest
+    : public ::testing::TestWithParam<FetchScanTasksResponseInvalidParam> {};
+
+TEST_P(FetchScanTasksResponseInvalidTest, InvalidInput) {
+  const auto& param = GetParam();
+  auto result = FetchScanTasksResponseFromJson(nlohmann::json::parse(param.json_str),
+                                               EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsError(param.expected_error_kind));
+  if (!param.expected_error_msg.empty()) {
+    EXPECT_THAT(result, HasErrorMessage(param.expected_error_msg));
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    FetchScanTasksResponseInvalidCases, FetchScanTasksResponseInvalidTest,
+    ::testing::Values(
+        FetchScanTasksResponseInvalidParam{
+            .test_name = "EmptyJson",
+            .json_str = R"({})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg = "planTasks and fileScanTask cannot both be null"},
+        FetchScanTasksResponseInvalidParam{
+            .test_name = "DeleteFilesWithoutFileScanTasks",
+            .json_str =
+                R"({"plan-tasks":["task1","task2"],"delete-files":[{"content":"position_deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}],"file-scan-tasks":[]})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg =
+                "deleteFiles should only be returned with fileScanTasks"}),
+    [](const ::testing::TestParamInfo<FetchScanTasksResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+// --- PlanTableScanRequest validation ---
+
+struct PlanTableScanRequestValidationParam {
+  std::string test_name;
+  PlanTableScanRequest request;
+  std::string expected_error_msg;
+};
+
+class PlanTableScanRequestValidationTest
+    : public ::testing::TestWithParam<PlanTableScanRequestValidationParam> {};
+
+TEST_P(PlanTableScanRequestValidationTest, ValidationFailed) {
+  const auto& param = GetParam();
+  auto status = param.request.Validate();
+  ASSERT_THAT(status, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(status, HasErrorMessage(param.expected_error_msg));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PlanTableScanRequestValidationCases, PlanTableScanRequestValidationTest,
+    ::testing::Values(
+        PlanTableScanRequestValidationParam{
+            .test_name = "SnapshotIdWithStartSnapshotId",
+            .request = {.snapshot_id = 1, .start_snapshot_id = 2, .end_snapshot_id = 5},
+            .expected_error_msg =
+                "cannot provide both snapshotId and startSnapshotId/endSnapshotId"},
+        PlanTableScanRequestValidationParam{
+            .test_name = "SnapshotIdWithEndSnapshotId",
+            .request = {.snapshot_id = 1, .end_snapshot_id = 5},
+            .expected_error_msg =
+                "cannot provide both snapshotId and startSnapshotId/endSnapshotId"},
+        PlanTableScanRequestValidationParam{
+            .test_name = "StartSnapshotIdWithoutEnd",
+            .request = {.start_snapshot_id = 1},
+            .expected_error_msg = "startSnapshotId and endSnapshotId is required"},
+        PlanTableScanRequestValidationParam{
+            .test_name = "EndSnapshotIdWithoutStart",
+            .request = {.end_snapshot_id = 5},
+            .expected_error_msg = "startSnapshotId and endSnapshotId is required"},
+        PlanTableScanRequestValidationParam{
+            .test_name = "NegativeMinRowsRequested",
+            .request = {.min_rows_requested = -1},
+            .expected_error_msg = "minRowsRequested is negative"}),
+    [](const ::testing::TestParamInfo<PlanTableScanRequestValidationParam>& info) {
+      return info.param.test_name;
+    });
 
 // --- DataFileFromJson ---
 
@@ -1710,8 +1886,8 @@ TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
     "delete-file-references": [0]
   }])"_json;
 
-  auto result =
-      FileScanTasksFromJson(json, {std::make_shared<DataFile>(delete_file)}, {}, Schema({}, 0));
+  auto result = FileScanTasksFromJson(json, {std::make_shared<DataFile>(delete_file)}, {},
+                                      Schema({}, 0));
   ASSERT_THAT(result, IsOk());
   ASSERT_EQ(result.value().size(), 1U);
   const auto& task = result.value()[0];
@@ -1810,7 +1986,8 @@ TEST(FetchScanTasksResponseRoundtripTest, WithFileScanTasksAndDeleteFiles) {
   ASSERT_THAT(result, IsOk());
 
   auto roundtrip_json = ToJson(*result);
-  auto result2 = FetchScanTasksResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  auto result2 =
+      FetchScanTasksResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result2, IsOk());
   EXPECT_EQ(*result, *result2);
 }
@@ -1821,14 +1998,15 @@ TEST(PlanTableScanResponseRoundtripTest, SubmittedStatus) {
   ASSERT_THAT(result, IsOk());
 
   auto roundtrip_json = ToJson(*result);
-  auto result2 = PlanTableScanResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  auto result2 =
+      PlanTableScanResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result2, IsOk());
   EXPECT_EQ(*result, *result2);
 }
 
 TEST(FetchPlanningResultResponseRoundtripTest, CompletedWithPlanTasks) {
-  auto json =
-      nlohmann::json::parse(R"({"status": "completed", "plan-tasks": ["task-1", "task-2"]})");
+  auto json = nlohmann::json::parse(
+      R"({"status": "completed", "plan-tasks": ["task-1", "task-2"]})");
   auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
 
