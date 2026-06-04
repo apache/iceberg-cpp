@@ -79,6 +79,12 @@ TEST(Base64Test, Decode) {
 
   // Invalid characters return error
   EXPECT_THAT(Base64::Decode("!!!"), IsError(ErrorKind::kInvalidArgument));
+
+  // Invalid padding and impossible unpadded lengths return error
+  for (const auto* invalid :
+       {"=", "====", "Y=Q=", "YQ=", "YQ===", "YWJj=", "aGVsbG8==", "A", "AAAAA"}) {
+    EXPECT_THAT(Base64::Decode(invalid), IsError(ErrorKind::kInvalidArgument)) << invalid;
+  }
 }
 
 TEST(Base64Test, UrlEncode) {
@@ -128,6 +134,13 @@ TEST(Base64Test, UrlDecode) {
 
   // Invalid characters return error
   EXPECT_THAT(Base64::UrlDecode("!!!invalid!!!"), IsError(ErrorKind::kInvalidArgument));
+
+  // Invalid padding and impossible unpadded lengths return error
+  for (const auto* invalid :
+       {"=", "====", "Y=Q=", "YQ=", "YQ===", "YWJj=", "aGVsbG8==", "A", "AAAAA"}) {
+    EXPECT_THAT(Base64::UrlDecode(invalid), IsError(ErrorKind::kInvalidArgument))
+        << invalid;
+  }
 }
 
 }  // namespace iceberg

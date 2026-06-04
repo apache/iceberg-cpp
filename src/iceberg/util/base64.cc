@@ -59,9 +59,26 @@ std::string Base64EncodeWithAlphabet(std::string_view input, std::string_view al
 // 0xFF means invalid character.
 Result<std::string> Base64DecodeWithTable(std::string_view input,
                                           const std::array<uint8_t, 256>& table) {
-  // Strip trailing padding
+  auto padded_size = input.size();
+  if (auto padding_pos = input.find('='); padding_pos != std::string_view::npos) {
+    auto padding = input.substr(padding_pos);
+    if (padding.find_first_not_of('=') != std::string_view::npos) {
+      return InvalidArgument("Invalid base64 padding");
+    }
+    auto padding_size = padding.size();
+    if (padding_size > 2 || input.size() % 4 != 0) {
+      return InvalidArgument("Invalid base64 padding");
+    }
+  }
+
+  // Strip trailing padding after validating its count and placement.
   while (!input.empty() && input.back() == '=') {
     input.remove_suffix(1);
+  }
+  auto unpadded_size = input.size();
+  if (unpadded_size % 4 == 1 ||
+      (padded_size != unpadded_size && unpadded_size % 4 == 0)) {
+    return InvalidArgument("Invalid base64 length");
   }
   if (input.empty()) {
     return std::string{};

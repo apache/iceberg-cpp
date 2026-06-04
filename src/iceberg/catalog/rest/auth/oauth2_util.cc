@@ -19,8 +19,6 @@
 
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
 
-#include <utility>
-
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
@@ -108,7 +106,7 @@ std::optional<int64_t> ExpiresAtMillis(std::string_view token) {
   const std::string& payload = *payload_result;
 
   // Parse JSON and extract "exp" claim
-  auto json = nlohmann::json::parse(payload, nullptr, false);
+  auto json = nlohmann::json::parse(payload, nullptr, /*allow_exceptions=*/false);
   if (json.is_discarded() || !json.is_object()) {
     return std::nullopt;
   }

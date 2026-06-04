@@ -27,6 +27,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_managers.h"
+#include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/endpoint.h"
@@ -119,7 +120,11 @@ Result<bool> CaptureNoSuchNamespace(const auto& status) {
 
 }  // namespace
 
-RestCatalog::~RestCatalog() = default;
+RestCatalog::~RestCatalog() {
+  if (catalog_session_) {
+    std::ignore = catalog_session_->Close();
+  }
+}
 
 Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
     const RestCatalogProperties& config) {

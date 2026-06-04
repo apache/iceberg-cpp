@@ -74,10 +74,10 @@ class ICEBERG_REST_EXPORT AuthSession {
 
   /// \brief Create an OAuth2 session with automatic token refresh.
   ///
-  /// This factory method creates a session that holds an access token and
-  /// optionally a refresh token. When Authenticate() is called and the token
-  /// is expired, it transparently refreshes the token before setting the
-  /// Authorization header.
+  /// This factory method creates a session that holds an access token and,
+  /// when keep_refreshed is enabled, schedules background refresh based on
+  /// token expiration. Authenticate() uses the latest cached Authorization
+  /// header and does not perform a synchronous token refresh.
   ///
   /// \param initial_token The initial token response from FetchToken().
   /// \param token_endpoint Full URL of the OAuth2 token endpoint for refresh.
@@ -86,9 +86,10 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \param scope OAuth2 scope for refresh requests.
   /// \param keep_refreshed Whether to schedule automatic token refresh.
   /// \param optional_oauth_params Optional OAuth params (audience, resource) for refresh.
-  /// \param client HTTP client for making refresh requests.
+  /// \param client HTTP client for making refresh requests. The caller owns the
+  ///        client and must keep it alive until the session is closed.
   /// \return A new session that manages token lifecycle automatically.
-  static std::shared_ptr<AuthSession> MakeOAuth2(
+  static Result<std::shared_ptr<AuthSession>> MakeOAuth2(
       const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
       const std::string& client_id, const std::string& client_secret,
       const std::string& scope, bool keep_refreshed,
