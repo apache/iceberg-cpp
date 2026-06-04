@@ -35,7 +35,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "iceberg/catalog/sql/config.h"
 #include "iceberg/catalog/sql/iceberg_sql_catalog_export.h"
 #include "iceberg/result.h"
 
@@ -199,39 +198,36 @@ class ICEBERG_SQL_CATALOG_EXPORT CatalogStore {
   virtual Status RunInTransaction(const std::function<Status()>& body) = 0;
 };
 
-#ifdef BUILD_SQLITE3_CONNECTOR
 /// \brief Build the built-in SQLite catalog store (sqlpp23 + SQLite3).
 ///
 /// `options.uri` is the SQLite database file path, or ":memory:".
 ///
 /// \param options Store connection options.
-/// \return A catalog store instance.
+/// \return A catalog store instance, or ErrorKind::kNotSupported if the SQLite
+///         connector was not built.
 ICEBERG_SQL_CATALOG_EXPORT Result<std::shared_ptr<CatalogStore>> MakeSqliteCatalogStore(
     const CatalogStoreOptions& options);
-#endif  // BUILD_SQLITE3_CONNECTOR
 
-#ifdef BUILD_POSTGRESQL_CONNECTOR
 /// \brief Build the built-in PostgreSQL catalog store (sqlpp23 + libpq).
 ///
 /// `options.uri` is parsed as
 /// `[scheme://][user[:password]@]host[:port][/database]`.
 ///
 /// \param options Store connection options.
-/// \return A catalog store instance.
+/// \return A catalog store instance, or ErrorKind::kNotSupported if the
+///         PostgreSQL connector was not built.
 ICEBERG_SQL_CATALOG_EXPORT Result<std::shared_ptr<CatalogStore>>
 MakePostgreSqlCatalogStore(const CatalogStoreOptions& options);
-#endif  // BUILD_POSTGRESQL_CONNECTOR
 
-#ifdef BUILD_MYSQL_CONNECTOR
 /// \brief Build the built-in MySQL catalog store (sqlpp23 + libmysqlclient).
 ///
 /// `options.uri` is parsed as
 /// `[scheme://][user[:password]@]host[:port][/database]`.
 ///
 /// \param options Store connection options.
-/// \return A catalog store instance.
+/// \return A catalog store instance, or ErrorKind::kNotSupported if the MySQL
+///         connector was not built.
 ICEBERG_SQL_CATALOG_EXPORT Result<std::shared_ptr<CatalogStore>> MakeMySqlCatalogStore(
     const CatalogStoreOptions& options);
-#endif  // BUILD_MYSQL_CONNECTOR
 
 }  // namespace iceberg::sql

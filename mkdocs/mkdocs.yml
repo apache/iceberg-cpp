@@ -58,6 +58,7 @@ nav:
     - Release Process: release-process.md
     - Verify a Release Candidate: verify-rc.md
   - API Documentation: api/index.html
+  - SQL Catalog: sql-catalog.md
 
 extra:
   social:

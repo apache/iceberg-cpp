@@ -28,6 +28,10 @@ cmake-build-release/
 .vscode
 .cache
 
+# mkdocs generated output
+/mkdocs/site/
+/mkdocs/docs/api/
+
 # devcontainer
 .devcontainer/*
 !.devcontainer/*.template

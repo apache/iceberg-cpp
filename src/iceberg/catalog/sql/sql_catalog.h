@@ -35,7 +35,6 @@
 
 #include "iceberg/catalog.h"
 #include "iceberg/catalog/sql/catalog_store.h"
-#include "iceberg/catalog/sql/config.h"
 #include "iceberg/catalog/sql/iceberg_sql_catalog_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
@@ -142,34 +141,34 @@ class ICEBERG_SQL_CATALOG_EXPORT SqlCatalog
       const TableIdentifier& identifier,
       const std::string& metadata_file_location) override;
 
-#ifdef BUILD_SQLITE3_CONNECTOR
   /// \brief Create a catalog backed by the built-in SQLite client.
   ///
   /// \param config `uri` is the SQLite database file path (or ":memory:").
   /// \param file_io File IO used to read and write table metadata files.
+  /// \return A catalog instance, or ErrorKind::kNotSupported if the SQLite
+  ///         connector was not built.
   static Result<std::shared_ptr<SqlCatalog>> MakeSqliteCatalog(
       const SqlCatalogConfig& config, std::shared_ptr<FileIO> file_io);
-#endif  // BUILD_SQLITE3_CONNECTOR
 
-#ifdef BUILD_POSTGRESQL_CONNECTOR
   /// \brief Create a catalog backed by the built-in PostgreSQL (libpq) client.
   ///
   /// \param config `uri` is parsed as
   ///        `[scheme://][user[:password]@]host[:port][/database]`.
   /// \param file_io File IO used to read and write table metadata files.
+  /// \return A catalog instance, or ErrorKind::kNotSupported if the PostgreSQL
+  ///         connector was not built.
   static Result<std::shared_ptr<SqlCatalog>> MakePostgreSqlCatalog(
       const SqlCatalogConfig& config, std::shared_ptr<FileIO> file_io);
-#endif  // BUILD_POSTGRESQL_CONNECTOR
 
-#ifdef BUILD_MYSQL_CONNECTOR
   /// \brief Create a catalog backed by the built-in MySQL client.
   ///
   /// \param config `uri` is parsed as
   ///        `[scheme://][user[:password]@]host[:port][/database]`.
   /// \param file_io File IO used to read and write table metadata files.
+  /// \return A catalog instance, or ErrorKind::kNotSupported if the MySQL
+  ///         connector was not built.
   static Result<std::shared_ptr<SqlCatalog>> MakeMySqlCatalog(
       const SqlCatalogConfig& config, std::shared_ptr<FileIO> file_io);
-#endif  // BUILD_MYSQL_CONNECTOR
 
  private:
   SqlCatalog(SqlCatalogConfig config, std::shared_ptr<FileIO> file_io,

@@ -74,6 +74,11 @@ cmake --install build
 | `ICEBERG_BUILD_BUNDLE` | `ON` | Build the battery-included library |
 | `ICEBERG_BUILD_REST` | `ON` | Build REST catalog client |
 | `ICEBERG_BUILD_REST_INTEGRATION_TESTS` | `OFF` | Build REST catalog integration tests |
+| `ICEBERG_BUILD_HIVE` | `OFF` | Build Hive (HMS) catalog client |
+| `ICEBERG_BUILD_SQL_CATALOG` | `OFF` | Build SQL catalog client |
+| `ICEBERG_SQL_SQLITE` | `OFF` | Build the SQLite connector for the SQL catalog |
+| `ICEBERG_SQL_POSTGRESQL` | `OFF` | Build the PostgreSQL connector for the SQL catalog |
+| `ICEBERG_SQL_MYSQL` | `OFF` | Build the MySQL connector for the SQL catalog |
 | `ICEBERG_ENABLE_ASAN` | `OFF` | Enable Address Sanitizer |
 | `ICEBERG_ENABLE_UBSAN` | `OFF` | Enable Undefined Behavior Sanitizer |
 

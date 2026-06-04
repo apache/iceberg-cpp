@@ -69,14 +69,19 @@ interface, so downstream consumers only need the native client libraries.
 
 ## Out-of-the-box usage
 
-Built-in connectors pull in their native client libraries via sqlpp23. Enable
-them at configure time:
+Enable the SQL catalog and any built-in connectors at configure time. Built-in
+connectors pull in their native client libraries via sqlpp23:
 
-| CMake option            | Default | sqlpp23 target        | Native dependency      |
-|-------------------------|---------|-----------------------|------------------------|
-| `ICEBERG_SQL_SQLITE`    | `ON`    | `sqlpp23::sqlite3`    | SQLite3                |
-| `ICEBERG_SQL_POSTGRESQL`| `OFF`   | `sqlpp23::postgresql` | libpq (PostgreSQL)     |
-| `ICEBERG_SQL_MYSQL`     | `OFF`   | `sqlpp23::mysql`      | libmysqlclient (MySQL) |
+| CMake option                | Default | sqlpp23 target        | Native dependency      |
+|-----------------------------|---------|-----------------------|------------------------|
+| `ICEBERG_BUILD_SQL_CATALOG` | `OFF`   | -                     | -                      |
+| `ICEBERG_SQL_SQLITE`        | `OFF`   | `sqlpp23::sqlite3`    | SQLite3                |
+| `ICEBERG_SQL_POSTGRESQL`    | `OFF`   | `sqlpp23::postgresql` | libpq (PostgreSQL)     |
+| `ICEBERG_SQL_MYSQL`         | `OFF`   | `sqlpp23::mysql`      | libmysqlclient (MySQL) |
+
+```bash
+cmake -S . -B build -DICEBERG_BUILD_SQL_CATALOG=ON -DICEBERG_SQL_SQLITE=ON
+```
 
 ```cpp
 #include "iceberg/catalog/sql/sql_catalog.h"
@@ -94,10 +99,11 @@ auto catalog = SqlCatalog::MakeSqliteCatalog(config, file_io).value();
 // catalog->CreateNamespace(...), CreateTable(...), LoadTable(...), ...
 ```
 
-`MakePostgreSqlCatalog` and `MakeMySqlCatalog` are available when the matching
-connector is enabled. Their URI is parsed as
-`[scheme://][user[:password]@]host[:port][/database]`. Each factory creates the
-schema if it does not yet exist.
+`MakePostgreSqlCatalog` and `MakeMySqlCatalog` use the same
+`[scheme://][user[:password]@]host[:port][/database]` URI form. Connector
+factories are always declared in the public headers; if a connector was not
+built, its factory returns `ErrorKind::kNotSupported`. Each enabled factory
+creates the schema if it does not yet exist.
 
 The PostgreSQL and MySQL stores use a single sqlpp23 connection when
 `max_connections <= 1` and a bounded sqlpp23 connection pool otherwise.

@@ -23,6 +23,7 @@
 #include <set>
 #include <string>
 
+#include "iceberg/catalog/sql/config.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
@@ -573,30 +574,58 @@ Result<std::shared_ptr<Table>> SqlCatalog::RegisterTable(
 // Built-in catalog store factories
 // --------------------------------------------------------------------------
 
-#ifdef BUILD_SQLITE3_CONNECTOR
 Result<std::shared_ptr<SqlCatalog>> SqlCatalog::MakeSqliteCatalog(
-    const SqlCatalogConfig& config, std::shared_ptr<FileIO> file_io) {
+    [[maybe_unused]] const SqlCatalogConfig& config,
+    [[maybe_unused]] std::shared_ptr<FileIO> file_io) {
+#ifdef BUILD_SQLITE3_CONNECTOR
   ICEBERG_ASSIGN_OR_RAISE(auto store,
                           MakeSqliteCatalogStore(ToCatalogStoreOptions(config)));
   return Make(config, std::move(file_io), std::move(store));
-}
+#else
+  return NotSupported("SQLite SQL catalog connector is not built");
 #endif  // BUILD_SQLITE3_CONNECTOR
+}
 
-#ifdef BUILD_POSTGRESQL_CONNECTOR
 Result<std::shared_ptr<SqlCatalog>> SqlCatalog::MakePostgreSqlCatalog(
-    const SqlCatalogConfig& config, std::shared_ptr<FileIO> file_io) {
+    [[maybe_unused]] const SqlCatalogConfig& config,
+    [[maybe_unused]] std::shared_ptr<FileIO> file_io) {
+#ifdef BUILD_POSTGRESQL_CONNECTOR
   ICEBERG_ASSIGN_OR_RAISE(auto store,
                           MakePostgreSqlCatalogStore(ToCatalogStoreOptions(config)));
   return Make(config, std::move(file_io), std::move(store));
-}
+#else
+  return NotSupported("PostgreSQL SQL catalog connector is not built");
 #endif  // BUILD_POSTGRESQL_CONNECTOR
+}
 
-#ifdef BUILD_MYSQL_CONNECTOR
 Result<std::shared_ptr<SqlCatalog>> SqlCatalog::MakeMySqlCatalog(
-    const SqlCatalogConfig& config, std::shared_ptr<FileIO> file_io) {
+    [[maybe_unused]] const SqlCatalogConfig& config,
+    [[maybe_unused]] std::shared_ptr<FileIO> file_io) {
+#ifdef BUILD_MYSQL_CONNECTOR
   ICEBERG_ASSIGN_OR_RAISE(auto store,
                           MakeMySqlCatalogStore(ToCatalogStoreOptions(config)));
   return Make(config, std::move(file_io), std::move(store));
+#else
+  return NotSupported("MySQL SQL catalog connector is not built");
+#endif  // BUILD_MYSQL_CONNECTOR
+}
+
+#ifndef BUILD_SQLITE3_CONNECTOR
+Result<std::shared_ptr<CatalogStore>> MakeSqliteCatalogStore(const CatalogStoreOptions&) {
+  return NotSupported("SQLite SQL catalog connector is not built");
+}
+#endif  // BUILD_SQLITE3_CONNECTOR
+
+#ifndef BUILD_POSTGRESQL_CONNECTOR
+Result<std::shared_ptr<CatalogStore>> MakePostgreSqlCatalogStore(
+    const CatalogStoreOptions&) {
+  return NotSupported("PostgreSQL SQL catalog connector is not built");
+}
+#endif  // BUILD_POSTGRESQL_CONNECTOR
+
+#ifndef BUILD_MYSQL_CONNECTOR
+Result<std::shared_ptr<CatalogStore>> MakeMySqlCatalogStore(const CatalogStoreOptions&) {
+  return NotSupported("MySQL SQL catalog connector is not built");
 }
 #endif  // BUILD_MYSQL_CONNECTOR
 
