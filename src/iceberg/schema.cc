@@ -37,24 +37,25 @@ namespace iceberg {
 
 namespace {
 
-Status ValidateUnknownFieldsOptional(const Type& type) {
+Status ValidateFieldNullability(const Type& type) {
+  auto validate_field = [&](const SchemaField& field) -> Status {
+    ICEBERG_PRECHECK(field.optional() || field.type()->type_id() != TypeId::kUnknown,
+                     "Unknown type field '{}' must be optional", field.name());
+    return ValidateFieldNullability(*field.type());
+  };
+
   switch (type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = static_cast<const StructType&>(type);
       for (const auto& field : struct_type.fields()) {
-        ICEBERG_PRECHECK(field.optional() || field.type()->type_id() != TypeId::kUnknown,
-                         "Unknown type field '{}' must be optional", field.name());
-        ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*field.type()));
+        ICEBERG_RETURN_UNEXPECTED(validate_field(field));
       }
       return {};
     }
     case TypeId::kList: {
       const auto& list_type = static_cast<const ListType&>(type);
       const auto& element = list_type.element();
-      ICEBERG_PRECHECK(
-          element.optional() || element.type()->type_id() != TypeId::kUnknown,
-          "Unknown type field '{}' must be optional", element.name());
-      return ValidateUnknownFieldsOptional(*element.type());
+      return validate_field(element);
     }
     case TypeId::kMap: {
       const auto& map_type = static_cast<const MapType&>(type);
@@ -62,10 +63,8 @@ Status ValidateUnknownFieldsOptional(const Type& type) {
       const auto& value = map_type.value();
       ICEBERG_PRECHECK(key.type()->type_id() != TypeId::kUnknown,
                        "Map 'key' cannot be unknown type");
-      ICEBERG_PRECHECK(value.optional() || value.type()->type_id() != TypeId::kUnknown,
-                       "Unknown type field '{}' must be optional", value.name());
-      ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*key.type()));
-      return ValidateUnknownFieldsOptional(*value.type());
+      ICEBERG_RETURN_UNEXPECTED(ValidateFieldNullability(*key.type()));
+      return validate_field(value);
     }
     default:
       return {};
