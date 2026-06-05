@@ -92,7 +92,7 @@ ICEBERG_REST_EXPORT Result<FetchScanTasksResponse> FetchScanTasksResponseFromJso
 ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const PlanTableScanRequest& request);
 ICEBERG_REST_EXPORT nlohmann::json ToJson(const FetchScanTasksRequest& request);
 
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const DataFile& df);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const DataFile& df);
 
 ICEBERG_REST_EXPORT Result<DataFile> DataFileFromJson(
     const nlohmann::json& json,
@@ -107,8 +107,9 @@ FileScanTasksFromJson(const nlohmann::json& json,
                           partition_spec_by_id,
                       const Schema& schema);
 
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const PlanTableScanResponse& response);
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const FetchPlanningResultResponse& response);
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const FetchScanTasksResponse& response);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const PlanTableScanResponse& response);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(
+    const FetchPlanningResultResponse& response);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const FetchScanTasksResponse& response);
 
 }  // namespace iceberg::rest

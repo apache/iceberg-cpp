@@ -321,7 +321,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
   return file_scan_tasks;
 }
 
-nlohmann::json ToJson(const DataFile& df) {
+Result<nlohmann::json> ToJson(const DataFile& df) {
   nlohmann::json json;
   switch (df.content) {
     case DataFile::Content::kData:
@@ -339,6 +339,15 @@ nlohmann::json ToJson(const DataFile& df) {
 
   if (df.partition_spec_id.has_value()) {
     json[kSpecId] = df.partition_spec_id.value();
+  }
+
+  if (df.partition.num_fields() > 0) {
+    nlohmann::json partition_json = nlohmann::json::array();
+    for (const auto& literal : df.partition.values()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto lit_json, iceberg::ToJson(literal));
+      partition_json.push_back(std::move(lit_json));
+    }
+    json[kPartition] = std::move(partition_json);
   }
 
   json[kRecordCount] = df.record_count;
@@ -407,18 +416,20 @@ nlohmann::json ToJson(const DataFile& df) {
 
 namespace {
 
-nlohmann::json BaseScanTaskResponseToJson(const BaseScanTaskResponse& response) {
+template <typename Response>
+Result<nlohmann::json> ScanTaskFieldsToJson(const Response& response) {
   nlohmann::json json;
 
   SetContainerField(json, kPlanTasks, response.plan_tasks);
 
-  // Build delete_files array and a pointer-to-index map for reference lookup.
-  std::unordered_map<const DataFile*, int32_t> delete_file_index;
+  // Build delete_files array keyed by file_path for stable identity lookup.
+  std::unordered_map<std::string, int32_t> delete_file_index;
   nlohmann::json delete_files_json = nlohmann::json::array();
   for (size_t i = 0; i < response.delete_files.size(); ++i) {
     if (response.delete_files[i]) {
-      delete_files_json.push_back(ToJson(*response.delete_files[i]));
-      delete_file_index[response.delete_files[i].get()] = static_cast<int32_t>(i);
+      ICEBERG_ASSIGN_OR_RAISE(auto df_json, ToJson(*response.delete_files[i]));
+      delete_files_json.push_back(std::move(df_json));
+      delete_file_index[response.delete_files[i]->file_path] = static_cast<int32_t>(i);
     }
   }
   if (!delete_files_json.empty()) {
@@ -430,12 +441,13 @@ nlohmann::json BaseScanTaskResponseToJson(const BaseScanTaskResponse& response) 
     if (!task) continue;
     nlohmann::json task_json;
     if (task->data_file()) {
-      task_json[kDataFile] = ToJson(*task->data_file());
+      ICEBERG_ASSIGN_OR_RAISE(auto data_file_json, ToJson(*task->data_file()));
+      task_json[kDataFile] = std::move(data_file_json);
     }
     if (!task->delete_files().empty()) {
       std::vector<int32_t> refs;
       for (const auto& df : task->delete_files()) {
-        auto it = delete_file_index.find(df.get());
+        auto it = delete_file_index.find(df->file_path);
         if (it != delete_file_index.end()) {
           refs.push_back(it->second);
         }
@@ -453,14 +465,15 @@ nlohmann::json BaseScanTaskResponseToJson(const BaseScanTaskResponse& response) 
   return json;
 }
 
-Status BaseScanTaskResponseFromJson(
-    const nlohmann::json& json, BaseScanTaskResponse* response,
+template <typename Response>
+Status ScanTaskFieldsFromJson(
+    const nlohmann::json& json, Response& response,
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
         partition_specs_by_id,
     const Schema& schema) {
   // 1. plan_tasks
   ICEBERG_ASSIGN_OR_RAISE(
-      response->plan_tasks,
+      response.plan_tasks,
       GetJsonValueOrDefault<std::vector<std::string>>(json, kPlanTasks));
 
   // 2. delete_files
@@ -470,7 +483,7 @@ Status BaseScanTaskResponseFromJson(
   for (const auto& entry_json : delete_files_json) {
     ICEBERG_ASSIGN_OR_RAISE(auto delete_file,
                             DataFileFromJson(entry_json, partition_specs_by_id, schema));
-    response->delete_files.push_back(std::make_shared<DataFile>(std::move(delete_file)));
+    response.delete_files.push_back(std::make_shared<DataFile>(std::move(delete_file)));
   }
 
   // 3. file_scan_tasks
@@ -478,8 +491,8 @@ Status BaseScanTaskResponseFromJson(
                           GetJsonValueOrDefault<nlohmann::json>(json, kFileScanTasks,
                                                                 nlohmann::json::array()));
   ICEBERG_ASSIGN_OR_RAISE(
-      response->file_scan_tasks,
-      FileScanTasksFromJson(file_scan_tasks_json, response->delete_files,
+      response.file_scan_tasks,
+      FileScanTasksFromJson(file_scan_tasks_json, response.delete_files,
                             partition_specs_by_id, schema));
   return {};
 }
@@ -957,8 +970,13 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
   ICEBERG_ASSIGN_OR_RAISE(response.plan_status, PlanStatusFromString(plan_status_str));
   ICEBERG_ASSIGN_OR_RAISE(response.plan_id,
                           GetJsonValueOrDefault<std::string>(json, kPlanId));
+  if (response.plan_status == PlanStatus::kFailed) {
+    ICEBERG_ASSIGN_OR_RAISE(response.error, ErrorResponseFromJson(json));
+  } else if (json.contains(kError)) {
+    return ValidationFailed("error can only be present when status is 'failed'");
+  }
   ICEBERG_RETURN_UNEXPECTED(
-      BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+      ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -972,8 +990,13 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
   ICEBERG_ASSIGN_OR_RAISE(auto plan_status_str,
                           GetJsonValue<std::string>(json, kPlanStatus));
   ICEBERG_ASSIGN_OR_RAISE(response.plan_status, PlanStatusFromString(plan_status_str));
+  if (response.plan_status == PlanStatus::kFailed) {
+    ICEBERG_ASSIGN_OR_RAISE(response.error, ErrorResponseFromJson(json));
+  } else if (json.contains(kError)) {
+    return ValidationFailed("error can only be present when status is 'failed'");
+  }
   ICEBERG_RETURN_UNEXPECTED(
-      BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+      ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -985,28 +1008,34 @@ Result<FetchScanTasksResponse> FetchScanTasksResponseFromJson(
     const Schema& schema) {
   FetchScanTasksResponse response;
   ICEBERG_RETURN_UNEXPECTED(
-      BaseScanTaskResponseFromJson(json, &response, partition_specs_by_id, schema));
+      ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
 
-nlohmann::json ToJson(const PlanTableScanResponse& response) {
-  nlohmann::json json = BaseScanTaskResponseToJson(response);
+Result<nlohmann::json> ToJson(const PlanTableScanResponse& response) {
+  ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json, ScanTaskFieldsToJson(response));
   json[kPlanStatus] = ToString(response.plan_status);
   if (!response.plan_id.empty()) {
     json[kPlanId] = response.plan_id;
   }
+  if (response.error.has_value()) {
+    json[kError] = ToJson(*response.error)[kError];
+  }
   return json;
 }
 
-nlohmann::json ToJson(const FetchPlanningResultResponse& response) {
-  nlohmann::json json = BaseScanTaskResponseToJson(response);
+Result<nlohmann::json> ToJson(const FetchPlanningResultResponse& response) {
+  ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json, ScanTaskFieldsToJson(response));
   json[kPlanStatus] = ToString(response.plan_status);
+  if (response.error.has_value()) {
+    json[kError] = ToJson(*response.error)[kError];
+  }
   return json;
 }
 
-nlohmann::json ToJson(const FetchScanTasksResponse& response) {
-  return BaseScanTaskResponseToJson(response);
+Result<nlohmann::json> ToJson(const FetchScanTasksResponse& response) {
+  return ScanTaskFieldsToJson(response);
 }
 
 #define ICEBERG_DEFINE_FROM_JSON(Model)                       \

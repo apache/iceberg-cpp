@@ -1416,11 +1416,17 @@ TEST(PlanTableScanResponseFromJsonTest, CompletedStatusWithPlanTasks) {
   EXPECT_EQ(result->plan_tasks[1], "task-2");
 }
 
-TEST(PlanTableScanResponseFromJsonTest, MissingPlanIdDefaultsToEmptyForFailedStatus) {
-  auto json = nlohmann::json::parse(R"({"status":"failed"})");
+TEST(PlanTableScanResponseFromJsonTest, FailedStatusWithError) {
+  auto json = nlohmann::json::parse(
+      R"({"status":"failed","error":{"message":"Planning failed","type":"PlanningException","code":500}})");
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, PlanStatus::kFailed);
   EXPECT_TRUE(result->plan_id.empty());
+  ASSERT_TRUE(result->error.has_value());
+  EXPECT_EQ(result->error->message, "Planning failed");
+  EXPECT_EQ(result->error->type, "PlanningException");
+  EXPECT_EQ(result->error->code, 500);
 }
 
 struct PlanTableScanResponseInvalidParam {
@@ -1474,10 +1480,22 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_error_msg = "tasks can only be defined when status is 'completed'"},
         PlanTableScanResponseInvalidParam{
             .test_name = "FailedWithPlanId",
-            .json_str = R"({"status":"failed","plan-id":"somePlanId"})",
+            .json_str =
+                R"({"status":"failed","plan-id":"somePlanId","error":{"message":"x","type":"y","code":500}})",
             .expected_error_kind = ErrorKind::kValidationFailed,
             .expected_error_msg =
                 "plan id can only be defined when status is 'submitted' or 'completed'"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "FailedWithoutError",
+            .json_str = R"({"status":"failed"})",
+            .expected_error_kind = ErrorKind::kJsonParseError,
+            .expected_error_msg = "Missing 'error'"},
+        PlanTableScanResponseInvalidParam{
+            .test_name = "CompletedWithError",
+            .json_str =
+                R"({"status":"completed","error":{"message":"x","type":"y","code":500}})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg = "error can only be present when status is 'failed'"},
         PlanTableScanResponseInvalidParam{
             .test_name = "DeleteFilesWithoutFileScanTasks",
             .json_str =
@@ -1509,6 +1527,18 @@ TEST(FetchPlanningResultResponseFromJsonTest, CompletedStatusWithPlanTasks) {
   EXPECT_EQ(result->plan_status, PlanStatus::kCompleted);
   ASSERT_EQ(result->plan_tasks.size(), 1);
   EXPECT_EQ(result->plan_tasks[0], "task-1");
+}
+
+TEST(FetchPlanningResultResponseFromJsonTest, FailedStatusWithError) {
+  auto json = nlohmann::json::parse(
+      R"({"status":"failed","error":{"message":"Planning failed","type":"PlanningException","code":500}})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->plan_status, PlanStatus::kFailed);
+  ASSERT_TRUE(result->error.has_value());
+  EXPECT_EQ(result->error->message, "Planning failed");
+  EXPECT_EQ(result->error->type, "PlanningException");
+  EXPECT_EQ(result->error->code, 500);
 }
 
 struct FetchPlanningResultResponseInvalidParam {
@@ -1555,7 +1585,18 @@ INSTANTIATE_TEST_SUITE_P(
                 R"({"status":"submitted","delete-files":[{"content":"position-deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}]})",
             .expected_error_kind = ErrorKind::kValidationFailed,
             .expected_error_msg =
-                "deleteFiles should only be returned with fileScanTasks"}),
+                "deleteFiles should only be returned with fileScanTasks"},
+        FetchPlanningResultResponseInvalidParam{
+            .test_name = "FailedWithoutError",
+            .json_str = R"({"status":"failed"})",
+            .expected_error_kind = ErrorKind::kJsonParseError,
+            .expected_error_msg = "Missing 'error'"},
+        FetchPlanningResultResponseInvalidParam{
+            .test_name = "CompletedWithError",
+            .json_str =
+                R"({"status":"completed","error":{"message":"x","type":"y","code":500}})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg = "error can only be present when status is 'failed'"}),
     [](const ::testing::TestParamInfo<FetchPlanningResultResponseInvalidParam>& info) {
       return info.param.test_name;
     });
@@ -1928,7 +1969,7 @@ TEST(DataFileRoundtripTest, RequiredFieldsOnly) {
   df.file_size_in_bytes = 12345;
   df.record_count = 100;
 
-  auto json = ToJson(df);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(df));
   auto result = DataFileFromJson(json, {}, Schema({}, 0));
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result.value(), df);
@@ -1950,7 +1991,7 @@ TEST(DataFileRoundtripTest, WithOptionalFields) {
   df.sort_order_id = 0;
   df.referenced_data_file = "s3://bucket/data/file.parquet";
 
-  auto json = ToJson(df);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(df));
   auto result = DataFileFromJson(json, {}, Schema({}, 0));
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result.value(), df);
@@ -1985,7 +2026,7 @@ TEST(FetchScanTasksResponseRoundtripTest, WithFileScanTasksAndDeleteFiles) {
   auto result = FetchScanTasksResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
 
-  auto roundtrip_json = ToJson(*result);
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json, ToJson(*result));
   auto result2 =
       FetchScanTasksResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result2, IsOk());
@@ -1997,7 +2038,20 @@ TEST(PlanTableScanResponseRoundtripTest, SubmittedStatus) {
   auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
 
-  auto roundtrip_json = ToJson(*result);
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json, ToJson(*result));
+  auto result2 =
+      PlanTableScanResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
+
+TEST(PlanTableScanResponseRoundtripTest, FailedWithError) {
+  auto json = nlohmann::json::parse(
+      R"({"status":"failed","error":{"message":"Planning failed","type":"PlanningException","code":500}})");
+  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json, ToJson(*result));
   auto result2 =
       PlanTableScanResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result2, IsOk());
@@ -2010,7 +2064,20 @@ TEST(FetchPlanningResultResponseRoundtripTest, CompletedWithPlanTasks) {
   auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result, IsOk());
 
-  auto roundtrip_json = ToJson(*result);
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json, ToJson(*result));
+  auto result2 =
+      FetchPlanningResultResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(*result, *result2);
+}
+
+TEST(FetchPlanningResultResponseRoundtripTest, FailedWithError) {
+  auto json = nlohmann::json::parse(
+      R"({"status":"failed","error":{"message":"Planning failed","type":"PlanningException","code":500}})");
+  auto result = FetchPlanningResultResponseFromJson(json, EmptySpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json, ToJson(*result));
   auto result2 =
       FetchPlanningResultResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result2, IsOk());

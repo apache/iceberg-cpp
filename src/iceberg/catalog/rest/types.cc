@@ -127,27 +127,35 @@ bool PlanTableScanRequest::operator==(const PlanTableScanRequest& other) const {
          min_rows_requested == other.min_rows_requested;
 }
 
-bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
-  if (plan_tasks != other.plan_tasks) {
+namespace {
+
+bool ScanTaskFieldsEqual(
+    const std::vector<std::string>& plan_tasks_a,
+    const std::vector<std::string>& plan_tasks_b,
+    const std::vector<std::shared_ptr<DataFile>>& delete_files_a,
+    const std::vector<std::shared_ptr<DataFile>>& delete_files_b,
+    const std::vector<std::shared_ptr<FileScanTask>>& file_scan_tasks_a,
+    const std::vector<std::shared_ptr<FileScanTask>>& file_scan_tasks_b) {
+  if (plan_tasks_a != plan_tasks_b) {
     return false;
   }
-  if (delete_files.size() != other.delete_files.size()) {
+  if (delete_files_a.size() != delete_files_b.size()) {
     return false;
   }
-  for (size_t i = 0; i < delete_files.size(); ++i) {
-    if (!delete_files[i] != !other.delete_files[i]) {
+  for (size_t i = 0; i < delete_files_a.size(); ++i) {
+    if (!delete_files_a[i] != !delete_files_b[i]) {
       return false;
     }
-    if (delete_files[i] && *delete_files[i] != *other.delete_files[i]) {
+    if (delete_files_a[i] && *delete_files_a[i] != *delete_files_b[i]) {
       return false;
     }
   }
-  if (file_scan_tasks.size() != other.file_scan_tasks.size()) {
+  if (file_scan_tasks_a.size() != file_scan_tasks_b.size()) {
     return false;
   }
-  for (size_t i = 0; i < file_scan_tasks.size(); ++i) {
-    const auto& a = file_scan_tasks[i];
-    const auto& b = other.file_scan_tasks[i];
+  for (size_t i = 0; i < file_scan_tasks_a.size(); ++i) {
+    const auto& a = file_scan_tasks_a[i];
+    const auto& b = file_scan_tasks_b[i];
     if (!a != !b) {
       return false;
     }
@@ -176,14 +184,22 @@ bool BaseScanTaskResponse::operator==(const BaseScanTaskResponse& other) const {
   return true;
 }
 
+}  // namespace
+
 bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const {
-  return BaseScanTaskResponse::operator==(other) && plan_status == other.plan_status &&
-         plan_id == other.plan_id;
+  return ScanTaskFieldsEqual(plan_tasks, other.plan_tasks, delete_files,
+                             other.delete_files, file_scan_tasks,
+                             other.file_scan_tasks) &&
+         plan_status == other.plan_status && plan_id == other.plan_id &&
+         error == other.error;
 }
 
 bool FetchPlanningResultResponse::operator==(
     const FetchPlanningResultResponse& other) const {
-  return BaseScanTaskResponse::operator==(other) && plan_status == other.plan_status;
+  return ScanTaskFieldsEqual(plan_tasks, other.plan_tasks, delete_files,
+                             other.delete_files, file_scan_tasks,
+                             other.file_scan_tasks) &&
+         plan_status == other.plan_status && error == other.error;
 }
 
 bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const {
@@ -191,7 +207,8 @@ bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const
 }
 
 bool FetchScanTasksResponse::operator==(const FetchScanTasksResponse& other) const {
-  return BaseScanTaskResponse::operator==(other);
+  return ScanTaskFieldsEqual(plan_tasks, other.plan_tasks, delete_files,
+                             other.delete_files, file_scan_tasks, other.file_scan_tasks);
 }
 
 Status OAuthTokenResponse::Validate() const {
@@ -256,6 +273,14 @@ Status PlanTableScanResponse::Validate() const {
         "Invalid response: deleteFiles should only be returned with fileScanTasks that "
         "reference them");
   }
+  if (plan_status == PlanStatus::kFailed && !error.has_value()) {
+    return ValidationFailed(
+        "Invalid response: error must be present when status is 'failed'");
+  }
+  if (plan_status != PlanStatus::kFailed && error.has_value()) {
+    return ValidationFailed(
+        "Invalid response: error can only be present when status is 'failed'");
+  }
   return {};
 }
 
@@ -269,6 +294,14 @@ Status FetchPlanningResultResponse::Validate() const {
     return ValidationFailed(
         "Invalid response: deleteFiles should only be returned with fileScanTasks that "
         "reference them");
+  }
+  if (plan_status == PlanStatus::kFailed && !error.has_value()) {
+    return ValidationFailed(
+        "Invalid response: error must be present when status is 'failed'");
+  }
+  if (plan_status != PlanStatus::kFailed && error.has_value()) {
+    return ValidationFailed(
+        "Invalid response: error can only be present when status is 'failed'");
   }
   return {};
 }
