@@ -41,14 +41,20 @@ jobs:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
       - name: Run build
         env:
           CC: gcc-14
           CXX: g++-14
         run: |
           mkdir build && cd build
-          cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DICEBERG_BUILD_SQL_CATALOG=ON \
+            -DICEBERG_SQL_SQLITE=ON \
+            -DICEBERG_SQL_POSTGRESQL=ON \
+            -DICEBERG_SQL_MYSQL=ON
           cmake --build .
       - uses: cpp-linter/cpp-linter-action@0f6d1b8d7e38b584cbee606eb23d850c217d54f8 # v2.15.1
         id: linter
@@ -66,7 +72,7 @@ jobs:
           database: build
           verbosity: 'debug'
           # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
-          extra-args: '-std=c++23 -I$PWD/src -I$PWD/build/src -fno-builtin-std-forward_like'
+          extra-args: '-std=c++23 -I$PWD/src -I$PWD/build/src -I$PWD/build/_deps/sqlpp23-src/include -I/usr/include/postgresql -I/usr/include/mysql -fno-builtin-std-forward_like'
       - name: Fail fast?!
         if: steps.linter.outputs.checks-failed != 0
         run: |
