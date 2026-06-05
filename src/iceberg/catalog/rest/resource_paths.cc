@@ -116,7 +116,7 @@ Result<std::string> ResourcePaths::CommitTransaction() const {
 }
 
 Result<std::string> ResourcePaths::Plan(const TableIdentifier& ident,
-                                            std::optional<std::string> plan_id) const {
+                                        std::optional<std::string> plan_id) const {
   ICEBERG_ASSIGN_OR_RAISE(std::string encoded_namespace,
                           EncodeNamespace(ident.ns, namespace_separator_));
   ICEBERG_ASSIGN_OR_RAISE(std::string encoded_table_name, EncodeString(ident.name));

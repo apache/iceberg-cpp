@@ -99,6 +99,9 @@ constexpr std::string_view kStatsFields = "stats-fields";
 constexpr std::string_view kMinRowsRequested = "min-rows-requested";
 constexpr std::string_view kPlanTask = "plan-task";
 constexpr std::string_view kContent = "content";
+constexpr std::string_view kContentData = "data";
+constexpr std::string_view kContentPositionDeletes = "position-deletes";
+constexpr std::string_view kContentEqualityDeletes = "equality-deletes";
 constexpr std::string_view kFilePath = "file-path";
 constexpr std::string_view kFileFormat = "file-format";
 constexpr std::string_view kSpecId = "spec-id";
@@ -127,7 +130,8 @@ constexpr std::string_view kResidualFilter = "residual-filter";
 
 Result<DataFile> DataFileFromJson(
     const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_spec_by_id,
     const Schema& schema) {
   if (!json.is_object()) {
     return JsonParseError("DataFile must be a JSON object: {}", SafeDumpJson(json));
@@ -135,11 +139,11 @@ Result<DataFile> DataFileFromJson(
   DataFile df;
 
   ICEBERG_ASSIGN_OR_RAISE(auto content_str, GetJsonValue<std::string>(json, kContent));
-  if (content_str == ToString(DataFile::Content::kData)) {
+  if (content_str == kContentData) {
     df.content = DataFile::Content::kData;
-  } else if (content_str == ToString(DataFile::Content::kPositionDeletes)) {
+  } else if (content_str == kContentPositionDeletes) {
     df.content = DataFile::Content::kPositionDeletes;
-  } else if (content_str == ToString(DataFile::Content::kEqualityDeletes)) {
+  } else if (content_str == kContentEqualityDeletes) {
     df.content = DataFile::Content::kEqualityDeletes;
   } else {
     return JsonParseError("Unknown data file content: {}", content_str);
@@ -220,7 +224,8 @@ Result<DataFile> DataFileFromJson(
     ICEBERG_ASSIGN_OR_RAISE(
         auto values, GetJsonValue<std::vector<std::vector<uint8_t>>>(map_json, "values"));
     if (keys.size() != values.size()) {
-      return JsonParseError("'{}' binary map keys and values have different lengths", key);
+      return JsonParseError("'{}' binary map keys and values have different lengths",
+                            key);
     }
     for (size_t i = 0; i < keys.size(); ++i) {
       target[keys[i]] = values[i];
@@ -268,7 +273,8 @@ Result<DataFile> DataFileFromJson(
 Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     const nlohmann::json& json,
     const std::vector<std::shared_ptr<DataFile>>& delete_files,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& partition_spec_by_id,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_spec_by_id,
     const Schema& schema) {
   if (!json.is_array()) {
     return JsonParseError("Cannot parse file scan tasks from non-array: {}",
@@ -283,8 +289,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
 
     ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
-    ICEBERG_ASSIGN_OR_RAISE(auto data_file,
-                            DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
 
     std::vector<std::shared_ptr<DataFile>> task_delete_files;
     if (task_json.contains(kDeleteFileReferences) &&
@@ -308,17 +314,26 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
       ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
     }
 
-    file_scan_tasks.push_back(
-        std::make_shared<FileScanTask>(std::make_shared<DataFile>(std::move(data_file)),
-                                      std::move(task_delete_files),
-                                      std::move(residual_filter)));
+    file_scan_tasks.push_back(std::make_shared<FileScanTask>(
+        std::make_shared<DataFile>(std::move(data_file)), std::move(task_delete_files),
+        std::move(residual_filter)));
   }
   return file_scan_tasks;
 }
 
 nlohmann::json ToJson(const DataFile& df) {
   nlohmann::json json;
-  json[kContent] = ToString(df.content);
+  switch (df.content) {
+    case DataFile::Content::kData:
+      json[kContent] = kContentData;
+      break;
+    case DataFile::Content::kPositionDeletes:
+      json[kContent] = kContentPositionDeletes;
+      break;
+    case DataFile::Content::kEqualityDeletes:
+      json[kContent] = kContentEqualityDeletes;
+      break;
+  }
   json[kFilePath] = df.file_path;
   json[kFileFormat] = ToString(df.file_format);
 
@@ -329,8 +344,7 @@ nlohmann::json ToJson(const DataFile& df) {
   json[kRecordCount] = df.record_count;
   json[kFileSizeInBytes] = df.file_size_in_bytes;
 
-  auto write_int_map = [&](std::string_view key,
-                           const std::map<int32_t, int64_t>& m) {
+  auto write_int_map = [&](std::string_view key, const std::map<int32_t, int64_t>& m) {
     if (!m.empty()) {
       std::vector<int32_t> keys;
       std::vector<int64_t> values;

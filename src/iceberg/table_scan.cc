@@ -797,10 +797,14 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
 
 std::string_view ToString(PlanStatus status) {
   switch (status) {
-    case PlanStatus::kSubmitted: return "submitted";
-    case PlanStatus::kCompleted: return "completed";
-    case PlanStatus::kCancelled: return "cancelled";
-    case PlanStatus::kFailed: return "failed";
+    case PlanStatus::kSubmitted:
+      return "submitted";
+    case PlanStatus::kCompleted:
+      return "completed";
+    case PlanStatus::kCancelled:
+      return "cancelled";
+    case PlanStatus::kFailed:
+      return "failed";
   }
   return "unknown";
 }

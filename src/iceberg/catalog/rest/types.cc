@@ -240,7 +240,8 @@ Status PlanTableScanResponse::Validate() const {
     return ValidationFailed(
         "Invalid response: 'cancelled' is not a valid status for planTableScan");
   }
-  if (plan_status != PlanStatus::kCompleted && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+  if (plan_status != PlanStatus::kCompleted &&
+      (!plan_tasks.empty() || !file_scan_tasks.empty())) {
     return ValidationFailed(
         "Invalid response: tasks can only be defined when status is 'completed'");
   }
@@ -259,7 +260,8 @@ Status PlanTableScanResponse::Validate() const {
 }
 
 Status FetchPlanningResultResponse::Validate() const {
-  if (plan_status != PlanStatus::kCompleted && (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+  if (plan_status != PlanStatus::kCompleted &&
+      (!plan_tasks.empty() || !file_scan_tasks.empty())) {
     return ValidationFailed(
         "Invalid response: tasks can only be returned in a 'completed' status");
   }

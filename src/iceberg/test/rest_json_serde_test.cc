@@ -1481,7 +1481,7 @@ INSTANTIATE_TEST_SUITE_P(
         PlanTableScanResponseInvalidParam{
             .test_name = "DeleteFilesWithoutFileScanTasks",
             .json_str =
-                R"({"status":"completed","delete-files":[{"content":"position_deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}],"file-scan-tasks":[]})",
+                R"({"status":"completed","delete-files":[{"content":"position-deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}],"file-scan-tasks":[]})",
             .expected_error_kind = ErrorKind::kValidationFailed,
             .expected_error_msg =
                 "deleteFiles should only be returned with fileScanTasks"}),
@@ -1552,7 +1552,7 @@ INSTANTIATE_TEST_SUITE_P(
         FetchPlanningResultResponseInvalidParam{
             .test_name = "DeleteFilesWithoutFileScanTasks",
             .json_str =
-                R"({"status":"submitted","delete-files":[{"content":"position_deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}]})",
+                R"({"status":"submitted","delete-files":[{"content":"position-deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}]})",
             .expected_error_kind = ErrorKind::kValidationFailed,
             .expected_error_msg =
                 "deleteFiles should only be returned with fileScanTasks"}),
@@ -1567,7 +1567,7 @@ TEST(FetchScanTasksResponseFromJsonTest, WithFileScanTasks) {
     "plan-tasks": [],
     "delete-files": [
       {
-        "content": "position_deletes",
+        "content": "position-deletes",
         "file-path": "s3://bucket/deletes/delete.parquet",
         "file-format": "PARQUET",
         "file-size-in-bytes": 512,
@@ -1640,7 +1640,7 @@ INSTANTIATE_TEST_SUITE_P(
         FetchScanTasksResponseInvalidParam{
             .test_name = "DeleteFilesWithoutFileScanTasks",
             .json_str =
-                R"({"plan-tasks":["task1","task2"],"delete-files":[{"content":"position_deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}],"file-scan-tasks":[]})",
+                R"({"plan-tasks":["task1","task2"],"delete-files":[{"content":"position-deletes","file-path":"s3://bucket/d.parquet","file-format":"PARQUET","file-size-in-bytes":512,"record-count":5}],"file-scan-tasks":[]})",
             .expected_error_kind = ErrorKind::kValidationFailed,
             .expected_error_msg =
                 "deleteFiles should only be returned with fileScanTasks"}),
@@ -1771,7 +1771,7 @@ TEST(DataFileFromJsonTest, WithOptionalFields) {
 
 TEST(DataFileFromJsonTest, EqualityDeleteFile) {
   auto json = R"({
-    "content": "equality_deletes",
+    "content": "equality-deletes",
     "file-path": "s3://bucket/deletes/eq_delete.parquet",
     "file-format": "PARQUET",
     "file-size-in-bytes": 5000,
@@ -1790,7 +1790,7 @@ TEST(DataFileFromJsonTest, EqualityDeleteFile) {
 
 TEST(DataFileFromJsonTest, PositionDeleteFileWithReferencedDataFile) {
   auto json = R"({
-    "content": "position_deletes",
+    "content": "position-deletes",
     "file-path": "s3://bucket/deletes/pos_delete.parquet",
     "file-format": "PARQUET",
     "file-size-in-bytes": 3000,
@@ -1961,7 +1961,7 @@ TEST(FetchScanTasksResponseRoundtripTest, WithFileScanTasksAndDeleteFiles) {
     "plan-tasks": [],
     "delete-files": [
       {
-        "content": "position_deletes",
+        "content": "position-deletes",
         "file-path": "s3://bucket/deletes/delete.parquet",
         "file-format": "PARQUET",
         "file-size-in-bytes": 512,
