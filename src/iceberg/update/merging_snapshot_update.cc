@@ -944,26 +944,11 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   result.insert(result.end(), std::make_move_iterator(merged_deletes.begin()),
                 std::make_move_iterator(merged_deletes.end()));
 
-  // Manifest count summary: unassigned manifests count as neither created nor kept.
-  int32_t manifests_created = 0;
-  int32_t manifests_kept = 0;
-  for (const auto& m : result) {
-    if (m.added_snapshot_id == snapshot_id) {
-      ++manifests_created;
-    } else if (m.added_snapshot_id != kInvalidSnapshotId) {
-      ++manifests_kept;
-    }
-  }
   int32_t replaced_manifests_count = data_filter_manager_->ReplacedManifestsCount() +
                                      delete_filter_manager_->ReplacedManifestsCount() +
                                      data_merge_manager_->ReplacedManifestsCount() +
                                      delete_merge_manager_->ReplacedManifestsCount();
-  summary_builder().Set(SnapshotSummaryFields::kManifestsCreated,
-                        std::to_string(manifests_created));
-  summary_builder().Set(SnapshotSummaryFields::kManifestsKept,
-                        std::to_string(manifests_kept));
-  summary_builder().Set(SnapshotSummaryFields::kManifestsReplaced,
-                        std::to_string(replaced_manifests_count));
+  summary_builder().Merge(BuildManifestCountSummary(result, replaced_manifests_count));
 
   return result;
 }
