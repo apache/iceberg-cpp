@@ -21,9 +21,10 @@
 
 namespace iceberg {
 
-std::unique_ptr<ScanMetrics> ScanMetrics::Of(MetricsContext& context) {
+std::unique_ptr<ScanMetrics> ScanMetrics::Make(MetricsContext& context) {
   auto m = std::unique_ptr<ScanMetrics>(new ScanMetrics());
-  m->total_planning_duration = context.GetTimer("total-planning-duration");
+  m->total_planning_duration =
+      context.GetTimer("total-planning-duration", TimerUnit::kNanoseconds);
   m->result_data_files = context.GetCounter("result-data-files");
   m->result_delete_files = context.GetCounter("result-delete-files");
   m->scanned_data_manifests = context.GetCounter("scanned-data-manifests");
@@ -46,22 +47,22 @@ std::unique_ptr<ScanMetrics> ScanMetrics::Of(MetricsContext& context) {
 }
 
 std::unique_ptr<ScanMetrics> ScanMetrics::Noop() {
-  return ScanMetrics::Of(*MetricsContext::Null());
+  return ScanMetrics::Make(*MetricsContext::Noop());
 }
 
 ScanMetricsResult ScanMetrics::ToResult() const {
   ScanMetricsResult r;
-  // Helper: snapshot a live Counter into a CounterResult (unit comes from the Counter).
-  auto snap = [](const std::shared_ptr<Counter>& c) -> CounterResult {
-    return c ? CounterResult{.unit = c->unit(), .value = c->value()} : CounterResult{};
+  auto snap = [](const std::shared_ptr<Counter>& c) -> std::optional<CounterResult> {
+    if (!c || c->IsNoop()) return std::nullopt;
+    return CounterResult{.unit = c->unit(), .value = c->value()};
   };
 
-  r.total_planning_duration =
-      total_planning_duration
-          ? TimerResult{.unit = std::string(total_planning_duration->Unit()),
-                        .count = total_planning_duration->Count(),
-                        .total_duration = total_planning_duration->TotalDuration()}
-          : TimerResult{};
+  if (total_planning_duration && !total_planning_duration->IsNoop()) {
+    r.total_planning_duration =
+        TimerResult{.unit = std::string(total_planning_duration->Unit()),
+                    .count = total_planning_duration->Count(),
+                    .total_duration = total_planning_duration->TotalDuration()};
+  }
   r.result_data_files = snap(result_data_files);
   r.result_delete_files = snap(result_delete_files);
   r.scanned_data_manifests = snap(scanned_data_manifests);

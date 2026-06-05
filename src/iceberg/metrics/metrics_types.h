@@ -52,7 +52,7 @@ struct ICEBERG_EXPORT CounterResult {
 ///
 /// Carries the unit name, recording count, and total accumulated duration.
 struct ICEBERG_EXPORT TimerResult {
-  // Time unit name; always "nanoseconds" for built-in timers.
+  // Time unit name; defaults to "nanoseconds" for built-in metrics.
   std::string unit{"nanoseconds"};
   int64_t count = 0;
   std::chrono::nanoseconds total_duration{0};

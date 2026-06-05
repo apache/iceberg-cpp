@@ -19,13 +19,17 @@
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/expression/expression.h"
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/metrics/json_serde_internal.h"
 #include "iceberg/util/json_util_internal.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
 namespace {
+
+using StringMap = std::unordered_map<std::string, std::string>;
 
 // JSON key constants (kebab-case, matching Iceberg spec)
 constexpr std::string_view kTableName = "table-name";
@@ -34,14 +38,14 @@ constexpr std::string_view kFilter = "filter";
 constexpr std::string_view kSchemaId = "schema-id";
 constexpr std::string_view kProjectedFieldIds = "projected-field-ids";
 constexpr std::string_view kProjectedFieldNames = "projected-field-names";
-constexpr std::string_view kScanMetrics = "scan-metrics";
+constexpr std::string_view kMetrics = "metrics";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kSequenceNumber = "sequence-number";
 constexpr std::string_view kOperation = "operation";
-constexpr std::string_view kCommitMetrics = "commit-metrics";
 
 // CounterResult / TimerResult keys
 constexpr std::string_view kUnit = "unit";
+constexpr std::string_view kTimeUnit = "time-unit";
 constexpr std::string_view kValue = "value";
 constexpr std::string_view kCount = "count";
 constexpr std::string_view kTotalDuration = "total-duration";
@@ -75,11 +79,11 @@ constexpr std::string_view kAddedDeleteFiles = "added-delete-files";
 constexpr std::string_view kAddedEqualityDeleteFiles = "added-equality-delete-files";
 constexpr std::string_view kAddedPositionalDeleteFiles = "added-positional-delete-files";
 constexpr std::string_view kAddedDvs = "added-dvs";
+constexpr std::string_view kRemovedDeleteFiles = "removed-delete-files";
 constexpr std::string_view kRemovedPositionalDeleteFiles =
     "removed-positional-delete-files";
 constexpr std::string_view kRemovedDvs = "removed-dvs";
 constexpr std::string_view kRemovedEqualityDeleteFiles = "removed-equality-delete-files";
-constexpr std::string_view kRemovedDeleteFiles = "removed-delete-files";
 constexpr std::string_view kTotalDeleteFiles = "total-delete-files";
 constexpr std::string_view kAddedRecords = "added-records";
 constexpr std::string_view kRemovedRecords = "removed-records";
@@ -93,34 +97,68 @@ constexpr std::string_view kTotalPositionalDeletes = "total-positional-deletes";
 constexpr std::string_view kAddedEqualityDeletes = "added-equality-deletes";
 constexpr std::string_view kRemovedEqualityDeletes = "removed-equality-deletes";
 constexpr std::string_view kTotalEqualityDeletes = "total-equality-deletes";
-constexpr std::string_view kKeptManifestCount = "kept-manifest-count";
-constexpr std::string_view kCreatedManifestCount = "created-manifest-count";
-constexpr std::string_view kReplacedManifestCount = "replaced-manifest-count";
-constexpr std::string_view kProcessedManifestEntriesCount =
-    "processed-manifest-entries-count";
+constexpr std::string_view kKeptManifestCount = "manifests-kept";
+constexpr std::string_view kCreatedManifestCount = "manifests-created";
+constexpr std::string_view kReplacedManifestCount = "manifests-replaced";
+constexpr std::string_view kProcessedManifestEntriesCount = "manifest-entries-processed";
 
-// Helper: emit a CounterResult field only when its value != 0
 void SetCounterField(nlohmann::json& json, std::string_view key,
-                     const CounterResult& counter) {
-  if (counter.value == 0) return;
-  json[key] = ToJson(counter);
+                     const std::optional<CounterResult>& counter) {
+  if (counter) {
+    json[key] = ToJson(*counter);
+  }
 }
 
-// Helper: parse optional CounterResult; absent/null yields CounterResult{}, malformed
-// propagates.
-Result<CounterResult> ParseCounterResult(const nlohmann::json& json,
-                                         std::string_view key) {
+Result<std::optional<CounterResult>> ParseCounterResult(const nlohmann::json& json,
+                                                        std::string_view key) {
   auto it = json.find(key);
-  if (it == json.end() || it->is_null()) return CounterResult{};
+  if (it == json.end()) return std::nullopt;
   return CounterResultFromJson(*it);
 }
 
-// Helper: parse optional timer field; absent/null yields TimerResult{}, malformed
-// propagates.
-Result<TimerResult> ParseTimerResult(const nlohmann::json& json, std::string_view key) {
+Result<std::optional<TimerResult>> ParseTimerResult(const nlohmann::json& json,
+                                                    std::string_view key) {
   auto it = json.find(key);
-  if (it == json.end() || it->is_null()) return TimerResult{};
+  if (it == json.end()) return std::nullopt;
   return TimerResultFromJson(*it);
+}
+
+Result<std::chrono::nanoseconds> DurationToNanoseconds(int64_t duration,
+                                                       std::string_view unit) {
+  auto normalized = StringUtils::ToLower(unit);
+  if (normalized == "nanoseconds") return std::chrono::nanoseconds{duration};
+  if (normalized == "microseconds") return std::chrono::microseconds{duration};
+  if (normalized == "milliseconds") return std::chrono::milliseconds{duration};
+  if (normalized == "seconds") return std::chrono::seconds{duration};
+  if (normalized == "minutes") return std::chrono::minutes{duration};
+  if (normalized == "hours") return std::chrono::hours{duration};
+  if (normalized == "days") return std::chrono::days{duration};
+  return JsonParseError("Invalid time unit: {}", unit);
+}
+
+Result<int64_t> NanosecondsToDuration(std::chrono::nanoseconds duration,
+                                      std::string_view unit) {
+  auto normalized = StringUtils::ToLower(unit);
+  if (normalized == "nanoseconds") return duration.count();
+  if (normalized == "microseconds") {
+    return std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+  }
+  if (normalized == "milliseconds") {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+  }
+  if (normalized == "seconds") {
+    return std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+  }
+  if (normalized == "minutes") {
+    return std::chrono::duration_cast<std::chrono::minutes>(duration).count();
+  }
+  if (normalized == "hours") {
+    return std::chrono::duration_cast<std::chrono::hours>(duration).count();
+  }
+  if (normalized == "days") {
+    return std::chrono::duration_cast<std::chrono::days>(duration).count();
+  }
+  return JsonParseError("Invalid time unit: {}", unit);
 }
 
 }  // namespace
@@ -134,43 +172,44 @@ nlohmann::json ToJson(const CounterResult& counter) {
 }
 
 Result<CounterResult> CounterResultFromJson(const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto unit, GetJsonValue<std::string>(json, kUnit));
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed_unit, CounterUnitFromString(unit));
   ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonValue<int64_t>(json, kValue));
-  CounterResult result;
-  result.value = value;
-  if (auto it = json.find(kUnit); it != json.end() && it->is_string()) {
-    result.unit = CounterUnitFromString(it->get<std::string>());
-  }
-  return result;
+  return CounterResult{.unit = parsed_unit, .value = value};
 }
 
 // ---------------------------------------------------------------------------
 // TimerResult
 // ---------------------------------------------------------------------------
 
-nlohmann::json ToJson(const TimerResult& timer) {
-  return {{kUnit, timer.unit},
-          {kCount, timer.count},
-          {kTotalDuration, timer.total_duration.count()}};
+Result<nlohmann::json> ToJson(const TimerResult& timer) {
+  ICEBERG_ASSIGN_OR_RAISE(auto duration,
+                          NanosecondsToDuration(timer.total_duration, timer.unit));
+  auto unit = StringUtils::ToLower(timer.unit);
+  nlohmann::json json = {
+      {kTimeUnit, unit}, {kCount, timer.count}, {kTotalDuration, duration}};
+  return json;
 }
 
 Result<TimerResult> TimerResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto count, GetJsonValue<int64_t>(json, kCount));
+  ICEBERG_ASSIGN_OR_RAISE(auto unit, GetJsonValue<std::string>(json, kTimeUnit));
   ICEBERG_ASSIGN_OR_RAISE(auto total, GetJsonValue<int64_t>(json, kTotalDuration));
-  TimerResult result{.count = count, .total_duration = std::chrono::nanoseconds{total}};
-  if (auto it = json.find(kUnit); it != json.end() && it->is_string()) {
-    result.unit = it->get<std::string>();
-  }
-  return result;
+  ICEBERG_ASSIGN_OR_RAISE(auto duration, DurationToNanoseconds(total, unit));
+  return TimerResult{
+      .unit = StringUtils::ToLower(unit), .count = count, .total_duration = duration};
 }
 
 // ---------------------------------------------------------------------------
 // ScanMetricsResult
 // ---------------------------------------------------------------------------
 
-nlohmann::json ToJson(const ScanMetricsResult& m) {
+Result<nlohmann::json> ToJson(const ScanMetricsResult& m) {
   nlohmann::json json = nlohmann::json::object();
-  if (m.total_planning_duration.count > 0) {
-    json[std::string(kTotalPlanningDuration)] = ToJson(m.total_planning_duration);
+  if (m.total_planning_duration) {
+    ICEBERG_ASSIGN_OR_RAISE(auto total_planning_duration,
+                            ToJson(*m.total_planning_duration));
+    json[std::string(kTotalPlanningDuration)] = std::move(total_planning_duration);
   }
   SetCounterField(json, kResultDataFiles, m.result_data_files);
   SetCounterField(json, kResultDeleteFiles, m.result_delete_files);
@@ -192,6 +231,10 @@ nlohmann::json ToJson(const ScanMetricsResult& m) {
 }
 
 Result<ScanMetricsResult> ScanMetricsResultFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) {
+    return JsonParseError("Cannot parse scan metrics from non-object: {}",
+                          SafeDumpJson(json));
+  }
   ScanMetricsResult m;
   ICEBERG_ASSIGN_OR_RAISE(m.total_planning_duration,
                           ParseTimerResult(json, kTotalPlanningDuration));
@@ -233,10 +276,11 @@ Result<ScanMetricsResult> ScanMetricsResultFromJson(const nlohmann::json& json) 
 // CommitMetricsResult
 // ---------------------------------------------------------------------------
 
-nlohmann::json ToJson(const CommitMetricsResult& m) {
+Result<nlohmann::json> ToJson(const CommitMetricsResult& m) {
   nlohmann::json json = nlohmann::json::object();
-  if (m.total_duration.count > 0) {
-    json[std::string(kTotalDuration)] = ToJson(m.total_duration);
+  if (m.total_duration) {
+    ICEBERG_ASSIGN_OR_RAISE(auto total_duration, ToJson(*m.total_duration));
+    json[std::string(kTotalDuration)] = std::move(total_duration);
   }
   SetCounterField(json, kAttempts, m.attempts);
   SetCounterField(json, kAddedDataFiles, m.added_data_files);
@@ -246,10 +290,10 @@ nlohmann::json ToJson(const CommitMetricsResult& m) {
   SetCounterField(json, kAddedEqualityDeleteFiles, m.added_equality_delete_files);
   SetCounterField(json, kAddedPositionalDeleteFiles, m.added_positional_delete_files);
   SetCounterField(json, kAddedDvs, m.added_dvs);
+  SetCounterField(json, kRemovedDeleteFiles, m.removed_delete_files);
   SetCounterField(json, kRemovedPositionalDeleteFiles, m.removed_positional_delete_files);
   SetCounterField(json, kRemovedDvs, m.removed_dvs);
   SetCounterField(json, kRemovedEqualityDeleteFiles, m.removed_equality_delete_files);
-  SetCounterField(json, kRemovedDeleteFiles, m.removed_delete_files);
   SetCounterField(json, kTotalDeleteFiles, m.total_delete_files);
   SetCounterField(json, kAddedRecords, m.added_records);
   SetCounterField(json, kRemovedRecords, m.removed_records);
@@ -272,6 +316,10 @@ nlohmann::json ToJson(const CommitMetricsResult& m) {
 }
 
 Result<CommitMetricsResult> CommitMetricsResultFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) {
+    return JsonParseError("Cannot parse commit metrics from non-object: {}",
+                          SafeDumpJson(json));
+  }
   CommitMetricsResult m;
   ICEBERG_ASSIGN_OR_RAISE(m.total_duration, ParseTimerResult(json, kTotalDuration));
   ICEBERG_ASSIGN_OR_RAISE(m.attempts, ParseCounterResult(json, kAttempts));
@@ -286,13 +334,13 @@ Result<CommitMetricsResult> CommitMetricsResultFromJson(const nlohmann::json& js
   ICEBERG_ASSIGN_OR_RAISE(m.added_positional_delete_files,
                           ParseCounterResult(json, kAddedPositionalDeleteFiles));
   ICEBERG_ASSIGN_OR_RAISE(m.added_dvs, ParseCounterResult(json, kAddedDvs));
+  ICEBERG_ASSIGN_OR_RAISE(m.removed_delete_files,
+                          ParseCounterResult(json, kRemovedDeleteFiles));
   ICEBERG_ASSIGN_OR_RAISE(m.removed_positional_delete_files,
                           ParseCounterResult(json, kRemovedPositionalDeleteFiles));
   ICEBERG_ASSIGN_OR_RAISE(m.removed_dvs, ParseCounterResult(json, kRemovedDvs));
   ICEBERG_ASSIGN_OR_RAISE(m.removed_equality_delete_files,
                           ParseCounterResult(json, kRemovedEqualityDeleteFiles));
-  ICEBERG_ASSIGN_OR_RAISE(m.removed_delete_files,
-                          ParseCounterResult(json, kRemovedDeleteFiles));
   ICEBERG_ASSIGN_OR_RAISE(m.total_delete_files,
                           ParseCounterResult(json, kTotalDeleteFiles));
   ICEBERG_ASSIGN_OR_RAISE(m.added_records, ParseCounterResult(json, kAddedRecords));
@@ -335,14 +383,14 @@ Result<nlohmann::json> ToJson(const ScanReport& report) {
   nlohmann::json json;
   json[kTableName] = report.table_name;
   json[kSnapshotId] = report.snapshot_id;
-  if (report.filter) {
-    ICEBERG_ASSIGN_OR_RAISE(auto filter_json, ToJson(*report.filter));
-    json[kFilter] = std::move(filter_json);
-  }
+  auto filter = report.filter ? report.filter : True::Instance();
+  ICEBERG_ASSIGN_OR_RAISE(auto filter_json, ToJson(*filter));
+  json[kFilter] = std::move(filter_json);
   json[kSchemaId] = report.schema_id;
-  SetContainerField(json, kProjectedFieldIds, report.projected_field_ids);
-  SetContainerField(json, kProjectedFieldNames, report.projected_field_names);
-  json[kScanMetrics] = ToJson(report.scan_metrics);
+  json[kProjectedFieldIds] = report.projected_field_ids;
+  json[kProjectedFieldNames] = report.projected_field_names;
+  ICEBERG_ASSIGN_OR_RAISE(auto metrics_json, ToJson(report.scan_metrics));
+  json[kMetrics] = std::move(metrics_json);
   if (!report.metadata.empty()) {
     json[kMetadata] = report.metadata;
   }
@@ -353,23 +401,19 @@ Result<ScanReport> ScanReportFromJson(const nlohmann::json& json) {
   ScanReport report;
   ICEBERG_ASSIGN_OR_RAISE(report.table_name, GetJsonValue<std::string>(json, kTableName));
   ICEBERG_ASSIGN_OR_RAISE(report.snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
-  if (auto it = json.find(kFilter); it != json.end() && !it->is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(report.filter, ExpressionFromJson(*it));
-  }
-  if (auto it = json.find(kSchemaId); it != json.end()) {
-    report.schema_id = it->get<int32_t>();
-  }
-  if (auto it = json.find(kProjectedFieldIds); it != json.end()) {
-    report.projected_field_ids = it->get<std::vector<int32_t>>();
-  }
-  if (auto it = json.find(kProjectedFieldNames); it != json.end()) {
-    report.projected_field_names = it->get<std::vector<std::string>>();
-  }
-  if (auto it = json.find(kScanMetrics); it != json.end() && !it->is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(report.scan_metrics, ScanMetricsResultFromJson(*it));
-  }
-  if (auto it = json.find(kMetadata); it != json.end() && it->is_object()) {
-    report.metadata = it->get<std::unordered_map<std::string, std::string>>();
+  ICEBERG_ASSIGN_OR_RAISE(auto filter_json, GetJsonValue<nlohmann::json>(json, kFilter));
+  ICEBERG_ASSIGN_OR_RAISE(report.filter, ExpressionFromJson(filter_json));
+  ICEBERG_ASSIGN_OR_RAISE(report.schema_id, GetJsonValue<int32_t>(json, kSchemaId));
+  ICEBERG_ASSIGN_OR_RAISE(report.projected_field_ids,
+                          GetJsonValue<std::vector<int32_t>>(json, kProjectedFieldIds));
+  ICEBERG_ASSIGN_OR_RAISE(
+      report.projected_field_names,
+      GetJsonValue<std::vector<std::string>>(json, kProjectedFieldNames));
+  ICEBERG_ASSIGN_OR_RAISE(auto metrics_json,
+                          GetJsonValue<nlohmann::json>(json, kMetrics));
+  ICEBERG_ASSIGN_OR_RAISE(report.scan_metrics, ScanMetricsResultFromJson(metrics_json));
+  if (json.contains(kMetadata)) {
+    ICEBERG_ASSIGN_OR_RAISE(report.metadata, GetJsonValue<StringMap>(json, kMetadata));
   }
   return report;
 }
@@ -378,13 +422,14 @@ Result<ScanReport> ScanReportFromJson(const nlohmann::json& json) {
 // CommitReport
 // ---------------------------------------------------------------------------
 
-nlohmann::json ToJson(const CommitReport& report) {
+Result<nlohmann::json> ToJson(const CommitReport& report) {
   nlohmann::json json;
   json[kTableName] = report.table_name;
   json[kSnapshotId] = report.snapshot_id;
   json[kSequenceNumber] = report.sequence_number;
-  SetOptionalStringField(json, kOperation, report.operation);
-  json[kCommitMetrics] = ToJson(report.commit_metrics);
+  json[kOperation] = report.operation;
+  ICEBERG_ASSIGN_OR_RAISE(auto metrics_json, ToJson(report.commit_metrics));
+  json[kMetrics] = std::move(metrics_json);
   if (!report.metadata.empty()) {
     json[kMetadata] = report.metadata;
   }
@@ -397,14 +442,13 @@ Result<CommitReport> CommitReportFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(report.snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
   ICEBERG_ASSIGN_OR_RAISE(report.sequence_number,
                           GetJsonValue<int64_t>(json, kSequenceNumber));
-  if (auto it = json.find(kOperation); it != json.end() && it->is_string()) {
-    report.operation = it->get<std::string>();
-  }
-  if (auto it = json.find(kCommitMetrics); it != json.end() && !it->is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(report.commit_metrics, CommitMetricsResultFromJson(*it));
-  }
-  if (auto it = json.find(kMetadata); it != json.end() && it->is_object()) {
-    report.metadata = it->get<std::unordered_map<std::string, std::string>>();
+  ICEBERG_ASSIGN_OR_RAISE(report.operation, GetJsonValue<std::string>(json, kOperation));
+  ICEBERG_ASSIGN_OR_RAISE(auto metrics_json,
+                          GetJsonValue<nlohmann::json>(json, kMetrics));
+  ICEBERG_ASSIGN_OR_RAISE(report.commit_metrics,
+                          CommitMetricsResultFromJson(metrics_json));
+  if (json.contains(kMetadata)) {
+    ICEBERG_ASSIGN_OR_RAISE(report.metadata, GetJsonValue<StringMap>(json, kMetadata));
   }
   return report;
 }

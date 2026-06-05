@@ -19,7 +19,6 @@ install_headers(
     [
         'commit_report.h',
         'counter.h',
-        'json_serde_internal.h',
         'metrics_context.h',
         'metrics_reporter.h',
         'metrics_reporters.h',

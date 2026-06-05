@@ -21,6 +21,7 @@
 
 #include <chrono>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -53,11 +54,13 @@ class CollectingMetricsReporter : public MetricsReporter {
 
 TEST(CustomMetricsReporterTest, RegisterAndLoad) {
   // Register custom reporter
-  MetricsReporters::Register("collecting",
-                             [](const std::unordered_map<std::string, std::string>& props)
-                                 -> Result<std::unique_ptr<MetricsReporter>> {
-                               return CollectingMetricsReporter::Make(props);
-                             });
+  auto status = MetricsReporters::Register(
+      "collecting",
+      [](const std::unordered_map<std::string, std::string>& props)
+          -> Result<std::unique_ptr<MetricsReporter>> {
+        return CollectingMetricsReporter::Make(props);
+      });
+  ASSERT_TRUE(status.has_value());
 
   // Load the custom reporter
   std::unordered_map<std::string, std::string> properties = {
@@ -90,11 +93,13 @@ class ReporterRegistrationTest
 
 TEST_P(ReporterRegistrationTest, LoadsRegisteredReporter) {
   const auto& param = GetParam();
-  MetricsReporters::Register(param.register_name,
-                             [](const std::unordered_map<std::string, std::string>&)
-                                 -> Result<std::unique_ptr<MetricsReporter>> {
-                               return std::make_unique<CollectingMetricsReporter>();
-                             });
+  auto status =
+      MetricsReporters::Register(param.register_name,
+                                 [](const std::unordered_map<std::string, std::string>&)
+                                     -> Result<std::unique_ptr<MetricsReporter>> {
+                                   return std::make_unique<CollectingMetricsReporter>();
+                                 });
+  ASSERT_TRUE(status.has_value());
 
   std::unordered_map<std::string, std::string> props = {
       {std::string(kMetricsReporterImpl), param.load_name}};
@@ -200,6 +205,13 @@ class FailingMetricsReporter : public MetricsReporter {
   }
 };
 
+class ThrowingMetricsReporter : public MetricsReporter {
+ public:
+  Status Report([[maybe_unused]] const MetricsReport&) override {
+    throw std::runtime_error("reporter threw");
+  }
+};
+
 TEST(CombineTest, FlattenNestedComposite) {
   auto a = std::make_shared<CollectingMetricsReporter>();
   auto b = std::make_shared<CollectingMetricsReporter>();
@@ -249,11 +261,54 @@ TEST(CombineTest, ErrorInOneReporterDoesNotBlockOthers) {
   EXPECT_EQ(collecting->reports().size(), 1);
 }
 
-TEST(MetricsReportersTest, LoadDefaultIsNoop) {
+TEST(CombineTest, ExceptionInOneReporterDoesNotBlockOthers) {
+  auto throwing = std::make_shared<ThrowingMetricsReporter>();
+  auto collecting = std::make_shared<CollectingMetricsReporter>();
+  auto combined = MetricsReporters::Combine(throwing, collecting);
+
+  auto s = combined->Report(ScanReport{});
+  EXPECT_FALSE(s.has_value());
+  EXPECT_EQ(collecting->reports().size(), 1);
+}
+
+TEST(MetricsReportersTest, LoadDefaultReporter) {
   auto result = MetricsReporters::Load({});
   ASSERT_TRUE(result.has_value());
   ASSERT_NE(result.value(), nullptr);
   EXPECT_TRUE(result.value()->Report(ScanReport{}).has_value());
+}
+
+TEST(MetricsReportersTest, LoadExplicitNoopReporter) {
+  auto result = MetricsReporters::Load(
+      {{std::string(kMetricsReporterImpl), std::string(kMetricsReporterTypeNoop)}});
+  ASSERT_TRUE(result.has_value());
+  ASSERT_NE(result.value(), nullptr);
+  EXPECT_TRUE(result.value()->Report(ScanReport{}).has_value());
+}
+
+TEST(MetricsReportersTest,
+     EmptyFactoryReturnsErrorAndDoesNotOverrideExistingRegistration) {
+  auto status = MetricsReporters::Register(
+      "empty-factory", [](const auto&) -> Result<std::unique_ptr<MetricsReporter>> {
+        return std::make_unique<CollectingMetricsReporter>();
+      });
+  ASSERT_TRUE(status.has_value());
+  auto invalid_status = MetricsReporters::Register("empty-factory", {});
+  EXPECT_FALSE(invalid_status.has_value());
+  auto result =
+      MetricsReporters::Load({{std::string(kMetricsReporterImpl), "empty-factory"}});
+  ASSERT_TRUE(result.has_value());
+  EXPECT_NE(dynamic_cast<CollectingMetricsReporter*>(result.value().get()), nullptr);
+}
+
+TEST(MetricsReportersTest, NullReporterFactoryReturnsError) {
+  auto status = MetricsReporters::Register(
+      "null-reporter",
+      [](const auto&) -> Result<std::unique_ptr<MetricsReporter>> { return nullptr; });
+  ASSERT_TRUE(status.has_value());
+  auto result =
+      MetricsReporters::Load({{std::string(kMetricsReporterImpl), "null-reporter"}});
+  EXPECT_FALSE(result.has_value());
 }
 
 // Verify that Load() calls Initialize() on the created reporter.
@@ -280,9 +335,10 @@ class InitializingReporter : public MetricsReporter {
 };
 
 TEST(MetricsReportersTest, LoadCallsInitialize) {
-  MetricsReporters::Register("initializing", [](const auto& props) {
+  auto status = MetricsReporters::Register("initializing", [](const auto& props) {
     return InitializingReporter::Make(props);
   });
+  ASSERT_TRUE(status.has_value());
 
   std::unordered_map<std::string, std::string> props = {
       {std::string(kMetricsReporterImpl), "initializing"},

@@ -26,6 +26,8 @@
 #include <utility>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -52,11 +54,13 @@ ICEBERG_EXPORT constexpr std::string_view ToString(CounterUnit unit) noexcept {
 /// \brief Parse a CounterUnit from a string.
 ///
 /// \param s The string to parse ("count", "bytes", or "undefined").
-/// \return The CounterUnit, or CounterUnit::kCount if unrecognized.
-ICEBERG_EXPORT constexpr CounterUnit CounterUnitFromString(std::string_view s) noexcept {
-  if (s == "bytes") return CounterUnit::kBytes;
-  if (s == "undefined") return CounterUnit::kUndefined;
-  return CounterUnit::kCount;
+/// \return The CounterUnit, or an InvalidArgument error if unrecognized.
+ICEBERG_EXPORT inline Result<CounterUnit> CounterUnitFromString(std::string_view s) {
+  auto unit = StringUtils::ToLower(s);
+  if (unit == "count") return CounterUnit::kCount;
+  if (unit == "bytes") return CounterUnit::kBytes;
+  if (unit == "undefined") return CounterUnit::kUndefined;
+  return InvalidArgument("Invalid unit: {}", s);
 }
 
 /// \brief Abstract counter for tracking event totals.

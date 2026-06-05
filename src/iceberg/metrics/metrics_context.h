@@ -23,22 +23,15 @@
 /// \brief Factory interface for creating named Counter and Timer instances.
 
 #include <memory>
-#include <shared_mutex>
 #include <string_view>
-#include <unordered_map>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/metrics/counter.h"
 #include "iceberg/metrics/timer.h"
-#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
 /// \brief Factory for creating named Counter and Timer instances.
-///
-/// A MetricsContext owns all metrics it creates. Asking for the same name
-/// twice returns the same object (identity by name). The null context returns
-/// noop singletons without allocating.
 class ICEBERG_EXPORT MetricsContext {
  public:
   virtual ~MetricsContext() = default;
@@ -54,37 +47,34 @@ class ICEBERG_EXPORT MetricsContext {
     return GetCounter(name, CounterUnit::kCount);
   }
 
-  /// \brief Get or create a named Timer (nanosecond precision).
-  virtual std::shared_ptr<Timer> GetTimer(std::string_view name) = 0;
+  /// \brief Get or create a named Timer with an explicit unit.
+  virtual std::shared_ptr<Timer> GetTimer(std::string_view name, TimerUnit unit) = 0;
 
-  /// \brief Return the null (no-op) MetricsContext singleton.
+  /// \brief Get or create a nanosecond-precision Timer by name.
   ///
-  /// All metrics returned by the null context are noop; nothing is allocated.
-  static std::shared_ptr<MetricsContext> Null();
+  /// Convenience overload defaulting to TimerUnit::kNanoseconds.
+  std::shared_ptr<Timer> GetTimer(std::string_view name) {
+    return GetTimer(name, TimerUnit::kNanoseconds);
+  }
+
+  /// \brief Return the no-op MetricsContext singleton.
+  ///
+  /// All metrics returned by the no-op context are noop; nothing is allocated.
+  static const std::shared_ptr<MetricsContext>& Noop();
 
   /// \brief Create a new DefaultMetricsContext.
   static std::unique_ptr<MetricsContext> Default();
 };
 
 /// \brief MetricsContext backed by DefaultCounter and DefaultTimer instances.
-///
-/// Fully thread-safe. Concurrent GetCounter/GetTimer calls are protected by a
-/// shared mutex: lookups take a shared lock, and inserts upgrade to an exclusive
-/// lock with a re-check to preserve identity-by-name semantics.
-/// Counter/Timer increments are independently thread-safe via std::atomic.
 class ICEBERG_EXPORT DefaultMetricsContext : public MetricsContext {
  public:
   using MetricsContext::GetCounter;  // expose the one-arg base overload
+  using MetricsContext::GetTimer;    // expose the one-arg base overload
+
   std::shared_ptr<Counter> GetCounter(std::string_view name, CounterUnit unit) override;
 
-  std::shared_ptr<Timer> GetTimer(std::string_view name) override;
-
- private:
-  mutable std::shared_mutex mtx_;
-  std::unordered_map<std::string, std::shared_ptr<Counter>, StringHash, StringEqual>
-      counters_;
-  std::unordered_map<std::string, std::shared_ptr<Timer>, StringHash, StringEqual>
-      timers_;
+  std::shared_ptr<Timer> GetTimer(std::string_view name, TimerUnit unit) override;
 };
 
 }  // namespace iceberg

@@ -19,6 +19,7 @@
 
 #include "iceberg/metrics/metrics_reporters.h"
 
+#include <exception>
 #include <mutex>
 #include <shared_mutex>
 
@@ -79,8 +80,18 @@ CompositeMetricsReporter::CompositeMetricsReporter(
 Status CompositeMetricsReporter::Report(const MetricsReport& report) {
   Status result;
   for (const auto& reporter : reporters_) {
-    if (auto s = reporter->Report(report); !s && result.has_value()) {
-      result = std::move(s);
+    try {
+      if (auto s = reporter->Report(report); !s && result.has_value()) {
+        result = std::move(s);
+      }
+    } catch (const std::exception& ex) {
+      if (result.has_value()) {
+        result = InvalidArgument("Metrics reporter failed: {}", ex.what());
+      }
+    } catch (...) {
+      if (result.has_value()) {
+        result = InvalidArgument("Metrics reporter failed with unknown exception");
+      }
     }
   }
   return result;
@@ -93,11 +104,16 @@ CompositeMetricsReporter::Reporters() const {
 
 // --- MetricsReporters ---
 
-void MetricsReporters::Register(std::string_view reporter_type,
-                                MetricsReporterFactory factory) {
+Status MetricsReporters::Register(std::string_view reporter_type,
+                                  MetricsReporterFactory factory) {
+  if (!factory) {
+    return InvalidArgument("Metrics reporter factory for '{}' must not be empty",
+                           reporter_type);
+  }
   auto& registry = GetRegistry();
   std::unique_lock lock(registry.mtx);
   registry.map[std::string(reporter_type)] = std::move(factory);
+  return {};
 }
 
 Result<std::unique_ptr<MetricsReporter>> MetricsReporters::Load(
@@ -118,9 +134,21 @@ Result<std::unique_ptr<MetricsReporter>> MetricsReporters::Load(
     factory = it->second;
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto reporter, factory(properties));
-  ICEBERG_RETURN_UNEXPECTED(reporter->Initialize(properties));
-  return reporter;
+  try {
+    ICEBERG_ASSIGN_OR_RAISE(auto reporter, factory(properties));
+    if (!reporter) {
+      return InvalidArgument("Metrics reporter factory for '{}' returned null",
+                             reporter_type);
+    }
+    ICEBERG_RETURN_UNEXPECTED(reporter->Initialize(properties));
+    return reporter;
+  } catch (const std::exception& ex) {
+    return InvalidArgument("Metrics reporter factory for '{}' failed: {}", reporter_type,
+                           ex.what());
+  } catch (...) {
+    return InvalidArgument(
+        "Metrics reporter factory for '{}' failed with unknown exception", reporter_type);
+  }
 }
 
 std::shared_ptr<MetricsReporter> MetricsReporters::Combine(

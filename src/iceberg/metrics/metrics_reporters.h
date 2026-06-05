@@ -103,7 +103,8 @@ class ICEBERG_EXPORT MetricsReporters {
   ///        value of "metrics-reporter-impl" in catalog properties, mirroring
   ///        Java's fully-qualified class-name lookup (e.g., "noop").
   /// \param factory Factory function that produces the reporter.
-  static void Register(std::string_view reporter_type, MetricsReporterFactory factory);
+  /// \return OK if the registration succeeded, or an error if the factory is invalid.
+  static Status Register(std::string_view reporter_type, MetricsReporterFactory factory);
 
   /// \brief Combine two reporters into one.
   ///

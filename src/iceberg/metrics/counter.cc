@@ -29,7 +29,8 @@ class NoopCounter final : public Counter {
  public:
   using Counter::Increment;
   void Increment(int64_t) override {}
-  int64_t value() const override { return 0; }
+  int64_t value() const override { return -1; }
+  CounterUnit unit() const override { return CounterUnit::kUndefined; }
   bool IsNoop() const override { return true; }
 };
 

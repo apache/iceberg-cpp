@@ -22,21 +22,55 @@
 #include <atomic>
 #include <chrono>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include "iceberg/iceberg_export.h"
 
 namespace iceberg {
 
+/// \brief Time units supported by Timer.
+enum class TimerUnit {
+  kNanoseconds,
+  kMicroseconds,
+  kMilliseconds,
+  kSeconds,
+  kMinutes,
+  kHours,
+  kDays,
+};
+
+/// \brief String representation of a TimerUnit.
+ICEBERG_EXPORT constexpr std::string_view ToString(TimerUnit unit) noexcept {
+  switch (unit) {
+    case TimerUnit::kNanoseconds:
+      return "nanoseconds";
+    case TimerUnit::kMicroseconds:
+      return "microseconds";
+    case TimerUnit::kMilliseconds:
+      return "milliseconds";
+    case TimerUnit::kSeconds:
+      return "seconds";
+    case TimerUnit::kMinutes:
+      return "minutes";
+    case TimerUnit::kHours:
+      return "hours";
+    case TimerUnit::kDays:
+      return "days";
+  }
+  std::unreachable();
+}
+
 /// \brief Abstract timer for measuring operation durations.
 ///
-/// Use Start() to obtain a Timed RAII
-/// guard that records the elapsed duration when it goes out of scope.
+/// Use Start() to obtain a Timed RAII guard that records the elapsed duration when it
+/// goes out of scope.
 class ICEBERG_EXPORT Timer {
  public:
-  /// \brief RAII guard that records elapsed time into the owning Timer on destruction.
+  /// \brief RAII guard that records elapsed time into a non-owning Timer on destruction.
   class ICEBERG_EXPORT Timed {
    public:
     explicit Timed(Timer& timer);
@@ -78,7 +112,7 @@ class ICEBERG_EXPORT Timer {
     Record(std::chrono::duration_cast<std::chrono::nanoseconds>(duration));
   }
 
-  /// \brief Return the time unit used by this timer (always "nanoseconds").
+  /// \brief Return the time unit used by this timer.
   virtual std::string_view Unit() const { return "nanoseconds"; }
 
   /// \brief Return true if this timer is a no-op.
@@ -87,20 +121,21 @@ class ICEBERG_EXPORT Timer {
   /// \brief Start timing and return a RAII Timed guard.
   ///
   /// The elapsed duration is recorded into this timer when the Timed guard is
-  /// destroyed or Stop() is called.
+  /// destroyed or Stop() is called. The caller must ensure this timer outlives
+  /// the returned guard.
   Timed Start();
 
   /// \brief Execute a callable, record its wall-clock duration, and return its result.
   template <typename Callable>
   decltype(auto) Time(Callable&& fn) {
     auto timed = Start();
-    if constexpr (std::is_void_v<std::invoke_result_t<Callable>>) {
-      std::forward<Callable>(fn)();
-      timed.Stop();
+    using ResultType = std::invoke_result_t<Callable&&>;
+    if constexpr (std::is_void_v<ResultType>) {
+      std::invoke(std::forward<Callable>(fn));
+    } else if constexpr (std::is_reference_v<ResultType>) {
+      return std::invoke(std::forward<Callable>(fn));
     } else {
-      auto result = std::forward<Callable>(fn)();
-      timed.Stop();
-      return result;
+      return std::invoke(std::forward<Callable>(fn));
     }
   }
 
@@ -111,13 +146,17 @@ class ICEBERG_EXPORT Timer {
 /// \brief Thread-safe timer backed by std::atomic<int64_t>.
 class ICEBERG_EXPORT DefaultTimer : public Timer {
  public:
+  explicit DefaultTimer(TimerUnit unit = TimerUnit::kNanoseconds);
+
   int64_t Count() const override;
   std::chrono::nanoseconds TotalDuration() const override;
   void Record(std::chrono::nanoseconds duration) override;
+  std::string_view Unit() const override { return ToString(unit_); }
 
  private:
   std::atomic<int64_t> count_{0};
   std::atomic<int64_t> total_nanos_{0};
+  TimerUnit unit_;
 };
 
 }  // namespace iceberg

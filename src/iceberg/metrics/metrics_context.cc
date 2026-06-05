@@ -20,28 +20,30 @@
 #include "iceberg/metrics/metrics_context.h"
 
 #include <memory>
-#include <mutex>
-#include <shared_mutex>
 
 namespace iceberg {
 
 namespace {
 
-class NullMetricsContext final : public MetricsContext {
+class NoopMetricsContext final : public MetricsContext {
  public:
   using MetricsContext::GetCounter;  // expose the one-arg base overload
+  using MetricsContext::GetTimer;    // expose the one-arg base overload
+
   std::shared_ptr<Counter> GetCounter(std::string_view, CounterUnit) override {
     return Counter::Noop();
   }
 
-  std::shared_ptr<Timer> GetTimer(std::string_view) override { return Timer::Noop(); }
+  std::shared_ptr<Timer> GetTimer(std::string_view, TimerUnit) override {
+    return Timer::Noop();
+  }
 };
 
 }  // namespace
 
-std::shared_ptr<MetricsContext> MetricsContext::Null() {
+const std::shared_ptr<MetricsContext>& MetricsContext::Noop() {
   static std::shared_ptr<MetricsContext> instance =
-      std::make_shared<NullMetricsContext>();
+      std::make_shared<NoopMetricsContext>();
   return instance;
 }
 
@@ -49,33 +51,14 @@ std::unique_ptr<MetricsContext> MetricsContext::Default() {
   return std::make_unique<DefaultMetricsContext>();
 }
 
-std::shared_ptr<Counter> DefaultMetricsContext::GetCounter(std::string_view name,
-                                                           CounterUnit unit) {
-  {
-    std::shared_lock lock(mtx_);
-    auto it = counters_.find(name);
-    if (it != counters_.end()) return it->second;
-  }
-  std::unique_lock lock(mtx_);
-  auto it = counters_.find(name);
-  if (it != counters_.end()) return it->second;
-  auto counter = std::make_shared<DefaultCounter>(unit);
-  counters_.emplace(name, counter);
-  return counter;
+std::shared_ptr<Counter> DefaultMetricsContext::GetCounter(
+    [[maybe_unused]] std::string_view name, CounterUnit unit) {
+  return std::make_shared<DefaultCounter>(unit);
 }
 
-std::shared_ptr<Timer> DefaultMetricsContext::GetTimer(std::string_view name) {
-  {
-    std::shared_lock lock(mtx_);
-    auto it = timers_.find(name);
-    if (it != timers_.end()) return it->second;
-  }
-  std::unique_lock lock(mtx_);
-  auto it = timers_.find(name);
-  if (it != timers_.end()) return it->second;
-  auto timer = std::make_shared<DefaultTimer>();
-  timers_.emplace(name, timer);
-  return timer;
+std::shared_ptr<Timer> DefaultMetricsContext::GetTimer(
+    [[maybe_unused]] std::string_view name, TimerUnit unit) {
+  return std::make_shared<DefaultTimer>(unit);
 }
 
 }  // namespace iceberg

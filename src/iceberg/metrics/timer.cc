@@ -27,13 +27,23 @@ namespace {
 
 class NoopTimer final : public Timer {
  public:
-  int64_t Count() const override { return 0; }
+  int64_t Count() const override { return -1; }
   std::chrono::nanoseconds TotalDuration() const override {
-    return std::chrono::nanoseconds{0};
+    return std::chrono::nanoseconds{-1};
   }
   void Record(std::chrono::nanoseconds) override {}
+  std::string_view Unit() const override { return "undefined"; }
   bool IsNoop() const override { return true; }
 };
+
+void RecordElapsedIfRunning(Timer* timer, std::chrono::steady_clock::time_point start,
+                            bool& stopped) {
+  if (stopped) return;
+  stopped = true;
+  if (!timer) return;
+  auto end = std::chrono::steady_clock::now();
+  timer->Record(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start));
+}
 
 }  // namespace
 
@@ -42,19 +52,21 @@ class NoopTimer final : public Timer {
 Timer::Timed::Timed(Timer& timer)
     : timer_(&timer), start_(std::chrono::steady_clock::now()) {}
 
-Timer::Timed::~Timed() { Stop(); }
+Timer::Timed::~Timed() { RecordElapsedIfRunning(timer_, start_, stopped_); }
 
 Timer::Timed::Timed(Timed&& other) noexcept
     : timer_(other.timer_), start_(other.start_), stopped_(other.stopped_) {
-  other.stopped_ = true;  // transfer ownership; prevent double-record
+  other.timer_ = nullptr;
+  other.stopped_ = true;  // transfer recording responsibility
 }
 
 Timer::Timed& Timer::Timed::operator=(Timed&& other) noexcept {
   if (this != &other) {
-    Stop();
+    RecordElapsedIfRunning(timer_, start_, stopped_);
     timer_ = other.timer_;
     start_ = other.start_;
     stopped_ = other.stopped_;
+    other.timer_ = nullptr;
     other.stopped_ = true;
   }
   return *this;
@@ -63,6 +75,7 @@ Timer::Timed& Timer::Timed::operator=(Timed&& other) noexcept {
 void Timer::Timed::Stop() {
   if (stopped_) return;
   stopped_ = true;
+  if (!timer_) return;
   auto end = std::chrono::steady_clock::now();
   timer_->Record(std::chrono::duration_cast<std::chrono::nanoseconds>(end - start_));
 }
@@ -78,6 +91,8 @@ std::shared_ptr<Timer> Timer::Noop() {
 
 // --- DefaultTimer ---
 
+DefaultTimer::DefaultTimer(TimerUnit unit) : unit_(unit) {}
+
 int64_t DefaultTimer::Count() const { return count_.load(std::memory_order_relaxed); }
 
 std::chrono::nanoseconds DefaultTimer::TotalDuration() const {
@@ -85,6 +100,7 @@ std::chrono::nanoseconds DefaultTimer::TotalDuration() const {
 }
 
 void DefaultTimer::Record(std::chrono::nanoseconds duration) {
+  if (duration.count() < 0) return;
   count_.fetch_add(1, std::memory_order_relaxed);
   total_nanos_.fetch_add(duration.count(), std::memory_order_relaxed);
 }

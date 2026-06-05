@@ -24,48 +24,51 @@
 
 namespace iceberg {
 
-std::unique_ptr<CommitMetrics> CommitMetrics::Of(MetricsContext& context) {
+std::unique_ptr<CommitMetrics> CommitMetrics::Make(MetricsContext& context) {
   auto m = std::unique_ptr<CommitMetrics>(new CommitMetrics());
-  m->total_duration = context.GetTimer("total-duration");
+  m->total_duration = context.GetTimer("total-duration", TimerUnit::kNanoseconds);
   m->attempts = context.GetCounter("attempts");
   return m;
 }
 
 std::unique_ptr<CommitMetrics> CommitMetrics::Noop() {
-  return CommitMetrics::Of(*MetricsContext::Null());
+  return CommitMetrics::Make(*MetricsContext::Noop());
 }
 
-void CommitMetrics::PopulateResult(CommitMetricsResult& result) const {
-  result.total_duration =
-      total_duration ? TimerResult{.unit = std::string(total_duration->Unit()),
-                                   .count = total_duration->Count(),
-                                   .total_duration = total_duration->TotalDuration()}
-                     : TimerResult{};
-  result.attempts =
-      attempts ? CounterResult{.unit = attempts->unit(), .value = attempts->value()}
-               : CounterResult{};
+CommitMetricsResult CommitMetrics::ToResult() const {
+  CommitMetricsResult result;
+  if (total_duration && !total_duration->IsNoop()) {
+    result.total_duration =
+        TimerResult{.unit = std::string(total_duration->Unit()),
+                    .count = total_duration->Count(),
+                    .total_duration = total_duration->TotalDuration()};
+  }
+  if (attempts && !attempts->IsNoop()) {
+    result.attempts = CounterResult{.unit = attempts->unit(), .value = attempts->value()};
+  }
+  return result;
 }
 
 CommitMetricsResult CommitMetricsResult::From(
     const CommitMetrics& live_metrics,
     const std::unordered_map<std::string, std::string>& snapshot_summary) {
-  CommitMetricsResult result;
-  live_metrics.PopulateResult(result);
+  auto result = live_metrics.ToResult();
 
-  // Helpers: parse a summary key and wrap as a typed CounterResult.
-  auto count_field = [&snapshot_summary](const std::string& key) -> CounterResult {
+  auto count_field =
+      [&snapshot_summary](const std::string& key) -> std::optional<CounterResult> {
     auto it = snapshot_summary.find(key);
-    if (it == snapshot_summary.end()) return {};
+    if (it == snapshot_summary.end()) return std::nullopt;
     auto parsed = StringUtils::ParseNumber<int64_t>(it->second);
-    return {.unit = CounterUnit::kCount,
-            .value = parsed.has_value() ? parsed.value() : 0};
+    if (!parsed.has_value()) return std::nullopt;
+    return CounterResult{.unit = CounterUnit::kCount, .value = parsed.value()};
   };
-  auto bytes_field = [&snapshot_summary](const std::string& key) -> CounterResult {
+  auto bytes_field =
+      [&snapshot_summary](const std::string& key) -> std::optional<CounterResult> {
     auto it = snapshot_summary.find(key);
-    if (it == snapshot_summary.end()) return {.unit = CounterUnit::kBytes};
+    if (it == snapshot_summary.end()) return std::nullopt;
     auto parsed = StringUtils::ParseNumber<int64_t>(it->second);
-    return {.unit = CounterUnit::kBytes,
-            .value = parsed.has_value() ? parsed.value() : 0};
+    if (!parsed.has_value()) return std::nullopt;
+    return CounterResult{.unit = CounterUnit::kBytes, .value = parsed.value()};
   };
 
   result.added_data_files = count_field(SnapshotSummaryFields::kAddedDataFiles);
@@ -77,12 +80,12 @@ CommitMetricsResult CommitMetricsResult::From(
   result.added_positional_delete_files =
       count_field(SnapshotSummaryFields::kAddedPosDeleteFiles);
   result.added_dvs = count_field(SnapshotSummaryFields::kAddedDVs);
+  result.removed_delete_files = count_field(SnapshotSummaryFields::kRemovedDeleteFiles);
   result.removed_positional_delete_files =
       count_field(SnapshotSummaryFields::kRemovedPosDeleteFiles);
   result.removed_dvs = count_field(SnapshotSummaryFields::kRemovedDVs);
   result.removed_equality_delete_files =
       count_field(SnapshotSummaryFields::kRemovedEqDeleteFiles);
-  result.removed_delete_files = count_field(SnapshotSummaryFields::kRemovedDeleteFiles);
   result.total_delete_files = count_field(SnapshotSummaryFields::kTotalDeleteFiles);
   result.added_records = count_field(SnapshotSummaryFields::kAddedRecords);
   result.removed_records = count_field(SnapshotSummaryFields::kDeletedRecords);

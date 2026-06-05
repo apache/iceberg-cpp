@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -41,39 +42,39 @@ class ScanMetrics;
 /// Populated by ScanMetrics::ToResult() after a scan completes.
 struct ICEBERG_EXPORT ScanMetricsResult {
   /// \brief Total planning duration (count of recordings + accumulated nanoseconds).
-  TimerResult total_planning_duration;
+  std::optional<TimerResult> total_planning_duration;
   /// \brief Number of data files included in the scan result.
-  CounterResult result_data_files;
+  std::optional<CounterResult> result_data_files;
   /// \brief Number of delete files included in the scan result.
-  CounterResult result_delete_files;
+  std::optional<CounterResult> result_delete_files;
   /// \brief Number of data manifests whose files were read (not skipped).
-  CounterResult scanned_data_manifests;
+  std::optional<CounterResult> scanned_data_manifests;
   /// \brief Number of delete manifests whose files were read (not skipped).
-  CounterResult scanned_delete_manifests;
+  std::optional<CounterResult> scanned_delete_manifests;
   /// \brief Total number of data manifests in the snapshot.
-  CounterResult total_data_manifests;
+  std::optional<CounterResult> total_data_manifests;
   /// \brief Total number of delete manifests in the snapshot.
-  CounterResult total_delete_manifests;
+  std::optional<CounterResult> total_delete_manifests;
   /// \brief Total byte size of all result data files.
-  CounterResult total_file_size_in_bytes;
+  std::optional<CounterResult> total_file_size_in_bytes;
   /// \brief Total byte size of all result delete files.
-  CounterResult total_delete_file_size_in_bytes;
+  std::optional<CounterResult> total_delete_file_size_in_bytes;
   /// \brief Number of data manifests skipped by partition/stats pruning.
-  CounterResult skipped_data_manifests;
+  std::optional<CounterResult> skipped_data_manifests;
   /// \brief Number of delete manifests skipped by partition/stats pruning.
-  CounterResult skipped_delete_manifests;
+  std::optional<CounterResult> skipped_delete_manifests;
   /// \brief Number of individual data files skipped by stats pruning.
-  CounterResult skipped_data_files;
+  std::optional<CounterResult> skipped_data_files;
   /// \brief Number of individual delete files skipped by stats pruning.
-  CounterResult skipped_delete_files;
+  std::optional<CounterResult> skipped_delete_files;
   /// \brief Number of indexed delete files (positional or DV) in the result.
-  CounterResult indexed_delete_files;
+  std::optional<CounterResult> indexed_delete_files;
   /// \brief Number of equality delete files in the result.
-  CounterResult equality_delete_files;
+  std::optional<CounterResult> equality_delete_files;
   /// \brief Number of positional delete files in the result.
-  CounterResult positional_delete_files;
+  std::optional<CounterResult> positional_delete_files;
   /// \brief Number of deletion vectors in the result.
-  CounterResult dvs;
+  std::optional<CounterResult> dvs;
 
   bool operator==(const ScanMetricsResult&) const = default;
 
@@ -84,13 +85,13 @@ struct ICEBERG_EXPORT ScanMetricsResult {
 /// \brief Live scan metrics collected during a table scan operation.
 ///
 /// Holds named Counter and Timer instances obtained from a MetricsContext.
-/// Call Of() at the start of a scan to obtain an instrumented instance, then
+/// Call Make() at the start of a scan to obtain an instrumented instance, then
 /// increment counters and start/stop the planning timer as the scan proceeds.
 /// Call ToResult() at the end to obtain the serialisable ScanMetricsResult.
 class ICEBERG_EXPORT ScanMetrics {
  public:
   /// \brief Create a ScanMetrics instance backed by the given MetricsContext.
-  static std::unique_ptr<ScanMetrics> Of(MetricsContext& context);
+  static std::unique_ptr<ScanMetrics> Make(MetricsContext& context);
 
   /// \brief Create a ScanMetrics instance with all-noop counters and timer.
   static std::unique_ptr<ScanMetrics> Noop();

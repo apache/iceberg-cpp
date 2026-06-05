@@ -34,14 +34,14 @@ namespace iceberg {
 ICEBERG_EXPORT nlohmann::json ToJson(const CounterResult& counter);
 ICEBERG_EXPORT Result<CounterResult> CounterResultFromJson(const nlohmann::json& json);
 
-ICEBERG_EXPORT nlohmann::json ToJson(const TimerResult& timer);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const TimerResult& timer);
 ICEBERG_EXPORT Result<TimerResult> TimerResultFromJson(const nlohmann::json& json);
 
-ICEBERG_EXPORT nlohmann::json ToJson(const ScanMetricsResult& metrics);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const ScanMetricsResult& metrics);
 ICEBERG_EXPORT Result<ScanMetricsResult> ScanMetricsResultFromJson(
     const nlohmann::json& json);
 
-ICEBERG_EXPORT nlohmann::json ToJson(const CommitMetricsResult& metrics);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const CommitMetricsResult& metrics);
 ICEBERG_EXPORT Result<CommitMetricsResult> CommitMetricsResultFromJson(
     const nlohmann::json& json);
 
@@ -54,9 +54,8 @@ ICEBERG_EXPORT Result<ScanReport> ScanReportFromJson(const nlohmann::json& json)
 
 /// \brief Serialize a CommitReport to JSON.
 ///
-/// Returns nlohmann::json directly (not Result) because CommitReport contains
-/// no Expression fields and serialization cannot fail.
-ICEBERG_EXPORT nlohmann::json ToJson(const CommitReport& report);
+/// Returns Result because commit metrics serialization validates timer units.
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const CommitReport& report);
 ICEBERG_EXPORT Result<CommitReport> CommitReportFromJson(const nlohmann::json& json);
 
 }  // namespace iceberg

@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -31,8 +32,85 @@
 
 namespace iceberg {
 
-// Forward declaration: CommitMetricsResult is defined later in this header.
-struct CommitMetricsResult;
+// Forward declaration: CommitMetrics is defined later in this header.
+class CommitMetrics;
+
+/// \brief Immutable snapshot of commit metrics for use in CommitReport.
+///
+/// Populated by CommitMetrics::ToResult() after a commit completes. File and
+/// record counts can also be combined from the snapshot summary with From().
+struct ICEBERG_EXPORT CommitMetricsResult {
+  /// \brief Total wall-clock duration of the commit attempt.
+  std::optional<TimerResult> total_duration;
+  /// \brief Number of commit attempts (1 on success without retries).
+  std::optional<CounterResult> attempts;
+  /// \brief Number of data files added in this commit.
+  std::optional<CounterResult> added_data_files;
+  /// \brief Number of data files removed in this commit.
+  std::optional<CounterResult> removed_data_files;
+  /// \brief Total live data files after this commit.
+  std::optional<CounterResult> total_data_files;
+  /// \brief Number of delete files added in this commit.
+  std::optional<CounterResult> added_delete_files;
+  /// \brief Equality delete files added.
+  std::optional<CounterResult> added_equality_delete_files;
+  /// \brief Positional delete files added.
+  std::optional<CounterResult> added_positional_delete_files;
+  /// \brief Deletion vectors added.
+  std::optional<CounterResult> added_dvs;
+  /// \brief Number of delete files removed in this commit.
+  std::optional<CounterResult> removed_delete_files;
+  /// \brief Positional delete files removed.
+  std::optional<CounterResult> removed_positional_delete_files;
+  /// \brief Deletion vectors removed.
+  std::optional<CounterResult> removed_dvs;
+  /// \brief Equality delete files removed.
+  std::optional<CounterResult> removed_equality_delete_files;
+  /// \brief Total live delete files after this commit.
+  std::optional<CounterResult> total_delete_files;
+  /// \brief Number of records added in this commit.
+  std::optional<CounterResult> added_records;
+  /// \brief Number of records removed in this commit.
+  std::optional<CounterResult> removed_records;
+  /// \brief Total live records after this commit.
+  std::optional<CounterResult> total_records;
+  /// \brief Total byte size of files added.
+  std::optional<CounterResult> added_files_size_bytes;
+  /// \brief Total byte size of files removed.
+  std::optional<CounterResult> removed_files_size_bytes;
+  /// \brief Total byte size of all live files after this commit.
+  std::optional<CounterResult> total_files_size_bytes;
+  /// \brief Positional delete records added.
+  std::optional<CounterResult> added_positional_deletes;
+  /// \brief Positional delete records removed.
+  std::optional<CounterResult> removed_positional_deletes;
+  /// \brief Total positional delete records after this commit.
+  std::optional<CounterResult> total_positional_deletes;
+  /// \brief Equality delete records added.
+  std::optional<CounterResult> added_equality_deletes;
+  /// \brief Equality delete records removed.
+  std::optional<CounterResult> removed_equality_deletes;
+  /// \brief Total equality delete records after this commit.
+  std::optional<CounterResult> total_equality_deletes;
+  /// \brief Manifest files kept unchanged in this commit.
+  std::optional<CounterResult> kept_manifest_count;
+  /// \brief Manifest files created in this commit.
+  std::optional<CounterResult> created_manifest_count;
+  /// \brief Manifest files replaced in this commit.
+  std::optional<CounterResult> replaced_manifest_count;
+  /// \brief Manifest entries processed in this commit.
+  std::optional<CounterResult> processed_manifest_entries_count;
+
+  bool operator==(const CommitMetricsResult&) const = default;
+
+  /// \brief Build a CommitMetricsResult from live metrics and a snapshot summary map.
+  ///
+  /// Combines timer/retry measurements from \p live_metrics with records parsed
+  /// from \p snapshot_summary. Missing or unparseable summary keys are omitted.
+  static CommitMetricsResult From(
+      const CommitMetrics& live_metrics,
+      const std::unordered_map<std::string, std::string>& snapshot_summary);
+};
 
 /// \brief Live commit metrics collected during a table commit operation.
 ///
@@ -42,16 +120,13 @@ struct CommitMetricsResult;
 class ICEBERG_EXPORT CommitMetrics {
  public:
   /// \brief Create a CommitMetrics instance backed by the given MetricsContext.
-  static std::unique_ptr<CommitMetrics> Of(MetricsContext& context);
+  static std::unique_ptr<CommitMetrics> Make(MetricsContext& context);
 
   /// \brief Create a CommitMetrics instance with all-noop timer and counter.
   static std::unique_ptr<CommitMetrics> Noop();
 
-  /// \brief Snapshot timer and counter values into the corresponding fields of result.
-  ///
-  /// Only total_duration and attempts are written; the caller is responsible for
-  /// populating the remaining snapshot-summary fields.
-  void PopulateResult(CommitMetricsResult& result) const;
+  /// \brief Snapshot current timer and counter values into a CommitMetricsResult.
+  CommitMetricsResult ToResult() const;
 
   /// \brief Timer measuring total wall-clock time of the commit call.
   std::shared_ptr<Timer> total_duration;
@@ -61,80 +136,6 @@ class ICEBERG_EXPORT CommitMetrics {
 
  private:
   CommitMetrics() = default;
-};
-
-/// \brief Immutable snapshot of commit metrics for use in CommitReport.
-struct ICEBERG_EXPORT CommitMetricsResult {
-  /// \brief Total wall-clock duration of the commit attempt.
-  TimerResult total_duration;
-  /// \brief Number of commit attempts (1 on success without retries).
-  CounterResult attempts;
-  /// \brief Number of data files added in this commit.
-  CounterResult added_data_files;
-  /// \brief Number of data files removed in this commit.
-  CounterResult removed_data_files;
-  /// \brief Total live data files after this commit.
-  CounterResult total_data_files;
-  /// \brief Number of delete files added in this commit.
-  CounterResult added_delete_files;
-  /// \brief Equality delete files added.
-  CounterResult added_equality_delete_files;
-  /// \brief Positional delete files added.
-  CounterResult added_positional_delete_files;
-  /// \brief Deletion vectors added.
-  CounterResult added_dvs;
-  /// \brief Positional delete files removed.
-  CounterResult removed_positional_delete_files;
-  /// \brief Deletion vectors removed.
-  CounterResult removed_dvs;
-  /// \brief Equality delete files removed.
-  CounterResult removed_equality_delete_files;
-  /// \brief Number of delete files removed in this commit.
-  CounterResult removed_delete_files;
-  /// \brief Total live delete files after this commit.
-  CounterResult total_delete_files;
-  /// \brief Number of records added in this commit.
-  CounterResult added_records;
-  /// \brief Number of records removed in this commit.
-  CounterResult removed_records;
-  /// \brief Total live records after this commit.
-  CounterResult total_records;
-  /// \brief Total byte size of files added.
-  CounterResult added_files_size_bytes;
-  /// \brief Total byte size of files removed.
-  CounterResult removed_files_size_bytes;
-  /// \brief Total byte size of all live files after this commit.
-  CounterResult total_files_size_bytes;
-  /// \brief Positional delete records added.
-  CounterResult added_positional_deletes;
-  /// \brief Positional delete records removed.
-  CounterResult removed_positional_deletes;
-  /// \brief Total positional delete records after this commit.
-  CounterResult total_positional_deletes;
-  /// \brief Equality delete records added.
-  CounterResult added_equality_deletes;
-  /// \brief Equality delete records removed.
-  CounterResult removed_equality_deletes;
-  /// \brief Total equality delete records after this commit.
-  CounterResult total_equality_deletes;
-  /// \brief Manifest files kept unchanged in this commit.
-  CounterResult kept_manifest_count;
-  /// \brief Manifest files created in this commit.
-  CounterResult created_manifest_count;
-  /// \brief Manifest files replaced in this commit.
-  CounterResult replaced_manifest_count;
-  /// \brief Manifest entries processed in this commit.
-  CounterResult processed_manifest_entries_count;
-
-  bool operator==(const CommitMetricsResult&) const = default;
-
-  /// \brief Build a CommitMetricsResult from live metrics and a snapshot summary map.
-  ///
-  /// Combines timer/retry measurements from \p live_metrics with records parsed
-  /// from \p snapshot_summary.  Missing or unparseable summary keys default to 0.
-  static CommitMetricsResult From(
-      const CommitMetrics& live_metrics,
-      const std::unordered_map<std::string, std::string>& snapshot_summary);
 };
 
 /// \brief Report generated after a commit operation.

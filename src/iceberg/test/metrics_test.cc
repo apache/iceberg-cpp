@@ -37,6 +37,33 @@
 
 namespace iceberg {
 
+namespace {
+
+int64_t DurationInUnit(std::chrono::nanoseconds duration, std::string_view unit) {
+  if (unit == "nanoseconds") return duration.count();
+  if (unit == "microseconds") {
+    return std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+  }
+  if (unit == "milliseconds") {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+  }
+  if (unit == "seconds") {
+    return std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+  }
+  if (unit == "minutes") {
+    return std::chrono::duration_cast<std::chrono::minutes>(duration).count();
+  }
+  if (unit == "hours") {
+    return std::chrono::duration_cast<std::chrono::hours>(duration).count();
+  }
+  if (unit == "days") {
+    return std::chrono::duration_cast<std::chrono::days>(duration).count();
+  }
+  return duration.count();
+}
+
+}  // namespace
+
 // ---------------------------------------------------------------------------
 // Counter
 // ---------------------------------------------------------------------------
@@ -62,6 +89,9 @@ TEST_P(DefaultCounterUnitTest, UnitRoundTrips) {
   DefaultCounter c(GetParam());
   EXPECT_EQ(c.unit(), GetParam());
   EXPECT_FALSE(c.IsNoop());
+  auto parsed = CounterUnitFromString(ToString(GetParam()));
+  ASSERT_TRUE(parsed.has_value());
+  EXPECT_EQ(parsed.value(), GetParam());
 }
 
 INSTANTIATE_TEST_SUITE_P(Units, DefaultCounterUnitTest,
@@ -70,12 +100,32 @@ INSTANTIATE_TEST_SUITE_P(Units, DefaultCounterUnitTest,
                            return info.param == CounterUnit::kCount ? "Count" : "Bytes";
                          });
 
-TEST(NoopCounterTest, IsNoopAndAlwaysZero) {
+TEST(DefaultCounterUnitTest, UnknownUnitReturnsError) {
+  auto result = CounterUnitFromString("rows");
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(DefaultCounterUnitTest, ParsesUnitsCaseInsensitively) {
+  auto count = CounterUnitFromString("COUNT");
+  ASSERT_TRUE(count.has_value());
+  EXPECT_EQ(count.value(), CounterUnit::kCount);
+
+  auto bytes = CounterUnitFromString("Bytes");
+  ASSERT_TRUE(bytes.has_value());
+  EXPECT_EQ(bytes.value(), CounterUnit::kBytes);
+}
+
+TEST(NoopCounterTest, IncrementIsNoop) {
   auto noop = Counter::Noop();
   EXPECT_TRUE(noop->IsNoop());
   noop->Increment();
   noop->Increment(100);
-  EXPECT_EQ(noop->value(), 0);
+}
+
+TEST(NoopCounterTest, AccessorsReturnSentinel) {
+  auto noop = Counter::Noop();
+  EXPECT_EQ(noop->value(), -1);
+  EXPECT_EQ(noop->unit(), CounterUnit::kUndefined);
 }
 
 // ---------------------------------------------------------------------------
@@ -107,6 +157,14 @@ TEST(DefaultTimerTest, RecordDirect) {
   EXPECT_EQ(t.TotalDuration(), std::chrono::nanoseconds{1500});
 }
 
+TEST(DefaultTimerTest, RejectsNegativeDuration) {
+  DefaultTimer t;
+  t.Record(std::chrono::nanoseconds{1000});
+  EXPECT_NO_THROW(t.Record(std::chrono::nanoseconds{-1}));
+  EXPECT_EQ(t.Count(), 1);
+  EXPECT_EQ(t.TotalDuration(), std::chrono::nanoseconds{1000});
+}
+
 TEST(DefaultTimerTest, MoveDoesNotDoubleRecord) {
   DefaultTimer t;
   {
@@ -116,20 +174,37 @@ TEST(DefaultTimerTest, MoveDoesNotDoubleRecord) {
   EXPECT_EQ(t.Count(), 1);
 }
 
-TEST(NoopTimerTest, IsNoopAndAlwaysZero) {
+TEST(DefaultTimerTest, MultipleStopsAreNoop) {
+  DefaultTimer t;
+  auto timed = t.Start();
+  timed.Stop();
+  EXPECT_NO_THROW(timed.Stop());
+  EXPECT_EQ(t.Count(), 1);
+}
+
+TEST(NoopTimerTest, TimingIsNoop) {
   auto noop = Timer::Noop();
   EXPECT_TRUE(noop->IsNoop());
   {
     auto timed = noop->Start();
   }
-  EXPECT_EQ(noop->Count(), 0);
-  EXPECT_EQ(noop->TotalDuration().count(), 0);
+}
+
+TEST(NoopTimerTest, AccessorsReturnSentinels) {
+  auto noop = Timer::Noop();
+  EXPECT_EQ(noop->Count(), -1);
+  EXPECT_EQ(noop->TotalDuration(), std::chrono::nanoseconds{-1});
+  EXPECT_EQ(noop->Unit(), "undefined");
 }
 
 TEST(DefaultTimerTest, UnitIsNanoseconds) {
   DefaultTimer t;
   EXPECT_EQ(t.Unit(), "nanoseconds");
-  EXPECT_EQ(Timer::Noop()->Unit(), "nanoseconds");
+}
+
+TEST(DefaultTimerTest, UnitCanBeSpecified) {
+  DefaultTimer t(TimerUnit::kMilliseconds);
+  EXPECT_EQ(t.Unit(), "milliseconds");
 }
 
 struct DurationConversionParam {
@@ -180,19 +255,29 @@ TEST(DefaultTimerTest, TimeNonVoidCallableReturnsResult) {
   EXPECT_EQ(called, 1);
 }
 
+TEST(DefaultTimerTest, TimePreservesReferenceReturn) {
+  DefaultTimer t;
+  int value = 42;
+  int& result = t.Time([&]() -> int& { return value; });
+  EXPECT_EQ(&result, &value);
+  result = 43;
+  EXPECT_EQ(value, 43);
+  EXPECT_EQ(t.Count(), 1);
+}
+
 // ---------------------------------------------------------------------------
 // MetricsContext
 // ---------------------------------------------------------------------------
 
-TEST(DefaultMetricsContextTest, SameNameReturnsSameObject) {
+TEST(DefaultMetricsContextTest, SameNameReturnsFreshObjects) {
   DefaultMetricsContext ctx;
   auto c1 = ctx.GetCounter("foo", CounterUnit::kCount);
   auto c2 = ctx.GetCounter("foo", CounterUnit::kCount);
-  EXPECT_EQ(c1.get(), c2.get());
+  EXPECT_NE(c1.get(), c2.get());
 
   auto t1 = ctx.GetTimer("dur");
   auto t2 = ctx.GetTimer("dur");
-  EXPECT_EQ(t1.get(), t2.get());
+  EXPECT_NE(t1.get(), t2.get());
 }
 
 TEST(DefaultMetricsContextTest, DifferentNamesReturnDifferentObjects) {
@@ -202,20 +287,27 @@ TEST(DefaultMetricsContextTest, DifferentNamesReturnDifferentObjects) {
   EXPECT_NE(c1.get(), c2.get());
 }
 
-TEST(NullMetricsContextTest, ReturnsNoopInstances) {
-  auto null_ctx = MetricsContext::Null();
-  EXPECT_TRUE(null_ctx->GetCounter("x", CounterUnit::kCount)->IsNoop());
-  EXPECT_TRUE(null_ctx->GetTimer("y")->IsNoop());
+TEST(DefaultMetricsContextTest, GetTimerUsesRequestedUnit) {
+  DefaultMetricsContext ctx;
+  auto timer = ctx.GetTimer("latency", TimerUnit::kSeconds);
+  ASSERT_NE(timer, nullptr);
+  EXPECT_EQ(timer->Unit(), "seconds");
 }
 
-TEST(NullMetricsContextTest, ReturnsSameSharedPtrEachCall) {
+TEST(NoopMetricsContextTest, ReturnsNoopInstances) {
+  auto noop_ctx = MetricsContext::Noop();
+  EXPECT_TRUE(noop_ctx->GetCounter("x", CounterUnit::kCount)->IsNoop());
+  EXPECT_TRUE(noop_ctx->GetTimer("y")->IsNoop());
+}
+
+TEST(NoopMetricsContextTest, ReturnsSameSharedPtrEachCall) {
   // Verify the static-shared_ptr fix: no new control block per call.
-  auto null_ctx = MetricsContext::Null();
-  auto c1 = null_ctx->GetCounter("a", CounterUnit::kCount);
-  auto c2 = null_ctx->GetCounter("b", CounterUnit::kCount);
+  auto noop_ctx = MetricsContext::Noop();
+  auto c1 = noop_ctx->GetCounter("a", CounterUnit::kCount);
+  auto c2 = noop_ctx->GetCounter("b", CounterUnit::kCount);
   EXPECT_EQ(c1.get(), c2.get());  // same noop singleton
-  auto t1 = null_ctx->GetTimer("x");
-  auto t2 = null_ctx->GetTimer("y");
+  auto t1 = noop_ctx->GetTimer("x");
+  auto t2 = noop_ctx->GetTimer("y");
   EXPECT_EQ(t1.get(), t2.get());
 }
 
@@ -224,63 +316,76 @@ TEST(DefaultMetricsContextTest, OneArgGetCounterDefaultsToCount) {
   auto c = ctx.GetCounter("hits");
   EXPECT_NE(c, nullptr);
   EXPECT_EQ(c->unit(), CounterUnit::kCount);
-  // Calling again with the same name returns the same object.
-  EXPECT_EQ(ctx.GetCounter("hits").get(), c.get());
+  EXPECT_NE(ctx.GetCounter("hits").get(), c.get());
+}
+
+TEST(DefaultMetricsContextTest, RepeatedScanMetricsDoNotShareCounters) {
+  DefaultMetricsContext ctx;
+  auto first = ScanMetrics::Make(ctx);
+  first->result_data_files->Increment(5);
+
+  auto second = ScanMetrics::Make(ctx);
+  auto result = second->ToResult();
+  ASSERT_TRUE(result.result_data_files.has_value());
+  EXPECT_EQ(result.result_data_files->value, 0);
 }
 
 // ---------------------------------------------------------------------------
 // ScanMetrics
 // ---------------------------------------------------------------------------
 
-TEST(ScanMetricsTest, OfContextPopulatesResult) {
+TEST(ScanMetricsTest, MakePopulatesResult) {
   DefaultMetricsContext ctx;
-  auto m = ScanMetrics::Of(ctx);
+  auto m = ScanMetrics::Make(ctx);
   m->result_data_files->Increment(5);
   m->total_file_size_in_bytes->Increment(1024);
   m->total_planning_duration->Record(std::chrono::nanoseconds{500});
 
   auto r = m->ToResult();
-  EXPECT_EQ(r.result_data_files.value, 5);
-  EXPECT_EQ(r.result_data_files.unit, CounterUnit::kCount);
-  EXPECT_EQ(r.total_file_size_in_bytes.value, 1024);
-  EXPECT_EQ(r.total_file_size_in_bytes.unit, CounterUnit::kBytes);
-  EXPECT_EQ(r.total_planning_duration.count, 1);
-  EXPECT_EQ(r.total_planning_duration.total_duration, std::chrono::nanoseconds{500});
+  ASSERT_TRUE(r.result_data_files.has_value());
+  EXPECT_EQ(r.result_data_files->value, 5);
+  EXPECT_EQ(r.result_data_files->unit, CounterUnit::kCount);
+  ASSERT_TRUE(r.total_file_size_in_bytes.has_value());
+  EXPECT_EQ(r.total_file_size_in_bytes->value, 1024);
+  EXPECT_EQ(r.total_file_size_in_bytes->unit, CounterUnit::kBytes);
+  ASSERT_TRUE(r.total_planning_duration.has_value());
+  EXPECT_EQ(r.total_planning_duration->count, 1);
+  EXPECT_EQ(r.total_planning_duration->total_duration, std::chrono::nanoseconds{500});
 }
 
 TEST(ScanMetricsTest, ToResultForwardsTimerUnit) {
   DefaultMetricsContext ctx;
-  auto m = ScanMetrics::Of(ctx);
+  auto m = ScanMetrics::Make(ctx);
   m->total_planning_duration->Record(std::chrono::nanoseconds{100});
   auto r = m->ToResult();
-  EXPECT_EQ(r.total_planning_duration.unit, "nanoseconds");
+  ASSERT_TRUE(r.total_planning_duration.has_value());
+  EXPECT_EQ(r.total_planning_duration->unit, "nanoseconds");
 }
 
 // ---------------------------------------------------------------------------
 // CommitMetrics
 // ---------------------------------------------------------------------------
 
-TEST(CommitMetricsTest, NoopPopulatesZero) {
+TEST(CommitMetricsTest, NoopProducesMissingMetrics) {
   auto m = CommitMetrics::Noop();
-  CommitMetricsResult result;
-  m->PopulateResult(result);
-  EXPECT_EQ(result.total_duration.count, 0);
-  EXPECT_EQ(result.total_duration.total_duration.count(), 0);
-  EXPECT_EQ(result.attempts.value, 0);
+  auto result = m->ToResult();
+  EXPECT_FALSE(result.total_duration.has_value());
+  EXPECT_FALSE(result.attempts.has_value());
 }
 
 TEST(CommitMetricsTest, TimerAndAttemptsPopulated) {
   DefaultMetricsContext ctx;
-  auto m = CommitMetrics::Of(ctx);
+  auto m = CommitMetrics::Make(ctx);
   m->total_duration->Record(std::chrono::nanoseconds{2000});
   m->attempts->Increment(3);
 
-  CommitMetricsResult result;
-  m->PopulateResult(result);
-  EXPECT_EQ(result.total_duration.count, 1);
-  EXPECT_EQ(result.total_duration.total_duration, std::chrono::nanoseconds{2000});
-  EXPECT_EQ(result.attempts.value, 3);
-  EXPECT_EQ(result.attempts.unit, CounterUnit::kCount);
+  auto result = m->ToResult();
+  ASSERT_TRUE(result.total_duration.has_value());
+  EXPECT_EQ(result.total_duration->count, 1);
+  EXPECT_EQ(result.total_duration->total_duration, std::chrono::nanoseconds{2000});
+  ASSERT_TRUE(result.attempts.has_value());
+  EXPECT_EQ(result.attempts->value, 3);
+  EXPECT_EQ(result.attempts->unit, CounterUnit::kCount);
 }
 
 // ---------------------------------------------------------------------------
@@ -314,12 +419,56 @@ class TimerResultRoundTripTest : public ::testing::TestWithParam<TimerResult> {}
 TEST_P(TimerResultRoundTripTest, RoundTrip) {
   const auto& input = GetParam();
   auto json = ToJson(input);
-  EXPECT_EQ(json["unit"], input.unit);
-  EXPECT_EQ(json["count"], input.count);
-  EXPECT_EQ(json["total-duration"], input.total_duration.count());
-  auto result = TimerResultFromJson(json);
+  ASSERT_TRUE(json.has_value());
+  EXPECT_EQ(json.value()["time-unit"], input.unit);
+  EXPECT_EQ(json.value()["count"], input.count);
+  EXPECT_EQ(json.value()["total-duration"],
+            DurationInUnit(input.total_duration, input.unit));
+  auto result = TimerResultFromJson(json.value());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), input);
+}
+
+TEST(TimerResultSerdeTest, ParsesJavaTimeUnits) {
+  nlohmann::json json = {
+      {"count", 3},
+      {"time-unit", "hours"},
+      {"total-duration", 10},
+  };
+  auto result = TimerResultFromJson(json);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().unit, "hours");
+  EXPECT_EQ(result.value().count, 3);
+  EXPECT_EQ(result.value().total_duration, std::chrono::hours{10});
+}
+
+TEST(TimerResultSerdeTest, SerializesDurationInDeclaredTimeUnit) {
+  TimerResult input{
+      .unit = "hours", .count = 44, .total_duration = std::chrono::hours{23}};
+  auto json = ToJson(input);
+  ASSERT_TRUE(json.has_value());
+  EXPECT_EQ(json.value()["time-unit"], "hours");
+  EXPECT_EQ(json.value()["count"], 44);
+  EXPECT_EQ(json.value()["total-duration"], 23);
+}
+
+TEST(TimerResultSerdeTest, InvalidUnitToJsonReturnsError) {
+  TimerResult input{
+      .unit = "fortnights", .count = 1, .total_duration = std::chrono::nanoseconds{1}};
+  auto json = ToJson(input);
+  EXPECT_FALSE(json.has_value());
+}
+
+TEST(TimerResultSerdeTest, ParsesTimeUnitCaseInsensitively) {
+  nlohmann::json json = {
+      {"count", 3},
+      {"time-unit", "HOURS"},
+      {"total-duration", 10},
+  };
+  auto result = TimerResultFromJson(json);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().unit, "hours");
+  EXPECT_EQ(result.value().total_duration, std::chrono::hours{10});
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -341,6 +490,7 @@ TEST(ScanReportSerdeTest, RoundTrip) {
   report.table_name = "cat.db.t";
   report.snapshot_id = 42;
   report.schema_id = 1;
+  report.filter = True::Instance();
   report.scan_metrics.result_data_files = CounterResult{.value = 7};
   report.scan_metrics.total_file_size_in_bytes =
       CounterResult{.unit = CounterUnit::kBytes, .value = 8192};
@@ -351,17 +501,23 @@ TEST(ScanReportSerdeTest, RoundTrip) {
 
   auto json_result = ToJson(report);
   ASSERT_TRUE(json_result.has_value());
+  EXPECT_TRUE(json_result.value().contains("filter"));
+  EXPECT_TRUE(json_result.value().contains("metrics"));
+  EXPECT_FALSE(json_result.value().contains("scan-metrics"));
   auto result = ScanReportFromJson(json_result.value());
   ASSERT_TRUE(result.has_value());
   const auto& r = result.value();
   EXPECT_EQ(r.table_name, "cat.db.t");
   EXPECT_EQ(r.snapshot_id, 42);
-  EXPECT_EQ(r.scan_metrics.result_data_files.value, 7);
-  EXPECT_EQ(r.scan_metrics.result_data_files.unit, CounterUnit::kCount);
-  EXPECT_EQ(r.scan_metrics.total_file_size_in_bytes.value, 8192);
-  EXPECT_EQ(r.scan_metrics.total_file_size_in_bytes.unit, CounterUnit::kBytes);
-  EXPECT_EQ(r.scan_metrics.total_planning_duration.count, 1);
-  EXPECT_EQ(r.scan_metrics.total_planning_duration.total_duration,
+  ASSERT_TRUE(r.scan_metrics.result_data_files.has_value());
+  EXPECT_EQ(r.scan_metrics.result_data_files->value, 7);
+  EXPECT_EQ(r.scan_metrics.result_data_files->unit, CounterUnit::kCount);
+  ASSERT_TRUE(r.scan_metrics.total_file_size_in_bytes.has_value());
+  EXPECT_EQ(r.scan_metrics.total_file_size_in_bytes->value, 8192);
+  EXPECT_EQ(r.scan_metrics.total_file_size_in_bytes->unit, CounterUnit::kBytes);
+  ASSERT_TRUE(r.scan_metrics.total_planning_duration.has_value());
+  EXPECT_EQ(r.scan_metrics.total_planning_duration->count, 1);
+  EXPECT_EQ(r.scan_metrics.total_planning_duration->total_duration,
             std::chrono::nanoseconds{100000});
   EXPECT_EQ(r.projected_field_ids, (std::vector<int32_t>{1, 2}));
 }
@@ -371,13 +527,68 @@ TEST(ScanReportSerdeTest, RoundTripWithAlwaysTrueFilter) {
   report.table_name = "db.t";
   report.snapshot_id = 1;
   report.filter = True::Instance();
+  report.schema_id = 4;
 
   auto json_result = ToJson(report);
   ASSERT_TRUE(json_result.has_value());
+  EXPECT_TRUE(json_result.value().contains("projected-field-ids"));
+  EXPECT_TRUE(json_result.value().contains("projected-field-names"));
   auto result = ScanReportFromJson(json_result.value());
   ASSERT_TRUE(result.has_value());
   ASSERT_NE(result.value().filter, nullptr);
   EXPECT_EQ(result.value().filter->op(), Expression::Operation::kTrue);
+}
+
+TEST(ScanReportSerdeTest, DefaultsMissingFilterToAlwaysTrueOnWrite) {
+  ScanReport report;
+  report.table_name = "db.t";
+  report.snapshot_id = 1;
+  report.schema_id = 4;
+
+  auto json_result = ToJson(report);
+  ASSERT_TRUE(json_result.has_value());
+  ASSERT_TRUE(json_result.value().contains("filter"));
+  EXPECT_TRUE(json_result.value()["filter"].is_boolean());
+  EXPECT_TRUE(json_result.value()["filter"].get<bool>());
+
+  auto result = ScanReportFromJson(json_result.value());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_NE(result.value().filter, nullptr);
+  EXPECT_EQ(result.value().filter->op(), Expression::Operation::kTrue);
+}
+
+TEST(ScanReportSerdeTest, ParsesJavaMetricsFieldName) {
+  nlohmann::json json = {
+      {"table-name", "db.t"},
+      {"snapshot-id", 1},
+      {"filter", true},
+      {"schema-id", 4},
+      {"projected-field-ids", nlohmann::json::array()},
+      {"projected-field-names", nlohmann::json::array()},
+      {"metrics", nlohmann::json{{"total-planning-duration",
+                                  nlohmann::json{{"count", 1},
+                                                 {"time-unit", "nanoseconds"},
+                                                 {"total-duration", 600}}}}},
+  };
+  auto result = ScanReportFromJson(json);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result.value().scan_metrics.total_planning_duration.has_value());
+  EXPECT_EQ(result.value().scan_metrics.total_planning_duration->total_duration,
+            std::chrono::nanoseconds{600});
+}
+
+TEST(ScanReportSerdeTest, MalformedProjectionReturnsError) {
+  nlohmann::json json = {
+      {"table-name", "db.t"},
+      {"snapshot-id", 1},
+      {"filter", true},
+      {"schema-id", 4},
+      {"projected-field-ids", nlohmann::json::array({"1"})},
+      {"projected-field-names", nlohmann::json::array()},
+      {"metrics", nlohmann::json::object()},
+  };
+  auto result = ScanReportFromJson(json);
+  EXPECT_FALSE(result.has_value());
 }
 
 TEST(CommitReportSerdeTest, RoundTrip) {
@@ -392,19 +603,25 @@ TEST(CommitReportSerdeTest, RoundTrip) {
   report.commit_metrics.added_data_files = CounterResult{.value = 3};
   report.commit_metrics.added_records = CounterResult{.value = 1000};
 
-  auto json = ToJson(report);
-  auto result = CommitReportFromJson(json);
+  auto json_result = ToJson(report);
+  ASSERT_TRUE(json_result.has_value());
+  EXPECT_TRUE(json_result.value().contains("metrics"));
+  EXPECT_FALSE(json_result.value().contains("commit-metrics"));
+  auto result = CommitReportFromJson(json_result.value());
   ASSERT_TRUE(result.has_value());
   const auto& r = result.value();
   EXPECT_EQ(r.table_name, "cat.db.t");
   EXPECT_EQ(r.snapshot_id, 99);
   EXPECT_EQ(r.sequence_number, 5);
   EXPECT_EQ(r.operation, "append");
-  EXPECT_EQ(r.commit_metrics.total_duration.count, 1);
-  EXPECT_EQ(r.commit_metrics.total_duration.total_duration,
+  ASSERT_TRUE(r.commit_metrics.total_duration.has_value());
+  EXPECT_EQ(r.commit_metrics.total_duration->count, 1);
+  EXPECT_EQ(r.commit_metrics.total_duration->total_duration,
             std::chrono::nanoseconds{200000});
-  EXPECT_EQ(r.commit_metrics.added_data_files.value, 3);
-  EXPECT_EQ(r.commit_metrics.added_records.value, 1000);
+  ASSERT_TRUE(r.commit_metrics.added_data_files.has_value());
+  EXPECT_EQ(r.commit_metrics.added_data_files->value, 3);
+  ASSERT_TRUE(r.commit_metrics.added_records.has_value());
+  EXPECT_EQ(r.commit_metrics.added_records->value, 1000);
 }
 
 // ---------------------------------------------------------------------------
@@ -413,7 +630,7 @@ TEST(CommitReportSerdeTest, RoundTrip) {
 
 TEST(ScanMetricsResultTest, FromDelegatesToToResult) {
   DefaultMetricsContext ctx;
-  auto m = ScanMetrics::Of(ctx);
+  auto m = ScanMetrics::Make(ctx);
   m->result_data_files->Increment(7);
   m->total_planning_duration->Record(std::chrono::nanoseconds{12345});
 
@@ -421,42 +638,44 @@ TEST(ScanMetricsResultTest, FromDelegatesToToResult) {
   auto via_to_result = m->ToResult();
 
   EXPECT_EQ(via_from.result_data_files, via_to_result.result_data_files);
-  EXPECT_EQ(via_from.total_planning_duration.count,
-            via_to_result.total_planning_duration.count);
-  EXPECT_EQ(via_from.total_planning_duration.total_duration,
-            via_to_result.total_planning_duration.total_duration);
+  ASSERT_TRUE(via_from.total_planning_duration.has_value());
+  ASSERT_TRUE(via_to_result.total_planning_duration.has_value());
+  EXPECT_EQ(via_from.total_planning_duration->count,
+            via_to_result.total_planning_duration->count);
+  EXPECT_EQ(via_from.total_planning_duration->total_duration,
+            via_to_result.total_planning_duration->total_duration);
 }
 
 // ---------------------------------------------------------------------------
 // CommitMetricsResult::From
 // ---------------------------------------------------------------------------
 
-TEST(CommitMetricsResultTest, FromWithEmptySummaryYieldsZeroFileCounts) {
+TEST(CommitMetricsResultTest, FromWithEmptySummaryYieldsMissingFileCounts) {
   DefaultMetricsContext ctx;
-  auto live = CommitMetrics::Of(ctx);
+  auto live = CommitMetrics::Make(ctx);
   live->total_duration->Record(std::chrono::nanoseconds{5000});
   live->attempts->Increment();
 
   auto result = CommitMetricsResult::From(*live, {});
 
-  EXPECT_EQ(result.total_duration.count, 1);
-  EXPECT_EQ(result.total_duration.total_duration, std::chrono::nanoseconds{5000});
-  EXPECT_EQ(result.attempts.value, 1);
-  EXPECT_EQ(result.attempts.unit, CounterUnit::kCount);
-  // All snapshot-summary fields must be zero when the summary is empty.
-  EXPECT_EQ(result.added_data_files.value, 0);
-  EXPECT_EQ(result.added_data_files.unit, CounterUnit::kCount);
-  EXPECT_EQ(result.removed_data_files.value, 0);
-  EXPECT_EQ(result.total_data_files.value, 0);
-  EXPECT_EQ(result.added_records.value, 0);
-  EXPECT_EQ(result.total_records.value, 0);
-  EXPECT_EQ(result.kept_manifest_count.value, 0);
-  EXPECT_EQ(result.created_manifest_count.value, 0);
+  ASSERT_TRUE(result.total_duration.has_value());
+  EXPECT_EQ(result.total_duration->count, 1);
+  EXPECT_EQ(result.total_duration->total_duration, std::chrono::nanoseconds{5000});
+  ASSERT_TRUE(result.attempts.has_value());
+  EXPECT_EQ(result.attempts->value, 1);
+  EXPECT_EQ(result.attempts->unit, CounterUnit::kCount);
+  EXPECT_FALSE(result.added_data_files.has_value());
+  EXPECT_FALSE(result.removed_data_files.has_value());
+  EXPECT_FALSE(result.total_data_files.has_value());
+  EXPECT_FALSE(result.added_records.has_value());
+  EXPECT_FALSE(result.total_records.has_value());
+  EXPECT_FALSE(result.kept_manifest_count.has_value());
+  EXPECT_FALSE(result.created_manifest_count.has_value());
 }
 
 TEST(CommitMetricsResultTest, FromParsesSnapshotSummary) {
   DefaultMetricsContext ctx;
-  auto live = CommitMetrics::Of(ctx);
+  auto live = CommitMetrics::Make(ctx);
   live->total_duration->Record(std::chrono::nanoseconds{8000});
   live->attempts->Increment(2);
 
@@ -473,54 +692,73 @@ TEST(CommitMetricsResultTest, FromParsesSnapshotSummary) {
   auto result = CommitMetricsResult::From(*live, summary);
 
   // Live metrics.
-  EXPECT_EQ(result.total_duration.count, 1);
-  EXPECT_EQ(result.total_duration.total_duration, std::chrono::nanoseconds{8000});
-  EXPECT_EQ(result.attempts.value, 2);
-  EXPECT_EQ(result.attempts.unit, CounterUnit::kCount);
+  ASSERT_TRUE(result.total_duration.has_value());
+  EXPECT_EQ(result.total_duration->count, 1);
+  EXPECT_EQ(result.total_duration->total_duration, std::chrono::nanoseconds{8000});
+  ASSERT_TRUE(result.attempts.has_value());
+  EXPECT_EQ(result.attempts->value, 2);
+  EXPECT_EQ(result.attempts->unit, CounterUnit::kCount);
 
   // Snapshot-summary fields — verify both value and unit.
-  EXPECT_EQ(result.added_data_files.value, 3);
-  EXPECT_EQ(result.added_data_files.unit, CounterUnit::kCount);
-  EXPECT_EQ(result.removed_data_files.value, 1);
-  EXPECT_EQ(result.total_data_files.value, 10);
-  EXPECT_EQ(result.added_records.value, 1000);
-  EXPECT_EQ(result.removed_records.value, 200);
-  EXPECT_EQ(result.total_records.value, 5000);
-  EXPECT_EQ(result.added_files_size_bytes.value, 4096);
-  EXPECT_EQ(result.added_files_size_bytes.unit, CounterUnit::kBytes);
-  EXPECT_EQ(result.removed_files_size_bytes.value, 1024);
-  EXPECT_EQ(result.removed_files_size_bytes.unit, CounterUnit::kBytes);
-  EXPECT_EQ(result.total_files_size_bytes.value, 20480);
-  EXPECT_EQ(result.total_files_size_bytes.unit, CounterUnit::kBytes);
-  EXPECT_EQ(result.created_manifest_count.value, 2);
-  EXPECT_EQ(result.kept_manifest_count.value, 5);
-  EXPECT_EQ(result.replaced_manifest_count.value, 1);
-  EXPECT_EQ(result.processed_manifest_entries_count.value, 8);
+  ASSERT_TRUE(result.added_data_files.has_value());
+  EXPECT_EQ(result.added_data_files->value, 3);
+  EXPECT_EQ(result.added_data_files->unit, CounterUnit::kCount);
+  ASSERT_TRUE(result.removed_data_files.has_value());
+  EXPECT_EQ(result.removed_data_files->value, 1);
+  ASSERT_TRUE(result.total_data_files.has_value());
+  EXPECT_EQ(result.total_data_files->value, 10);
+  ASSERT_TRUE(result.added_records.has_value());
+  EXPECT_EQ(result.added_records->value, 1000);
+  ASSERT_TRUE(result.removed_records.has_value());
+  EXPECT_EQ(result.removed_records->value, 200);
+  ASSERT_TRUE(result.total_records.has_value());
+  EXPECT_EQ(result.total_records->value, 5000);
+  ASSERT_TRUE(result.added_files_size_bytes.has_value());
+  EXPECT_EQ(result.added_files_size_bytes->value, 4096);
+  EXPECT_EQ(result.added_files_size_bytes->unit, CounterUnit::kBytes);
+  ASSERT_TRUE(result.removed_files_size_bytes.has_value());
+  EXPECT_EQ(result.removed_files_size_bytes->value, 1024);
+  EXPECT_EQ(result.removed_files_size_bytes->unit, CounterUnit::kBytes);
+  ASSERT_TRUE(result.total_files_size_bytes.has_value());
+  EXPECT_EQ(result.total_files_size_bytes->value, 20480);
+  EXPECT_EQ(result.total_files_size_bytes->unit, CounterUnit::kBytes);
+  ASSERT_TRUE(result.created_manifest_count.has_value());
+  EXPECT_EQ(result.created_manifest_count->value, 2);
+  ASSERT_TRUE(result.kept_manifest_count.has_value());
+  EXPECT_EQ(result.kept_manifest_count->value, 5);
+  ASSERT_TRUE(result.replaced_manifest_count.has_value());
+  EXPECT_EQ(result.replaced_manifest_count->value, 1);
+  ASSERT_TRUE(result.processed_manifest_entries_count.has_value());
+  EXPECT_EQ(result.processed_manifest_entries_count->value, 8);
 }
 
 TEST(CommitMetricsResultTest, FromHandlesMissingAndUnparseableKeys) {
-  // Missing key → 0, unparseable value → 0.
   std::unordered_map<std::string, std::string> summary = {
       {"added-data-files", "not-a-number"},
       // "deleted-data-files" intentionally absent
   };
   auto result = CommitMetricsResult::From(*CommitMetrics::Noop(), summary);
-  EXPECT_EQ(result.added_data_files.value, 0);    // unparseable
-  EXPECT_EQ(result.removed_data_files.value, 0);  // absent
+  EXPECT_FALSE(result.added_data_files.has_value());
+  EXPECT_FALSE(result.removed_data_files.has_value());
 }
 
 // ---------------------------------------------------------------------------
 // Metrics JSON serde — CounterResult (additional cases)
 // ---------------------------------------------------------------------------
 
-TEST(CounterResultSerdeTest, MissingUnitDefaultsToCount) {
+TEST(CounterResultSerdeTest, MissingUnitReturnsError) {
   nlohmann::json json;
   json["value"] = 7;
-  // No "unit" key — should default to kCount.
   auto result = CounterResultFromJson(json);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value().unit, CounterUnit::kCount);
-  EXPECT_EQ(result.value().value, 7);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(CounterResultSerdeTest, UnknownUnitReturnsError) {
+  nlohmann::json json;
+  json["unit"] = "rows";
+  json["value"] = 7;
+  auto result = CounterResultFromJson(json);
+  EXPECT_FALSE(result.has_value());
 }
 
 TEST(CounterResultSerdeTest, MissingValueReturnsError) {
@@ -529,6 +767,15 @@ TEST(CounterResultSerdeTest, MissingValueReturnsError) {
   // Missing "value" key — must return an error.
   auto result = CounterResultFromJson(json);
   EXPECT_FALSE(result.has_value());
+}
+
+TEST(CounterResultSerdeTest, ParsesUnitCaseInsensitively) {
+  nlohmann::json json;
+  json["unit"] = "COUNT";
+  json["value"] = 7;
+  auto result = CounterResultFromJson(json);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().unit, CounterUnit::kCount);
 }
 
 // ---------------------------------------------------------------------------
@@ -559,21 +806,38 @@ TEST(ScanMetricsResultSerdeTest, AllFieldsRoundTrip) {
   m.dvs = CounterResult{.unit = CounterUnit::kCount, .value = 3};
 
   auto json = ToJson(m);
-  auto result = ScanMetricsResultFromJson(json);
+  ASSERT_TRUE(json.has_value());
+  auto result = ScanMetricsResultFromJson(json.value());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), m);
 }
 
-TEST(ScanMetricsResultSerdeTest, MissingFieldsDefaultToZeroCounterResult) {
-  // JSON with only one field set; all others must default to CounterResult{}.
+TEST(ScanMetricsResultSerdeTest, MissingFieldsRemainUnset) {
+  // JSON with only one field set; all others remain missing.
   nlohmann::json json = nlohmann::json::object();
   json["result-data-files"] = nlohmann::json{{"unit", "count"}, {"value", 5}};
 
   auto result = ScanMetricsResultFromJson(json);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value().result_data_files.value, 5);
-  EXPECT_EQ(result.value().result_delete_files, CounterResult{});
-  EXPECT_EQ(result.value().total_file_size_in_bytes, CounterResult{});
+  ASSERT_TRUE(result.value().result_data_files.has_value());
+  EXPECT_EQ(result.value().result_data_files->value, 5);
+  EXPECT_FALSE(result.value().result_delete_files.has_value());
+  EXPECT_FALSE(result.value().total_file_size_in_bytes.has_value());
+}
+
+TEST(ScanMetricsResultSerdeTest, NonObjectReturnsError) {
+  EXPECT_FALSE(ScanMetricsResultFromJson(nlohmann::json::array()).has_value());
+  EXPECT_FALSE(ScanMetricsResultFromJson(nlohmann::json{5}).has_value());
+}
+
+TEST(ScanMetricsResultSerdeTest, NullMetricFieldReturnsError) {
+  nlohmann::json json = nlohmann::json::object();
+  json["result-data-files"] = nullptr;
+  EXPECT_FALSE(ScanMetricsResultFromJson(json).has_value());
+
+  json = nlohmann::json::object();
+  json["total-planning-duration"] = nullptr;
+  EXPECT_FALSE(ScanMetricsResultFromJson(json).has_value());
 }
 
 TEST(ScanMetricsResultSerdeTest, JsonKeyNamesAreKebabCase) {
@@ -584,12 +848,22 @@ TEST(ScanMetricsResultSerdeTest, JsonKeyNamesAreKebabCase) {
       TimerResult{.count = 1, .total_duration = std::chrono::nanoseconds{1}};
 
   auto json = ToJson(m);
-  EXPECT_TRUE(json.contains("result-data-files"));
-  EXPECT_TRUE(json.contains("total-file-size-in-bytes"));
-  EXPECT_TRUE(json.contains("total-planning-duration"));
+  ASSERT_TRUE(json.has_value());
+  EXPECT_TRUE(json.value().contains("result-data-files"));
+  EXPECT_TRUE(json.value().contains("total-file-size-in-bytes"));
+  EXPECT_TRUE(json.value().contains("total-planning-duration"));
   // Spot-check that no camelCase or snake_case keys leaked in.
-  EXPECT_FALSE(json.contains("resultDataFiles"));
-  EXPECT_FALSE(json.contains("result_data_files"));
+  EXPECT_FALSE(json.value().contains("resultDataFiles"));
+  EXPECT_FALSE(json.value().contains("result_data_files"));
+}
+
+TEST(ScanMetricsResultSerdeTest, InvalidTimerUnitToJsonReturnsError) {
+  ScanMetricsResult m;
+  m.total_planning_duration = TimerResult{
+      .unit = "fortnights", .count = 1, .total_duration = std::chrono::nanoseconds{1}};
+
+  auto json = ToJson(m);
+  EXPECT_FALSE(json.has_value());
 }
 
 // ---------------------------------------------------------------------------
@@ -599,8 +873,9 @@ TEST(ScanMetricsResultSerdeTest, JsonKeyNamesAreKebabCase) {
 TEST(CommitMetricsResultSerdeTest, EmptyResultProducesEmptyJsonObject) {
   CommitMetricsResult empty{};
   auto json = ToJson(empty);
-  EXPECT_TRUE(json.is_object());
-  EXPECT_TRUE(json.empty()) << "all-zero CommitMetricsResult must produce empty JSON";
+  ASSERT_TRUE(json.has_value());
+  EXPECT_TRUE(json.value().is_object());
+  EXPECT_TRUE(json.value().empty());
 }
 
 TEST(CommitMetricsResultSerdeTest, AllFieldsRoundTrip) {
@@ -642,45 +917,134 @@ TEST(CommitMetricsResultSerdeTest, AllFieldsRoundTrip) {
       CounterResult{.unit = CounterUnit::kCount, .value = 12};
 
   auto json = ToJson(m);
-  auto result = CommitMetricsResultFromJson(json);
+  ASSERT_TRUE(json.has_value());
+  EXPECT_TRUE(json.value().contains("manifests-kept"));
+  EXPECT_TRUE(json.value().contains("manifests-created"));
+  EXPECT_TRUE(json.value().contains("manifests-replaced"));
+  EXPECT_TRUE(json.value().contains("manifest-entries-processed"));
+  EXPECT_FALSE(json.value().contains("kept-manifest-count"));
+  EXPECT_FALSE(json.value().contains("created-manifest-count"));
+  EXPECT_FALSE(json.value().contains("replaced-manifest-count"));
+  EXPECT_FALSE(json.value().contains("processed-manifest-entries-count"));
+  auto result = CommitMetricsResultFromJson(json.value());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), m);
 }
 
-TEST(CommitMetricsResultSerdeTest, ZeroValueFieldsOmittedFromJson) {
-  CommitMetricsResult m;
-  m.added_data_files = CounterResult{.value = 5};
-  // All other fields remain zero.
-  auto json = ToJson(m);
-  EXPECT_TRUE(json.contains("added-data-files"));
-  EXPECT_FALSE(json.contains("removed-data-files"));
-  EXPECT_FALSE(json.contains("total-duration"));
-  EXPECT_FALSE(json.contains("attempts"));
+TEST(CommitMetricsResultSerdeTest, ParsesJavaManifestMetricFieldNames) {
+  nlohmann::json json = {
+      {"manifests-kept", nlohmann::json{{"unit", "count"}, {"value", 6}}},
+      {"manifests-created", nlohmann::json{{"unit", "count"}, {"value", 10}}},
+      {"manifests-replaced", nlohmann::json{{"unit", "count"}, {"value", 5}}},
+      {"manifest-entries-processed", nlohmann::json{{"unit", "count"}, {"value", 20}}},
+  };
+  auto result = CommitMetricsResultFromJson(json);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result.value().kept_manifest_count.has_value());
+  EXPECT_EQ(result.value().kept_manifest_count->value, 6);
+  ASSERT_TRUE(result.value().created_manifest_count.has_value());
+  EXPECT_EQ(result.value().created_manifest_count->value, 10);
+  ASSERT_TRUE(result.value().replaced_manifest_count.has_value());
+  EXPECT_EQ(result.value().replaced_manifest_count->value, 5);
+  ASSERT_TRUE(result.value().processed_manifest_entries_count.has_value());
+  EXPECT_EQ(result.value().processed_manifest_entries_count->value, 20);
 }
 
-TEST(CommitMetricsResultSerdeTest, MissingFieldsDefaultToZeroCounterResult) {
+TEST(CommitMetricsResultSerdeTest, ExplicitZeroValueFieldsAreSerialized) {
+  CommitMetricsResult m;
+  m.added_data_files = CounterResult{.value = 5};
+  m.removed_data_files = CounterResult{.value = 0};
+  auto json = ToJson(m);
+  ASSERT_TRUE(json.has_value());
+  EXPECT_TRUE(json.value().contains("added-data-files"));
+  EXPECT_TRUE(json.value().contains("removed-data-files"));
+  EXPECT_EQ(json.value()["removed-data-files"]["value"], 0);
+  EXPECT_FALSE(json.value().contains("total-duration"));
+  EXPECT_FALSE(json.value().contains("attempts"));
+}
+
+TEST(CommitMetricsResultSerdeTest, MissingFieldsRemainUnset) {
   nlohmann::json json = nlohmann::json::object();
   json["added-data-files"] = nlohmann::json{{"unit", "count"}, {"value", 9}};
 
   auto result = CommitMetricsResultFromJson(json);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value().added_data_files.value, 9);
-  EXPECT_EQ(result.value().removed_data_files, CounterResult{});
-  EXPECT_EQ(result.value().total_duration, TimerResult{});
+  ASSERT_TRUE(result.value().added_data_files.has_value());
+  EXPECT_EQ(result.value().added_data_files->value, 9);
+  EXPECT_FALSE(result.value().removed_data_files.has_value());
+  EXPECT_FALSE(result.value().total_duration.has_value());
+}
+
+TEST(CommitMetricsResultSerdeTest, NonObjectReturnsError) {
+  EXPECT_FALSE(CommitMetricsResultFromJson(nlohmann::json::array()).has_value());
+  EXPECT_FALSE(CommitMetricsResultFromJson(nlohmann::json{5}).has_value());
+}
+
+TEST(CommitMetricsResultSerdeTest, NullMetricFieldReturnsError) {
+  nlohmann::json json = nlohmann::json::object();
+  json["added-data-files"] = nullptr;
+  EXPECT_FALSE(CommitMetricsResultFromJson(json).has_value());
+
+  json = nlohmann::json::object();
+  json["total-duration"] = nullptr;
+  EXPECT_FALSE(CommitMetricsResultFromJson(json).has_value());
 }
 
 // ---------------------------------------------------------------------------
 // Metrics JSON serde — CommitReport (additional cases)
 // ---------------------------------------------------------------------------
 
-TEST(CommitReportSerdeTest, ZeroMetricsOmittedFromJson) {
+TEST(CommitReportSerdeTest, EmptyMetricsSerializedAsEmptyObject) {
   CommitReport report;
   report.table_name = "db.t";
   report.snapshot_id = 1;
   report.sequence_number = 1;
+  report.operation = "append";
   auto json = ToJson(report);
-  EXPECT_TRUE(json.contains("commit-metrics"));
-  EXPECT_TRUE(json["commit-metrics"].empty());
+  ASSERT_TRUE(json.has_value());
+  EXPECT_TRUE(json.value().contains("metrics"));
+  EXPECT_TRUE(json.value()["metrics"].empty());
+}
+
+TEST(CommitReportSerdeTest, InvalidTimerUnitToJsonReturnsError) {
+  CommitReport report;
+  report.table_name = "db.t";
+  report.snapshot_id = 1;
+  report.sequence_number = 1;
+  report.operation = "append";
+  report.commit_metrics.total_duration = TimerResult{
+      .unit = "fortnights", .count = 1, .total_duration = std::chrono::nanoseconds{1}};
+
+  auto json = ToJson(report);
+  EXPECT_FALSE(json.has_value());
+}
+
+TEST(ScanReportSerdeTest, MetadataNullReturnsError) {
+  nlohmann::json json = {
+      {"table-name", "db.t"},
+      {"snapshot-id", 1},
+      {"filter", "true"},
+      {"schema-id", 1},
+      {"projected-field-ids", nlohmann::json::array()},
+      {"projected-field-names", nlohmann::json::array()},
+      {"metrics", nlohmann::json::object()},
+      {"metadata", nullptr},
+  };
+
+  EXPECT_FALSE(ScanReportFromJson(json).has_value());
+}
+
+TEST(CommitReportSerdeTest, MetadataNullReturnsError) {
+  nlohmann::json json = {
+      {"table-name", "db.t"},
+      {"snapshot-id", 1},
+      {"sequence-number", 1},
+      {"operation", "append"},
+      {"metrics", nlohmann::json::object()},
+      {"metadata", nullptr},
+  };
+
+  EXPECT_FALSE(CommitReportFromJson(json).has_value());
 }
 
 struct ReportRequiredFieldParam {
@@ -703,8 +1067,24 @@ INSTANTIATE_TEST_SUITE_P(
             "ScanMissingSnapshotId", nlohmann::json{{"table-name", "t"}},
             [](const nlohmann::json& j) { return ScanReportFromJson(j).has_value(); }},
         ReportRequiredFieldParam{
+            "ScanMissingFilter",
+            nlohmann::json{{"table-name", "t"},
+                           {"snapshot-id", 1},
+                           {"schema-id", 1},
+                           {"projected-field-ids", nlohmann::json::array()},
+                           {"projected-field-names", nlohmann::json::array()},
+                           {"metrics", nlohmann::json::object()}},
+            [](const nlohmann::json& j) { return ScanReportFromJson(j).has_value(); }},
+        ReportRequiredFieldParam{
             "CommitMissingTableName",
             nlohmann::json{{"snapshot-id", 1}, {"sequence-number", 1}},
+            [](const nlohmann::json& j) { return CommitReportFromJson(j).has_value(); }},
+        ReportRequiredFieldParam{
+            "CommitMissingOperation",
+            nlohmann::json{{"table-name", "t"},
+                           {"snapshot-id", 1},
+                           {"sequence-number", 1},
+                           {"metrics", nlohmann::json::object()}},
             [](const nlohmann::json& j) { return CommitReportFromJson(j).has_value(); }}),
     [](const auto& info) { return info.param.name; });
 
