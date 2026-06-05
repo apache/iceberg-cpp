@@ -216,6 +216,7 @@ This product includes code from Apache Arrow.
 
 * Core utilities:
   * checked_cast utility in src/iceberg/util/checked_cast.h.
+  * FnOnce utility in src/iceberg/util/functional.h.
   * visit_type utility in src/iceberg/util/visit_type.h.
   * Decimal128 implementation details in src/iceberg/util/decimal files.
 * Build system modules:
