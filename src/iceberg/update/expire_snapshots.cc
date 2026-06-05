@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <unordered_set>
@@ -43,6 +44,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg {
 
@@ -693,6 +695,11 @@ ExpireSnapshots& ExpireSnapshots::DeleteWith(
   return *this;
 }
 
+ExpireSnapshots& ExpireSnapshots::PlanWith(Executor& executor) {
+  plan_executor_ = std::ref(executor);
+  return *this;
+}
+
 ExpireSnapshots& ExpireSnapshots::CleanupLevel(enum CleanupLevel level) {
   cleanup_level_ = level;
   return *this;
@@ -865,20 +872,33 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
   });
 
   if (clean_expired_metadata_) {
+    std::vector<std::unordered_set<int32_t>> reachable_spec_ids(ids_to_retain.size());
+    std::vector<std::optional<int32_t>> reachable_schema_ids(ids_to_retain.size());
+    auto metadata_tasks = TaskGroup().SetExecutor(plan_executor_);
+    for (auto&& [snapshot_id, spec_ids, schema_id] :
+         std::views::zip(ids_to_retain, reachable_spec_ids, reachable_schema_ids)) {
+      metadata_tasks.Submit([&]() -> Status {
+        ICEBERG_ASSIGN_OR_RAISE(auto snapshot, base.SnapshotById(snapshot_id));
+        SnapshotCache snapshot_cache(snapshot.get());
+        ICEBERG_ASSIGN_OR_RAISE(auto manifests,
+                                snapshot_cache.Manifests(ctx_->table->io()));
+        for (const auto& manifest : manifests) {
+          spec_ids.insert(manifest.partition_spec_id);
+        }
+        schema_id = snapshot->schema_id;
+        return {};
+      });
+    }
+    ICEBERG_RETURN_UNEXPECTED(std::move(metadata_tasks).Run());
+
     std::unordered_set<int32_t> reachable_specs = {base.default_spec_id};
     std::unordered_set<int32_t> reachable_schemas = {base.current_schema_id};
 
-    // TODO(xiao.dong) parallel processing
-    for (int64_t snapshot_id : ids_to_retain) {
-      ICEBERG_ASSIGN_OR_RAISE(auto snapshot, base.SnapshotById(snapshot_id));
-      SnapshotCache snapshot_cache(snapshot.get());
-      ICEBERG_ASSIGN_OR_RAISE(auto manifests,
-                              snapshot_cache.Manifests(ctx_->table->io()));
-      for (const auto& manifest : manifests) {
-        reachable_specs.insert(manifest.partition_spec_id);
-      }
-      if (snapshot->schema_id.has_value()) {
-        reachable_schemas.insert(snapshot->schema_id.value());
+    for (auto&& [spec_ids, schema_id] :
+         std::views::zip(reachable_spec_ids, reachable_schema_ids)) {
+      reachable_specs.merge(spec_ids);
+      if (schema_id.has_value()) {
+        reachable_schemas.insert(schema_id.value());
       }
     }
 

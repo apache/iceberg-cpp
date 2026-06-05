@@ -32,6 +32,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/timepoint.h"
 
 /// \file iceberg/update/expire_snapshots.h
@@ -119,6 +120,9 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// \return Reference to this for method chaining.
   ExpireSnapshots& DeleteWith(std::function<void(const std::string&)> delete_func);
 
+  /// \brief Configure an executor for planning expired snapshot metadata.
+  ExpireSnapshots& PlanWith(Executor& executor);
+
   /// \brief Configures the cleanup level for expired files.
   ///
   /// This method provides fine-grained control over which files are cleaned up during
@@ -182,6 +186,7 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   std::function<void(const std::string&)> delete_func_;
   std::vector<int64_t> snapshot_ids_to_expire_;
   enum CleanupLevel cleanup_level_ { CleanupLevel::kAll };
+  OptionalExecutor plan_executor_;
   bool clean_expired_metadata_{false};
   bool specified_snapshot_id_{false};
 

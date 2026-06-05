@@ -39,6 +39,7 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -327,6 +328,44 @@ TEST_P(ManifestGroupTest, IgnoreDeleted) {
   EXPECT_THAT(GetPaths(tasks),
               testing::UnorderedElementsAre("/path/to/added.parquet",
                                             "/path/to/existing.parquet"));
+}
+
+TEST_P(ManifestGroupTest, PlanWithExecutor) {
+  auto version = GetParam();
+
+  constexpr int64_t kSnapshotId = 1000L;
+  constexpr int64_t kSequenceNumber = 1L;
+  const auto partition_a = PartitionValues({Literal::Int(0)});
+  const auto partition_b = PartitionValues({Literal::Int(1)});
+
+  auto manifest_a =
+      WriteDataManifest(version, kSnapshotId,
+                        {MakeEntry(ManifestStatus::kAdded, kSnapshotId, kSequenceNumber,
+                                   MakeDataFile("/path/to/data-a.parquet", partition_a,
+                                                partitioned_spec_->spec_id()))},
+                        partitioned_spec_);
+  auto manifest_b =
+      WriteDataManifest(version, kSnapshotId,
+                        {MakeEntry(ManifestStatus::kAdded, kSnapshotId, kSequenceNumber,
+                                   MakeDataFile("/path/to/data-b.parquet", partition_b,
+                                                partitioned_spec_->spec_id()))},
+                        partitioned_spec_);
+
+  std::vector<ManifestFile> manifests = {
+      WriteAndReadManifestListEntry(version, kSnapshotId, kSequenceNumber, manifest_a),
+      WriteAndReadManifestListEntry(version, kSnapshotId, kSequenceNumber, manifest_b)};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
+
+  test::ThreadExecutor executor;
+  group->PlanWith(std::ref(executor));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+  ASSERT_EQ(tasks.size(), 2);
+  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data-a.parquet",
+                                                             "/path/to/data-b.parquet"));
+  EXPECT_EQ(executor.submit_count(), 2);
 }
 
 TEST_P(ManifestGroupTest, IgnoreExisting) {

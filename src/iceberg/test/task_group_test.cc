@@ -95,7 +95,7 @@ TEST(FnOnceTest, SupportsMoveOnlyCapture) {
 
 TEST(TaskGroupTest, UsesExecutor) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   bool ran = false;
 
   group.SetExecutor(std::ref(executor));
@@ -111,7 +111,7 @@ TEST(TaskGroupTest, UsesExecutor) {
 
 TEST(TaskGroupTest, ReturnsSubmitError) {
   test::ThreadExecutor executor(ServiceUnavailable("executor busy"));
-  TaskGroup<> group;
+  TaskGroup group;
 
   group.SetExecutor(std::ref(executor));
   group.Submit([]() -> Status { return {}; });
@@ -121,7 +121,7 @@ TEST(TaskGroupTest, ReturnsSubmitError) {
 }
 
 TEST(TaskGroupTest, DirectMoveOnlyTask) {
-  TaskGroup<> group;
+  TaskGroup group;
   auto value = std::make_unique<int>(7);
   int observed = 0;
 
@@ -136,7 +136,7 @@ TEST(TaskGroupTest, DirectMoveOnlyTask) {
 
 TEST(TaskGroupTest, ClearsExecutor) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   int call_count = 0;
 
   group.SetExecutor(std::ref(executor));
@@ -152,9 +152,11 @@ TEST(TaskGroupTest, ClearsExecutor) {
 }
 
 TEST(TaskGroupTest, FluentSubmit) {
+  test::ThreadExecutor executor;
   int call_count = 0;
 
-  auto status = TaskGroup<>()
+  auto status = TaskGroup()
+                    .SetExecutor(std::ref(executor))
                     .Submit([&]() -> Status {
                       ++call_count;
                       return {};
@@ -170,7 +172,7 @@ TEST(TaskGroupTest, FluentSubmit) {
 }
 
 TEST(TaskGroupTest, DirectAggregatesErrors) {
-  TaskGroup<> group;
+  TaskGroup group;
   int call_count = 0;
 
   group.Submit([&]() -> Status {
@@ -192,7 +194,7 @@ TEST(TaskGroupTest, DirectAggregatesErrors) {
 
 TEST(TaskGroupTest, ParallelSubmitsAll) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   std::atomic<int> call_count = 0;
 
   group.SetExecutor(std::ref(executor));
@@ -212,7 +214,7 @@ TEST(TaskGroupTest, ParallelSubmitsAll) {
 
 TEST(TaskGroupTest, ParallelAggregatesErrors) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   std::atomic<int> call_count = 0;
 
   group.SetExecutor(std::ref(executor));
@@ -236,7 +238,7 @@ TEST(TaskGroupTest, ParallelAggregatesErrors) {
 
 TEST(TaskGroupTest, ParallelSubmitErrors) {
   test::ThreadExecutor executor(ServiceUnavailable("executor busy"));
-  TaskGroup<> group;
+  TaskGroup group;
   int call_count = 0;
 
   group.SetExecutor(std::ref(executor));

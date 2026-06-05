@@ -289,6 +289,12 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::MinRowsRequested(
 }
 
 template <typename ScanType>
+TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::PlanWith(Executor& executor) {
+  context_.plan_executor = std::ref(executor);
+  return *this;
+}
+
+template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snapshot_id) {
   ICEBERG_BUILDER_CHECK(!context_.snapshot_id.has_value(),
                         "Cannot override snapshot, already set snapshot id={}",
@@ -538,7 +544,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
       .Select(ScanColumns())
       .FilterData(filter())
       .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats);
+      .ColumnsToKeepStats(context_.columns_to_keep_stats)
+      .PlanWith(context_.plan_executor);
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();
   }
@@ -641,7 +648,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
                entry.status == ManifestStatus::kAdded;
       })
       .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats);
+      .ColumnsToKeepStats(context_.columns_to_keep_stats)
+      .PlanWith(context_.plan_executor);
 
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();
@@ -737,7 +745,8 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
                snapshot_ids.contains(entry.snapshot_id.value());
       })
       .IgnoreExisting()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats);
+      .ColumnsToKeepStats(context_.columns_to_keep_stats)
+      .PlanWith(context_.plan_executor);
 
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();

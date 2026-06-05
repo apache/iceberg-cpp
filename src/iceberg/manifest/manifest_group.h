@@ -36,6 +36,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
@@ -120,6 +121,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \param column_ids Field IDs of columns whose statistics should be preserved.
   ManifestGroup& ColumnsToKeepStats(std::unordered_set<int32_t> column_ids);
 
+  /// \brief Configure an optional executor for manifest planning.
+  ManifestGroup& PlanWith(OptionalExecutor executor);
+
   /// \brief Plan scan tasks for all matching data files.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles();
 
@@ -158,6 +162,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   std::function<bool(const ManifestEntry&)> manifest_entry_predicate_;
   std::vector<std::string> columns_;
   std::unordered_set<int32_t> columns_to_keep_stats_;
+  OptionalExecutor executor_;
   bool case_sensitive_ = true;
   bool ignore_deleted_ = false;
   bool ignore_existing_ = false;

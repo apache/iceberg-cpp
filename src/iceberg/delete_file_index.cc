@@ -22,7 +22,9 @@
 #include <algorithm>
 #include <cstdint>
 #include <iterator>
+#include <mutex>
 #include <ranges>
+#include <shared_mutex>
 #include <vector>
 
 #include "iceberg/expression/expression.h"
@@ -38,6 +40,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg {
 
@@ -528,107 +531,159 @@ DeleteFileIndex::Builder& DeleteFileIndex::Builder::IgnoreResiduals() {
   return *this;
 }
 
+DeleteFileIndex::Builder& DeleteFileIndex::Builder::PlanWith(OptionalExecutor executor) {
+  executor_ = executor;
+  return *this;
+}
+
 Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
-  // Build expression caches per spec ID
-  std::unordered_map<int32_t, std::shared_ptr<Expression>> part_expr_cache;
+  // TODO(zehua): Replace with a thread-safe LRU cache.
+  std::shared_mutex projected_expr_cache_mutex;
+  std::unordered_map<int32_t, std::shared_ptr<Expression>> projected_expr_cache;
+  std::shared_mutex eval_cache_mutex;
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> eval_cache;
 
   auto data_filter = ignore_residuals_ ? True::Instance() : data_filter_;
 
-  // Filter and read manifests into manifest entries
-  std::vector<ManifestEntry> files;
-  for (const auto& manifest : delete_manifests_) {
-    if (manifest.content != ManifestContent::kDeletes) {
-      continue;
+  auto and_filters =
+      [](std::shared_ptr<Expression> left,
+         std::shared_ptr<Expression> right) -> Result<std::shared_ptr<Expression>> {
+    if (left && right) {
+      return And::MakeFolded(std::move(left), std::move(right));
     }
-    if (!manifest.has_added_files() && !manifest.has_existing_files()) {
-      continue;
+    if (right) {
+      return right;
     }
+    return left;
+  };
 
-    const int32_t spec_id = manifest.partition_spec_id;
-    auto spec_iter = specs_by_id_.find(spec_id);
-    ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
-                  "Partition spec ID {} not found when loading delete files", spec_id);
-
-    const auto& spec = spec_iter->second;
-
-    // Get or compute projected partition expression
-    if (!part_expr_cache.contains(spec_id) && data_filter_) {
-      auto projector = Projections::Inclusive(*spec, *schema_, case_sensitive_);
-      ICEBERG_ASSIGN_OR_RAISE(auto projected, projector->Project(data_filter_));
-      part_expr_cache[spec_id] = std::move(projected);
+  auto get_projected_expr = [&](int32_t spec_id,
+                                const std::shared_ptr<PartitionSpec>& spec)
+      -> Result<std::shared_ptr<Expression>> {
+    if (!data_filter_) {
+      return std::shared_ptr<Expression>();
     }
 
-    // Get or create manifest evaluator
-    if (!eval_cache.contains(spec_id)) {
-      auto filter = partition_filter_;
-      if (auto it = part_expr_cache.find(spec_id); it != part_expr_cache.cend()) {
-        if (filter) {
-          ICEBERG_ASSIGN_OR_RAISE(filter, And::Make(filter, it->second));
-        } else {
-          filter = it->second;
+    {
+      std::shared_lock lock(projected_expr_cache_mutex);
+      auto iter = projected_expr_cache.find(spec_id);
+      if (iter != projected_expr_cache.end()) {
+        return iter->second;
+      }
+    }
+
+    std::lock_guard lock(projected_expr_cache_mutex);
+    auto iter = projected_expr_cache.find(spec_id);
+    if (iter != projected_expr_cache.end()) {
+      return iter->second;
+    }
+
+    auto projector = Projections::Inclusive(*spec, *schema_, case_sensitive_);
+    ICEBERG_ASSIGN_OR_RAISE(auto projected, projector->Project(data_filter_));
+    auto [inserted_iter, _] = projected_expr_cache.emplace(spec_id, std::move(projected));
+    return inserted_iter->second;
+  };
+
+  auto get_manifest_evaluator =
+      [&](int32_t spec_id, const std::shared_ptr<PartitionSpec>& spec,
+          const std::shared_ptr<Expression>& filter) -> Result<ManifestEvaluator*> {
+    if (!filter) {
+      return nullptr;
+    }
+
+    {
+      std::shared_lock lock(eval_cache_mutex);
+      auto iter = eval_cache.find(spec_id);
+      if (iter != eval_cache.end()) {
+        return iter->second.get();
+      }
+    }
+
+    std::lock_guard lock(eval_cache_mutex);
+    auto iter = eval_cache.find(spec_id);
+    if (iter != eval_cache.end()) {
+      return iter->second.get();
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto evaluator, ManifestEvaluator::MakePartitionFilter(
+                                                filter, spec, *schema_, case_sensitive_));
+    auto [inserted_iter, _] = eval_cache.emplace(spec_id, std::move(evaluator));
+    return inserted_iter->second.get();
+  };
+
+  std::vector<std::vector<ManifestEntry>> manifest_results(delete_manifests_.size());
+  auto read_tasks = TaskGroup().SetExecutor(executor_);
+  for (auto&& [manifest, manifest_result] :
+       std::views::zip(delete_manifests_, manifest_results)) {
+    read_tasks.Submit([&]() -> Status {
+      if (manifest.content != ManifestContent::kDeletes) {
+        return {};
+      }
+      if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+        return {};
+      }
+
+      const int32_t spec_id = manifest.partition_spec_id;
+      auto spec_iter = specs_by_id_.find(spec_id);
+      ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
+                    "Partition spec ID {} not found when loading delete files", spec_id);
+
+      const auto& spec = spec_iter->second;
+
+      ICEBERG_ASSIGN_OR_RAISE(auto projected_data_filter,
+                              get_projected_expr(spec_id, spec));
+      ICEBERG_ASSIGN_OR_RAISE(auto delete_partition_filter,
+                              and_filters(partition_filter_, projected_data_filter));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto manifest_evaluator,
+          get_manifest_evaluator(spec_id, spec, delete_partition_filter));
+      if (manifest_evaluator != nullptr) {
+        ICEBERG_ASSIGN_OR_RAISE(auto should_match,
+                                manifest_evaluator->Evaluate(manifest));
+        if (!should_match) {
+          return {};
         }
       }
-      if (filter) {
-        ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
-                                ManifestEvaluator::MakePartitionFilter(
-                                    std::move(filter), spec, *schema_, case_sensitive_));
-        eval_cache[spec_id] = std::move(evaluator);
+
+      // Read manifest entries
+      ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                              ManifestReader::Make(manifest, io_, schema_, spec));
+
+      if (delete_partition_filter) {
+        reader->FilterPartitions(std::move(delete_partition_filter));
       }
-    }
-
-    // Evaluate manifest against filter
-    if (auto it = eval_cache.find(spec_id); it != eval_cache.end()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto should_match, it->second->Evaluate(manifest));
-      if (!should_match) {
-        continue;  // Manifest doesn't match filter
+      if (partition_set_) {
+        reader->FilterPartitions(partition_set_);
       }
-    }
+      reader->FilterRows(data_filter).CaseSensitive(case_sensitive_).TryDropStats();
 
-    // Read manifest entries
-    ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                            ManifestReader::Make(manifest, io_, schema_, spec));
+      ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
+      manifest_result.reserve(entries.size());
 
-    auto partition_filter = partition_filter_;
-    if (auto it = part_expr_cache.find(spec_id); it != part_expr_cache.cend()) {
-      if (partition_filter) {
-        ICEBERG_ASSIGN_OR_RAISE(partition_filter,
-                                And::Make(partition_filter, it->second));
-      } else {
-        partition_filter = it->second;
+      for (auto& entry : entries) {
+        ICEBERG_CHECK(entry.data_file != nullptr, "ManifestEntry must have a data file");
+        ICEBERG_CHECK(entry.sequence_number.has_value(),
+                      "Missing sequence number from delete file: {}",
+                      entry.data_file->file_path);
+        if (entry.sequence_number.value() > min_sequence_number_) {
+          auto& file = *entry.data_file;
+          // keep minimum stats to avoid memory pressure
+          std::unordered_set<int32_t> columns =
+              file.content == DataFile::Content::kPositionDeletes
+                  ? std::unordered_set<int32_t>{MetadataColumns::kDeleteFilePathColumnId}
+                  : std::unordered_set<int32_t>(file.equality_ids.begin(),
+                                                file.equality_ids.end());
+          ContentFileUtil::DropUnselectedStats(*entry.data_file, columns);
+          manifest_result.emplace_back(std::move(entry));
+        }
       }
-    }
-    if (partition_filter) {
-      reader->FilterPartitions(std::move(partition_filter));
-    }
-    if (partition_set_) {
-      reader->FilterPartitions(partition_set_);
-    }
-    reader->FilterRows(data_filter).CaseSensitive(case_sensitive_).TryDropStats();
-
-    ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
-    files.reserve(files.size() + entries.size());
-
-    for (auto& entry : entries) {
-      ICEBERG_CHECK(entry.data_file != nullptr, "ManifestEntry must have a data file");
-      ICEBERG_CHECK(entry.sequence_number.has_value(),
-                    "Missing sequence number from delete file: {}",
-                    entry.data_file->file_path);
-      if (entry.sequence_number.value() > min_sequence_number_) {
-        auto& file = *entry.data_file;
-        // keep minimum stats to avoid memory pressure
-        std::unordered_set<int32_t> columns =
-            file.content == DataFile::Content::kPositionDeletes
-                ? std::unordered_set<int32_t>{MetadataColumns::kDeleteFilePathColumnId}
-                : std::unordered_set<int32_t>(file.equality_ids.begin(),
-                                              file.equality_ids.end());
-        ContentFileUtil::DropUnselectedStats(*entry.data_file, columns);
-        files.emplace_back(std::move(entry));
-      }
-    }
+      return {};
+    });
   }
+  ICEBERG_RETURN_UNEXPECTED(std::move(read_tasks).Run());
 
-  return files;
+  return manifest_results | std::views::join | std::views::as_rvalue |
+         std::ranges::to<std::vector<ManifestEntry>>();
 }
 
 Status DeleteFileIndex::Builder::AddDV(

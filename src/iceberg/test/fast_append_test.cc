@@ -20,6 +20,8 @@
 #include "iceberg/update/fast_append.h"
 
 #include <format>
+#include <thread>
+#include <unordered_set>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -29,11 +31,30 @@
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/test_resource.h"
 #include "iceberg/test/update_test_base.h"
-#include "iceberg/util/uuid.h"
+#include "iceberg/transaction.h"
 
 namespace iceberg {
+
+namespace {
+
+class TestSnapshotUpdate : public SnapshotUpdate {
+ public:
+  explicit TestSnapshotUpdate(std::shared_ptr<TransactionContext> ctx)
+      : SnapshotUpdate(std::move(ctx)) {}
+
+  using SnapshotUpdate::ManifestPath;
+
+  Status CleanUncommitted(const std::unordered_set<std::string>&) override { return {}; }
+  std::string operation() override { return "test"; }
+  Result<std::vector<ManifestFile>> Apply(const TableMetadata&,
+                                          const std::shared_ptr<Snapshot>&) override {
+    return std::vector<ManifestFile>{};
+  }
+  std::unordered_map<std::string, std::string> Summary() override { return {}; }
+};
+
+}  // namespace
 
 class FastAppendTest : public UpdateTestBase {
  protected:
@@ -77,6 +98,8 @@ class FastAppendTest : public UpdateTestBase {
   std::shared_ptr<DataFile> file_a_;
   std::shared_ptr<DataFile> file_b_;
 };
+
+class SnapshotUpdateTest : public UpdateTestBase {};
 
 TEST_F(FastAppendTest, AppendDataFile) {
   std::shared_ptr<FastAppend> fast_append;
@@ -197,6 +220,37 @@ TEST_F(FastAppendTest, SetSnapshotProperty) {
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   EXPECT_EQ(snapshot->summary.at("custom-property"), "custom-value");
+}
+
+TEST_F(SnapshotUpdateTest, ConcurrentManifestPaths) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ctx,
+                         TransactionContext::Make(table_, TransactionKind::kUpdate));
+  TestSnapshotUpdate update(std::move(ctx));
+
+  constexpr int kThreadCount = 8;
+  constexpr int kPathsPerThread = 32;
+  std::vector<std::string> paths(kThreadCount * kPathsPerThread);
+  std::vector<std::thread> threads;
+  threads.reserve(kThreadCount);
+
+  for (int thread_index = 0; thread_index < kThreadCount; ++thread_index) {
+    threads.emplace_back([&, thread_index] {
+      for (int path_index = 0; path_index < kPathsPerThread; ++path_index) {
+        paths[thread_index * kPathsPerThread + path_index] = update.ManifestPath();
+      }
+    });
+  }
+
+  for (auto& thread : threads) {
+    thread.join();
+  }
+
+  std::unordered_set<std::string> unique_paths(paths.begin(), paths.end());
+  ASSERT_EQ(unique_paths.size(), paths.size());
+  for (const auto& path : paths) {
+    EXPECT_THAT(path, ::testing::HasSubstr("/metadata/"));
+    EXPECT_THAT(path, ::testing::HasSubstr("-m"));
+  }
 }
 
 }  // namespace iceberg
