@@ -215,6 +215,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   std::string ManifestPath();
   std::string ManifestListPath();
+  SnapshotSummaryBuilder BuildManifestCountSummary(
+      std::span<const ManifestFile> manifests, int32_t replaced_manifests_count);
   SnapshotSummaryBuilder& summary_builder() { return summary_; }
   SnapshotSummaryBuilder BuildManifestCountSummary(
       std::span<const ManifestFile> manifests, int32_t replaced_manifests_count);

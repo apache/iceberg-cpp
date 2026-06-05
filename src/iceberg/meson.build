@@ -126,6 +126,7 @@ iceberg_sources = files(
     'type.cc',
     'update/expire_snapshots.cc',
     'update/fast_append.cc',
+    'update/merge_append.cc',
     'update/merging_snapshot_update.cc',
     'update/pending_update.cc',
     'update/set_snapshot.cc',

@@ -225,6 +225,7 @@ class TransactionContext;
 /// \brief Update family.
 class ExpireSnapshots;
 class FastAppend;
+class MergeAppend;
 class PendingUpdate;
 class SetSnapshot;
 class SnapshotManager;
