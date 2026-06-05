@@ -781,20 +781,6 @@ class AvroWriterTest : public ::testing::Test,
     return avro_reader.dataSchema();
   }
 
-  void ExpectOpenFails(std::shared_ptr<Schema> schema,
-                       std::string_view expected_message) {
-    WriterProperties writer_properties;
-    writer_properties.Set(WriterProperties::kAvroSkipDatum, skip_datum_);
-    auto writer = WriterFactoryRegistry::Open(
-        FileFormatType::kAvro, {.path = temp_avro_file_,
-                                .schema = std::move(schema),
-                                .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO(),
-                                .properties = std::move(writer_properties)});
-
-    EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(writer, HasErrorMessage(std::string(expected_message)));
-  }
-
   std::shared_ptr<FileIO> file_io_;
   std::string temp_avro_file_;
   bool skip_datum_{true};
@@ -945,7 +931,7 @@ TEST_P(AvroWriterTest, WriteOptionalFields) {
   VerifyWrittenData(test_data);
 }
 
-TEST_P(AvroWriterTest, DoesNotMaterializeUnknownFieldsOnWrite) {
+TEST_P(AvroWriterTest, WritesUnknownFieldsAsAvroNull) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(1, "id", int32()),
       SchemaField::MakeOptional(2, "mystery", unknown()),
@@ -966,17 +952,24 @@ TEST_P(AvroWriterTest, DoesNotMaterializeUnknownFieldsOnWrite) {
   auto avro_schema = PhysicalAvroSchema();
   auto root = avro_schema.root();
   ASSERT_EQ(root->type(), ::avro::AVRO_RECORD);
-  ASSERT_EQ(root->leaves(), 2);
+  // Unknown fields are written as AVRO_NULL, not pruned.
+  ASSERT_EQ(root->leaves(), 3);
   EXPECT_EQ(root->nameAt(0), "id");
   EXPECT_EQ(FieldIdAt(root, 0), std::make_optional(1));
-  EXPECT_EQ(root->nameAt(1), "profile");
-  EXPECT_EQ(FieldIdAt(root, 1), std::make_optional(3));
+  EXPECT_EQ(root->nameAt(1), "mystery");
+  EXPECT_EQ(root->leafAt(1)->type(), ::avro::AVRO_NULL);
+  EXPECT_EQ(FieldIdAt(root, 1), std::make_optional(2));
+  EXPECT_EQ(root->nameAt(2), "profile");
+  EXPECT_EQ(FieldIdAt(root, 2), std::make_optional(3));
 
-  auto profile = UnwrapOptional(root->leafAt(1));
+  auto profile = UnwrapOptional(root->leafAt(2));
   ASSERT_EQ(profile->type(), ::avro::AVRO_RECORD);
-  ASSERT_EQ(profile->leaves(), 1);
+  ASSERT_EQ(profile->leaves(), 2);
   EXPECT_EQ(profile->nameAt(0), "name");
   EXPECT_EQ(FieldIdAt(profile, 0), std::make_optional(4));
+  EXPECT_EQ(profile->nameAt(1), "secret");
+  EXPECT_EQ(profile->leafAt(1)->type(), ::avro::AVRO_NULL);
+  EXPECT_EQ(FieldIdAt(profile, 1), std::make_optional(5));
 
   VerifyWrittenData(test_data);
 }
@@ -1020,61 +1013,6 @@ TEST_P(AvroWriterTest, WritesUnknownListElementsAndMapValues) {
   VerifyWrittenData(test_data);
 }
 
-TEST_P(AvroWriterTest, RejectsUnknownMapKeyOnWrite) {
-  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(
-          1, "properties",
-          std::make_shared<MapType>(
-              SchemaField::MakeRequired(2, MapType::kKeyName, unknown()),
-              SchemaField::MakeOptional(3, MapType::kValueName, string()))),
-  });
-
-  ExpectOpenFails(schema, "Cannot write map key");
-}
-
-TEST_P(AvroWriterTest, RejectsRequiredUnknownOnWrite) {
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField(1, "mystery", unknown(),
-                                           /*optional=*/false)});
-
-  ExpectOpenFails(schema, "Unknown type field 'mystery' must be optional");
-}
-
-TEST_P(AvroWriterTest, RejectsUnknownOnlyStructOnWrite) {
-  std::vector<std::shared_ptr<Schema>> schemas = {
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(1, "wrapper",
-                                    std::make_shared<StructType>(std::vector<SchemaField>{
-                                        SchemaField::MakeOptional(2, "secret", unknown()),
-                                    })),
-      }),
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(
-              1, "wrappers",
-              std::make_shared<ListType>(SchemaField::MakeOptional(
-                  2, ListType::kElementName,
-                  std::make_shared<StructType>(std::vector<SchemaField>{
-                      SchemaField::MakeOptional(3, "secret", unknown()),
-                  })))),
-      }),
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(
-              1, "properties",
-              std::make_shared<MapType>(
-                  SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::string()),
-                  SchemaField::MakeOptional(
-                      3, MapType::kValueName,
-                      std::make_shared<StructType>(std::vector<SchemaField>{
-                          SchemaField::MakeOptional(4, "secret", unknown()),
-                      })))),
-      }),
-  };
-
-  for (const auto& schema : schemas) {
-    ExpectOpenFails(schema, "all child fields are unknown");
-  }
-}
-
 TEST_P(AvroWriterTest, WritesUnknownFieldsNestedInsideListOrMapStructs) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(1, "id", int32()),
@@ -1113,18 +1051,24 @@ TEST_P(AvroWriterTest, WritesUnknownFieldsNestedInsideListOrMapStructs) {
   ASSERT_EQ(events->type(), ::avro::AVRO_ARRAY);
   auto event = UnwrapOptional(events->leafAt(0));
   ASSERT_EQ(event->type(), ::avro::AVRO_RECORD);
-  ASSERT_EQ(event->leaves(), 1);
+  ASSERT_EQ(event->leaves(), 2);
   EXPECT_EQ(event->nameAt(0), "name");
   EXPECT_EQ(FieldIdAt(event, 0), std::make_optional(4));
+  EXPECT_EQ(event->nameAt(1), "secret");
+  EXPECT_EQ(event->leafAt(1)->type(), ::avro::AVRO_NULL);
+  EXPECT_EQ(FieldIdAt(event, 1), std::make_optional(5));
 
   auto properties = UnwrapOptional(root->leafAt(2));
   ASSERT_EQ(properties->type(), ::avro::AVRO_MAP);
   ASSERT_EQ(properties->leaves(), 2);
   auto value = UnwrapOptional(properties->leafAt(1));
   ASSERT_EQ(value->type(), ::avro::AVRO_RECORD);
-  ASSERT_EQ(value->leaves(), 1);
+  ASSERT_EQ(value->leaves(), 2);
   EXPECT_EQ(value->nameAt(0), "label");
   EXPECT_EQ(FieldIdAt(value, 0), std::make_optional(9));
+  EXPECT_EQ(value->nameAt(1), "secret");
+  EXPECT_EQ(value->leafAt(1)->type(), ::avro::AVRO_NULL);
+  EXPECT_EQ(FieldIdAt(value, 1), std::make_optional(10));
 
   VerifyWrittenData(test_data);
 }

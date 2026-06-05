@@ -80,15 +80,16 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
     return EncodeArrowToAvro(branches.value_node, encoder, type, array, row_index, ctx);
   }
 
-  if (is_null && avro_node->type() != ::avro::AVRO_NULL) {
+  if (avro_node->type() == ::avro::AVRO_NULL) {
+    encoder.encodeNull();
+    return {};
+  }
+
+  if (is_null) {
     return InvalidArgument("Null value in non-nullable field");
   }
 
   switch (avro_node->type()) {
-    case ::avro::AVRO_NULL:
-      encoder.encodeNull();
-      return {};
-
     case ::avro::AVRO_BOOL: {
       const auto& bool_array =
           internal::checked_cast<const ::arrow::BooleanArray&>(array);

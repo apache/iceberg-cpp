@@ -219,45 +219,6 @@ TEST(SchemaJsonTest, NestedUnknownFieldsRoundTrip) {
   ASSERT_EQ(ToJson(*schema), parsed_json);
 }
 
-TEST(SchemaJsonTest, RejectRequiredUnknownField) {
-  constexpr std::string_view json =
-      R"({"fields":[{"id":1,"name":"mystery","required":true,"type":"unknown"}],"schema-id":1,"type":"struct"})";
-
-  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
-  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
-  ASSERT_THAT(schema_result,
-              HasErrorMessage("Unknown type field 'mystery' must be optional"));
-}
-
-TEST(SchemaJsonTest, RejectRequiredUnknownListElement) {
-  constexpr std::string_view json =
-      R"({"fields":[{"id":1,"name":"mysteries","required":false,"type":{"element":"unknown","element-id":2,"element-required":true,"type":"list"}}],"schema-id":1,"type":"struct"})";
-
-  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
-  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
-  ASSERT_THAT(schema_result,
-              HasErrorMessage("Unknown type field 'element' must be optional"));
-}
-
-TEST(SchemaJsonTest, RejectUnknownMapKey) {
-  constexpr std::string_view json =
-      R"({"fields":[{"id":1,"name":"mysteries","required":false,"type":{"key":"unknown","key-id":2,"type":"map","value":"string","value-id":3,"value-required":false}}],"schema-id":1,"type":"struct"})";
-
-  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
-  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
-  ASSERT_THAT(schema_result, HasErrorMessage("Map 'key' cannot be unknown type"));
-}
-
-TEST(SchemaJsonTest, RejectRequiredUnknownMapValue) {
-  constexpr std::string_view json =
-      R"({"fields":[{"id":1,"name":"mysteries","required":false,"type":{"key":"string","key-id":2,"type":"map","value":"unknown","value-id":3,"value-required":true}}],"schema-id":1,"type":"struct"})";
-
-  auto schema_result = SchemaFromJson(nlohmann::json::parse(json));
-  ASSERT_THAT(schema_result, IsError(ErrorKind::kJsonParseError));
-  ASSERT_THAT(schema_result,
-              HasErrorMessage("Unknown type field 'value' must be optional"));
-}
-
 TEST(SchemaJsonTest, IdentifierFieldIds) {
   // Test schema with identifier-field-ids
   constexpr std::string_view json_with_identifier_str =

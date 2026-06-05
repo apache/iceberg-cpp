@@ -20,11 +20,7 @@
 #include "iceberg/avro/avro_writer.h"
 
 #include <memory>
-#include <optional>
-#include <utility>
-#include <vector>
 
-#include <arrow/array.h>
 #include <arrow/array/builder_base.h>
 #include <arrow/c/bridge.h>
 #include <arrow/record_batch.h>
@@ -42,12 +38,8 @@
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
 #include "iceberg/metrics_config.h"
-#include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
-#include "iceberg/schema_util.h"
-#include "iceberg/type.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
@@ -87,126 +79,6 @@ Result<std::optional<int32_t>> ParseCodecLevel(const WriterProperties& propertie
   }
   ICEBERG_ASSIGN_OR_RAISE(auto level, StringUtils::ParseNumber<int32_t>(level_str));
   return level;
-}
-
-enum class FieldContext {
-  kTopLevel,
-  kStruct,
-  kListElement,
-  kMapKey,
-  kMapValue,
-};
-
-Result<std::optional<SchemaField>> PruneUnknownField(const SchemaField& field,
-                                                     FieldContext context) {
-  if (field.type()->type_id() == TypeId::kUnknown) {
-    ICEBERG_PRECHECK(context != FieldContext::kMapKey,
-                     "Cannot write map key '{}' of unknown type because it has no "
-                     "physical Avro representation",
-                     field.name());
-    ICEBERG_PRECHECK(field.optional(), "Unknown type field '{}' must be optional",
-                     field.name());
-    if (context == FieldContext::kListElement || context == FieldContext::kMapValue) {
-      return field;
-    }
-    return std::nullopt;
-  }
-
-  switch (field.type()->type_id()) {
-    case TypeId::kStruct: {
-      const auto& struct_type = internal::checked_cast<const StructType&>(*field.type());
-      std::vector<SchemaField> pruned_fields;
-      pruned_fields.reserve(struct_type.fields().size());
-      bool changed = false;
-      for (const auto& child : struct_type.fields()) {
-        ICEBERG_ASSIGN_OR_RAISE(auto pruned_child,
-                                PruneUnknownField(child, FieldContext::kStruct));
-        if (pruned_child.has_value()) {
-          if (!(pruned_child.value() == child)) {
-            changed = true;
-          }
-          pruned_fields.push_back(std::move(pruned_child.value()));
-        } else {
-          changed = true;
-        }
-      }
-
-      if (!changed) {
-        return field;
-      }
-
-      ICEBERG_PRECHECK(
-          !pruned_fields.empty(),
-          "Cannot write struct field '{}' because all child fields are unknown and "
-          "would be omitted from Avro",
-          field.name());
-
-      return SchemaField(field.field_id(), field.name(),
-                         std::make_shared<StructType>(std::move(pruned_fields)),
-                         field.optional(), field.doc());
-    }
-    case TypeId::kList: {
-      const auto& list_type = internal::checked_cast<const ListType&>(*field.type());
-      const auto& element = list_type.element();
-      ICEBERG_ASSIGN_OR_RAISE(auto pruned_element,
-                              PruneUnknownField(element, FieldContext::kListElement));
-      ICEBERG_PRECHECK(pruned_element.has_value(),
-                       "Cannot write list field '{}' because its element has no "
-                       "physical Avro representation",
-                       field.name());
-      if (pruned_element.value() == element) {
-        return field;
-      }
-      return SchemaField(field.field_id(), field.name(),
-                         std::make_shared<ListType>(std::move(pruned_element.value())),
-                         field.optional(), field.doc());
-    }
-    case TypeId::kMap: {
-      const auto& map_type = internal::checked_cast<const MapType&>(*field.type());
-      ICEBERG_ASSIGN_OR_RAISE(auto pruned_key,
-                              PruneUnknownField(map_type.key(), FieldContext::kMapKey));
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto pruned_value,
-          PruneUnknownField(map_type.value(), FieldContext::kMapValue));
-      ICEBERG_PRECHECK(pruned_key.has_value(),
-                       "Cannot write map field '{}' because its key has no physical "
-                       "Avro representation",
-                       field.name());
-      ICEBERG_PRECHECK(pruned_value.has_value(),
-                       "Cannot write map field '{}' because its value has no physical "
-                       "Avro representation",
-                       field.name());
-      if (pruned_key.value() == map_type.key() &&
-          pruned_value.value() == map_type.value()) {
-        return field;
-      }
-      return SchemaField(field.field_id(), field.name(),
-                         std::make_shared<MapType>(std::move(pruned_key.value()),
-                                                   std::move(pruned_value.value())),
-                         field.optional(), field.doc());
-    }
-    default:
-      return field;
-  }
-}
-
-Result<std::shared_ptr<Schema>> PhysicalWriteSchema(const Schema& schema) {
-  std::vector<SchemaField> pruned_fields;
-  pruned_fields.reserve(schema.fields().size());
-  for (const auto& field : schema.fields()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto pruned_field,
-                            PruneUnknownField(field, FieldContext::kTopLevel));
-    if (pruned_field.has_value()) {
-      pruned_fields.push_back(std::move(pruned_field.value()));
-    }
-  }
-
-  ICEBERG_PRECHECK(
-      !pruned_fields.empty(),
-      "Cannot write schema because all fields are unknown and would be omitted from "
-      "Avro");
-
-  return std::make_shared<Schema>(std::move(pruned_fields), schema.schema_id());
 }
 
 // Abstract base class for Avro write backends.
@@ -306,14 +178,17 @@ class GenericDatumBackend : public AvroWriteBackend {
 
 class AvroWriter::Impl {
  public:
+  ~Impl() {
+    if (arrow_schema_.release != nullptr) {
+      ArrowSchemaRelease(&arrow_schema_);
+    }
+  }
+
   Status Open(const WriterOptions& options) {
-    schema_ = options.schema;
-    ICEBERG_ASSIGN_OR_RAISE(physical_schema_, PhysicalWriteSchema(*schema_));
-    ICEBERG_ASSIGN_OR_RAISE(projection_, iceberg::Project(*physical_schema_, *schema_,
-                                                          /*prune_source=*/false));
+    write_schema_ = options.schema;
 
     ::avro::NodePtr root;
-    ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(*physical_schema_, &root));
+    ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(*write_schema_, &root));
     if (const auto& schema_name =
             options.properties.Get(WriterProperties::kAvroSchemaName);
         !schema_name.empty()) {
@@ -352,43 +227,19 @@ class AvroWriter::Impl {
                        options.properties.Get(WriterProperties::kAvroSyncInterval), codec,
                        compression_level, metadata));
 
-    ArrowSchema input_arrow_c_schema;
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*schema_, &input_arrow_c_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input_type,
-                                   ::arrow::ImportType(&input_arrow_c_schema));
-    input_arrow_type_ = internal::checked_pointer_cast<::arrow::StructType>(input_type);
-    input_arrow_schema_ = ::arrow::schema(input_arrow_type_->fields());
-
-    ArrowSchema physical_arrow_c_schema;
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*physical_schema_, &physical_arrow_c_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto physical_type,
-                                   ::arrow::ImportType(&physical_arrow_c_schema));
-    write_arrow_type_ =
-        internal::checked_pointer_cast<::arrow::StructType>(physical_type);
-    write_arrow_schema_ = ::arrow::schema(write_arrow_type_->fields());
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*write_schema_, &arrow_schema_));
     return {};
   }
 
   Status Write(ArrowArray* data) {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto result,
-                                   ::arrow::ImportArray(data, input_arrow_type_));
-    auto input_struct_array =
-        internal::checked_pointer_cast<::arrow::StructArray>(result);
-    auto batch = ::arrow::RecordBatch::Make(input_arrow_schema_, result->length(),
-                                            input_struct_array->fields());
-    ICEBERG_ASSIGN_OR_RAISE(
-        batch, iceberg::parquet::ProjectRecordBatch(
-                   std::move(batch), write_arrow_schema_, *physical_schema_, projection_,
-                   arrow::MetadataColumnContext{}, ::arrow::default_memory_pool()));
+                                   ::arrow::ImportArray(data, &arrow_schema_));
 
-    auto write_array = std::make_shared<::arrow::StructArray>(
-        write_arrow_type_, batch->num_rows(), batch->columns());
-
-    for (int64_t i = 0; i < write_array->length(); i++) {
-      ICEBERG_RETURN_UNEXPECTED(backend_->WriteRow(*physical_schema_, *write_array, i));
+    for (int64_t i = 0; i < result->length(); i++) {
+      ICEBERG_RETURN_UNEXPECTED(backend_->WriteRow(*write_schema_, *result, i));
     }
 
-    num_records_ += write_array->length();
+    num_records_ += result->length();
     return {};
   }
 
@@ -416,28 +267,19 @@ class AvroWriter::Impl {
     if (!Closed()) {
       return Invalid("AvroWriter is not closed");
     }
-    return AvroMetrics::GetMetrics(*schema_, num_records_, *MetricsConfig::Default());
+    return AvroMetrics::GetMetrics(*write_schema_, num_records_,
+                                   *MetricsConfig::Default());
   }
 
  private:
-  // Schema supplied by the caller.
-  std::shared_ptr<::iceberg::Schema> schema_;
-  // Schema used to write physical Avro fields after pruning unknown fields.
-  std::shared_ptr<::iceberg::Schema> physical_schema_;
-  // Arrow type used to import caller-provided ArrowArray data.
-  std::shared_ptr<::arrow::StructType> input_arrow_type_;
-  // Arrow schema used to project caller-provided data.
-  std::shared_ptr<::arrow::Schema> input_arrow_schema_;
-  // Arrow type used by the Avro writer backends.
-  std::shared_ptr<::arrow::StructType> write_arrow_type_;
-  // Arrow schema used to write physical Avro fields.
-  std::shared_ptr<::arrow::Schema> write_arrow_schema_;
-  // Projection from the logical Iceberg schema to the physical write schema.
-  SchemaProjection projection_;
+  // The schema to write.
+  std::shared_ptr<::iceberg::Schema> write_schema_;
   // The avro schema to write.
   std::shared_ptr<::avro::ValidSchema> avro_schema_;
   // Arrow output stream of the Avro file to write
   std::shared_ptr<::arrow::io::OutputStream> arrow_output_stream_;
+  // Arrow schema to write data.
+  ArrowSchema arrow_schema_;
   // Total length of the written Avro file.
   int64_t total_bytes_ = 0;
   // Number of records written.

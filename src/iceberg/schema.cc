@@ -320,7 +320,7 @@ bool Schema::SameSchema(const Schema& other) const {
 }
 
 Status Schema::Validate(int32_t format_version) const {
-  ICEBERG_RETURN_UNEXPECTED(ValidateUnknownFieldsOptional(*this));
+  ICEBERG_RETURN_UNEXPECTED(ValidateFieldNullability(*this));
 
   // Get all fields including nested ones
   ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, cache_->GetIdToFieldMap());

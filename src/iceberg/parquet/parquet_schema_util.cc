@@ -87,7 +87,9 @@ std::optional<int32_t> FirstColumnIndex(
   return std::nullopt;
 }
 
-void SelectShapeColumnIfNeeded(
+// Pick a physical column as an anchor when all children are null-projected,
+// so that Parquet readers can still locate row boundaries.
+void SelectAnchorColumnIfEmpty(
     FieldProjection* projection,
     const std::vector<::parquet::arrow::SchemaField>& parquet_fields) {
   if (HasSelectedColumn(*projection)) {
@@ -343,7 +345,7 @@ Result<FieldProjection> ProjectStruct(
     result.children.emplace_back(std::move(child_projection));
   }
 
-  SelectShapeColumnIfNeeded(&result, parquet_fields);
+  SelectAnchorColumnIfEmpty(&result, parquet_fields);
   PruneFieldProjection(result);
   return result;
 }
@@ -373,7 +375,7 @@ Result<FieldProjection> ProjectList(
 
   FieldProjection result;
   result.children.emplace_back(std::move(element_projection));
-  SelectShapeColumnIfNeeded(&result, parquet_fields);
+  SelectAnchorColumnIfEmpty(&result, parquet_fields);
   return result;
 }
 
@@ -422,7 +424,7 @@ Result<FieldProjection> ProjectMap(
     result.children.emplace_back(std::move(sub_projection));
   }
 
-  SelectShapeColumnIfNeeded(&result, parquet_fields);
+  SelectAnchorColumnIfEmpty(&result, parquet_fields);
   return result;
 }
 

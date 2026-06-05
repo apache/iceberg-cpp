@@ -20,9 +20,7 @@
 #include "iceberg/parquet/parquet_writer.h"
 
 #include <memory>
-#include <optional>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include <arrow/c/bridge.h>
@@ -36,12 +34,8 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
-#include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/schema_internal.h"
-#include "iceberg/schema_util.h"
-#include "iceberg/type.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::parquet {
@@ -51,131 +45,6 @@ namespace {
 Result<std::shared_ptr<::arrow::io::OutputStream>> OpenOutputStream(
     const WriterOptions& options) {
   return arrow::OpenArrowOutputStream(options.io, options.path);
-}
-
-enum class FieldContext {
-  kTopLevel,
-  kStruct,
-  kListElement,
-  kMapKey,
-  kMapValue,
-};
-
-Result<std::optional<SchemaField>> PruneUnknownField(const SchemaField& field,
-                                                     FieldContext context) {
-  if (field.type()->type_id() == TypeId::kUnknown) {
-    ICEBERG_PRECHECK(field.optional(), "Unknown type field '{}' must be optional",
-                     field.name());
-    ICEBERG_PRECHECK(context != FieldContext::kListElement,
-                     "Cannot write list element '{}' of unknown type because it has no "
-                     "physical Parquet representation",
-                     field.name());
-    ICEBERG_PRECHECK(context != FieldContext::kMapKey,
-                     "Cannot write map key '{}' of unknown type because it has no "
-                     "physical Parquet representation",
-                     field.name());
-    ICEBERG_PRECHECK(context != FieldContext::kMapValue,
-                     "Cannot write map value '{}' of unknown type because it has no "
-                     "physical Parquet representation",
-                     field.name());
-    return std::nullopt;
-  }
-
-  switch (field.type()->type_id()) {
-    case TypeId::kStruct: {
-      const auto& struct_type = internal::checked_cast<const StructType&>(*field.type());
-      std::vector<SchemaField> pruned_fields;
-      pruned_fields.reserve(struct_type.fields().size());
-      bool changed = false;
-      for (const auto& child : struct_type.fields()) {
-        ICEBERG_ASSIGN_OR_RAISE(auto pruned_child,
-                                PruneUnknownField(child, FieldContext::kStruct));
-        if (pruned_child.has_value()) {
-          if (!(pruned_child.value() == child)) {
-            changed = true;
-          }
-          pruned_fields.push_back(std::move(pruned_child.value()));
-        } else {
-          changed = true;
-        }
-      }
-
-      if (!changed) {
-        return field;
-      }
-
-      ICEBERG_PRECHECK(
-          !pruned_fields.empty(),
-          "Cannot write struct field '{}' because all child fields are unknown and "
-          "would be omitted from Parquet",
-          field.name());
-
-      return SchemaField(field.field_id(), field.name(),
-                         std::make_shared<StructType>(std::move(pruned_fields)),
-                         field.optional(), field.doc());
-    }
-    case TypeId::kList: {
-      const auto& list_type = internal::checked_cast<const ListType&>(*field.type());
-      const auto& element = list_type.element();
-      ICEBERG_ASSIGN_OR_RAISE(auto pruned_element,
-                              PruneUnknownField(element, FieldContext::kListElement));
-      ICEBERG_PRECHECK(pruned_element.has_value(),
-                       "Cannot write list field '{}' because its element has no "
-                       "physical Parquet representation",
-                       field.name());
-      if (pruned_element.value() == element) {
-        return field;
-      }
-      return SchemaField(field.field_id(), field.name(),
-                         std::make_shared<ListType>(std::move(pruned_element.value())),
-                         field.optional(), field.doc());
-    }
-    case TypeId::kMap: {
-      const auto& map_type = internal::checked_cast<const MapType&>(*field.type());
-      ICEBERG_ASSIGN_OR_RAISE(auto pruned_key,
-                              PruneUnknownField(map_type.key(), FieldContext::kMapKey));
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto pruned_value,
-          PruneUnknownField(map_type.value(), FieldContext::kMapValue));
-      ICEBERG_PRECHECK(pruned_key.has_value(),
-                       "Cannot write map field '{}' because its key has no physical "
-                       "Parquet representation",
-                       field.name());
-      ICEBERG_PRECHECK(pruned_value.has_value(),
-                       "Cannot write map field '{}' because its value has no physical "
-                       "Parquet representation",
-                       field.name());
-      if (pruned_key.value() == map_type.key() &&
-          pruned_value.value() == map_type.value()) {
-        return field;
-      }
-      return SchemaField(field.field_id(), field.name(),
-                         std::make_shared<MapType>(std::move(pruned_key.value()),
-                                                   std::move(pruned_value.value())),
-                         field.optional(), field.doc());
-    }
-    default:
-      return field;
-  }
-}
-
-Result<std::shared_ptr<Schema>> PhysicalWriteSchema(const Schema& schema) {
-  std::vector<SchemaField> pruned_fields;
-  pruned_fields.reserve(schema.fields().size());
-  for (const auto& field : schema.fields()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto pruned_field,
-                            PruneUnknownField(field, FieldContext::kTopLevel));
-    if (pruned_field.has_value()) {
-      pruned_fields.push_back(std::move(pruned_field.value()));
-    }
-  }
-
-  ICEBERG_PRECHECK(
-      !pruned_fields.empty(),
-      "Cannot write schema because all fields are unknown and would be omitted from "
-      "Parquet");
-
-  return std::make_shared<Schema>(std::move(pruned_fields), schema.schema_id());
 }
 
 Result<::arrow::Compression::type> ParseCompression(const WriterProperties& properties) {
@@ -220,9 +89,6 @@ class ParquetWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
     schema_ = options.schema;
-    ICEBERG_ASSIGN_OR_RAISE(physical_schema_, PhysicalWriteSchema(*schema_));
-    ICEBERG_ASSIGN_OR_RAISE(projection_, iceberg::Project(*physical_schema_, *schema_,
-                                                          /*prune_source=*/false));
 
     ICEBERG_ASSIGN_OR_RAISE(auto compression, ParseCompression(options.properties));
     ICEBERG_ASSIGN_OR_RAISE(auto compression_level, ParseCodecLevel(options.properties));
@@ -242,15 +108,10 @@ class ParquetWriter::Impl {
 
     ArrowSchema c_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*schema_, &c_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(input_arrow_schema_, ::arrow::ImportSchema(&c_schema));
-
-    ArrowSchema physical_c_schema;
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*physical_schema_, &physical_c_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(write_arrow_schema_,
-                                   ::arrow::ImportSchema(&physical_c_schema));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(arrow_schema_, ::arrow::ImportSchema(&c_schema));
 
     ICEBERG_ARROW_RETURN_NOT_OK(
-        ::parquet::arrow::ToParquetSchema(write_arrow_schema_.get(), *writer_properties,
+        ::parquet::arrow::ToParquetSchema(arrow_schema_.get(), *writer_properties,
                                           *arrow_writer_properties, &parquet_schema_));
     auto schema_node = std::static_pointer_cast<::parquet::schema::GroupNode>(
         parquet_schema_->schema_root());
@@ -262,9 +123,9 @@ class ParquetWriter::Impl {
     auto file_writer = ::parquet::ParquetFileWriter::Open(
         output_stream_, std::move(schema_node), std::move(writer_properties),
         std::make_shared<::arrow::KeyValueMetadata>(options.metadata));
-    ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::FileWriter::Make(
-        pool_, std::move(file_writer), write_arrow_schema_,
-        std::move(arrow_writer_properties), &writer_));
+    ICEBERG_ARROW_RETURN_NOT_OK(
+        ::parquet::arrow::FileWriter::Make(pool_, std::move(file_writer), arrow_schema_,
+                                           std::move(arrow_writer_properties), &writer_));
 
     metrics_config_ = options.metrics_config;
 
@@ -272,12 +133,8 @@ class ParquetWriter::Impl {
   }
 
   Status Write(ArrowArray* array) {
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(
-        auto batch, ::arrow::ImportRecordBatch(array, input_arrow_schema_));
-    ICEBERG_ASSIGN_OR_RAISE(
-        batch,
-        ProjectRecordBatch(std::move(batch), write_arrow_schema_, *physical_schema_,
-                           projection_, arrow::MetadataColumnContext{}, pool_));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
+                                   ::arrow::ImportRecordBatch(array, arrow_schema_));
 
     ICEBERG_ARROW_RETURN_NOT_OK(writer_->WriteRecordBatch(*batch));
 
@@ -332,14 +189,8 @@ class ParquetWriter::Impl {
   ::arrow::MemoryPool* pool_ = ::arrow::default_memory_pool();
   // Schema to write from the Iceberg table.
   std::shared_ptr<Schema> schema_;
-  // Schema used to write physical Parquet fields after pruning unknown fields.
-  std::shared_ptr<Schema> physical_schema_;
-  // Schema used to import caller-provided ArrowArray data.
-  std::shared_ptr<::arrow::Schema> input_arrow_schema_;
-  // Schema used by the Parquet writer.
-  std::shared_ptr<::arrow::Schema> write_arrow_schema_;
-  // Projection from the logical Iceberg schema to the physical write schema.
-  SchemaProjection projection_;
+  // Schema to write from the Parquet file.
+  std::shared_ptr<::arrow::Schema> arrow_schema_;
   // Parquet schema descriptor generated from the Arrow schema.
   std::shared_ptr<::parquet::SchemaDescriptor> parquet_schema_;
   // Metrics config for collecting metrics during write.

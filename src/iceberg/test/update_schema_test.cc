@@ -29,9 +29,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/type.h"
-#include "iceberg/update/update_properties.h"
 #include "iceberg/util/checked_cast.h"
-#include "iceberg/util/type_util.h"
 
 namespace iceberg {
 
@@ -1071,85 +1069,12 @@ TEST_F(UpdateSchemaTest, UpdateColumnUnknownToPrimitive) {
   EXPECT_EQ(field_opt->get().doc(), "A null-only placeholder");
 }
 
-TEST_F(UpdateSchemaTest, UpdateColumnUnknownToNestedTypes) {
-  ICEBERG_UNWRAP_OR_FAIL(auto properties_update, table_->NewUpdateProperties());
-  properties_update->Set("format-version", "3");
-  ASSERT_THAT(properties_update->Commit(), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto v3_table, catalog_->LoadTable(table_ident_));
-  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, v3_table->NewUpdateSchema());
-  setup_update->AddColumn("profile", unknown(), "A struct placeholder")
-      .AddColumn("items", unknown(), "A list placeholder")
-      .AddColumn("properties", unknown(), "A map placeholder");
-  EXPECT_THAT(setup_update->Commit(), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
-  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
-  update->UpdateColumn("profile",
-                       struct_({SchemaField::MakeOptional(100, "name", string())}));
-  update->UpdateColumn("items",
-                       list(SchemaField::MakeOptional(101, "element", string())));
-  update->UpdateColumn("properties",
-                       map(SchemaField::MakeRequired(102, "key", string()),
-                           SchemaField::MakeOptional(103, "value", string())));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto profile_opt, result.schema->FindFieldByName("profile"));
-  ASSERT_TRUE(profile_opt.has_value());
-  const auto& profile = checked_cast<const StructType&>(*profile_opt->get().type());
-  ASSERT_EQ(profile.fields().size(), 1);
-  EXPECT_EQ(profile.fields()[0].name(), "name");
-  EXPECT_EQ(*profile.fields()[0].type(), *string());
-  EXPECT_NE(profile.fields()[0].field_id(), 100);
-  EXPECT_TRUE(profile_opt->get().optional());
-  EXPECT_EQ(profile_opt->get().doc(), "A struct placeholder");
-
-  ICEBERG_UNWRAP_OR_FAIL(auto items_opt, result.schema->FindFieldByName("items"));
-  ASSERT_TRUE(items_opt.has_value());
-  const auto& items = checked_cast<const ListType&>(*items_opt->get().type());
-  EXPECT_EQ(items.element().name(), ListType::kElementName);
-  EXPECT_EQ(*items.element().type(), *string());
-  EXPECT_NE(items.element().field_id(), 101);
-  EXPECT_TRUE(items_opt->get().optional());
-  EXPECT_EQ(items_opt->get().doc(), "A list placeholder");
-
-  ICEBERG_UNWRAP_OR_FAIL(auto properties_opt,
-                         result.schema->FindFieldByName("properties"));
-  ASSERT_TRUE(properties_opt.has_value());
-  const auto& properties = checked_cast<const MapType&>(*properties_opt->get().type());
-  EXPECT_EQ(properties.key().name(), MapType::kKeyName);
-  EXPECT_EQ(*properties.key().type(), *string());
-  EXPECT_NE(properties.key().field_id(), 102);
-  EXPECT_EQ(properties.value().name(), MapType::kValueName);
-  EXPECT_EQ(*properties.value().type(), *string());
-  EXPECT_NE(properties.value().field_id(), 103);
-  EXPECT_TRUE(properties_opt->get().optional());
-  EXPECT_EQ(properties_opt->get().doc(), "A map placeholder");
-}
-
-TEST_F(UpdateSchemaTest, OnlyUnknownCanPromoteToNestedTypes) {
-  std::vector<std::shared_ptr<Type>> nested_types = {
-      struct_({SchemaField::MakeOptional(3, "name", string())}),
-      list(SchemaField::MakeOptional(4, "element", string())),
-      map(SchemaField::MakeRequired(5, "key", string()),
-          SchemaField::MakeOptional(6, "value", string())),
-  };
-
-  for (const auto& nested_type : nested_types) {
-    SCOPED_TRACE(nested_type->ToString());
-
-    EXPECT_TRUE(IsPromotionAllowed(unknown(), nested_type));
-    EXPECT_FALSE(IsPromotionAllowed(int32(), nested_type));
-  }
-}
-
 TEST_F(UpdateSchemaTest, AddRequiredUnknownColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AllowIncompatibleChanges().AddRequiredColumn("mystery", unknown());
 
   auto result = update->Apply();
-  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("Unknown type field 'mystery' must be optional"));
 }
 
@@ -1160,7 +1085,7 @@ TEST_F(UpdateSchemaTest, AddColumnWithRequiredNestedUnknownFails) {
                                }));
 
   auto result = update->Apply();
-  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("Unknown type field 'mystery' must be optional"));
 }
 

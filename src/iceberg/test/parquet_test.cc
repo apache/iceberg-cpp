@@ -582,88 +582,6 @@ TEST_F(ParquetReadWrite, RejectsUnavailableCompressionCodec) {
                               " is not available in the current build"));
 }
 
-TEST_F(ParquetReadWrite, RejectsUnknownInsideListOrMapOnWrite) {
-  std::vector<std::shared_ptr<Schema>> schemas = {
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(1, "mysteries",
-                                    std::make_shared<ListType>(SchemaField::MakeOptional(
-                                        2, ListType::kElementName, iceberg::unknown()))),
-      }),
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(
-              1, "properties",
-              std::make_shared<MapType>(
-                  SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::string()),
-                  SchemaField::MakeOptional(3, MapType::kValueName, iceberg::unknown()))),
-      }),
-  };
-
-  for (const auto& schema : schemas) {
-    auto writer = WriterFactoryRegistry::Open(
-        FileFormatType::kParquet, {.path = "unknown_nested.parquet",
-                                   .schema = schema,
-                                   .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO()});
-
-    EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(writer, HasErrorMessage("physical Parquet representation"));
-  }
-}
-
-TEST_F(ParquetReadWrite, RejectsRequiredUnknownOnWrite) {
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField(1, "mystery", unknown(),
-                                           /*optional=*/false)});
-
-  auto writer = WriterFactoryRegistry::Open(
-      FileFormatType::kParquet, {.path = "required_unknown.parquet",
-                                 .schema = schema,
-                                 .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO()});
-
-  EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(writer, HasErrorMessage("Unknown type field 'mystery' must be optional"));
-}
-
-TEST_F(ParquetReadWrite, RejectsUnknownOnlyStructOnWrite) {
-  std::vector<std::shared_ptr<Schema>> schemas = {
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(1, "wrapper",
-                                    std::make_shared<StructType>(std::vector<SchemaField>{
-                                        SchemaField::MakeOptional(2, "secret", unknown()),
-                                    })),
-      }),
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(
-              1, "wrappers",
-              std::make_shared<ListType>(SchemaField::MakeOptional(
-                  2, ListType::kElementName,
-                  std::make_shared<StructType>(std::vector<SchemaField>{
-                      SchemaField::MakeOptional(3, "secret", unknown()),
-                  })))),
-      }),
-      std::make_shared<Schema>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(
-              1, "properties",
-              std::make_shared<MapType>(
-                  SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::string()),
-                  SchemaField::MakeOptional(
-                      3, MapType::kValueName,
-                      std::make_shared<StructType>(std::vector<SchemaField>{
-                          SchemaField::MakeOptional(4, "secret", unknown()),
-                      })))),
-      }),
-  };
-
-  for (const auto& schema : schemas) {
-    auto writer = WriterFactoryRegistry::Open(
-        FileFormatType::kParquet, {.path = "unknown_only_struct.parquet",
-                                   .schema = schema,
-                                   .io = arrow::ArrowFileSystemFileIO::MakeMockFileIO()});
-
-    EXPECT_THAT(writer, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(writer, HasErrorMessage("all child fields are unknown"));
-  }
-}
-
 TEST_F(ParquetReadWrite, WritesUnknownFieldsNestedInsideListOrMapStructs) {
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(1, "id", int32()),
@@ -718,7 +636,8 @@ TEST_F(ParquetReadWrite, WritesUnknownFieldsNestedInsideListOrMapStructs) {
   for (int i = 0; i < parquet_schema->num_columns(); ++i) {
     field_ids.push_back(parquet_schema->Column(i)->schema_node()->field_id());
   }
-  EXPECT_THAT(field_ids, ::testing::UnorderedElementsAre(1, 4, 7, 9));
+  // Unknown fields (secret, IDs 5 and 10) are also written as null-type columns.
+  EXPECT_THAT(field_ids, ::testing::UnorderedElementsAre(1, 4, 5, 7, 9, 10));
 
   std::shared_ptr<::arrow::Array> out;
   ASSERT_THAT(ReadArray(out, {.path = basePath, .io = file_io, .projection = schema},
@@ -776,9 +695,12 @@ TEST_F(ParquetReadWrite, DoesNotMaterializeUnknownFieldsOnWrite) {
   auto parquet_reader = ::parquet::ParquetFileReader::Open(input_file);
   auto parquet_schema = parquet_reader->metadata()->schema();
 
-  ASSERT_EQ(parquet_schema->num_columns(), 2);
+  // Unknown fields (mystery, secret) are also written as null-type columns.
+  ASSERT_EQ(parquet_schema->num_columns(), 4);
   EXPECT_EQ(parquet_schema->Column(0)->schema_node()->field_id(), 1);
-  EXPECT_EQ(parquet_schema->Column(1)->schema_node()->field_id(), 4);
+  EXPECT_EQ(parquet_schema->Column(1)->schema_node()->field_id(), 2);
+  EXPECT_EQ(parquet_schema->Column(2)->schema_node()->field_id(), 4);
+  EXPECT_EQ(parquet_schema->Column(3)->schema_node()->field_id(), 5);
 
   std::shared_ptr<::arrow::Array> out;
   ASSERT_THAT(ReadArray(out, {.path = basePath, .io = file_io, .projection = schema},
