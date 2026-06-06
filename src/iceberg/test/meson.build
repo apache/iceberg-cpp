@@ -144,6 +144,7 @@ if get_option('rest').enabled()
                 'error_handlers_test.cc',
                 'rest_file_io_test.cc',
                 'rest_json_serde_test.cc',
+                'rest_metrics_reporter_test.cc',
                 'rest_util_test.cc',
             ),
             'dependencies': [iceberg_rest_dep],

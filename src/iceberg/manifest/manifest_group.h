@@ -130,6 +130,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \return Reference to this for method chaining.
   ManifestGroup& PlanWith(OptionalExecutor executor);
 
+  /// \brief Attach scan metrics to receive per-manifest and per-file counters.
+  ManifestGroup& ScanMetrics(std::shared_ptr<class ScanMetrics> scan_metrics);
+
   /// \brief Plan scan tasks for all matching data files.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles();
 
@@ -173,6 +176,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   bool ignore_deleted_ = false;
   bool ignore_existing_ = false;
   bool ignore_residuals_ = false;
+  std::shared_ptr<class ScanMetrics> scan_metrics_;
 };
 
 }  // namespace iceberg

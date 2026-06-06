@@ -25,6 +25,7 @@
 
 #include "iceberg/catalog/sql/config.h"
 #include "iceberg/file_io.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
@@ -147,6 +148,15 @@ Result<std::shared_ptr<SqlCatalog>> SqlCatalog::Make(
   auto catalog = std::shared_ptr<SqlCatalog>(
       new SqlCatalog(config, std::move(file_io), std::move(store)));
   ICEBERG_RETURN_UNEXPECTED(catalog->store_->Initialize());
+
+  const auto& props = catalog->config_.props;
+  if (auto it = props.find(std::string(kMetricsReporterImpl));
+      it != props.end() && !it->second.empty() &&
+      it->second != kMetricsReporterTypeNoop) {
+    ICEBERG_ASSIGN_OR_RAISE(auto reporter, MetricsReporters::Load(props));
+    catalog->reporter_ = std::shared_ptr<MetricsReporter>(std::move(reporter));
+  }
+
   return catalog;
 }
 
@@ -372,7 +382,7 @@ Result<std::shared_ptr<Table>> SqlCatalog::LoadTableFrom(
   ICEBERG_ASSIGN_OR_RAISE(auto metadata,
                           TableMetadataUtil::Read(*file_io_, metadata_location));
   return Table::Make(identifier, std::move(metadata), metadata_location, file_io_,
-                     shared_from_this());
+                     shared_from_this(), reporter_);
 }
 
 Result<std::shared_ptr<Table>> SqlCatalog::LoadTable(const TableIdentifier& identifier) {
@@ -410,7 +420,7 @@ Result<std::shared_ptr<Table>> SqlCatalog::CreateTable(
       store_->InsertTable(ns_str, identifier.name, metadata_location));
 
   return Table::Make(identifier, std::move(metadata), metadata_location, file_io_,
-                     shared_from_this());
+                     shared_from_this(), reporter_);
 }
 
 Result<std::shared_ptr<Table>> SqlCatalog::UpdateTable(
@@ -475,7 +485,7 @@ Result<std::shared_ptr<Table>> SqlCatalog::UpdateTable(
   }
 
   return Table::Make(identifier, std::move(updated), new_metadata_location, file_io_,
-                     shared_from_this());
+                     shared_from_this(), reporter_);
 }
 
 Result<std::shared_ptr<Transaction>> SqlCatalog::StageCreateTable(
@@ -502,7 +512,7 @@ Result<std::shared_ptr<Transaction>> SqlCatalog::StageCreateTable(
                                                              base_location, properties));
   ICEBERG_ASSIGN_OR_RAISE(auto table,
                           StagedTable::Make(identifier, std::move(metadata), "", file_io_,
-                                            shared_from_this()));
+                                            shared_from_this(), reporter_));
   return Transaction::Make(std::move(table), TransactionKind::kCreate);
 }
 
@@ -582,7 +592,7 @@ Result<std::shared_ptr<Table>> SqlCatalog::RegisterTable(
       store_->InsertTable(ns_str, identifier.name, metadata_file_location));
 
   return Table::Make(identifier, std::move(metadata), metadata_file_location, file_io_,
-                     shared_from_this());
+                     shared_from_this(), reporter_);
 }
 
 // --------------------------------------------------------------------------
