@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/metrics/counter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -75,6 +76,9 @@ class ICEBERG_EXPORT ManifestReader {
 
   /// \brief Try to drop stats from returned DataFile objects.
   virtual ManifestReader& TryDropStats() = 0;
+
+  /// \brief Set a counter to increment for each entry skipped by per-entry filters.
+  virtual ManifestReader& SkipCounter(std::shared_ptr<Counter> counter) = 0;
 
   /// \brief Determine whether stats should be dropped based on selected columns.
   ///

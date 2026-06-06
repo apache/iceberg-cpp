@@ -51,6 +51,10 @@ struct ICEBERG_EXPORT ContentFileUtil {
   /// \brief Generate a description string for a deletion vector.
   static std::string DVDesc(const DataFile& file);
 
+  /// \brief Size in bytes of the portion of `file` relevant to a scan task — the DV's
+  /// own content size when set, otherwise the file's total size.
+  static int64_t ContentSizeInBytes(const DataFile& file);
+
   /// \brief In-place drop stats.
   static void DropAllStats(DataFile& data_file);
 

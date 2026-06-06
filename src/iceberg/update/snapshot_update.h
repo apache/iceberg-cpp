@@ -33,6 +33,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
@@ -59,6 +60,20 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   Kind kind() const override { return Kind::kUpdateSnapshot; }
   bool IsRetryable() const override { return true; }
+
+  /// \brief Set the metrics reporter for this snapshot update.
+  ///
+  /// \param reporter The metrics reporter to use.
+  /// \return Reference to this for method chaining.
+  auto& ReportWith(this auto& self, std::shared_ptr<MetricsReporter> reporter) {
+    static_cast<SnapshotUpdate&>(self).reporter_ = std::move(reporter);
+    return self;
+  }
+
+  /// \brief Get the metrics reporter explicitly set via ReportWith(), if any.
+  ///
+  /// \return The reporter override for this operation, or null if none was set.
+  const std::shared_ptr<MetricsReporter>& reporter() const { return reporter_; }
 
   /// \brief Set a callback to delete files instead of the table's default.
   ///
@@ -258,6 +273,10 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   SnapshotSummaryBuilder& summary_builder() { return summary_; }
   SnapshotSummaryBuilder BuildManifestCountSummary(
       std::span<const ManifestFile> manifests, int32_t replaced_manifests_count);
+
+ protected:
+  /// \brief Reporter to receive CommitReport after a successful commit.
+  std::shared_ptr<MetricsReporter> reporter_;
 
  private:
   /// \brief Returns the snapshot summary from the implementation and updates totals.

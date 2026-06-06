@@ -184,6 +184,7 @@ class ICEBERG_SQL_CATALOG_EXPORT SqlCatalog
   SqlCatalogConfig config_;
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<CatalogStore> store_;
+  std::shared_ptr<iceberg::MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg::sql

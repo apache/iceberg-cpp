@@ -16,6 +16,9 @@
 # under the License.
 
 build/
+build_bundle/
+build_core/
+builddir/
 cmake-build/
 cmake-build-debug/
 cmake-build-release/

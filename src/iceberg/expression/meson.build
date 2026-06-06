@@ -30,6 +30,7 @@ install_headers(
         'projections.h',
         'residual_evaluator.h',
         'rewrite_not.h',
+        'sanitize_expression.h',
         'strict_metrics_evaluator.h',
         'term.h',
     ],

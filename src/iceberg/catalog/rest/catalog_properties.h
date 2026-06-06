@@ -55,6 +55,12 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   inline static Entry<std::string> kNamespaceSeparator{"namespace-separator", "%1F"};
   /// \brief The snapshot loading mode (ALL or REFS).
   inline static Entry<std::string> kSnapshotLoadingMode{"snapshot-loading-mode", "ALL"};
+  /// \brief Whether to report metrics to the REST catalog server (default: true).
+  ///
+  /// When true and the server advertises the ReportMetrics endpoint, RestCatalog
+  /// automatically POSTs scan and commit reports to the per-table metrics endpoint.
+  inline static Entry<std::string> kMetricsReportingEnabled{
+      "rest-metrics-reporting-enabled", "true"};
   /// \brief The prefix for HTTP headers.
   inline static constexpr std::string_view kHeaderPrefix = "header.";
 
