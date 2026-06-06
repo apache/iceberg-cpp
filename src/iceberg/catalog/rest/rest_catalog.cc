@@ -36,9 +36,11 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
+#include "iceberg/catalog/rest/rest_metrics_reporter.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -48,6 +50,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::rest {
 
@@ -171,7 +174,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   // Get snapshot loading mode
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, final_config.SnapshotLoadingMode());
 
-  auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders());
+  auto client = std::make_shared<HttpClient>(final_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
                           auth_manager->CatalogSession(*client, final_config.configs()));
 
@@ -185,7 +188,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
 }
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-                         std::unique_ptr<HttpClient> client,
+                         std::shared_ptr<HttpClient> client,
                          std::unique_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints,
                          std::unique_ptr<auth::AuthManager> auth_manager,
@@ -201,9 +204,32 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
       catalog_session_(std::move(catalog_session)),
       snapshot_mode_(snapshot_mode) {
   ICEBERG_DCHECK(catalog_session_ != nullptr, "catalog_session must not be null");
+  const auto& props = config_.configs();
+  auto it = props.find(std::string(kMetricsReporterImpl));
+  if (it != props.end() && !it->second.empty() &&
+      it->second != kMetricsReporterTypeNoop) {
+    if (auto r = MetricsReporters::Load(props); r.has_value()) {
+      reporter_ = std::shared_ptr<MetricsReporter>(std::move(r.value()));
+    }
+  }
 }
 
 std::string_view RestCatalog::name() const { return name_; }
+
+std::shared_ptr<MetricsReporter> RestCatalog::MakeTableReporter(
+    const TableIdentifier& identifier) const {
+  auto enabled = config_.Get(RestCatalogProperties::kMetricsReportingEnabled);
+  if (StringUtils::ToLower(enabled) == "true" &&
+      supported_endpoints_.contains(Endpoint::ReportMetrics())) {
+    auto path = paths_->Metrics(identifier);
+    if (path.has_value()) {
+      auto rest_reporter =
+          std::make_shared<RestMetricsReporter>(client_, *path, catalog_session_);
+      return MetricsReporters::Combine(reporter_, rest_reporter);
+    }
+  }
+  return reporter_;
+}
 
 Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) const {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::ListNamespaces());
@@ -367,7 +393,8 @@ Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
                           CreateTableInternal(identifier, schema, spec, order, location,
                                               properties, /*stage_create=*/false));
   return Table::Make(identifier, std::move(result.metadata),
-                     std::move(result.metadata_location), file_io_, shared_from_this());
+                     std::move(result.metadata_location), file_io_, shared_from_this(),
+                     MakeTableReporter(identifier));
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
@@ -398,7 +425,7 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
 
   return Table::Make(identifier, std::move(commit_response.metadata),
                      std::move(commit_response.metadata_location), file_io_,
-                     shared_from_this());
+                     shared_from_this(), MakeTableReporter(identifier));
 }
 
 Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
@@ -409,10 +436,11 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
   ICEBERG_ASSIGN_OR_RAISE(auto result,
                           CreateTableInternal(identifier, schema, spec, order, location,
                                               properties, /*stage_create=*/true));
-  ICEBERG_ASSIGN_OR_RAISE(auto staged_table,
-                          StagedTable::Make(identifier, std::move(result.metadata),
-                                            std::move(result.metadata_location), file_io_,
-                                            shared_from_this()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto staged_table,
+      StagedTable::Make(identifier, std::move(result.metadata),
+                        std::move(result.metadata_location), file_io_, shared_from_this(),
+                        MakeTableReporter(identifier)));
   return Transaction::Make(std::move(staged_table), TransactionKind::kCreate);
 }
 
@@ -480,9 +508,11 @@ Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& ide
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
   /// FIXME: support per-table FileIO creation
+  /// FIXME: support per-table auth session (currently uses catalog-level
+  /// catalog_session_)
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
-                     shared_from_this());
+                     shared_from_this(), MakeTableReporter(identifier));
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
@@ -505,7 +535,7 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
-                     shared_from_this());
+                     shared_from_this(), MakeTableReporter(identifier));
 }
 
 }  // namespace iceberg::rest

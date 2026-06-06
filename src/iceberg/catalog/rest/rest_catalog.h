@@ -30,6 +30,10 @@
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 
+namespace iceberg {
+class MetricsReporter;
+}  // namespace iceberg
+
 /// \file iceberg/catalog/rest/rest_catalog.h
 /// RestCatalog implementation for Iceberg REST API.
 
@@ -101,13 +105,22 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
 
  private:
   RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-              std::unique_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
+              std::shared_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
               std::unordered_set<Endpoint> endpoints,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session,
               SnapshotMode snapshot_mode);
 
   Result<std::string> LoadTableInternal(const TableIdentifier& identifier) const;
+
+  /// \brief Build the per-table metrics reporter.
+  ///
+  /// When rest-metrics-reporting-enabled is true and the server advertises the
+  /// ReportMetrics endpoint, returns a CompositeMetricsReporter combining configured
+  /// reporter with a RestMetricsReporter targeting this table. Otherwise returns the
+  /// configured reporter.
+  std::shared_ptr<MetricsReporter> MakeTableReporter(
+      const TableIdentifier& identifier) const;
 
   Result<LoadTableResult> CreateTableInternal(
       const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
@@ -117,13 +130,14 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
 
   RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;
-  std::unique_ptr<HttpClient> client_;
+  std::shared_ptr<HttpClient> client_;
   std::unique_ptr<ResourcePaths> paths_;
   std::string name_;
   std::unordered_set<Endpoint> supported_endpoints_;
   std::unique_ptr<auth::AuthManager> auth_manager_;
   std::shared_ptr<auth::AuthSession> catalog_session_;
   SnapshotMode snapshot_mode_;
+  std::shared_ptr<MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg::rest

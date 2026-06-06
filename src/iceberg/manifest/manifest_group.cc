@@ -34,6 +34,7 @@
 #include "iceberg/expression/residual_evaluator.h"
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/metrics/scan_report.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/manifest_wrapper.h"
 #include "iceberg/schema.h"
@@ -189,6 +190,12 @@ ManifestGroup& ManifestGroup::ColumnsToKeepStats(std::unordered_set<int32_t> col
   return *this;
 }
 
+ManifestGroup& ManifestGroup::ScanMetrics(
+    std::shared_ptr<class ScanMetrics> scan_metrics) {
+  scan_metrics_ = std::move(scan_metrics);
+  return *this;
+}
+
 Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   auto create_file_scan_tasks =
       [this](std::vector<ManifestEntry>&& entries,
@@ -220,6 +227,24 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   for (auto& task : tasks) {
     file_tasks.push_back(internal::checked_pointer_cast<FileScanTask>(task));
   }
+
+  if (scan_metrics_) {
+    for (const auto& task : file_tasks) {
+      for (const auto& df : task->delete_files()) {
+        scan_metrics_->result_delete_files->Increment(1);
+        scan_metrics_->indexed_delete_files->Increment(1);
+        scan_metrics_->total_delete_file_size_in_bytes->Increment(df->file_size_in_bytes);
+        if (ContentFileUtil::IsDV(*df)) {
+          scan_metrics_->dvs->Increment(1);
+        } else if (df->content == DataFile::Content::kEqualityDeletes) {
+          scan_metrics_->equality_delete_files->Increment(1);
+        } else {
+          scan_metrics_->positional_delete_files->Increment(1);
+        }
+      }
+    }
+  }
+
   return file_tasks;
 }
 
@@ -245,6 +270,9 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
     return residual_cache[spec_id].get();
   };
 
+  if (scan_metrics_) {
+    delete_index_builder_.ScanMetrics(scan_metrics_.get());
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto delete_index, delete_index_builder_.Build());
 
   bool drop_stats = ManifestReader::ShouldDropStats(columns_);
@@ -338,6 +366,10 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
       .CaseSensitive(case_sensitive_)
       .Select(std::move(columns));
 
+  if (scan_metrics_) {
+    reader->SkipCounter(scan_metrics_->skipped_data_files);
+  }
+
   return reader;
 }
 
@@ -386,12 +418,18 @@ ManifestGroup::ReadEntries() {
     ICEBERG_ASSIGN_OR_RAISE(bool should_match, manifest_evaluator->Evaluate(manifest));
     if (!should_match) {
       // Skip this manifest because it doesn't match partition filter
+      if (scan_metrics_) {
+        scan_metrics_->skipped_data_manifests->Increment(1);
+      }
       continue;
     }
 
     if (ignore_deleted_) {
       // only scan manifests that have entries other than deletes
       if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+        if (scan_metrics_) {
+          scan_metrics_->skipped_data_manifests->Increment(1);
+        }
         continue;
       }
     }
@@ -399,17 +437,24 @@ ManifestGroup::ReadEntries() {
     if (ignore_existing_) {
       // only scan manifests that have entries other than existing
       if (!manifest.has_added_files() && !manifest.has_deleted_files()) {
+        if (scan_metrics_) {
+          scan_metrics_->skipped_data_manifests->Increment(1);
+        }
         continue;
       }
     }
 
     // Read manifest entries
+    if (scan_metrics_) {
+      scan_metrics_->scanned_data_manifests->Increment(1);
+    }
     ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
     ICEBERG_ASSIGN_OR_RAISE(auto entries,
                             ignore_deleted_ ? reader->LiveEntries() : reader->Entries());
 
     for (auto& entry : entries) {
       if (ignore_existing_ && entry.status == ManifestStatus::kExisting) {
+        if (scan_metrics_) scan_metrics_->skipped_data_files->Increment(1);
         continue;
       }
 
@@ -418,14 +463,23 @@ ManifestGroup::ReadEntries() {
         ICEBERG_ASSIGN_OR_RAISE(bool should_match,
                                 data_file_evaluator->Evaluate(data_file));
         if (!should_match) {
+          if (scan_metrics_) {
+            scan_metrics_->skipped_data_files->Increment(1);
+          }
           continue;
         }
       }
 
       if (!manifest_entry_predicate_(entry)) {
+        if (scan_metrics_) scan_metrics_->skipped_data_files->Increment(1);
         continue;
       }
 
+      if (scan_metrics_ && entry.data_file) {
+        scan_metrics_->result_data_files->Increment(1);
+        scan_metrics_->total_file_size_in_bytes->Increment(
+            entry.data_file->file_size_in_bytes);
+      }
       result[spec_id].push_back(std::move(entry));
     }
   }

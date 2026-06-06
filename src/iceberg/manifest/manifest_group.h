@@ -39,6 +39,8 @@
 
 namespace iceberg {
 
+class ScanMetrics;
+
 /// \brief Context passed to task creation functions.
 struct ICEBERG_EXPORT TaskContext {
  public:
@@ -120,6 +122,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \param column_ids Field IDs of columns whose statistics should be preserved.
   ManifestGroup& ColumnsToKeepStats(std::unordered_set<int32_t> column_ids);
 
+  /// \brief Attach scan metrics to receive per-manifest and per-file counters.
+  ManifestGroup& ScanMetrics(std::shared_ptr<class ScanMetrics> scan_metrics);
+
   /// \brief Plan scan tasks for all matching data files.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles();
 
@@ -162,6 +167,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   bool ignore_deleted_ = false;
   bool ignore_existing_ = false;
   bool ignore_residuals_ = false;
+  std::shared_ptr<class ScanMetrics> scan_metrics_;
 };
 
 }  // namespace iceberg
