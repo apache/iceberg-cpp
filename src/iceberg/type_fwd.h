@@ -225,6 +225,9 @@ class LocationProvider;
 class SessionCatalog;
 struct SessionContext;
 
+/// \brief Metrics reporting.
+class MetricsReporter;
+
 /// \brief Table.
 class Table;
 class TableProperties;

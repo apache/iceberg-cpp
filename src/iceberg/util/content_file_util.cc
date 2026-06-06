@@ -83,6 +83,10 @@ std::string ContentFileUtil::DVDesc(const DataFile& file) {
                      file.referenced_data_file.value_or(""));
 }
 
+int64_t ContentFileUtil::ContentSizeInBytes(const DataFile& file) {
+  return file.content_size_in_bytes.value_or(file.file_size_in_bytes);
+}
+
 void ContentFileUtil::DropAllStats(DataFile& data_file) {
   data_file.column_sizes.clear();
   data_file.value_counts.clear();

@@ -17,11 +17,14 @@
  * under the License.
  */
 
+#include <chrono>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/rewrite_not.h"
+#include "iceberg/expression/sanitize_expression.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
@@ -504,6 +507,157 @@ TEST_F(RewriteNotTest, ComplexExpression) {
   // The outer NOT should push down via negation
   // NOT(pred1 AND NOT(pred2)) becomes NOT(pred1) OR pred2
   EXPECT_EQ(rewritten->op(), Expression::Operation::kOr);
+}
+
+class SanitizeExpressionTest : public ExpressionVisitorTest {};
+
+TEST_F(SanitizeExpressionTest, Constants) {
+  auto true_expr = Expressions::AlwaysTrue();
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_true, SanitizeExpression::Sanitize(true_expr));
+  EXPECT_TRUE(sanitized_true->Equals(*True::Instance()));
+
+  auto false_expr = Expressions::AlwaysFalse();
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_false, SanitizeExpression::Sanitize(false_expr));
+  EXPECT_TRUE(sanitized_false->Equals(*False::Instance()));
+}
+
+TEST_F(SanitizeExpressionTest, BoundLiteralPredicateHidesValue) {
+  auto unbound_pred = Expressions::Equal("name", Literal::String("alice@example.com"));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_pred, Bind(unbound_pred));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(bound_pred));
+  EXPECT_EQ(sanitized->op(), Expression::Operation::kEq);
+  EXPECT_TRUE(sanitized->is_unbound_predicate());
+  EXPECT_THAT(
+      sanitized->ToString(),
+      ::testing::MatchesRegex(R"re(ref\(name="name"\) == "\(hash-[0-9a-f]{8}\)")re"));
+  EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr("alice")));
+}
+
+TEST_F(SanitizeExpressionTest, UnboundLiteralPredicateHidesValue) {
+  auto unbound_pred = Expressions::GreaterThan("age", Literal::Int(42));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_EQ(sanitized->op(), Expression::Operation::kGt);
+  EXPECT_EQ(sanitized->ToString(), "ref(name=\"age\") > \"(2-digit-int)\"");
+  EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr("42")));
+}
+
+TEST_F(SanitizeExpressionTest, UnaryPredicateNeedsNoLiteral) {
+  auto unbound_pred = Expressions::IsNull("salary");
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_pred, Bind(unbound_pred));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(bound_pred));
+  EXPECT_EQ(sanitized->op(), Expression::Operation::kIsNull);
+  EXPECT_EQ(sanitized->ToString(), "is_null(ref(name=\"salary\"))");
+}
+
+TEST_F(SanitizeExpressionTest, SetPredicateSanitizesEachElement) {
+  auto unbound_pred = Expressions::In(
+      "name",
+      {Literal::String("alice"), Literal::String("bob"), Literal::String("carol")});
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_pred, Bind(unbound_pred));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(bound_pred));
+  EXPECT_EQ(sanitized->op(), Expression::Operation::kIn);
+  EXPECT_THAT(
+      sanitized->ToString(),
+      ::testing::MatchesRegex(
+          R"re(ref\(name="name"\) in \["\(hash-[0-9a-f]{8}\)"(, "\(hash-[0-9a-f]{8}\)"){2}\])re"));
+  for (const auto* leaked : {"alice", "bob", "carol"}) {
+    EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr(leaked)));
+  }
+}
+
+TEST_F(SanitizeExpressionTest, FractionalFloatLiteralDigitCount) {
+  auto unbound_pred = Expressions::LessThan("salary", Literal::Double(0.05));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_EQ(sanitized->ToString(), "ref(name=\"salary\") < \"(0-digit-float)\"");
+}
+
+TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByHoursAgo) {
+  auto fifty_hours_ago = std::chrono::system_clock::now() - std::chrono::hours(50);
+  int64_t micros = std::chrono::duration_cast<std::chrono::microseconds>(
+                       fifty_hours_ago.time_since_epoch())
+                       .count();
+  auto unbound_pred = Expressions::LessThan("ts", Literal::Timestamp(micros));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_THAT(sanitized->ToString(),
+              ::testing::MatchesRegex(
+                  R"re(ref\(name="ts"\) < "\(timestamp-(49|50)-hours-ago\)")re"));
+}
+
+TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByDaysAgo) {
+  auto ten_days_ago = std::chrono::system_clock::now() - std::chrono::hours(240);
+  int64_t micros = std::chrono::duration_cast<std::chrono::microseconds>(
+                       ten_days_ago.time_since_epoch())
+                       .count();
+  auto unbound_pred = Expressions::LessThan("ts", Literal::Timestamp(micros));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_THAT(
+      sanitized->ToString(),
+      ::testing::MatchesRegex(R"re(ref\(name="ts"\) < "\(timestamp-10-days-ago\)")re"));
+}
+
+TEST_F(SanitizeExpressionTest, UnboundPredicateOverTransformKeepsTransform) {
+  auto bucket_term = Expressions::Bucket("id", 16);
+  auto unbound_pred = Expressions::Equal<BoundTransform>(bucket_term, Literal::Int(5));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_EQ(sanitized->ToString(), "bucket[16](ref(name=\"id\")) == \"(1-digit-int)\"");
+}
+
+TEST_F(SanitizeExpressionTest, BoundPredicateOverTransformKeepsTransform) {
+  // Regression test: Java's unbind(BoundTerm) rebuilds a BoundTransform term as a
+  // transform term, not a plain reference; BoundPredicate::reference() alone would
+  // silently discard the transform.
+  auto bucket_term = Expressions::Bucket("id", 16);
+  auto unbound_pred = Expressions::Equal<BoundTransform>(bucket_term, Literal::Int(5));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_pred, Bind(unbound_pred));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(bound_pred));
+  EXPECT_TRUE(sanitized->is_unbound_predicate());
+  EXPECT_EQ(sanitized->ToString(), "bucket[16](ref(name=\"id\")) == \"(1-digit-int)\"");
+}
+
+TEST_F(SanitizeExpressionTest, PreservesAndOrNotStructure) {
+  auto pred1 = Expressions::Equal("name", Literal::String("alice@example.com"));
+  auto pred2 = Expressions::GreaterThan("age", Literal::Int(25));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_pred1, Bind(pred1));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_pred2, Bind(pred2));
+  auto not_pred2 = Expressions::Not(bound_pred2);
+  auto and_expr = Expressions::And(bound_pred1, not_pred2);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(and_expr));
+  EXPECT_EQ(sanitized->op(), Expression::Operation::kAnd);
+  EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr("alice")));
+  EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr("25")));
+}
+
+TEST_F(SanitizeExpressionTest, BindWithFallbackMatchesUnboundOnSuccess) {
+  auto unbound_pred = Expressions::GreaterThan("age", Literal::Int(42));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_unbound,
+                         SanitizeExpression::Sanitize(unbound_pred));
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_bound,
+                         SanitizeExpression::Sanitize(*schema_, unbound_pred,
+                                                      /*case_sensitive=*/true));
+  EXPECT_EQ(sanitized_bound->ToString(), sanitized_unbound->ToString());
+}
+
+TEST_F(SanitizeExpressionTest, BindWithFallbackFallsBackOnUnknownColumn) {
+  // "not_a_column" isn't in schema_, so binding fails and Sanitize() should fall back
+  // to sanitizing the unbound expression rather than propagating the bind error.
+  auto unbound_pred = Expressions::GreaterThan("not_a_column", Literal::Int(42));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized,
+                         SanitizeExpression::Sanitize(*schema_, unbound_pred,
+                                                      /*case_sensitive=*/true));
+  EXPECT_EQ(sanitized->op(), Expression::Operation::kGt);
+  EXPECT_EQ(sanitized->ToString(), "ref(name=\"not_a_column\") > \"(2-digit-int)\"");
 }
 
 class ReferenceVisitorTest : public ExpressionVisitorTest {};
