@@ -752,7 +752,7 @@ TEST_F(ExpireSnapshotsCleanupTest, IncrementalSkipsCherryPickedSnapshotCleanup) 
   EXPECT_EQ(committed_metadata->snapshots.at(0)->snapshot_id, kCurrentSnapshotId);
 }
 
-TEST_F(ExpireSnapshotsCleanupTest, ReachableCleanupFailsClosedOnUnbindableExpiredSpec) {
+TEST_F(ExpireSnapshotsCleanupTest, ReachableCleanupReadsExpiredSpecWithMissingSource) {
   const auto expired_data_file_path = table_location_ + "/data/expired-data.parquet";
   const auto expired_data_manifest_path = table_location_ + "/metadata/expired-data.avro";
   const auto expired_manifest_list_path =
@@ -796,9 +796,9 @@ TEST_F(ExpireSnapshotsCleanupTest, ReachableCleanupFailsClosedOnUnbindableExpire
       [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
 
   EXPECT_THAT(update->Commit(), IsOk());
-  EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_manifest_path,
+  EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
+                                                           expired_data_manifest_path,
                                                            expired_manifest_list_path));
-  EXPECT_THAT(deleted_files, testing::Not(testing::Contains(expired_data_file_path)));
 }
 
 TEST_F(ExpireSnapshotsCleanupTest, CommitIgnoresMalformedSourceSnapshotIdCleanup) {

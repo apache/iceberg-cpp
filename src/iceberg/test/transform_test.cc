@@ -159,12 +159,16 @@ TEST(TransformResultTypeTest, PositiveCases) {
     ASSERT_TRUE(result.has_value()) << "Failed to parse: " << c.str;
 
     const auto& transform = result.value();
-    const auto transformPtr = transform->Bind(c.source_type);
-    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind: " << c.str;
-
-    auto result_type = transformPtr.value()->ResultType();
+    auto result_type = transform->ResultType(c.source_type);
+    ASSERT_NE(result_type, nullptr) << "Missing result type for: " << c.str;
     EXPECT_EQ(result_type->type_id(), c.expected_result_type->type_id())
         << "Unexpected result type for: " << c.str;
+
+    const auto transform_func = transform->Bind(c.source_type);
+    ASSERT_TRUE(transform_func.has_value()) << "Failed to bind: " << c.str;
+    EXPECT_EQ(transform_func.value()->ResultType()->type_id(),
+              c.expected_result_type->type_id())
+        << "Unexpected bound result type for: " << c.str;
   }
 }
 

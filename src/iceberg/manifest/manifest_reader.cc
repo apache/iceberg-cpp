@@ -861,7 +861,7 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::LiveEntries() {
 }
 
 Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_live) {
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec_->PartitionType(*schema_));
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec_->RawPartitionType(*schema_));
   auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();
 
   std::shared_ptr<Schema> projected_data_file_schema;

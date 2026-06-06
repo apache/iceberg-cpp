@@ -288,6 +288,26 @@ TEST_P(TestManifestReader, TestManifestReaderWithPartitionMetadata) {
   EXPECT_EQ(read_entry.data_file->partition.values()[0], Literal::Int(0));
 }
 
+TEST_P(TestManifestReader, ReadsEntriesWhenPartitionSourceFieldIsMissing) {
+  auto version = GetParam();
+  auto file = MakeDataFile("/path/to/historical-data.parquet",
+                           PartitionValues({Literal::Int(7)}));
+  auto manifest =
+      WriteManifest(version, /*snapshot_id=*/1000L,
+                    {MakeEntry(ManifestStatus::kAdded, 1000L, std::move(file))});
+
+  auto current_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(/*field_id=*/3, "id", int32())});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, current_schema, spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto read_entries, reader->Entries());
+
+  ASSERT_EQ(read_entries.size(), 1U);
+  EXPECT_EQ(read_entries[0].data_file->file_path, "/path/to/historical-data.parquet");
+  EXPECT_EQ(read_entries[0].data_file->record_count, 1);
+}
+
 TEST_P(TestManifestReader, TestDeleteFilesWithReferences) {
   auto version = GetParam();
   if (version < 2) {

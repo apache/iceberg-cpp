@@ -51,10 +51,6 @@ namespace {
 Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
     const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
     const TableMetadata& metadata) {
-  // TODO(gangwu): Build manifest file schemas from PartitionSpec::RawPartitionType
-  // with UnknownType for dropped source fields instead of requiring the table schema
-  // to bind every partition source field. Until then, cleanup fails closed when
-  // historical specs cannot bind to the metadata schema.
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
   TableMetadataCache metadata_cache(&metadata);
   ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());

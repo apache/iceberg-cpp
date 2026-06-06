@@ -35,7 +35,102 @@
 
 namespace iceberg {
 
+struct SchemaReassignIdContext {
+  Schema::IdMap ids_to_reassigned;
+  Schema::IdMap ids_to_original;
+};
+
 namespace {
+
+const Schema::IdMap& EmptyIdMap() {
+  static const Schema::IdMap kEmpty;
+  return kEmpty;
+}
+
+void RecordIdReassignment(int32_t old_id, int32_t new_id,
+                          Schema::IdMap& ids_to_reassigned,
+                          Schema::IdMap& ids_to_original) {
+  if (new_id != old_id) {
+    ids_to_reassigned[old_id] = new_id;
+    ids_to_original[new_id] = old_id;
+  }
+}
+
+SchemaField ReassignField(const SchemaField& field, int32_t new_id,
+                          const Schema::GetId& get_id, Schema::IdMap& ids_to_reassigned,
+                          Schema::IdMap& ids_to_original);
+
+std::shared_ptr<Type> ReassignTypeIds(const std::shared_ptr<Type>& type,
+                                      const Schema::GetId& get_id,
+                                      Schema::IdMap& ids_to_reassigned,
+                                      Schema::IdMap& ids_to_original) {
+  switch (type->type_id()) {
+    case TypeId::kStruct: {
+      const auto& struct_type = static_cast<const StructType&>(*type);
+      const auto& fields = struct_type.fields();
+      std::vector<int32_t> new_ids;
+      new_ids.reserve(fields.size());
+      for (const auto& field : fields) {
+        const auto new_id = get_id(field.field_id());
+        RecordIdReassignment(field.field_id(), new_id, ids_to_reassigned,
+                             ids_to_original);
+        new_ids.push_back(new_id);
+      }
+
+      std::vector<SchemaField> reassigned_fields;
+      reassigned_fields.reserve(fields.size());
+      for (size_t i = 0; i < fields.size(); ++i) {
+        reassigned_fields.emplace_back(ReassignField(fields[i], new_ids[i], get_id,
+                                                     ids_to_reassigned, ids_to_original));
+      }
+      return std::make_shared<StructType>(std::move(reassigned_fields));
+    }
+    case TypeId::kList: {
+      const auto& list_type = static_cast<const ListType&>(*type);
+      const auto& element = list_type.element();
+      const auto new_id = get_id(element.field_id());
+      RecordIdReassignment(element.field_id(), new_id, ids_to_reassigned,
+                           ids_to_original);
+      return std::make_shared<ListType>(
+          ReassignField(element, new_id, get_id, ids_to_reassigned, ids_to_original));
+    }
+    case TypeId::kMap: {
+      const auto& map_type = static_cast<const MapType&>(*type);
+      const auto& key = map_type.key();
+      const auto& value = map_type.value();
+      const auto new_key_id = get_id(key.field_id());
+      const auto new_value_id = get_id(value.field_id());
+      RecordIdReassignment(key.field_id(), new_key_id, ids_to_reassigned,
+                           ids_to_original);
+      RecordIdReassignment(value.field_id(), new_value_id, ids_to_reassigned,
+                           ids_to_original);
+      return std::make_shared<MapType>(
+          ReassignField(key, new_key_id, get_id, ids_to_reassigned, ids_to_original),
+          ReassignField(value, new_value_id, get_id, ids_to_reassigned, ids_to_original));
+    }
+    default:
+      return type;
+  }
+}
+
+SchemaField ReassignField(const SchemaField& field, int32_t new_id,
+                          const Schema::GetId& get_id, Schema::IdMap& ids_to_reassigned,
+                          Schema::IdMap& ids_to_original) {
+  return {new_id, std::string(field.name()),
+          ReassignTypeIds(field.type(), get_id, ids_to_reassigned, ids_to_original),
+          field.optional(), std::string(field.doc())};
+}
+
+std::vector<SchemaField> ReassignIds(std::vector<SchemaField> fields,
+                                     const Schema::GetId& get_id,
+                                     SchemaReassignIdContext& reassign_id_context) {
+  auto reassigned_type = ReassignTypeIds(std::make_shared<StructType>(std::move(fields)),
+                                         get_id, reassign_id_context.ids_to_reassigned,
+                                         reassign_id_context.ids_to_original);
+  const auto& reassigned_fields =
+      internal::checked_cast<const StructType&>(*reassigned_type).fields();
+  return {reassigned_fields.begin(), reassigned_fields.end()};
+}
 
 Status ValidateFieldNullability(const Type& type) {
   auto validate_field = [&](const SchemaField& field) -> Status {
@@ -73,17 +168,23 @@ Status ValidateFieldNullability(const Type& type) {
 
 }  // namespace
 
-Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id)
+Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id, GetId get_id)
     : StructType(std::move(fields)),
       schema_id_(schema_id),
-      cache_(std::make_unique<SchemaCache>(this)) {}
+      cache_(std::make_unique<SchemaCache>(this)) {
+  if (get_id) {
+    reassign_id_context_ = std::make_unique<SchemaReassignIdContext>();
+    fields_ = ReassignIds(std::move(fields_), get_id, *reassign_id_context_);
+  }
+}
 
 Schema::~Schema() = default;
 
 Result<std::unique_ptr<Schema>> Schema::Make(std::vector<SchemaField> fields,
                                              int32_t schema_id,
-                                             std::vector<int32_t> identifier_field_ids) {
-  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
+                                             std::vector<int32_t> identifier_field_ids,
+                                             GetId get_id) {
+  auto schema = std::make_unique<Schema>(std::move(fields), schema_id, std::move(get_id));
 
   if (!identifier_field_ids.empty()) {
     auto id_to_parent = IndexParents(*schema);
@@ -99,8 +200,8 @@ Result<std::unique_ptr<Schema>> Schema::Make(std::vector<SchemaField> fields,
 
 Result<std::unique_ptr<Schema>> Schema::Make(
     std::vector<SchemaField> fields, int32_t schema_id,
-    const std::vector<std::string>& identifier_field_names) {
-  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
+    const std::vector<std::string>& identifier_field_names, GetId get_id) {
+  auto schema = std::make_unique<Schema>(std::move(fields), schema_id, std::move(get_id));
 
   std::vector<int32_t> fresh_identifier_ids;
   for (const auto& name : identifier_field_names) {
@@ -180,6 +281,14 @@ const std::shared_ptr<Schema>& Schema::EmptySchema() {
 }
 
 int32_t Schema::schema_id() const { return schema_id_; }
+
+const Schema::IdMap& Schema::IdsToReassigned() const {
+  return reassign_id_context_ ? reassign_id_context_->ids_to_reassigned : EmptyIdMap();
+}
+
+const Schema::IdMap& Schema::IdsToOriginal() const {
+  return reassign_id_context_ ? reassign_id_context_->ids_to_original : EmptyIdMap();
+}
 
 std::string Schema::ToString() const {
   std::string repr = "schema<";

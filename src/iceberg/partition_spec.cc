@@ -74,24 +74,16 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
 
   std::vector<SchemaField> partition_fields;
   for (const auto& partition_field : fields_) {
-    // Get the source field from the original schema by source_id
     ICEBERG_ASSIGN_OR_RAISE(auto source_field,
                             schema.FindFieldById(partition_field.source_id()));
-    if (!source_field.has_value()) {
-      // TODO(xiao.dong) when source field is missing,
-      // should return an error or just use UNKNOWN type
-      return InvalidSchema("Cannot find source field for partition field:{}",
-                           partition_field.field_id());
+    std::shared_ptr<Type> result_type;
+    if (source_field.has_value()) {
+      auto source_field_type = source_field.value().get().type();
+      result_type = partition_field.transform()->ResultType(std::move(source_field_type));
+    } else {
+      result_type = unknown();
     }
-    auto source_field_type = source_field.value().get().type();
-    // Bind the transform to the source field type to get the result type
-    ICEBERG_ASSIGN_OR_RAISE(auto transform_function,
-                            partition_field.transform()->Bind(source_field_type));
 
-    auto result_type = transform_function->ResultType();
-
-    // Create the partition field with the transform result type
-    // Partition fields are always optional (can be null)
     partition_fields.emplace_back(partition_field.field_id(),
                                   std::string(partition_field.name()),
                                   std::move(result_type),
@@ -99,6 +91,29 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
   }
 
   return std::make_unique<StructType>(std::move(partition_fields));
+}
+
+Result<std::unique_ptr<StructType>> PartitionSpec::RawPartitionType(
+    const Schema& schema) const {
+  const auto& ids_to_original = schema.IdsToOriginal();
+  if (ids_to_original.empty()) {
+    return PartitionType(schema);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, PartitionType(schema));
+  std::vector<SchemaField> raw_partition_fields;
+  raw_partition_fields.reserve(partition_type->fields().size());
+  for (const auto& field : partition_type->fields()) {
+    auto original_id = ids_to_original.find(field.field_id());
+    if (original_id == ids_to_original.end()) {
+      return InvalidSchema("Cannot find original field ID for reassigned field ID: {}",
+                           field.field_id());
+    }
+    raw_partition_fields.emplace_back(original_id->second, std::string(field.name()),
+                                      field.type(), field.optional(),
+                                      std::string(field.doc()));
+  }
+  return std::make_unique<StructType>(std::move(raw_partition_fields));
 }
 
 Result<std::string> PartitionSpec::PartitionPath(const PartitionValues& data) const {

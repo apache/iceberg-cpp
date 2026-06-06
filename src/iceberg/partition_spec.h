@@ -64,6 +64,9 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get the partition type binding to the input schema.
   Result<std::unique_ptr<StructType>> PartitionType(const Schema& schema) const;
 
+  /// \brief Get the partition type as physically written in manifest files.
+  Result<std::unique_ptr<StructType>> RawPartitionType(const Schema& schema) const;
+
   /// \brief Get the partition path for the given partition data.
   Result<std::string> PartitionPath(const PartitionValues& data) const;
 

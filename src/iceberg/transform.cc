@@ -135,6 +135,26 @@ Result<std::shared_ptr<TransformFunction>> Transform::Bind(
   }
 }
 
+std::shared_ptr<Type> Transform::ResultType(
+    const std::shared_ptr<Type>& source_type) const {
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+    case TransformType::kTruncate:
+    case TransformType::kVoid:
+      return source_type;
+    case TransformType::kBucket:
+    case TransformType::kYear:
+    case TransformType::kMonth:
+    case TransformType::kHour:
+      return int32();
+    case TransformType::kDay:
+      return date();
+    case TransformType::kUnknown:
+      return string();
+  }
+  std::unreachable();
+}
+
 bool Transform::CanTransform(const Type& source_type) const {
   switch (transform_type_) {
     case TransformType::kIdentity:

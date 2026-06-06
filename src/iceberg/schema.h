@@ -24,6 +24,7 @@
 /// and any utility functions.  See iceberg/type.h and iceberg/field.h as well.
 
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -40,6 +41,7 @@
 namespace iceberg {
 
 class SchemaCache;
+struct SchemaReassignIdContext;
 
 /// \brief A schema for a Table.
 ///
@@ -55,7 +57,14 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \brief Special value to select all columns from manifest files.
   static constexpr std::string_view kAllColumns = "*";
 
-  explicit Schema(std::vector<SchemaField> fields, int32_t schema_id = kInitialSchemaId);
+  /// \brief Maps an original field ID to its reassigned ID.
+  ///
+  /// The mapping is total: return the original ID when no reassignment is needed.
+  using GetId = std::function<int32_t(int32_t)>;
+  using IdMap = std::unordered_map<int32_t, int32_t>;
+
+  explicit Schema(std::vector<SchemaField> fields, int32_t schema_id = kInitialSchemaId,
+                  GetId get_id = {});
 
   ~Schema() override;
 
@@ -64,10 +73,12 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \param fields The fields that make up the schema.
   /// \param schema_id The unique identifier for this schema (default:kInitialSchemaId).
   /// \param identifier_field_ids Field IDs that uniquely identify rows in the table.
+  /// \param get_id Function mapping each original field ID to its reassigned ID.
   /// \return A new Schema instance or Status if failed.
   static Result<std::unique_ptr<Schema>> Make(std::vector<SchemaField> fields,
                                               int32_t schema_id,
-                                              std::vector<int32_t> identifier_field_ids);
+                                              std::vector<int32_t> identifier_field_ids,
+                                              GetId get_id = {});
 
   /// \brief Create a schema.
   ///
@@ -75,10 +86,11 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \param schema_id The unique identifier for this schema (default: kInitialSchemaId).
   /// \param identifier_field_names Canonical names of fields that uniquely identify rows
   /// in the table.
+  /// \param get_id Function mapping each original field ID to its reassigned ID.
   /// \return A new Schema instance or Status if failed.
   static Result<std::unique_ptr<Schema>> Make(
       std::vector<SchemaField> fields, int32_t schema_id,
-      const std::vector<std::string>& identifier_field_names);
+      const std::vector<std::string>& identifier_field_names, GetId get_id = {});
 
   /// \brief Validate that the identifier field with the given ID is valid for the schema
   ///
@@ -166,6 +178,12 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \brief Return the field IDs of the identifier fields.
   const std::vector<int32_t>& IdentifierFieldIds() const;
 
+  /// \brief Return a map of original field IDs to reassigned field IDs.
+  const IdMap& IdsToReassigned() const;
+
+  /// \brief Return a map of reassigned field IDs to original field IDs.
+  const IdMap& IdsToOriginal() const;
+
   /// \brief Return the canonical field names of the identifier fields.
   Result<std::vector<std::string>> IdentifierFieldNames() const;
 
@@ -196,6 +214,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   const int32_t schema_id_;
   // Field IDs that uniquely identify rows in the table.
   std::vector<int32_t> identifier_field_ids_;
+  std::unique_ptr<SchemaReassignIdContext> reassign_id_context_;
   // Cache for schema mappings to facilitate fast lookups.
   std::unique_ptr<SchemaCache> cache_;
 };

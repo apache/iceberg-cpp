@@ -106,6 +106,8 @@ TEST(AssignFreshIdVisitorTest, FlatSchema) {
                 },
                 Schema::kInitialSchemaId),
             *fresh_schema);
+  EXPECT_TRUE(fresh_schema->IdsToReassigned().empty());
+  EXPECT_TRUE(fresh_schema->IdsToOriginal().empty());
 }
 
 TEST(AssignFreshIdVisitorTest, NestedSchema) {
@@ -167,6 +169,55 @@ TEST(AssignFreshIdVisitorTest, NestedSchema) {
       std::dynamic_pointer_cast<StructType>(nested_struct_field.type());
   ASSERT_TRUE(nested_struct_type);
   EXPECT_EQ(*expect_nested_struct_type, *nested_struct_type);
+}
+
+TEST(AssignFreshIdVisitorTest, GetIdMaps) {
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateNestedSchema());
+  std::vector<SchemaField> fields(schema->fields().begin(), schema->fields().end());
+  auto reassign_id = [](int32_t old_id) { return old_id + 1000; };
+
+  Schema reassigned_schema(std::move(fields), Schema::kInitialSchemaId, reassign_id);
+
+  EXPECT_EQ(reassigned_schema.fields()[0].field_id(), 1010);
+  EXPECT_EQ(reassigned_schema.fields()[1].field_id(), 1020);
+  auto list_type =
+      std::dynamic_pointer_cast<ListType>(reassigned_schema.fields()[1].type());
+  ASSERT_TRUE(list_type);
+  EXPECT_EQ(list_type->element().field_id(), 1101);
+
+  EXPECT_EQ(reassigned_schema.IdsToReassigned().size(), 15U);
+  EXPECT_THAT(
+      reassigned_schema.IdsToReassigned(),
+      testing::UnorderedElementsAre(
+          testing::Pair(10, 1010), testing::Pair(20, 1020), testing::Pair(30, 1030),
+          testing::Pair(40, 1040), testing::Pair(101, 1101), testing::Pair(102, 1102),
+          testing::Pair(103, 1103), testing::Pair(201, 1201), testing::Pair(202, 1202),
+          testing::Pair(203, 1203), testing::Pair(204, 1204), testing::Pair(301, 1301),
+          testing::Pair(302, 1302), testing::Pair(303, 1303), testing::Pair(304, 1304)));
+  EXPECT_THAT(
+      reassigned_schema.IdsToOriginal(),
+      testing::UnorderedElementsAre(
+          testing::Pair(1010, 10), testing::Pair(1020, 20), testing::Pair(1030, 30),
+          testing::Pair(1040, 40), testing::Pair(1101, 101), testing::Pair(1102, 102),
+          testing::Pair(1103, 103), testing::Pair(1201, 201), testing::Pair(1202, 202),
+          testing::Pair(1203, 203), testing::Pair(1204, 204), testing::Pair(1301, 301),
+          testing::Pair(1302, 302), testing::Pair(1303, 303), testing::Pair(1304, 304)));
+}
+
+TEST(AssignFreshIdVisitorTest, GetIdIdentifierNames) {
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateNestedSchema());
+  std::vector<SchemaField> fields(schema->fields().begin(), schema->fields().end());
+  auto reassign_id = [](int32_t old_id) { return old_id + 1000; };
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reassigned_schema,
+      Schema::Make(std::move(fields), Schema::kInitialSchemaId,
+                   std::vector<std::string>{"id", "struct.outer_id"}, reassign_id));
+
+  EXPECT_THAT(reassigned_schema->IdentifierFieldIds(), testing::ElementsAre(1010, 1301));
+  ICEBERG_UNWRAP_OR_FAIL(auto identifier_field_names,
+                         reassigned_schema->IdentifierFieldNames());
+  EXPECT_THAT(identifier_field_names, testing::ElementsAre("id", "struct.outer_id"));
 }
 
 TEST(AssignFreshIdVisitorTest, RefreshIdentifierId) {

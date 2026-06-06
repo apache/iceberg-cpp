@@ -149,6 +149,59 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
   EXPECT_EQ(pt_field3, partition_type->fields()[2]);
 }
 
+TEST(PartitionSpecTest, PartitionTypeMissingSource) {
+  Schema schema({SchemaField::MakeRequired(2, "ts", timestamp())},
+                Schema::kInitialSchemaId);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(
+          1, {PartitionField(1, 1000, "dropped_identity", Transform::Identity()),
+              PartitionField(3, 1001, "dropped_bucket", Transform::Bucket(16)),
+              PartitionField(2, 1002, "ts_day", Transform::Day())}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_type, spec->PartitionType(schema));
+
+  ASSERT_EQ(partition_type->fields().size(), 3U);
+  EXPECT_EQ(partition_type->fields()[0],
+            SchemaField::MakeOptional(1000, "dropped_identity", unknown()));
+  EXPECT_EQ(partition_type->fields()[1],
+            SchemaField::MakeOptional(1001, "dropped_bucket", unknown()));
+  EXPECT_EQ(partition_type->fields()[2],
+            SchemaField::MakeOptional(1002, "ts_day", date()));
+}
+
+TEST(PartitionSpecTest, RawPartitionTypeNoReassign) {
+  Schema schema({SchemaField::MakeRequired(2, "ts", timestamp())},
+                Schema::kInitialSchemaId);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(
+                     1, {PartitionField(1, 1000, "dropped", Transform::Identity())}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_type, spec->PartitionType(schema));
+  ICEBERG_UNWRAP_OR_FAIL(auto raw_partition_type, spec->RawPartitionType(schema));
+
+  EXPECT_EQ(*raw_partition_type, *partition_type);
+}
+
+TEST(PartitionSpecTest, RawPartitionTypeReassignIds) {
+  auto reassign_id = [](int32_t old_id) { return old_id == 1000 ? 2000 : old_id; };
+  Schema schema({SchemaField::MakeOptional(1000, "partition_col", int32())},
+                Schema::kInitialSchemaId, reassign_id);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(1, {PartitionField(2000, 2000, "partition_col",
+                                                        Transform::Identity())}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_type, spec->PartitionType(schema));
+  ICEBERG_UNWRAP_OR_FAIL(auto raw_partition_type, spec->RawPartitionType(schema));
+
+  ASSERT_EQ(partition_type->fields().size(), 1U);
+  EXPECT_EQ(partition_type->fields()[0],
+            SchemaField::MakeOptional(2000, "partition_col", int32()));
+  ASSERT_EQ(raw_partition_type->fields().size(), 1U);
+  EXPECT_EQ(raw_partition_type->fields()[0],
+            SchemaField::MakeOptional(1000, "partition_col", int32()));
+}
+
 TEST(PartitionSpecTest, InvalidTransformForType) {
   // Test Day transform on string type (should fail)
   auto field_string = SchemaField::MakeRequired(6, "s", string());
