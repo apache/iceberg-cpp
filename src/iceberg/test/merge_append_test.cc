@@ -347,18 +347,17 @@ class MergeAppendTestBase : public UpdateTestBase {
 
   const ManifestFile* FindManifestByPath(const std::vector<ManifestFile>& manifests,
                                          const std::string& path) {
-    auto it = std::find_if(
-        manifests.begin(), manifests.end(),
-        [&path](const ManifestFile& manifest) { return manifest.manifest_path == path; });
+    auto it = std::ranges::find_if(manifests, [&path](const ManifestFile& manifest) {
+      return manifest.manifest_path == path;
+    });
     return it == manifests.end() ? nullptr : &*it;
   }
 
   const ManifestFile* FindManifestForSpec(const std::vector<ManifestFile>& manifests,
                                           int32_t spec_id) {
-    auto it = std::find_if(manifests.begin(), manifests.end(),
-                           [spec_id](const ManifestFile& manifest) {
-                             return manifest.partition_spec_id == spec_id;
-                           });
+    auto it = std::ranges::find_if(manifests, [spec_id](const ManifestFile& manifest) {
+      return manifest.partition_spec_id == spec_id;
+    });
     return it == manifests.end() ? nullptr : &*it;
   }
 
@@ -654,8 +653,8 @@ TEST_P(MergeAppendTest, EmptyTableAppendFilesAndManifest) {
   ExpectManifestEntries(*inherited_manifest, {file_a_, file_b_},
                         {ManifestStatus::kAdded, ManifestStatus::kAdded});
 
-  auto appended_manifest = std::find_if(
-      data_manifests.begin(), data_manifests.end(),
+  auto appended_manifest = std::ranges::find_if(
+      data_manifests,
       [&path](const ManifestFile& manifest) { return manifest.manifest_path != path; });
   ASSERT_NE(appended_manifest, data_manifests.end());
   ExpectManifestEntries(*appended_manifest, {file_c_, file_d_},
@@ -997,11 +996,10 @@ TEST_P(MergeAppendTest, MergeSizeTargetWithExistingManifest) {
       {first_snapshot->sequence_number, first_snapshot->sequence_number},
       {first_snapshot->sequence_number, first_snapshot->sequence_number});
 
-  auto new_manifest =
-      std::find_if(data_manifests.begin(), data_manifests.end(),
-                   [&initial_manifest](const ManifestFile& manifest) {
-                     return manifest.manifest_path != initial_manifest.manifest_path;
-                   });
+  auto new_manifest = std::ranges::find_if(
+      data_manifests, [&initial_manifest](const ManifestFile& manifest) {
+        return manifest.manifest_path != initial_manifest.manifest_path;
+      });
   ASSERT_NE(new_manifest, data_manifests.end());
   ExpectManifestEntries(
       *new_manifest, {file_c_, file_d_}, {ManifestStatus::kAdded, ManifestStatus::kAdded},
