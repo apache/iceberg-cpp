@@ -78,12 +78,13 @@ class OAuth2AuthSession : public AuthSession,
     return session;
   }
 
-  Status Authenticate(std::unordered_map<std::string, std::string>& headers) override {
+  Result<HttpRequest> Authenticate(const HttpRequest& request) override {
+    HttpRequest authenticated = request;
     std::shared_lock lock(mutex_);
     for (const auto& [key, value] : headers_) {
-      headers.try_emplace(key, value);
+      authenticated.headers.try_emplace(key, value);
     }
-    return {};
+    return authenticated;
   }
 
   Status Close() override { return CloseImpl(); }

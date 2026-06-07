@@ -496,9 +496,9 @@ TEST(OAuth2AuthSessionTest, InitialTokenIsUsed) {
   ASSERT_THAT(session_result, IsOk());
   auto session = session_result.value();
 
-  std::unordered_map<std::string, std::string> headers;
-  ASSERT_THAT(session->Authenticate(headers), IsOk());
-  EXPECT_EQ(headers["Authorization"], "Bearer initial-token-123");
+  auto auth_result = session->Authenticate({});
+  ASSERT_THAT(auth_result, IsOk());
+  EXPECT_EQ(auth_result.value().headers.at("Authorization"), "Bearer initial-token-123");
 
   session->Close();
 }

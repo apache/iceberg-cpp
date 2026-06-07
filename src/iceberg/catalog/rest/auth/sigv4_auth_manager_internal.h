@@ -78,11 +78,17 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   }
 
  private:
+  // WrapSession() reserves an AwsSdkLifecycle slot and transfers it here.
+  friend class SigV4AuthManager;
+
   std::shared_ptr<AuthSession> delegate_;
   std::string signing_region_;
   std::string signing_name_;
   std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider_;
   std::unique_ptr<Aws::Client::AWSAuthV4Signer> signer_;
+  // Only WrapSession()-created sessions registered a slot; directly-constructed
+  // ones (e.g. tests) must not unregister and underflow the count.
+  bool owns_sdk_registration_ = false;
 };
 
 /// \brief An AuthManager that produces SigV4AuthSession instances.
@@ -114,7 +120,7 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
  private:
   static Result<std::shared_ptr<Aws::Auth::AWSCredentialsProvider>>
   MakeCredentialsProvider(const std::unordered_map<std::string, std::string>& properties);
-  static std::string ResolveSigningRegion(
+  static Result<std::string> ResolveSigningRegion(
       const std::unordered_map<std::string, std::string>& properties);
   static std::string ResolveSigningName(
       const std::unordered_map<std::string, std::string>& properties);

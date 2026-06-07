@@ -32,7 +32,9 @@
 #  include <aws/core/auth/AWSCredentialsProvider.h>
 #  include <aws/core/auth/AWSCredentialsProviderChain.h>
 #  include <aws/core/client/ClientConfiguration.h>
+#  include <aws/core/config/ConfigAndCredentialsCacheManager.h>
 #  include <aws/core/http/standard/StandardHttpRequest.h>
+#  include <aws/core/platform/Environment.h>
 #  include <aws/core/utils/HashingUtils.h>
 
 #  include "iceberg/catalog/rest/auth/auth_managers.h"
@@ -170,7 +172,11 @@ SigV4AuthSession::SigV4AuthSession(
       signer_(std::make_unique<RestSigV4Signer>(
           credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {}
 
-SigV4AuthSession::~SigV4AuthSession() { AwsSdkLifecycle::Instance().UnregisterSession(); }
+SigV4AuthSession::~SigV4AuthSession() {
+  if (owns_sdk_registration_) {
+    AwsSdkLifecycle::Instance().UnregisterSession();
+  }
+}
 
 Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_request, delegate_->Authenticate(request));
@@ -338,18 +344,36 @@ SigV4AuthManager::MakeCredentialsProvider(
   return std::make_shared<Aws::Auth::DefaultAWSCredentialsProviderChain>();
 }
 
-std::string SigV4AuthManager::ResolveSigningRegion(
+Result<std::string> SigV4AuthManager::ResolveSigningRegion(
     const std::unordered_map<std::string, std::string>& properties) {
   if (auto it = properties.find(AuthProperties::kSigV4SigningRegion);
       it != properties.end() && !it->second.empty()) {
     return it->second;
   }
-  // ClientConfiguration() walks env / profile / IMDS / us-east-1; the IMDS
-  // step can block for seconds on non-EC2 hosts. Resolve once per process
-  // (set AWS_EC2_METADATA_DISABLED=true to skip IMDS).
-  static const std::string kSdkResolvedRegion =
-      std::string(Aws::Client::ClientConfiguration().region.c_str());
-  return kSdkResolvedRegion;
+  // Resolve from env then the shared config profile (skip IMDS — it can block
+  // on non-EC2 hosts), and fail rather than silently defaulting to us-east-1.
+  // Resolved once per process.
+  static const std::string kResolvedRegion = []() -> std::string {
+    Aws::String region = Aws::Environment::GetEnv("AWS_REGION");
+    if (region.empty()) {
+      region = Aws::Environment::GetEnv("AWS_DEFAULT_REGION");
+    }
+    if (region.empty()) {
+      const auto& profiles = Aws::Config::GetCachedConfigProfiles();
+      if (auto it = profiles.find(Aws::Auth::GetConfigProfileName());
+          it != profiles.end()) {
+        region = it->second.GetRegion();
+      }
+    }
+    return std::string(region.c_str());
+  }();
+  if (kResolvedRegion.empty()) {
+    return InvalidArgument(
+        "SigV4: could not resolve a signing region; set the '{}' property or the "
+        "AWS_REGION environment variable",
+        AuthProperties::kSigV4SigningRegion);
+  }
+  return kResolvedRegion;
 }
 
 std::string SigV4AuthManager::ResolveSigningName(
@@ -392,7 +416,7 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
     const std::unordered_map<std::string, std::string>& properties,
     std::shared_ptr<Aws::Auth::AWSCredentialsProvider> reuse_credentials) {
   ICEBERG_ASSIGN_OR_RAISE(auto slot, SessionSlot::Reserve());
-  auto region = ResolveSigningRegion(properties);
+  ICEBERG_ASSIGN_OR_RAISE(auto region, ResolveSigningRegion(properties));
   auto service = ResolveSigningName(properties);
 
   // Reuse the parent's provider unless properties override keys, avoiding a
@@ -409,6 +433,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
   auto session =
       std::make_shared<SigV4AuthSession>(std::move(delegate_session), std::move(region),
                                          std::move(service), std::move(credentials));
+  // The reserved slot's unregister responsibility now belongs to the session.
+  session->owns_sdk_registration_ = true;
   slot.Release();
   return session;
 }

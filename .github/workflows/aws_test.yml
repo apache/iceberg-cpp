@@ -15,9 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# AWS-related tests. ICEBERG_S3 (Arrow's bundled AWS SDK) and ICEBERG_SIGV4
-# (vcpkg-installed aws-cpp-sdk-core) are tested in separate jobs: linking
-# both into one binary causes ODR conflicts on the shared AWS SDK symbols.
+# AWS-related tests. ICEBERG_S3 and ICEBERG_SIGV4 are exercised individually and
+# together; with both on, Arrow's S3 reuses SigV4's system AWS SDK
+# (AWSSDK_SOURCE=SYSTEM) so a single AWS SDK is linked (no ODR).
 name: AWS Tests
 
 on:
@@ -62,6 +62,17 @@ jobs:
             CXX: g++-14
             s3: "OFF"
             sigv4: "ON"
+            aws-sdk-features: core
+          - title: AMD64 Ubuntu 24.04, S3 + SigV4
+            runs-on: ubuntu-24.04
+            CC: gcc-14
+            CXX: g++-14
+            s3: "ON"
+            sigv4: "ON"
+            # Arrow's S3 filesystem consumes this same AWS SDK, so it needs the
+            # S3-related components in addition to core (config is required by
+            # Arrow's FindAWSSDKAlt).
+            aws-sdk-features: core,config,s3,identity-management,sts,transfer
           - title: AArch64 macOS 26, S3
             runs-on: macos-26
             s3: "ON"
@@ -88,11 +99,21 @@ jobs:
         id: vcpkg-cache
         with:
           path: /usr/local/share/vcpkg/installed
-          key: vcpkg-x64-linux-aws-sdk-cpp-core-${{ hashFiles('.github/workflows/aws_test.yml') }}
+          key: vcpkg-x64-linux-aws-sdk-cpp-s3-${{ matrix.s3 }}-sigv4-${{ matrix.sigv4 }}-${{ hashFiles('.github/workflows/aws_test.yml') }}
       - name: Install AWS SDK via vcpkg
         if: ${{ matrix.sigv4 == 'ON' && steps.vcpkg-cache.outputs.cache-hit != 'true' }}
         shell: bash
-        run: vcpkg install aws-sdk-cpp[core]:x64-linux
+        # Retry to ride out transient GitHub/mirror download failures (504s).
+        run: |
+          for attempt in 1 2 3; do
+            if vcpkg install "aws-sdk-cpp[${{ matrix.aws-sdk-features }}]:x64-linux"; then
+              exit 0
+            fi
+            echo "::warning::vcpkg install failed (attempt ${attempt}/3), retrying in 30s"
+            sleep 30
+          done
+          echo "::error::vcpkg install failed after 3 attempts"
+          exit 1
       - name: Set Ubuntu Compilers
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         run: |
@@ -107,3 +128,57 @@ jobs:
         env:
           CMAKE_TOOLCHAIN_FILE: ${{ matrix.sigv4 == 'ON' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
         run: ci/scripts/build_iceberg.sh "$(pwd)" OFF OFF ${{ matrix.s3 }} ${{ matrix.sigv4 }}
+
+  # Exercise the Meson build with SigV4 enabled (resolves aws-cpp-sdk-core via
+  # its CMake config, not pkg-config whose Cflags force -std=c++11).
+  meson-sigv4:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    name: Meson SigV4 (AMD64 Ubuntu 24.04)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.x'
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements.txt
+      - name: Cache vcpkg packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        id: vcpkg-cache
+        with:
+          path: /usr/local/share/vcpkg/installed
+          key: vcpkg-x64-linux-aws-sdk-cpp-core-${{ hashFiles('.github/workflows/aws_test.yml') }}
+      - name: Install AWS SDK via vcpkg
+        if: ${{ steps.vcpkg-cache.outputs.cache-hit != 'true' }}
+        shell: bash
+        # Retry to ride out transient GitHub/mirror download failures (504s).
+        run: |
+          for attempt in 1 2 3; do
+            if vcpkg install aws-sdk-cpp[core]:x64-linux; then
+              exit 0
+            fi
+            echo "::warning::vcpkg install failed (attempt ${attempt}/3), retrying in 30s"
+            sleep 30
+          done
+          echo "::error::vcpkg install failed after 3 attempts"
+          exit 1
+      - name: Set Ubuntu Compilers
+        run: |
+          echo "CC=gcc-14" >> $GITHUB_ENV
+          echo "CXX=g++-14" >> $GITHUB_ENV
+      - name: Build and test Iceberg
+        shell: bash
+        env:
+          CMAKE_PREFIX_PATH: /usr/local/share/vcpkg/installed/x64-linux
+        run: |
+          meson setup builddir -Dsigv4=enabled
+          meson compile -C builddir
+          meson test -C builddir --timeout-multiplier 0 --print-errorlogs

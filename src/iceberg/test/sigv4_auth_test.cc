@@ -72,6 +72,32 @@ TEST_F(SigV4AuthTest, LifecycleFinalizeRefusesWhileSessionsAlive) {
   EXPECT_TRUE(IsAwsSdkInitialized());
 }
 
+TEST_F(SigV4AuthTest, DirectlyConstructedSessionDoesNotCorruptLifecycleCount) {
+  // A directly-constructed session never registered with AwsSdkLifecycle, so
+  // destroying it must not decrement the count. Otherwise it underflows, and a
+  // later real session wraps it back to zero, letting FinalizeAwsSdk() shut the
+  // SDK down while a session is still alive.
+  {
+    auto delegate = AuthSession::MakeDefault({});
+    auto credentials = std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(
+        Aws::Auth::AWSCredentials("id", "secret"));
+    auto direct = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
+                                                     credentials);
+  }  // destroyed here — must leave the lifecycle count untouched
+
+  auto properties = MakeSigV4Properties();
+  auto manager_result = AuthManagers::Load("test-catalog", properties);
+  ASSERT_THAT(manager_result, IsOk());
+  auto session_result = manager_result.value()->CatalogSession(client_, properties);
+  ASSERT_THAT(session_result, IsOk());
+
+  // Exactly one live (registered) session, so Finalize must refuse. With the
+  // underflow bug the count would have wrapped and Finalize could wrongly
+  // succeed and shut the SDK down.
+  EXPECT_THAT(FinalizeAwsSdk(), IsError(ErrorKind::kInvalid));
+  EXPECT_TRUE(IsAwsSdkInitialized());
+}
+
 TEST_F(SigV4AuthTest, LoadSigV4AuthManager) {
   auto properties = MakeSigV4Properties();
   auto manager_result = AuthManagers::Load("test-catalog", properties);

@@ -110,6 +110,11 @@ function(resolve_arrow_dependency)
   set(ARROW_RUNTIME_SIMD_LEVEL "NONE")
   set(ARROW_POSITION_INDEPENDENT_CODE ON)
   set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
+  # With SigV4 also on, make Arrow's S3 reuse the system AWS SDK (the one SigV4
+  # finds) instead of bundling its own, so only one AWS SDK is linked (no ODR).
+  if(ICEBERG_S3 AND ICEBERG_SIGV4)
+    set(AWSSDK_SOURCE "SYSTEM")
+  endif()
   set(ARROW_WITH_ZLIB ON)
   set(ZLIB_SOURCE "SYSTEM")
   set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
