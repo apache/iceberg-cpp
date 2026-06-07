@@ -32,6 +32,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/timepoint.h"
 
 /// \file iceberg/update/expire_snapshots.h
@@ -115,6 +116,9 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// If this method is not called, unnecessary manifests and data files will still be
   /// deleted.
   ///
+  /// \note When an executor is configured via ExecuteDeleteWith(), this callback may
+  /// be invoked concurrently from worker threads; implementations must be thread-safe.
+  ///
   /// \param delete_func A function that will be called to delete manifests and data files
   /// \return Reference to this for method chaining.
   ExpireSnapshots& DeleteWith(std::function<void(const std::string&)> delete_func);
@@ -139,6 +143,20 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// \param clean Remove unused partition specs, schemas, or other metadata when true.
   /// \return Reference to this for method chaining.
   ExpireSnapshots& CleanExpiredMetadata(bool clean);
+
+  /// \brief Configure an executor used to parallelize best-effort file deletion.
+  ///
+  /// Only meaningful in combination with DeleteWith(): when both are set the custom
+  /// delete callback is invoked concurrently for each path through the supplied
+  /// executor. Without DeleteWith(), file deletion uses FileIO's bulk DeleteFiles
+  /// API and the executor is unused. The caller retains ownership and must keep the
+  /// executor alive until Finalize() returns.
+  ///
+  /// Named after Java's `ExpireSnapshots.executeDeleteWith(ExecutorService)`.
+  ///
+  /// \param executor An executor reference, or std::nullopt for serial deletion.
+  /// \return Reference to this for method chaining.
+  ExpireSnapshots& ExecuteDeleteWith(OptionalExecutor executor);
 
   Kind kind() const final { return Kind::kExpireSnapshots; }
   bool IsRetryable() const override { return true; }
@@ -184,6 +202,7 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   enum CleanupLevel cleanup_level_ { CleanupLevel::kAll };
   bool clean_expired_metadata_{false};
   bool specified_snapshot_id_{false};
+  OptionalExecutor executor_;
 
   /// Cached result from Apply(), consumed by Finalize() and cleared after use.
   std::optional<ApplyResult> apply_result_;

@@ -19,6 +19,8 @@
 
 #include "iceberg/update/expire_snapshots.h"
 
+#include <functional>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -33,6 +35,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 
@@ -442,6 +445,45 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredFiles) {
                                                            expired_data_manifest_path,
                                                            expired_delete_manifest_path,
                                                            expired_manifest_list_path));
+}
+
+TEST_F(ExpireSnapshotsCleanupTest, ExecutorDispatchesDeletesConcurrently) {
+  const auto expired_data_file_path = table_location_ + "/data/expired-data.parquet";
+  const auto expired_data_manifest_path = table_location_ + "/metadata/expired-data.avro";
+  const auto expired_manifest_list_path =
+      table_location_ + "/metadata/expired-manifest-list.avro";
+  const auto current_manifest_list_path =
+      table_location_ + "/metadata/current-manifest-list.avro";
+
+  auto expired_data_manifest = WriteDataManifest(
+      expired_data_manifest_path, kExpiredSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId, kExpiredSequenceNumber,
+                 MakeDataFile(expired_data_file_path))});
+  WriteManifestList(expired_manifest_list_path, kExpiredSnapshotId,
+                    /*parent_snapshot_id=*/0, kExpiredSequenceNumber,
+                    {expired_data_manifest});
+  WriteManifestList(current_manifest_list_path, kCurrentSnapshotId, kExpiredSnapshotId,
+                    kCurrentSequenceNumber, {});
+  RewriteTableWithManifestLists(expired_manifest_list_path, current_manifest_list_path);
+
+  test::ThreadExecutor executor;
+  std::mutex deleted_files_mu;
+  std::vector<std::string> deleted_files;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  update->ExpireSnapshotId(kExpiredSnapshotId);
+  update->ExecuteDeleteWith(std::ref(executor));
+  update->DeleteWith([&deleted_files, &deleted_files_mu](const std::string& path) {
+    std::lock_guard<std::mutex> lock(deleted_files_mu);
+    deleted_files.push_back(path);
+  });
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
+                                                           expired_data_manifest_path,
+                                                           expired_manifest_list_path));
+  // One submission per file: the executor saw real work.
+  EXPECT_EQ(executor.submit_count(), 3);
 }
 
 TEST_F(ExpireSnapshotsCleanupTest, MetadataOnlySkipsDataDeletion) {

@@ -40,9 +40,12 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/retry_util.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg {
 
@@ -61,8 +64,11 @@ Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
 class FileCleanupStrategy {
  public:
   FileCleanupStrategy(std::shared_ptr<FileIO> file_io,
-                      std::function<void(const std::string&)> delete_func)
-      : file_io_(std::move(file_io)), delete_func_(std::move(delete_func)) {}
+                      std::function<void(const std::string&)> delete_func,
+                      OptionalExecutor executor)
+      : file_io_(std::move(file_io)),
+        delete_func_(std::move(delete_func)),
+        executor_(std::move(executor)) {}
 
   virtual ~FileCleanupStrategy() = default;
 
@@ -95,19 +101,48 @@ class FileCleanupStrategy {
   }
 
   /// \brief Delete files at the given locations.
+  ///
+  /// Best-effort: errors are suppressed to mirror Java's suppressFailureWhenFinished.
+  /// When a custom delete function was provided, deletes are invoked one path at a time,
+  /// optionally parallelized via the strategy's executor. Otherwise the FileIO bulk
+  /// `DeleteFiles` API is invoked once with a bounded retry that stops on kNotFound.
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
-    try {
-      if (delete_func_) {
-        for (const auto& path : paths) {
-          delete_func_(path);
-        }
-      } else {
-        std::vector<std::string> path_list(paths.begin(), paths.end());
-        std::ignore = file_io_->DeleteFiles(path_list);
-      }
-    } catch (...) {
-      // TODO(shangxinli): add retry
+    if (paths.empty()) return;
+    std::vector<std::string> path_list(paths.begin(), paths.end());
+
+    if (!delete_func_) {
+      // Bulk path: rely on FileIO::DeleteFiles. The tight retry helps atomic-bulk
+      // implementations (e.g. an S3 DeleteObjects-backed FileIO) ride out a
+      // transient throttle or network blip on the single round trip.
+      //
+      // Caveat: for the default fail-fast iterative impl, a retried attempt
+      // re-submits the full path_list, so files already deleted on a prior
+      // attempt come back as kNotFound and short-circuit the retry (kNotFound is
+      // in StopRetryOn). That is best-effort cleanup -- still no worse than the
+      // prior behaviour of a single un-retried call -- and we discard the final
+      // Status to match Java's suppressFailureWhenFinished semantics.
+      RetryRunner<retry::StopRetryOn<ErrorKind::kNotFound>> runner(kDeleteRetryConfig);
+      std::ignore = runner.Run([&]() { return file_io_->DeleteFiles(path_list); });
+      return;
     }
+
+    // Custom callback path: invoke one path at a time, optionally on a worker thread
+    // pulled from the configured executor. Without an executor TaskGroup runs the
+    // callbacks synchronously on the calling thread.
+    TaskGroup<> group;
+    group.SetExecutor(executor_);
+    for (auto& path : path_list) {
+      group.Submit([this, path = std::move(path)]() -> Status {
+        try {
+          delete_func_(path);
+        } catch (...) {
+          // Suppress all exceptions during file cleanup to match Java's
+          // suppressFailureWhenFinished behavior.
+        }
+        return {};
+      });
+    }
+    std::ignore = std::move(group).Run();
   }
 
   bool HasAnyStatisticsFiles(const TableMetadata& metadata) const {
@@ -149,6 +184,18 @@ class FileCleanupStrategy {
 
   std::shared_ptr<FileIO> file_io_;
   std::function<void(const std::string&)> delete_func_;
+  OptionalExecutor executor_;
+
+ private:
+  /// Retry budget for the FileIO bulk `DeleteFiles` path. Tight on purpose: file
+  /// cleanup is best-effort and runs after a successful commit, so we'd rather give
+  /// up than block the caller for minutes on a flaky storage layer.
+  static constexpr RetryConfig kDeleteRetryConfig{
+      .num_retries = 2,
+      .min_wait_ms = 100,
+      .max_wait_ms = 1000,
+      .total_timeout_ms = 5000,
+  };
 };
 
 /// \brief File cleanup strategy that determines safe deletions via full reachability.
@@ -157,7 +204,7 @@ class FileCleanupStrategy {
 /// still referenced by retained snapshots, then deletes orphaned manifests, data
 /// files, and manifest lists.
 ///
-/// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
+/// TODO(shangxinli): Add multi-threaded manifest reading support.
 class ReachableFileCleanup : public FileCleanupStrategy {
  public:
   using FileCleanupStrategy::FileCleanupStrategy;
@@ -362,7 +409,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
 /// logically introduced by a snapshot whose changes are still present in the
 /// current state under a different id.
 ///
-/// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
+/// TODO(shangxinli): Add multi-threaded manifest reading support.
 class IncrementalFileCleanup : public FileCleanupStrategy {
  public:
   using FileCleanupStrategy::FileCleanupStrategy;
@@ -699,6 +746,11 @@ ExpireSnapshots& ExpireSnapshots::CleanExpiredMetadata(bool clean) {
   return *this;
 }
 
+ExpireSnapshots& ExpireSnapshots::ExecuteDeleteWith(OptionalExecutor executor) {
+  executor_ = std::move(executor);
+  return *this;
+}
+
 Result<std::unordered_set<int64_t>> ExpireSnapshots::ComputeBranchSnapshotsToRetain(
     int64_t snapshot_id, TimePointMs expire_snapshot_older_than,
     int32_t min_snapshots_to_keep) const {
@@ -930,11 +982,11 @@ Status ExpireSnapshots::Finalize(Result<const TableMetadata*> commit_result) {
       !HasNonMainSnapshots(metadata_after_expiration);
 
   if (can_use_incremental) {
-    return IncrementalFileCleanup(ctx_->table->io(), delete_func_)
+    return IncrementalFileCleanup(ctx_->table->io(), delete_func_, executor_)
         .CleanFiles(metadata_before_expiration, metadata_after_expiration,
                     cleanup_level_);
   }
-  return ReachableFileCleanup(ctx_->table->io(), delete_func_)
+  return ReachableFileCleanup(ctx_->table->io(), delete_func_, executor_)
       .CleanFiles(metadata_before_expiration, metadata_after_expiration, cleanup_level_);
 }
 
