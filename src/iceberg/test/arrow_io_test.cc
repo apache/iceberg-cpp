@@ -405,6 +405,14 @@ TEST_F(LocalFileIOTest, StdReadKeepsPositionAvailableAtEof) {
   EXPECT_THAT(stream->Position(), HasValue(::testing::Eq(3)));
 }
 
+TEST_F(LocalFileIOTest, ResolvesForeignSchemeToUnderlyingPath) {
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "hello world"), IsOk());
+
+  auto read_res = file_io_->ReadFile("x-store://" + temp_filepath_, std::nullopt);
+  EXPECT_THAT(read_res, IsOk());
+  EXPECT_THAT(read_res, HasValue(::testing::Eq("hello world")));
+}
+
 TEST(FileIOAdapterTest, InputAdapterRejectsReadsAfterClose) {
   auto state = std::make_shared<PermissiveReadState>();
   state->data = "abc";

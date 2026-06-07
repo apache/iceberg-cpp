@@ -473,9 +473,14 @@ class ArrowOutputFile : public OutputFile {
 }  // namespace
 
 Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
-  if (file_location.find("://") != std::string::npos) {
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto path, arrow_fs_->PathFromUri(file_location));
-    return path;
+  if (auto pos = file_location.find("://"); pos != std::string::npos) {
+    auto path = arrow_fs_->PathFromUri(file_location);
+    if (path.ok()) {
+      return path.ValueOrDie();
+    }
+    // PathFromUri rejects S3-compatible schemes (s3a/s3n, gs://, oss://);
+    // fall back to the scheme-less bucket/key.
+    return file_location.substr(pos + 3);
   }
   return file_location;
 }
