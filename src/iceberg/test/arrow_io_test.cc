@@ -429,11 +429,12 @@ TEST_F(LocalFileIOTest, PropagatesNonSchemeMismatchUriError) {
   EXPECT_THAT(read_res, HasErrorMessage("Cannot parse URI"));
 }
 
-TEST_F(LocalFileIOTest, FallbackPreservesPercentEncodingInKey) {
-  std::string encoded_path = temp_filepath_ + "%20x";
-  ASSERT_THAT(file_io_->WriteFile(encoded_path, "raw"), IsOk());
+TEST_F(LocalFileIOTest, FallbackDecodesPercentEncodingInKey) {
+  std::string decoded_path = temp_filepath_ + " x";
+  ASSERT_THAT(file_io_->WriteFile(decoded_path, "raw"), IsOk());
 
-  auto read_res = file_io_->ReadFile(ForeignSchemeUri(encoded_path), std::nullopt);
+  auto read_res =
+      file_io_->ReadFile(ForeignSchemeUri(temp_filepath_ + "%20x"), std::nullopt);
   EXPECT_THAT(read_res, IsOk());
   EXPECT_THAT(read_res, HasValue(::testing::Eq("raw")));
 }

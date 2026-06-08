@@ -30,6 +30,7 @@
 #include <arrow/io/interfaces.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
+#include <arrow/util/uri.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
@@ -490,9 +491,10 @@ Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_l
     return std::unexpected<Error>{
         {.kind = ToErrorKind(status), .message = status.ToString()}};
   }
-  // Scheme-less bucket/key, dropping any ?query / #fragment.
+  // Scheme-less bucket/key: drop ?query / #fragment and percent-decode to match s3://.
   std::string bucket_key = file_location.substr(pos + 3);
-  return bucket_key.substr(0, bucket_key.find_first_of("?#"));
+  bucket_key = bucket_key.substr(0, bucket_key.find_first_of("?#"));
+  return ::arrow::util::UriUnescape(bucket_key);
 }
 
 Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(
