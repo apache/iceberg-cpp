@@ -473,16 +473,26 @@ class ArrowOutputFile : public OutputFile {
 }  // namespace
 
 Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
-  if (auto pos = file_location.find("://"); pos != std::string::npos) {
-    auto path = arrow_fs_->PathFromUri(file_location);
-    if (path.ok()) {
-      return path.ValueOrDie();
-    }
-    // PathFromUri rejects S3-compatible schemes (s3a/s3n, gs://, oss://);
-    // fall back to the scheme-less bucket/key.
-    return file_location.substr(pos + 3);
+  const auto pos = file_location.find("://");
+  if (pos == std::string::npos) {
+    return file_location;
   }
-  return file_location;
+
+  auto path = arrow_fs_->PathFromUri(file_location);
+  if (path.ok()) {
+    return std::move(path).ValueOrDie();
+  }
+
+  // Only fall back for Arrow's scheme-mismatch error; propagate anything else.
+  const auto& status = path.status();
+  if (status.message().find("expected a URI with one of the schemes") ==
+      std::string::npos) {
+    return std::unexpected<Error>{
+        {.kind = ToErrorKind(status), .message = status.ToString()}};
+  }
+  // Scheme-less bucket/key, dropping any ?query / #fragment.
+  std::string bucket_key = file_location.substr(pos + 3);
+  return bucket_key.substr(0, bucket_key.find_first_of("?#"));
 }
 
 Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(

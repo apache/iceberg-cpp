@@ -37,6 +37,11 @@ namespace iceberg {
 
 namespace {
 
+std::string ForeignSchemeUri(std::string local_path) {
+  std::ranges::replace(local_path, '\\', '/');
+  return "x-store://" + local_path;
+}
+
 struct CloseState {
   bool closed = false;
 };
@@ -408,9 +413,29 @@ TEST_F(LocalFileIOTest, StdReadKeepsPositionAvailableAtEof) {
 TEST_F(LocalFileIOTest, ResolvesForeignSchemeToUnderlyingPath) {
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "hello world"), IsOk());
 
-  auto read_res = file_io_->ReadFile("x-store://" + temp_filepath_, std::nullopt);
+  auto read_res = file_io_->ReadFile(ForeignSchemeUri(temp_filepath_), std::nullopt);
   EXPECT_THAT(read_res, IsOk());
   EXPECT_THAT(read_res, HasValue(::testing::Eq("hello world")));
+
+  auto with_query = file_io_->ReadFile(ForeignSchemeUri(temp_filepath_) + "?versionId=42",
+                                       std::nullopt);
+  EXPECT_THAT(with_query, IsOk());
+  EXPECT_THAT(with_query, HasValue(::testing::Eq("hello world")));
+}
+
+TEST_F(LocalFileIOTest, PropagatesNonSchemeMismatchUriError) {
+  auto read_res = file_io_->ReadFile("file:///tmp/%ZZ", std::nullopt);
+  EXPECT_THAT(read_res, IsError(ErrorKind::kUnknownError));
+  EXPECT_THAT(read_res, HasErrorMessage("Cannot parse URI"));
+}
+
+TEST_F(LocalFileIOTest, FallbackPreservesPercentEncodingInKey) {
+  std::string encoded_path = temp_filepath_ + "%20x";
+  ASSERT_THAT(file_io_->WriteFile(encoded_path, "raw"), IsOk());
+
+  auto read_res = file_io_->ReadFile(ForeignSchemeUri(encoded_path), std::nullopt);
+  EXPECT_THAT(read_res, IsOk());
+  EXPECT_THAT(read_res, HasValue(::testing::Eq("raw")));
 }
 
 TEST(FileIOAdapterTest, InputAdapterRejectsReadsAfterClose) {
