@@ -94,14 +94,14 @@ jobs:
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Cache vcpkg packages
-        if: ${{ matrix.sigv4 == 'ON' }}
+        if: ${{ matrix.sigv4 == 'ON' && matrix.s3 == 'OFF' }}
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         id: vcpkg-cache
         with:
           path: /usr/local/share/vcpkg/installed
           key: vcpkg-x64-linux-aws-sdk-cpp-s3-${{ matrix.s3 }}-sigv4-${{ matrix.sigv4 }}-${{ hashFiles('.github/workflows/aws_test.yml') }}
       - name: Install AWS SDK via vcpkg
-        if: ${{ matrix.sigv4 == 'ON' && steps.vcpkg-cache.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.sigv4 == 'ON' && matrix.s3 == 'OFF' && steps.vcpkg-cache.outputs.cache-hit != 'true' }}
         shell: bash
         # Retry to ride out transient GitHub/mirror download failures (504s).
         run: |
@@ -126,7 +126,7 @@ jobs:
       - name: Build and test Iceberg
         shell: bash
         env:
-          CMAKE_TOOLCHAIN_FILE: ${{ matrix.sigv4 == 'ON' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
+          CMAKE_TOOLCHAIN_FILE: ${{ matrix.sigv4 == 'ON' && matrix.s3 == 'OFF' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
         run: ci/scripts/build_iceberg.sh "$(pwd)" OFF OFF ${{ matrix.s3 }} ${{ matrix.sigv4 }}
 
   # Exercise the Meson build with SigV4 enabled (resolves aws-cpp-sdk-core via

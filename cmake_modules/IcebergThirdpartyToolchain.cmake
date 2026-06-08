@@ -20,6 +20,22 @@
 set(ICEBERG_SYSTEM_DEPENDENCIES)
 set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 
+if(ICEBERG_SIGV4)
+  set(ICEBERG_AWSSDK_SOURCE_RESOLVED "${ICEBERG_AWSSDK_SOURCE}")
+  if(ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "AUTO")
+    if(ICEBERG_S3)
+      set(ICEBERG_AWSSDK_SOURCE_RESOLVED "BUNDLED")
+    else()
+      set(ICEBERG_AWSSDK_SOURCE_RESOLVED "SYSTEM")
+    endif()
+  endif()
+  if(ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "BUNDLED" AND NOT ICEBERG_S3)
+    message(FATAL_ERROR "ICEBERG_AWSSDK_SOURCE=BUNDLED requires ICEBERG_S3=ON: "
+                        "the bundled AWS SDK is provided by Arrow's S3 support.")
+  endif()
+  message(STATUS "AWS SDK source for SigV4: ${ICEBERG_AWSSDK_SOURCE_RESOLVED}")
+endif()
+
 # ----------------------------------------------------------------------
 # Versions and URLs for toolchain builds
 #
@@ -110,9 +126,9 @@ function(resolve_arrow_dependency)
   set(ARROW_RUNTIME_SIMD_LEVEL "NONE")
   set(ARROW_POSITION_INDEPENDENT_CODE ON)
   set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
-  # With SigV4 also on, make Arrow's S3 reuse the system AWS SDK (the one SigV4
-  # finds) instead of bundling its own, so only one AWS SDK is linked (no ODR).
-  if(ICEBERG_S3 AND ICEBERG_SIGV4)
+  if(ICEBERG_S3
+     AND ICEBERG_SIGV4
+     AND ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "SYSTEM")
     set(AWSSDK_SOURCE "SYSTEM")
   endif()
   set(ARROW_WITH_ZLIB ON)
@@ -643,6 +659,10 @@ endif()
 # AWS SDK for C++
 
 function(resolve_aws_sdk_dependency)
+  if(ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "BUNDLED")
+    message(STATUS "SigV4 reuses Arrow's bundled AWS SDK (aws-cpp-sdk-core)")
+    return()
+  endif()
   find_package(AWSSDK REQUIRED COMPONENTS core)
   list(APPEND ICEBERG_SYSTEM_DEPENDENCIES AWSSDK)
   set(ICEBERG_SYSTEM_DEPENDENCIES

@@ -54,6 +54,12 @@ option(ICEBERG_SQL_POSTGRESQL "Build the PostgreSQL connector for the SQL catalo
 option(ICEBERG_SQL_MYSQL "Build the MySQL connector for the SQL catalog" OFF)
 option(ICEBERG_S3 "Build with S3 support" OFF)
 option(ICEBERG_SIGV4 "Build SigV4 authentication support (requires AWS SDK)" OFF)
+set(ICEBERG_AWSSDK_SOURCE
+    "AUTO"
+    CACHE STRING "AWS SDK source for SigV4: AUTO (reuse Arrow's bundled AWS SDK when \
+ICEBERG_S3 is ON, otherwise SYSTEM), SYSTEM (find an installed AWS SDK), or \
+BUNDLED (reuse Arrow's bundled AWS SDK; requires ICEBERG_S3)")
+set_property(CACHE ICEBERG_AWSSDK_SOURCE PROPERTY STRINGS AUTO SYSTEM BUNDLED)
 option(ICEBERG_ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(ICEBERG_ENABLE_UBSAN "Enable Undefined Behavior Sanitizer" OFF)
 
