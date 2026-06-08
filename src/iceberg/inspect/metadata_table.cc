@@ -76,7 +76,7 @@ MetadataTable::~MetadataTable() = default;
 
 Status MetadataTable::Refresh() { return source_table_->Refresh(); }
 
-Result<std::unique_ptr<TableScanBuilder>> MetadataTable::NewScan() const {
+Result<std::unique_ptr<DataTableScanBuilder>> MetadataTable::NewScan() const {
   return NotSupported("TODO: Scanning metadata tables is not yet supported");
 };
 

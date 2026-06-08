@@ -96,7 +96,7 @@ class ICEBERG_EXPORT MetadataTable : public StaticTable {
   ///
   /// Once a table scan builder is created, it can be refined to project columns and
   /// filter data.
-  Result<std::unique_ptr<TableScanBuilder>> NewScan() const override;
+  Result<std::unique_ptr<DataTableScanBuilder>> NewScan() const override;
 
   ~MetadataTable();
 
