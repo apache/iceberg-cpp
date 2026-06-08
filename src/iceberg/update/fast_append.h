@@ -72,6 +72,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
       const TableMetadata& metadata_to_update,
       const std::shared_ptr<Snapshot>& snapshot) override;
   std::unordered_map<std::string, std::string> Summary() override;
+  void SetSummaryProperty(const std::string& property, const std::string& value) override;
   Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
   bool CleanupAfterCommit() const override;
 
@@ -85,7 +86,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   ///
   /// \param manifest The manifest to copy
   /// \return The copied manifest file
-  Result<ManifestFile> CopyManifest(const ManifestFile& manifest);
+  Result<ManifestFile> CopyManifest(const ManifestFile& manifest, bool update_summary);
 
   /// \brief Write new manifests for the accumulated data files.
   ///
@@ -95,7 +96,11 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
  private:
   std::string table_name_;
   std::unordered_map<int32_t, DataFileSet> new_data_files_by_spec_;
+  SnapshotSummaryBuilder added_data_files_summary_;
+  SnapshotSummaryBuilder appended_manifests_summary_;
+  std::unordered_map<std::string, std::string> custom_summary_properties_;
   std::vector<ManifestFile> append_manifests_;
+  std::vector<ManifestFile> append_manifests_to_copy_;
   std::vector<ManifestFile> rewritten_append_manifests_;
   std::vector<ManifestFile> new_manifests_;
   bool has_new_files_{false};
