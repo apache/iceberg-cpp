@@ -226,7 +226,7 @@ function(resolve_avro_dependency)
     fetchcontent_declare(avro-cpp
                          ${FC_DECLARE_COMMON_OPTIONS}
                          GIT_REPOSITORY ${AVRO_GIT_REPOSITORY}
-                         GIT_TAG 11fb55500bed9fbe9af53b85112cd13887f0ce80
+                         GIT_TAG 997d50d312613e921598aaed30b082f9bcf9c6ea
                          SOURCE_SUBDIR
                          lang/c++
                          FIND_PACKAGE_ARGS

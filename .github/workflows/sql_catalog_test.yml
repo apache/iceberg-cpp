@@ -80,12 +80,6 @@ jobs:
         run: |
           echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
-      - name: Install dependencies on macOS
-        if: ${{ startsWith(matrix.runs-on, 'macos') }}
-        shell: bash
-        run: |
-          brew install fmt
-          echo "CMAKE_PREFIX_PATH=$(brew --prefix fmt):${CMAKE_PREFIX_PATH:-}" >> "${GITHUB_ENV}"
       - name: Install dependencies on Windows
         if: ${{ startsWith(matrix.runs-on, 'windows') }}
         shell: pwsh
