@@ -109,6 +109,9 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Create a new MergeAppend to append data files and merge manifests.
   Result<std::shared_ptr<MergeAppend>> NewMergeAppend();
 
+  /// \brief Create a new DeleteFiles to delete data files and commit the changes.
+  Result<std::shared_ptr<DeleteFiles>> NewDeleteFiles();
+
   /// \brief Create a new SnapshotManager to manage snapshots.
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 

@@ -31,6 +31,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/delete_files.h"
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
@@ -222,6 +223,12 @@ Result<std::shared_ptr<MergeAppend>> Table::NewMergeAppend() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
   return MergeAppend::Make(name().name, std::move(ctx));
+}
+
+Result<std::shared_ptr<DeleteFiles>> Table::NewDeleteFiles() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
+  return DeleteFiles::Make(name().name, std::move(ctx));
 }
 
 Result<std::shared_ptr<UpdateStatistics>> Table::NewUpdateStatistics() {
