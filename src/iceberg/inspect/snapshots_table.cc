@@ -35,7 +35,7 @@ SnapshotsTable::SnapshotsTable(std::shared_ptr<Table> table)
 
 SnapshotsTable::~SnapshotsTable() = default;
 
-std::shared_ptr<Schema> SnapshotsTable::GetSchema() const {
+std::shared_ptr<Schema> SnapshotsTable::GetSchema() const override {
   return std::make_shared<Schema>(
       std::vector<SchemaField>{
           SchemaField::MakeRequired(1, "committed_at", timestamp_tz()),
@@ -52,7 +52,7 @@ std::shared_ptr<Schema> SnapshotsTable::GetSchema() const {
 }
 
 TableIdentifier SnapshotsTable::CreateName(const TableIdentifier& source_name) {
-  return TableIdentifier{source_name.ns, source_name.name + ".snapshots"};
+  return TableIdentifier{.ns = source_name.ns, .name = source_name.name + ".snapshots"};
 }
 
 Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(

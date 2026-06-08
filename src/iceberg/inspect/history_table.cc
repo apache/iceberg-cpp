@@ -35,7 +35,7 @@ HistoryTable::HistoryTable(std::shared_ptr<Table> table)
 
 HistoryTable::~HistoryTable() = default;
 
-std::shared_ptr<Schema> HistoryTable::GetSchema() const {
+std::shared_ptr<Schema> HistoryTable::GetSchema() const override {
   return std::make_shared<Schema>(
       std::vector<SchemaField>{
           SchemaField::MakeRequired(1, "made_current_at", timestamp_tz()),
@@ -46,7 +46,7 @@ std::shared_ptr<Schema> HistoryTable::GetSchema() const {
 }
 
 TableIdentifier HistoryTable::CreateName(const TableIdentifier& source_name) {
-  return TableIdentifier{source_name.ns, source_name.name + ".history"};
+  return TableIdentifier{.ns = source_name.ns, .name = source_name.name + ".history"};
 }
 
 Result<std::unique_ptr<HistoryTable>> HistoryTable::Make(std::shared_ptr<Table> table) {
