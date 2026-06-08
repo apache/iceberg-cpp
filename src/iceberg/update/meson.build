@@ -17,6 +17,7 @@
 
 install_headers(
     [
+        'delete_files.h',
         'expire_snapshots.h',
         'fast_append.h',
         'merging_snapshot_update.h',

@@ -176,6 +176,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new FastAppend to append data files and commit the changes.
   virtual Result<std::shared_ptr<FastAppend>> NewFastAppend();
 
+  /// \brief Create a new DeleteFiles to delete data files and commit the changes.
+  virtual Result<std::shared_ptr<DeleteFiles>> NewDeleteFiles();
+
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 

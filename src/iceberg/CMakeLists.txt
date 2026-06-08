@@ -94,6 +94,7 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    update/delete_files.cc
     update/expire_snapshots.cc
     update/fast_append.cc
     update/merging_snapshot_update.cc
