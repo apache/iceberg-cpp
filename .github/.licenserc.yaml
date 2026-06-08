@@ -31,5 +31,6 @@ header:
     - 'requirements.txt'
     - 'src/iceberg/util/murmurhash3_internal.*'
     - 'src/iceberg/test/resources/**'
+    - 'thirdparty/**'
 
   comment: on-failure
