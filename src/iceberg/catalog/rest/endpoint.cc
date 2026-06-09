@@ -24,22 +24,6 @@
 
 namespace iceberg::rest {
 
-constexpr std::string_view ToString(HttpMethod method) {
-  switch (method) {
-    case HttpMethod::kGet:
-      return "GET";
-    case HttpMethod::kPost:
-      return "POST";
-    case HttpMethod::kPut:
-      return "PUT";
-    case HttpMethod::kDelete:
-      return "DELETE";
-    case HttpMethod::kHead:
-      return "HEAD";
-  }
-  return "UNKNOWN";
-}
-
 Result<Endpoint> Endpoint::Make(HttpMethod method, std::string_view path) {
   if (path.empty()) {
     return InvalidArgument("Endpoint cannot have empty path");

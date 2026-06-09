@@ -35,7 +35,21 @@ namespace iceberg::rest {
 enum class HttpMethod : uint8_t { kGet, kPost, kPut, kDelete, kHead };
 
 /// \brief Convert HttpMethod to string representation.
-constexpr std::string_view ToString(HttpMethod method);
+constexpr std::string_view ToString(HttpMethod method) {
+  switch (method) {
+    case HttpMethod::kGet:
+      return "GET";
+    case HttpMethod::kPost:
+      return "POST";
+    case HttpMethod::kPut:
+      return "PUT";
+    case HttpMethod::kDelete:
+      return "DELETE";
+    case HttpMethod::kHead:
+      return "HEAD";
+  }
+  return "UNKNOWN";
+}
 
 /// \brief Ordered collection of HTTP headers preserving repeated values.
 ///
