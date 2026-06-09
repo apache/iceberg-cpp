@@ -764,18 +764,16 @@ MergingSnapshotUpdate::MergeDVs() {
     }
     if (dvs.size() > 1) {
       if (!writer) {
-        ICEBERG_ASSIGN_OR_RAISE(
-            merged_dv_path,
-            ctx_->NewDataLocation(std::format("merged-dvs-{}-{}.puffin", SnapshotId(),
-                                             merged_dv_count_++)));
+        ICEBERG_ASSIGN_OR_RAISE(merged_dv_path, ctx_->NewDataLocation(std::format(
+                                                    "merged-dvs-{}-{}.puffin",
+                                                    SnapshotId(), merged_dv_count_++)));
         ICEBERG_ASSIGN_OR_RAISE(auto output,
                                 ctx_->table->io()->NewOutputFile(merged_dv_path));
-        ICEBERG_ASSIGN_OR_RAISE(writer,
-                                puffin::PuffinWriter::Make(std::move(output)));
+        ICEBERG_ASSIGN_OR_RAISE(writer, puffin::PuffinWriter::Make(std::move(output)));
       }
-      ICEBERG_ASSIGN_OR_RAISE(auto merged,
-                              MergeDVsForReferencedFile(referenced_file, dvs, *writer,
-                                                        merged_dv_path));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto merged,
+          MergeDVsForReferencedFile(referenced_file, dvs, *writer, merged_dv_path));
       merged_files.push_back(merged.file);
       merged_dvs_.push_back(merged);
       result.push_back(std::move(merged));

@@ -48,7 +48,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
-#include "iceberg/update/fast_append.h"         // IWYU pragma: keep
+#include "iceberg/update/fast_append.h"        // IWYU pragma: keep
 #include "iceberg/update/update_properties.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
@@ -871,9 +871,9 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
   SetTableFormatVersion(3);
 
   ICEBERG_UNWRAP_OR_FAIL(auto first_dv,
-                          WriteDeletionVector("/delete/dv_a.puffin", {1, 3}, file_a_));
+                         WriteDeletionVector("/delete/dv_a.puffin", {1, 3}, file_a_));
   ICEBERG_UNWRAP_OR_FAIL(auto second_dv,
-                          WriteDeletionVector("/delete/dv_b.puffin", {3, 5}, file_a_));
+                         WriteDeletionVector("/delete/dv_b.puffin", {3, 5}, file_a_));
   ICEBERG_UNWRAP_OR_FAIL(auto third_dv,
                          WriteDeletionVector("/delete/dv_c.puffin", {7}, file_b_));
   ICEBERG_UNWRAP_OR_FAIL(auto fourth_dv,
@@ -887,10 +887,9 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto apply, static_cast<SnapshotUpdate&>(*op).Apply());
   SnapshotCache snapshot_cache(apply.snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests,
-                          snapshot_cache.DeleteManifests(file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, snapshot_cache.DeleteManifests(file_io_));
   std::vector<ManifestFile> delete_manifest_vector(delete_manifests.begin(),
-                                                    delete_manifests.end());
+                                                   delete_manifests.end());
   ICEBERG_UNWRAP_OR_FAIL(auto entries,
                          ReadAllEntries(delete_manifest_vector, *table_->metadata()));
 

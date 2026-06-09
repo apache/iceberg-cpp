@@ -47,7 +47,7 @@ ICEBERG_EXPORT Result<FileMetadata> FileMetadataFromJson(const nlohmann::json& j
 
 /// \brief Serialize a FileMetadata to a JSON string.
 ICEBERG_EXPORT std::string ToJsonString(const FileMetadata& file_metadata,
-                                             bool pretty = false);
+                                        bool pretty = false);
 
 /// \brief Deserialize a FileMetadata from a JSON string.
 ICEBERG_EXPORT Result<FileMetadata> FileMetadataFromJsonString(
