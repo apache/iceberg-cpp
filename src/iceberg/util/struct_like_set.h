@@ -34,6 +34,9 @@
 
 namespace iceberg {
 
+/// \brief Compare two StructLike rows by scalar values.
+ICEBERG_EXPORT Result<bool> StructLikeEqual(const StructLike& lhs, const StructLike& rhs);
+
 /// \brief A set of StructLike rows with type-aware hashing and equality.
 ///
 /// As StructLike uses view semantics, this set makes deep copies of inserted rows

@@ -21,10 +21,13 @@
 
 #include <algorithm>
 #include <array>
+#include <format>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "iceberg/constants.h"
@@ -32,6 +35,8 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/manifest_evaluator.h"
 #include "iceberg/expression/projections.h"
+#include "iceberg/file_io.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_group.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -39,6 +44,7 @@
 #include "iceberg/manifest/manifest_util_internal.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/puffin_dv_io.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
@@ -48,6 +54,7 @@
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
+#include "iceberg/util/struct_like_set.h"
 
 namespace iceberg {
 
@@ -751,9 +758,11 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDataManifests()
 }
 
 Result<std::vector<MergingSnapshotUpdate::PendingDeleteFile>>
-MergingSnapshotUpdate::MergeDVs() const {
+MergingSnapshotUpdate::MergeDVs() {
   std::vector<PendingDeleteFile> result;
   result.reserve(dvs_by_referenced_file_.size());
+  std::vector<DeletionVectorMergeGroup> groups;
+  std::vector<std::optional<int64_t>> data_sequence_numbers;
 
   for (const auto& entry : dvs_by_referenced_file_.entries()) {
     const auto& referenced_file = entry.referenced_file;
@@ -761,16 +770,85 @@ MergingSnapshotUpdate::MergeDVs() const {
     if (dvs.empty()) {
       continue;
     }
-    if (dvs.size() > 1) {
-      // TODO(Guotao): Merge duplicate DVs for one referenced data file once C++
-      // has DVUtil/Puffin DV rewriting; Java merges them before writing manifests.
-      return NotImplemented(
-          "Merging multiple deletion vectors is not supported yet for referenced "
-          "data file: {}",
-          referenced_file);
+    if (dvs.size() == 1) {
+      result.push_back(dvs.front());
+      continue;
     }
 
-    result.push_back(dvs.front());
+    const auto& first_file = dvs.front().file;
+    const auto first_data_sequence_number = dvs.front().data_sequence_number;
+    const auto first_spec_id = first_file->partition_spec_id;
+    ICEBERG_PRECHECK(first_spec_id.has_value(), "DV must have a partition spec ID: {}",
+                     first_file->file_path);
+
+    for (const auto& dv : dvs) {
+      ICEBERG_PRECHECK(dv.data_sequence_number == first_data_sequence_number,
+                       "Cannot merge DVs, mismatched sequence numbers for {}",
+                       referenced_file);
+      ICEBERG_PRECHECK(dv.file->partition_spec_id == first_spec_id,
+                       "Cannot merge DVs, mismatched partition specs for {}",
+                       referenced_file);
+      // TODO(gangwu): Java DVUtil.validateCanMerge compares partitions with
+      // Comparators.forType(spec.partitionType()). Use a typed C++ comparator if
+      // StructLikeEqual's scalar equality is not enough for future partition types.
+      ICEBERG_ASSIGN_OR_RAISE(auto same_partition,
+                              StructLikeEqual(dv.file->partition, first_file->partition));
+      ICEBERG_PRECHECK(same_partition,
+                       "Cannot merge DVs, mismatched partition tuples for {}",
+                       referenced_file);
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto spec, base().PartitionSpecById(*first_spec_id));
+    DeletionVectorMergeGroup group{
+        .referenced_data_file = referenced_file,
+        .spec = std::move(spec),
+        .partition = first_file->partition,
+    };
+    group.delete_files.reserve(dvs.size());
+    for (const auto& dv : dvs) {
+      group.delete_files.push_back(dv.file);
+    }
+    groups.push_back(std::move(group));
+    data_sequence_numbers.push_back(first_data_sequence_number);
+  }
+
+  if (groups.empty()) {
+    return result;
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto location_provider, ctx_->LocationProvider());
+  auto output_path = location_provider->NewDataLocation(
+      std::format("merged-dvs-{}-{}.puffin", SnapshotId(), ++dv_merge_attempt_));
+
+  auto merged_files =
+      PuffinDVIORegistry::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
+  if (!merged_files) {
+    std::ignore = DeleteFile(output_path);
+    return std::unexpected<Error>(std::move(merged_files.error()));
+  }
+
+  std::unordered_map<std::string, std::shared_ptr<DataFile>> merged_by_ref;
+  for (auto& file : merged_files.value()) {
+    ICEBERG_PRECHECK(file != nullptr, "Merged DV file must not be null");
+    ICEBERG_PRECHECK(file->referenced_data_file.has_value(),
+                     "Merged DV must have a referenced data file: {}", file->file_path);
+    const auto referenced_data_file = *file->referenced_data_file;
+    auto insert_result = merged_by_ref.emplace(referenced_data_file, std::move(file));
+    ICEBERG_PRECHECK(insert_result.second, "Duplicate merged DV for {}",
+                     referenced_data_file);
+  }
+  ICEBERG_PRECHECK(merged_by_ref.size() == groups.size(),
+                   "Expected {} merged DVs but got {}", groups.size(),
+                   merged_by_ref.size());
+
+  for (size_t pos = 0; pos < groups.size(); ++pos) {
+    auto iter = merged_by_ref.find(groups[pos].referenced_data_file);
+    ICEBERG_CHECK(iter != merged_by_ref.end(), "Missing merged DV for {}",
+                  groups[pos].referenced_data_file);
+    PendingDeleteFile merged{.file = std::move(iter->second),
+                             .data_sequence_number = data_sequence_numbers[pos]};
+    merged_dvs_.push_back(merged);
+    result.push_back(std::move(merged));
   }
 
   return result;
@@ -783,6 +861,13 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests
       std::ignore = DeleteFile(m.manifest_path);
     }
     cached_new_delete_manifests_.clear();
+    std::unordered_set<std::string> deleted_merged_dv_paths;
+    for (const auto& dv : merged_dvs_) {
+      if (deleted_merged_dv_paths.insert(dv.file->file_path).second) {
+        std::ignore = DeleteFile(dv.file->file_path);
+      }
+    }
+    merged_dvs_.clear();
     added_delete_files_summary_.Clear();
   }
 
@@ -988,6 +1073,15 @@ Status MergingSnapshotUpdate::CleanUncommittedAppends(
   // rewritten_append_manifests_ are always owned by the table.
   ICEBERG_RETURN_UNEXPECTED(
       DeleteUncommitted(rewritten_append_manifests_, committed, /*clear=*/true));
+  if (committed.empty()) {
+    std::unordered_set<std::string> deleted_merged_dv_paths;
+    for (const auto& dv : merged_dvs_) {
+      if (deleted_merged_dv_paths.insert(dv.file->file_path).second) {
+        std::ignore = DeleteFile(dv.file->file_path);
+      }
+    }
+  }
+  merged_dvs_.clear();
 
   // append_manifests_ are only owned by the table if the commit succeeded.
   if (!committed.empty()) {

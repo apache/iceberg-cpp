@@ -24,6 +24,7 @@ set(ICEBERG_SOURCES
     catalog/memory/in_memory_catalog.cc
     catalog/session_catalog.cc
     catalog/session_context.cc
+    puffin_dv_io.cc
     delete_file_index.cc
     expression/aggregate.cc
     expression/binder.cc
@@ -196,6 +197,7 @@ set(ICEBERG_DATA_SOURCES
     data/data_writer.cc
     data/delete_filter.cc
     data/delete_loader.cc
+    data/puffin_dv_register.cc
     data/deletion_vector_writer.cc
     data/dv_util.cc
     data/equality_delete_writer.cc

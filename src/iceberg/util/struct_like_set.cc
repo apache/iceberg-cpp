@@ -365,7 +365,7 @@ Status ValidateRowAgainstTypes(const StructLike& row,
   return {};
 }
 
-Result<bool> StructLikeEqual(const StructLike& lhs, const StructLike& rhs) {
+Result<bool> StructLikeEqualInternal(const StructLike& lhs, const StructLike& rhs) {
   if (lhs.num_fields() != rhs.num_fields()) {
     return false;
   }
@@ -417,7 +417,7 @@ Result<bool> MapLikeEqual(const MapLike& lhs, const MapLike& rhs) {
 }
 
 bool StructLikeEqualUnchecked(const StructLike& lhs, const StructLike& rhs) noexcept {
-  auto result = StructLikeEqual(lhs, rhs);
+  auto result = StructLikeEqualInternal(lhs, rhs);
   ICEBERG_DCHECK(result.has_value(), "Validated StructLike equality must not fail");
   return result.value_or(false);
 }
@@ -455,7 +455,7 @@ Result<bool> ScalarEqual(const Scalar& lhs, const Scalar& rhs) {
             const auto& r = std::get<std::shared_ptr<StructLike>>(other);
             if (!l && !r) return true;
             if (!l || !r) return false;
-            return StructLikeEqual(*l, *r);
+            return StructLikeEqualInternal(*l, *r);
           },
           [](const std::shared_ptr<ArrayLike>& l, const Scalar& other) -> Result<bool> {
             const auto& r = std::get<std::shared_ptr<ArrayLike>>(other);
@@ -474,6 +474,10 @@ Result<bool> ScalarEqual(const Scalar& lhs, const Scalar& rhs) {
 }
 
 }  // namespace
+
+Result<bool> StructLikeEqual(const StructLike& lhs, const StructLike& rhs) {
+  return StructLikeEqualInternal(lhs, rhs);
+}
 
 template <bool kValidate>
 StructLikeSet<kValidate>::StructLikeSet(const StructType& type, size_t arena_initial_size)

@@ -38,6 +38,7 @@
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/puffin_dv_io.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -56,6 +57,55 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+class RecordingPuffinDVIO final : public PuffinDVIO {
+ public:
+  struct Call {
+    std::string output_path;
+    std::vector<DeletionVectorMergeGroup> groups;
+  };
+
+  Result<std::vector<std::shared_ptr<DataFile>>> MergeAndWriteDVs(
+      std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
+      const std::shared_ptr<FileIO>& /*io*/) override {
+    calls.push_back(Call{.output_path = std::string(output_path),
+                         .groups = {groups.begin(), groups.end()}});
+
+    std::vector<std::shared_ptr<DataFile>> result;
+    result.reserve(groups.size());
+    for (const auto& group : groups) {
+      auto file = std::make_shared<DataFile>(*group.delete_files.front());
+      file->file_path = std::string(output_path);
+      file->file_format = FileFormatType::kPuffin;
+      file->referenced_data_file = group.referenced_data_file;
+      file->record_count = 0;
+      for (const auto& delete_file : group.delete_files) {
+        file->record_count += delete_file->record_count;
+      }
+      file->content_offset = static_cast<int64_t>(result.size()) * 100;
+      file->content_size_in_bytes = 100;
+      result.push_back(std::move(file));
+    }
+    return result;
+  }
+
+  std::vector<Call> calls;
+};
+
+class ScopedPuffinDVIORegistry {
+ public:
+  explicit ScopedPuffinDVIORegistry(PuffinDVIOFactory factory)
+      : previous_factory_(std::move(PuffinDVIORegistry::GetFactory())) {
+    PuffinDVIORegistry::GetFactory() = std::move(factory);
+  }
+
+  ~ScopedPuffinDVIORegistry() {
+    PuffinDVIORegistry::GetFactory() = std::move(previous_factory_);
+  }
+
+ private:
+  PuffinDVIOFactory previous_factory_;
+};
 
 /// \brief Concrete subclass of MergingSnapshotUpdate for testing.
 class TestMergeAppend : public MergingSnapshotUpdate {
@@ -261,6 +311,20 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
   std::shared_ptr<DataFile> MakeDeleteFile(const std::string& path, int64_t partition_x) {
     auto f = MakeDataFile(path, partition_x);
     f->content = DataFile::Content::kPositionDeletes;
+    return f;
+  }
+
+  std::shared_ptr<DataFile> MakeDeletionVector(const std::string& path,
+                                               const std::shared_ptr<DataFile>& data_file,
+                                               int64_t record_count) {
+    auto f = MakeDeleteFile(path, 0);
+    f->file_format = FileFormatType::kPuffin;
+    f->partition = data_file->partition;
+    f->partition_spec_id = data_file->partition_spec_id;
+    f->referenced_data_file = data_file->file_path;
+    f->record_count = record_count;
+    f->content_offset = 0;
+    f->content_size_in_bytes = 100;
     return f;
   }
 
@@ -976,6 +1040,78 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV3AllowsDeletionVector) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
+}
+
+TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
+  SetTableFormatVersion(3);
+
+  auto dv_io = std::make_shared<RecordingPuffinDVIO>();
+  ScopedPuffinDVIORegistry registry(
+      [dv_io]() -> Result<std::shared_ptr<PuffinDVIO>> { return dv_io; });
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+
+  auto dv_a1 = MakeDeletionVector("/delete/dv_a1.puffin", file_a_, 1);
+  auto dv_a2 = MakeDeletionVector("/delete/dv_a2.puffin", file_a_, 2);
+  auto dv_b = MakeDeletionVector("/delete/dv_b.puffin", file_b_, 3);
+
+  EXPECT_THAT(op->AddDelete(dv_a1, 7), IsOk());
+  EXPECT_THAT(op->AddDelete(dv_a2, 7), IsOk());
+  EXPECT_THAT(op->AddDelete(dv_b, 8), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), nullptr));
+  auto delete_manifest_it =
+      std::ranges::find_if(manifests, [](const ManifestFile& manifest) {
+        return manifest.content == ManifestContent::kDeletes;
+      });
+  ASSERT_NE(delete_manifest_it, manifests.end());
+  ICEBERG_UNWRAP_OR_FAIL(auto entries,
+                         ReadAllEntries(std::vector<ManifestFile>{*delete_manifest_it},
+                                        *table_->metadata()));
+
+  ASSERT_EQ(dv_io->calls.size(), 1U);
+  EXPECT_THAT(dv_io->calls[0].output_path, ::testing::HasSubstr("/data/merged-dvs-"));
+  ASSERT_EQ(dv_io->calls[0].groups.size(), 1U);
+  EXPECT_EQ(dv_io->calls[0].groups[0].referenced_data_file, file_a_->file_path);
+  EXPECT_THAT(dv_io->calls[0].groups[0].delete_files, ::testing::SizeIs(2));
+
+  ASSERT_EQ(entries.size(), 2U);
+  auto merged_it = std::ranges::find_if(entries, [&](const ManifestEntry& entry) {
+    return entry.data_file->referenced_data_file == file_a_->file_path;
+  });
+  ASSERT_NE(merged_it, entries.end());
+  EXPECT_THAT(merged_it->data_file->file_path, ::testing::HasSubstr("/data/merged-dvs-"));
+  EXPECT_EQ(merged_it->data_file->record_count, 3);
+  ASSERT_TRUE(merged_it->sequence_number.has_value());
+  EXPECT_EQ(*merged_it->sequence_number, 7);
+
+  auto single_it = std::ranges::find_if(entries, [&](const ManifestEntry& entry) {
+    return entry.data_file->referenced_data_file == file_b_->file_path;
+  });
+  ASSERT_NE(single_it, entries.end());
+  EXPECT_EQ(single_it->data_file->file_path, dv_b->file_path);
+  ASSERT_TRUE(single_it->sequence_number.has_value());
+  EXPECT_EQ(*single_it->sequence_number, 8);
+}
+
+TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectorsWithNullPartition) {
+  SetTableFormatVersion(3);
+
+  auto dv_io = std::make_shared<RecordingPuffinDVIO>();
+  ScopedPuffinDVIORegistry registry(
+      [dv_io]() -> Result<std::shared_ptr<PuffinDVIO>> { return dv_io; });
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+
+  file_a_->partition = PartitionValues({Literal::Null(int64())});
+  auto dv_a1 = MakeDeletionVector("/delete/dv_a1.puffin", file_a_, 1);
+  auto dv_a2 = MakeDeletionVector("/delete/dv_a2.puffin", file_a_, 2);
+
+  EXPECT_THAT(op->AddDelete(dv_a1, 7), IsOk());
+  EXPECT_THAT(op->AddDelete(dv_a2, 7), IsOk());
+
+  EXPECT_THAT(op->Apply(*table_->metadata(), nullptr), IsOk());
+  ASSERT_EQ(dv_io->calls.size(), 1U);
+  ASSERT_EQ(dv_io->calls[0].groups.size(), 1U);
+  EXPECT_EQ(dv_io->calls[0].groups[0].referenced_data_file, file_a_->file_path);
 }
 
 TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileRejectsUnsupportedVersion) {
