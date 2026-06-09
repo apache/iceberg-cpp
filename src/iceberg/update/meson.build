@@ -21,6 +21,7 @@ install_headers(
         'fast_append.h',
         'merging_snapshot_update.h',
         'pending_update.h',
+        'row_delta.h',
         'set_snapshot.h',
         'snapshot_manager.h',
         'snapshot_update.h',

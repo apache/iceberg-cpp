@@ -224,6 +224,7 @@ class TransactionContext;
 class ExpireSnapshots;
 class FastAppend;
 class PendingUpdate;
+class RowDelta;
 class SetSnapshot;
 class SnapshotManager;
 class SnapshotUpdate;
