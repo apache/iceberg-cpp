@@ -243,6 +243,7 @@ class ExpireSnapshots;
 class FastAppend;
 class MergeAppend;
 class PendingUpdate;
+class RowDelta;
 class SetSnapshot;
 class SnapshotManager;
 class SnapshotUpdate;

@@ -288,6 +288,14 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
       const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
       bool case_sensitive = true);
 
+  /// \brief Return an error if a staged deletion vector conflicts with a deletion
+  /// vector added since starting_snapshot_id.
+  Status ValidateAddedDVs(const TableMetadata& metadata,
+                          std::optional<int64_t> starting_snapshot_id,
+                          std::shared_ptr<Expression> conflict_filter,
+                          const std::shared_ptr<Snapshot>& parent,
+                          std::shared_ptr<FileIO> io) const;
+
  private:
   struct PendingDeleteFile {
     std::shared_ptr<DataFile> file;
@@ -323,12 +331,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   Status AddDeleteFile(std::shared_ptr<DataFile> file,
                        std::optional<int64_t> data_sequence_number);
-
-  Status ValidateAddedDVs(const TableMetadata& metadata,
-                          std::optional<int64_t> starting_snapshot_id,
-                          std::shared_ptr<Expression> conflict_filter,
-                          const std::shared_ptr<Snapshot>& parent,
-                          std::shared_ptr<FileIO> io) const;
 
   Status ManagersReady() const;
 
