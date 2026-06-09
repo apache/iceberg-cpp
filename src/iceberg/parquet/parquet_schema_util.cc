@@ -459,7 +459,8 @@ Status ValidateParquetTypeCompatibility(
       }
       break;
     case TypeId::kList:
-      if (arrow_type->id() == ::arrow::Type::LIST) {
+      if (arrow_type->id() == ::arrow::Type::LIST ||
+          arrow_type->id() == ::arrow::Type::LARGE_LIST) {
         return {};
       }
       break;
