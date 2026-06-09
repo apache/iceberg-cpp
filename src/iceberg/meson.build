@@ -17,6 +17,7 @@
 
 conf_data = configuration_data()
 version = meson.project_version()
+version_suffix = '-SNAPSHOT'
 components = version.split('.')
 assert(
     components.length() >= 3,
@@ -28,7 +29,7 @@ ver_patch = components[2]
 conf_data.set('PROJECT_VERSION_MAJOR', ver_major)
 conf_data.set('PROJECT_VERSION_MINOR', ver_minor)
 conf_data.set('PROJECT_VERSION_PATCH', ver_patch)
-conf_data.set('PROJECT_VERSION', version)
+conf_data.set('ICEBERG_VERSION_STRING', version + version_suffix)
 conf_data.set('PROJECT_NAME', meson.project_name())
 configure_file(
     input: 'version.h.in',
