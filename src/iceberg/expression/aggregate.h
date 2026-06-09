@@ -80,7 +80,7 @@ class ICEBERG_EXPORT UnboundAggregateImpl : public UnboundAggregate,
   static Result<std::shared_ptr<UnboundAggregateImpl<B>>> Make(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
 
-  std::shared_ptr<NamedReference> reference() override {
+  std::shared_ptr<const NamedReference> reference() const override {
     return BASE::term() ? BASE::term()->reference() : nullptr;
   }
 

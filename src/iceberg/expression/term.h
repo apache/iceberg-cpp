@@ -113,7 +113,9 @@ class ICEBERG_EXPORT NamedReference
   Result<std::shared_ptr<BoundReference>> Bind(const Schema& schema,
                                                bool case_sensitive) const override;
 
-  std::shared_ptr<NamedReference> reference() override { return shared_from_this(); }
+  std::shared_ptr<const NamedReference> reference() const override {
+    return shared_from_this();
+  }
 
   std::string ToString() const override;
 
@@ -185,7 +187,7 @@ class ICEBERG_EXPORT UnboundTransform : public UnboundTerm<class BoundTransform>
   Result<std::shared_ptr<BoundTransform>> Bind(const Schema& schema,
                                                bool case_sensitive) const override;
 
-  std::shared_ptr<NamedReference> reference() override { return ref_; }
+  std::shared_ptr<const NamedReference> reference() const override { return ref_; }
 
   const std::shared_ptr<Transform>& transform() const { return transform_; }
 

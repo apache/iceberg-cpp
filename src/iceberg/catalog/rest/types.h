@@ -29,12 +29,8 @@
 
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/expression/expression.h"
-#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
-#include "iceberg/schema.h"
 #include "iceberg/table_identifier.h"
-#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/macros.h"
 
@@ -42,6 +38,17 @@
 /// Request and response types for Iceberg REST Catalog API.
 
 namespace iceberg::rest {
+
+/// \brief Status of a REST server-side scan planning operation.
+enum class PlanStatus {
+  kSubmitted,
+  kCompleted,
+  kCancelled,
+  kFailed,
+};
+
+ICEBERG_REST_EXPORT std::string_view ToString(PlanStatus status);
+ICEBERG_REST_EXPORT Result<PlanStatus> PlanStatusFromString(std::string_view status_str);
 
 /// \brief Server-provided configuration for the catalog.
 struct ICEBERG_REST_EXPORT CatalogConfig {
@@ -319,8 +326,8 @@ struct ICEBERG_REST_EXPORT PlanTableScanRequest {
 /// \brief Response from initiating a scan planning operation, including plan status and
 /// initial scan tasks.
 struct ICEBERG_REST_EXPORT PlanTableScanResponse {
-  std::vector<std::string> plan_tasks;
-  std::vector<std::shared_ptr<FileScanTask>> file_scan_tasks;
+  std::optional<std::vector<std::string>> plan_tasks;
+  std::optional<std::vector<std::shared_ptr<FileScanTask>>> file_scan_tasks;
   std::vector<std::shared_ptr<DataFile>> delete_files;
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::string plan_id;
@@ -335,8 +342,8 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse {
 /// \brief Response from polling an asynchronous scan plan, including current status and
 /// available scan tasks.
 struct ICEBERG_REST_EXPORT FetchPlanningResultResponse {
-  std::vector<std::string> plan_tasks;
-  std::vector<std::shared_ptr<FileScanTask>> file_scan_tasks;
+  std::optional<std::vector<std::string>> plan_tasks;
+  std::optional<std::vector<std::shared_ptr<FileScanTask>>> file_scan_tasks;
   std::vector<std::shared_ptr<DataFile>> delete_files;
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::optional<ErrorResponse> error;
@@ -358,8 +365,8 @@ struct ICEBERG_REST_EXPORT FetchScanTasksRequest {
 
 /// \brief Response containing the file scan tasks for a given plan task token.
 struct ICEBERG_REST_EXPORT FetchScanTasksResponse {
-  std::vector<std::string> plan_tasks;
-  std::vector<std::shared_ptr<FileScanTask>> file_scan_tasks;
+  std::optional<std::vector<std::string>> plan_tasks;
+  std::optional<std::vector<std::shared_ptr<FileScanTask>>> file_scan_tasks;
   std::vector<std::shared_ptr<DataFile>> delete_files;
 
   Status Validate() const;

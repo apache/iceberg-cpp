@@ -20,15 +20,41 @@
 #include "iceberg/catalog/rest/types.h"
 
 #include <algorithm>
+#include <optional>
 
+#include "iceberg/expression/expression.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
 
 namespace iceberg::rest {
+
+std::string_view ToString(PlanStatus status) {
+  switch (status) {
+    case PlanStatus::kSubmitted:
+      return "submitted";
+    case PlanStatus::kCompleted:
+      return "completed";
+    case PlanStatus::kCancelled:
+      return "cancelled";
+    case PlanStatus::kFailed:
+      return "failed";
+  }
+  return "unknown";
+}
+
+Result<PlanStatus> PlanStatusFromString(std::string_view status_str) {
+  if (status_str == "submitted") return PlanStatus::kSubmitted;
+  if (status_str == "completed") return PlanStatus::kCompleted;
+  if (status_str == "cancelled") return PlanStatus::kCancelled;
+  if (status_str == "failed") return PlanStatus::kFailed;
+  return JsonParseError("Unknown plan status: {}", status_str);
+}
 
 bool CreateTableRequest::operator==(const CreateTableRequest& other) const {
   if (name != other.name || location != other.location ||
@@ -118,9 +144,22 @@ bool CommitTableResponse::operator==(const CommitTableResponse& other) const {
   return true;
 }
 
+namespace {
+
+bool ExpressionPtrEqual(const std::shared_ptr<Expression>& lhs,
+                        const std::shared_ptr<Expression>& rhs) {
+  if (lhs == rhs) {
+    return true;
+  }
+  return lhs && rhs && lhs->Equals(*rhs);
+}
+
+}  // namespace
+
 bool PlanTableScanRequest::operator==(const PlanTableScanRequest& other) const {
   return snapshot_id == other.snapshot_id && select == other.select &&
-         filter == other.filter && case_sensitive == other.case_sensitive &&
+         ExpressionPtrEqual(filter, other.filter) &&
+         case_sensitive == other.case_sensitive &&
          use_snapshot_schema == other.use_snapshot_schema &&
          start_snapshot_id == other.start_snapshot_id &&
          end_snapshot_id == other.end_snapshot_id && stats_fields == other.stats_fields &&
@@ -129,77 +168,73 @@ bool PlanTableScanRequest::operator==(const PlanTableScanRequest& other) const {
 
 namespace {
 
-bool ScanTaskFieldsEqual(
-    const std::vector<std::string>& plan_tasks_a,
-    const std::vector<std::string>& plan_tasks_b,
-    const std::vector<std::shared_ptr<DataFile>>& delete_files_a,
-    const std::vector<std::shared_ptr<DataFile>>& delete_files_b,
-    const std::vector<std::shared_ptr<FileScanTask>>& file_scan_tasks_a,
-    const std::vector<std::shared_ptr<FileScanTask>>& file_scan_tasks_b) {
-  if (plan_tasks_a != plan_tasks_b) {
+template <typename T>
+bool SharedPtrEqual(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) {
+  if (lhs == rhs) {
+    return true;
+  }
+  return lhs && rhs && *lhs == *rhs;
+}
+
+template <typename T>
+bool SharedPtrVectorEqual(const std::vector<std::shared_ptr<T>>& lhs,
+                          const std::vector<std::shared_ptr<T>>& rhs) {
+  return std::ranges::equal(lhs, rhs, SharedPtrEqual<T>);
+}
+
+bool FileScanTaskEqual(const std::shared_ptr<FileScanTask>& lhs,
+                       const std::shared_ptr<FileScanTask>& rhs) {
+  if (lhs == rhs) {
+    return true;
+  }
+  if (!lhs || !rhs) {
     return false;
   }
-  if (delete_files_a.size() != delete_files_b.size()) {
+  return SharedPtrEqual(lhs->data_file(), rhs->data_file()) &&
+         SharedPtrVectorEqual(lhs->delete_files(), rhs->delete_files()) &&
+         ExpressionPtrEqual(lhs->residual_filter(), rhs->residual_filter());
+}
+
+template <typename T>
+bool OptionalSharedPtrVectorEqual(
+    const std::optional<std::vector<std::shared_ptr<T>>>& lhs,
+    const std::optional<std::vector<std::shared_ptr<T>>>& rhs,
+    bool (*eq)(const std::shared_ptr<T>&, const std::shared_ptr<T>&)) {
+  if (lhs.has_value() != rhs.has_value()) {
     return false;
   }
-  for (size_t i = 0; i < delete_files_a.size(); ++i) {
-    if (!delete_files_a[i] != !delete_files_b[i]) {
-      return false;
-    }
-    if (delete_files_a[i] && *delete_files_a[i] != *delete_files_b[i]) {
-      return false;
-    }
-  }
-  if (file_scan_tasks_a.size() != file_scan_tasks_b.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < file_scan_tasks_a.size(); ++i) {
-    const auto& a = file_scan_tasks_a[i];
-    const auto& b = file_scan_tasks_b[i];
-    if (!a != !b) {
-      return false;
-    }
-    if (!a) continue;
-    if (!a->data_file() != !b->data_file()) {
-      return false;
-    }
-    if (a->data_file() && *a->data_file() != *b->data_file()) {
-      return false;
-    }
-    if (a->delete_files().size() != b->delete_files().size()) {
-      return false;
-    }
-    for (size_t j = 0; j < a->delete_files().size(); ++j) {
-      if (!a->delete_files()[j] != !b->delete_files()[j]) {
-        return false;
-      }
-      if (a->delete_files()[j] && *a->delete_files()[j] != *b->delete_files()[j]) {
-        return false;
-      }
-    }
-    if (a->residual_filter() != b->residual_filter()) {
-      return false;
-    }
-  }
-  return true;
+  return !lhs.has_value() || std::ranges::equal(*lhs, *rhs, eq);
+}
+
+template <typename Response>
+bool ScanTaskFieldsEqual(const Response& lhs, const Response& rhs) {
+  return lhs.plan_tasks == rhs.plan_tasks &&
+         SharedPtrVectorEqual(lhs.delete_files, rhs.delete_files) &&
+         OptionalSharedPtrVectorEqual(lhs.file_scan_tasks, rhs.file_scan_tasks,
+                                      FileScanTaskEqual);
+}
+
+template <typename Response>
+bool HasTaskFields(const Response& response) {
+  return response.plan_tasks.has_value() || response.file_scan_tasks.has_value();
+}
+
+template <typename Response>
+bool HasNonEmptyFileScanTasks(const Response& response) {
+  return response.file_scan_tasks.has_value() && !response.file_scan_tasks->empty();
 }
 
 }  // namespace
 
 bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const {
-  return ScanTaskFieldsEqual(plan_tasks, other.plan_tasks, delete_files,
-                             other.delete_files, file_scan_tasks,
-                             other.file_scan_tasks) &&
-         plan_status == other.plan_status && plan_id == other.plan_id &&
-         error == other.error;
+  return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
+         plan_id == other.plan_id && error == other.error;
 }
 
 bool FetchPlanningResultResponse::operator==(
     const FetchPlanningResultResponse& other) const {
-  return ScanTaskFieldsEqual(plan_tasks, other.plan_tasks, delete_files,
-                             other.delete_files, file_scan_tasks,
-                             other.file_scan_tasks) &&
-         plan_status == other.plan_status && error == other.error;
+  return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
+         error == other.error;
 }
 
 bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const {
@@ -207,8 +242,7 @@ bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const
 }
 
 bool FetchScanTasksResponse::operator==(const FetchScanTasksResponse& other) const {
-  return ScanTaskFieldsEqual(plan_tasks, other.plan_tasks, delete_files,
-                             other.delete_files, file_scan_tasks, other.file_scan_tasks);
+  return ScanTaskFieldsEqual(*this, other);
 }
 
 Status OAuthTokenResponse::Validate() const {
@@ -257,8 +291,7 @@ Status PlanTableScanResponse::Validate() const {
     return ValidationFailed(
         "Invalid response: 'cancelled' is not a valid status for planTableScan");
   }
-  if (plan_status != PlanStatus::kCompleted &&
-      (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+  if (plan_status != PlanStatus::kCompleted && HasTaskFields(*this)) {
     return ValidationFailed(
         "Invalid response: tasks can only be defined when status is 'completed'");
   }
@@ -268,7 +301,7 @@ Status PlanTableScanResponse::Validate() const {
         "Invalid response: plan id can only be defined when status is 'submitted' or "
         "'completed'");
   }
-  if (file_scan_tasks.empty() && !delete_files.empty()) {
+  if (!HasNonEmptyFileScanTasks(*this) && !delete_files.empty()) {
     return ValidationFailed(
         "Invalid response: deleteFiles should only be returned with fileScanTasks that "
         "reference them");
@@ -285,12 +318,11 @@ Status PlanTableScanResponse::Validate() const {
 }
 
 Status FetchPlanningResultResponse::Validate() const {
-  if (plan_status != PlanStatus::kCompleted &&
-      (!plan_tasks.empty() || !file_scan_tasks.empty())) {
+  if (plan_status != PlanStatus::kCompleted && HasTaskFields(*this)) {
     return ValidationFailed(
         "Invalid response: tasks can only be returned in a 'completed' status");
   }
-  if (file_scan_tasks.empty() && !delete_files.empty()) {
+  if (!HasNonEmptyFileScanTasks(*this) && !delete_files.empty()) {
     return ValidationFailed(
         "Invalid response: deleteFiles should only be returned with fileScanTasks that "
         "reference them");
@@ -314,12 +346,12 @@ Status FetchScanTasksRequest::Validate() const {
 }
 
 Status FetchScanTasksResponse::Validate() const {
-  if (file_scan_tasks.empty() && !delete_files.empty()) {
+  if (!HasNonEmptyFileScanTasks(*this) && !delete_files.empty()) {
     return ValidationFailed(
         "Invalid response: deleteFiles should only be returned with fileScanTasks that "
         "reference them");
   }
-  if (plan_tasks.empty() && file_scan_tasks.empty()) {
+  if (!HasTaskFields(*this)) {
     return ValidationFailed(
         "Invalid response: planTasks and fileScanTask cannot both be null");
   }

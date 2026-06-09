@@ -350,7 +350,7 @@ class ICEBERG_EXPORT Unbound {
   Result<std::shared_ptr<B>> Bind(const Schema& schema) const;
 
   /// \brief Returns the underlying named reference for this unbound term.
-  virtual std::shared_ptr<class NamedReference> reference() = 0;
+  virtual std::shared_ptr<const class NamedReference> reference() const = 0;
 };
 
 /// \brief Interface for bound expressions that can be evaluated.

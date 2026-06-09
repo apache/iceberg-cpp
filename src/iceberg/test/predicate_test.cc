@@ -38,7 +38,8 @@ class PredicateTest : public ::testing::Test {
                                  SchemaField::MakeOptional(2, "name", string()),
                                  SchemaField::MakeRequired(3, "age", int32()),
                                  SchemaField::MakeOptional(4, "salary", float64()),
-                                 SchemaField::MakeRequired(5, "active", boolean())},
+                                 SchemaField::MakeRequired(5, "active", boolean()),
+                                 SchemaField::MakeRequired(6, "age2", int32())},
         /*schema_id=*/0);
   }
 
@@ -286,6 +287,34 @@ TEST_F(PredicateTest, UnboundPredicateToString) {
 
   auto starts_with_pred = Expressions::StartsWith("name", "John");
   EXPECT_EQ(starts_with_pred->ToString(), "ref(name=\"name\") startsWith \"John\"");
+}
+
+TEST_F(PredicateTest, UnboundPredicateEquality) {
+  auto pred = Expressions::GreaterThan("age", Literal::Int(25));
+  auto same = Expressions::GreaterThan("age", Literal::Int(25));
+  auto different_op = Expressions::GreaterThanOrEqual("age", Literal::Int(25));
+  auto different_ref = Expressions::GreaterThan("id", Literal::Int(25));
+  auto different_literal = Expressions::GreaterThan("age", Literal::Int(26));
+
+  EXPECT_TRUE(pred->Equals(*same));
+  EXPECT_TRUE(same->Equals(*pred));
+  EXPECT_FALSE(pred->Equals(*different_op));
+  EXPECT_FALSE(pred->Equals(*different_ref));
+  EXPECT_FALSE(pred->Equals(*different_literal));
+
+  auto bucket = [](std::string name,
+                   int32_t num_buckets) -> std::shared_ptr<UnboundTerm<BoundTransform>> {
+    return Expressions::Bucket(std::move(name), num_buckets);
+  };
+
+  auto transformed = Expressions::Equal(bucket("id", 16), Literal::Int(3));
+  auto same_transformed = Expressions::Equal(bucket("id", 16), Literal::Int(3));
+  auto different_transform = Expressions::Equal(bucket("id", 32), Literal::Int(3));
+  auto different_transform_ref = Expressions::Equal(bucket("age", 16), Literal::Int(3));
+
+  EXPECT_TRUE(transformed->Equals(*same_transformed));
+  EXPECT_FALSE(transformed->Equals(*different_transform));
+  EXPECT_FALSE(transformed->Equals(*different_transform_ref));
 }
 
 TEST_F(PredicateTest, UnboundPredicateNegate) {
@@ -581,10 +610,12 @@ TEST_F(PredicateTest, BoundSetPredicateEquals) {
       Expressions::In("age", {Literal::Int(20), Literal::Int(10)});  // Different order
   auto in3 =
       Expressions::In("age", {Literal::Int(10), Literal::Int(30)});  // Different values
+  auto in4 = Expressions::In("age2", {Literal::Int(10), Literal::Int(20)});
 
   auto bound_in1 = in1->Bind(*schema_, /*case_sensitive=*/true).value();
   auto bound_in2 = in2->Bind(*schema_, /*case_sensitive=*/true).value();
   auto bound_in3 = in3->Bind(*schema_, /*case_sensitive=*/true).value();
+  auto bound_in4 = in4->Bind(*schema_, /*case_sensitive=*/true).value();
 
   // Same values in different order should be equal (unordered_set)
   EXPECT_TRUE(bound_in1->Equals(*bound_in2));
@@ -592,6 +623,9 @@ TEST_F(PredicateTest, BoundSetPredicateEquals) {
 
   // Different values should not be equal
   EXPECT_FALSE(bound_in1->Equals(*bound_in3));
+
+  // Same values on a different term should not be equal
+  EXPECT_FALSE(bound_in1->Equals(*bound_in4));
 }
 
 namespace {

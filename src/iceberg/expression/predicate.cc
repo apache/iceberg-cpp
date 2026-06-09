@@ -25,6 +25,7 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
+#include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
@@ -121,7 +122,32 @@ UnboundPredicateImpl<B>::UnboundPredicateImpl(Expression::Operation op,
 template <typename B>
 UnboundPredicateImpl<B>::~UnboundPredicateImpl() = default;
 
-namespace {}
+namespace {
+
+bool UnboundTermEqual(const Term& lhs, const Term& rhs) {
+  if (!lhs.is_unbound() || !rhs.is_unbound() || lhs.kind() != rhs.kind()) {
+    return false;
+  }
+
+  switch (lhs.kind()) {
+    case Term::Kind::kReference: {
+      const auto& lhs_ref = internal::checked_cast<const NamedReference&>(lhs);
+      const auto& rhs_ref = internal::checked_cast<const NamedReference&>(rhs);
+      return lhs_ref.name() == rhs_ref.name();
+    }
+    case Term::Kind::kTransform: {
+      const auto& lhs_transform = internal::checked_cast<const UnboundTransform&>(lhs);
+      const auto& rhs_transform = internal::checked_cast<const UnboundTransform&>(rhs);
+      return lhs_transform.reference()->name() == rhs_transform.reference()->name() &&
+             *lhs_transform.transform() == *rhs_transform.transform();
+    }
+    case Term::Kind::kExtract:
+      return false;
+  }
+  std::unreachable();
+}
+
+}  // namespace
 
 template <typename B>
 std::string UnboundPredicateImpl<B>::ToString() const {
@@ -172,6 +198,24 @@ std::string UnboundPredicateImpl<B>::ToString() const {
     default:
       return invalid_predicate_string(op);
   }
+}
+
+template <typename B>
+bool UnboundPredicateImpl<B>::Equals(const Expression& other) const {
+  if (!other.is_unbound_predicate()) {
+    return false;
+  }
+
+  if (BASE::op() != other.op()) {
+    return false;
+  }
+
+  const auto* other_pred = dynamic_cast<const UnboundPredicate*>(&other);
+  if (other_pred == nullptr) {
+    return false;
+  }
+  return UnboundTermEqual(unbound_term(), other_pred->unbound_term()) &&
+         std::ranges::equal(literals(), other_pred->literals());
 }
 
 template <typename B>
@@ -626,7 +670,7 @@ bool BoundSetPredicate::Equals(const Expression& other) const {
 
   if (const auto* other_pred = dynamic_cast<const BoundSetPredicate*>(&other);
       other_pred) {
-    return value_set_ == other_pred->value_set_;
+    return term_->Equals(*other_pred->term()) && value_set_ == other_pred->value_set_;
   }
 
   return false;

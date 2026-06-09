@@ -27,11 +27,8 @@
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/types.h"
-#include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
-#include "iceberg/schema.h"
-#include "iceberg/table_scan.h"
+#include "iceberg/type_fwd.h"
 
 /// \file iceberg/catalog/rest/json_serde_internal.h
 /// JSON serialization and deserialization for Iceberg REST Catalog API types.
@@ -75,10 +72,20 @@ ICEBERG_REST_EXPORT Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
         partition_specs_by_id,
     const Schema& schema);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(
+    const PlanTableScanResponse& response,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema);
 
 ICEBERG_REST_EXPORT Result<FetchPlanningResultResponse>
 FetchPlanningResultResponseFromJson(
     const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(
+    const FetchPlanningResultResponse& response,
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
         partition_specs_by_id,
     const Schema& schema);
@@ -88,11 +95,29 @@ ICEBERG_REST_EXPORT Result<FetchScanTasksResponse> FetchScanTasksResponseFromJso
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
         partition_specs_by_id,
     const Schema& schema);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(
+    const FetchScanTasksResponse& response,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema);
 
+ICEBERG_REST_EXPORT Result<PlanTableScanRequest> PlanTableScanRequestFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<PlanTableScanRequest> FromJson(const nlohmann::json& json);
 ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const PlanTableScanRequest& request);
+
+ICEBERG_REST_EXPORT Result<FetchScanTasksRequest> FetchScanTasksRequestFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<FetchScanTasksRequest> FromJson(const nlohmann::json& json);
 ICEBERG_REST_EXPORT nlohmann::json ToJson(const FetchScanTasksRequest& request);
 
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const DataFile& df);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(
+    const DataFile& df,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema);
 
 ICEBERG_REST_EXPORT Result<DataFile> DataFileFromJson(
     const nlohmann::json& json,
@@ -106,10 +131,5 @@ FileScanTasksFromJson(const nlohmann::json& json,
                       const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
                           partition_spec_by_id,
                       const Schema& schema);
-
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const PlanTableScanResponse& response);
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(
-    const FetchPlanningResultResponse& response);
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const FetchScanTasksResponse& response);
 
 }  // namespace iceberg::rest

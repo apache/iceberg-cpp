@@ -65,7 +65,7 @@ class ICEBERG_EXPORT UnboundPredicate : public virtual Expression,
   ~UnboundPredicate() override = default;
 
   /// \brief Returns the reference of this UnboundPredicate.
-  std::shared_ptr<NamedReference> reference() override = 0;
+  std::shared_ptr<const NamedReference> reference() const override = 0;
 
   /// \brief Bind this UnboundPredicate.
   Result<std::shared_ptr<Expression>> Bind(const Schema& schema,
@@ -125,11 +125,13 @@ class ICEBERG_EXPORT UnboundPredicateImpl : public UnboundPredicate,
 
   ~UnboundPredicateImpl() override;
 
-  std::shared_ptr<NamedReference> reference() override {
+  std::shared_ptr<const NamedReference> reference() const override {
     return BASE::term()->reference();
   }
 
   std::string ToString() const override;
+
+  bool Equals(const Expression& other) const override;
 
   Result<std::shared_ptr<Expression>> Bind(const Schema& schema,
                                            bool case_sensitive) const override;
