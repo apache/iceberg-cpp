@@ -484,14 +484,13 @@ Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_l
     return std::move(path).ValueOrDie();
   }
 
-  // Only fall back for Arrow's scheme-mismatch error; propagate anything else.
-  const auto& status = path.status();
-  if (status.message().find("expected a URI with one of the schemes") ==
-      std::string::npos) {
+  // Foreign alias (s3a/s3n): validate via Arrow's parser, then percent-decode the
+  // scheme-less key (substring keeps a Windows drive letter's ':' that host() drops).
+  if (auto parsed = ::arrow::util::Uri::FromString(file_location); !parsed.ok()) {
+    const auto& status = parsed.status();
     return std::unexpected<Error>{
         {.kind = ToErrorKind(status), .message = status.ToString()}};
   }
-  // Scheme-less bucket/key: drop ?query / #fragment and percent-decode to match s3://.
   std::string bucket_key = file_location.substr(pos + 3);
   bucket_key = bucket_key.substr(0, bucket_key.find_first_of("?#"));
   return ::arrow::util::UriUnescape(bucket_key);
