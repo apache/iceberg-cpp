@@ -224,6 +224,8 @@ add_iceberg_lib(iceberg_data
                 ${ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS})
 
 iceberg_install_all_headers(iceberg)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/version.h"
+        DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}/iceberg")
 
 add_subdirectory(catalog)
 add_subdirectory(data)
