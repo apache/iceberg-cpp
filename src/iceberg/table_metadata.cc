@@ -224,7 +224,8 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
   ICEBERG_RETURN_UNEXPECTED(PropertyUtil::ValidateCommitProperties(properties));
 
   return TableMetadataBuilder::BuildFromEmpty(format_version)
-      ->SetLocation(location)
+      ->AssignUUID()
+      .SetLocation(location)
       .SetCurrentSchema(std::move(fresh_schema), last_column_id)
       .SetDefaultPartitionSpec(std::move(fresh_spec))
       .SetDefaultSortOrder(std::move(fresh_order))

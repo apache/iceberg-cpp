@@ -36,6 +36,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -102,6 +103,7 @@ TEST(TableMetadataTest, Make) {
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto metadata, TableMetadata::Make(*Schema, *spec, *order, "s3://bucket/test", {}));
+  EXPECT_THAT(Uuid::FromString(metadata->table_uuid), IsOk());
   // Check schema fields
   ASSERT_EQ(1, metadata->schemas.size());
   auto fields = metadata->schemas[0]->fields() | std::ranges::to<std::vector>();
