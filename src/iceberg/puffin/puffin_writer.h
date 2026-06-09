@@ -30,7 +30,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "iceberg/iceberg_data_export.h"
+#include "iceberg/iceberg_export.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -40,7 +40,7 @@ namespace iceberg::puffin {
 /// \brief Writer for Puffin files.
 ///
 /// Writes blobs and footer to an OutputFile stream.
-class ICEBERG_DATA_EXPORT PuffinWriter {
+class ICEBERG_EXPORT PuffinWriter {
  public:
   /// \brief Create a PuffinWriter for the given output file.
   /// \param output_file The output file to write to.

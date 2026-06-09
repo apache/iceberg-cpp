@@ -29,7 +29,7 @@
 #include <utility>
 #include <vector>
 
-#include "iceberg/iceberg_data_export.h"
+#include "iceberg/iceberg_export.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -39,7 +39,7 @@ namespace iceberg::puffin {
 /// \brief Reader for Puffin files.
 ///
 /// Reads from an InputFile with seek support for efficient blob access.
-class ICEBERG_DATA_EXPORT PuffinReader {
+class ICEBERG_EXPORT PuffinReader {
  public:
   /// \brief Create a PuffinReader for the given input file.
   /// \param input_file The input file to read from.

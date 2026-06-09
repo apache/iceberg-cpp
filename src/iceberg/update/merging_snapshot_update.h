@@ -40,6 +40,10 @@
 
 namespace iceberg {
 
+namespace puffin {
+class PuffinWriter;
+}
+
 /// \brief Abstract base class for all merge-based snapshot write operations.
 ///
 /// Provides the complete filter → write → merge pipeline that all merge-based
@@ -334,7 +338,11 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   void SetSummaryProperty(const std::string& property, const std::string& value) override;
 
-  Result<std::vector<PendingDeleteFile>> MergeDVs() const;
+  Result<std::vector<PendingDeleteFile>> MergeDVs();
+
+  Result<PendingDeleteFile> MergeDVsForReferencedFile(
+      const std::string& referenced_file, const std::vector<PendingDeleteFile>& dvs,
+      puffin::PuffinWriter& writer, const std::string& path);
 
   /// \brief Write new data manifests for staged data files; caches the result.
   Result<std::vector<ManifestFile>> WriteNewDataManifests();
@@ -383,6 +391,8 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   std::vector<ManifestFile> cached_new_data_manifests_;
   std::vector<ManifestFile> cached_new_delete_manifests_;
+  std::vector<PendingDeleteFile> merged_dvs_;
+  int32_t merged_dv_count_ = 0;
 };
 
 }  // namespace iceberg
