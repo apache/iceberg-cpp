@@ -893,22 +893,22 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestRetryCopiesManifestAgain) {
   ICEBERG_UNWRAP_OR_FAIL(auto first_apply, static_cast<SnapshotUpdate&>(*op).Apply());
   SnapshotCache first_snapshot_cache(first_apply.snapshot.get());
   ICEBERG_UNWRAP_OR_FAIL(auto first_manifests,
-                          first_snapshot_cache.DataManifests(file_io_));
+                         first_snapshot_cache.DataManifests(file_io_));
   ASSERT_EQ(first_manifests.size(), 1U);
   EXPECT_NE(first_manifests[0].manifest_path, path);
 
   ICEBERG_UNWRAP_OR_FAIL(auto second_apply, static_cast<SnapshotUpdate&>(*op).Apply());
   SnapshotCache second_snapshot_cache(second_apply.snapshot.get());
   ICEBERG_UNWRAP_OR_FAIL(auto second_manifests,
-                          second_snapshot_cache.DataManifests(file_io_));
+                         second_snapshot_cache.DataManifests(file_io_));
   ASSERT_EQ(second_manifests.size(), 1U);
   EXPECT_NE(second_manifests[0].manifest_path, path);
   EXPECT_NE(second_manifests[0].manifest_path, first_manifests[0].manifest_path);
 
   std::vector<ManifestFile> second_manifest_vector(second_manifests.begin(),
-                                                     second_manifests.end());
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto entries, ReadAllEntries(second_manifest_vector, *table_->metadata()));
+                                                   second_manifests.end());
+  ICEBERG_UNWRAP_OR_FAIL(auto entries,
+                         ReadAllEntries(second_manifest_vector, *table_->metadata()));
   ASSERT_EQ(entries.size(), 1U);
   ASSERT_NE(entries[0].data_file, nullptr);
   EXPECT_EQ(entries[0].data_file->file_path, file_a_->file_path);
