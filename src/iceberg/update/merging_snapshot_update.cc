@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <array>
+#include <format>
 #include <span>
 #include <string_view>
 #include <unordered_map>
@@ -29,9 +30,11 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/delete_file_index.h"
+#include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/manifest_evaluator.h"
 #include "iceberg/expression/projections.h"
+#include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_group.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -39,9 +42,12 @@
 #include "iceberg/manifest/manifest_util_internal.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/puffin/file_metadata.h"
+#include "iceberg/puffin/puffin_reader.h"
+#include "iceberg/puffin/puffin_writer.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
-#include "iceberg/table.h"
+#include "iceberg/table.h"  // IWYU pragma: keep
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/transaction.h"
@@ -743,9 +749,12 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDataManifests()
 }
 
 Result<std::vector<MergingSnapshotUpdate::PendingDeleteFile>>
-MergingSnapshotUpdate::MergeDVs() const {
+MergingSnapshotUpdate::MergeDVs() {
   std::vector<PendingDeleteFile> result;
   result.reserve(dvs_by_referenced_file_.size());
+  std::unique_ptr<puffin::PuffinWriter> writer;
+  std::string merged_dv_path;
+  std::vector<std::shared_ptr<DataFile>> merged_files;
 
   for (const auto& entry : dvs_by_referenced_file_.entries()) {
     const auto& referenced_file = entry.referenced_file;
@@ -754,18 +763,110 @@ MergingSnapshotUpdate::MergeDVs() const {
       continue;
     }
     if (dvs.size() > 1) {
-      // TODO(Guotao): Merge duplicate DVs for one referenced data file once C++
-      // has DVUtil/Puffin DV rewriting; Java merges them before writing manifests.
-      return NotImplemented(
-          "Merging multiple deletion vectors is not supported yet for referenced "
-          "data file: {}",
-          referenced_file);
+      if (!writer) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            merged_dv_path,
+            ctx_->NewDataLocation(std::format("merged-dvs-{}-{}.puffin", SnapshotId(),
+                                             merged_dv_count_++)));
+        ICEBERG_ASSIGN_OR_RAISE(auto output,
+                                ctx_->table->io()->NewOutputFile(merged_dv_path));
+        ICEBERG_ASSIGN_OR_RAISE(writer,
+                                puffin::PuffinWriter::Make(std::move(output)));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto merged,
+                              MergeDVsForReferencedFile(referenced_file, dvs, *writer,
+                                                        merged_dv_path));
+      merged_files.push_back(merged.file);
+      merged_dvs_.push_back(merged);
+      result.push_back(std::move(merged));
+      continue;
     }
 
     result.push_back(dvs.front());
   }
 
+  if (writer) {
+    ICEBERG_RETURN_UNEXPECTED(writer->Finish());
+    ICEBERG_ASSIGN_OR_RAISE(auto file_size, writer->FileSize());
+    for (const auto& file : merged_files) {
+      file->file_size_in_bytes = file_size;
+    }
+  }
+
   return result;
+}
+
+Result<MergingSnapshotUpdate::PendingDeleteFile>
+MergingSnapshotUpdate::MergeDVsForReferencedFile(
+    const std::string& referenced_file, const std::vector<PendingDeleteFile>& dvs,
+    puffin::PuffinWriter& writer, const std::string& path) {
+  const auto& first_file = dvs.front().file;
+  const auto first_data_sequence_number = dvs.front().data_sequence_number;
+  const auto first_spec_id = first_file->partition_spec_id;
+  RoaringPositionBitmap bitmap;
+
+  for (const auto& dv : dvs) {
+    ICEBERG_PRECHECK(dv.data_sequence_number == first_data_sequence_number,
+                     "Cannot merge DVs, mismatched sequence numbers for {}",
+                     referenced_file);
+    ICEBERG_PRECHECK(dv.file->partition_spec_id == first_spec_id,
+                     "Cannot merge DVs, mismatched partition specs for {}",
+                     referenced_file);
+    ICEBERG_PRECHECK(dv.file->partition == first_file->partition,
+                     "Cannot merge DVs, mismatched partition tuples for {}",
+                     referenced_file);
+    ICEBERG_PRECHECK(dv.file->content_offset.has_value(),
+                     "DV must have a content offset: {}", dv.file->file_path);
+    ICEBERG_PRECHECK(dv.file->content_size_in_bytes.has_value(),
+                     "DV must have a content size: {}", dv.file->file_path);
+
+    ICEBERG_ASSIGN_OR_RAISE(auto input,
+                            ctx_->table->io()->NewInputFile(dv.file->file_path));
+    ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                            puffin::PuffinReader::Make(std::move(input), std::nullopt,
+                                                       dv.file->file_size_in_bytes));
+    ICEBERG_ASSIGN_OR_RAISE(auto metadata, reader->ReadFileMetadata());
+    auto blob_it = std::ranges::find_if(metadata.blobs, [&](const auto& blob) {
+      return blob.type == puffin::StandardBlobTypes::kDeletionVectorV1 &&
+             blob.offset == dv.file->content_offset.value() &&
+             blob.length == dv.file->content_size_in_bytes.value();
+    });
+    ICEBERG_PRECHECK(blob_it != metadata.blobs.end(),
+                     "Cannot find DV blob at offset {} with length {} in {}",
+                     dv.file->content_offset.value(),
+                     dv.file->content_size_in_bytes.value(), dv.file->file_path);
+    ICEBERG_ASSIGN_OR_RAISE(auto blob, reader->ReadBlob(*blob_it));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto dv_bitmap,
+        RoaringPositionBitmap::Deserialize(std::string_view(
+            reinterpret_cast<const char*>(blob.second.data()), blob.second.size())));
+    bitmap.Or(dv_bitmap);
+  }
+
+  bitmap.Optimize();
+  ICEBERG_ASSIGN_OR_RAISE(auto serialized, bitmap.Serialize());
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto blob_metadata,
+      writer.Write(puffin::Blob{
+          .type = std::string(puffin::StandardBlobTypes::kDeletionVectorV1),
+          .input_fields = {},
+          .snapshot_id = SnapshotId(),
+          .sequence_number = first_data_sequence_number.value_or(0),
+          .data = {serialized.begin(), serialized.end()},
+      }));
+
+  auto merged_file = std::make_shared<DataFile>(*first_file);
+  merged_file->file_path = path;
+  merged_file->record_count = static_cast<int64_t>(bitmap.Cardinality());
+  merged_file->referenced_data_file = referenced_file;
+  merged_file->content_offset = blob_metadata.offset;
+  merged_file->content_size_in_bytes = blob_metadata.length;
+
+  return PendingDeleteFile{
+      .file = std::move(merged_file),
+      .data_sequence_number = first_data_sequence_number,
+  };
 }
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests() {
@@ -775,6 +876,13 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests
       std::ignore = DeleteFile(m.manifest_path);
     }
     cached_new_delete_manifests_.clear();
+    std::unordered_set<std::string> deleted_merged_dv_paths;
+    for (const auto& dv : merged_dvs_) {
+      if (deleted_merged_dv_paths.insert(dv.file->file_path).second) {
+        std::ignore = DeleteFile(dv.file->file_path);
+      }
+    }
+    merged_dvs_.clear();
     added_delete_files_summary_.Clear();
   }
 
@@ -988,6 +1096,15 @@ Status MergingSnapshotUpdate::CleanUncommittedAppends(
   // rewritten_append_manifests_ are always owned by the table.
   ICEBERG_RETURN_UNEXPECTED(
       DeleteUncommitted(rewritten_append_manifests_, committed, /*clear=*/false));
+  if (committed.empty()) {
+    std::unordered_set<std::string> deleted_merged_dv_paths;
+    for (const auto& dv : merged_dvs_) {
+      if (deleted_merged_dv_paths.insert(dv.file->file_path).second) {
+        std::ignore = DeleteFile(dv.file->file_path);
+      }
+    }
+  }
+  merged_dvs_.clear();
 
   // append_manifests_ are only owned by the table if the commit succeeded.
   if (!committed.empty()) {
