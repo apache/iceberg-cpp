@@ -17,6 +17,18 @@
 
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
+
+# Generate the logging backend config header. ALWAYS generated (not gated by
+# ICEBERG_SPDLOG) so logging/logger.cc can include it in both ON and OFF builds;
+# only the definedness of ICEBERG_HAS_SPDLOG varies. Generated into the build
+# tree (already on ICEBERG_INCLUDES), included as "iceberg/logging/config.h", and
+# NOT installed (it must never appear in a public/installed header).
+if(ICEBERG_SPDLOG)
+  set(ICEBERG_HAS_SPDLOG ON)
+endif()
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/logging/config.h.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/logging/config.h")
+
 set(ICEBERG_SOURCES
     arrow_c_data_util.cc
     arrow_c_data_guard_internal.cc
@@ -44,6 +56,7 @@ set(ICEBERG_SOURCES
     inheritable_metadata.cc
     json_serde.cc
     location_provider.cc
+    logging/logger.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
     manifest/manifest_filter_manager.cc
