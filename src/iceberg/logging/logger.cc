@@ -25,6 +25,8 @@
 #include <mutex>
 #include <utility>
 
+#include "iceberg/logging/cerr_logger.h"
+
 namespace iceberg {
 
 namespace {
@@ -41,9 +43,9 @@ class NoopLogger final : public Logger {
 
 /// \brief Construct the process default logger for this build configuration.
 ///
-/// Block 2 defaults to the no-op logger; Block 3 switches this to CerrLogger and
-/// Block 5 wraps the selection in `#ifdef ICEBERG_HAS_SPDLOG` to prefer SpdLogger.
-std::shared_ptr<Logger> MakeDefaultLogger() { return Logger::Noop(); }
+/// Defaults to the always-available std::cerr logger. Block 5 wraps this in
+/// `#ifdef ICEBERG_HAS_SPDLOG` to prefer SpdLogger when spdlog is compiled in.
+std::shared_ptr<Logger> MakeDefaultLogger() { return std::make_shared<CerrLogger>(); }
 
 /// \brief The process-global default-logger slot.
 struct DefaultSlot {
