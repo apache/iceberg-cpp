@@ -464,11 +464,16 @@ function(resolve_cpr_dependency)
   set(CPR_ENABLE_CURL_HTTP_ONLY ON)
   set(CPR_ENABLE_SSL ON)
   set(CPR_USE_SYSTEM_CURL ON)
+  set(CPR_USE_EXISTING_CURL_TARGET ON)
 
   if(DEFINED ENV{ICEBERG_CPR_URL})
     set(CPR_URL "$ENV{ICEBERG_CPR_URL}")
   else()
     set(CPR_URL "https://github.com/libcpr/cpr/archive/refs/tags/1.14.1.tar.gz")
+  endif()
+
+  if(NOT TARGET CURL::libcurl)
+    find_package(CURL REQUIRED)
   endif()
 
   fetchcontent_declare(cpr

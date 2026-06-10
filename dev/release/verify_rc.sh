@@ -48,6 +48,9 @@ ARCHIVE_BASE_NAME="apache-iceberg-cpp-${VERSION}"
 : "${VERIFY_DEFAULT:=1}"
 : "${VERIFY_DOWNLOAD:=${VERIFY_DEFAULT}}"
 : "${VERIFY_SIGN:=${VERIFY_DEFAULT}}"
+: "${VERIFY_REST:=${VERIFY_DEFAULT}}"
+: "${VERIFY_SQL:=0}"
+: "${VERIFY_INSTALL_SMOKE:=0}"
 
 VERIFY_SUCCESS=no
 
@@ -116,12 +119,27 @@ ensure_source_directory() {
 test_source_distribution() {
   echo "Building and testing Apache Iceberg C++..."
 
+  if [ "${VERIFY_REST}" -gt 0 ]; then
+    verify_rest=ON
+  else
+    verify_rest=OFF
+  fi
+
+  if [ "${VERIFY_SQL}" -gt 0 ]; then
+    verify_sql=ON
+  else
+    verify_sql=OFF
+  fi
+
   # Configure build
   cmake -S . -B build \
     -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations" \
     -DCMAKE_BUILD_TYPE=Release \
     -DICEBERG_BUILD_STATIC=ON \
     -DICEBERG_BUILD_SHARED=ON \
+    -DICEBERG_BUILD_REST="${verify_rest}" \
+    -DICEBERG_BUILD_SQL_CATALOG="${verify_sql}" \
+    -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER \
     --compile-no-warning-as-error
 
   # Build
@@ -133,6 +151,14 @@ test_source_distribution() {
   # Install
   mkdir -p ./install_test
   cmake --install build --prefix ./install_test
+
+  if [ "${VERIFY_INSTALL_SMOKE}" -gt 0 ]; then
+    cmake -S example -B example_build \
+      -DCMAKE_PREFIX_PATH="${PWD}/install_test" \
+      -DCMAKE_BUILD_TYPE=Release
+    cmake --build example_build --parallel $(nproc || sysctl -n hw.ncpu || echo 4)
+    ./example_build/demo_example
+  fi
 
   echo "Build, test and install completed successfully!"
 }

@@ -26,6 +26,7 @@ build_dir=${1}/build
 build_rest_integration_test=${2:-OFF}
 build_enable_sccache=${3:-OFF}
 build_enable_s3=${4:-OFF}
+run_tests=${ICEBERG_RUN_TESTS:-ON}
 
 mkdir ${build_dir}
 pushd ${build_dir}
@@ -60,13 +61,22 @@ if [[ "${build_enable_sccache}" == "ON" ]]; then
     CMAKE_ARGS+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
 fi
 
+if [[ -n "${ICEBERG_EXTRA_CMAKE_ARGS:-}" ]]; then
+    read -r -a EXTRA_CMAKE_ARGS <<< "${ICEBERG_EXTRA_CMAKE_ARGS}"
+    CMAKE_ARGS+=("${EXTRA_CMAKE_ARGS[@]}")
+fi
+
 cmake "${CMAKE_ARGS[@]}" ${source_dir}
 if is_windows; then
   cmake --build . --config Release --target install
-  ctest --output-on-failure -C Release
+  if [[ "${run_tests}" == "ON" ]]; then
+    ctest --output-on-failure -C Release
+  fi
 else
   cmake --build . --target install
-  ctest --output-on-failure
+  if [[ "${run_tests}" == "ON" ]]; then
+    ctest --output-on-failure
+  fi
 fi
 
 popd
