@@ -123,6 +123,23 @@ const std::shared_ptr<Logger>& CurrentLogger() noexcept {
   return tls;
 }
 
+void Emit(Logger& logger, LogLevel level, const std::source_location& location,
+          std::string&& message) {
+  logger.Log(LogMessage{.level = level,
+                        .message = std::move(message),
+                        .location = location,
+                        .attributes = {}});
+}
+
+void EmitFormatError(Logger& logger, LogLevel level,
+                     const std::source_location& location) noexcept {
+  // Fixed short literal (SSO -> no heap allocation), no std::format, no retry.
+  logger.Log(LogMessage{.level = level,
+                        .message = std::string("<log format error>"),
+                        .location = location,
+                        .attributes = {}});
+}
+
 }  // namespace detail
 
 }  // namespace iceberg

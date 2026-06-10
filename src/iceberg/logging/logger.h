@@ -20,17 +20,21 @@
 #pragma once
 
 /// \file iceberg/logging/logger.h
-/// \brief Pluggable logging interface and the process-global default logger.
+/// \brief Pluggable logging interface, the process-global default logger, and
+/// the logging macros.
 ///
 /// This header is backend-agnostic: it never includes the build-generated
 /// backend configuration header and never references the spdlog feature macro,
 /// so consumers see one stable API regardless of how the backend was configured.
 
+#include <cstdlib>
+#include <format>
 #include <memory>
 #include <source_location>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -138,6 +142,176 @@ ICEBERG_EXPORT LogLevel EffectiveLevel() noexcept;
 /// statement.
 ICEBERG_EXPORT const std::shared_ptr<Logger>& CurrentLogger() noexcept;
 
+/// \brief Build a LogMessage from the already-formatted text and dispatch it.
+///
+/// Declared ICEBERG_EXPORT because the logging macros expand into this call in
+/// consumer translation units.
+ICEBERG_EXPORT void Emit(Logger& logger, LogLevel level,
+                         const std::source_location& location, std::string&& message);
+
+/// \brief Emit a fixed fallback record when formatting threw.
+///
+/// noexcept, allocation-light (small/SSO literal), performs no std::format, and
+/// does not recurse -- so the macro's "logging never throws" guarantee holds
+/// even when a format argument throws.
+ICEBERG_EXPORT void EmitFormatError(Logger& logger, LogLevel level,
+                                    const std::source_location& location) noexcept;
+
+/// \brief Runtime (non-literal) format-string helper.
+///
+/// std::format requires a compile-time format string; this routes a runtime
+/// string through std::vformat. Args are bound as named lvalues and the
+/// arg-store is held in a named variable so it outlives the vformat call
+/// (C++23 make_format_args rejects rvalues -- P2905 / LWG3631).
+template <typename... Args>
+std::string VFormat(std::string_view fmt, Args&&... args) {
+  auto store = std::make_format_args(args...);
+  return std::vformat(fmt, store);
+}
+
 }  // namespace detail
 
 }  // namespace iceberg
+
+/// \brief Compile-time severity floor: statements below this level are removed
+/// entirely from the build (their format call sites and source_location literals
+/// are never emitted). Defaults to keeping everything. ICEBERG_LOG_FATAL is never
+/// gated by this floor -- its abort is always compiled in.
+#ifndef ICEBERG_LOG_ACTIVE_LEVEL
+#  define ICEBERG_LOG_ACTIVE_LEVEL ::iceberg::LogLevel::kTrace
+#endif
+
+// Internal: fixed-severity emit with compile-time floor + lock-free gate +
+// authoritative ShouldLog, formatting only on the taken path, never throwing.
+#define ICEBERG_INTERNAL_LOG(level_, FMT_, ...)                                      \
+  do {                                                                               \
+    if constexpr ((level_) >= ICEBERG_LOG_ACTIVE_LEVEL) {                            \
+      if ((level_) >= ::iceberg::detail::EffectiveLevel()) {                         \
+        const auto& _ib_logger = ::iceberg::detail::CurrentLogger();                 \
+        if (_ib_logger && _ib_logger->ShouldLog(level_)) {                           \
+          try {                                                                      \
+            ::iceberg::detail::Emit(*_ib_logger, (level_),                           \
+                                    ::std::source_location::current(),               \
+                                    ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__)); \
+          } catch (...) {                                                            \
+            ::iceberg::detail::EmitFormatError(*_ib_logger, (level_),                \
+                                               ::std::source_location::current());   \
+          }                                                                          \
+        }                                                                            \
+      }                                                                              \
+    }                                                                                \
+  } while (0)
+
+#define ICEBERG_LOG_TRACE(...) \
+  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kTrace, __VA_ARGS__)
+#define ICEBERG_LOG_DEBUG(...) \
+  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kDebug, __VA_ARGS__)
+#define ICEBERG_LOG_INFO(...) \
+  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kInfo, __VA_ARGS__)
+#define ICEBERG_LOG_WARN(...) \
+  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kWarn, __VA_ARGS__)
+#define ICEBERG_LOG_ERROR(...) \
+  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kError, __VA_ARGS__)
+#define ICEBERG_LOG_CRITICAL(...) \
+  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kCritical, __VA_ARGS__)
+
+// FATAL: emit if enabled (never compile-stripped), then ALWAYS flush + abort.
+#define ICEBERG_LOG_FATAL(FMT_, ...)                                                   \
+  do {                                                                                 \
+    if (::iceberg::LogLevel::kFatal >= ::iceberg::detail::EffectiveLevel()) {          \
+      const auto& _ib_logger = ::iceberg::detail::CurrentLogger();                     \
+      if (_ib_logger && _ib_logger->ShouldLog(::iceberg::LogLevel::kFatal)) {          \
+        try {                                                                          \
+          ::iceberg::detail::Emit(*_ib_logger, ::iceberg::LogLevel::kFatal,            \
+                                  ::std::source_location::current(),                   \
+                                  ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__));     \
+        } catch (...) {                                                                \
+          ::iceberg::detail::EmitFormatError(*_ib_logger, ::iceberg::LogLevel::kFatal, \
+                                             ::std::source_location::current());       \
+        }                                                                              \
+      }                                                                                \
+    }                                                                                  \
+    if (auto _ib_fatal = ::iceberg::GetDefaultLogger()) _ib_fatal->Flush();            \
+    ::std::abort();                                                                    \
+  } while (0)
+
+// Generic, runtime-level form against the default logger. No compile-time floor
+// (the level is not a constant). Aborts when level == kFatal.
+#define ICEBERG_LOG(level_, FMT_, ...)                                             \
+  do {                                                                             \
+    const ::iceberg::LogLevel _ib_lvl = (level_);                                  \
+    if (_ib_lvl >= ::iceberg::detail::EffectiveLevel()) {                          \
+      const auto& _ib_logger = ::iceberg::detail::CurrentLogger();                 \
+      if (_ib_logger && _ib_logger->ShouldLog(_ib_lvl)) {                          \
+        try {                                                                      \
+          ::iceberg::detail::Emit(*_ib_logger, _ib_lvl,                            \
+                                  ::std::source_location::current(),               \
+                                  ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__)); \
+        } catch (...) {                                                            \
+          ::iceberg::detail::EmitFormatError(*_ib_logger, _ib_lvl,                 \
+                                             ::std::source_location::current());   \
+        }                                                                          \
+      }                                                                            \
+    }                                                                              \
+    if (_ib_lvl == ::iceberg::LogLevel::kFatal) {                                  \
+      if (auto _ib_fatal = ::iceberg::GetDefaultLogger()) _ib_fatal->Flush();      \
+      ::std::abort();                                                              \
+    }                                                                              \
+  } while (0)
+
+// Generic form targeting an EXPLICIT logger. Honors only that logger's
+// ShouldLog -- never the default logger's global gate. Aborts when level == kFatal.
+#define ICEBERG_LOG_TO(logger_, level_, FMT_, ...)                                      \
+  do {                                                                                  \
+    ::iceberg::Logger& _ib_logger = (logger_);                                          \
+    const ::iceberg::LogLevel _ib_lvl = (level_);                                       \
+    if (_ib_logger.ShouldLog(_ib_lvl)) {                                                \
+      try {                                                                             \
+        ::iceberg::detail::Emit(_ib_logger, _ib_lvl, ::std::source_location::current(), \
+                                ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__));        \
+      } catch (...) {                                                                   \
+        ::iceberg::detail::EmitFormatError(_ib_logger, _ib_lvl,                         \
+                                           ::std::source_location::current());          \
+      }                                                                                 \
+    }                                                                                   \
+    if (_ib_lvl == ::iceberg::LogLevel::kFatal) {                                       \
+      _ib_logger.Flush();                                                               \
+      ::std::abort();                                                                   \
+    }                                                                                   \
+  } while (0)
+
+// Runtime (non-literal) format string against the default logger.
+#define ICEBERG_LOG_RUNTIME_FMT(level_, FMT_, ...)                               \
+  do {                                                                           \
+    const ::iceberg::LogLevel _ib_lvl = (level_);                                \
+    if (_ib_lvl >= ::iceberg::detail::EffectiveLevel()) {                        \
+      const auto& _ib_logger = ::iceberg::detail::CurrentLogger();               \
+      if (_ib_logger && _ib_logger->ShouldLog(_ib_lvl)) {                        \
+        try {                                                                    \
+          ::iceberg::detail::Emit(                                               \
+              *_ib_logger, _ib_lvl, ::std::source_location::current(),           \
+              ::iceberg::detail::VFormat((FMT_)__VA_OPT__(, ) __VA_ARGS__));     \
+        } catch (...) {                                                          \
+          ::iceberg::detail::EmitFormatError(*_ib_logger, _ib_lvl,               \
+                                             ::std::source_location::current()); \
+        }                                                                        \
+      }                                                                          \
+    }                                                                            \
+    if (_ib_lvl == ::iceberg::LogLevel::kFatal) {                                \
+      if (auto _ib_fatal = ::iceberg::GetDefaultLogger()) _ib_fatal->Flush();    \
+      ::std::abort();                                                            \
+    }                                                                            \
+  } while (0)
+
+// Bare, Java-style aliases. Opt-IN only (define ICEBERG_LOG_SHORT_MACROS before
+// including this header) to avoid colliding with glog/abseil/windows.h in
+// consumer translation units. No bare LOG(level) is provided.
+#ifdef ICEBERG_LOG_SHORT_MACROS
+#  define LOG_TRACE(...) ICEBERG_LOG_TRACE(__VA_ARGS__)
+#  define LOG_DEBUG(...) ICEBERG_LOG_DEBUG(__VA_ARGS__)
+#  define LOG_INFO(...) ICEBERG_LOG_INFO(__VA_ARGS__)
+#  define LOG_WARN(...) ICEBERG_LOG_WARN(__VA_ARGS__)
+#  define LOG_ERROR(...) ICEBERG_LOG_ERROR(__VA_ARGS__)
+#  define LOG_CRITICAL(...) ICEBERG_LOG_CRITICAL(__VA_ARGS__)
+#  define LOG_FATAL(...) ICEBERG_LOG_FATAL(__VA_ARGS__)
+#endif  // ICEBERG_LOG_SHORT_MACROS
