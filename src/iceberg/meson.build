@@ -71,6 +71,7 @@ iceberg_sources = files(
     'json_serde.cc',
     'location_provider.cc',
     'logging/cerr_logger.cc',
+    'logging/internal/spdlog_logger.cc',
     'logging/logger.cc',
     'manifest/manifest_adapter.cc',
     'manifest/manifest_entry.cc',

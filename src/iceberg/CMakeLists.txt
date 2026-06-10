@@ -153,24 +153,34 @@ list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      nlohmann_json::nlohmann_json
-     spdlog::spdlog
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_SHARED_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      nlohmann_json::nlohmann_json
-     spdlog::spdlog
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+)
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+)
+
+# spdlog backend: linked and compiled only when ICEBERG_SPDLOG is ON. When OFF,
+# the core library has no spdlog dependency and CerrLogger is the default sink.
+if(ICEBERG_SPDLOG)
+  list(APPEND ICEBERG_SOURCES logging/internal/spdlog_logger.cc)
+  list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS spdlog::spdlog)
+  list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS spdlog::spdlog)
+  list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
+       "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+  list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
+       "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+endif()
 
 add_iceberg_lib(iceberg
                 SOURCES
