@@ -30,11 +30,12 @@
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/manifest/rolling_manifest_writer.h"
 #include "iceberg/partition_summary_internal.h"
-#include "iceberg/table.h"
+#include "iceberg/table.h"  // IWYU pragma: keep
 #include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/task_group.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -174,7 +175,7 @@ void SnapshotUpdate::SetSummaryProperty(const std::string& property,
   summary_.Set(property, value);
 }
 
-// TODO(xxx): write manifests in parallel
+// TODO(xxx): Split files into independent rolling-writer groups before parallelizing.
 Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
     std::span<const std::shared_ptr<DataFile>> files,
     const std::shared_ptr<PartitionSpec>& spec,
@@ -200,7 +201,7 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
   return rolling_writer.ToManifestFiles();
 }
 
-// TODO(xxx): write manifests in parallel
+// TODO(xxx): Split files into independent rolling-writer groups before parallelizing.
 Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
     std::span<const ContentFileWithSequenceNumber> files,
     const std::shared_ptr<PartitionSpec>& spec) {
@@ -257,13 +258,17 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   ICEBERG_RETURN_UNEXPECTED(Validate(base(), parent_snapshot));
 
   ICEBERG_ASSIGN_OR_RAISE(auto manifests, Apply(base(), parent_snapshot));
+  auto metadata_tasks = TaskGroup().SetExecutor(plan_executor_);
   for (auto& manifest : manifests) {
     if (manifest.added_snapshot_id != kInvalidSnapshotId) {
       continue;
     }
-    // TODO(xxx): read in parallel and cache enriched manifests for retries
-    ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+    metadata_tasks.Submit([&manifest, this]() -> Status {
+      ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+      return {};
+    });
   }
+  ICEBERG_RETURN_UNEXPECTED(std::move(metadata_tasks).Run());
 
   std::string manifest_list_path = ManifestListPath();
   manifest_lists_.push_back(manifest_list_path);
@@ -419,15 +424,17 @@ std::string SnapshotUpdate::ManifestListPath() {
   // Generate manifest list path
   // Format: {metadata_location}/snap-{snapshot_id}-{attempt}-{uuid}.avro
   int64_t snapshot_id = SnapshotId();
+  auto attempt = attempt_.fetch_add(1, std::memory_order_relaxed) + 1;
   std::string filename =
-      std::format("snap-{}-{}-{}.avro", snapshot_id, ++attempt_, commit_uuid_);
+      std::format("snap-{}-{}-{}.avro", snapshot_id, attempt, commit_uuid_);
   return ctx_->MetadataFileLocation(filename);
 }
 
 std::string SnapshotUpdate::ManifestPath() {
   // Generate manifest path
   // Format: {metadata_location}/{uuid}-m{manifest_count}.avro
-  std::string filename = std::format("{}-m{}.avro", commit_uuid_, manifest_count_++);
+  auto manifest_count = manifest_count_.fetch_add(1, std::memory_order_relaxed);
+  std::string filename = std::format("{}-m{}.avro", commit_uuid_, manifest_count);
   return ctx_->MetadataFileLocation(filename);
 }
 

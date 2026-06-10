@@ -32,6 +32,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
@@ -228,6 +229,7 @@ struct TableScanContext {
   std::optional<int64_t> to_snapshot_id;
   std::string branch{};
   std::optional<int64_t> min_rows_requested;
+  OptionalExecutor plan_executor;
 
   // Validate the context parameters to see if they have conflicts.
   [[nodiscard]] Status Validate() const;
@@ -301,6 +303,9 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
   ///
   /// \param num_rows The minimum number of rows requested
   TableScanBuilder& MinRowsRequested(int64_t num_rows);
+
+  /// \brief Configure an executor for manifest planning.
+  TableScanBuilder& PlanWith(Executor& executor);
 
   /// \brief Request this scan to use the given snapshot by ID.
   /// \param snapshot_id a snapshot ID

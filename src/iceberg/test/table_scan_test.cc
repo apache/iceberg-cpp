@@ -30,6 +30,7 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/scan_test_base.h"
 
 namespace iceberg {
@@ -399,6 +400,72 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
+}
+
+TEST_P(TableScanTest, PlanWithExecutor) {
+  auto version = GetParam();
+
+  const auto partition_a = PartitionValues({Literal::Int(0)});
+  const auto partition_b = PartitionValues({Literal::Int(1)});
+
+  std::vector<ManifestEntry> data_entries_1{MakeEntry(
+      ManifestStatus::kAdded, /*snapshot_id=*/1000L, /*sequence_number=*/1,
+      MakeDataFile("/path/to/data1.parquet", partition_a, partitioned_spec_->spec_id()))};
+  auto data_manifest_1 = WriteDataManifest(version, /*snapshot_id=*/1000L,
+                                           std::move(data_entries_1), partitioned_spec_);
+
+  std::vector<ManifestEntry> data_entries_2{MakeEntry(
+      ManifestStatus::kAdded, /*snapshot_id=*/1000L, /*sequence_number=*/1,
+      MakeDataFile("/path/to/data2.parquet", partition_b, partitioned_spec_->spec_id()))};
+  auto data_manifest_2 = WriteDataManifest(version, /*snapshot_id=*/1000L,
+                                           std::move(data_entries_2), partitioned_spec_);
+
+  std::string manifest_list_path =
+      WriteManifestList(version, /*snapshot_id=*/1000L, /*sequence_number=*/1,
+                        {data_manifest_1, data_manifest_2});
+
+  auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
+  auto snapshot_with_manifests =
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1000L,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = 1L,
+                                          .timestamp_ms = timestamp_ms,
+                                          .manifest_list = manifest_list_path,
+                                          .summary = {},
+                                          .schema_id = schema_->schema_id()});
+
+  auto metadata_with_manifests = std::make_shared<TableMetadata>(
+      TableMetadata{.format_version = 2,
+                    .table_uuid = "test-table-uuid",
+                    .location = "/tmp/table",
+                    .last_sequence_number = 1L,
+                    .last_updated_ms = timestamp_ms,
+                    .last_column_id = 2,
+                    .schemas = {schema_},
+                    .current_schema_id = schema_->schema_id(),
+                    .partition_specs = {partitioned_spec_, unpartitioned_spec_},
+                    .default_spec_id = partitioned_spec_->spec_id(),
+                    .last_partition_id = 1000,
+                    .current_snapshot_id = 1000L,
+                    .snapshots = {snapshot_with_manifests},
+                    .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
+                                                      .snapshot_id = 1000L}},
+                    .default_sort_order_id = 0,
+                    .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                                          .snapshot_id = 1000L,
+                                          .retention = SnapshotRef::Branch{},
+                                      })}}});
+
+  test::ThreadExecutor executor;
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         DataTableScanBuilder::Make(metadata_with_manifests, file_io_));
+  builder->PlanWith(executor);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  ASSERT_EQ(tasks.size(), 2);
+  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
+                                                             "/path/to/data2.parquet"));
+  EXPECT_EQ(executor.submit_count(), 2);
 }
 
 TEST_P(TableScanTest, PlanFilesWithFilter) {

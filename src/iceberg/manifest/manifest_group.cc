@@ -21,6 +21,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <mutex>
+#include <ranges>
+#include <shared_mutex>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -42,6 +45,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg {
 
@@ -186,6 +190,12 @@ ManifestGroup& ManifestGroup::CaseSensitive(bool case_sensitive) {
 
 ManifestGroup& ManifestGroup::ColumnsToKeepStats(std::unordered_set<int32_t> column_ids) {
   columns_to_keep_stats_ = std::move(column_ids);
+  return *this;
+}
+
+ManifestGroup& ManifestGroup::PlanWith(OptionalExecutor executor) {
+  executor_ = executor;
+  delete_index_builder_.PlanWith(executor);
   return *this;
 }
 
@@ -343,10 +353,23 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
 
 Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>>
 ManifestGroup::ReadEntries() {
+  // TODO(zehua): Replace with a thread-safe LRU cache.
+  std::shared_mutex eval_cache_mutex;
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> eval_cache;
+
   auto get_manifest_evaluator = [&](int32_t spec_id) -> Result<ManifestEvaluator*> {
-    if (eval_cache.contains(spec_id)) {
-      return eval_cache[spec_id].get();
+    {
+      std::shared_lock lock(eval_cache_mutex);
+      auto iter = eval_cache.find(spec_id);
+      if (iter != eval_cache.end()) {
+        return iter->second.get();
+      }
+    }
+
+    std::lock_guard lock(eval_cache_mutex);
+    auto iter = eval_cache.find(spec_id);
+    if (iter != eval_cache.end()) {
+      return iter->second.get();
     }
 
     auto spec_iter = specs_by_id_.find(spec_id);
@@ -376,57 +399,73 @@ ManifestGroup::ReadEntries() {
         Evaluator::Make(*DataFileFilterSchema(), file_filter_, case_sensitive_));
   }
 
-  std::unordered_map<int32_t, std::vector<ManifestEntry>> result;
+  std::vector<std::unordered_map<int32_t, std::vector<ManifestEntry>>> manifest_results(
+      data_manifests_.size());
 
-  // TODO(gangwu): Parallelize reading manifests
-  for (const auto& manifest : data_manifests_) {
-    const int32_t spec_id = manifest.partition_spec_id;
+  auto read_tasks = TaskGroup().SetExecutor(executor_);
+  for (auto&& [manifest, manifest_result] :
+       std::views::zip(data_manifests_, manifest_results)) {
+    read_tasks.Submit([&]() -> Status {
+      const int32_t spec_id = manifest.partition_spec_id;
 
-    ICEBERG_ASSIGN_OR_RAISE(auto manifest_evaluator, get_manifest_evaluator(spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(bool should_match, manifest_evaluator->Evaluate(manifest));
-    if (!should_match) {
-      // Skip this manifest because it doesn't match partition filter
-      continue;
-    }
-
-    if (ignore_deleted_) {
-      // only scan manifests that have entries other than deletes
-      if (!manifest.has_added_files() && !manifest.has_existing_files()) {
-        continue;
-      }
-    }
-
-    if (ignore_existing_) {
-      // only scan manifests that have entries other than existing
-      if (!manifest.has_added_files() && !manifest.has_deleted_files()) {
-        continue;
-      }
-    }
-
-    // Read manifest entries
-    ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
-    ICEBERG_ASSIGN_OR_RAISE(auto entries,
-                            ignore_deleted_ ? reader->LiveEntries() : reader->Entries());
-
-    for (auto& entry : entries) {
-      if (ignore_existing_ && entry.status == ManifestStatus::kExisting) {
-        continue;
+      ICEBERG_ASSIGN_OR_RAISE(auto manifest_evaluator, get_manifest_evaluator(spec_id));
+      ICEBERG_ASSIGN_OR_RAISE(bool should_match, manifest_evaluator->Evaluate(manifest));
+      if (!should_match) {
+        // Skip this manifest because it doesn't match partition filter
+        return {};
       }
 
-      if (data_file_evaluator != nullptr) {
-        DataFileStructLike data_file(*entry.data_file);
-        ICEBERG_ASSIGN_OR_RAISE(bool should_match,
-                                data_file_evaluator->Evaluate(data_file));
-        if (!should_match) {
-          continue;
+      if (ignore_deleted_) {
+        // only scan manifests that have entries other than deletes
+        if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+          return {};
         }
       }
 
-      if (!manifest_entry_predicate_(entry)) {
-        continue;
+      if (ignore_existing_) {
+        // only scan manifests that have entries other than existing
+        if (!manifest.has_added_files() && !manifest.has_deleted_files()) {
+          return {};
+        }
       }
 
-      result[spec_id].push_back(std::move(entry));
+      // Read manifest entries
+      ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto entries, ignore_deleted_ ? reader->LiveEntries() : reader->Entries());
+
+      for (auto& entry : entries) {
+        if (ignore_existing_ && entry.status == ManifestStatus::kExisting) {
+          continue;
+        }
+
+        if (data_file_evaluator != nullptr) {
+          DataFileStructLike data_file(*entry.data_file);
+          ICEBERG_ASSIGN_OR_RAISE(bool should_match,
+                                  data_file_evaluator->Evaluate(data_file));
+          if (!should_match) {
+            continue;
+          }
+        }
+
+        if (!manifest_entry_predicate_(entry)) {
+          continue;
+        }
+
+        manifest_result[spec_id].push_back(std::move(entry));
+      }
+      return {};
+    });
+  }
+  ICEBERG_RETURN_UNEXPECTED(std::move(read_tasks).Run());
+
+  std::unordered_map<int32_t, std::vector<ManifestEntry>> result;
+  for (auto& manifest_result : manifest_results) {
+    result.merge(manifest_result);
+    for (auto& [spec_id, entries] : manifest_result) {
+      auto& spec_entries = result[spec_id];
+      spec_entries.insert(spec_entries.end(), std::make_move_iterator(entries.begin()),
+                          std::make_move_iterator(entries.end()));
     }
   }
 
