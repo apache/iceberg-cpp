@@ -26,6 +26,6 @@ configure_file(output: 'config.h', configuration: logging_config_data)
 # Public logging headers. The build-generated config.h and the internal
 # SpdLogger header are intentionally NOT installed.
 install_headers(
-    ['cerr_logger.h', 'log_level.h', 'logger.h'],
+    ['cerr_logger.h', 'log_level.h', 'logger.h', 'loggers.h'],
     subdir: 'iceberg/logging',
 )
