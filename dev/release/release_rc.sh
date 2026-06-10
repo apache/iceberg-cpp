@@ -44,6 +44,7 @@ rc=$2
 : "${RELEASE_PUSH_TAG:=${RELEASE_DEFAULT}}"
 : "${RELEASE_SIGN:=${RELEASE_DEFAULT}}"
 : "${RELEASE_UPLOAD:=${RELEASE_DEFAULT}}"
+: "${RELEASE_WATCH:=${RELEASE_DEFAULT}}"
 : "${RELEASE_WATCH_INTERVAL:=30}"
 
 cd "${SOURCE_TOP_DIR}"
@@ -97,29 +98,33 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
   done
 
   echo "Found GitHub Actions workflow with ID: ${run_id}"
-  while true; do
-    run_status=$(gh run view \
-      --repo "${repository}" \
-      --json 'status,conclusion' \
-      --jq '.status + " " + (.conclusion // "")' \
-      "${run_id}")
-    echo "$(date -u '+%Y-%m-%dT%H:%M:%SZ') GitHub Actions workflow status: ${run_status}"
-    gh run view \
-      --repo "${repository}" \
-      --json jobs \
-      --jq '.jobs[] | "  " + .name + ": " + .status + " " + (.conclusion // "")' \
-      "${run_id}"
-    case "${run_status}" in
-      "completed success")
-        break
-        ;;
-      completed\ *)
-        echo "GitHub Actions workflow did not complete successfully: ${run_status}"
-        exit 1
-        ;;
-    esac
-    sleep "${RELEASE_WATCH_INTERVAL}"
-  done
+  if [ "${RELEASE_WATCH}" -gt 0 ]; then
+    gh run watch --repo "${repository}" --exit-status "${run_id}"
+  else
+    while true; do
+      run_status=$(gh run view \
+        --repo "${repository}" \
+        --json 'status,conclusion' \
+        --jq '.status + " " + (.conclusion // "")' \
+        "${run_id}")
+      echo "$(date -u '+%Y-%m-%dT%H:%M:%SZ') GitHub Actions workflow status: ${run_status}"
+      gh run view \
+        --repo "${repository}" \
+        --json jobs \
+        --jq '.jobs[] | "  " + .name + ": " + .status + " " + (.conclusion // "")' \
+        "${run_id}"
+      case "${run_status}" in
+        "completed success")
+          break
+          ;;
+        completed\ *)
+          echo "GitHub Actions workflow did not complete successfully: ${run_status}"
+          exit 1
+          ;;
+      esac
+      sleep "${RELEASE_WATCH_INTERVAL}"
+    done
+  fi
 
   mkdir -p "${rc_id}"
 
