@@ -197,10 +197,10 @@ class ParquetReaderTest : public TempFileTestBase {
     ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
     auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
 
-    auto array = ::arrow::json::ArrayFromJSONString(
-                     ::arrow::struct_(arrow_schema->fields()),
-                     R"([[1, [1, 2]], [2, [3]], [3, null]])")
-                     .ValueOrDie();
+    auto array =
+        ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                           R"([[1, [1, 2]], [2, [3]], [3, null]])")
+            .ValueOrDie();
 
     WriterProperties writer_properties;
     writer_properties.Set(WriterProperties::kParquetCompression,
