@@ -120,6 +120,7 @@ iceberg_sources = files(
     'update/fast_append.cc',
     'update/merging_snapshot_update.cc',
     'update/pending_update.cc',
+    'update/row_delta.cc',
     'update/set_snapshot.cc',
     'update/snapshot_manager.cc',
     'update/snapshot_update.cc',

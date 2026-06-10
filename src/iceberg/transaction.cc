@@ -35,6 +35,7 @@
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/snapshot_update.h"
@@ -476,6 +477,13 @@ Result<std::shared_ptr<FastAppend>> Transaction::NewFastAppend() {
                           FastAppend::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(fast_append));
   return fast_append;
+}
+
+Result<std::shared_ptr<RowDelta>> Transaction::NewRowDelta() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<RowDelta> row_delta,
+                          RowDelta::Make(ctx_->table->name().name, ctx_));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(row_delta));
+  return row_delta;
 }
 
 Result<std::shared_ptr<UpdateStatistics>> Transaction::NewUpdateStatistics() {
