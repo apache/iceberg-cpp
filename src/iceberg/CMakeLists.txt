@@ -230,6 +230,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/version.h"
 add_subdirectory(catalog)
 add_subdirectory(data)
 add_subdirectory(deletes)
+add_subdirectory(encryption)
 add_subdirectory(expression)
 add_subdirectory(manifest)
 add_subdirectory(puffin)
