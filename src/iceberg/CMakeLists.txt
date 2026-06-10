@@ -22,6 +22,7 @@ set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     catalog/memory/in_memory_catalog.cc
     delete_file_index.cc
+    deletes/roaring_position_bitmap.cc
     expression/aggregate.cc
     expression/binder.cc
     expression/evaluator.cc
@@ -70,6 +71,11 @@ set(ICEBERG_SOURCES
     partition_field.cc
     partition_spec.cc
     partition_summary.cc
+    puffin/file_metadata.cc
+    puffin/json_serde.cc
+    puffin/puffin_format.cc
+    puffin/puffin_reader.cc
+    puffin/puffin_writer.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/partition_values.cc
@@ -139,22 +145,24 @@ list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      nlohmann_json::nlohmann_json
+     roaring::roaring
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_SHARED_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      nlohmann_json::nlohmann_json
+     roaring::roaring
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-)
+     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-)
+     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
 
 add_iceberg_lib(iceberg
                 SOURCES
@@ -181,13 +189,7 @@ set(ICEBERG_DATA_SOURCES
     data/position_delete_writer.cc
     data/writer.cc
     deletes/position_delete_index.cc
-    deletes/position_delete_range_consumer.cc
-    deletes/roaring_position_bitmap.cc
-    puffin/file_metadata.cc
-    puffin/json_serde.cc
-    puffin/puffin_format.cc
-    puffin/puffin_reader.cc
-    puffin/puffin_writer.cc)
+    deletes/position_delete_range_consumer.cc)
 
 set(ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS)
@@ -195,19 +197,17 @@ set(ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
-     roaring::roaring)
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>")
 list(APPEND ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
-     roaring::roaring)
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>")
 list(APPEND
      ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
+)
 list(APPEND
      ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
+)
 
 add_iceberg_lib(iceberg_data
                 SOURCES

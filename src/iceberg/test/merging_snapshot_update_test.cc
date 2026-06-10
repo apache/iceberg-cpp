@@ -29,11 +29,16 @@
 
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/constants.h"
+#include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/puffin/file_metadata.h"
+#include "iceberg/puffin/puffin_reader.h"
+#include "iceberg/puffin/puffin_writer.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -43,11 +48,14 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
-#include "iceberg/update/fast_append.h"
-#include "iceberg/update/update_properties.h"
+#include "iceberg/update/fast_append.h"        // IWYU pragma: keep
+#include "iceberg/update/update_properties.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+static_assert(sizeof(FastAppend) > 0);
+static_assert(sizeof(UpdateProperties) > 0);
 
 /// \brief Concrete subclass of MergingSnapshotUpdate for testing.
 class TestMergeAppend : public MergingSnapshotUpdate {
@@ -244,6 +252,60 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     auto f = MakeDataFile(path, partition_x);
     f->content = DataFile::Content::kPositionDeletes;
     return f;
+  }
+
+  Result<std::shared_ptr<DataFile>> WriteDeletionVector(
+      const std::string& path, const std::vector<int64_t>& positions,
+      const std::shared_ptr<DataFile>& data_file) {
+    RoaringPositionBitmap bitmap;
+    for (auto position : positions) {
+      bitmap.Add(position);
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto serialized, bitmap.Serialize());
+
+    auto file_path = table_location_ + path;
+    ICEBERG_ASSIGN_OR_RAISE(auto output, file_io_->NewOutputFile(file_path));
+    ICEBERG_ASSIGN_OR_RAISE(auto writer, puffin::PuffinWriter::Make(std::move(output)));
+    std::vector<uint8_t> bytes(serialized.begin(), serialized.end());
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto blob_metadata,
+        writer->Write(puffin::Blob{
+            .type = std::string(puffin::StandardBlobTypes::kDeletionVectorV1),
+            .input_fields = {},
+            .snapshot_id = 1,
+            .sequence_number = 7,
+            .data = std::move(bytes),
+        }));
+    ICEBERG_RETURN_UNEXPECTED(writer->Finish());
+    ICEBERG_ASSIGN_OR_RAISE(auto file_size, writer->FileSize());
+
+    auto delete_file = MakeDeleteFile(path, 1L);
+    delete_file->partition = data_file->partition;
+    delete_file->partition_spec_id = data_file->partition_spec_id;
+    delete_file->file_format = FileFormatType::kPuffin;
+    delete_file->record_count = static_cast<int64_t>(positions.size());
+    delete_file->file_size_in_bytes = file_size;
+    delete_file->referenced_data_file = data_file->file_path;
+    delete_file->content_offset = blob_metadata.offset;
+    delete_file->content_size_in_bytes = blob_metadata.length;
+    return delete_file;
+  }
+
+  Result<RoaringPositionBitmap> ReadDeletionVector(const DataFile& delete_file) {
+    ICEBERG_ASSIGN_OR_RAISE(auto input, file_io_->NewInputFile(delete_file.file_path));
+    ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                            puffin::PuffinReader::Make(std::move(input), std::nullopt,
+                                                       delete_file.file_size_in_bytes));
+    ICEBERG_ASSIGN_OR_RAISE(auto metadata, reader->ReadFileMetadata());
+    auto blob_it = std::ranges::find_if(metadata.blobs, [&](const auto& blob) {
+      return blob.type == puffin::StandardBlobTypes::kDeletionVectorV1 &&
+             blob.offset == delete_file.content_offset.value() &&
+             blob.length == delete_file.content_size_in_bytes.value();
+    });
+    ICEBERG_PRECHECK(blob_it != metadata.blobs.end(), "DV blob not found");
+    ICEBERG_ASSIGN_OR_RAISE(auto blob, reader->ReadBlob(*blob_it));
+    return RoaringPositionBitmap::Deserialize(std::string_view(
+        reinterpret_cast<const char*>(blob.second.data()), blob.second.size()));
   }
 
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
@@ -803,6 +865,68 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV3AllowsDeletionVector) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
+}
+
+TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
+  SetTableFormatVersion(3);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_dv,
+                         WriteDeletionVector("/delete/dv_a.puffin", {1, 3}, file_a_));
+  ICEBERG_UNWRAP_OR_FAIL(auto second_dv,
+                         WriteDeletionVector("/delete/dv_b.puffin", {3, 5}, file_a_));
+  ICEBERG_UNWRAP_OR_FAIL(auto third_dv,
+                         WriteDeletionVector("/delete/dv_c.puffin", {7}, file_b_));
+  ICEBERG_UNWRAP_OR_FAIL(auto fourth_dv,
+                         WriteDeletionVector("/delete/dv_d.puffin", {9}, file_b_));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  EXPECT_THAT(op->AddDelete(first_dv, 7), IsOk());
+  EXPECT_THAT(op->AddDelete(second_dv, 7), IsOk());
+  EXPECT_THAT(op->AddDelete(third_dv, 7), IsOk());
+  EXPECT_THAT(op->AddDelete(fourth_dv, 7), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto apply, static_cast<SnapshotUpdate&>(*op).Apply());
+  SnapshotCache snapshot_cache(apply.snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, snapshot_cache.DeleteManifests(file_io_));
+  std::vector<ManifestFile> delete_manifest_vector(delete_manifests.begin(),
+                                                   delete_manifests.end());
+  ICEBERG_UNWRAP_OR_FAIL(auto entries,
+                         ReadAllEntries(delete_manifest_vector, *table_->metadata()));
+
+  ASSERT_EQ(entries.size(), 2U);
+  ASSERT_NE(entries[0].data_file, nullptr);
+  ASSERT_NE(entries[1].data_file, nullptr);
+  const DataFile* merged_a = nullptr;
+  const DataFile* merged_b = nullptr;
+  for (const auto& entry : entries) {
+    const auto& merged_dv = *entry.data_file;
+    EXPECT_EQ(merged_dv.file_format, FileFormatType::kPuffin);
+    if (merged_dv.referenced_data_file == file_a_->file_path) {
+      merged_a = &merged_dv;
+    } else if (merged_dv.referenced_data_file == file_b_->file_path) {
+      merged_b = &merged_dv;
+    }
+  }
+  ASSERT_NE(merged_a, nullptr);
+  ASSERT_NE(merged_b, nullptr);
+  EXPECT_EQ(merged_a->file_path, merged_b->file_path);
+  EXPECT_NE(merged_a->content_offset, merged_b->content_offset);
+  EXPECT_NE(merged_a->file_path, first_dv->file_path);
+  EXPECT_NE(merged_a->file_path, second_dv->file_path);
+  EXPECT_NE(merged_b->file_path, third_dv->file_path);
+  EXPECT_NE(merged_b->file_path, fourth_dv->file_path);
+  EXPECT_EQ(merged_a->record_count, 3);
+  EXPECT_EQ(merged_b->record_count, 2);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto bitmap_a, ReadDeletionVector(*merged_a));
+  EXPECT_EQ(bitmap_a.Cardinality(), 3U);
+  EXPECT_TRUE(bitmap_a.Contains(1));
+  EXPECT_TRUE(bitmap_a.Contains(3));
+  EXPECT_TRUE(bitmap_a.Contains(5));
+  ICEBERG_UNWRAP_OR_FAIL(auto bitmap_b, ReadDeletionVector(*merged_b));
+  EXPECT_EQ(bitmap_b.Cardinality(), 2U);
+  EXPECT_TRUE(bitmap_b.Contains(7));
+  EXPECT_TRUE(bitmap_b.Contains(9));
 }
 
 TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileRejectsUnsupportedVersion) {
