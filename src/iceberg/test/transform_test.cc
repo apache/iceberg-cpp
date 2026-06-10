@@ -71,6 +71,56 @@ TEST(TransformFunctionTest, CreateTruncateTransform) {
   EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kTruncate);
 }
 
+TEST(TransformFunctionTest, CreateYearTransform) {
+  auto transform = Transform::Year();
+  EXPECT_EQ("year", transform->ToString());
+  EXPECT_EQ("year", std::format("{}", *transform));
+
+  auto transformPtr = transform->Bind(iceberg::timestamp());
+  ASSERT_TRUE(transformPtr);
+  EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kYear);
+}
+
+TEST(TransformFunctionTest, CreateMonthTransform) {
+  auto transform = Transform::Month();
+  EXPECT_EQ("month", transform->ToString());
+  EXPECT_EQ("month", std::format("{}", *transform));
+
+  auto transformPtr = transform->Bind(iceberg::timestamp());
+  ASSERT_TRUE(transformPtr);
+  EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kMonth);
+}
+
+TEST(TransformFunctionTest, CreateDayTransform) {
+  auto transform = Transform::Day();
+  EXPECT_EQ("day", transform->ToString());
+  EXPECT_EQ("day", std::format("{}", *transform));
+
+  auto transformPtr = transform->Bind(iceberg::timestamp_tz());
+  ASSERT_TRUE(transformPtr);
+  EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kDay);
+}
+
+TEST(TransformFunctionTest, CreateHourTransform) {
+  auto transform = Transform::Hour();
+  EXPECT_EQ("hour", transform->ToString());
+  EXPECT_EQ("hour", std::format("{}", *transform));
+
+  auto transformPtr = transform->Bind(iceberg::timestamp());
+  ASSERT_TRUE(transformPtr);
+  EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kHour);
+}
+
+TEST(TransformFunctionTest, CreateVoidTransform) {
+  auto transform = Transform::Void();
+  EXPECT_EQ("void", transform->ToString());
+  EXPECT_EQ("void", std::format("{}", *transform));
+
+  auto transformPtr = transform->Bind(iceberg::int32());
+  ASSERT_TRUE(transformPtr);
+  EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kVoid);
+}
+
 TEST(TransformFromStringTest, PositiveCases) {
   struct Case {
     std::string str;
