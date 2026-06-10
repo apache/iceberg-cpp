@@ -29,6 +29,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "iceberg/encryption/encrypted_key.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
@@ -63,6 +64,8 @@ class ICEBERG_EXPORT TableUpdate {
     kRemoveStatistics,
     kSetPartitionStatistics,
     kRemovePartitionStatistics,
+    kAddEncryptionKey,
+    kRemoveEncryptionKey,
   };
 
   virtual ~TableUpdate();
@@ -606,6 +609,48 @@ class ICEBERG_EXPORT RemovePartitionStatistics : public TableUpdate {
 
  private:
   int64_t snapshot_id_;
+};
+
+/// \brief Represents adding an encryption key to the table.
+class ICEBERG_EXPORT AddEncryptionKey : public TableUpdate {
+ public:
+  explicit AddEncryptionKey(EncryptedKey key) : key_(std::move(key)) {}
+
+  const EncryptedKey& key() const { return key_; }
+
+  void ApplyTo(TableMetadataBuilder& builder) const override;
+
+  void GenerateRequirements(TableUpdateContext& context) const override;
+
+  Kind kind() const override { return Kind::kAddEncryptionKey; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
+ private:
+  EncryptedKey key_;
+};
+
+/// \brief Represents removing an encryption key from the table.
+class ICEBERG_EXPORT RemoveEncryptionKey : public TableUpdate {
+ public:
+  explicit RemoveEncryptionKey(std::string key_id) : key_id_(std::move(key_id)) {}
+
+  const std::string& key_id() const { return key_id_; }
+
+  void ApplyTo(TableMetadataBuilder& builder) const override;
+
+  void GenerateRequirements(TableUpdateContext& context) const override;
+
+  Kind kind() const override { return Kind::kRemoveEncryptionKey; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
+ private:
+  std::string key_id_;
 };
 
 }  // namespace table

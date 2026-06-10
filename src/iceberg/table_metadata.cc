@@ -176,6 +176,10 @@ std::vector<std::unique_ptr<TableUpdate>> ChangesForCreate(
         std::make_unique<table::SetProperties>(metadata.properties.configs()));
   }
 
+  for (const auto& key : metadata.encryption_keys) {
+    changes.push_back(std::make_unique<table::AddEncryptionKey>(key));
+  }
+
   return changes;
 }
 }  // namespace
@@ -224,7 +228,8 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
   ICEBERG_RETURN_UNEXPECTED(PropertyUtil::ValidateCommitProperties(properties));
 
   return TableMetadataBuilder::BuildFromEmpty(format_version)
-      ->SetLocation(location)
+      ->AssignUUID()
+      .SetLocation(location)
       .SetCurrentSchema(std::move(fresh_schema), last_column_id)
       .SetDefaultPartitionSpec(std::move(fresh_spec))
       .SetDefaultSortOrder(std::move(fresh_order))
@@ -352,7 +357,7 @@ bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
          SnapshotRefEquals(lhs.refs, rhs.refs) &&
          SharedPtrVectorEquals(lhs.statistics, rhs.statistics) &&
          SharedPtrVectorEquals(lhs.partition_statistics, rhs.partition_statistics) &&
-         lhs.next_row_id == rhs.next_row_id;
+         lhs.next_row_id == rhs.next_row_id && lhs.encryption_keys == rhs.encryption_keys;
 }
 
 // TableMetadataCache implementation
@@ -578,6 +583,10 @@ class TableMetadataBuilder::Impl {
       snapshots_by_id_.emplace(snapshot->snapshot_id, snapshot);
     }
 
+    for (const auto& key : metadata_.encryption_keys) {
+      keys_by_id_.emplace(key.key_id);
+    }
+
     metadata_.last_updated_ms = kInvalidLastUpdatedMs;
   }
 
@@ -626,6 +635,8 @@ class TableMetadataBuilder::Impl {
   Status SetPartitionStatistics(
       std::shared_ptr<PartitionStatisticsFile> partition_statistics_file);
   Status RemovePartitionStatistics(int64_t snapshot_id);
+  Status AddEncryptionKey(EncryptedKey key);
+  Status RemoveEncryptionKey(std::string_view key_id);
 
   Result<std::unique_ptr<TableMetadata>> Build();
 
@@ -698,6 +709,7 @@ class TableMetadataBuilder::Impl {
   std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id_;
   std::unordered_map<int32_t, std::shared_ptr<SortOrder>> sort_orders_by_id_;
   std::unordered_map<int64_t, std::shared_ptr<Snapshot>> snapshots_by_id_;
+  std::unordered_set<std::string> keys_by_id_;
 };
 
 Status TableMetadataBuilder::Impl::AssignUUID(std::string_view uuid) {
@@ -1246,6 +1258,29 @@ Status TableMetadataBuilder::Impl::RemovePartitionStatistics(int64_t snapshot_id
   return {};
 }
 
+Status TableMetadataBuilder::Impl::AddEncryptionKey(EncryptedKey key) {
+  if (keys_by_id_.contains(key.key_id)) {
+    return {};
+  }
+
+  keys_by_id_.emplace(key.key_id);
+  changes_.push_back(std::make_unique<table::AddEncryptionKey>(key));
+  metadata_.encryption_keys.push_back(std::move(key));
+  return {};
+}
+
+Status TableMetadataBuilder::Impl::RemoveEncryptionKey(std::string_view key_id) {
+  std::string key_id_str(key_id);
+  if (keys_by_id_.erase(key_id_str) == 0) {
+    return {};
+  }
+
+  std::erase_if(metadata_.encryption_keys,
+                [&key_id_str](const auto& key) { return key.key_id == key_id_str; });
+  changes_.push_back(std::make_unique<table::RemoveEncryptionKey>(std::move(key_id_str)));
+  return {};
+}
+
 std::unordered_set<int64_t> TableMetadataBuilder::Impl::IntermediateSnapshotIdSet(
     int64_t current_snapshot_id) const {
   std::unordered_set<int64_t> added_snapshot_ids;
@@ -1701,13 +1736,14 @@ TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view locatio
   return *this;
 }
 
-TableMetadataBuilder& TableMetadataBuilder::AddEncryptionKey(
-    std::shared_ptr<EncryptedKey> key) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+TableMetadataBuilder& TableMetadataBuilder::AddEncryptionKey(EncryptedKey key) {
+  ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->AddEncryptionKey(std::move(key)));
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view key_id) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->RemoveEncryptionKey(key_id));
+  return *this;
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {

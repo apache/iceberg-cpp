@@ -486,4 +486,57 @@ TEST(MetadataSerdeTest, DeserializeV2MissingSortOrder) {
                                "sort-orders must exist");
 }
 
+TEST(MetadataSerdeTest, EncryptionKeysRoundTrip) {
+  nlohmann::json metadata_json = R"({
+    "format-version": 2,
+    "table-uuid": "test-uuid-1234",
+    "location": "s3://bucket/test",
+    "last-sequence-number": 0,
+    "last-updated-ms": 0,
+    "last-column-id": 1,
+    "schemas": [
+      {
+        "type": "struct",
+        "schema-id": 0,
+        "fields": [
+          {"id": 1, "name": "id", "type": "int", "required": true}
+        ]
+      }
+    ],
+    "current-schema-id": 0,
+    "partition-specs": [{"spec-id": 0, "fields": []}],
+    "default-spec-id": 0,
+    "last-partition-id": 999,
+    "sort-orders": [{"order-id": 0, "fields": []}],
+    "default-sort-order-id": 0,
+    "properties": {},
+    "current-snapshot-id": null,
+    "refs": {},
+    "snapshots": [],
+    "statistics": [],
+    "partition-statistics": [],
+    "snapshot-log": [],
+    "metadata-log": [],
+    "encryption-keys": [
+      {
+        "key-id": "key-1",
+        "encrypted-key-metadata": "c2VjcmV0LWtleS1tZXRhZGF0YQ==",
+        "encrypted-by-id": "kek-1",
+        "properties": {"scope": "table"}
+      }
+    ]
+  })"_json;
+
+  auto metadata = TableMetadataFromJson(metadata_json);
+  ASSERT_THAT(metadata, IsOk());
+  ASSERT_EQ(metadata.value()->encryption_keys.size(), 1);
+  EXPECT_EQ(metadata.value()->encryption_keys[0].key_id, "key-1");
+  EXPECT_EQ(metadata.value()->encryption_keys[0].encrypted_key_metadata,
+            "secret-key-metadata");
+
+  auto serialized = ToJson(*metadata.value());
+  ASSERT_TRUE(serialized.contains("encryption-keys"));
+  EXPECT_EQ(serialized["encryption-keys"], metadata_json["encryption-keys"]);
+}
+
 }  // namespace iceberg

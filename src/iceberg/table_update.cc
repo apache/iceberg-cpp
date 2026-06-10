@@ -565,4 +565,48 @@ std::unique_ptr<TableUpdate> RemovePartitionStatistics::Clone() const {
   return std::make_unique<RemovePartitionStatistics>(snapshot_id_);
 }
 
+// AddEncryptionKey
+
+void AddEncryptionKey::ApplyTo(TableMetadataBuilder& builder) const {
+  builder.AddEncryptionKey(key_);
+}
+
+void AddEncryptionKey::GenerateRequirements(TableUpdateContext& context) const {
+  // AddEncryptionKey doesn't generate any requirements
+}
+
+bool AddEncryptionKey::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kAddEncryptionKey) {
+    return false;
+  }
+  const auto& other_add = internal::checked_cast<const AddEncryptionKey&>(other);
+  return key_ == other_add.key_;
+}
+
+std::unique_ptr<TableUpdate> AddEncryptionKey::Clone() const {
+  return std::make_unique<AddEncryptionKey>(key_);
+}
+
+// RemoveEncryptionKey
+
+void RemoveEncryptionKey::ApplyTo(TableMetadataBuilder& builder) const {
+  builder.RemoveEncryptionKey(key_id_);
+}
+
+void RemoveEncryptionKey::GenerateRequirements(TableUpdateContext& context) const {
+  // RemoveEncryptionKey doesn't generate any requirements
+}
+
+bool RemoveEncryptionKey::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemoveEncryptionKey) {
+    return false;
+  }
+  const auto& other_remove = internal::checked_cast<const RemoveEncryptionKey&>(other);
+  return key_id_ == other_remove.key_id_;
+}
+
+std::unique_ptr<TableUpdate> RemoveEncryptionKey::Clone() const {
+  return std::make_unique<RemoveEncryptionKey>(key_id_);
+}
+
 }  // namespace iceberg::table

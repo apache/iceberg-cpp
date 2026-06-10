@@ -36,6 +36,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -102,6 +103,7 @@ TEST(TableMetadataTest, Make) {
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto metadata, TableMetadata::Make(*Schema, *spec, *order, "s3://bucket/test", {}));
+  EXPECT_THAT(Uuid::FromString(metadata->table_uuid), IsOk());
   // Check schema fields
   ASSERT_EQ(1, metadata->schemas.size());
   auto fields = metadata->schemas[0]->fields() | std::ranges::to<std::vector>();
@@ -360,6 +362,40 @@ TEST(TableMetadataBuilderTest, RemoveProperties) {
   EXPECT_EQ(metadata->properties.configs().size(), 2);
   EXPECT_EQ(metadata->properties.configs().at("key1"), "value1");
   EXPECT_EQ(metadata->properties.configs().at("key3"), "value3");
+}
+
+TEST(TableMetadataBuilderTest, AddAndRemoveEncryptionKey) {
+  auto base = CreateBaseMetadata();
+  EncryptedKey key{
+      .key_id = "key-1",
+      .encrypted_key_metadata = "secret-key-metadata",
+      .encrypted_by_id = "kek-1",
+      .properties = {{"scope", "table"}},
+  };
+
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  builder->AddEncryptionKey(key);
+  builder->AddEncryptionKey(key);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->encryption_keys.size(), 1);
+  EXPECT_EQ(metadata->encryption_keys[0], key);
+  ASSERT_EQ(builder->changes().size(), 1);
+  EXPECT_EQ(builder->changes()[0]->kind(), TableUpdate::Kind::kAddEncryptionKey);
+
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->RemoveEncryptionKey("missing-key");
+  ICEBERG_UNWRAP_OR_FAIL(auto unchanged, builder->Build());
+  ASSERT_EQ(unchanged->encryption_keys.size(), 1);
+  EXPECT_EQ(unchanged->encryption_keys[0], key);
+  EXPECT_TRUE(builder->changes().empty());
+
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->RemoveEncryptionKey("key-1");
+  ICEBERG_UNWRAP_OR_FAIL(auto removed, builder->Build());
+  EXPECT_TRUE(removed->encryption_keys.empty());
+  ASSERT_EQ(builder->changes().size(), 1);
+  EXPECT_EQ(builder->changes()[0]->kind(), TableUpdate::Kind::kRemoveEncryptionKey);
 }
 
 TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
