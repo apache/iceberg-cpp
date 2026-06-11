@@ -19,8 +19,13 @@
 
 #include "iceberg/catalog/rest/rest_file_io.h"
 
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
+#include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/util/macros.h"
 
@@ -90,6 +95,61 @@ Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& c
   // TODO(gangwu): Support Java-style customized FileIO creation flows instead of
   // resolving a single catalog-scoped FileIO instance only from properties.
   return FileIORegistry::Load(io_impl, config.configs());
+}
+
+const StorageCredential* MatchStorageCredential(
+    std::string_view location, const std::vector<StorageCredential>& credentials) {
+  const StorageCredential* best = nullptr;
+  for (const auto& credential : credentials) {
+    if (!location.starts_with(credential.prefix)) {
+      continue;
+    }
+    if (best == nullptr || credential.prefix.size() > best->prefix.size()) {
+      best = &credential;
+    }
+  }
+  return best;
+}
+
+Result<std::shared_ptr<FileIO>> MakeTableFileIO(
+    const RestCatalogProperties& catalog_config,
+    const std::shared_ptr<FileIO>& catalog_file_io, std::string_view location,
+    const std::unordered_map<std::string, std::string>& table_config,
+    const std::vector<StorageCredential>& storage_credentials) {
+  const StorageCredential* credential =
+      MatchStorageCredential(location, storage_credentials);
+
+  // Without table-specific overrides, reuse the shared catalog FileIO.
+  if (table_config.empty() && credential == nullptr) {
+    return catalog_file_io;
+  }
+
+  // Layer table config, then vended credentials, on top of the catalog properties.
+  // Vended credentials are the most specific and therefore take precedence.
+  static const std::unordered_map<std::string, std::string> kEmptyConfig;
+  auto properties =
+      MergeConfigs(catalog_config.configs(), table_config,
+                   credential != nullptr ? credential->config : kEmptyConfig);
+
+  std::string io_impl;
+  if (auto it = properties.find(RestCatalogProperties::kIOImpl.key());
+      it != properties.end()) {
+    io_impl = it->second;
+  }
+  if (io_impl.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(const auto detected_kind, DetectBuiltinFileIO(location));
+    io_impl = std::string(BuiltinFileIOName(detected_kind));
+  } else if (!location.empty() && IsBuiltinImpl(io_impl)) {
+    ICEBERG_ASSIGN_OR_RAISE(const auto detected_kind, DetectBuiltinFileIO(location));
+    if (io_impl != BuiltinFileIOName(detected_kind)) {
+      return InvalidArgument(
+          R"("io-impl" value '{}' is incompatible with table location '{}')", io_impl,
+          location);
+    }
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto file_io, FileIORegistry::Load(io_impl, properties));
+  return std::shared_ptr<FileIO>(std::move(file_io));
 }
 
 }  // namespace iceberg::rest

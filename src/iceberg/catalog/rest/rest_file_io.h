@@ -22,9 +22,12 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
+#include <unordered_map>
+#include <vector>
 
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/result.h"
@@ -43,5 +46,28 @@ ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
 
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
+
+/// \brief Select the storage credential whose prefix is the most specific (longest)
+/// match for `location`, per the REST spec guidance.
+///
+/// \return A pointer into `credentials`, or nullptr if none match. The pointer is
+///         valid only as long as `credentials` is alive and unmodified.
+ICEBERG_REST_EXPORT const StorageCredential* MatchStorageCredential(
+    std::string_view location, const std::vector<StorageCredential>& credentials);
+
+/// \brief Build a FileIO for a single table from a load/create response.
+///
+/// Layers the table's vended storage credentials (the most specific prefix match for
+/// `location`) and table-specific `table_config` on top of the catalog configuration,
+/// then resolves a FileIO implementation. Vended credentials take precedence over
+/// `table_config`, which takes precedence over the catalog configuration.
+///
+/// When the table supplies neither vended credentials nor overriding config,
+/// `catalog_file_io` is returned unchanged so the shared instance is reused.
+ICEBERG_REST_EXPORT Result<std::shared_ptr<FileIO>> MakeTableFileIO(
+    const RestCatalogProperties& catalog_config,
+    const std::shared_ptr<FileIO>& catalog_file_io, std::string_view location,
+    const std::unordered_map<std::string, std::string>& table_config,
+    const std::vector<StorageCredential>& storage_credentials);
 
 }  // namespace iceberg::rest

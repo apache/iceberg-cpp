@@ -71,6 +71,8 @@ constexpr std::string_view kSource = "source";
 constexpr std::string_view kDestination = "destination";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kConfig = "config";
+constexpr std::string_view kStorageCredentials = "storage-credentials";
+constexpr std::string_view kPrefix = "prefix";
 constexpr std::string_view kIdentifiers = "identifiers";
 constexpr std::string_view kOverrides = "overrides";
 constexpr std::string_view kDefaults = "defaults";
@@ -689,12 +691,32 @@ Result<RenameTableRequest> RenameTableRequestFromJson(const nlohmann::json& json
   return request;
 }
 
+// StorageCredential (used by LoadTableResult)
+nlohmann::json ToJson(const StorageCredential& credential) {
+  nlohmann::json json;
+  json[kPrefix] = credential.prefix;
+  SetContainerField(json, kConfig, credential.config);
+  return json;
+}
+
+Result<StorageCredential> StorageCredentialFromJson(const nlohmann::json& json) {
+  StorageCredential credential;
+  ICEBERG_ASSIGN_OR_RAISE(credential.prefix, GetJsonValue<std::string>(json, kPrefix));
+  ICEBERG_ASSIGN_OR_RAISE(
+      credential.config,
+      GetJsonValueOrDefault<decltype(credential.config)>(json, kConfig));
+  return credential;
+}
+
 // LoadTableResult (used by CreateTableResponse, LoadTableResponse)
 nlohmann::json ToJson(const LoadTableResult& result) {
   nlohmann::json json;
   SetOptionalStringField(json, kMetadataLocation, result.metadata_location);
   json[kMetadata] = ToJson(*result.metadata);
   SetContainerField(json, kConfig, result.config);
+  for (const auto& credential : result.storage_credentials) {
+    json[kStorageCredentials].emplace_back(ToJson(credential));
+  }
   return json;
 }
 
@@ -707,6 +729,9 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(result.metadata, TableMetadataFromJson(metadata_json));
   ICEBERG_ASSIGN_OR_RAISE(result.config,
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
+  ICEBERG_ASSIGN_OR_RAISE(result.storage_credentials,
+                          FromJsonList<StorageCredential>(json, kStorageCredentials,
+                                                          StorageCredentialFromJson));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
 }
