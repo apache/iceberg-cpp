@@ -106,6 +106,7 @@ class ParquetMetricsTest : public MetricsTestBase, public ::testing::Test {
   }
 
   bool SupportsSmallRowGroups() const override { return true; }
+  bool ReportsNanCounts() const override { return true; }
 
  private:
   std::string temp_parquet_file_;

@@ -60,6 +60,9 @@ class MetricsTestBase {
   /// \brief Whether the format supports small row groups for testing
   virtual bool SupportsSmallRowGroups() const { return false; }
 
+  /// \brief Whether the format reports NaN counts for floating-point fields
+  virtual bool ReportsNanCounts() const { return false; }
+
   // Helper methods for assertions
   void AssertCounts(int field_id, std::optional<int64_t> expected_value_count,
                     std::optional<int64_t> expected_null_count, const Metrics& metrics);
