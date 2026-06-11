@@ -19,9 +19,15 @@
 
 #include "iceberg/catalog/rest/rest_file_io.h"
 
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/test/matchers.h"
 
@@ -141,6 +147,70 @@ TEST(RestFileIOTest, MakeCatalogFileIOSkipsCheckWhenWarehouseAbsent) {
       {{"io-impl", std::string(FileIORegistry::kArrowLocalFileIO)}});
   auto result = MakeCatalogFileIO(config);
   ASSERT_THAT(result, IsOk());
+}
+
+TEST(RestFileIOTest, MatchStorageCredentialPicksLongestPrefix) {
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "s3://bucket", .config = {{"k", "broad"}}},
+      {.prefix = "s3://bucket/db/table", .config = {{"k", "specific"}}},
+      {.prefix = "s3://other", .config = {{"k", "other"}}},
+  };
+
+  const auto* match =
+      MatchStorageCredential("s3://bucket/db/table/data/f.parquet", credentials);
+  ASSERT_NE(match, nullptr);
+  EXPECT_EQ(match->prefix, "s3://bucket/db/table");
+
+  EXPECT_EQ(MatchStorageCredential("gs://nope/x", credentials), nullptr);
+}
+
+TEST(RestFileIOTest, MatchStorageCredentialEmptyReturnsNull) {
+  EXPECT_EQ(MatchStorageCredential("s3://bucket/x", {}), nullptr);
+}
+
+TEST(RestFileIOTest, MakeTableFileIOReusesCatalogIOWhenNoOverrides) {
+  auto catalog_io = std::make_shared<MockFileIO>();
+  auto config = RestCatalogProperties::FromMap(
+      {{"io-impl", std::string(FileIORegistry::kArrowS3FileIO)}});
+
+  auto result = MakeTableFileIO(config, catalog_io, "s3://bucket/test",
+                                /*table_config=*/{}, /*storage_credentials=*/{});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value(), catalog_io);  // shared catalog instance reused
+}
+
+TEST(RestFileIOTest, MakeTableFileIOAppliesVendedCredentials) {
+  auto captured = std::make_shared<std::unordered_map<std::string, std::string>>();
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowS3FileIO),
+      [captured](const std::unordered_map<std::string, std::string>& properties)
+          -> Result<std::unique_ptr<FileIO>> {
+        *captured = properties;
+        return std::make_unique<MockFileIO>();
+      });
+
+  auto catalog_io = std::make_shared<MockFileIO>();
+  auto config = RestCatalogProperties::FromMap(
+      {{"io-impl", std::string(FileIORegistry::kArrowS3FileIO)},
+       {"s3.access-key-id", "catalog-key"}});
+
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "broad"}}},
+      {.prefix = "s3://bucket/test",
+       .config = {{"s3.access-key-id", "vended"}, {"s3.session-token", "tok"}}},
+  };
+
+  auto result = MakeTableFileIO(config, catalog_io, "s3://bucket/test/data/f.parquet",
+                                /*table_config=*/{{"write.parquet.compression", "zstd"}},
+                                credentials);
+  ASSERT_THAT(result, IsOk());
+  EXPECT_NE(result.value(), catalog_io);  // a new, table-scoped FileIO
+
+  // The most specific vended credential wins over the catalog value.
+  EXPECT_EQ((*captured)["s3.access-key-id"], "vended");
+  EXPECT_EQ((*captured)["s3.session-token"], "tok");
+  // Table-specific config is layered in as well.
+  EXPECT_EQ((*captured)["write.parquet.compression"], "zstd");
 }
 
 }  // namespace iceberg::rest

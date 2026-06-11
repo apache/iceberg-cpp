@@ -180,12 +180,29 @@ struct ICEBERG_REST_EXPORT CreateTableRequest {
 /// \brief An opaque token that allows clients to make use of pagination for list APIs.
 using PageToken = std::string;
 
+/// \brief A storage credential vended by the REST catalog, scoped to a location prefix.
+///
+/// The REST catalog returns these so clients can access table data without holding
+/// long-lived storage credentials. When several credentials are available, clients
+/// should pick the one with the most specific (longest) matching prefix.
+struct ICEBERG_REST_EXPORT StorageCredential {
+  /// Storage location prefix this credential applies to (e.g. "s3://bucket/db/table").
+  std::string prefix;  // required
+  /// Credential properties to layer onto the FileIO configuration (e.g. access key,
+  /// secret key, session token).
+  std::unordered_map<std::string, std::string> config;
+
+  bool operator==(const StorageCredential&) const = default;
+};
+
 /// \brief Result body for table create/load/register APIs.
 struct ICEBERG_REST_EXPORT LoadTableResult {
   std::string metadata_location;
   std::shared_ptr<TableMetadata> metadata;  // required
   std::unordered_map<std::string, std::string> config;
-  // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
+  /// Storage credentials for accessing the table's data. Clients should prefer these
+  /// over any credentials embedded in `config`.
+  std::vector<StorageCredential> storage_credentials;
 
   /// \brief Validates the LoadTableResult.
   Status Validate() const {

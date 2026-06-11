@@ -1116,7 +1116,17 @@ INSTANTIATE_TEST_SUITE_P(
             .model = {.metadata_location = "s3://bucket/metadata/v1.json",
                       .metadata = MakeSimpleTableMetadata(),
                       .config = {{"warehouse", "s3://bucket/warehouse"},
-                                 {"foo", "bar"}}}}),
+                                 {"foo", "bar"}}}},
+        // With vended storage credentials
+        LoadTableResultParam{
+            .test_name = "WithStorageCredentials",
+            .expected_json_str =
+                R"({"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"},"storage-credentials":[{"config":{"s3.access-key-id":"AKIA","s3.secret-access-key":"secret"},"prefix":"s3://bucket/test"}]})",
+            .model = {.metadata = MakeSimpleTableMetadata(),
+                      .storage_credentials = {StorageCredential{
+                          .prefix = "s3://bucket/test",
+                          .config = {{"s3.access-key-id", "AKIA"},
+                                     {"s3.secret-access-key", "secret"}}}}}}),
     [](const ::testing::TestParamInfo<LoadTableResultParam>& info) {
       return info.param.test_name;
     });
@@ -1145,7 +1155,20 @@ INSTANTIATE_TEST_SUITE_P(
             .json_str =
                 R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"config":{"warehouse":"s3://bucket/warehouse"}})",
             .expected_model = {.metadata = MakeSimpleTableMetadata(),
-                               .config = {{"warehouse", "s3://bucket/warehouse"}}}}),
+                               .config = {{"warehouse", "s3://bucket/warehouse"}}}},
+        // With multiple vended storage credentials
+        LoadTableResultDeserializeParam{
+            .test_name = "WithStorageCredentials",
+            .json_str =
+                R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"storage-credentials":[{"prefix":"s3://bucket","config":{"s3.access-key-id":"BROAD"}},{"prefix":"s3://bucket/test","config":{"s3.access-key-id":"AKIA","s3.session-token":"tok"}}]})",
+            .expected_model =
+                {.metadata = MakeSimpleTableMetadata(),
+                 .storage_credentials =
+                     {StorageCredential{.prefix = "s3://bucket",
+                                        .config = {{"s3.access-key-id", "BROAD"}}},
+                      StorageCredential{.prefix = "s3://bucket/test",
+                                        .config = {{"s3.access-key-id", "AKIA"},
+                                                   {"s3.session-token", "tok"}}}}}}),
     [](const ::testing::TestParamInfo<LoadTableResultDeserializeParam>& info) {
       return info.param.test_name;
     });
