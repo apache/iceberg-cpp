@@ -950,6 +950,30 @@ TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIntToLong) {
   ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
 }
 
+TEST(AvroSchemaProjectionTest, ProjectDateFromPlainInt) {
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "day", iceberg::date()),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "day", "type": "int", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+}
+
 TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble) {
   // Create iceberg schema expecting a double
   Schema expected_schema({

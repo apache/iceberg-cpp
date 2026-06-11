@@ -523,10 +523,10 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
     }
 
     case TypeId::kDate: {
-      if (avro_node->type() != ::avro::AVRO_INT ||
-          avro_node->logicalType().type() != ::avro::LogicalType::DATE) {
+      if (!IsAvroDateOrPlainInt(avro_node)) {
         return InvalidArgument(
-            "Expected Avro int with DATE logical type for date field, got: {}",
+            "Expected Avro int with DATE logical type or plain int for date field, got: "
+            "{}",
             ToString(avro_node));
       }
       auto* builder = internal::checked_cast<::arrow::Date32Builder*>(array_builder);
