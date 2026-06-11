@@ -188,6 +188,7 @@ set(ICEBERG_DATA_SOURCES
     data/data_writer.cc
     data/delete_filter.cc
     data/delete_loader.cc
+    data/deletion_vector_writer.cc
     data/equality_delete_writer.cc
     data/file_scan_task_reader.cc
     data/position_delete_writer.cc
@@ -195,6 +196,7 @@ set(ICEBERG_DATA_SOURCES
     deletes/position_delete_index.cc
     deletes/position_delete_range_consumer.cc
     deletes/roaring_position_bitmap.cc
+    puffin/deletion_vector.cc
     puffin/file_metadata.cc
     puffin/json_serde.cc
     puffin/puffin_format.cc

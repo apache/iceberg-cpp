@@ -17,6 +17,7 @@
 
 install_headers(
     [
+        'deletion_vector.h',
         'file_metadata.h',
         'puffin_format.h',
         'puffin_reader.h',

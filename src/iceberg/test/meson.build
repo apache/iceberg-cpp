@@ -117,10 +117,15 @@ iceberg_tests = {
     },
     'puffin_test': {
         'sources': files(
+            'puffin_deletion_vector_test.cc',
             'puffin_format_test.cc',
             'puffin_json_test.cc',
             'puffin_reader_writer_test.cc',
         ),
+        'use_data': true,
+    },
+    'deletion_vector_writer_test': {
+        'sources': files('deletion_vector_writer_test.cc'),
         'use_data': true,
     },
 }
