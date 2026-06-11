@@ -125,6 +125,12 @@ std::string ToString(const ::avro::LogicalType::Type& logical_type) {
   return ToString(::avro::LogicalType(logical_type));
 }
 
+bool IsAvroDateOrPlainInt(const ::avro::NodePtr& node) {
+  return node->type() == ::avro::AVRO_INT &&
+         (node->logicalType().type() == ::avro::LogicalType::DATE ||
+          node->logicalType().type() == ::avro::LogicalType::NONE);
+}
+
 Status ToAvroNodeVisitor::Visit(const BooleanType& type, ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_BOOL);
   return {};
@@ -550,8 +556,7 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
       }
       break;
     case TypeId::kDate:
-      if (avro_node->type() == ::avro::AVRO_INT &&
-          HasLogicalType(avro_node, ::avro::LogicalType::DATE)) {
+      if (IsAvroDateOrPlainInt(avro_node)) {
         return {};
       }
       break;
