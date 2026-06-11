@@ -16,8 +16,8 @@
 # under the License.
 
 # AWS-related tests. ICEBERG_S3 and ICEBERG_SIGV4 are exercised individually and
-# together; with both on, Arrow's S3 reuses SigV4's system AWS SDK
-# (AWSSDK_SOURCE=SYSTEM) so a single AWS SDK is linked (no ODR).
+# together; with both on, ICEBERG_AWSSDK_SOURCE defaults to BUNDLED so SigV4
+# reuses Arrow's bundled aws-cpp-sdk-core — a single AWS SDK is linked (no ODR).
 name: AWS Tests
 
 on:

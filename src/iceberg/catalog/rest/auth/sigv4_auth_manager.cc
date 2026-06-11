@@ -430,6 +430,17 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
   } else {
     ICEBERG_ASSIGN_OR_RAISE(credentials, MakeCredentialsProvider(properties));
   }
+  // Fail fast when the provider cannot resolve credentials (e.g. an empty
+  // default chain) instead of sending an effectively unsigned request later.
+  if (credentials->GetAWSCredentials().IsEmpty()) {
+    return std::unexpected<Error>(
+        Error{.kind = ErrorKind::kAuthenticationFailed,
+              .message = "SigV4: AWS credentials provider returned empty credentials; "
+                         "set '" +
+                         AuthProperties::kSigV4AccessKeyId + "' and '" +
+                         AuthProperties::kSigV4SecretAccessKey +
+                         "' or configure the AWS credentials chain"});
+  }
   auto session =
       std::make_shared<SigV4AuthSession>(std::move(delegate_session), std::move(region),
                                          std::move(service), std::move(credentials));
