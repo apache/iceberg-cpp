@@ -1,0 +1,376 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#include "iceberg/data/deletion_vector_writer.h"
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <gtest/gtest.h>
+
+#include "iceberg/data/delete_loader.h"
+#include "iceberg/deletes/position_delete_index.h"
+#include "iceberg/deletes/roaring_position_bitmap.h"
+#include "iceberg/file_format.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/partition_spec.h"
+#include "iceberg/row/partition_values.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_io.h"
+
+namespace iceberg {
+
+namespace {
+
+std::shared_ptr<DataFile> FindByReferencedFile(
+    const std::vector<std::shared_ptr<DataFile>>& files, const std::string& ref) {
+  for (const auto& file : files) {
+    if (file->referenced_data_file == ref) {
+      return file;
+    }
+  }
+  return nullptr;
+}
+
+std::shared_ptr<PartitionSpec> UnpartitionedSpec() {
+  return PartitionSpec::Unpartitioned();
+}
+
+// A load_previous_deletes callback for data files that have no existing deletes.
+Result<std::shared_ptr<PositionDeleteIndex>> NoPreviousDeletes(std::string_view) {
+  return nullptr;
+}
+
+}  // namespace
+
+TEST(DeletionVectorWriterTest, WriteThenLoadEndToEnd) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+
+  std::vector<std::shared_ptr<DataFile>> delete_files;
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                           DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                               .path = "memory://deletes.puffin",
+                               .io = io,
+                               .properties = {{"created-by", "iceberg-cpp-test"}},
+                               .load_previous_deletes = NoPreviousDeletes,
+                           }));
+
+    ASSERT_THAT(writer->Delete("data-a.parquet", 0, spec, PartitionValues{}), IsOk());
+    ASSERT_THAT(writer->Delete("data-a.parquet", 5, spec, PartitionValues{}), IsOk());
+    ASSERT_THAT(writer->Delete("data-a.parquet", 10, spec, PartitionValues{}), IsOk());
+    ASSERT_THAT(writer->Delete("data-b.parquet", 1, spec, PartitionValues{}), IsOk());
+    ASSERT_THAT(writer->Delete("data-b.parquet", 2, spec, PartitionValues{}), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto result, writer->Metadata());
+    delete_files = result.delete_files;
+    // Each referenced data file is reported once.
+    EXPECT_EQ(result.referenced_data_files.size(), 2u);
+    // No previous deletes were loaded, so nothing was rewritten.
+    EXPECT_TRUE(result.rewritten_delete_files.empty());
+  }
+
+  // One DataFile per referenced data file.
+  ASSERT_EQ(delete_files.size(), 2u);
+
+  auto dv_a = FindByReferencedFile(delete_files, "data-a.parquet");
+  auto dv_b = FindByReferencedFile(delete_files, "data-b.parquet");
+  ASSERT_NE(dv_a, nullptr);
+  ASSERT_NE(dv_b, nullptr);
+
+  EXPECT_EQ(dv_a->content, DataFile::Content::kPositionDeletes);
+  EXPECT_EQ(dv_a->file_format, FileFormatType::kPuffin);
+  EXPECT_TRUE(dv_a->IsDeletionVector());
+  EXPECT_EQ(dv_a->file_path, "memory://deletes.puffin");
+  EXPECT_EQ(dv_a->record_count, 3);
+  EXPECT_TRUE(dv_a->content_offset.has_value());
+  EXPECT_TRUE(dv_a->content_size_in_bytes.has_value());
+  EXPECT_GT(dv_a->file_size_in_bytes, 0);
+  EXPECT_EQ(dv_a->partition_spec_id, spec->spec_id());
+  EXPECT_EQ(dv_b->record_count, 2);
+
+  // Both blobs live in the same Puffin file but at different offsets.
+  EXPECT_EQ(dv_a->file_path, dv_b->file_path);
+  EXPECT_NE(dv_a->content_offset.value(), dv_b->content_offset.value());
+
+  // Read back through DeleteLoader. Each data file's DV is applied on its own
+  // (a single DV replaces all other deletes for that file), so the loader is
+  // called with just the DV that references the requested data file.
+  DeleteLoader loader(io);
+  {
+    auto result = loader.LoadPositionDeletes({&dv_a, 1}, "data-a.parquet");
+    ASSERT_THAT(result, IsOk());
+    auto& index = result.value();
+    EXPECT_EQ(index.Cardinality(), 3);
+    EXPECT_TRUE(index.IsDeleted(0));
+    EXPECT_TRUE(index.IsDeleted(5));
+    EXPECT_TRUE(index.IsDeleted(10));
+    EXPECT_FALSE(index.IsDeleted(1));
+  }
+
+  {
+    auto result = loader.LoadPositionDeletes({&dv_b, 1}, "data-b.parquet");
+    ASSERT_THAT(result, IsOk());
+    auto& index = result.value();
+    EXPECT_EQ(index.Cardinality(), 2);
+    EXPECT_TRUE(index.IsDeleted(1));
+    EXPECT_TRUE(index.IsDeleted(2));
+    EXPECT_FALSE(index.IsDeleted(0));
+  }
+}
+
+// The PositionDeleteIndex overload bulk-adds positions for a data file.
+TEST(DeletionVectorWriterTest, DeleteFromIndex) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+
+  PositionDeleteIndex positions;
+  positions.Delete(0);
+  positions.Delete(3, 6);  // [3, 6) -> 3, 4, 5
+
+  ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                         DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                             .path = "memory://from-index.puffin",
+                             .io = io,
+                             .load_previous_deletes = NoPreviousDeletes}));
+  ASSERT_THAT(writer->Delete("data.parquet", positions, spec, PartitionValues{}), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, writer->Metadata());
+  ASSERT_EQ(result.delete_files.size(), 1u);
+  EXPECT_EQ(result.delete_files[0]->record_count, 4);
+
+  DeleteLoader loader(io);
+  auto loaded = loader.LoadPositionDeletes(result.delete_files, "data.parquet");
+  ASSERT_THAT(loaded, IsOk());
+  EXPECT_EQ(loaded.value().Cardinality(), 4);
+  EXPECT_TRUE(loaded.value().IsDeleted(0));
+  EXPECT_TRUE(loaded.value().IsDeleted(5));
+  EXPECT_FALSE(loaded.value().IsDeleted(6));
+}
+
+// Previously written deletes are merged into the new vector, and the file-scoped
+// delete files they came from are reported as rewritten.
+TEST(DeletionVectorWriterTest, LoadPreviousDeletesMergesAndReportsRewritten) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+
+  // Build a previous DV index carrying its source (file-scoped) delete file,
+  // the same way DeleteLoader would produce it.
+  PositionDeleteIndex previous_positions;
+  previous_positions.Delete(100);
+  previous_positions.Delete(200);
+  ICEBERG_UNWRAP_OR_FAIL(auto previous_blob, previous_positions.Serialize());
+  auto previous_dv = std::make_shared<DataFile>(DataFile{
+      .content = DataFile::Content::kPositionDeletes,
+      .file_path = "memory://old.puffin",
+      .file_format = FileFormatType::kPuffin,
+      .record_count = 2,
+      .referenced_data_file = "data.parquet",
+      .content_offset = 0,
+      .content_size_in_bytes = static_cast<int64_t>(previous_blob.size()),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer,
+      DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+          .path = "memory://merged.puffin",
+          .io = io,
+          .load_previous_deletes =
+              [&](std::string_view path) -> Result<std::shared_ptr<PositionDeleteIndex>> {
+            if (path != "data.parquet") {
+              return nullptr;
+            }
+            ICEBERG_ASSIGN_OR_RAISE(
+                auto index, PositionDeleteIndex::Deserialize(previous_blob, previous_dv));
+            return std::make_shared<PositionDeleteIndex>(std::move(index));
+          },
+      }));
+
+  ASSERT_THAT(writer->Delete("data.parquet", 0, spec, PartitionValues{}), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, writer->Metadata());
+  ASSERT_EQ(result.delete_files.size(), 1u);
+  // New position plus the two previous positions.
+  EXPECT_EQ(result.delete_files[0]->record_count, 3);
+  // The previous DV is file-scoped, so it is reported for removal.
+  ASSERT_EQ(result.rewritten_delete_files.size(), 1u);
+  EXPECT_EQ(result.rewritten_delete_files[0]->file_path, "memory://old.puffin");
+
+  DeleteLoader loader(io);
+  auto loaded = loader.LoadPositionDeletes(result.delete_files, "data.parquet");
+  ASSERT_THAT(loaded, IsOk());
+  EXPECT_EQ(loaded.value().Cardinality(), 3);
+  EXPECT_TRUE(loaded.value().IsDeleted(0));
+  EXPECT_TRUE(loaded.value().IsDeleted(100));
+  EXPECT_TRUE(loaded.value().IsDeleted(200));
+}
+
+// A previous delete that is not file-scoped (e.g. a partition-scoped position
+// delete) is merged into the new vector but is NOT reported as rewritten.
+TEST(DeletionVectorWriterTest, PartitionScopedPreviousDeleteMergesButNotRewritten) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+
+  // A partition-scoped Parquet position delete: no referenced_data_file, so it
+  // is not file-scoped and must not be reported as rewritten.
+  auto previous_position_delete = std::make_shared<DataFile>(DataFile{
+      .content = DataFile::Content::kPositionDeletes,
+      .file_path = "memory://partition-deletes.parquet",
+      .file_format = FileFormatType::kParquet,
+      .record_count = 1,
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer,
+      DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+          .path = "memory://merged-partition.puffin",
+          .io = io,
+          .load_previous_deletes =
+              [&](std::string_view path) -> Result<std::shared_ptr<PositionDeleteIndex>> {
+            // Model what DeleteLoader produces from a Parquet position delete:
+            // positions plus the source delete file, not a DV blob.
+            auto index = std::make_shared<PositionDeleteIndex>();
+            index->Delete(50);
+            index->AddDeleteFile(previous_position_delete);
+            return index;
+          },
+      }));
+
+  ASSERT_THAT(writer->Delete("data.parquet", 0, spec, PartitionValues{}), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, writer->Metadata());
+  ASSERT_EQ(result.delete_files.size(), 1u);
+  // The previous position was merged in.
+  EXPECT_EQ(result.delete_files[0]->record_count, 2);
+  // The previous delete is partition-scoped, so it is not rewritten.
+  EXPECT_TRUE(result.rewritten_delete_files.empty());
+
+  DeleteLoader loader(io);
+  auto loaded = loader.LoadPositionDeletes(result.delete_files, "data.parquet");
+  ASSERT_THAT(loaded, IsOk());
+  EXPECT_EQ(loaded.value().Cardinality(), 2);
+  EXPECT_TRUE(loaded.value().IsDeleted(0));
+  EXPECT_TRUE(loaded.value().IsDeleted(50));
+}
+
+TEST(DeletionVectorWriterTest, EmptyWriterProducesNoDataFiles) {
+  auto io = std::make_shared<MockFileIO>();
+  ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                         DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                             .path = "memory://empty.puffin",
+                             .io = io,
+                             .load_previous_deletes = NoPreviousDeletes}));
+  ASSERT_THAT(writer->Close(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, writer->Metadata());
+  EXPECT_TRUE(result.delete_files.empty());
+
+  // No blobs were written, so no (orphan) Puffin file should have been created.
+  EXPECT_THAT(io->NewInputFile("memory://empty.puffin"), IsError(ErrorKind::kNotFound));
+}
+
+TEST(DeletionVectorWriterTest, DeleteRejectsEmptyReferencedFile) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+  ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                         DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                             .path = "memory://invalid.puffin",
+                             .io = io,
+                             .load_previous_deletes = NoPreviousDeletes}));
+  EXPECT_THAT(writer->Delete("", 0, spec, PartitionValues{}),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(DeletionVectorWriterTest, DeleteRejectsOutOfRangePosition) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+  ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                         DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                             .path = "memory://invalid.puffin",
+                             .io = io,
+                             .load_previous_deletes = NoPreviousDeletes}));
+  // Negative and out-of-range positions are rejected rather than silently
+  // dropped by the underlying bitmap.
+  EXPECT_THAT(writer->Delete("data.parquet", -1, spec, PartitionValues{}),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(writer->Delete("data.parquet", RoaringPositionBitmap::kMaxPosition + 1,
+                             spec, PartitionValues{}),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+// Close propagates a load_previous_deletes failure and returns no metadata.
+TEST(DeletionVectorWriterTest, ClosePropagatesLoadPreviousDeletesError) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer,
+      DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+          .path = "memory://err.puffin",
+          .io = io,
+          .load_previous_deletes = [](std::string_view)
+              -> Result<std::shared_ptr<PositionDeleteIndex>> { return IOError("boom"); },
+      }));
+
+  ASSERT_THAT(writer->Delete("data.parquet", 0, spec, PartitionValues{}), IsOk());
+  EXPECT_THAT(writer->Close(), IsError(ErrorKind::kIOError));
+  // No partial delete metadata is exposed after a failed Close.
+  EXPECT_THAT(writer->Metadata(), IsError(ErrorKind::kValidationFailed));
+  // No orphan Puffin file was created.
+  EXPECT_THAT(io->NewInputFile("memory://err.puffin"), IsError(ErrorKind::kNotFound));
+}
+
+TEST(DeletionVectorWriterTest, MakeRejectsNullIo) {
+  EXPECT_THAT(DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                  .path = "x.puffin", .load_previous_deletes = NoPreviousDeletes}),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(DeletionVectorWriterTest, MakeRejectsEmptyPath) {
+  auto io = std::make_shared<MockFileIO>();
+  EXPECT_THAT(DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                  .io = io, .load_previous_deletes = NoPreviousDeletes}),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(DeletionVectorWriterTest, MakeRejectsMissingLoadPreviousDeletes) {
+  auto io = std::make_shared<MockFileIO>();
+  EXPECT_THAT(DeletionVectorWriter::Make(
+                  DeletionVectorWriterOptions{.path = "x.puffin", .io = io}),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(DeletionVectorWriterTest, DeleteAfterCloseFails) {
+  auto io = std::make_shared<MockFileIO>();
+  auto spec = UnpartitionedSpec();
+  ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                         DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                             .path = "memory://closed.puffin",
+                             .io = io,
+                             .load_previous_deletes = NoPreviousDeletes}));
+  ASSERT_THAT(writer->Close(), IsOk());
+  EXPECT_THAT(writer->Delete("data-a.parquet", 0, spec, PartitionValues{}),
+              IsError(ErrorKind::kValidationFailed));
+}
+
+}  // namespace iceberg

@@ -130,6 +130,10 @@ iceberg_tests = {
         ),
         'use_data': true,
     },
+    'deletion_vector_writer_test': {
+        'sources': files('deletion_vector_writer_test.cc'),
+        'use_data': true,
+    },
 }
 
 if get_option('rest').enabled()

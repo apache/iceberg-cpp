@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -32,6 +33,20 @@
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
+
+/// \brief The result of writing delete files.
+///
+/// Holds the delete files produced, the data files they reference, and any
+/// previously written delete files that were merged and should be removed from
+/// table state.
+struct ICEBERG_DATA_EXPORT DeleteWriteResult {
+  /// Delete files produced.
+  std::vector<std::shared_ptr<DataFile>> delete_files;
+  /// Data files referenced by the produced delete files.
+  std::vector<std::string> referenced_data_files;
+  /// Previously written delete files that were merged and should be removed.
+  std::vector<std::shared_ptr<DataFile>> rewritten_delete_files;
+};
 
 /// \brief Base interface for data file writers.
 class ICEBERG_DATA_EXPORT FileWriter {

@@ -29,8 +29,11 @@
 
 #include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/iceberg_data_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
+
+struct DataFile;
 
 /// \brief Tracks deleted row positions using a bitmap.
 ///
@@ -66,7 +69,39 @@ class ICEBERG_DATA_EXPORT PositionDeleteIndex {
   /// \param other The index to merge (union operation)
   void Merge(const PositionDeleteIndex& other);
 
+  /// \brief The delete files whose positions were merged into this index.
+  ///
+  /// Populated by Deserialize and AddDeleteFile, and preserved across Merge.
+  /// Callers use these to report the delete files that were rewritten when
+  /// replacing them with a new deletion vector.
+  const std::vector<std::shared_ptr<DataFile>>& delete_files() const {
+    return delete_files_;
+  }
+
+  /// \brief Record a delete file whose positions were merged into this index.
+  ///
+  /// Used by the position-delete load path, where positions come from a Parquet
+  /// delete file rather than a DV blob. The file is exposed via delete_files().
+  void AddDeleteFile(std::shared_ptr<DataFile> delete_file);
+
+  /// \brief Serialize the index into a `deletion-vector-v1` blob.
+  ///
+  /// The positions are run-length encoded, then framed per the Puffin spec:
+  /// https://iceberg.apache.org/puffin-spec/#deletion-vector-v1-blob-type
+  Result<std::vector<uint8_t>> Serialize();
+
+  /// \brief Deserialize a `deletion-vector-v1` blob into an index.
+  ///
+  /// Validates the blob framing (length prefix, magic sequence, CRC-32) and,
+  /// against the source delete file, that the blob length matches
+  /// `content_size_in_bytes` and the bitmap cardinality matches `record_count`.
+  /// The source delete file is retained and exposed via delete_files().
+  static Result<PositionDeleteIndex> Deserialize(std::span<const uint8_t> blob,
+                                                 std::shared_ptr<DataFile> delete_file);
+
  private:
+  explicit PositionDeleteIndex(RoaringPositionBitmap bitmap);
+
   // Bulk-add positions sharing high-32-bit `key`. Private hook for
   // `ForEachPositionDelete`'s bulk path; keeps `Delete` the sole public
   // mutation surface.
@@ -77,6 +112,7 @@ class ICEBERG_DATA_EXPORT PositionDeleteIndex {
                         std::vector<uint32_t>& scratch);
 
   RoaringPositionBitmap bitmap_;
+  std::vector<std::shared_ptr<DataFile>> delete_files_;
 };
 
 }  // namespace iceberg
