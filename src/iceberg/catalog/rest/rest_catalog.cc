@@ -162,7 +162,7 @@ Status RestCatalog::RememberTableSession(
 }
 
 std::shared_ptr<auth::AuthSession> RestCatalog::SessionFor(
-    const TableIdentifier& identifier) {
+    const TableIdentifier& identifier) const {
   std::lock_guard<std::mutex> lock(table_sessions_mutex_);
   auto it = table_sessions_.find(TableSessionKey(identifier));
   return it != table_sessions_.end() ? it->second : catalog_session_;
@@ -512,10 +512,12 @@ Result<std::string> RestCatalog::LoadTableInternal(
     params["snapshots"] = "all";
   }
 
+  // Refresh uses the cached per-table session; the initial load falls back to
+  // the catalog session (no table session is cached yet).
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
       client_->Get(path, params, /*headers=*/{}, *TableErrorHandler::Instance(),
-                   *catalog_session_));
+                   *SessionFor(identifier)));
   return response.body();
 }
 

@@ -117,7 +117,7 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
                               const std::unordered_map<std::string, std::string>& config);
 
   /// \brief Returns the cached per-table session, or the catalog session.
-  std::shared_ptr<auth::AuthSession> SessionFor(const TableIdentifier& identifier);
+  std::shared_ptr<auth::AuthSession> SessionFor(const TableIdentifier& identifier) const;
 
   Result<LoadTableResult> CreateTableInternal(
       const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
@@ -134,7 +134,7 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
   std::unique_ptr<auth::AuthManager> auth_manager_;
   std::shared_ptr<auth::AuthSession> catalog_session_;
   SnapshotMode snapshot_mode_;
-  std::mutex table_sessions_mutex_;
+  mutable std::mutex table_sessions_mutex_;
   std::unordered_map<std::string, std::shared_ptr<auth::AuthSession>> table_sessions_;
 };
 
