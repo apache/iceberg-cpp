@@ -25,11 +25,13 @@ namespace iceberg::avro {
 
 // Avro logical type constants
 constexpr std::string_view kMapLogicalType = "map";
+constexpr std::string_view kVariantLogicalType = "variant";
 
 // Name mapping field constants
 constexpr std::string_view kElement = "element";
 constexpr std::string_view kKey = "key";
 constexpr std::string_view kValue = "value";
+constexpr std::string_view kMetadata = "metadata";
 
 // Avro custom attributes constants
 constexpr std::string_view kIcebergFieldNameProp = "iceberg-field-name";

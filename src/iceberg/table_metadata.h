@@ -81,6 +81,7 @@ struct ICEBERG_EXPORT TableMetadata {
       {TypeId::kTimestampNs, 3},
       {TypeId::kTimestampTzNs, 3},
       {TypeId::kUnknown, 3},
+      {TypeId::kVariant, 3},
   };
 
   /// An integer version number for the format

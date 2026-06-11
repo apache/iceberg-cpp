@@ -66,4 +66,7 @@ bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
 Status ValidateParquetSchemaEvolution(const Type& expected_type,
                                       const ::parquet::arrow::SchemaField& parquet_field);
 
+/// \brief Register Arrow's Parquet Variant extension type if available.
+Status EnsureParquetVariantExtensionRegistered();
+
 }  // namespace iceberg::parquet

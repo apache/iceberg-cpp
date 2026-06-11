@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <arrow/extension/parquet_variant.h>
 #include <arrow/extension_type.h>
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
@@ -24,6 +25,7 @@
 #include <parquet/arrow/schema.h>
 #include <parquet/schema.h>
 
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/constants.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
@@ -37,6 +39,10 @@
 namespace iceberg::parquet {
 
 namespace {
+
+constexpr std::string_view kArrowVariantExtensionName = "arrow.parquet.variant";
+constexpr std::string_view kVariantMetadataFieldName = "metadata";
+constexpr std::string_view kVariantValueFieldName = "value";
 
 std::optional<int32_t> FieldIdFromMetadata(
     const std::shared_ptr<const ::arrow::KeyValueMetadata>& metadata) {
@@ -239,6 +245,15 @@ Status ValidateParquetSchemaEvolution(
       break;
     case TypeId::kUnknown:
       return {};
+    case TypeId::kVariant:
+      if (arrow_type->id() == ::arrow::Type::EXTENSION) {
+        const auto& extension_type =
+            internal::checked_cast<const ::arrow::ExtensionType&>(*arrow_type);
+        if (extension_type.extension_name() == kArrowVariantExtensionName) {
+          return {};
+        }
+      }
+      break;
     case TypeId::kStruct:
       if (arrow_type->id() == ::arrow::Type::STRUCT) {
         return {};
@@ -269,6 +284,64 @@ Result<FieldProjection> ProjectNested(
     const Type& nested_type,
     const std::vector<::parquet::arrow::SchemaField>& parquet_fields);
 
+Result<FieldProjection> ProjectVariant(
+    const ::parquet::arrow::SchemaField& parquet_field) {
+  if (parquet_field.children.size() != 2) {
+    return NotSupported(
+        "Reading shredded Variant columns is not supported yet; expected "
+        "metadata and value fields only");
+  }
+
+  std::optional<size_t> metadata_index;
+  std::optional<size_t> value_index;
+  for (size_t i = 0; i < parquet_field.children.size(); ++i) {
+    const auto& child = parquet_field.children[i];
+    const auto name = std::string_view(child.field->name());
+    if (name == kVariantMetadataFieldName) {
+      if (metadata_index.has_value()) {
+        return InvalidSchema("Variant Parquet field contains duplicate metadata field");
+      }
+      metadata_index = i;
+    } else if (name == kVariantValueFieldName) {
+      if (value_index.has_value()) {
+        return InvalidSchema("Variant Parquet field contains duplicate value field");
+      }
+      value_index = i;
+    }
+  }
+
+  if (!metadata_index.has_value() || !value_index.has_value()) {
+    return InvalidSchema("Variant Parquet field must contain metadata and value");
+  }
+
+  const auto& metadata_field = parquet_field.children[metadata_index.value()];
+  const auto& value_field = parquet_field.children[value_index.value()];
+  if (metadata_field.field->type()->id() != ::arrow::Type::BINARY ||
+      value_field.field->type()->id() != ::arrow::Type::BINARY) {
+    return InvalidSchema("Variant metadata and value fields must be binary");
+  }
+  if (metadata_field.field->nullable() || value_field.field->nullable()) {
+    return InvalidSchema("Variant metadata and value fields must be required");
+  }
+
+  FieldProjection metadata_projection;
+  metadata_projection.kind = FieldProjection::Kind::kProjected;
+  metadata_projection.from = metadata_index.value();
+  metadata_projection.attributes =
+      std::make_shared<ParquetExtraAttributes>(metadata_field.column_index);
+
+  FieldProjection value_projection;
+  value_projection.kind = FieldProjection::Kind::kProjected;
+  value_projection.from = value_index.value();
+  value_projection.attributes =
+      std::make_shared<ParquetExtraAttributes>(value_field.column_index);
+
+  FieldProjection result;
+  result.children.emplace_back(std::move(metadata_projection));
+  result.children.emplace_back(std::move(value_projection));
+  return result;
+}
+
 Result<FieldProjection> ProjectField(const SchemaField& expected_field,
                                      const ::parquet::arrow::SchemaField& parquet_field,
                                      size_t source_index) {
@@ -284,14 +357,18 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
     return projection;
   }
 
-  ICEBERG_RETURN_UNEXPECTED(ValidateParquetSchemaEvolution(expected_type, parquet_field));
-
-  if (expected_type.is_nested()) {
-    ICEBERG_ASSIGN_OR_RAISE(projection,
-                            ProjectNested(expected_type, parquet_field.children));
+  if (expected_type.is_variant()) {
+    ICEBERG_ASSIGN_OR_RAISE(projection, ProjectVariant(parquet_field));
   } else {
-    projection.attributes =
-        std::make_shared<ParquetExtraAttributes>(parquet_field.column_index);
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateParquetSchemaEvolution(expected_type, parquet_field));
+    if (expected_type.is_nested()) {
+      ICEBERG_ASSIGN_OR_RAISE(projection,
+                              ProjectNested(expected_type, parquet_field.children));
+    } else {
+      projection.attributes =
+          std::make_shared<ParquetExtraAttributes>(parquet_field.column_index);
+    }
   }
   projection.from = source_index;
   projection.kind = FieldProjection::Kind::kProjected;
@@ -471,6 +548,20 @@ void CollectColumnIds(const FieldProjection& field_projection,
 }
 
 }  // namespace
+
+Status EnsureParquetVariantExtensionRegistered() {
+  if (::arrow::GetExtensionType(std::string(kArrowVariantExtensionName)) != nullptr) {
+    return {};
+  }
+
+  auto metadata = ::arrow::field("metadata", ::arrow::binary(), /*nullable=*/false);
+  auto value = ::arrow::field("value", ::arrow::binary(), /*nullable=*/false);
+  auto storage_type = ::arrow::struct_({metadata, value});
+  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::RegisterExtensionType(
+      internal::checked_pointer_cast<::arrow::ExtensionType>(
+          ::arrow::extension::variant(storage_type))));
+  return {};
+}
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const ::parquet::arrow::SchemaManifest& parquet_schema) {

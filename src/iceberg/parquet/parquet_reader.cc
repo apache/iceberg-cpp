@@ -113,6 +113,7 @@ class ParquetReader::Impl {
     read_schema_ = options.projection;
 
     // Prepare reader properties
+    ICEBERG_RETURN_UNEXPECTED(EnsureParquetVariantExtensionRegistered());
     ::parquet::ReaderProperties reader_properties(pool_);
     ::parquet::ArrowReaderProperties arrow_reader_properties;
     arrow_reader_properties.set_batch_size(
@@ -212,6 +213,7 @@ class ParquetReader::Impl {
     // Build the output Arrow schema
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
+    ICEBERG_RETURN_UNEXPECTED(EnsureParquetVariantExtensionRegistered());
     ICEBERG_ARROW_ASSIGN_OR_RETURN(context_->output_arrow_schema_,
                                    ::arrow::ImportSchema(&arrow_schema));
 

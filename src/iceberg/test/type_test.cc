@@ -54,6 +54,7 @@ TEST_P(TypeTest, TypeId) {
 
 TEST_P(TypeTest, IsPrimitive) {
   const auto& test_case = GetParam();
+  ASSERT_FALSE(test_case.type->is_variant());
   if (test_case.primitive) {
     ASSERT_TRUE(test_case.type->is_primitive());
     ASSERT_FALSE(test_case.type->is_nested());
@@ -66,6 +67,7 @@ TEST_P(TypeTest, IsPrimitive) {
 
 TEST_P(TypeTest, IsNested) {
   const auto& test_case = GetParam();
+  ASSERT_FALSE(test_case.type->is_variant());
   if (!test_case.primitive) {
     ASSERT_FALSE(test_case.type->is_primitive());
     ASSERT_TRUE(test_case.type->is_nested());
@@ -280,6 +282,7 @@ TEST(TypeTest, Equality) {
   for (const auto& test_case : kNestedTypes) {
     alltypes.push_back(test_case.type);
   }
+  alltypes.push_back(iceberg::variant());
 
   for (size_t i = 0; i < alltypes.size(); i++) {
     for (size_t j = 0; j < alltypes.size(); j++) {
@@ -292,6 +295,16 @@ TEST(TypeTest, Equality) {
       }
     }
   }
+}
+
+TEST(TypeTest, Variant) {
+  ASSERT_EQ(iceberg::TypeId::kVariant, iceberg::variant()->type_id());
+  ASSERT_FALSE(iceberg::variant()->is_primitive());
+  ASSERT_FALSE(iceberg::variant()->is_nested());
+  ASSERT_TRUE(iceberg::variant()->is_variant());
+  ASSERT_EQ("variant", iceberg::variant()->ToString());
+  ASSERT_EQ(*iceberg::variant(), *iceberg::variant());
+  ASSERT_EQ("variant", std::format("{}", *iceberg::variant()));
 }
 
 TEST(TypeTest, Decimal) {

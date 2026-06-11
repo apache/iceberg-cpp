@@ -19,9 +19,14 @@
 
 #include "iceberg/parquet/parquet_register.h"
 
+#include <tuple>
+
+#include "iceberg/parquet/parquet_schema_util_internal.h"
+
 namespace iceberg::parquet {
 
 void RegisterAll() {
+  std::ignore = EnsureParquetVariantExtensionRegistered();
   RegisterReader();
   RegisterWriter();
 }
