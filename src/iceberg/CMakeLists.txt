@@ -244,6 +244,7 @@ if(ICEBERG_BUILD_BUNDLE)
       arrow/arrow_io.cc
       arrow/s3/arrow_s3_file_io.cc
       arrow/arrow_register.cc
+      arrow/literal_util.cc
       arrow/metadata_column_util.cc
       avro/avro_data_util.cc
       avro/avro_direct_decoder.cc

@@ -31,6 +31,7 @@
 
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
@@ -657,6 +658,43 @@ TEST(AppendDatumToBuilderTest, StructWithMissingOptionalField) {
   const std::string expected_json = R"([
     {"id": 1, "name": "Person0", "age": null, "email": null},
     {"id": 2, "name": "Person1", "age": null, "email": null}
+  ])";
+  ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
+                                                     avro_data, expected_json));
+}
+
+TEST(AppendDatumToBuilderTest, StructWithMissingDefaultFields) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      // Missing required field with an initial-default: filled with the default.
+      SchemaField::MakeRequired(2, "score", iceberg::int64())
+          .WithInitialDefault(Literal::Long(100)),
+      // Missing optional field with an initial-default: also filled, not null.
+      SchemaField::MakeOptional(3, "grade", iceberg::string())
+          .WithInitialDefault(Literal::String("A")),
+  });
+
+  // Create Avro schema that only has the id field (missing score and grade)
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "person",
+    "fields": [
+      {"name": "id", "type": "int", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  std::vector<::avro::GenericDatum> avro_data;
+  for (int i = 0; i < 2; ++i) {
+    ::avro::GenericDatum avro_datum(avro_schema.root());
+    auto& record = avro_datum.value<::avro::GenericRecord>();
+    record.fieldAt(0).value<int32_t>() = i + 1;
+    avro_data.push_back(avro_datum);
+  }
+
+  const std::string expected_json = R"([
+    {"id": 1, "score": 100, "grade": "A"},
+    {"id": 2, "score": 100, "grade": "A"}
   ])";
   ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
                                                      avro_data, expected_json));

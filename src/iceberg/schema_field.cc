@@ -21,9 +21,12 @@
 
 #include <format>
 #include <string_view>
+#include <utility>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -55,12 +58,85 @@ bool SchemaField::optional() const { return optional_; }
 
 std::string_view SchemaField::doc() const { return doc_; }
 
+std::optional<std::reference_wrapper<const Literal>> SchemaField::initial_default()
+    const {
+  if (initial_default_ == nullptr) {
+    return std::nullopt;
+  }
+  return std::cref(*initial_default_);
+}
+
+std::optional<std::reference_wrapper<const Literal>> SchemaField::write_default() const {
+  if (write_default_ == nullptr) {
+    return std::nullopt;
+  }
+  return std::cref(*write_default_);
+}
+
+SchemaField SchemaField::WithInitialDefault(Literal initial_default) const {
+  SchemaField copy = *this;
+  copy.initial_default_ = std::make_shared<const Literal>(std::move(initial_default));
+  return copy;
+}
+
+SchemaField SchemaField::WithInitialDefault(
+    std::optional<std::reference_wrapper<const Literal>> initial_default) const {
+  SchemaField copy = *this;
+  copy.initial_default_ = initial_default.has_value()
+                              ? std::make_shared<const Literal>(initial_default->get())
+                              : nullptr;
+  return copy;
+}
+
+SchemaField SchemaField::WithWriteDefault(Literal write_default) const {
+  SchemaField copy = *this;
+  copy.write_default_ = std::make_shared<const Literal>(std::move(write_default));
+  return copy;
+}
+
+SchemaField SchemaField::WithWriteDefault(
+    std::optional<std::reference_wrapper<const Literal>> write_default) const {
+  SchemaField copy = *this;
+  copy.write_default_ = write_default.has_value()
+                            ? std::make_shared<const Literal>(write_default->get())
+                            : nullptr;
+  return copy;
+}
+
+namespace {
+
+Status ValidateDefault(const SchemaField& field, const Literal& value,
+                       std::string_view kind) {
+  if (value.IsNull() || value.IsAboveMax() || value.IsBelowMin()) {
+    return InvalidSchema("Invalid {} value for {}: must be a non-null value", kind,
+                         field.name());
+  }
+  if (field.type() == nullptr || !field.type()->is_primitive()) {
+    return InvalidSchema("Invalid {} value for {}: {} (must be null)", kind, field.name(),
+                         value);
+  }
+  if (*value.type() != *field.type()) {
+    return InvalidSchema("{} of field {} has type {} but expected {}", kind, field.name(),
+                         *value.type(), *field.type());
+  }
+  return {};
+}
+
+}  // namespace
+
 Status SchemaField::Validate() const {
   if (name_.empty()) [[unlikely]] {
     return InvalidSchema("SchemaField cannot have empty name");
   }
   if (type_ == nullptr) [[unlikely]] {
     return InvalidSchema("SchemaField cannot have null type");
+  }
+  if (initial_default_ != nullptr) {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateDefault(*this, *initial_default_, "initial-default"));
+  }
+  if (write_default_ != nullptr) {
+    ICEBERG_RETURN_UNEXPECTED(ValidateDefault(*this, *write_default_, "write-default"));
   }
   return {};
 }
@@ -72,9 +148,23 @@ std::string SchemaField::ToString() const {
   return result;
 }
 
+namespace {
+
+bool DefaultEquals(const std::shared_ptr<const Literal>& lhs,
+                   const std::shared_ptr<const Literal>& rhs) {
+  if (lhs == nullptr || rhs == nullptr) {
+    return lhs == rhs;
+  }
+  return *lhs == *rhs;
+}
+
+}  // namespace
+
 bool SchemaField::Equals(const SchemaField& other) const {
   return field_id_ == other.field_id_ && name_ == other.name_ && *type_ == *other.type_ &&
-         optional_ == other.optional_;
+         optional_ == other.optional_ &&
+         DefaultEquals(initial_default_, other.initial_default_) &&
+         DefaultEquals(write_default_, other.write_default_);
 }
 
 }  // namespace iceberg

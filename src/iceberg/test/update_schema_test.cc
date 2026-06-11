@@ -19,11 +19,13 @@
 
 #include "iceberg/update/update_schema.h"
 
+#include <limits>
 #include <memory>
 #include <vector>
 
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
@@ -80,6 +82,168 @@ TEST_F(UpdateSchemaTest, AddRequiredColumnWithAllowIncompatible) {
   EXPECT_EQ(new_field.type(), string());
   EXPECT_FALSE(new_field.optional());
   EXPECT_EQ(new_field.doc(), "A required string column");
+}
+
+/// Default values require a v3 table for Apply() to validate successfully.
+class UpdateSchemaDefaultValueTest : public UpdateSchemaTest {
+ protected:
+  std::string MetadataResource() const override { return "TableMetadataV3Valid.json"; }
+};
+
+TEST_F(UpdateSchemaTest, AddColumnWithDefaultValueRequiresV3) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage("is not supported until v3"));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithDefaultValue) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_col"));
+  ASSERT_TRUE(new_field_opt.has_value());
+
+  const auto& new_field = new_field_opt->get();
+  ASSERT_TRUE(new_field.initial_default().has_value());
+  EXPECT_EQ(new_field.initial_default()->get(), Literal::Int(42));
+  ASSERT_TRUE(new_field.write_default().has_value());
+  EXPECT_EQ(new_field.write_default()->get(), Literal::Int(42));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, AddRequiredColumnWithDefaultValue) {
+  // A required column with a default does not need AllowIncompatibleChanges():
+  // old rows read the initial-default instead of null.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddRequiredColumn("required_col", string(), "A required string column",
+                            Literal::String("n/a"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt,
+                         result.schema->FindFieldByName("required_col"));
+  ASSERT_TRUE(new_field_opt.has_value());
+
+  const auto& new_field = new_field_opt->get();
+  EXPECT_FALSE(new_field.optional());
+  ASSERT_TRUE(new_field.initial_default().has_value());
+  EXPECT_EQ(new_field.initial_default()->get(), Literal::String("n/a"));
+  ASSERT_TRUE(new_field.write_default().has_value());
+  EXPECT_EQ(new_field.write_default()->get(), Literal::String("n/a"));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithMismatchedDefaultValueFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column", Literal::String("oops"));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithNarrowingDefaultValueFails) {
+  // CastTo signals narrowing with AboveMax/BelowMin sentinels; they must not be
+  // stored as defaults.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column",
+                    Literal::Long(std::numeric_limits<int64_t>::max()));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefault) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
+      .UpdateColumnDefault("new_col", Literal::Int(7));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_col"));
+  ASSERT_TRUE(new_field_opt.has_value());
+
+  const auto& new_field = new_field_opt->get();
+  // initial-default is fixed at column addition; write-default is updated.
+  ASSERT_TRUE(new_field.initial_default().has_value());
+  EXPECT_EQ(new_field.initial_default()->get(), Literal::Int(42));
+  ASSERT_TRUE(new_field.write_default().has_value());
+  EXPECT_EQ(new_field.write_default()->get(), Literal::Int(7));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultOnExistingColumn) {
+  // Updating the write-default of a pre-existing column must survive Apply().
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->UpdateColumnDefault("x", Literal::Long(0));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("x"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  EXPECT_FALSE(field.initial_default().has_value());
+  ASSERT_TRUE(field.write_default().has_value());
+  EXPECT_EQ(field.write_default()->get(), Literal::Long(0));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultCastsToColumnType) {
+  // Match Java: an int default for a long column is cast, not rejected.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->UpdateColumnDefault("x", Literal::Int(5));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("x"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  ASSERT_TRUE(field.write_default().has_value());
+  EXPECT_EQ(field.write_default()->get(), Literal::Long(5));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, RequireColumnAddedWithDefault) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
+      .RequireColumn("new_col");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_col"));
+  ASSERT_TRUE(new_field_opt.has_value());
+  EXPECT_FALSE(new_field_opt->get().optional());
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDocPreservesDefaultValues) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
+      .UpdateColumnDoc("new_col", "updated doc");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  EXPECT_EQ(field.doc(), "updated doc");
+  ASSERT_TRUE(field.initial_default().has_value());
+  EXPECT_EQ(field.initial_default()->get(), Literal::Int(42));
+  ASSERT_TRUE(field.write_default().has_value());
+  EXPECT_EQ(field.write_default()->get(), Literal::Int(42));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnTypePromotesDefaultValues) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
+      .UpdateColumn("new_col", int64());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  EXPECT_EQ(field.type(), int64());
+  ASSERT_TRUE(field.initial_default().has_value());
+  EXPECT_EQ(field.initial_default()->get(), Literal::Long(42));
+  ASSERT_TRUE(field.write_default().has_value());
+  EXPECT_EQ(field.write_default()->get(), Literal::Long(42));
 }
 
 TEST_F(UpdateSchemaTest, AddMultipleColumns) {
