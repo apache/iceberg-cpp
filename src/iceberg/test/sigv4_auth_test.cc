@@ -72,18 +72,16 @@ TEST_F(SigV4AuthTest, LifecycleFinalizeRefusesWhileSessionsAlive) {
   EXPECT_TRUE(IsAwsSdkInitialized());
 }
 
-TEST_F(SigV4AuthTest, DirectlyConstructedSessionDoesNotCorruptLifecycleCount) {
-  // A directly-constructed session never registered with AwsSdkLifecycle, so
-  // destroying it must not decrement the count. Otherwise it underflows, and a
-  // later real session wraps it back to zero, letting FinalizeAwsSdk() shut the
-  // SDK down while a session is still alive.
+TEST_F(SigV4AuthTest, SessionRegistrationBalancesLifecycleCount) {
   {
     auto delegate = AuthSession::MakeDefault({});
     auto credentials = std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(
         Aws::Auth::AWSCredentials("id", "secret"));
-    auto direct = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
-                                                     credentials);
-  }  // destroyed here — must leave the lifecycle count untouched
+    auto session_result =
+        SigV4AuthSession::Make(delegate, "us-east-1", "execute-api", credentials);
+    ASSERT_THAT(session_result, IsOk());
+    EXPECT_THAT(FinalizeAwsSdk(), IsError(ErrorKind::kInvalid));
+  }
 
   auto properties = MakeSigV4Properties();
   auto manager_result = AuthManagers::Load("test-catalog", properties);
@@ -91,9 +89,6 @@ TEST_F(SigV4AuthTest, DirectlyConstructedSessionDoesNotCorruptLifecycleCount) {
   auto session_result = manager_result.value()->CatalogSession(client_, properties);
   ASSERT_THAT(session_result, IsOk());
 
-  // Exactly one live (registered) session, so Finalize must refuse. With the
-  // underflow bug the count would have wrapped and Finalize could wrongly
-  // succeed and shut the SDK down.
   EXPECT_THAT(FinalizeAwsSdk(), IsError(ErrorKind::kInvalid));
   EXPECT_TRUE(IsAwsSdkInitialized());
 }
@@ -338,7 +333,8 @@ TEST_F(SigV4AuthTest, AuthenticateWithBodyDetailedHeaders) {
   ASSERT_NE(auth_it, headers.end());
   EXPECT_TRUE(auth_it->second.starts_with("AWS4-HMAC-SHA256 Credential="));
 
-  // x-amz-content-sha256 should be Base64-encoded body SHA256 (matching Java)
+  // Java parity: the x-amz-content-sha256 header is Base64(SHA256(body)) for
+  // non-empty bodies; the canonical request payload hash stays lowercase hex.
   auto sha_it = headers.find("x-amz-content-sha256");
   ASSERT_NE(sha_it, headers.end());
   EXPECT_NE(sha_it->second, SigV4AuthSession::kEmptyBodySha256);
@@ -390,8 +386,10 @@ TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
   auto credentials =
       std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(Aws::Auth::AWSCredentials(
           "AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"));
-  auto session = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
-                                                    credentials);
+  auto session_result =
+      SigV4AuthSession::Make(delegate, "us-east-1", "execute-api", credentials);
+  ASSERT_THAT(session_result, IsOk());
+  auto session = session_result.value();
 
   HttpRequest request{.method = HttpMethod::kGet, .url = "http://localhost:8080/path"};
   auto auth_result = session->Authenticate(request);
@@ -418,11 +416,11 @@ TEST_F(SigV4AuthTest, SessionCloseDelegatesToInner) {
   auto delegate = AuthSession::MakeDefault({});
   auto credentials = std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(
       Aws::Auth::AWSCredentials("id", "secret"));
-  auto session = std::make_shared<SigV4AuthSession>(delegate, "us-east-1", "execute-api",
-                                                    credentials);
+  auto session_result =
+      SigV4AuthSession::Make(delegate, "us-east-1", "execute-api", credentials);
+  ASSERT_THAT(session_result, IsOk());
 
-  // Close should succeed without error
-  EXPECT_THAT(session->Close(), IsOk());
+  EXPECT_THAT(session_result.value()->Close(), IsOk());
 }
 
 TEST_F(SigV4AuthTest, CreateCustomDelegateNone) {

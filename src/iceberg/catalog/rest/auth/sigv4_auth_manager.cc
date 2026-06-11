@@ -172,11 +172,7 @@ SigV4AuthSession::SigV4AuthSession(
       signer_(std::make_unique<RestSigV4Signer>(
           credentials_provider_, signing_name_.c_str(), signing_region_.c_str())) {}
 
-SigV4AuthSession::~SigV4AuthSession() {
-  if (owns_sdk_registration_) {
-    AwsSdkLifecycle::Instance().UnregisterSession();
-  }
-}
+SigV4AuthSession::~SigV4AuthSession() { AwsSdkLifecycle::Instance().UnregisterSession(); }
 
 Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_request, delegate_->Authenticate(request));
@@ -198,8 +194,12 @@ Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
     aws_request->SetHeaderValue(Aws::String(name.c_str()), Aws::String(value.c_str()));
   }
 
-  // Empty body: hex EMPTY_BODY_SHA256 (Java parity workaround for the signer
-  // computing an invalid checksum on empty bodies). Non-empty: Base64.
+  // Java parity: for non-empty bodies the signed x-amz-content-sha256 header
+  // carries Base64(SHA256(body)) — matching the Java client's
+  // SignerChecksumParams behavior — while the canonical request's payload hash
+  // line remains lowercase hex per SigV4. Empty bodies use the hex
+  // EMPTY_BODY_SHA256 constant (workaround for the signer computing an invalid
+  // checksum on empty bodies).
   if (delegate_request.body.empty()) {
     aws_request->SetHeaderValue("x-amz-content-sha256", Aws::String(kEmptyBodySha256));
   } else {
@@ -411,11 +411,23 @@ class SessionSlot {
 
 }  // namespace
 
+Result<std::shared_ptr<SigV4AuthSession>> SigV4AuthSession::Make(
+    std::shared_ptr<AuthSession> delegate, std::string signing_region,
+    std::string signing_name,
+    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider) {
+  ICEBERG_ASSIGN_OR_RAISE(auto slot, SessionSlot::Reserve());
+  auto session = std::shared_ptr<SigV4AuthSession>(
+      new SigV4AuthSession(std::move(delegate), std::move(signing_region),
+                           std::move(signing_name), std::move(credentials_provider)));
+  // The session's destructor now owns the unregister.
+  slot.Release();
+  return session;
+}
+
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
     std::shared_ptr<AuthSession> delegate_session,
     const std::unordered_map<std::string, std::string>& properties,
     std::shared_ptr<Aws::Auth::AWSCredentialsProvider> reuse_credentials) {
-  ICEBERG_ASSIGN_OR_RAISE(auto slot, SessionSlot::Reserve());
   ICEBERG_ASSIGN_OR_RAISE(auto region, ResolveSigningRegion(properties));
   auto service = ResolveSigningName(properties);
 
@@ -441,12 +453,9 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
                          AuthProperties::kSigV4SecretAccessKey +
                          "' or configure the AWS credentials chain"});
   }
-  auto session =
-      std::make_shared<SigV4AuthSession>(std::move(delegate_session), std::move(region),
-                                         std::move(service), std::move(credentials));
-  // The reserved slot's unregister responsibility now belongs to the session.
-  session->owns_sdk_registration_ = true;
-  slot.Release();
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto session, SigV4AuthSession::Make(std::move(delegate_session), std::move(region),
+                                           std::move(service), std::move(credentials)));
   return session;
 }
 

@@ -60,6 +60,11 @@ if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
     CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
 else
+    # Pass an externally provided toolchain (e.g. vcpkg for the SigV4 job)
+    # explicitly instead of relying on CMake >= 3.21 reading the env var.
+    if [[ -n "${CMAKE_TOOLCHAIN_FILE:-}" ]]; then
+        CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+    fi
     CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Debug")
 fi
 

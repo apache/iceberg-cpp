@@ -44,6 +44,8 @@ option(
     value: 'disabled',
 )
 
+# Resolves a system-installed AWS SDK via its CMake config; the bundled-AWS
+# path (ICEBERG_AWSSDK_SOURCE=BUNDLED) is CMake-only.
 option(
     'sigv4',
     type: 'feature',

@@ -118,12 +118,54 @@ Result<bool> CaptureNoSuchNamespace(const auto& status) {
   return CaptureNoSuchObject(status, ErrorKind::kNoSuchNamespace);
 }
 
+std::string TableSessionKey(const TableIdentifier& identifier) {
+  std::string key;
+  for (const auto& level : identifier.ns.levels) {
+    key += level;
+    key += '\x1f';
+  }
+  key += identifier.name;
+  return key;
+}
+
 }  // namespace
 
 RestCatalog::~RestCatalog() {
+  for (auto& [key, session] : table_sessions_) {
+    if (session) {
+      std::ignore = session->Close();
+    }
+  }
   if (catalog_session_) {
     std::ignore = catalog_session_->Close();
   }
+}
+
+Status RestCatalog::RememberTableSession(
+    const TableIdentifier& identifier,
+    const std::unordered_map<std::string, std::string>& config) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto session, auth_manager_->TableSession(identifier, config, catalog_session_));
+  if (session == catalog_session_) {
+    return {};
+  }
+  std::shared_ptr<auth::AuthSession> replaced;
+  {
+    std::lock_guard<std::mutex> lock(table_sessions_mutex_);
+    auto& slot = table_sessions_[TableSessionKey(identifier)];
+    replaced = std::exchange(slot, std::move(session));
+  }
+  if (replaced) {
+    std::ignore = replaced->Close();
+  }
+  return {};
+}
+
+std::shared_ptr<auth::AuthSession> RestCatalog::SessionFor(
+    const TableIdentifier& identifier) {
+  std::lock_guard<std::mutex> lock(table_sessions_mutex_);
+  auto it = table_sessions_.find(TableSessionKey(identifier));
+  return it != table_sessions_.end() ? it->second : catalog_session_;
 }
 
 Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
@@ -355,7 +397,9 @@ Result<LoadTableResult> RestCatalog::CreateTableInternal(
                     *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  return LoadTableResultFromJson(json);
+  ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  ICEBERG_RETURN_UNEXPECTED(RememberTableSession(identifier, load_result.config));
+  return load_result;
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
@@ -391,7 +435,7 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
       client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance(),
-                    *catalog_session_));
+                    *SessionFor(identifier)));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto commit_response, CommitTableResponseFromJson(json));
@@ -479,6 +523,7 @@ Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& ide
   ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  ICEBERG_RETURN_UNEXPECTED(RememberTableSession(identifier, load_result.config));
   /// FIXME: support per-table FileIO creation
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
@@ -503,6 +548,7 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  ICEBERG_RETURN_UNEXPECTED(RememberTableSession(identifier, load_result.config));
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());

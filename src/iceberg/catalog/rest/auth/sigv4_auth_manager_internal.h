@@ -58,7 +58,11 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   /// Prefix prepended to relocated headers that conflict with SigV4-signed headers.
   static constexpr std::string_view kRelocatedHeaderPrefix = "Original-";
 
-  SigV4AuthSession(
+  /// \brief Creates a session registered with the AWS SDK lifecycle.
+  ///
+  /// Fails if the SDK is not initialized. Every session owns its lifecycle
+  /// registration and unregisters on destruction.
+  static Result<std::shared_ptr<SigV4AuthSession>> Make(
       std::shared_ptr<AuthSession> delegate, std::string signing_region,
       std::string signing_name,
       std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider);
@@ -78,17 +82,16 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
   }
 
  private:
-  // WrapSession() reserves an AwsSdkLifecycle slot and transfers it here.
-  friend class SigV4AuthManager;
+  SigV4AuthSession(
+      std::shared_ptr<AuthSession> delegate, std::string signing_region,
+      std::string signing_name,
+      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider);
 
   std::shared_ptr<AuthSession> delegate_;
   std::string signing_region_;
   std::string signing_name_;
   std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider_;
   std::unique_ptr<Aws::Client::AWSAuthV4Signer> signer_;
-  // Only WrapSession()-created sessions registered a slot; directly-constructed
-  // ones (e.g. tests) must not unregister and underflow the count.
-  bool owns_sdk_registration_ = false;
 };
 
 /// \brief An AuthManager that produces SigV4AuthSession instances.
