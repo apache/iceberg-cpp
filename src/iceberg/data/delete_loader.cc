@@ -19,9 +19,12 @@
 
 #include "iceberg/data/delete_loader.h"
 
+#include <cstdint>
 #include <cstring>
+#include <limits>
 #include <span>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
@@ -30,6 +33,7 @@
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/deletes/position_delete_range_consumer.h"
+#include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
@@ -171,7 +175,44 @@ Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteInde
 }
 
 Status DeleteLoader::LoadDV(const DataFile& file, PositionDeleteIndex& index) const {
-  return NotSupported("Loading deletion vectors is not yet supported");
+  // A deletion vector must reference exactly one data file; without it the
+  // caller cannot know which data file the positions apply to.
+  ICEBERG_PRECHECK(file.referenced_data_file.has_value(),
+                   "Deletion vector requires referenced_data_file: {}", file.file_path);
+
+  // For deletion vectors, content_offset and content_size_in_bytes point directly
+  // at the DV blob bytes within the Puffin file and are required by the spec.
+  ICEBERG_PRECHECK(
+      file.content_offset.has_value() && file.content_size_in_bytes.has_value(),
+      "Deletion vector requires content_offset and content_size_in_bytes: {}",
+      file.file_path);
+
+  const int64_t offset = file.content_offset.value();
+  const int64_t length = file.content_size_in_bytes.value();
+  ICEBERG_PRECHECK(offset >= 0 && length >= 0,
+                   "Invalid deletion vector offset/length: offset={}, length={}", offset,
+                   length);
+  ICEBERG_PRECHECK(length <= std::numeric_limits<int32_t>::max(),
+                   "Cannot read deletion vector larger than 2GB: {}", length);
+
+  ICEBERG_ASSIGN_OR_RAISE(auto input_file, io_->NewInputFile(file.file_path));
+  ICEBERG_ASSIGN_OR_RAISE(auto stream, input_file->Open());
+
+  std::vector<std::byte> bytes(static_cast<size_t>(length));
+  ICEBERG_RETURN_UNEXPECTED(stream->ReadFully(offset, bytes));
+  ICEBERG_RETURN_UNEXPECTED(stream->Close());
+
+  std::span<const uint8_t> blob(reinterpret_cast<const uint8_t*>(bytes.data()),
+                                bytes.size());
+  ICEBERG_ASSIGN_OR_RAISE(auto dv, PositionDeleteIndex::Deserialize(blob));
+
+  // The bitmap cardinality must match the record count recorded in metadata.
+  ICEBERG_PRECHECK(std::cmp_equal(dv.Cardinality(), file.record_count),
+                   "Deletion vector cardinality {} does not match record count {}: {}",
+                   dv.Cardinality(), file.record_count, file.file_path);
+
+  index.Merge(dv);
+  return {};
 }
 
 Result<PositionDeleteIndex> DeleteLoader::LoadPositionDeletes(
