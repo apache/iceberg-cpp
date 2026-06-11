@@ -25,6 +25,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
@@ -131,6 +132,57 @@ TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
   EXPECT_THAT(
       unknown_schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
       iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateRejectsDefaultValuesBeforeFormatV3) {
+  iceberg::Schema schema({iceberg::SchemaField(1, "id", iceberg::int32(), false)
+                              .WithInitialDefault(iceberg::Literal::Int(42))});
+
+  auto status = schema.Validate(2);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status,
+              iceberg::HasErrorMessage("default values are not supported until v3"));
+
+  EXPECT_THAT(schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
+}
+
+TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {
+  // Rebuilding fields during ID reassignment must carry default values along.
+  iceberg::Schema schema({iceberg::SchemaField(1, "id", iceberg::int32(), false)
+                              .WithInitialDefault(iceberg::Literal::Int(42))
+                              .WithWriteDefault(iceberg::Literal::Int(7))},
+                         iceberg::Schema::kInitialSchemaId,
+                         /*get_id=*/[](int32_t id) { return id + 100; });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto field, schema.FindFieldById(101));
+  ASSERT_TRUE(field.has_value());
+  ASSERT_TRUE(field->get().initial_default().has_value());
+  EXPECT_EQ(field->get().initial_default()->get(), iceberg::Literal::Int(42));
+  ASSERT_TRUE(field->get().write_default().has_value());
+  EXPECT_EQ(field->get().write_default()->get(), iceberg::Literal::Int(7));
+}
+
+TEST(SchemaTest, ValidateRejectsWriteDefaultBeforeFormatV3) {
+  iceberg::Schema schema({iceberg::SchemaField(1, "id", iceberg::int32(), false)
+                              .WithWriteDefault(iceberg::Literal::Int(7))});
+
+  auto status = schema.Validate(2);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status,
+              iceberg::HasErrorMessage("default values are not supported until v3"));
+
+  EXPECT_THAT(schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
+  iceberg::Schema schema({iceberg::SchemaField(1, "id", iceberg::int32(), false)
+                              .WithWriteDefault(iceberg::Literal::String("oops"))});
+
+  auto status = schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("write-default"));
 }
 
 TEST(SchemaTest, ValidateRejectsInvalidUnknownFields) {

@@ -116,9 +116,8 @@ std::shared_ptr<Type> ReassignTypeIds(const std::shared_ptr<Type>& type,
 SchemaField ReassignField(const SchemaField& field, int32_t new_id,
                           const Schema::GetId& get_id, Schema::IdMap& ids_to_reassigned,
                           Schema::IdMap& ids_to_original) {
-  return {new_id, std::string(field.name()),
-          ReassignTypeIds(field.type(), get_id, ids_to_reassigned, ids_to_original),
-          field.optional(), std::string(field.doc())};
+  return field.WithIdAndType(
+      new_id, ReassignTypeIds(field.type(), get_id, ids_to_reassigned, ids_to_original));
 }
 
 std::vector<SchemaField> ReassignIds(std::vector<SchemaField> fields,
@@ -447,7 +446,15 @@ Status Schema::Validate(int32_t format_version) const {
       }
     }
 
-    // TODO(GuoTao.yu): Check default values when they are supported
+    // Column default values (both initial-default and write-default) require v3+.
+    if (field.initial_default().has_value() || field.write_default().has_value()) {
+      if (format_version < TableMetadata::kMinFormatVersionDefaultValues) {
+        return InvalidSchema(
+            "Invalid default value for {}: default values are not supported until v{}",
+            field.name(), TableMetadata::kMinFormatVersionDefaultValues);
+      }
+      ICEBERG_RETURN_UNEXPECTED(field.Validate());
+    }
   }
 
   return {};

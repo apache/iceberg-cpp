@@ -216,8 +216,7 @@ Result<std::shared_ptr<Type>> PruneColumnVisitor::Visit(const SchemaField& field
 
 SchemaField PruneColumnVisitor::MakeField(const SchemaField& field,
                                           std::shared_ptr<Type> type) {
-  return {field.field_id(), std::string(field.name()), std::move(type), field.optional(),
-          std::string(field.doc())};
+  return field.WithIdAndType(field.field_id(), std::move(type));
 }
 
 Result<std::shared_ptr<Type>> PruneColumnVisitor::Visit(
@@ -364,9 +363,7 @@ std::shared_ptr<StructType> AssignFreshIdVisitor::Visit(const StructType& type) 
   std::vector<SchemaField> fresh_fields;
   for (size_t i = 0; i < type.fields().size(); ++i) {
     const auto& field = type.fields()[i];
-    fresh_fields.emplace_back(fresh_ids[i], std::string(field.name()),
-                              Visit(field.type()), field.optional(),
-                              std::string(field.doc()));
+    fresh_fields.push_back(field.WithIdAndType(fresh_ids[i], Visit(field.type())));
   }
   return std::make_shared<StructType>(std::move(fresh_fields));
 }
@@ -374,10 +371,8 @@ std::shared_ptr<StructType> AssignFreshIdVisitor::Visit(const StructType& type) 
 std::shared_ptr<ListType> AssignFreshIdVisitor::Visit(const ListType& type) const {
   const auto& elem_field = type.fields()[0];
   int32_t fresh_id = next_id_();
-  SchemaField fresh_elem_field(fresh_id, std::string(elem_field.name()),
-                               Visit(elem_field.type()), elem_field.optional(),
-                               std::string(elem_field.doc()));
-  return std::make_shared<ListType>(std::move(fresh_elem_field));
+  return std::make_shared<ListType>(
+      elem_field.WithIdAndType(fresh_id, Visit(elem_field.type())));
 }
 
 std::shared_ptr<MapType> AssignFreshIdVisitor::Visit(const MapType& type) const {
@@ -387,14 +382,9 @@ std::shared_ptr<MapType> AssignFreshIdVisitor::Visit(const MapType& type) const 
   int32_t fresh_key_id = next_id_();
   int32_t fresh_value_id = next_id_();
 
-  SchemaField fresh_key_field(fresh_key_id, std::string(key_field.name()),
-                              Visit(key_field.type()), key_field.optional(),
-                              std::string(key_field.doc()));
-  SchemaField fresh_value_field(fresh_value_id, std::string(value_field.name()),
-                                Visit(value_field.type()), value_field.optional(),
-                                std::string(value_field.doc()));
-  return std::make_shared<MapType>(std::move(fresh_key_field),
-                                   std::move(fresh_value_field));
+  return std::make_shared<MapType>(
+      key_field.WithIdAndType(fresh_key_id, Visit(key_field.type())),
+      value_field.WithIdAndType(fresh_value_id, Visit(value_field.type())));
 }
 
 Result<std::shared_ptr<Schema>> AssignFreshIds(int32_t schema_id, const Schema& schema,

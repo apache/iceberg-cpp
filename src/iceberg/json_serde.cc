@@ -27,6 +27,8 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/constants.h"
+#include "iceberg/expression/json_serde_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_field.h"
@@ -298,6 +300,15 @@ nlohmann::json ToJson(const SchemaField& field) {
   if (!field.doc().empty()) {
     json[kDoc] = field.doc();
   }
+  // Defaults are validated to be primitive literals matching the field type, so
+  // single-value serialization cannot fail here.
+  if (field.initial_default().has_value()) {
+    ICEBERG_ASSIGN_OR_THROW(json[kInitialDefault],
+                            ToJson(field.initial_default()->get()));
+  }
+  if (field.write_default().has_value()) {
+    ICEBERG_ASSIGN_OR_THROW(json[kWriteDefault], ToJson(field.write_default()->get()));
+  }
   return json;
 }
 
@@ -310,7 +321,6 @@ nlohmann::json ToJson(const Type& type) {
       nlohmann::json fields_json = nlohmann::json::array();
       for (const auto& field : struct_type.fields()) {
         fields_json.push_back(ToJson(field));
-        // TODO(gangwu): add default values
       }
       json[kFields] = fields_json;
       return json;
@@ -552,9 +562,23 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto name, GetJsonValue<std::string>(json, kName));
   ICEBERG_ASSIGN_OR_RAISE(auto required, GetJsonValue<bool>(json, kRequired));
   ICEBERG_ASSIGN_OR_RAISE(auto doc, GetJsonValueOrDefault<std::string>(json, kDoc));
+  ICEBERG_ASSIGN_OR_RAISE(std::optional<nlohmann::json> initial_default_json,
+                          GetJsonValueOptional<nlohmann::json>(json, kInitialDefault));
+  ICEBERG_ASSIGN_OR_RAISE(std::optional<nlohmann::json> write_default_json,
+                          GetJsonValueOptional<nlohmann::json>(json, kWriteDefault));
 
-  return std::make_unique<SchemaField>(field_id, std::move(name), std::move(type),
-                                       !required, doc);
+  SchemaField field(field_id, std::move(name), std::move(type), !required, doc);
+  if (initial_default_json.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(Literal literal,
+                            LiteralFromJson(*initial_default_json, field.type().get()));
+    field = field.WithInitialDefault(std::move(literal));
+  }
+  if (write_default_json.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(Literal literal,
+                            LiteralFromJson(*write_default_json, field.type().get()));
+    field = field.WithWriteDefault(std::move(literal));
+  }
+  return std::make_unique<SchemaField>(std::move(field));
 }
 
 Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
