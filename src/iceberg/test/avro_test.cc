@@ -37,6 +37,7 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_stream_internal.h"
 #include "iceberg/avro/avro_writer.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
@@ -221,6 +222,34 @@ TEST_F(AvroReaderTest, ReadTwoFields) {
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(AvroReaderTest, ReadMissingFieldsWithDefaults) {
+  // The file contains only fields 1 and 2; the projected schema adds fields 3 and 4
+  // with initial-defaults, which are filled for all rows written before the columns
+  // existed.
+  CreateSimpleAvroFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(3, "score", std::make_shared<LongType>())
+          .WithInitialDefault(Literal::Long(100)),
+      SchemaField::MakeOptional(4, "status", std::make_shared<StringType>())
+          .WithInitialDefault(Literal::String("active")),
+  });
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kAvro,
+      {.path = temp_avro_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsOk());
+  auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader,
+                                          R"([[1, "Alice", 100, "active"],
+                                              [2, "Bob", 100, "active"],
+                                              [3, "Charlie", 100, "active"]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 

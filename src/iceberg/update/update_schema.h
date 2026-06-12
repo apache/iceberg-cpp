@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -41,10 +42,6 @@ namespace iceberg {
 ///
 /// When committing, these changes will be applied to the current table metadata.
 /// Commit conflicts will not be resolved and will result in a CommitFailed error.
-///
-/// TODO(Guotao Yu): Add support for V3 default values when adding columns. Currently, all
-/// added columns use null as the default value, but Iceberg V3 supports custom
-/// default values for new columns.
 class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
  public:
   static Result<std::shared_ptr<UpdateSchema>> Make(
@@ -78,15 +75,19 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// If type is a nested type, its field IDs are reassigned when added to the
   /// existing schema.
   ///
-  /// The added column will be optional with a null default value.
+  /// Without a default value, the added column is optional with a null default.
+  /// With a default value (v3+), it is used as both the `initial-default` and the
+  /// `write-default` of the new column.
   ///
   /// \param name Name for the new column.
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
+  /// \param default_value Optional default value for the new column (v3+).
   /// \return Reference to this for method chaining.
   /// \note InvalidArgument will be reported if name contains ".".
   UpdateSchema& AddColumn(std::string_view name, std::shared_ptr<Type> type,
-                          std::string_view doc = "");
+                          std::string_view doc = "",
+                          std::optional<Literal> default_value = std::nullopt);
 
   /// \brief Add a new optional column to a nested struct with documentation.
   ///
@@ -102,22 +103,28 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// If type is a nested type, its field IDs are reassigned when added to the
   /// existing schema.
   ///
-  /// The added column will be optional with a null default value.
+  /// Without a default value, the added column is optional with a null default.
+  /// With a default value (v3+), it is used as both the `initial-default` and the
+  /// `write-default` of the new column.
   ///
   /// \param parent Name of the parent struct to which the column will be added.
   /// \param name Name for the new column.
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
+  /// \param default_value Optional default value for the new column (v3+).
   /// \return Reference to this for method chaining.
   /// \note InvalidArgument will be reported if parent doesn't identify a struct.
   UpdateSchema& AddColumn(std::optional<std::string_view> parent, std::string_view name,
-                          std::shared_ptr<Type> type, std::string_view doc = "");
+                          std::shared_ptr<Type> type, std::string_view doc = "",
+                          std::optional<Literal> default_value = std::nullopt);
 
   /// \brief Add a new required top-level column with documentation.
   ///
   /// Adding a required column without a default is an incompatible change that can
   /// break reading older data. To suppress exceptions thrown when an incompatible
-  /// change is detected, call AllowIncompatibleChanges().
+  /// change is detected, call AllowIncompatibleChanges() or provide a default value
+  /// (v3+), which is used as both the `initial-default` and the `write-default` of
+  /// the new column.
   ///
   /// Because "." may be interpreted as a column path separator or may be used in
   /// field names, it is not allowed in names passed to this method. To add to nested
@@ -130,16 +137,20 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name for the new column.
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
+  /// \param default_value Optional default value for the new column (v3+).
   /// \return Reference to this for method chaining.
   /// \note InvalidArgument will be reported if name contains ".".
   UpdateSchema& AddRequiredColumn(std::string_view name, std::shared_ptr<Type> type,
-                                  std::string_view doc = "");
+                                  std::string_view doc = "",
+                                  std::optional<Literal> default_value = std::nullopt);
 
   /// \brief Add a new required column to a nested struct with documentation.
   ///
   /// Adding a required column without a default is an incompatible change that can
   /// break reading older data. To suppress exceptions thrown when an incompatible
-  /// change is detected, call AllowIncompatibleChanges().
+  /// change is detected, call AllowIncompatibleChanges() or provide a default value
+  /// (v3+), which is used as both the `initial-default` and the `write-default` of
+  /// the new column.
   ///
   /// The parent name is used to find the parent using Schema::FindFieldByName(). If
   /// the parent name is null or empty, the new column will be added to the root as a
@@ -157,11 +168,13 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name for the new column.
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
+  /// \param default_value Optional default value for the new column (v3+).
   /// \return Reference to this for method chaining.
   /// \note InvalidArgument will be reported if parent doesn't identify a struct.
   UpdateSchema& AddRequiredColumn(std::optional<std::string_view> parent,
                                   std::string_view name, std::shared_ptr<Type> type,
-                                  std::string_view doc = "");
+                                  std::string_view doc = "",
+                                  std::optional<Literal> default_value = std::nullopt);
 
   /// \brief Rename a column in the schema.
   ///
@@ -209,6 +222,20 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// schema or if
   ///       the column will be deleted.
   UpdateSchema& UpdateColumnDoc(std::string_view name, std::string_view new_doc);
+
+  /// \brief Update the `write-default` value for a column (v3+).
+  ///
+  /// The name is used to find the column to update using Schema::FindFieldByName().
+  /// The column's `initial-default` is not changed: it is fixed when the column is
+  /// added and applies to rows that predate the column.
+  ///
+  /// \param name Name of the column to update the default value for.
+  /// \param new_default Replacement `write-default` value for the column.
+  /// \return Reference to this for method chaining.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       the column will be deleted.
+  UpdateSchema& UpdateColumnDefault(std::string_view name, Literal new_default);
 
   /// \brief Update a column to be optional.
   ///
@@ -367,7 +394,8 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \return Reference to this for method chaining.
   UpdateSchema& AddColumnInternal(std::optional<std::string_view> parent,
                                   std::string_view name, bool is_optional,
-                                  std::shared_ptr<Type> type, std::string_view doc);
+                                  std::shared_ptr<Type> type, std::string_view doc,
+                                  std::optional<Literal> default_value);
 
   /// \brief Internal implementation for updating column requirement (optional/required).
   ///

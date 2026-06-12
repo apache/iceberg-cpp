@@ -24,7 +24,9 @@
 /// type (e.g. a struct).
 
 #include <cstdint>
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -71,6 +73,22 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   /// \brief Get the field documentation.
   std::string_view doc() const;
 
+  /// \brief Get the default value for this field used when reading rows written
+  /// before the field existed (v3 `initial-default`). Empty if absent.
+  ///
+  /// The returned reference is a non-owning view into a value owned by this field;
+  /// it remains valid for the lifetime of this SchemaField.
+  [[nodiscard]] std::optional<std::reference_wrapper<const Literal>> initial_default()
+      const;
+
+  /// \brief Get the default value for this field used when a writer does not
+  /// supply a value (v3 `write-default`). Empty if absent.
+  ///
+  /// The returned reference is a non-owning view into a value owned by this field;
+  /// it remains valid for the lifetime of this SchemaField.
+  [[nodiscard]] std::optional<std::reference_wrapper<const Literal>> write_default()
+      const;
+
   [[nodiscard]] std::string ToString() const override;
 
   Status Validate() const;
@@ -91,6 +109,30 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
     return copy;
   }
 
+  /// \brief Return a copy of this field with the given `initial-default` value.
+  ///
+  /// The returned field takes ownership of the value.
+  [[nodiscard]] SchemaField WithInitialDefault(Literal initial_default) const;
+
+  /// \brief Return a copy of this field with the `initial-default` value copied from
+  /// `initial_default`, or without one if it is empty.
+  ///
+  /// The referenced value is copied; no reference to it is retained.
+  [[nodiscard]] SchemaField WithInitialDefault(
+      std::optional<std::reference_wrapper<const Literal>> initial_default) const;
+
+  /// \brief Return a copy of this field with the given `write-default` value.
+  ///
+  /// The returned field takes ownership of the value.
+  [[nodiscard]] SchemaField WithWriteDefault(Literal write_default) const;
+
+  /// \brief Return a copy of this field with the `write-default` value copied from
+  /// `write_default`, or without one if it is empty.
+  ///
+  /// The referenced value is copied; no reference to it is retained.
+  [[nodiscard]] SchemaField WithWriteDefault(
+      std::optional<std::reference_wrapper<const Literal>> write_default) const;
+
  private:
   /// \brief Compare two fields for equality.
   [[nodiscard]] bool Equals(const SchemaField& other) const;
@@ -100,6 +142,11 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   std::shared_ptr<Type> type_;
   bool optional_;
   std::string doc_;
+  // Default values are owned by this field and never mutated after being set; copies
+  // of the field share the same payload (reference-counted) instead of deep-copying,
+  // like `type_` above. Sharing is unobservable because the payload is immutable.
+  std::shared_ptr<const Literal> initial_default_;
+  std::shared_ptr<const Literal> write_default_;
 };
 
 }  // namespace iceberg

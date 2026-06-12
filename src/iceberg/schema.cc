@@ -447,7 +447,18 @@ Status Schema::Validate(int32_t format_version) const {
       }
     }
 
-    // TODO(GuoTao.yu): Check default values when they are supported
+    // Column default values require v3+.
+    if (field.initial_default().has_value() &&
+        format_version < TableMetadata::kMinFormatVersionDefaultValues) {
+      return InvalidSchema(
+          "Invalid initial default for {}: non-null default ({}) is not supported "
+          "until v{}",
+          field.name(), field.initial_default()->get(),
+          TableMetadata::kMinFormatVersionDefaultValues);
+    }
+    if (field.initial_default().has_value() || field.write_default().has_value()) {
+      ICEBERG_RETURN_UNEXPECTED(field.Validate());
+    }
   }
 
   return {};
