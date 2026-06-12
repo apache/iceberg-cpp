@@ -122,6 +122,7 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
                      snapshot_manifests.end());
   }
 
+  summary_.Merge(BuildManifestCountSummary(manifests, /*replaced_manifests_count=*/0));
   return manifests;
 }
 
