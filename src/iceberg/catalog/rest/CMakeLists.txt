@@ -32,6 +32,7 @@ set(ICEBERG_REST_SOURCES
     resource_paths.cc
     rest_catalog.cc
     rest_file_io.cc
+    rest_metrics_reporter.cc
     rest_util.cc
     types.cc)
 

@@ -33,6 +33,7 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/metrics/scan_report.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"
@@ -528,6 +529,12 @@ DeleteFileIndex::Builder& DeleteFileIndex::Builder::IgnoreResiduals() {
   return *this;
 }
 
+DeleteFileIndex::Builder& DeleteFileIndex::Builder::ScanMetrics(
+    class iceberg::ScanMetrics* scan_metrics) {
+  scan_metrics_ = scan_metrics;
+  return *this;
+}
+
 Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
   // Build expression caches per spec ID
   std::unordered_map<int32_t, std::shared_ptr<Expression>> part_expr_cache;
@@ -542,6 +549,7 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
       continue;
     }
     if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+      if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
       continue;
     }
 
@@ -581,9 +589,12 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
     if (auto it = eval_cache.find(spec_id); it != eval_cache.end()) {
       ICEBERG_ASSIGN_OR_RAISE(auto should_match, it->second->Evaluate(manifest));
       if (!should_match) {
+        if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
         continue;  // Manifest doesn't match filter
       }
     }
+
+    if (scan_metrics_) scan_metrics_->scanned_delete_manifests->Increment(1);
 
     // Read manifest entries
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
@@ -605,6 +616,9 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
       reader->FilterPartitions(partition_set_);
     }
     reader->FilterRows(data_filter).CaseSensitive(case_sensitive_).TryDropStats();
+    if (scan_metrics_) {
+      reader->SkipCounter(scan_metrics_->skipped_delete_files);
+    }
 
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
     files.reserve(files.size() + entries.size());
@@ -624,6 +638,8 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
                                               file.equality_ids.end());
         ContentFileUtil::DropUnselectedStats(*entry.data_file, columns);
         files.emplace_back(std::move(entry));
+      } else {
+        if (scan_metrics_) scan_metrics_->skipped_delete_files->Increment(1);
       }
     }
   }

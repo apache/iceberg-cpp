@@ -40,6 +40,10 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
 
+namespace iceberg {
+class MetricsReporter;
+}  // namespace iceberg
+
 namespace iceberg::sql {
 
 /// \brief Default maximum number of database connections for built-in SQL stores.
@@ -184,6 +188,7 @@ class ICEBERG_SQL_CATALOG_EXPORT SqlCatalog
   SqlCatalogConfig config_;
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<CatalogStore> store_;
+  std::shared_ptr<iceberg::MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg::sql
