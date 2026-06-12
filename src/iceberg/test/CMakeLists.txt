@@ -219,6 +219,7 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(table_update_test
                    USE_BUNDLE
                    SOURCES
+                   delete_files_test.cc
                    expire_snapshots_test.cc
                    fast_append_test.cc
                    manifest_filter_manager_test.cc

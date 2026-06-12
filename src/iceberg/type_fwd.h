@@ -221,6 +221,7 @@ class Transaction;
 class TransactionContext;
 
 /// \brief Update family.
+class DeleteFiles;
 class ExpireSnapshots;
 class FastAppend;
 class PendingUpdate;
