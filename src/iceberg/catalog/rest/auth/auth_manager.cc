@@ -38,7 +38,8 @@ Result<std::shared_ptr<AuthSession>> AuthManager::InitSession(
 }
 
 Result<std::shared_ptr<AuthSession>> AuthManager::ContextualSession(
-    [[maybe_unused]] const SessionContext& context, std::shared_ptr<AuthSession> parent) {
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& context,
+    std::shared_ptr<AuthSession> parent) {
   // By default, return the parent session as-is
   return parent;
 }

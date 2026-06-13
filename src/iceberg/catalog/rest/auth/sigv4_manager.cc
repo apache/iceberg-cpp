@@ -18,14 +18,17 @@
  */
 
 #include "iceberg/catalog/rest/auth/auth_manager_internal.h"
-#include "iceberg/catalog/rest/auth/aws_sdk.h"
 #include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
+#include "iceberg/result.h"
 
-#ifdef ICEBERG_SIGV4
+#if ICEBERG_SIGV4_ENABLED
 
 #  include <atomic>
+#  include <map>
 #  include <mutex>
 #  include <sstream>
+#  include <string_view>
+#  include <utility>
 
 #  include <aws/core/Aws.h>
 #  include <aws/core/auth/AWSAuthSigner.h>
@@ -46,6 +49,8 @@
 namespace iceberg::rest::auth {
 
 namespace {
+
+constexpr std::string_view kAmzContentSha256Header = "x-amz-content-sha256";
 
 class AwsSdkLifecycle {
  public:
@@ -157,6 +162,113 @@ class RestSigV4Signer : public Aws::Client::AWSAuthV4Signer {
   }
 };
 
+// TODO(sigv4): support loading a custom AWSCredentialsProvider via a class
+// name property, matching Java's AwsProperties.restCredentialsProvider().
+Result<std::shared_ptr<Aws::Auth::AWSCredentialsProvider>> MakeCredentialsProvider(
+    const std::unordered_map<std::string, std::string>& properties) {
+  auto access_key_it = properties.find(AuthProperties::kSigV4AccessKeyId);
+  auto secret_key_it = properties.find(AuthProperties::kSigV4SecretAccessKey);
+  auto session_token_it = properties.find(AuthProperties::kSigV4SessionToken);
+  bool has_ak = access_key_it != properties.end() && !access_key_it->second.empty();
+  bool has_sk = secret_key_it != properties.end() && !secret_key_it->second.empty();
+  bool has_token =
+      session_token_it != properties.end() && !session_token_it->second.empty();
+
+  ICEBERG_PRECHECK(
+      has_ak == has_sk, "Both '{}' and '{}' must be set together, or neither",
+      AuthProperties::kSigV4AccessKeyId, AuthProperties::kSigV4SecretAccessKey);
+  ICEBERG_PRECHECK(!has_token || (has_ak && has_sk),
+                   "'{}' requires both '{}' and '{}' to be set",
+                   AuthProperties::kSigV4SessionToken, AuthProperties::kSigV4AccessKeyId,
+                   AuthProperties::kSigV4SecretAccessKey);
+
+  if (has_ak) {
+    Aws::Auth::AWSCredentials credentials(access_key_it->second.c_str(),
+                                          secret_key_it->second.c_str());
+    if (has_token) {
+      credentials.SetSessionToken(session_token_it->second.c_str());
+    }
+    return std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(credentials);
+  }
+
+  return std::make_shared<Aws::Auth::DefaultAWSCredentialsProviderChain>();
+}
+
+Result<std::string> ResolveSigningRegion(
+    const std::unordered_map<std::string, std::string>& properties) {
+  if (auto it = properties.find(AuthProperties::kSigV4SigningRegion);
+      it != properties.end() && !it->second.empty()) {
+    return it->second;
+  }
+  // Resolve from env then the shared config profile, otherwise fail.
+  // If this becomes expensive, cache it at the catalog/AuthManager scope or
+  // introduce an AwsProperties-like object as Java does.
+  Aws::String region = Aws::Environment::GetEnv("AWS_REGION");
+  if (region.empty()) {
+    region = Aws::Environment::GetEnv("AWS_DEFAULT_REGION");
+  }
+  if (region.empty()) {
+    const auto& profiles = Aws::Config::GetCachedConfigProfiles();
+    if (auto it = profiles.find(Aws::Auth::GetConfigProfileName());
+        it != profiles.end()) {
+      region = it->second.GetRegion();
+    }
+  }
+  if (region.empty()) {
+    return InvalidArgument(
+        "SigV4: could not resolve a signing region; set the '{}' property or the "
+        "AWS_REGION environment variable",
+        AuthProperties::kSigV4SigningRegion);
+  }
+  return std::string(region.c_str());
+}
+
+std::string ResolveSigningName(
+    const std::unordered_map<std::string, std::string>& properties) {
+  if (auto it = properties.find(AuthProperties::kSigV4SigningName);
+      it != properties.end() && !it->second.empty()) {
+    return it->second;
+  }
+  return AuthProperties::kSigV4SigningNameDefault;
+}
+
+bool HasSigV4CredentialOverride(
+    const std::unordered_map<std::string, std::string>& properties) {
+  return properties.contains(AuthProperties::kSigV4AccessKeyId) ||
+         properties.contains(AuthProperties::kSigV4SecretAccessKey) ||
+         properties.contains(AuthProperties::kSigV4SessionToken);
+}
+
+Result<std::shared_ptr<Aws::Auth::AWSCredentialsProvider>> ResolveCredentialsProvider(
+    const std::unordered_map<std::string, std::string>& properties,
+    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> reuse_credentials = nullptr) {
+  if (reuse_credentials && !HasSigV4CredentialOverride(properties)) {
+    return reuse_credentials;
+  }
+  return MakeCredentialsProvider(properties);
+}
+
+template <typename Fn>
+class ScopeExit {
+ public:
+  explicit ScopeExit(Fn fn) : fn_(std::move(fn)) {}
+  ScopeExit(ScopeExit&& other) noexcept
+      : fn_(std::move(other.fn_)), active_(other.active_) {
+    other.active_ = false;
+  }
+  ScopeExit(const ScopeExit&) = delete;
+  ScopeExit& operator=(const ScopeExit&) = delete;
+  ScopeExit& operator=(ScopeExit&&) = delete;
+  ~ScopeExit() {
+    if (active_) fn_();
+  }
+  void Cancel() noexcept { active_ = false; }
+
+ private:
+  Fn fn_;
+  bool active_ = true;
+};
+
 }  // namespace
 
 // ---- SigV4AuthSession ----
@@ -174,8 +286,9 @@ SigV4AuthSession::SigV4AuthSession(
 
 SigV4AuthSession::~SigV4AuthSession() { AwsSdkLifecycle::Instance().UnregisterSession(); }
 
-Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
-  ICEBERG_ASSIGN_OR_RAISE(auto delegate_request, delegate_->Authenticate(request));
+Result<HttpRequest> SigV4AuthSession::Authenticate(HttpRequest request) {
+  ICEBERG_ASSIGN_OR_RAISE(auto delegate_request,
+                          delegate_->Authenticate(std::move(request)));
   const auto& original_headers = delegate_request.headers;
 
   std::unordered_map<std::string, std::string> signing_headers;
@@ -194,57 +307,49 @@ Result<HttpRequest> SigV4AuthSession::Authenticate(const HttpRequest& request) {
     aws_request->SetHeaderValue(Aws::String(name.c_str()), Aws::String(value.c_str()));
   }
 
-  // Java parity: for non-empty bodies the signed x-amz-content-sha256 header
-  // carries Base64(SHA256(body)) — matching the Java client's
-  // SignerChecksumParams behavior — while the canonical request's payload hash
-  // line remains lowercase hex per SigV4. Empty bodies use the hex
-  // EMPTY_BODY_SHA256 constant (workaround for the signer computing an invalid
-  // checksum on empty bodies).
+  // Empty bodies use the hex SHA256 constant; non-empty bodies use
+  // Base64(SHA256(body)). This matches Java RESTSigV4AuthSession behavior.
   if (delegate_request.body.empty()) {
-    aws_request->SetHeaderValue("x-amz-content-sha256", Aws::String(kEmptyBodySha256));
+    aws_request->SetHeaderValue(Aws::String(kAmzContentSha256Header),
+                                Aws::String(kEmptyBodySha256));
   } else {
     auto body_stream =
         Aws::MakeShared<std::stringstream>("SigV4Body", delegate_request.body);
     aws_request->AddContentBody(body_stream);
     auto sha256 = Aws::Utils::HashingUtils::CalculateSHA256(
         Aws::String(delegate_request.body.data(), delegate_request.body.size()));
-    aws_request->SetHeaderValue("x-amz-content-sha256",
+    aws_request->SetHeaderValue(Aws::String(kAmzContentSha256Header),
                                 Aws::Utils::HashingUtils::Base64Encode(sha256));
   }
 
   if (!signer_->SignRequest(*aws_request)) {
-    return std::unexpected<Error>(Error{.kind = ErrorKind::kAuthenticationFailed,
-                                        .message = "SigV4 signing failed"});
+    return AuthenticationFailed("AWS SigV4 request signing failed");
   }
 
-  // Build a case-insensitive index of original headers once so the outer
-  // loop over signed headers below is O(N + M) instead of O(N * M).
-  std::unordered_map<std::string, std::vector<const std::string*>> originals_by_name;
+  // Build a case-insensitive view of original headers so signer-added headers
+  // can be compared without lowercasing or copying the originals.
+  std::map<std::string_view, std::string_view, CaseInsensitiveHeaderLess>
+      originals_by_name;
   for (const auto& [orig_name, orig_value] : original_headers) {
-    originals_by_name[StringUtils::ToLower(orig_name)].push_back(&orig_value);
+    originals_by_name.emplace(orig_name, orig_value);
   }
 
   HttpRequest signed_request{.method = delegate_request.method,
                              .url = std::move(delegate_request.url),
                              .headers = {},
                              .body = std::move(delegate_request.body)};
-  signed_request.headers.reserve(aws_request->GetHeaders().size() +
-                                 original_headers.size());
   for (const auto& [aws_name, aws_value] : aws_request->GetHeaders()) {
     std::string name(aws_name.c_str(), aws_name.size());
     std::string value(aws_value.c_str(), aws_value.size());
-    if (auto it = originals_by_name.find(StringUtils::ToLower(name));
+    if (auto it = originals_by_name.find(std::string_view(name));
         it != originals_by_name.end()) {
-      // Preserve every original entry with this name whose value the signer
-      // didn't produce, matching Java updateRequestHeaders.
-      for (const auto* orig_value : it->second) {
-        if (*orig_value != value) {
-          signed_request.headers.add(std::string(kRelocatedHeaderPrefix) + name,
-                                     *orig_value);
-        }
+      // Preserve the original value when the signer overwrites a header.
+      if (it->second != std::string_view(value)) {
+        signed_request.headers.try_emplace(std::string(kRelocatedHeaderPrefix) + name,
+                                           std::string(it->second));
       }
     }
-    signed_request.headers.add(std::move(name), std::move(value));
+    signed_request.headers.insert_or_assign(std::move(name), std::move(value));
   }
 
   return signed_request;
@@ -265,7 +370,8 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::InitSession(
   ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().EnsureInitialized());
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session,
                           delegate_->InitSession(init_client, properties));
-  return WrapSession(std::move(delegate_session), properties);
+  ICEBERG_ASSIGN_OR_RAISE(auto credentials, ResolveCredentialsProvider(properties));
+  return WrapSession(std::move(delegate_session), properties, std::move(credentials));
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
@@ -275,14 +381,13 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
   catalog_properties_ = properties;
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session,
                           delegate_->CatalogSession(shared_client, properties));
-  return WrapSession(std::move(delegate_session), properties);
+  ICEBERG_ASSIGN_OR_RAISE(auto credentials, ResolveCredentialsProvider(properties));
+  return WrapSession(std::move(delegate_session), properties, std::move(credentials));
 }
 
-// Both derived sessions merge against the stored catalog_properties_, so
-// contextual overrides do not propagate into child table sessions.
-
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
-    const SessionContext& context, std::shared_ptr<AuthSession> parent) {
+    const std::unordered_map<std::string, std::string>& context,
+    std::shared_ptr<AuthSession> parent) {
   auto sigv4_parent = std::dynamic_pointer_cast<SigV4AuthSession>(std::move(parent));
   ICEBERG_PRECHECK(sigv4_parent != nullptr,
                    "SigV4AuthManager parent must be a SigV4AuthSession");
@@ -290,12 +395,11 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session, delegate_->ContextualSession(
                                                      context, sigv4_parent->delegate()));
 
-  // Merge context.credentials into properties so credential overrides aren't
-  // dropped.
-  auto merged = MergeProperties(catalog_properties_,
-                                MergeProperties(context.properties, context.credentials));
-  return WrapSession(std::move(delegate_session), merged,
-                     sigv4_parent->credentials_provider());
+  auto merged = MergeProperties(catalog_properties_, context);
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto credentials,
+      ResolveCredentialsProvider(context, sigv4_parent->credentials_provider()));
+  return WrapSession(std::move(delegate_session), merged, std::move(credentials));
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
@@ -311,147 +415,43 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::TableSession(
       delegate_->TableSession(table, properties, sigv4_parent->delegate()));
 
   auto merged = MergeProperties(catalog_properties_, properties);
-  return WrapSession(std::move(delegate_session), merged,
-                     sigv4_parent->credentials_provider());
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto credentials,
+      ResolveCredentialsProvider(properties, sigv4_parent->credentials_provider()));
+  return WrapSession(std::move(delegate_session), merged, std::move(credentials));
 }
 
 Status SigV4AuthManager::Close() { return delegate_->Close(); }
-
-// TODO(sigv4): support loading a custom AWSCredentialsProvider via a class
-// name property, matching Java's AwsProperties.restCredentialsProvider().
-Result<std::shared_ptr<Aws::Auth::AWSCredentialsProvider>>
-SigV4AuthManager::MakeCredentialsProvider(
-    const std::unordered_map<std::string, std::string>& properties) {
-  auto access_key_it = properties.find(AuthProperties::kSigV4AccessKeyId);
-  auto secret_key_it = properties.find(AuthProperties::kSigV4SecretAccessKey);
-  bool has_ak = access_key_it != properties.end() && !access_key_it->second.empty();
-  bool has_sk = secret_key_it != properties.end() && !secret_key_it->second.empty();
-
-  ICEBERG_PRECHECK(
-      has_ak == has_sk, "Both '{}' and '{}' must be set together, or neither",
-      AuthProperties::kSigV4AccessKeyId, AuthProperties::kSigV4SecretAccessKey);
-
-  if (has_ak) {
-    Aws::Auth::AWSCredentials credentials(access_key_it->second.c_str(),
-                                          secret_key_it->second.c_str());
-    auto session_token_it = properties.find(AuthProperties::kSigV4SessionToken);
-    if (session_token_it != properties.end() && !session_token_it->second.empty()) {
-      credentials.SetSessionToken(session_token_it->second.c_str());
-    }
-    return std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(credentials);
-  }
-
-  return std::make_shared<Aws::Auth::DefaultAWSCredentialsProviderChain>();
-}
-
-Result<std::string> SigV4AuthManager::ResolveSigningRegion(
-    const std::unordered_map<std::string, std::string>& properties) {
-  if (auto it = properties.find(AuthProperties::kSigV4SigningRegion);
-      it != properties.end() && !it->second.empty()) {
-    return it->second;
-  }
-  // Resolve from env then the shared config profile (skip IMDS — it can block
-  // on non-EC2 hosts), and fail rather than silently defaulting to us-east-1.
-  // Resolved once per process.
-  static const std::string kResolvedRegion = []() -> std::string {
-    Aws::String region = Aws::Environment::GetEnv("AWS_REGION");
-    if (region.empty()) {
-      region = Aws::Environment::GetEnv("AWS_DEFAULT_REGION");
-    }
-    if (region.empty()) {
-      const auto& profiles = Aws::Config::GetCachedConfigProfiles();
-      if (auto it = profiles.find(Aws::Auth::GetConfigProfileName());
-          it != profiles.end()) {
-        region = it->second.GetRegion();
-      }
-    }
-    return std::string(region.c_str());
-  }();
-  if (kResolvedRegion.empty()) {
-    return InvalidArgument(
-        "SigV4: could not resolve a signing region; set the '{}' property or the "
-        "AWS_REGION environment variable",
-        AuthProperties::kSigV4SigningRegion);
-  }
-  return kResolvedRegion;
-}
-
-std::string SigV4AuthManager::ResolveSigningName(
-    const std::unordered_map<std::string, std::string>& properties) {
-  if (auto it = properties.find(AuthProperties::kSigV4SigningName);
-      it != properties.end() && !it->second.empty()) {
-    return it->second;
-  }
-  return AuthProperties::kSigV4SigningNameDefault;
-}
-
-namespace {
-
-// RAII guard so any throw between RegisterSession() and the successful
-// SigV4AuthSession construction unwinds the session count.
-class SessionSlot {
- public:
-  static Result<SessionSlot> Reserve() {
-    ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().RegisterSession());
-    return SessionSlot{};
-  }
-  SessionSlot(SessionSlot&& other) noexcept : armed_(other.armed_) {
-    other.armed_ = false;
-  }
-  SessionSlot& operator=(SessionSlot&&) = delete;
-  ~SessionSlot() {
-    if (armed_) AwsSdkLifecycle::Instance().UnregisterSession();
-  }
-  void Release() noexcept { armed_ = false; }
-
- private:
-  SessionSlot() = default;
-  bool armed_ = true;
-};
-
-}  // namespace
 
 Result<std::shared_ptr<SigV4AuthSession>> SigV4AuthSession::Make(
     std::shared_ptr<AuthSession> delegate, std::string signing_region,
     std::string signing_name,
     std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider) {
-  ICEBERG_ASSIGN_OR_RAISE(auto slot, SessionSlot::Reserve());
+  ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().RegisterSession());
+  ScopeExit unregister_on_failure(
+      [] { AwsSdkLifecycle::Instance().UnregisterSession(); });
   auto session = std::shared_ptr<SigV4AuthSession>(
       new SigV4AuthSession(std::move(delegate), std::move(signing_region),
                            std::move(signing_name), std::move(credentials_provider)));
   // The session's destructor now owns the unregister.
-  slot.Release();
+  unregister_on_failure.Cancel();
   return session;
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::WrapSession(
     std::shared_ptr<AuthSession> delegate_session,
     const std::unordered_map<std::string, std::string>& properties,
-    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> reuse_credentials) {
+    std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials) {
   ICEBERG_ASSIGN_OR_RAISE(auto region, ResolveSigningRegion(properties));
   auto service = ResolveSigningName(properties);
 
-  // Reuse the parent's provider unless properties override keys, avoiding a
-  // fresh DefaultAWSCredentialsProviderChain (can hit IMDS) per derivation.
-  auto explicit_keys = properties.find(AuthProperties::kSigV4AccessKeyId);
-  bool has_explicit_keys =
-      explicit_keys != properties.end() && !explicit_keys->second.empty();
-  std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials;
-  if (reuse_credentials && !has_explicit_keys) {
-    credentials = std::move(reuse_credentials);
-  } else {
-    ICEBERG_ASSIGN_OR_RAISE(credentials, MakeCredentialsProvider(properties));
-  }
   // Fail fast when the provider cannot resolve credentials (e.g. an empty
   // default chain) instead of sending an effectively unsigned request later.
   if (credentials->GetAWSCredentials().IsEmpty()) {
-    return std::unexpected<Error>(
-        Error{.kind = ErrorKind::kAuthenticationFailed,
-              .message = "SigV4: AWS credentials provider returned empty credentials; "
-                         "set '" +
-                         AuthProperties::kSigV4AccessKeyId + "' and '" +
-                         AuthProperties::kSigV4SecretAccessKey +
-                         "' or configure the AWS credentials chain"});
+    return AuthenticationFailed(
+        "SigV4: AWS credentials provider returned empty credentials; set '{}' and '{}' "
+        "or configure the AWS credentials chain",
+        AuthProperties::kSigV4AccessKeyId, AuthProperties::kSigV4SecretAccessKey);
   }
   ICEBERG_ASSIGN_OR_RAISE(
       auto session, SigV4AuthSession::Make(std::move(delegate_session), std::move(region),
@@ -493,7 +493,7 @@ bool IsAwsSdkFinalized() { return AwsSdkLifecycle::Instance().IsFinalized(); }
 
 }  // namespace iceberg::rest::auth
 
-#else  // !ICEBERG_SIGV4
+#else  // !ICEBERG_SIGV4_ENABLED
 
 namespace iceberg::rest::auth {
 
@@ -517,4 +517,4 @@ bool IsAwsSdkFinalized() { return false; }
 
 }  // namespace iceberg::rest::auth
 
-#endif  // ICEBERG_SIGV4
+#endif  // ICEBERG_SIGV4_ENABLED

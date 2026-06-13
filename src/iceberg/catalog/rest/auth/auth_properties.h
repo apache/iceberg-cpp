@@ -59,6 +59,10 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   inline static const std::string kSigV4Enabled = "rest.sigv4-enabled";
   inline static const std::string kSigV4DelegateAuthType =
       "rest.auth.sigv4.delegate-auth-type";
+
+  /// SigV4 signing region. If unset, SigV4 resolves the signing region from
+  /// AWS environment/profile configuration and fails if no region can be
+  /// resolved.
   inline static const std::string kSigV4SigningRegion = "rest.signing-region";
   inline static const std::string kSigV4SigningName = "rest.signing-name";
   inline static const std::string kSigV4SigningNameDefault = "execute-api";

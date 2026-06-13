@@ -75,7 +75,6 @@ HttpHeaders MergeHeaders(
     const std::unordered_map<std::string, std::string>& default_headers,
     const std::unordered_map<std::string, std::string>& request_headers) {
   HttpHeaders merged;
-  merged.reserve(default_headers.size() + request_headers.size());
   for (const auto& [key, val] : default_headers) {
     merged.try_emplace(key, val);
   }
@@ -90,11 +89,18 @@ cpr::Header ToCprHeader(const HttpRequest& request) {
 }
 
 /// \brief Append URL-encoded query parameters to a URL, sorted by key.
-/// \param base_url must not already contain a query string ('?' or '&').
+/// \param base_url must not already contain a query string. Callers pass query
+///        parameters separately so authentication signs one unambiguous final URL.
 Result<std::string> AppendQueryString(
     const std::string& base_url,
     const std::unordered_map<std::string, std::string>& params) {
   if (params.empty()) return base_url;
+  if (base_url.find('?') != std::string::npos) {
+    return InvalidArgument(
+        "HttpClient base URL must not contain a query string when query parameters "
+        "are passed separately: {}",
+        base_url);
+  }
   std::map<std::string, std::string> sorted(params.begin(), params.end());
   std::string url = base_url + "?";
   bool first = true;
@@ -106,6 +112,15 @@ Result<std::string> AppendQueryString(
     first = false;
   }
   return url;
+}
+
+Result<HttpRequest> AuthenticateRequest(auth::AuthSession& session, HttpMethod method,
+                                        std::string url, HttpHeaders headers,
+                                        std::string body = "") {
+  return session.Authenticate({.method = method,
+                               .url = std::move(url),
+                               .headers = std::move(headers),
+                               .body = std::move(body)});
 }
 
 /// \brief Checks if the HTTP status code indicates a successful response.
@@ -167,12 +182,9 @@ Result<HttpResponse> HttpClient::Get(
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto url, AppendQueryString(path, params));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto authenticated,
-      session.Authenticate({.method = HttpMethod::kGet,
-                            .url = std::move(url),
-                            .headers = MergeHeaders(default_headers_, headers),
-                            .body = ""}));
+  ICEBERG_ASSIGN_OR_RAISE(auto authenticated,
+                          AuthenticateRequest(session, HttpMethod::kGet, std::move(url),
+                                              MergeHeaders(default_headers_, headers)));
   cpr::Response response = cpr::Get(cpr::Url{authenticated.url},
                                     ToCprHeader(authenticated), *connection_pool_);
 
@@ -188,10 +200,8 @@ Result<HttpResponse> HttpClient::Post(
     const ErrorHandler& error_handler, auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto authenticated,
-      session.Authenticate({.method = HttpMethod::kPost,
-                            .url = path,
-                            .headers = MergeHeaders(default_headers_, headers),
-                            .body = body}));
+      AuthenticateRequest(session, HttpMethod::kPost, path,
+                          MergeHeaders(default_headers_, headers), body));
   cpr::Response response =
       cpr::Post(cpr::Url{authenticated.url}, cpr::Body{authenticated.body},
                 ToCprHeader(authenticated), *connection_pool_);
@@ -219,10 +229,9 @@ Result<HttpResponse> HttpClient::PostForm(
       cpr::Payload(pair_list.begin(), pair_list.end()).GetContent();
   ICEBERG_ASSIGN_OR_RAISE(
       auto authenticated,
-      session.Authenticate({.method = HttpMethod::kPost,
-                            .url = path,
-                            .headers = MergeHeaders(default_headers_, form_headers),
-                            .body = std::move(encoded_body)}));
+      AuthenticateRequest(session, HttpMethod::kPost, path,
+                          MergeHeaders(default_headers_, form_headers),
+                          std::move(encoded_body)));
   cpr::Response response =
       cpr::Post(cpr::Url{authenticated.url}, cpr::Body{authenticated.body},
                 ToCprHeader(authenticated), *connection_pool_);
@@ -236,12 +245,9 @@ Result<HttpResponse> HttpClient::PostForm(
 Result<HttpResponse> HttpClient::Head(
     const std::string& path, const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto authenticated,
-      session.Authenticate({.method = HttpMethod::kHead,
-                            .url = path,
-                            .headers = MergeHeaders(default_headers_, headers),
-                            .body = ""}));
+  ICEBERG_ASSIGN_OR_RAISE(auto authenticated,
+                          AuthenticateRequest(session, HttpMethod::kHead, path,
+                                              MergeHeaders(default_headers_, headers)));
   cpr::Response response = cpr::Head(cpr::Url{authenticated.url},
                                      ToCprHeader(authenticated), *connection_pool_);
 
@@ -258,10 +264,8 @@ Result<HttpResponse> HttpClient::Delete(
   ICEBERG_ASSIGN_OR_RAISE(auto url, AppendQueryString(path, params));
   ICEBERG_ASSIGN_OR_RAISE(
       auto authenticated,
-      session.Authenticate({.method = HttpMethod::kDelete,
-                            .url = std::move(url),
-                            .headers = MergeHeaders(default_headers_, headers),
-                            .body = ""}));
+      AuthenticateRequest(session, HttpMethod::kDelete, std::move(url),
+                          MergeHeaders(default_headers_, headers)));
   cpr::Response response = cpr::Delete(cpr::Url{authenticated.url},
                                        ToCprHeader(authenticated), *connection_pool_);
 

@@ -37,6 +37,7 @@
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
 #include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
+#include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/json_serde_internal.h"
@@ -87,6 +88,25 @@ TEST_F(AuthManagerTest, LoadNoopAuthManagerExplicit) {
 TEST_F(AuthManagerTest, LoadNoopAuthManagerInferred) {
   auto manager_result = AuthManagers::Load("test-catalog", {});
   ASSERT_THAT(manager_result, IsOk());
+}
+
+TEST_F(AuthManagerTest, HttpHeadersAreCaseInsensitiveSingleValueMap) {
+  HttpHeaders headers;
+  headers.emplace("Authorization", "Bearer first");
+  headers.emplace("authorization", "Bearer second");
+
+  EXPECT_EQ(headers.size(), 1);
+  EXPECT_EQ(headers.at("AUTHORIZATION"), "Bearer first");
+}
+
+TEST_F(AuthManagerTest, HttpClientRejectsParamsWhenUrlAlreadyHasQuery) {
+  auto session = AuthSession::MakeDefault({});
+  auto result =
+      client_.Get("http://127.0.0.1/v1/config?existing=true", {{"warehouse", "prod"}},
+                  /*headers=*/{}, *rest::DefaultErrorHandler::Instance(), *session);
+
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("must not contain a query string"));
 }
 
 // Verifies that auth type is case-insensitive

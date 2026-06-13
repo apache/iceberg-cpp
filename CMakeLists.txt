@@ -53,13 +53,8 @@ option(ICEBERG_SQL_SQLITE "Build the SQLite connector for the SQL catalog" OFF)
 option(ICEBERG_SQL_POSTGRESQL "Build the PostgreSQL connector for the SQL catalog" OFF)
 option(ICEBERG_SQL_MYSQL "Build the MySQL connector for the SQL catalog" OFF)
 option(ICEBERG_S3 "Build with S3 support" OFF)
-option(ICEBERG_SIGV4 "Build SigV4 authentication support (requires AWS SDK)" OFF)
-set(ICEBERG_AWSSDK_SOURCE
-    "AUTO"
-    CACHE STRING "AWS SDK source for SigV4: AUTO (reuse Arrow's bundled AWS SDK when \
-ICEBERG_S3 is ON, otherwise SYSTEM), SYSTEM (find an installed AWS SDK), or \
-BUNDLED (reuse Arrow's bundled AWS SDK; requires ICEBERG_S3)")
-set_property(CACHE ICEBERG_AWSSDK_SOURCE PROPERTY STRINGS AUTO SYSTEM BUNDLED)
+option(ICEBERG_SIGV4 "Build with SigV4 support" OFF)
+option(ICEBERG_BUNDLE_AWSSDK "Bundle AWS SDK for S3/SigV4 support" ON)
 option(ICEBERG_ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(ICEBERG_ENABLE_UBSAN "Enable Undefined Behavior Sanitizer" OFF)
 
@@ -81,12 +76,6 @@ endif()
 if(ICEBERG_BUILD_REST_INTEGRATION_TESTS AND WIN32)
   set(ICEBERG_BUILD_REST_INTEGRATION_TESTS OFF)
   message(WARNING "Cannot build rest integration test on Windows, turning it off.")
-endif()
-
-# ICEBERG_S3 requires ICEBERG_BUILD_BUNDLE
-if(NOT ICEBERG_BUILD_BUNDLE AND ICEBERG_S3)
-  set(ICEBERG_S3 OFF)
-  message(STATUS "ICEBERG_S3 is disabled because ICEBERG_BUILD_BUNDLE is OFF")
 endif()
 
 include(CMakeParseArguments)

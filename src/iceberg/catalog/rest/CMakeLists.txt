@@ -23,13 +23,12 @@ set(ICEBERG_REST_SOURCES
     auth/auth_properties.cc
     auth/auth_session.cc
     auth/oauth2_util.cc
-    auth/sigv4_auth_manager.cc
+    auth/sigv4_manager.cc
     auth/token_refresh_scheduler.cc
     catalog_properties.cc
     endpoint.cc
     error_handlers.cc
     http_client.cc
-    http_request.cc
     json_serde.cc
     resource_paths.cc
     rest_catalog.cc
@@ -58,7 +57,7 @@ list(APPEND
 if(ICEBERG_SIGV4)
   list(APPEND ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS aws-cpp-sdk-core)
   list(APPEND ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS aws-cpp-sdk-core)
-  if(ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "SYSTEM")
+  if(NOT ICEBERG_AWSSDK_BUNDLED)
     list(APPEND ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS aws-cpp-sdk-core)
     list(APPEND ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS aws-cpp-sdk-core)
   endif()
@@ -76,12 +75,16 @@ add_iceberg_lib(iceberg_rest
                 SHARED_INSTALL_INTERFACE_LIBS
                 ${ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS})
 
-if(ICEBERG_SIGV4)
-  foreach(LIB iceberg_rest_static iceberg_rest_shared)
-    if(TARGET ${LIB})
-      target_compile_definitions(${LIB} PUBLIC ICEBERG_SIGV4)
+foreach(LIB iceberg_rest_static iceberg_rest_shared)
+  if(TARGET ${LIB})
+    if(ICEBERG_SIGV4)
+      target_compile_definitions(${LIB}
+                                 PUBLIC "$<BUILD_INTERFACE:ICEBERG_SIGV4_ENABLED=1>")
+    else()
+      target_compile_definitions(${LIB}
+                                 PUBLIC "$<BUILD_INTERFACE:ICEBERG_SIGV4_ENABLED=0>")
     endif()
-  endforeach()
-endif()
+  endif()
+endforeach()
 
 iceberg_install_all_headers(iceberg/catalog/rest)

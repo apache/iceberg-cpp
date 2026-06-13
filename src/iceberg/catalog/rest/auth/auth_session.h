@@ -40,9 +40,9 @@ class ICEBERG_REST_EXPORT AuthSession {
 
   /// \brief Authenticate an outgoing HTTP request.
   ///
-  /// Returns a new request with authentication information (e.g., an
-  /// Authorization header) added. Implementations must be idempotent and must
-  /// not mutate the input request.
+  /// Returns a request with authentication information (e.g., an Authorization
+  /// header) added. Implementations must be idempotent. The request is passed
+  /// by value so callers can move request bodies into the authentication path.
   ///
   /// \param request The request to authenticate.
   /// \return The authenticated request on success, or one of:
@@ -52,7 +52,7 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///         - NotAuthorized: Not authenticated (401)
   ///         - IOError: Network or connection errors when reaching auth server
   ///         - RestError: HTTP errors from authentication service
-  virtual Result<HttpRequest> Authenticate(const HttpRequest& request) = 0;
+  virtual Result<HttpRequest> Authenticate(HttpRequest request) = 0;
 
   /// \brief Close the session and release any resources.
   ///

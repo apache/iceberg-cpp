@@ -26,7 +26,6 @@ iceberg_rest_sources = files(
     'endpoint.cc',
     'error_handlers.cc',
     'http_client.cc',
-    'http_request.cc',
     'json_serde.cc',
     'resource_paths.cc',
     'rest_catalog.cc',
@@ -42,7 +41,7 @@ cpr_needs_static = (
 )
 cpr_dep = dependency('cpr', static: cpr_needs_static)
 
-iceberg_rest_sources += files('auth/sigv4_auth_manager.cc')
+iceberg_rest_sources += files('auth/sigv4_manager.cc')
 iceberg_rest_build_deps = [iceberg_dep, cpr_dep]
 iceberg_rest_compile_defs = []
 
@@ -57,7 +56,9 @@ aws_sdk_core_dep = dependency(
 )
 if aws_sdk_core_dep.found()
     iceberg_rest_build_deps += aws_sdk_core_dep
-    iceberg_rest_compile_defs += '-DICEBERG_SIGV4'
+    iceberg_rest_compile_defs += '-DICEBERG_SIGV4_ENABLED=1'
+else
+    iceberg_rest_compile_defs += '-DICEBERG_SIGV4_ENABLED=0'
 endif
 
 iceberg_rest_lib = library(

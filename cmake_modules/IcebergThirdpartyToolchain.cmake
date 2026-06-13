@@ -19,22 +19,48 @@
 # third party libraries.
 set(ICEBERG_SYSTEM_DEPENDENCIES)
 set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
-
-if(ICEBERG_SIGV4)
-  set(ICEBERG_AWSSDK_SOURCE_RESOLVED "${ICEBERG_AWSSDK_SOURCE}")
-  if(ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "AUTO")
-    if(ICEBERG_S3)
-      set(ICEBERG_AWSSDK_SOURCE_RESOLVED "BUNDLED")
-    else()
-      set(ICEBERG_AWSSDK_SOURCE_RESOLVED "SYSTEM")
-    endif()
+set(ICEBERG_AWSSDK_BUNDLED FALSE)
+if(ICEBERG_S3 AND ICEBERG_BUNDLE_AWSSDK)
+  if(NOT ICEBERG_BUILD_BUNDLE)
+    message(FATAL_ERROR "ICEBERG_BUNDLE_AWSSDK requires ICEBERG_BUILD_BUNDLE to be ON")
   endif()
-  if(ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "BUNDLED" AND NOT ICEBERG_S3)
-    message(FATAL_ERROR "ICEBERG_AWSSDK_SOURCE=BUNDLED requires ICEBERG_S3=ON: "
-                        "the bundled AWS SDK is provided by Arrow's S3 support.")
-  endif()
-  message(STATUS "AWS SDK source for SigV4: ${ICEBERG_AWSSDK_SOURCE_RESOLVED}")
+  set(ICEBERG_AWSSDK_BUNDLED TRUE)
 endif()
+
+set(ICEBERG_AWSSDK_COMPONENTS)
+if(NOT ICEBERG_AWSSDK_BUNDLED)
+  if(ICEBERG_S3)
+    list(APPEND
+         ICEBERG_AWSSDK_COMPONENTS
+         core
+         config
+         s3
+         transfer
+         identity-management
+         sts)
+  elseif(ICEBERG_SIGV4)
+    list(APPEND ICEBERG_AWSSDK_COMPONENTS core)
+  endif()
+endif()
+
+# ----------------------------------------------------------------------
+# AWS SDK for C++
+
+function(resolve_aws_sdk_dependency)
+  if(NOT ICEBERG_AWSSDK_COMPONENTS)
+    return()
+  endif()
+  find_package(AWSSDK REQUIRED COMPONENTS ${ICEBERG_AWSSDK_COMPONENTS})
+  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES AWSSDK)
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  # Forwarded to find_dependency(AWSSDK ...) in iceberg-config.cmake.in so
+  # downstream installed builds load the same AWS SDK targets.
+  set(ICEBERG_FIND_EXTRA_ARGS_AWSSDK
+      "COMPONENTS;${ICEBERG_AWSSDK_COMPONENTS}"
+      PARENT_SCOPE)
+endfunction()
 
 # ----------------------------------------------------------------------
 # Versions and URLs for toolchain builds
@@ -126,12 +152,10 @@ function(resolve_arrow_dependency)
   set(ARROW_RUNTIME_SIMD_LEVEL "NONE")
   set(ARROW_POSITION_INDEPENDENT_CODE ON)
   set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
-  if(ICEBERG_S3
-     AND ICEBERG_SIGV4
-     AND ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "SYSTEM")
+  set(ARROW_WITH_ZLIB ON)
+  if(ICEBERG_S3 AND NOT ICEBERG_AWSSDK_BUNDLED)
     set(AWSSDK_SOURCE "SYSTEM")
   endif()
-  set(ARROW_WITH_ZLIB ON)
   set(ZLIB_SOURCE "SYSTEM")
   set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
   set(CMAKE_CXX_STANDARD 20)
@@ -641,6 +665,13 @@ resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
 resolve_nlohmann_json_dependency()
 
+if(ICEBERG_S3 OR ICEBERG_SIGV4)
+  if(ICEBERG_SIGV4 AND NOT ICEBERG_BUILD_REST)
+    message(FATAL_ERROR "ICEBERG_SIGV4 requires ICEBERG_BUILD_REST to be ON")
+  endif()
+  resolve_aws_sdk_dependency()
+endif()
+
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
   resolve_avro_dependency()
@@ -653,31 +684,4 @@ endif()
 
 if(ICEBERG_BUILD_SQL_CATALOG)
   resolve_sql_catalog_dependencies()
-endif()
-
-# ----------------------------------------------------------------------
-# AWS SDK for C++
-
-function(resolve_aws_sdk_dependency)
-  if(ICEBERG_AWSSDK_SOURCE_RESOLVED STREQUAL "BUNDLED")
-    message(STATUS "SigV4 reuses Arrow's bundled AWS SDK (aws-cpp-sdk-core)")
-    return()
-  endif()
-  find_package(AWSSDK REQUIRED COMPONENTS core)
-  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES AWSSDK)
-  set(ICEBERG_SYSTEM_DEPENDENCIES
-      ${ICEBERG_SYSTEM_DEPENDENCIES}
-      PARENT_SCOPE)
-  # Forwarded to find_dependency(AWSSDK ...) in iceberg-config.cmake.in so
-  # downstream installed builds load aws-cpp-sdk-core via AWSSDK_FIND_COMPONENTS.
-  set(ICEBERG_FIND_EXTRA_ARGS_AWSSDK
-      "COMPONENTS;core"
-      PARENT_SCOPE)
-endfunction()
-
-if(ICEBERG_SIGV4)
-  if(NOT ICEBERG_BUILD_REST)
-    message(FATAL_ERROR "ICEBERG_SIGV4 requires ICEBERG_BUILD_REST to be ON")
-  endif()
-  resolve_aws_sdk_dependency()
 endif()

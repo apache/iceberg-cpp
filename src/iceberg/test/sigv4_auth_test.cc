@@ -17,19 +17,25 @@
  * under the License.
  */
 
-#ifdef ICEBERG_SIGV4
+#if ICEBERG_SIGV4_ENABLED
 
+#  include <algorithm>
+#  include <cctype>
 #  include <string>
+#  include <string_view>
 #  include <unordered_map>
+#  include <utility>
+#  include <vector>
 
 #  include <aws/core/auth/AWSCredentialsProvider.h>
+#  include <aws/core/utils/HashingUtils.h>
+#  include <aws/core/utils/crypto/Sha256HMAC.h>
+#  include <gmock/gmock.h>
 #  include <gtest/gtest.h>
 
 #  include "iceberg/catalog/rest/auth/auth_managers.h"
 #  include "iceberg/catalog/rest/auth/auth_properties.h"
 #  include "iceberg/catalog/rest/auth/auth_session.h"
-#  include "iceberg/catalog/rest/auth/aws_sdk.h"
-#  include "iceberg/catalog/rest/auth/session_context.h"
 #  include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
 #  include "iceberg/catalog/rest/http_client.h"
 #  include "iceberg/table_identifier.h"
@@ -37,22 +43,164 @@
 
 namespace iceberg::rest::auth {
 
+namespace {
+
+using ::testing::HasSubstr;
+using ::testing::StartsWith;
+
+constexpr std::string_view kAccessKey = "AKIAIOSFODNN7EXAMPLE";
+constexpr std::string_view kSecretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+constexpr std::string_view kAmzContentSha256Header = "x-amz-content-sha256";
+
+std::string HexEncode(const Aws::Utils::ByteBuffer& buffer) {
+  static constexpr char kHex[] = "0123456789abcdef";
+  std::string hex;
+  hex.reserve(buffer.GetLength() * 2);
+  for (size_t i = 0; i < buffer.GetLength(); ++i) {
+    auto byte = buffer.GetUnderlyingData()[i];
+    hex.push_back(kHex[byte >> 4]);
+    hex.push_back(kHex[byte & 0x0F]);
+  }
+  return hex;
+}
+
+Aws::Utils::ByteBuffer BufferFromString(std::string_view value) {
+  return Aws::Utils::ByteBuffer(reinterpret_cast<const unsigned char*>(value.data()),
+                                value.size());
+}
+
+Aws::Utils::ByteBuffer HmacSha256(const Aws::Utils::ByteBuffer& key,
+                                  std::string_view value) {
+  Aws::Utils::Crypto::Sha256HMAC hmac;
+  auto result = hmac.Calculate(BufferFromString(value), key);
+  EXPECT_TRUE(result.IsSuccess());
+  return result.GetResult();
+}
+
+std::string Sha256Hex(std::string_view value) {
+  auto digest =
+      Aws::Utils::HashingUtils::CalculateSHA256(Aws::String(value.data(), value.size()));
+  return Aws::Utils::HashingUtils::HexEncode(digest).c_str();
+}
+
+std::string ExtractAuthField(std::string_view authorization, std::string_view prefix) {
+  auto pos = authorization.find(prefix);
+  EXPECT_NE(pos, std::string_view::npos) << authorization;
+  if (pos == std::string_view::npos) return {};
+  pos += prefix.size();
+  auto end = authorization.find(',', pos);
+  return std::string(authorization.substr(pos, end - pos));
+}
+
+std::string HeaderValue(const HttpHeaders& headers, std::string_view name) {
+  auto it = headers.find(name);
+  EXPECT_NE(it, headers.end()) << "Missing header: " << name;
+  if (it == headers.end()) return {};
+  return it->second;
+}
+
+std::string PathFromUrl(const std::string& url) {
+  auto scheme = url.find("://");
+  auto path_start =
+      scheme == std::string::npos ? url.find('/') : url.find('/', scheme + 3);
+  if (path_start == std::string::npos) return "/";
+  auto query_start = url.find('?', path_start);
+  return url.substr(path_start, query_start - path_start);
+}
+
+std::string CanonicalQueryFromUrl(const std::string& url) {
+  auto query_start = url.find('?');
+  if (query_start == std::string::npos) return {};
+  std::vector<std::string> params;
+  size_t start = query_start + 1;
+  while (start <= url.size()) {
+    auto end = url.find('&', start);
+    params.emplace_back(url.substr(start, end - start));
+    if (end == std::string::npos) break;
+    start = end + 1;
+  }
+  std::sort(params.begin(), params.end());
+
+  std::string canonical;
+  for (const auto& param : params) {
+    if (!canonical.empty()) canonical += '&';
+    canonical += param;
+  }
+  return canonical;
+}
+
+std::string ExpectedSigV4Signature(const HttpRequest& request,
+                                   std::string_view signing_region,
+                                   std::string_view signing_name) {
+  const auto authorization = HeaderValue(request.headers, "authorization");
+  const auto x_amz_date = HeaderValue(request.headers, "x-amz-date");
+  const auto credential_scope =
+      ExtractAuthField(authorization, std::string(kAccessKey) + "/");
+  const auto signed_headers = ExtractAuthField(authorization, "SignedHeaders=");
+  const auto date = x_amz_date.substr(0, 8);
+
+  std::string canonical_headers;
+  size_t start = 0;
+  while (start <= signed_headers.size()) {
+    auto end = signed_headers.find(';', start);
+    auto header_name = signed_headers.substr(start, end - start);
+    canonical_headers += header_name;
+    canonical_headers += ':';
+    canonical_headers += HeaderValue(request.headers, header_name);
+    canonical_headers += '\n';
+    if (end == std::string::npos) break;
+    start = end + 1;
+  }
+
+  auto payload_hash = request.body.empty()
+                          ? std::string(SigV4AuthSession::kEmptyBodySha256)
+                          : Sha256Hex(request.body);
+  const auto canonical_request =
+      std::string(ToString(request.method)) + "\n" + PathFromUrl(request.url) + "\n" +
+      CanonicalQueryFromUrl(request.url) + "\n" + canonical_headers + "\n" +
+      signed_headers + "\n" + payload_hash;
+  const auto string_to_sign = "AWS4-HMAC-SHA256\n" + x_amz_date + "\n" +
+                              credential_scope + "\n" + Sha256Hex(canonical_request);
+
+  auto date_key = HmacSha256(BufferFromString("AWS4" + std::string(kSecretKey)), date);
+  auto region_key = HmacSha256(date_key, signing_region);
+  auto service_key = HmacSha256(region_key, signing_name);
+  auto signing_key = HmacSha256(service_key, "aws4_request");
+  return HexEncode(HmacSha256(signing_key, string_to_sign));
+}
+
+}  // namespace
+
 class SigV4AuthTest : public ::testing::Test {
  protected:
   static void SetUpTestSuite() { ASSERT_THAT(InitializeAwsSdk(), IsOk()); }
 
-  HttpClient client_{{}};
+  static void TearDownTestSuite() { EXPECT_THAT(FinalizeAwsSdk(), IsOk()); }
 
   std::unordered_map<std::string, std::string> MakeSigV4Properties() {
     return {
         {AuthProperties::kAuthType, "sigv4"},
         {AuthProperties::kSigV4SigningRegion, "us-east-1"},
         {AuthProperties::kSigV4SigningName, "execute-api"},
-        {AuthProperties::kSigV4AccessKeyId, "AKIAIOSFODNN7EXAMPLE"},
-        {AuthProperties::kSigV4SecretAccessKey,
-         "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"},
+        {AuthProperties::kSigV4AccessKeyId, std::string(kAccessKey)},
+        {AuthProperties::kSigV4SecretAccessKey, std::string(kSecretKey)},
     };
   }
+
+  Result<std::shared_ptr<AuthSession>> MakeCatalogSession(
+      const std::unordered_map<std::string, std::string>& properties) {
+    ICEBERG_ASSIGN_OR_RAISE(auto manager, AuthManagers::Load("test-catalog", properties));
+    return manager->CatalogSession(client_, properties);
+  }
+
+  Result<HttpRequest> SignRequest(
+      const std::unordered_map<std::string, std::string>& properties,
+      HttpRequest request) {
+    ICEBERG_ASSIGN_OR_RAISE(auto session, MakeCatalogSession(properties));
+    return session->Authenticate(std::move(request));
+  }
+
+  HttpClient client_{{}};
 };
 
 TEST_F(SigV4AuthTest, LifecycleInitializeIsIdempotent) {
@@ -62,130 +210,127 @@ TEST_F(SigV4AuthTest, LifecycleInitializeIsIdempotent) {
 }
 
 TEST_F(SigV4AuthTest, LifecycleFinalizeRefusesWhileSessionsAlive) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto session, MakeCatalogSession(MakeSigV4Properties()));
 
   EXPECT_THAT(FinalizeAwsSdk(), IsError(ErrorKind::kInvalid));
   EXPECT_TRUE(IsAwsSdkInitialized());
 }
 
-TEST_F(SigV4AuthTest, SessionRegistrationBalancesLifecycleCount) {
-  {
-    auto delegate = AuthSession::MakeDefault({});
-    auto credentials = std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(
-        Aws::Auth::AWSCredentials("id", "secret"));
-    auto session_result =
-        SigV4AuthSession::Make(delegate, "us-east-1", "execute-api", credentials);
-    ASSERT_THAT(session_result, IsOk());
-    EXPECT_THAT(FinalizeAwsSdk(), IsError(ErrorKind::kInvalid));
-  }
+TEST_F(SigV4AuthTest, AuthenticateWithoutBodyDetailedHeaders) {
+  ICEBERG_UNWRAP_OR_FAIL(auto signed_request,
+                         SignRequest(MakeSigV4Properties(),
+                                     {.method = HttpMethod::kGet,
+                                      .url = "http://localhost:8080/path",
+                                      .headers = {{"Content-Type", "application/json"},
+                                                  {"Content-Encoding", "gzip"}}}));
 
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
+  EXPECT_EQ(HeaderValue(signed_request.headers, "content-type"), "application/json");
+  EXPECT_EQ(HeaderValue(signed_request.headers, "content-encoding"), "gzip");
+  EXPECT_EQ(HeaderValue(signed_request.headers, "host"), "localhost:8080");
+  EXPECT_EQ(HeaderValue(signed_request.headers, kAmzContentSha256Header),
+            SigV4AuthSession::kEmptyBodySha256);
+  EXPECT_NE(signed_request.headers.find("x-amz-date"), signed_request.headers.end());
 
-  EXPECT_THAT(FinalizeAwsSdk(), IsError(ErrorKind::kInvalid));
-  EXPECT_TRUE(IsAwsSdkInitialized());
+  auto authorization = HeaderValue(signed_request.headers, "authorization");
+  EXPECT_THAT(authorization, StartsWith("AWS4-HMAC-SHA256 Credential="));
+  EXPECT_THAT(authorization, HasSubstr("SignedHeaders=content-encoding;content-type;host;"
+                                       "x-amz-content-sha256;x-amz-date"));
+  EXPECT_EQ(ExtractAuthField(authorization, "Signature="),
+            ExpectedSigV4Signature(signed_request, "us-east-1", "execute-api"));
 }
 
-TEST_F(SigV4AuthTest, LoadSigV4AuthManager) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+TEST_F(SigV4AuthTest, AuthenticateWithBodyDetailedHeaders) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      SignRequest(MakeSigV4Properties(),
+                  {.method = HttpMethod::kPost,
+                   .url = "http://localhost:8080/path",
+                   .headers = {{"Content-Type", "application/x-www-form-urlencoded"},
+                               {"Content-Encoding", "gzip"}},
+                   .body = R"({"namespace":["ns"]})"}));
+
+  auto authorization = HeaderValue(signed_request.headers, "authorization");
+  EXPECT_THAT(authorization, StartsWith("AWS4-HMAC-SHA256 Credential="));
+  EXPECT_THAT(authorization, HasSubstr("SignedHeaders=content-encoding;content-type;host;"
+                                       "x-amz-content-sha256;x-amz-date"));
+  EXPECT_EQ(HeaderValue(signed_request.headers, kAmzContentSha256Header),
+            "LL0/LbCIE/WzVCHsfA3ASGOx9vJNPeTL0jBro8scPfA=");
+  EXPECT_EQ(ExtractAuthField(authorization, "Signature="),
+            ExpectedSigV4Signature(signed_request, "us-east-1", "execute-api"));
 }
 
-TEST_F(SigV4AuthTest, CatalogSessionProducesSession) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+TEST_F(SigV4AuthTest, QueryStringIsIncludedInSignature) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      SignRequest(MakeSigV4Properties(),
+                  {.method = HttpMethod::kGet,
+                   .url = "http://localhost:8080/path?warehouse=prod&prefix=a"}));
 
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
+  auto authorization = HeaderValue(signed_request.headers, "authorization");
+  EXPECT_THAT(authorization, StartsWith("AWS4-HMAC-SHA256 Credential="));
+  EXPECT_EQ(ExtractAuthField(authorization, "Signature="),
+            ExpectedSigV4Signature(signed_request, "us-east-1", "execute-api"));
 }
 
-TEST_F(SigV4AuthTest, AuthenticateAddsAuthorizationHeader) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_TRUE(headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
-  EXPECT_NE(headers.find("x-amz-date"), headers.end());
-}
-
-TEST_F(SigV4AuthTest, AuthenticateWithPostBody) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kPost,
-                      .url = "https://example.com/v1/namespaces",
-                      .headers = {{"Content-Type", "application/json"}},
-                      .body = R"({"namespace":["ns1"]})"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_TRUE(headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
-}
-
-TEST_F(SigV4AuthTest, DelegateAuthorizationHeaderRelocated) {
+TEST_F(SigV4AuthTest, DelegateAuthorizationHeaderIsRelocatedAndSigned) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kToken.key()] = "my-oauth-token";
-  properties[AuthProperties::kSigV4DelegateAuthType] = "oauth2";
 
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      SignRequest(properties, {.method = HttpMethod::kGet,
+                               .url = "http://localhost:8080/path",
+                               .headers = {{"Content-Type", "application/json"}}}));
 
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
+  EXPECT_EQ(HeaderValue(signed_request.headers, "original-authorization"),
+            "Bearer my-oauth-token");
+  auto authorization = HeaderValue(signed_request.headers, "authorization");
+  EXPECT_THAT(authorization,
+              HasSubstr("SignedHeaders=content-type;host;original-authorization;"
+                        "x-amz-content-sha256;x-amz-date"));
+  EXPECT_EQ(ExtractAuthField(authorization, "Signature="),
+            ExpectedSigV4Signature(signed_request, "us-east-1", "execute-api"));
+}
 
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
+TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
+  auto delegate = AuthSession::MakeDefault({
+      {"x-amz-content-sha256", "fake-sha256"},
+      {"X-Amz-Date", "fake-date"},
+      {"Content-Type", "application/json"},
+  });
+  auto credentials =
+      std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(Aws::Auth::AWSCredentials(
+          std::string(kAccessKey).c_str(), std::string(kSecretKey).c_str()));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto session,
+      SigV4AuthSession::Make(delegate, "us-east-1", "execute-api", credentials));
 
-  EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_TRUE(headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
-  EXPECT_NE(headers.find("original-authorization"), headers.end());
-  EXPECT_EQ(headers.at("original-authorization"), "Bearer my-oauth-token");
+  ICEBERG_UNWRAP_OR_FAIL(auto signed_request,
+                         session->Authenticate({.method = HttpMethod::kGet,
+                                                .url = "http://localhost:8080/path"}));
+
+  EXPECT_EQ(HeaderValue(signed_request.headers, kAmzContentSha256Header),
+            SigV4AuthSession::kEmptyBodySha256);
+  EXPECT_EQ(HeaderValue(signed_request.headers, "Original-x-amz-content-sha256"),
+            "fake-sha256");
+  EXPECT_EQ(HeaderValue(signed_request.headers, "Original-X-Amz-Date"), "fake-date");
+  EXPECT_NE(signed_request.headers.find("authorization"), signed_request.headers.end());
 }
 
 TEST_F(SigV4AuthTest, AuthenticateWithSessionToken) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kSigV4SessionToken] = "FwoGZXIvYXdzEBYaDHqa0";
 
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      SignRequest(properties,
+                  {.method = HttpMethod::kGet, .url = "https://example.com/v1/config"}));
 
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_NE(headers.find("x-amz-security-token"), headers.end());
-  EXPECT_EQ(headers.at("x-amz-security-token"), "FwoGZXIvYXdzEBYaDHqa0");
+  EXPECT_EQ(HeaderValue(signed_request.headers, "x-amz-security-token"),
+            "FwoGZXIvYXdzEBYaDHqa0");
+  EXPECT_THAT(HeaderValue(signed_request.headers, "authorization"),
+              HasSubstr("SignedHeaders=host;x-amz-content-sha256;x-amz-date;"
+                        "x-amz-security-token"));
 }
 
 TEST_F(SigV4AuthTest, CustomSigningNameAndRegion) {
@@ -193,38 +338,28 @@ TEST_F(SigV4AuthTest, CustomSigningNameAndRegion) {
   properties[AuthProperties::kSigV4SigningRegion] = "eu-west-1";
   properties[AuthProperties::kSigV4SigningName] = "custom-service";
 
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      SignRequest(properties,
+                  {.method = HttpMethod::kGet, .url = "https://example.com/v1/config"}));
 
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  auto auth_it = headers.find("authorization");
-  ASSERT_NE(auth_it, headers.end());
-  EXPECT_TRUE(auth_it->second.find("eu-west-1") != std::string::npos);
-  EXPECT_TRUE(auth_it->second.find("custom-service") != std::string::npos);
+  auto authorization = HeaderValue(signed_request.headers, "authorization");
+  EXPECT_THAT(authorization, HasSubstr("eu-west-1"));
+  EXPECT_THAT(authorization, HasSubstr("custom-service"));
 }
 
 TEST_F(SigV4AuthTest, LegacySigV4EnabledFlagSelectsSigV4) {
   auto properties = MakeSigV4Properties();
   properties.erase(AuthProperties::kAuthType);
   properties[AuthProperties::kSigV4Enabled] = "true";
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
 
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      SignRequest(properties,
+                  {.method = HttpMethod::kGet, .url = "https://example.com/v1/config"}));
 
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  EXPECT_TRUE(
-      auth_result.value().headers.at("authorization").starts_with("AWS4-HMAC-SHA256"));
+  EXPECT_THAT(HeaderValue(signed_request.headers, "authorization"),
+              StartsWith("AWS4-HMAC-SHA256"));
 }
 
 TEST_F(SigV4AuthTest, AuthTypeCaseInsensitive) {
@@ -236,226 +371,66 @@ TEST_F(SigV4AuthTest, AuthTypeCaseInsensitive) {
   }
 }
 
-TEST_F(SigV4AuthTest, DelegateDefaultsToOAuth2NoAuth) {
+TEST_F(SigV4AuthTest, MissingStaticCredentialsAreRejected) {
+  for (auto missing_property :
+       {AuthProperties::kSigV4AccessKeyId, AuthProperties::kSigV4SecretAccessKey}) {
+    auto properties = MakeSigV4Properties();
+    properties.erase(missing_property);
+    ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+
+    auto session_result = manager->CatalogSession(client_, properties);
+    EXPECT_THAT(session_result, IsError(ErrorKind::kInvalidArgument))
+        << "Missing property: " << missing_property;
+    EXPECT_THAT(session_result, HasErrorMessage("must be set together"));
+  }
+
+  auto session_token_only = MakeSigV4Properties();
+  session_token_only.erase(AuthProperties::kSigV4AccessKeyId);
+  session_token_only.erase(AuthProperties::kSigV4SecretAccessKey);
+  session_token_only[AuthProperties::kSigV4SessionToken] = "token";
+  ICEBERG_UNWRAP_OR_FAIL(auto manager,
+                         AuthManagers::Load("test-catalog", session_token_only));
+
+  auto session_result = manager->CatalogSession(client_, session_token_only);
+  EXPECT_THAT(session_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(session_result, HasErrorMessage("requires"));
+}
+
+TEST_F(SigV4AuthTest, DerivedCredentialOverridesMustBeComplete) {
   auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog_session,
+                         manager->CatalogSession(client_, properties));
 
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
+  auto context_result = manager->ContextualSession(
+      {{AuthProperties::kSigV4SecretAccessKey, "context-secret"}}, catalog_session);
+  EXPECT_THAT(context_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(context_result, HasErrorMessage("must be set together"));
 
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  EXPECT_EQ(headers.find("original-authorization"), headers.end());
-}
-
-TEST_F(SigV4AuthTest, TableSessionInheritsProperties) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto catalog_session = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(catalog_session, IsOk());
-
-  iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"ns1"}}, .name = "table1"};
-  std::unordered_map<std::string, std::string> table_props;
-  auto table_session = manager_result.value()->TableSession(table_id, table_props,
-                                                            catalog_session.value());
-  ASSERT_THAT(table_session, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kGet,
-                      .url = "https://example.com/v1/ns1/tables/table1"};
-  auto auth_result = table_session.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  EXPECT_NE(auth_result.value().headers.find("authorization"),
-            auth_result.value().headers.end());
-}
-
-TEST_F(SigV4AuthTest, AuthenticateWithoutBodyDetailedHeaders) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kGet,
-                      .url = "http://localhost:8080/path",
-                      .headers = {{"Content-Type", "application/json"}}};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  // Original header preserved
-  EXPECT_EQ(headers.at("content-type"), "application/json");
-
-  // Host header generated by the signer
-  EXPECT_NE(headers.find("host"), headers.end());
-
-  // SigV4 headers
-  auto auth_it = headers.find("authorization");
-  ASSERT_NE(auth_it, headers.end());
-  EXPECT_TRUE(auth_it->second.starts_with("AWS4-HMAC-SHA256 Credential="));
-
-  EXPECT_TRUE(auth_it->second.find("content-type") != std::string::npos);
-  EXPECT_TRUE(auth_it->second.find("host") != std::string::npos);
-  EXPECT_TRUE(auth_it->second.find("x-amz-content-sha256") != std::string::npos);
-  EXPECT_TRUE(auth_it->second.find("x-amz-date") != std::string::npos);
-
-  // Empty body SHA256 hash
-  EXPECT_EQ(headers.at("x-amz-content-sha256"), SigV4AuthSession::kEmptyBodySha256);
-
-  // X-Amz-Date present
-  EXPECT_NE(headers.find("x-amz-date"), headers.end());
-}
-
-TEST_F(SigV4AuthTest, AuthenticateWithBodyDetailedHeaders) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kPost,
-                      .url = "http://localhost:8080/path",
-                      .headers = {{"Content-Type", "application/json"}},
-                      .body = R"({"namespace":["ns1"]})"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  // SigV4 Authorization header
-  auto auth_it = headers.find("authorization");
-  ASSERT_NE(auth_it, headers.end());
-  EXPECT_TRUE(auth_it->second.starts_with("AWS4-HMAC-SHA256 Credential="));
-
-  // Java parity: the x-amz-content-sha256 header is Base64(SHA256(body)) for
-  // non-empty bodies; the canonical request payload hash stays lowercase hex.
-  auto sha_it = headers.find("x-amz-content-sha256");
-  ASSERT_NE(sha_it, headers.end());
-  EXPECT_NE(sha_it->second, SigV4AuthSession::kEmptyBodySha256);
-
-  EXPECT_EQ(sha_it->second.size(), 44)
-      << "Expected Base64 SHA256, got: " << sha_it->second;
-}
-
-TEST_F(SigV4AuthTest, ConflictingAuthorizationHeaderIncludedInSignedHeaders) {
-  auto properties = MakeSigV4Properties();
-  properties[AuthProperties::kToken.key()] = "my-oauth-token";
-  properties[AuthProperties::kSigV4DelegateAuthType] = "oauth2";
-
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kGet,
-                      .url = "http://localhost:8080/path",
-                      .headers = {{"Content-Type", "application/json"}}};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  // SigV4 Authorization header
-  auto auth_it = headers.find("authorization");
-  ASSERT_NE(auth_it, headers.end());
-  EXPECT_TRUE(auth_it->second.starts_with("AWS4-HMAC-SHA256 Credential="));
-
-  // Relocated delegate header should be in SignedHeaders
-  EXPECT_TRUE(auth_it->second.find("original-authorization") != std::string::npos)
-      << "SignedHeaders should include 'original-authorization', got: "
-      << auth_it->second;
-
-  // Relocated Authorization present
-  auto orig_it = headers.find("original-authorization");
-  ASSERT_NE(orig_it, headers.end());
-  EXPECT_EQ(orig_it->second, "Bearer my-oauth-token");
-}
-
-TEST_F(SigV4AuthTest, ConflictingSigV4HeadersRelocated) {
-  auto delegate = AuthSession::MakeDefault({
-      {"x-amz-content-sha256", "fake-sha256"},
-      {"X-Amz-Date", "fake-date"},
-      {"Content-Type", "application/json"},
-  });
-  auto credentials =
-      std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(Aws::Auth::AWSCredentials(
-          "AKIAIOSFODNN7EXAMPLE", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"));
-  auto session_result =
-      SigV4AuthSession::Make(delegate, "us-east-1", "execute-api", credentials);
-  ASSERT_THAT(session_result, IsOk());
-  auto session = session_result.value();
-
-  HttpRequest request{.method = HttpMethod::kGet, .url = "http://localhost:8080/path"};
-  auto auth_result = session->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  // The real x-amz-content-sha256 should be the empty body hash (signer overwrites fake)
-  EXPECT_EQ(headers.at("x-amz-content-sha256"), SigV4AuthSession::kEmptyBodySha256);
-
-  // The fake values should be relocated since the signer produced different values
-  auto orig_sha_it = headers.find("Original-x-amz-content-sha256");
-  ASSERT_NE(orig_sha_it, headers.end());
-  EXPECT_EQ(orig_sha_it->second, "fake-sha256");
-
-  auto orig_date_it = headers.find("Original-X-Amz-Date");
-  ASSERT_NE(orig_date_it, headers.end());
-  EXPECT_EQ(orig_date_it->second, "fake-date");
-
-  // SigV4 Authorization present
-  EXPECT_NE(headers.find("authorization"), headers.end());
-}
-
-TEST_F(SigV4AuthTest, SessionCloseDelegatesToInner) {
-  auto delegate = AuthSession::MakeDefault({});
-  auto credentials = std::make_shared<Aws::Auth::SimpleAWSCredentialsProvider>(
-      Aws::Auth::AWSCredentials("id", "secret"));
-  auto session_result =
-      SigV4AuthSession::Make(delegate, "us-east-1", "execute-api", credentials);
-  ASSERT_THAT(session_result, IsOk());
-
-  EXPECT_THAT(session_result.value()->Close(), IsOk());
+  iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"db1"}}, .name = "table1"};
+  auto table_result = manager->TableSession(
+      table_id, {{AuthProperties::kSigV4SessionToken, "table-token"}}, catalog_session);
+  EXPECT_THAT(table_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(table_result, HasErrorMessage("requires"));
 }
 
 TEST_F(SigV4AuthTest, CreateCustomDelegateNone) {
-  std::unordered_map<std::string, std::string> properties = {
-      {AuthProperties::kAuthType, "sigv4"},
-      {AuthProperties::kSigV4DelegateAuthType, "none"},
-      {AuthProperties::kSigV4SigningRegion, "us-west-2"},
-      {AuthProperties::kSigV4AccessKeyId, "id"},
-      {AuthProperties::kSigV4SecretAccessKey, "secret"},
-  };
+  auto properties = MakeSigV4Properties();
+  properties[AuthProperties::kSigV4DelegateAuthType] = "none";
 
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      SignRequest(properties,
+                  {.method = HttpMethod::kGet, .url = "https://example.com/v1/config"}));
 
-  auto session_result = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(session_result, IsOk());
-
-  // Authenticate should work with noop delegate
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = session_result.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  EXPECT_NE(headers.find("authorization"), headers.end());
-  EXPECT_EQ(headers.find("original-authorization"), headers.end());
+  EXPECT_NE(signed_request.headers.find("authorization"), signed_request.headers.end());
+  EXPECT_EQ(signed_request.headers.find("original-authorization"),
+            signed_request.headers.end());
 }
 
 TEST_F(SigV4AuthTest, CreateInvalidCustomDelegateSigV4Circular) {
-  std::unordered_map<std::string, std::string> properties = {
-      {AuthProperties::kAuthType, "sigv4"},
-      {AuthProperties::kSigV4DelegateAuthType, "sigv4"},
-      {AuthProperties::kSigV4SigningRegion, "us-east-1"},
-      {AuthProperties::kSigV4AccessKeyId, "id"},
-      {AuthProperties::kSigV4SecretAccessKey, "secret"},
-  };
+  auto properties = MakeSigV4Properties();
+  properties[AuthProperties::kSigV4DelegateAuthType] = "sigv4";
 
   auto result = AuthManagers::Load("test-catalog", properties);
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
@@ -466,114 +441,72 @@ TEST_F(SigV4AuthTest, CreateInvalidCustomDelegateSigV4Circular) {
 TEST_F(SigV4AuthTest, ContextualSessionOverridesProperties) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kSigV4SigningRegion] = "us-west-2";
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog_session,
+                         manager->CatalogSession(client_, properties));
 
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto ctx_session,
+      manager->ContextualSession({{AuthProperties::kSigV4AccessKeyId, "id2"},
+                                  {AuthProperties::kSigV4SecretAccessKey, "secret2"},
+                                  {AuthProperties::kSigV4SigningRegion, "eu-west-1"}},
+                                 catalog_session));
 
-  auto catalog_session = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(catalog_session, IsOk());
-
-  SessionContext context{
-      .properties = {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}},
-      .credentials = {{AuthProperties::kSigV4AccessKeyId, "id2"},
-                      {AuthProperties::kSigV4SecretAccessKey, "secret2"}},
-  };
-
-  auto ctx_session =
-      manager_result.value()->ContextualSession(context, catalog_session.value());
-  ASSERT_THAT(ctx_session, IsOk());
-
-  HttpRequest request{.method = HttpMethod::kGet, .url = "https://example.com/v1/config"};
-  auto auth_result = ctx_session.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  auto auth_it = headers.find("authorization");
-  ASSERT_NE(auth_it, headers.end());
-
-  EXPECT_TRUE(auth_it->second.find("eu-west-1") != std::string::npos)
-      << "Expected eu-west-1 in Authorization, got: " << auth_it->second;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      ctx_session->Authenticate(
+          {.method = HttpMethod::kGet, .url = "https://example.com/v1/config"}));
+  EXPECT_THAT(HeaderValue(signed_request.headers, "authorization"),
+              HasSubstr("eu-west-1"));
 }
 
 TEST_F(SigV4AuthTest, TableSessionOverridesProperties) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kSigV4SigningRegion] = "us-west-2";
-
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto catalog_session = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(catalog_session, IsOk());
-
-  // Table properties override region and credentials
-  std::unordered_map<std::string, std::string> table_props = {
-      {AuthProperties::kSigV4AccessKeyId, "table-key-id"},
-      {AuthProperties::kSigV4SecretAccessKey, "table-secret"},
-      {AuthProperties::kSigV4SigningRegion, "ap-southeast-1"},
-  };
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog_session,
+                         manager->CatalogSession(client_, properties));
 
   iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"db1"}}, .name = "table1"};
-  auto table_session = manager_result.value()->TableSession(table_id, table_props,
-                                                            catalog_session.value());
-  ASSERT_THAT(table_session, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table_session,
+      manager->TableSession(table_id,
+                            {{AuthProperties::kSigV4AccessKeyId, "table-key-id"},
+                             {AuthProperties::kSigV4SecretAccessKey, "table-secret"},
+                             {AuthProperties::kSigV4SigningRegion, "ap-southeast-1"}},
+                            catalog_session));
 
-  HttpRequest request{.method = HttpMethod::kGet,
-                      .url = "https://example.com/v1/db1/tables/table1"};
-  auto auth_result = table_session.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-  const auto& headers = auth_result.value().headers;
-
-  auto auth_it = headers.find("authorization");
-  ASSERT_NE(auth_it, headers.end());
-
-  EXPECT_TRUE(auth_it->second.find("ap-southeast-1") != std::string::npos)
-      << "Expected ap-southeast-1 in Authorization, got: " << auth_it->second;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      table_session->Authenticate({.method = HttpMethod::kGet,
+                                   .url = "https://example.com/v1/db1/tables/table1"}));
+  EXPECT_THAT(HeaderValue(signed_request.headers, "authorization"),
+              HasSubstr("ap-southeast-1"));
 }
 
-// Matches Java RESTSigV4AuthManager: a table session derived from a contextual
-// parent does NOT inherit the contextual overrides; it merges catalog props
-// with table props directly. Contextual and table are independent dimensions.
 TEST_F(SigV4AuthTest, TableSessionIgnoresContextualOverrides) {
   auto properties = MakeSigV4Properties();
   properties[AuthProperties::kSigV4SigningRegion] = "us-west-2";
-
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  auto catalog_session = manager_result.value()->CatalogSession(client_, properties);
-  ASSERT_THAT(catalog_session, IsOk());
-
-  auto ctx_session = manager_result.value()->ContextualSession(
-      SessionContext{.properties = {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}}},
-      catalog_session.value());
-  ASSERT_THAT(ctx_session, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog_session,
+                         manager->CatalogSession(client_, properties));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto ctx_session,
+      manager->ContextualSession({{AuthProperties::kSigV4SigningRegion, "eu-west-1"}},
+                                 catalog_session));
 
   iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"db1"}}, .name = "table1"};
-  auto table_session = manager_result.value()->TableSession(table_id, /*properties=*/{},
-                                                            ctx_session.value());
-  ASSERT_THAT(table_session, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table_session,
+                         manager->TableSession(table_id, {}, ctx_session));
 
-  HttpRequest request{.method = HttpMethod::kGet,
-                      .url = "https://example.com/v1/db1/tables/table1"};
-  auto auth_result = table_session.value()->Authenticate(request);
-  ASSERT_THAT(auth_result, IsOk());
-
-  auto auth_it = auth_result.value().headers.find("authorization");
-  ASSERT_NE(auth_it, auth_result.value().headers.end());
-  EXPECT_TRUE(auth_it->second.find("us-west-2") != std::string::npos)
-      << "Table session should use the catalog region, not the contextual override, got: "
-      << auth_it->second;
-}
-
-TEST_F(SigV4AuthTest, ManagerCloseDelegatesToInner) {
-  auto properties = MakeSigV4Properties();
-  auto manager_result = AuthManagers::Load("test-catalog", properties);
-  ASSERT_THAT(manager_result, IsOk());
-
-  // Close should succeed without error
-  EXPECT_THAT(manager_result.value()->Close(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto signed_request,
+      table_session->Authenticate({.method = HttpMethod::kGet,
+                                   .url = "https://example.com/v1/db1/tables/table1"}));
+  EXPECT_THAT(HeaderValue(signed_request.headers, "authorization"),
+              HasSubstr("us-west-2"));
 }
 
 }  // namespace iceberg::rest::auth
 
-#endif  // ICEBERG_SIGV4
+#endif  // ICEBERG_SIGV4_ENABLED

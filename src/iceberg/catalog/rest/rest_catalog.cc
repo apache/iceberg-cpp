@@ -118,54 +118,12 @@ Result<bool> CaptureNoSuchNamespace(const auto& status) {
   return CaptureNoSuchObject(status, ErrorKind::kNoSuchNamespace);
 }
 
-std::string TableSessionKey(const TableIdentifier& identifier) {
-  std::string key;
-  for (const auto& level : identifier.ns.levels) {
-    key += level;
-    key += '\x1f';
-  }
-  key += identifier.name;
-  return key;
-}
-
 }  // namespace
 
 RestCatalog::~RestCatalog() {
-  for (auto& [key, session] : table_sessions_) {
-    if (session) {
-      std::ignore = session->Close();
-    }
-  }
   if (catalog_session_) {
     std::ignore = catalog_session_->Close();
   }
-}
-
-Status RestCatalog::RememberTableSession(
-    const TableIdentifier& identifier,
-    const std::unordered_map<std::string, std::string>& config) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto session, auth_manager_->TableSession(identifier, config, catalog_session_));
-  if (session == catalog_session_) {
-    return {};
-  }
-  std::shared_ptr<auth::AuthSession> replaced;
-  {
-    std::lock_guard<std::mutex> lock(table_sessions_mutex_);
-    auto& slot = table_sessions_[TableSessionKey(identifier)];
-    replaced = std::exchange(slot, std::move(session));
-  }
-  if (replaced) {
-    std::ignore = replaced->Close();
-  }
-  return {};
-}
-
-std::shared_ptr<auth::AuthSession> RestCatalog::SessionFor(
-    const TableIdentifier& identifier) const {
-  std::lock_guard<std::mutex> lock(table_sessions_mutex_);
-  auto it = table_sessions_.find(TableSessionKey(identifier));
-  return it != table_sessions_.end() ? it->second : catalog_session_;
 }
 
 Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
@@ -398,7 +356,9 @@ Result<LoadTableResult> RestCatalog::CreateTableInternal(
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-  ICEBERG_RETURN_UNEXPECTED(RememberTableSession(identifier, load_result.config));
+  // TODO: Wire table-specific auth config from LoadTableResponse once C++ has
+  // table-scoped REST operations or a table-scoped catalog wrapper. The current
+  // Table implementation routes refresh and commit back through Catalog.
   return load_result;
 }
 
@@ -435,7 +395,7 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
       client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance(),
-                    *SessionFor(identifier)));
+                    *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto commit_response, CommitTableResponseFromJson(json));
@@ -512,12 +472,10 @@ Result<std::string> RestCatalog::LoadTableInternal(
     params["snapshots"] = "all";
   }
 
-  // Refresh uses the cached per-table session; the initial load falls back to
-  // the catalog session (no table session is cached yet).
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
       client_->Get(path, params, /*headers=*/{}, *TableErrorHandler::Instance(),
-                   *SessionFor(identifier)));
+                   *catalog_session_));
   return response.body();
 }
 
@@ -525,8 +483,8 @@ Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& ide
   ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-  ICEBERG_RETURN_UNEXPECTED(RememberTableSession(identifier, load_result.config));
-  /// FIXME: support per-table FileIO creation
+  // TODO: Support table-specific auth config and per-table FileIO from the REST
+  // load response when table-scoped REST operations are introduced.
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());
@@ -550,7 +508,8 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-  ICEBERG_RETURN_UNEXPECTED(RememberTableSession(identifier, load_result.config));
+  // TODO: Support table-specific auth config and per-table FileIO from the REST
+  // register response when table-scoped REST operations are introduced.
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());

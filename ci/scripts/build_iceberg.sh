@@ -17,7 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Usage: build_iceberg.sh <source_dir> [rest_integration_tests=OFF] [sccache=OFF] [s3=OFF] [sigv4=OFF]
+# Usage: build_iceberg.sh <source_dir> [rest_integration_tests=OFF] [sccache=OFF] [s3=OFF] [sigv4=OFF] [bundle_awssdk=ON]
 
 set -eux
 
@@ -27,6 +27,7 @@ build_rest_integration_test=${2:-OFF}
 build_enable_sccache=${3:-OFF}
 build_enable_s3=${4:-OFF}
 build_enable_sigv4=${5:-OFF}
+build_bundle_awssdk=${6:-ON}
 run_tests=${ICEBERG_RUN_TESTS:-ON}
 
 mkdir ${build_dir}
@@ -56,12 +57,17 @@ else
     CMAKE_ARGS+=("-DICEBERG_SIGV4=OFF")
 fi
 
+if [[ "${build_bundle_awssdk}" == "ON" ]]; then
+    CMAKE_ARGS+=("-DICEBERG_BUNDLE_AWSSDK=ON")
+else
+    CMAKE_ARGS+=("-DICEBERG_BUNDLE_AWSSDK=OFF")
+fi
+
 if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
     CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
 else
     # Pass an externally provided toolchain (e.g. vcpkg for the SigV4 job)
-    # explicitly instead of relying on CMake >= 3.21 reading the env var.
     if [[ -n "${CMAKE_TOOLCHAIN_FILE:-}" ]]; then
         CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
     fi

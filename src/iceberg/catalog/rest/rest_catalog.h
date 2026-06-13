@@ -20,9 +20,7 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 #include <string>
-#include <unordered_map>
 #include <unordered_set>
 
 #include "iceberg/catalog.h"
@@ -111,14 +109,6 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
 
   Result<std::string> LoadTableInternal(const TableIdentifier& identifier) const;
 
-  /// \brief Derives and caches a per-table auth session from a table response
-  /// `config`, per the REST spec (`config.token` must be used for table requests).
-  Status RememberTableSession(const TableIdentifier& identifier,
-                              const std::unordered_map<std::string, std::string>& config);
-
-  /// \brief Returns the cached per-table session, or the catalog session.
-  std::shared_ptr<auth::AuthSession> SessionFor(const TableIdentifier& identifier) const;
-
   Result<LoadTableResult> CreateTableInternal(
       const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
       const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
@@ -134,8 +124,6 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
   std::unique_ptr<auth::AuthManager> auth_manager_;
   std::shared_ptr<auth::AuthSession> catalog_session_;
   SnapshotMode snapshot_mode_;
-  mutable std::mutex table_sessions_mutex_;
-  std::unordered_map<std::string, std::shared_ptr<auth::AuthSession>> table_sessions_;
 };
 
 }  // namespace iceberg::rest

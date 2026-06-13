@@ -38,6 +38,21 @@ class AWSAuthV4Signer;
 
 namespace iceberg::rest::auth {
 
+/// \brief Initialize the AWS SDK for SigV4 use. Idempotent.
+///
+/// Normal REST SigV4 users do not need to call this. SigV4 sessions lazily
+/// initialize the SDK when needed. This hook exists for tests and for explicit
+/// process-shutdown sequencing when an embedding application needs it.
+ICEBERG_REST_EXPORT Status InitializeAwsSdk();
+
+/// \brief Shut down the SigV4-owned AWS SDK lifecycle.
+///
+/// Refuses if any SigV4 sessions are alive.
+ICEBERG_REST_EXPORT Status FinalizeAwsSdk();
+
+ICEBERG_REST_EXPORT bool IsAwsSdkInitialized();
+ICEBERG_REST_EXPORT bool IsAwsSdkFinalized();
+
 /// \brief An AuthSession that signs requests with AWS SigV4.
 ///
 /// The request is first authenticated by the delegate AuthSession (e.g., OAuth2),
@@ -69,7 +84,7 @@ class ICEBERG_REST_EXPORT SigV4AuthSession : public AuthSession {
 
   ~SigV4AuthSession() override;
 
-  Result<HttpRequest> Authenticate(const HttpRequest& request) override;
+  Result<HttpRequest> Authenticate(HttpRequest request) override;
 
   Status Close() override;
 
@@ -111,7 +126,8 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
       const std::unordered_map<std::string, std::string>& properties) override;
 
   Result<std::shared_ptr<AuthSession>> ContextualSession(
-      const SessionContext& context, std::shared_ptr<AuthSession> parent) override;
+      const std::unordered_map<std::string, std::string>& context,
+      std::shared_ptr<AuthSession> parent) override;
 
   Result<std::shared_ptr<AuthSession>> TableSession(
       const TableIdentifier& table,
@@ -121,18 +137,10 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
   Status Close() override;
 
  private:
-  static Result<std::shared_ptr<Aws::Auth::AWSCredentialsProvider>>
-  MakeCredentialsProvider(const std::unordered_map<std::string, std::string>& properties);
-  static Result<std::string> ResolveSigningRegion(
-      const std::unordered_map<std::string, std::string>& properties);
-  static std::string ResolveSigningName(
-      const std::unordered_map<std::string, std::string>& properties);
-  /// \param reuse_credentials If non-null and `properties` has no explicit
-  /// access keys, this provider is reused instead of building a new one.
   Result<std::shared_ptr<AuthSession>> WrapSession(
       std::shared_ptr<AuthSession> delegate_session,
       const std::unordered_map<std::string, std::string>& properties,
-      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> reuse_credentials = nullptr);
+      std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider);
 
   std::unique_ptr<AuthManager> delegate_;
   std::unordered_map<std::string, std::string> catalog_properties_;

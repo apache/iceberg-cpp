@@ -43,12 +43,11 @@ class DefaultAuthSession : public AuthSession {
   explicit DefaultAuthSession(std::unordered_map<std::string, std::string> headers)
       : headers_(std::move(headers)) {}
 
-  Result<HttpRequest> Authenticate(const HttpRequest& request) override {
-    HttpRequest authenticated = request;
+  Result<HttpRequest> Authenticate(HttpRequest request) override {
     for (const auto& [key, value] : headers_) {
-      authenticated.headers.try_emplace(key, value);
+      request.headers.try_emplace(key, value);
     }
-    return authenticated;
+    return request;
   }
 
  private:
@@ -78,13 +77,12 @@ class OAuth2AuthSession : public AuthSession,
     return session;
   }
 
-  Result<HttpRequest> Authenticate(const HttpRequest& request) override {
-    HttpRequest authenticated = request;
+  Result<HttpRequest> Authenticate(HttpRequest request) override {
     std::shared_lock lock(mutex_);
     for (const auto& [key, value] : headers_) {
-      authenticated.headers.try_emplace(key, value);
+      request.headers.try_emplace(key, value);
     }
-    return authenticated;
+    return request;
   }
 
   Status Close() override { return CloseImpl(); }
