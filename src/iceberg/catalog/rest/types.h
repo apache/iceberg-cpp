@@ -180,12 +180,23 @@ struct ICEBERG_REST_EXPORT CreateTableRequest {
 /// \brief An opaque token that allows clients to make use of pagination for list APIs.
 using PageToken = std::string;
 
+/// \brief A short-lived credential vended by a REST catalog for a storage
+/// location ``prefix`` (clients pick the longest matching prefix); ``config``
+/// holds backend properties such as ``"s3.access-key-id"`` (Iceberg REST spec).
+struct ICEBERG_REST_EXPORT StorageCredential {
+  std::string prefix;
+  std::unordered_map<std::string, std::string> config;
+
+  bool operator==(const StorageCredential& other) const = default;
+};
+
 /// \brief Result body for table create/load/register APIs.
 struct ICEBERG_REST_EXPORT LoadTableResult {
   std::string metadata_location;
   std::shared_ptr<TableMetadata> metadata;  // required
   std::unordered_map<std::string, std::string> config;
-  // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
+  /// \brief Vended storage credentials, one per URI prefix; empty if none.
+  std::vector<StorageCredential> storage_credentials;
 
   /// \brief Validates the LoadTableResult.
   Status Validate() const {

@@ -479,10 +479,16 @@ Result<std::string> RestCatalog::LoadTableInternal(
   return response.body();
 }
 
-Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& identifier) {
+Result<LoadTableResult> RestCatalog::LoadTableResultFor(
+    const TableIdentifier& identifier) {
   ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
-  ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  return LoadTableResultFromJson(json);
+}
+
+Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& identifier) {
+  ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFor(identifier));
+  // Binds the catalog's default FileIO; use LoadTableResultFor() for vended creds.
   // TODO: Support table-specific auth config and per-table FileIO from the REST
   // load response when table-scoped REST operations are introduced.
   return Table::Make(identifier, std::move(load_result.metadata),
