@@ -101,6 +101,8 @@ add_iceberg_test(table_test
                  table_test.cc
                  table_update_test.cc)
 
+add_iceberg_test(logging_test SOURCES log_level_test.cc logger_test.cc)
+
 add_iceberg_test(expression_test
                  SOURCES
                  aggregate_test.cc
