@@ -30,6 +30,15 @@
 
 namespace iceberg::rest {
 
+namespace {
+
+Status ValidateNamespaceSeparator(std::string_view separator) {
+  ICEBERG_PRECHECK(!separator.empty(), "REST namespace separator cannot be empty");
+  return {};
+}
+
+}  // namespace
+
 std::string_view TrimTrailingSlash(std::string_view str) {
   while (!str.empty() && str.back() == '/') {
     str.remove_suffix(1);
@@ -67,6 +76,8 @@ Result<std::string> DecodeString(std::string_view str_to_decode) {
 
 Result<std::string> EncodeNamespace(const Namespace& ns_to_encode,
                                     std::string_view separator) {
+  ICEBERG_RETURN_UNEXPECTED(ValidateNamespaceSeparator(separator));
+
   if (ns_to_encode.levels.empty()) {
     return "";
   }
@@ -85,6 +96,8 @@ Result<std::string> EncodeNamespace(const Namespace& ns_to_encode,
 
 Result<Namespace> DecodeNamespace(std::string_view str_to_decode,
                                   std::string_view separator) {
+  ICEBERG_RETURN_UNEXPECTED(ValidateNamespaceSeparator(separator));
+
   if (str_to_decode.empty()) {
     return Namespace{.levels = {}};
   }
