@@ -38,6 +38,10 @@ configure_file(
     install_dir: get_option('includedir') / 'iceberg',
 )
 
+# Generate iceberg/logging/config.h (must precede the library() that compiles
+# the logging sources which include it).
+subdir('logging')
+
 iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
@@ -66,6 +70,9 @@ iceberg_sources = files(
     'inheritable_metadata.cc',
     'json_serde.cc',
     'location_provider.cc',
+    'logging/cerr_logger.cc',
+    'logging/internal/spdlog_logger.cc',
+    'logging/logger.cc',
     'manifest/manifest_adapter.cc',
     'manifest/manifest_entry.cc',
     'manifest/manifest_filter_manager.cc',
