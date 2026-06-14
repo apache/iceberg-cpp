@@ -51,6 +51,26 @@ TEST(TruncateUtilTest, TruncateLiteral) {
             Literal::Binary(std::vector<uint8_t>(expected.begin(), expected.end())));
 }
 
+TEST(TruncateUtilTest, TruncateLiteralRejectsInvalidWidth) {
+  std::vector<uint8_t> data{1, 2, 3};
+
+  auto expect_invalid_width = [](const auto& result) {
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("Width must be positive"));
+  };
+
+  for (int32_t width : {0, -1}) {
+    SCOPED_TRACE(width);
+    expect_invalid_width(TruncateUtils::TruncateLiteral(Literal::Int(1), width));
+    expect_invalid_width(TruncateUtils::TruncateLiteral(Literal::Long(1), width));
+    expect_invalid_width(
+        TruncateUtils::TruncateLiteral(Literal::Decimal(1065, 4, 2), width));
+    expect_invalid_width(
+        TruncateUtils::TruncateLiteral(Literal::String("iceberg"), width));
+    expect_invalid_width(TruncateUtils::TruncateLiteral(Literal::Binary(data), width));
+  }
+}
+
 TEST(TruncateUtilTest, TruncateBinaryMax) {
   std::vector<uint8_t> test1{1, 1, 2};
   std::vector<uint8_t> test2{1, 1, 0xFF, 2};
@@ -188,6 +208,28 @@ TEST(TruncateUtilTest, TruncateStringMax) {
   ICEBERG_UNWRAP_OR_FAIL(auto result9_2,
                          TruncateUtils::TruncateLiteralMax(Literal::String(test9), 2));
   EXPECT_EQ(result9_2, Literal::String(test9_2_expected));
+}
+
+TEST(TruncateUtilTest, TruncateLiteralMaxRejectsInvalidWidth) {
+  std::vector<uint8_t> data{1, 2, 3};
+
+  auto expect_invalid_width = [](const auto& result) {
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("Width must be positive"));
+  };
+
+  for (int32_t width : {0, -1}) {
+    SCOPED_TRACE(width);
+    expect_invalid_width(
+        TruncateUtils::TruncateLiteralMax(Literal::String("iceberg"), width));
+    expect_invalid_width(TruncateUtils::TruncateLiteralMax(Literal::Binary(data), width));
+  }
+}
+
+TEST(TruncateUtilTest, TruncateUTF8MaxRejectsZeroWidth) {
+  auto result = TruncateUtils::TruncateUTF8Max("iceberg", 0);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Width must be positive"));
 }
 
 }  // namespace iceberg
