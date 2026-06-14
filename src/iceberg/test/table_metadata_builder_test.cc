@@ -36,6 +36,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/timepoint.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -1157,6 +1158,39 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotRef) {
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   ASSERT_EQ(metadata->refs.size(), 1);
   EXPECT_TRUE(metadata->refs.contains("ref1"));
+}
+
+TEST(TableMetadataBuilderTest, SetRefRejectsTagForMainBranch) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto main_tag, SnapshotRef::MakeTag(1));
+
+  builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_tag));
+
+  auto result = builder->Build();
+  ASSERT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot set main to a tag, it must be a branch"));
+}
+
+TEST(TableMetadataBuilderTest, SetMainRefToAddedSnapshotUsesSnapshotTimestampForLog) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  auto snapshot_time = TimePointMsFromUnixMs(123456789);
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .sequence_number = 1, .timestamp_ms = snapshot_time}));
+  ICEBERG_UNWRAP_OR_FAIL(auto main_branch, SnapshotRef::MakeBranch(1));
+
+  builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_branch));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  EXPECT_EQ(metadata->current_snapshot_id, 1);
+  EXPECT_NE(metadata->last_updated_ms, snapshot_time);
+  ASSERT_FALSE(metadata->snapshot_log.empty());
+  EXPECT_EQ(metadata->snapshot_log.back().snapshot_id, 1);
+  EXPECT_EQ(metadata->snapshot_log.back().timestamp_ms, snapshot_time);
 }
 
 TEST(TableMetadataBuilderTest, RemoveSnapshot) {

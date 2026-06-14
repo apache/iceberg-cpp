@@ -1067,7 +1067,6 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
       "Cannot add snapshot with sequence number {} older than last sequence number {}",
       snapshot->sequence_number, metadata_.last_sequence_number);
 
-  metadata_.last_updated_ms = snapshot->timestamp_ms;
   metadata_.last_sequence_number = snapshot->sequence_number;
   metadata_.snapshots.push_back(snapshot);
   snapshots_by_id_.emplace(snapshot->snapshot_id, snapshot);
@@ -1156,22 +1155,26 @@ Status TableMetadataBuilder::Impl::SetRef(const std::string& name,
                 "Cannot set {} to unknown snapshot: {}", name, snapshot_id);
   const auto& snapshot = snapshot_it->second;
 
-  // If snapshot was added in this set of changes, update last_updated_ms
-  if (std::ranges::any_of(changes_, [snapshot_id](const auto& change) {
-        return change->kind() == TableUpdate::Kind::kAddSnapshot &&
-               internal::checked_cast<const table::AddSnapshot&>(*change)
-                       .snapshot()
-                       ->snapshot_id == snapshot_id;
-      })) {
-    metadata_.last_updated_ms = snapshot->timestamp_ms;
-  }
+  ICEBERG_CHECK(
+      name != SnapshotRef::kMainBranch || ref->type() == SnapshotRefType::kBranch,
+      "Cannot set {} to a tag, it must be a branch", SnapshotRef::kMainBranch);
 
   if (name == SnapshotRef::kMainBranch) {
+    const bool is_added_snapshot =
+        std::ranges::any_of(changes_, [snapshot_id](const auto& change) {
+          return change->kind() == TableUpdate::Kind::kAddSnapshot &&
+                 internal::checked_cast<const table::AddSnapshot&>(*change)
+                         .snapshot()
+                         ->snapshot_id == snapshot_id;
+        });
     metadata_.current_snapshot_id = ref->snapshot_id;
     if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {
       metadata_.last_updated_ms = CurrentTimePointMs();
     }
-    metadata_.snapshot_log.emplace_back(metadata_.last_updated_ms, ref->snapshot_id);
+
+    auto time_of_change =
+        is_added_snapshot ? snapshot->timestamp_ms : metadata_.last_updated_ms;
+    metadata_.snapshot_log.emplace_back(time_of_change, ref->snapshot_id);
   }
 
   changes_.push_back(std::make_unique<table::SetSnapshotRef>(name, *ref));

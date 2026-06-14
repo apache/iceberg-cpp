@@ -209,6 +209,7 @@ Status Transaction::ApplyExpireSnapshots(ExpireSnapshots& update) {
   if (!result.schema_ids_to_remove.empty()) {
     ctx_->metadata_builder->RemoveSchemas(std::move(result.schema_ids_to_remove));
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
@@ -216,6 +217,7 @@ Status Transaction::ApplySetSnapshot(SetSnapshot& update) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, update.Apply());
   ctx_->metadata_builder->SetBranchSnapshot(snapshot_id,
                                             std::string(SnapshotRef::kMainBranch));
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
@@ -232,6 +234,7 @@ Status Transaction::ApplyUpdatePartitionSpec(UpdatePartitionSpec& update) {
   } else {
     ctx_->metadata_builder->AddPartitionSpec(std::move(result.spec));
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
@@ -246,6 +249,7 @@ Status Transaction::ApplyUpdateProperties(UpdateProperties& update) {
   if (result.format_version.has_value()) {
     ctx_->metadata_builder->UpgradeFormatVersion(result.format_version.value());
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
@@ -256,6 +260,7 @@ Status Transaction::ApplyUpdateSchema(UpdateSchema& update) {
   if (!result.updated_props.empty()) {
     ctx_->metadata_builder->SetProperties(result.updated_props);
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
 
   return {};
 }
@@ -275,6 +280,7 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
   } else {
     temp_update->SetBranchSnapshot(std::move(result.snapshot), result.target_branch);
   }
+  ICEBERG_RETURN_UNEXPECTED(temp_update->CheckErrors());
 
   if (temp_update->changes().empty()) {
     // Do not commit if the metadata has not changed. for example, this may happen
@@ -293,6 +299,7 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
   if (base.table_uuid.empty()) {
     ctx_->metadata_builder->AssignUUID();
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
@@ -304,12 +311,14 @@ Status Transaction::ApplyUpdateSnapshotReference(UpdateSnapshotReference& update
   for (auto&& [name, ref] : result.to_set) {
     ctx_->metadata_builder->SetRef(std::move(name), std::move(ref));
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
 Status Transaction::ApplyUpdateSortOrder(UpdateSortOrder& update) {
   ICEBERG_ASSIGN_OR_RAISE(auto sort_order, update.Apply());
   ctx_->metadata_builder->SetDefaultSortOrder(std::move(sort_order));
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
@@ -321,6 +330,7 @@ Status Transaction::ApplyUpdateStatistics(UpdateStatistics& update) {
   for (const auto& snapshot_id : result.to_remove) {
     ctx_->metadata_builder->RemoveStatistics(snapshot_id);
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
@@ -332,6 +342,7 @@ Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& up
   for (const auto& snapshot_id : result.to_remove) {
     ctx_->metadata_builder->RemovePartitionStatistics(snapshot_id);
   }
+  ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 

@@ -421,6 +421,25 @@ TEST_F(SnapshotManagerMinimalTableTest, CreateBranchOnEmptyTable) {
   EXPECT_EQ(it->second->type(), SnapshotRefType::kBranch);
 }
 
+TEST_F(SnapshotManagerMinimalTableTest, CreateTagNamedMainFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
+  manager->CreateBranch("branch1");
+  ExpectCommitOk(manager->Commit());
+
+  auto metadata = ReloadMetadata();
+  auto branch_it = metadata->refs.find("branch1");
+  ASSERT_NE(branch_it, metadata->refs.end());
+  ASSERT_EQ(branch_it->second->type(), SnapshotRefType::kBranch);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto table_with_branch, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto new_manager, table_with_branch->NewSnapshotManager());
+  new_manager->CreateTag(std::string(SnapshotRef::kMainBranch),
+                         branch_it->second->snapshot_id);
+  ExpectCommitError(new_manager->Commit(), ErrorKind::kValidationFailed,
+                    "Cannot set main to a tag, it must be a branch");
+  ExpectNoRef(std::string(SnapshotRef::kMainBranch));
+}
+
 TEST_F(SnapshotManagerMinimalTableTest,
        CreateBranchOnEmptyTableFailsWhenRefAlreadyExists) {
   ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());

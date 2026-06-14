@@ -440,4 +440,24 @@ TEST(TableUpdateTest, SetSnapshotRefApplyUpdate) {
   }
 }
 
+TEST(TableUpdateTest, SetSnapshotRefRejectsTagForMainBranch) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  auto snapshot = std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 987654321,
+               .sequence_number = 1,
+               .timestamp_ms = TimePointMsFromUnixMs(2000000),
+               .manifest_list = "s3://bucket/manifest-list.avro"});
+  builder->AddSnapshot(snapshot);
+
+  table::SetSnapshotRef update(std::string(SnapshotRef::kMainBranch), 987654321,
+                               SnapshotRefType::kTag);
+  update.ApplyTo(*builder);
+
+  auto result = builder->Build();
+  ASSERT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot set main to a tag, it must be a branch"));
+}
+
 }  // namespace iceberg
