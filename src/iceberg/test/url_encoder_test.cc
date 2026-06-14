@@ -40,6 +40,7 @@ TEST(UrlEncoderTest, Encode) {
               ::testing::Eq("key%3Dvalue%26foo%3Dbar"));
   EXPECT_THAT(UrlEncoder::Encode("100%"), ::testing::Eq("100%25"));
   EXPECT_THAT(UrlEncoder::Encode("hello\x1fworld"), ::testing::Eq("hello%1Fworld"));
+  EXPECT_THAT(UrlEncoder::Encode("caf\xC3\xA9"), ::testing::Eq("caf%C3%A9"));
   EXPECT_THAT(UrlEncoder::Encode(""), ::testing::Eq(""));
 }
 
@@ -69,6 +70,7 @@ TEST(UrlEncoderTest, EncodeDecodeRoundTrip) {
                                          "key=value&foo=bar",
                                          "100%",
                                          "hello\x1Fworld",
+                                         "caf\xC3\xA9",
                                          "special!@#$%^&*()chars",
                                          "mixed-123_test.file~ok",
                                          ""};
