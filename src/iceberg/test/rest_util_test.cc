@@ -25,6 +25,7 @@
 
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
+#include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/test/matchers.h"
 
@@ -81,6 +82,25 @@ TEST(RestUtilTest, RoundTripNamespaceWithCustomSeparator) {
               HasValue(::testing::Eq("dogs.and.cats%2Enamed%2Ehank.or.james-westfall")));
   EXPECT_THAT(DecodeNamespace("dogs.and.cats%2Enamed%2Ehank.or.james-westfall", "%2E"),
               HasValue(::testing::Eq(ns)));
+}
+
+TEST(RestUtilTest, NamespaceRejectsEmptySeparator) {
+  auto expect_empty_separator_error = [](const auto& result) {
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("REST namespace separator cannot be empty"));
+  };
+
+  expect_empty_separator_error(EncodeNamespace(Namespace{.levels = {"dogs"}}, ""));
+  expect_empty_separator_error(EncodeNamespace(Namespace{.levels = {}}, ""));
+  expect_empty_separator_error(DecodeNamespace("dogs", ""));
+  expect_empty_separator_error(DecodeNamespace("", ""));
+}
+
+TEST(RestUtilTest, ResourcePathsRejectsEmptyNamespaceSeparator) {
+  auto result = ResourcePaths::Make("https://catalog.example.com", "", "");
+
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("REST namespace separator cannot be empty"));
 }
 
 TEST(RestUtilTest, EncodeString) {
