@@ -26,6 +26,7 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -33,6 +34,20 @@ namespace {
 constexpr uint32_t kUtf8MaxCodePoint = 0x10FFFF;
 constexpr uint32_t kUtf8MinSurrogate = 0xD800;
 constexpr uint32_t kUtf8MaxSurrogate = 0xDFFF;
+
+Status ValidateTruncateWidth(int32_t width) {
+  if (width <= 0) {
+    return InvalidArgument("Width must be positive, got {}", width);
+  }
+  return {};
+}
+
+Status ValidateTruncateWidth(size_t width) {
+  if (width == 0) {
+    return InvalidArgument("Width must be positive, got 0");
+  }
+  return {};
+}
 
 std::optional<uint32_t> DecodeUtf8CodePoint(std::string_view source) {
   if (source.empty()) {
@@ -205,6 +220,8 @@ Result<std::optional<Literal>> TruncateLiteralMaxImpl<TypeId::kBinary>(
 
 Result<std::optional<std::string>> TruncateUtils::TruncateUTF8Max(
     const std::string& source, size_t L) {
+  ICEBERG_RETURN_UNEXPECTED(ValidateTruncateWidth(L));
+
   std::string truncated = TruncateUTF8(source, L);
   if (truncated == source) {
     return truncated;
@@ -253,6 +270,8 @@ Decimal TruncateUtils::TruncateDecimal(const Decimal& decimal, int32_t width) {
     return TruncateLiteralImpl<TYPE_ID>(literal, width);
 
 Result<Literal> TruncateUtils::TruncateLiteral(const Literal& literal, int32_t width) {
+  ICEBERG_RETURN_UNEXPECTED(ValidateTruncateWidth(width));
+
   if (literal.IsNull()) [[unlikely]] {
     // Return null as is
     return literal;
@@ -280,6 +299,8 @@ Result<Literal> TruncateUtils::TruncateLiteral(const Literal& literal, int32_t w
 
 Result<std::optional<Literal>> TruncateUtils::TruncateLiteralMax(const Literal& literal,
                                                                  int32_t width) {
+  ICEBERG_RETURN_UNEXPECTED(ValidateTruncateWidth(width));
+
   if (literal.IsNull()) [[unlikely]] {
     // Return null as is
     return literal;
