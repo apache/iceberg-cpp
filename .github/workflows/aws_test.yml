@@ -85,7 +85,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Cache vcpkg packages
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: vcpkg-cache
         with:
           path: /usr/local/share/vcpkg/installed
@@ -141,7 +141,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
       - name: Cache vcpkg packages
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: vcpkg-cache
         with:
           path: /usr/local/share/vcpkg/installed
