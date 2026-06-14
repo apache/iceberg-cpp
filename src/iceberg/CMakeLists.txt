@@ -17,6 +17,18 @@
 
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
+
+# Generate the logging backend config header. ALWAYS generated (not gated by
+# ICEBERG_SPDLOG) so logging/logger.cc can include it in both ON and OFF builds;
+# only the definedness of ICEBERG_HAS_SPDLOG varies. Generated into the build
+# tree (already on ICEBERG_INCLUDES), included as "iceberg/logging/config.h", and
+# NOT installed (it must never appear in a public/installed header).
+if(ICEBERG_SPDLOG)
+  set(ICEBERG_HAS_SPDLOG ON)
+endif()
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/logging/config.h.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/logging/config.h")
+
 set(ICEBERG_SOURCES
     arrow_c_data_util.cc
     arrow_c_data_guard_internal.cc
@@ -44,6 +56,9 @@ set(ICEBERG_SOURCES
     inheritable_metadata.cc
     json_serde.cc
     location_provider.cc
+    logging/cerr_logger.cc
+    logging/logger.cc
+    logging/loggers.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
     manifest/manifest_filter_manager.cc
@@ -139,24 +154,34 @@ list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      nlohmann_json::nlohmann_json
-     spdlog::spdlog
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_SHARED_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      nlohmann_json::nlohmann_json
-     spdlog::spdlog
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+)
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+)
+
+# spdlog backend: linked and compiled only when ICEBERG_SPDLOG is ON. When OFF,
+# the core library has no spdlog dependency and CerrLogger is the default sink.
+if(ICEBERG_SPDLOG)
+  list(APPEND ICEBERG_SOURCES logging/internal/spdlog_logger.cc)
+  list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS spdlog::spdlog)
+  list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS spdlog::spdlog)
+  list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
+       "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+  list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
+       "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+endif()
 
 add_iceberg_lib(iceberg
                 SOURCES
@@ -239,6 +264,7 @@ add_subdirectory(row)
 add_subdirectory(update)
 add_subdirectory(util)
 add_subdirectory(metrics)
+add_subdirectory(logging)
 
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES
