@@ -28,6 +28,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "iceberg/encryption/encrypted_key.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/type_fwd.h"
@@ -129,6 +130,8 @@ struct ICEBERG_EXPORT TableMetadata {
   std::vector<std::shared_ptr<struct PartitionStatisticsFile>> partition_statistics;
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
+  /// A list of encrypted table key entries
+  std::vector<EncryptedKey> encryption_keys;
 
   static Result<std::unique_ptr<TableMetadata>> Make(
       const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
@@ -446,7 +449,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param key The encryption key to add
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AddEncryptionKey(std::shared_ptr<EncryptedKey> key);
+  TableMetadataBuilder& AddEncryptionKey(EncryptedKey key);
 
   /// \brief Remove an encryption key from the table by key ID
   ///

@@ -240,10 +240,6 @@ class UpdateStatistics;
 class DeleteLoader;
 class PositionDeleteIndex;
 
-/// ----------------------------------------------------------------------------
-/// TODO: Forward declarations below are not added yet.
-/// ----------------------------------------------------------------------------
-
-class EncryptedKey;
+struct EncryptedKey;
 
 }  // namespace iceberg

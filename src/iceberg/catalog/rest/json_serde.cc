@@ -903,6 +903,10 @@ Result<CommitTableRequest> CommitTableRequestFromJson(const nlohmann::json& json
 
   ICEBERG_ASSIGN_OR_RAISE(auto requirements_json,
                           GetJsonValue<nlohmann::json>(json, kRequirements));
+  if (!requirements_json.is_array()) {
+    return JsonParseError("Expected '{}' to be an array, got {}", kRequirements,
+                          SafeDumpJson(requirements_json));
+  }
   for (const auto& req_json : requirements_json) {
     ICEBERG_ASSIGN_OR_RAISE(auto requirement, TableRequirementFromJson(req_json));
     request.requirements.push_back(std::move(requirement));
@@ -910,6 +914,10 @@ Result<CommitTableRequest> CommitTableRequestFromJson(const nlohmann::json& json
 
   ICEBERG_ASSIGN_OR_RAISE(auto updates_json,
                           GetJsonValue<nlohmann::json>(json, kUpdates));
+  if (!updates_json.is_array()) {
+    return JsonParseError("Expected '{}' to be an array, got {}", kUpdates,
+                          SafeDumpJson(updates_json));
+  }
   for (const auto& update_json : updates_json) {
     ICEBERG_ASSIGN_OR_RAISE(auto update, TableUpdateFromJson(update_json));
     request.updates.push_back(std::move(update));

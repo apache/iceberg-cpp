@@ -1293,6 +1293,18 @@ INSTANTIATE_TEST_SUITE_P(
             .invalid_json_str =
                 R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":[{"action":"assign-uuid"}]})",
             .expected_error_message = "Missing 'uuid'"},
+        // Invalid requirements - must be an array
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidRequirementsNotArray",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":{"type":"assert-create"},"updates":[]})",
+            .expected_error_message = "Expected 'requirements' to be an array"},
+        // Invalid updates - must be an array
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidUpdatesNotArray",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":{"action":"assign-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"}})",
+            .expected_error_message = "Expected 'updates' to be an array"},
         // Missing required requirements field
         CommitTableRequestInvalidParam{
             .test_name = "MissingRequirements",
