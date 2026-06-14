@@ -242,6 +242,7 @@ class DeleteFiles;
 class ExpireSnapshots;
 class FastAppend;
 class MergeAppend;
+class OverwriteFiles;
 class PendingUpdate;
 class RowDelta;
 class SetSnapshot;

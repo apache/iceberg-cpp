@@ -105,6 +105,7 @@ set(ICEBERG_SOURCES
     update/fast_append.cc
     update/merge_append.cc
     update/merging_snapshot_update.cc
+    update/overwrite_files.cc
     update/pending_update.cc
     update/row_delta.cc
     update/set_snapshot.cc

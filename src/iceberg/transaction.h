@@ -115,6 +115,9 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Create a new RowDelta to add rows and row-level deletes.
   Result<std::shared_ptr<RowDelta>> NewRowDelta();
 
+  /// \brief Create a new OverwriteFiles to overwrite data files and commit the changes.
+  Result<std::shared_ptr<OverwriteFiles>> NewOverwrite();
+
   /// \brief Create a new SnapshotManager to manage snapshots.
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 

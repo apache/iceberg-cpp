@@ -36,6 +36,7 @@
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
 #include "iceberg/update/row_delta.h"
+#include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_location.h"
@@ -236,6 +237,12 @@ Result<std::shared_ptr<RowDelta>> Table::NewRowDelta() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
   return RowDelta::Make(name().name, std::move(ctx));
+}
+
+Result<std::shared_ptr<OverwriteFiles>> Table::NewOverwrite() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
+  return OverwriteFiles::Make(name().name, std::move(ctx));
 }
 
 Result<std::shared_ptr<UpdateStatistics>> Table::NewUpdateStatistics() {

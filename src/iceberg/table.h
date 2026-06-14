@@ -185,6 +185,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new RowDelta to add rows and row-level deletes.
   virtual Result<std::shared_ptr<RowDelta>> NewRowDelta();
 
+  /// \brief Create a new OverwriteFiles to overwrite data files and commit the changes.
+  virtual Result<std::shared_ptr<OverwriteFiles>> NewOverwrite();
+
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 

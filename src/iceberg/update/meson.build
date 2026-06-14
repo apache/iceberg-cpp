@@ -22,6 +22,7 @@ install_headers(
         'fast_append.h',
         'merge_append.h',
         'merging_snapshot_update.h',
+        'overwrite_files.h',
         'pending_update.h',
         'row_delta.h',
         'set_snapshot.h',

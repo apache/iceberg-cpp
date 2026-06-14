@@ -36,6 +36,7 @@
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
+#include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
@@ -511,6 +512,13 @@ Result<std::shared_ptr<RowDelta>> Transaction::NewRowDelta() {
                           RowDelta::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(row_delta));
   return row_delta;
+}
+
+Result<std::shared_ptr<OverwriteFiles>> Transaction::NewOverwrite() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<OverwriteFiles> overwrite,
+                          OverwriteFiles::Make(ctx_->table->name().name, ctx_));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(overwrite));
+  return overwrite;
 }
 
 Result<std::shared_ptr<UpdateStatistics>> Transaction::NewUpdateStatistics() {

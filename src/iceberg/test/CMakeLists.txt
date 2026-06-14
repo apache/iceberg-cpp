@@ -239,7 +239,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    update_properties_test.cc
                    update_schema_test.cc
                    update_sort_order_test.cc
-                   update_statistics_test.cc)
+                   update_statistics_test.cc
+                   overwrite_files_test.cc)
 
   add_iceberg_test(data_test
                    USE_BUNDLE
