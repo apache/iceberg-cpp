@@ -1,0 +1,745 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1MetricsTestBase" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::test::MetricsTestBase</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1test_1_1ParquetMetricsTest" prot="public" virt="non-virtual">iceberg::test::ParquetMetricsTest</derivedcompoundref>
+    <includes refid="metrics__test__base_8h" local="no">metrics_test_base.h</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1MetricsTestBase_1a32f0c6c4c6911329e5817ef5bd58f53e" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::test::MetricsTestBase::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="114" column="19" bodyfile="iceberg/test/metrics_test_base.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1MetricsTestBase_1a1873add6727dfa5c69808ee2fe2a8570" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::test::MetricsTestBase::temp_dir_</definition>
+        <argsstring></argsstring>
+        <name>temp_dir_</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::temp_dir_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="115" column="15" bodyfile="iceberg/test/metrics_test_base.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1MetricsTestBase_1a5fb163b915a34b6f1f1c2253db5d4881" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::test::MetricsTestBase::path_</definition>
+        <argsstring></argsstring>
+        <name>path_</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="116" column="15" bodyfile="iceberg/test/metrics_test_base.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a02caaa6f82c562f8f68fd0a50c532ca9" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::SetUp</definition>
+        <argsstring>()</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::SetUp</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a13b84da66192b910058fd7d974347782">SetUp</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="43" column="16" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="36" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a1828a29f65d959ab66eae1872b5baeab" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>virtual Result&lt; Metrics &gt; iceberg::test::MetricsTestBase::GetMetrics</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, std::shared_ptr&lt;::arrow::Array &gt; records)=0</argsstring>
+        <name>GetMetrics</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::GetMetrics</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a9acbcadc01236d18a07008ae87543a95">GetMetrics</reimplementedby>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::Array &gt;</type>
+          <declname>records</declname>
+        </param>
+        <briefdescription>
+<para>Get metrics for the given schema and records. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="46" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a0eb8fd220e4466536806947026a3295a" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>virtual Result&lt; Metrics &gt; iceberg::test::MetricsTestBase::GetMetrics</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, std::shared_ptr&lt; MetricsConfig &gt; config, std::shared_ptr&lt;::arrow::Array &gt; records)=0</argsstring>
+        <name>GetMetrics</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::GetMetrics</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a100294b68e5c9a8267ca9c398ea1aa30">GetMetrics</reimplementedby>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &gt;</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::Array &gt;</type>
+          <declname>records</declname>
+        </param>
+        <briefdescription>
+<para>Get metrics with custom <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="50" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1afa327a958d3a52e08202a1e89a9e3ae6" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string iceberg::test::MetricsTestBase::CreateOutputFile</definition>
+        <argsstring>()=0</argsstring>
+        <name>CreateOutputFile</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::CreateOutputFile</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1ParquetMetricsTest_1ad2f2fa10a6f1073459a1701046c6e38e">CreateOutputFile</reimplementedby>
+        <briefdescription>
+<para>Create an output file for testing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="55" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a33ed3eb096d5d4b998287e5b88f419d6" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; int &gt;</type>
+        <definition>virtual Result&lt; int &gt; iceberg::test::MetricsTestBase::GetSplitCount</definition>
+        <argsstring>()=0</argsstring>
+        <name>GetSplitCount</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::GetSplitCount</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a0428f1a6ba273af0357f2283f62849f4">GetSplitCount</reimplementedby>
+        <briefdescription>
+<para>Get the number of row groups/splits in a file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="58" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1ad8f75d591d61f4506bd505f93280c00b" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::test::MetricsTestBase::SupportsSmallRowGroups</definition>
+        <argsstring>() const</argsstring>
+        <name>SupportsSmallRowGroups</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::SupportsSmallRowGroups</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a4932b50cb6f29cef74d808013e682f4c">SupportsSmallRowGroups</reimplementedby>
+        <briefdescription>
+<para>Whether the format supports small row groups for testing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="61" column="16" bodyfile="iceberg/test/metrics_test_base.h" bodystart="61" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1abb7038734e04d7f1f66afd0a4f7ab34e" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::AssertCounts</definition>
+        <argsstring>(int field_id, std::optional&lt; int64_t &gt; expected_value_count, std::optional&lt; int64_t &gt; expected_null_count, const Metrics &amp;metrics)</argsstring>
+        <name>AssertCounts</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::AssertCounts</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_value_count</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_null_count</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &amp;</type>
+          <declname>metrics</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="64" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="41" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a3e11bae974ce12270d2f9c23e3276667" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::AssertCounts</definition>
+        <argsstring>(int field_id, std::optional&lt; int64_t &gt; expected_value_count, std::optional&lt; int64_t &gt; expected_null_count, std::optional&lt; int64_t &gt; expected_nan_count, const Metrics &amp;metrics)</argsstring>
+        <name>AssertCounts</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::AssertCounts</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_value_count</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_null_count</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>expected_nan_count</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &amp;</type>
+          <declname>metrics</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="67" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="66" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a6ec41e067e89fbe7516ac014c2eb7e62" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::AssertColumnSizeFields</definition>
+        <argsstring>(std::vector&lt; int32_t &gt; expected_field_ids, const Metrics &amp;metrics)</argsstring>
+        <name>AssertColumnSizeFields</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::AssertColumnSizeFields</qualifiedname>
+        <param>
+          <type>std::vector&lt; int32_t &gt;</type>
+          <declname>expected_field_ids</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &amp;</type>
+          <declname>metrics</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="71" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="84" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1acad828f8766511834385121b38508eaa" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>template void iceberg::test::MetricsTestBase::AssertBounds&lt; Decimal &gt;</definition>
+        <argsstring>(int field_id, std::shared_ptr&lt; PrimitiveType &gt; type, std::optional&lt; T &gt; expected_lower, std::optional&lt; T &gt; expected_upper, const Metrics &amp;metrics)</argsstring>
+        <name>AssertBounds</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::AssertBounds</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; T &gt;</type>
+          <declname>expected_lower</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; T &gt;</type>
+          <declname>expected_upper</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &amp;</type>
+          <declname>metrics</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="75" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="96" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a1cab1f097343b9281e10a455568f02a7" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt;::arrow::Array &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::Array &gt; iceberg::test::MetricsTestBase::CreateRecordArrays</definition>
+        <argsstring>(const std::shared_ptr&lt;::arrow::Schema &gt; &amp;arrow_schema, const std::string &amp;json_data)</argsstring>
+        <name>CreateRecordArrays</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::CreateRecordArrays</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt;::arrow::Schema &gt; &amp;</type>
+          <declname>arrow_schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="80" column="19" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="162" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a95a4ec1b074f195a900286a61a5196d2" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForRepeatedValues</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForRepeatedValues</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForRepeatedValues</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="89" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="219" bodyend="242"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a5b2051da326d7ea738de72fe29dcfa43" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForTopLevelFields</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForTopLevelFields</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForTopLevelFields</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="90" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="244" bodyend="297"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1ab2e525c252533436b1edfbe7e3c75b1d" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForDecimals</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForDecimals</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForDecimals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="91" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="299" bodyend="343"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a80ff2e6973233399a3ff81e43f397fe8" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForNestedStructFields</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForNestedStructFields</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForNestedStructFields</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="92" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="345" bodyend="371"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1ab3117fac5f06b53c110165dcce56f5bb" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsModeForNestedStructFields</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsModeForNestedStructFields</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsModeForNestedStructFields</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="93" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="373" bodyend="394"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a87ec03fbe262b19e67104fcbdd496d5b" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForListAndMapElements</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForListAndMapElements</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForListAndMapElements</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="94" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="396" bodyend="493"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a85e35eb2cc8788d29138808280a2abb3" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForNullColumns</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForNullColumns</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForNullColumns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="95" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="495" bodyend="515"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a9f753c802b87cdc2d91a033f4001ee5a" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForNaNColumns</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForNaNColumns</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForNaNColumns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="96" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="517" bodyend="550"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a2fcc5c8e582d1a26f393fb84da0b9039" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::ColumnBoundsWithNaNValueAtFront</definition>
+        <argsstring>()</argsstring>
+        <name>ColumnBoundsWithNaNValueAtFront</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::ColumnBoundsWithNaNValueAtFront</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="97" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="552" bodyend="590"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1ad007d84a542dd08414d35851b0a22d0f" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::ColumnBoundsWithNaNValueInMiddle</definition>
+        <argsstring>()</argsstring>
+        <name>ColumnBoundsWithNaNValueInMiddle</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::ColumnBoundsWithNaNValueInMiddle</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="98" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="592" bodyend="629"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1aa58bb5ababfaae2bda13c881f9a20de2" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::ColumnBoundsWithNaNValueAtEnd</definition>
+        <argsstring>()</argsstring>
+        <name>ColumnBoundsWithNaNValueAtEnd</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::ColumnBoundsWithNaNValueAtEnd</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="99" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="631" bodyend="668"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1acf1df959da7b3e26dcc6a9e6c8ea4959" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForTopLevelWithMultipleRowGroup</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForTopLevelWithMultipleRowGroup</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForTopLevelWithMultipleRowGroup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="100" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="670" bodyend="701"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a1beb196dccdfe5fb96ebc0adb0d5b1f8" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::MetricsForNestedStructFieldsWithMultipleRowGroup</definition>
+        <argsstring>()</argsstring>
+        <name>MetricsForNestedStructFieldsWithMultipleRowGroup</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::MetricsForNestedStructFieldsWithMultipleRowGroup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="101" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="703" bodyend="736"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a3eceb458e4113bb9610fd17707abc1f5" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::NoneMetricsMode</definition>
+        <argsstring>()</argsstring>
+        <name>NoneMetricsMode</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::NoneMetricsMode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="102" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="738" bodyend="765"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a4f1775f182cd3b38e506dd30ff2831c1" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::CountsMetricsMode</definition>
+        <argsstring>()</argsstring>
+        <name>CountsMetricsMode</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::CountsMetricsMode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="103" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="767" bodyend="794"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a28a76dff7c706cb5a6c32a8bf449f452" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::FullMetricsMode</definition>
+        <argsstring>()</argsstring>
+        <name>FullMetricsMode</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::FullMetricsMode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="104" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="796" bodyend="825"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a635960676653d24bddbf02f36a7cef37" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::TruncateStringMetricsMode</definition>
+        <argsstring>()</argsstring>
+        <name>TruncateStringMetricsMode</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::TruncateStringMetricsMode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="105" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="827" bodyend="860"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a6dee85955e1d6b01d409a597848295d7" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::MetricsTestBase::TruncateBinaryMetricsMode</definition>
+        <argsstring>()</argsstring>
+        <name>TruncateBinaryMetricsMode</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::TruncateBinaryMetricsMode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="106" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="862" bodyend="903"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1afd163812e0a8beb31f9ef7601a3e7c6b" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::test::MetricsTestBase::SimpleSchema</definition>
+        <argsstring>()</argsstring>
+        <name>SimpleSchema</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::SimpleSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="84" column="26" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="168" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a0b0e789a342b5003e242bd54d4f698e9" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::test::MetricsTestBase::NestedSchema</definition>
+        <argsstring>()</argsstring>
+        <name>NestedSchema</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::NestedSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="85" column="26" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="186" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1aa630fdceb1e8f286775eaf1fb4aff0d5" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::test::MetricsTestBase::FloatDoubleSchema</definition>
+        <argsstring>()</argsstring>
+        <name>FloatDoubleSchema</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::FloatDoubleSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="86" column="26" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="204" bodyend="209"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a5d6c965dc2cd4c872a055a76f462d572" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt; iceberg::test::MetricsTestBase::BuildSimpleRecords</definition>
+        <argsstring>(std::shared_ptr&lt;::arrow::Schema &gt; arrow_schema, int32_t count=1)</argsstring>
+        <name>BuildSimpleRecords</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::BuildSimpleRecords</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::Schema &gt;</type>
+          <declname>arrow_schema</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>count</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="109" column="10" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="905" bodyend="970"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1MetricsTestBase_1a415d594733fbf1e41a7a9ff8dc1783a5" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Array &gt; &gt; iceberg::test::MetricsTestBase::BuildNestedRecords</definition>
+        <argsstring>(int32_t count=1)</argsstring>
+        <name>BuildNestedRecords</name>
+        <qualifiedname>iceberg::test::MetricsTestBase::BuildNestedRecords</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>count</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.h" line="111" column="10" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="972" bodyend="1035"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base test class for metrics testing, similar to Java&apos;s TestMetrics. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides common test infrastructure and helper methods for testing metrics collection across different file formats (Parquet, Avro, ORC). </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::test::MetricsTestBase</label>
+        <link refid="classiceberg_1_1test_1_1MetricsTestBase"/>
+      </node>
+      <node id="2">
+        <label>iceberg::test::ParquetMetricsTest</label>
+        <link refid="classiceberg_1_1test_1_1ParquetMetricsTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::MetricsTestBase</label>
+        <link refid="classiceberg_1_1test_1_1MetricsTestBase"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>path_</edgelabel>
+          <edgelabel>temp_dir_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/metrics_test_base.h" line="41" column="1" bodyfile="iceberg/test/metrics_test_base.h" bodystart="41" bodyend="117"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1acad828f8766511834385121b38508eaa" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>AssertBounds</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a6ec41e067e89fbe7516ac014c2eb7e62" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>AssertColumnSizeFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1abb7038734e04d7f1f66afd0a4f7ab34e" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>AssertCounts</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a3e11bae974ce12270d2f9c23e3276667" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>AssertCounts</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a415d594733fbf1e41a7a9ff8dc1783a5" prot="private" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>BuildNestedRecords</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a5d6c965dc2cd4c872a055a76f462d572" prot="private" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>BuildSimpleRecords</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1aa58bb5ababfaae2bda13c881f9a20de2" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>ColumnBoundsWithNaNValueAtEnd</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a2fcc5c8e582d1a26f393fb84da0b9039" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>ColumnBoundsWithNaNValueAtFront</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1ad007d84a542dd08414d35851b0a22d0f" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>ColumnBoundsWithNaNValueInMiddle</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a4f1775f182cd3b38e506dd30ff2831c1" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>CountsMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1afa327a958d3a52e08202a1e89a9e3ae6" prot="protected" virt="pure-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>CreateOutputFile</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a1cab1f097343b9281e10a455568f02a7" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>CreateRecordArrays</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a32f0c6c4c6911329e5817ef5bd58f53e" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1aa630fdceb1e8f286775eaf1fb4aff0d5" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>FloatDoubleSchema</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a28a76dff7c706cb5a6c32a8bf449f452" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>FullMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a1828a29f65d959ab66eae1872b5baeab" prot="protected" virt="pure-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>GetMetrics</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a0eb8fd220e4466536806947026a3295a" prot="protected" virt="pure-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>GetMetrics</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a33ed3eb096d5d4b998287e5b88f419d6" prot="protected" virt="pure-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>GetSplitCount</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1ab2e525c252533436b1edfbe7e3c75b1d" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForDecimals</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a87ec03fbe262b19e67104fcbdd496d5b" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForListAndMapElements</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a9f753c802b87cdc2d91a033f4001ee5a" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForNaNColumns</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a80ff2e6973233399a3ff81e43f397fe8" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForNestedStructFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a1beb196dccdfe5fb96ebc0adb0d5b1f8" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForNestedStructFieldsWithMultipleRowGroup</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a85e35eb2cc8788d29138808280a2abb3" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForNullColumns</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a95a4ec1b074f195a900286a61a5196d2" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForRepeatedValues</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a5b2051da326d7ea738de72fe29dcfa43" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForTopLevelFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1acf1df959da7b3e26dcc6a9e6c8ea4959" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsForTopLevelWithMultipleRowGroup</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1ab3117fac5f06b53c110165dcce56f5bb" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>MetricsModeForNestedStructFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a0b0e789a342b5003e242bd54d4f698e9" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>NestedSchema</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a3eceb458e4113bb9610fd17707abc1f5" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>NoneMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a5fb163b915a34b6f1f1c2253db5d4881" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>path_</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a02caaa6f82c562f8f68fd0a50c532ca9" prot="protected" virt="virtual"><scope>iceberg::test::MetricsTestBase</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1afd163812e0a8beb31f9ef7601a3e7c6b" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>SimpleSchema</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1ad8f75d591d61f4506bd505f93280c00b" prot="protected" virt="virtual"><scope>iceberg::test::MetricsTestBase</scope><name>SupportsSmallRowGroups</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a1873add6727dfa5c69808ee2fe2a8570" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>temp_dir_</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a6dee85955e1d6b01d409a597848295d7" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>TruncateBinaryMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a635960676653d24bddbf02f36a7cef37" prot="protected" virt="non-virtual"><scope>iceberg::test::MetricsTestBase</scope><name>TruncateStringMetricsMode</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

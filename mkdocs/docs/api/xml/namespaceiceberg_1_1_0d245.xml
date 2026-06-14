@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1_0d245" kind="namespace" language="C++">
+    <compoundname>iceberg</compoundname>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866" prot="public" static="no" strong="yes">
+        <type>size_t</type>
+        <name>DataFileFieldPosition</name>
+        <qualifiedname>iceberg::DataFileFieldPosition</qualifiedname>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a164f80bc4952e8bfb68f1619f80ab66f" prot="public">
+          <name>kContent</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a28130244eb6cd7ad1433df967418bf58" prot="public">
+          <name>kFilePath</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866aea3108632d64938d7315696b819a5c33" prot="public">
+          <name>kFileFormat</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866afe774b2e89ce46e097dbf35f26cba5a1" prot="public">
+          <name>kSpecId</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a0d18bed4d2ed03250303d946e0a86516" prot="public">
+          <name>kPartition</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866ab544eba036403159cd46244bd154b25b" prot="public">
+          <name>kRecordCount</name>
+          <initializer>= 5</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866aa1e81409d59798e6cca7604f62776eb4" prot="public">
+          <name>kFileSize</name>
+          <initializer>= 6</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a1a817955bbd1f645d722139a414b2413" prot="public">
+          <name>kColumnSizes</name>
+          <initializer>= 7</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a1cb257e5fb4993208b843fe1fd21b1c7" prot="public">
+          <name>kValueCounts</name>
+          <initializer>= 8</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a000b7a42a8335116e94086e8df5703ec" prot="public">
+          <name>kNullValueCounts</name>
+          <initializer>= 9</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a72019ac629e9f409f33014671a7b512c" prot="public">
+          <name>kNanValueCounts</name>
+          <initializer>= 10</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866aa59773d511e09049dbb02fcf044b9116" prot="public">
+          <name>kLowerBounds</name>
+          <initializer>= 11</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a02235fbdc5c4059e468803290cf8f4ff" prot="public">
+          <name>kUpperBounds</name>
+          <initializer>= 12</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a2796a13deedfa39d757183f0b6908760" prot="public">
+          <name>kKeyMetadata</name>
+          <initializer>= 13</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a4590efec7dfb19ef58fb2bef2032bff7" prot="public">
+          <name>kSplitOffsets</name>
+          <initializer>= 14</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a44b0fe636d2f8b8489e7eb53e5d76a74" prot="public">
+          <name>kEqualityIds</name>
+          <initializer>= 15</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a5ee8b6c55ee6a4c6ab53746d7be7480d" prot="public">
+          <name>kSortOrderId</name>
+          <initializer>= 16</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866aad70014fce461ff974500b70e98f662f" prot="public">
+          <name>kFirstRowId</name>
+          <initializer>= 17</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a3f50a7acb1380fca70fa12c35bf301cb" prot="public">
+          <name>kReferencedDataFile</name>
+          <initializer>= 18</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a2cad6991c7b849fd5912550c7655acbc" prot="public">
+          <name>kContentOffset</name>
+          <initializer>= 19</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866a5ecf60a3a6f906a3d0b7f5852cd1248a" prot="public">
+          <name>kContentSize</name>
+          <initializer>= 20</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1_0d245_1ad369aeaf81aa3879be04d10585226866ae60e411715b421894e0c2fe9184deb04" prot="public">
+          <name>kNextUnusedId</name>
+          <initializer>= 21</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.cc" line="36" column="1" bodyfile="iceberg/row/manifest_wrapper.cc" bodystart="36" bodyend="59"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/row/manifest_wrapper.cc" line="34" column="1"/>
+  </compounddef>
+</doxygen>

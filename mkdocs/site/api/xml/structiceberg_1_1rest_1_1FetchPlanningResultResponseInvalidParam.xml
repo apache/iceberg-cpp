@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::FetchPlanningResultResponseInvalidParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1a2a8672cae55637be89e090dd2b26cf69" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::FetchPlanningResultResponseInvalidParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::rest::FetchPlanningResultResponseInvalidParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1580" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1580" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1a140b929e200241efa6c30db99f7c5a0a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::FetchPlanningResultResponseInvalidParam::json_str</definition>
+        <argsstring></argsstring>
+        <name>json_str</name>
+        <qualifiedname>iceberg::rest::FetchPlanningResultResponseInvalidParam::json_str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1581" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1581" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1afa70e25168e827f48f6d29556a1526f7" prot="public" static="no" mutable="no">
+        <type>ErrorKind</type>
+        <definition>ErrorKind iceberg::rest::FetchPlanningResultResponseInvalidParam::expected_error_kind</definition>
+        <argsstring></argsstring>
+        <name>expected_error_kind</name>
+        <qualifiedname>iceberg::rest::FetchPlanningResultResponseInvalidParam::expected_error_kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1582" column="13" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1582" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1abec8578cd977388992bb3168dab0874e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::FetchPlanningResultResponseInvalidParam::expected_error_msg</definition>
+        <argsstring></argsstring>
+        <name>expected_error_msg</name>
+        <qualifiedname>iceberg::rest::FetchPlanningResultResponseInvalidParam::expected_error_msg</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1583" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1583" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::FetchPlanningResultResponseInvalidParam</label>
+        <link refid="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_msg</edgelabel>
+          <edgelabel>json_str</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_serde_test.cc" line="1579" column="1" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1579" bodyend="1584"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1afa70e25168e827f48f6d29556a1526f7" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchPlanningResultResponseInvalidParam</scope><name>expected_error_kind</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1abec8578cd977388992bb3168dab0874e" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchPlanningResultResponseInvalidParam</scope><name>expected_error_msg</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1a140b929e200241efa6c30db99f7c5a0a" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchPlanningResultResponseInvalidParam</scope><name>json_str</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchPlanningResultResponseInvalidParam_1a2a8672cae55637be89e090dd2b26cf69" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchPlanningResultResponseInvalidParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

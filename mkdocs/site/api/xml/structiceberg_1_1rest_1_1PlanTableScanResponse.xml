@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1PlanTableScanResponse" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::PlanTableScanResponse</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1a634d6d66a2e832101eb4d8201d52c2ca" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::vector&lt; std::string &gt; &gt;</type>
+        <definition>std::optional&lt;std::vector&lt;std::string&gt; &gt; iceberg::rest::PlanTableScanResponse::plan_tasks</definition>
+        <argsstring></argsstring>
+        <name>plan_tasks</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::plan_tasks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="329" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="329" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1a85975f7aa7c47b569d6a23d0e096b250" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &gt; &gt; &gt;</type>
+        <definition>std::optional&lt;std::vector&lt;std::shared_ptr&lt;FileScanTask&gt; &gt; &gt; iceberg::rest::PlanTableScanResponse::file_scan_tasks</definition>
+        <argsstring></argsstring>
+        <name>file_scan_tasks</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::file_scan_tasks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="330" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="330" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1ac2f3fc2dcbb458cb993bddc15ed2f303" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;DataFile&gt; &gt; iceberg::rest::PlanTableScanResponse::delete_files</definition>
+        <argsstring></argsstring>
+        <name>delete_files</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="331" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="331" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1ad5270b2769cd34e51bc319b31138119e" prot="public" static="no" mutable="no">
+        <type><ref refid="types_8h_1aa87d5beb145c3452177fa4d9f9cf58b5" kindref="member">PlanStatus</ref></type>
+        <definition>PlanStatus iceberg::rest::PlanTableScanResponse::plan_status</definition>
+        <argsstring></argsstring>
+        <name>plan_status</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::plan_status</qualifiedname>
+        <initializer>= PlanStatus::kCompleted</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="332" column="14" bodyfile="iceberg/catalog/rest/types.h" bodystart="332" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1aead1e60fca2a40fe3bc53aefd08b0616" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::PlanTableScanResponse::plan_id</definition>
+        <argsstring></argsstring>
+        <name>plan_id</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::plan_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="333" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="333" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1acc51d4db254a98dea19471a3485ca3f5" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref> &gt;</type>
+        <definition>std::optional&lt;ErrorResponse&gt; iceberg::rest::PlanTableScanResponse::error</definition>
+        <argsstring></argsstring>
+        <name>error</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::error</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="334" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="334" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1a911c5af130563b0b3f18d8a459eb8fd4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::PlanTableScanResponse::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::Validate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="337" column="10" bodyfile="iceberg/catalog/rest/types.cc" bodystart="285" bodyend="318"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1PlanTableScanResponse_1ab3800a3b8b940b7f0df6798b6aa8d0e9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::PlanTableScanResponse::operator==</definition>
+        <argsstring>(const PlanTableScanResponse &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1PlanTableScanResponse" kindref="compound">PlanTableScanResponse</ref> &amp;</type>
+          <defname>other</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="339" column="8" bodyfile="iceberg/catalog/rest/types.cc" bodystart="229" bodyend="232"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Response from initiating a scan planning operation, including plan status and initial scan tasks. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::PlanTableScanResponse</label>
+        <link refid="structiceberg_1_1rest_1_1PlanTableScanResponse"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>delete_files</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>plan_id</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="9">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::DataFile &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="328" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="328" bodyend="340"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1ac2f3fc2dcbb458cb993bddc15ed2f303" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>delete_files</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1acc51d4db254a98dea19471a3485ca3f5" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>error</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1a85975f7aa7c47b569d6a23d0e096b250" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>file_scan_tasks</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1ab3800a3b8b940b7f0df6798b6aa8d0e9" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1aead1e60fca2a40fe3bc53aefd08b0616" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>plan_id</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1ad5270b2769cd34e51bc319b31138119e" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>plan_status</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1a634d6d66a2e832101eb4d8201d52c2ca" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>plan_tasks</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponse_1a911c5af130563b0b3f18d8a459eb8fd4" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponse</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

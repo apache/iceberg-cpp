@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1PooledConnectionSource_1_1TransactionContext" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::sql::PooledConnectionSource::TransactionContext</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1PooledConnectionSource_1_1TransactionContext_1a584d5c162fb378682917f166c7fca5cb" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1sql_1_1PooledConnectionSource" kindref="compound">PooledConnectionSource</ref> *</type>
+        <definition>PooledConnectionSource* iceberg::sql::PooledConnectionSource&lt; Pool &gt;::TransactionContext::owner</definition>
+        <argsstring></argsstring>
+        <name>owner</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::TransactionContext::owner</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="142" column="28" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="142" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1PooledConnectionSource_1_1TransactionContext_1afbc444a9d5670d101cedca85bc4683f8" prot="public" static="no" mutable="no">
+        <type>Connection *</type>
+        <definition>Connection* iceberg::sql::PooledConnectionSource&lt; Pool &gt;::TransactionContext::connection</definition>
+        <argsstring></argsstring>
+        <name>connection</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::TransactionContext::connection</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="143" column="16" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="143" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::sql::PooledConnectionSource&lt; Pool &gt;</label>
+        <link refid="classiceberg_1_1sql_1_1PooledConnectionSource"/>
+      </node>
+      <node id="1">
+        <label>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::TransactionContext</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>owner</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="141" column="3" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="141" bodyend="144"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1PooledConnectionSource_1_1TransactionContext_1afbc444a9d5670d101cedca85bc4683f8" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::TransactionContext</scope><name>connection</name></member>
+      <member refid="structiceberg_1_1sql_1_1PooledConnectionSource_1_1TransactionContext_1a584d5c162fb378682917f166c7fca5cb" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::TransactionContext</scope><name>owner</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

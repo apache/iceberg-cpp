@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1GZipTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::GZipTest</compoundname>
+    <basecompoundref refid="classiceberg_1_1TempFileTestBase" prot="public" virt="non-virtual">iceberg::TempFileTestBase</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1GZipTest_1ab2c0dffdf4bc973f6c3a2e55f06e0a05" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">iceberg::FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;iceberg::FileIO&gt; iceberg::GZipTest::io_</definition>
+        <argsstring></argsstring>
+        <name>io_</name>
+        <qualifiedname>iceberg::GZipTest::io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/gzip_decompress_test.cc" line="43" column="19" bodyfile="iceberg/test/gzip_decompress_test.cc" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GZipTest_1a482bb04fa7e9ebd6ef81ec3a166637b9" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::GZipTest::temp_filepath_</definition>
+        <argsstring></argsstring>
+        <name>temp_filepath_</name>
+        <qualifiedname>iceberg::GZipTest::temp_filepath_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/gzip_decompress_test.cc" line="44" column="15" bodyfile="iceberg/test/gzip_decompress_test.cc" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1GZipTest_1aaaf87fde0edd7eee6a2a617952559fd7" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::GZipTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::GZipTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/gzip_decompress_test.cc" line="36" column="8" bodyfile="iceberg/test/gzip_decompress_test.cc" bodystart="36" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::GZipTest</label>
+        <link refid="classiceberg_1_1GZipTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="8">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::GZipTest</label>
+        <link refid="classiceberg_1_1GZipTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>temp_filepath_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>created_temp_files_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/gzip_decompress_test.cc" line="34" column="1" bodyfile="iceberg/test/gzip_decompress_test.cc" bodystart="34" bodyend="45"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TempFileTestBase_1a81e8f787019341a0f6e808b06944692c" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>created_temp_files_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a469206ba6bfaea7b40483a594c819d8f" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>CreateNewTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a79c5ec372d23b44b3b25f90faadafcdf" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>CreateNewTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a78b1aeba8972a7b7a1efe8250fc275b9" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>CreateTempDirectory</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a0f94d0c787eed57fca2687c77f0873dd" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>CreateTempFileWithContent</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ab8c455679ca860cf68d867b134fd6dbc" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>GenerateRandomString</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac4a5a13677373ca5e40f5251f2fc16d5" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>GenerateUniqueTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a25203f87d8d23209c611949d95749559" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>GenerateUniqueTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1GZipTest_1ab2c0dffdf4bc973f6c3a2e55f06e0a05" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>io_</name></member>
+      <member refid="classiceberg_1_1GZipTest_1aaaf87fde0edd7eee6a2a617952559fd7" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ad0259e7197a5f7c88a6cd9688efe6b53" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1GZipTest_1a482bb04fa7e9ebd6ef81ec3a166637b9" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>temp_filepath_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac5dbf7b55b849f990733840057bd450f" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>TestInfo</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a3ba86e7547c2ea06ac70f76e61040af5" prot="protected" virt="non-virtual"><scope>iceberg::GZipTest</scope><name>WriteContentToFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

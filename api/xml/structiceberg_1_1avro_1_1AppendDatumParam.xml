@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1AppendDatumParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::AppendDatumParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1AppendDatumParam_1ac9fc66d40c18461fb7d115505d3285a8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::AppendDatumParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::avro::AppendDatumParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="44" column="15" bodyfile="iceberg/test/avro_data_test.cc" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1AppendDatumParam_1ae1ae68f00357bf4d1cb3fc2fb0cd784e" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::avro::AppendDatumParam::projected_type</definition>
+        <argsstring></argsstring>
+        <name>projected_type</name>
+        <qualifiedname>iceberg::avro::AppendDatumParam::projected_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="45" column="19" bodyfile="iceberg/test/avro_data_test.cc" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1AppendDatumParam_1a6e40f2ed59cc6fc81a39c90c7913ce1d" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::avro::AppendDatumParam::source_type</definition>
+        <argsstring></argsstring>
+        <name>source_type</name>
+        <qualifiedname>iceberg::avro::AppendDatumParam::source_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="46" column="19" bodyfile="iceberg/test/avro_data_test.cc" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1AppendDatumParam_1a4dc2dba10d2256e142e72bd1c10aef9c" prot="public" static="no" mutable="no">
+        <type>std::function&lt; void(::avro::GenericDatum &amp;, int)&gt;</type>
+        <definition>std::function&lt;void(::avro::GenericDatum&amp;, int)&gt; iceberg::avro::AppendDatumParam::value_setter</definition>
+        <argsstring></argsstring>
+        <name>value_setter</name>
+        <qualifiedname>iceberg::avro::AppendDatumParam::value_setter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="47" column="17" bodyfile="iceberg/test/avro_data_test.cc" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1AppendDatumParam_1ac561325bbcbd61453e4c9f82dbff76fe" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::AppendDatumParam::expected_json</definition>
+        <argsstring></argsstring>
+        <name>expected_json</name>
+        <qualifiedname>iceberg::avro::AppendDatumParam::expected_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_data_test.cc" line="48" column="15" bodyfile="iceberg/test/avro_data_test.cc" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Test case structure for parameterized primitive type tests. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AppendDatumParam</label>
+        <link refid="structiceberg_1_1avro_1_1AppendDatumParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_json</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>projected_type</edgelabel>
+          <edgelabel>source_type</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_data_test.cc" line="43" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="43" bodyend="49"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1AppendDatumParam_1ac561325bbcbd61453e4c9f82dbff76fe" prot="public" virt="non-virtual"><scope>iceberg::avro::AppendDatumParam</scope><name>expected_json</name></member>
+      <member refid="structiceberg_1_1avro_1_1AppendDatumParam_1ac9fc66d40c18461fb7d115505d3285a8" prot="public" virt="non-virtual"><scope>iceberg::avro::AppendDatumParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1avro_1_1AppendDatumParam_1ae1ae68f00357bf4d1cb3fc2fb0cd784e" prot="public" virt="non-virtual"><scope>iceberg::avro::AppendDatumParam</scope><name>projected_type</name></member>
+      <member refid="structiceberg_1_1avro_1_1AppendDatumParam_1a6e40f2ed59cc6fc81a39c90c7913ce1d" prot="public" virt="non-virtual"><scope>iceberg::avro::AppendDatumParam</scope><name>source_type</name></member>
+      <member refid="structiceberg_1_1avro_1_1AppendDatumParam_1a4dc2dba10d2256e142e72bd1c10aef9c" prot="public" virt="non-virtual"><scope>iceberg::avro::AppendDatumParam</scope><name>value_setter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structFetchScanTasksResponseInvalidParam" kind="struct" language="C++" prot="public">
+    <compoundname>FetchScanTasksResponseInvalidParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structFetchScanTasksResponseInvalidParam_1aa83b1c1425050ab8247fd98f31c281cd" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string FetchScanTasksResponseInvalidParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>FetchScanTasksResponseInvalidParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1713" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1713" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structFetchScanTasksResponseInvalidParam_1a6776174477105e6db0361d638d1dae5a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string FetchScanTasksResponseInvalidParam::json_str</definition>
+        <argsstring></argsstring>
+        <name>json_str</name>
+        <qualifiedname>FetchScanTasksResponseInvalidParam::json_str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1714" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1714" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structFetchScanTasksResponseInvalidParam_1a0b359e2d6f456a92f08843de29fa069d" prot="public" static="no" mutable="no">
+        <type>ErrorKind</type>
+        <definition>ErrorKind FetchScanTasksResponseInvalidParam::expected_error_kind</definition>
+        <argsstring></argsstring>
+        <name>expected_error_kind</name>
+        <qualifiedname>FetchScanTasksResponseInvalidParam::expected_error_kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1715" column="13" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1715" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structFetchScanTasksResponseInvalidParam_1a9679462e43dc0f37eecf8a56de25bb6e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string FetchScanTasksResponseInvalidParam::expected_error_msg</definition>
+        <argsstring></argsstring>
+        <name>expected_error_msg</name>
+        <qualifiedname>FetchScanTasksResponseInvalidParam::expected_error_msg</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1716" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1716" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>FetchScanTasksResponseInvalidParam</label>
+        <link refid="structFetchScanTasksResponseInvalidParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_msg</edgelabel>
+          <edgelabel>json_str</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_serde_test.cc" line="1712" column="1" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1712" bodyend="1717"/>
+    <listofallmembers>
+      <member refid="structFetchScanTasksResponseInvalidParam_1a0b359e2d6f456a92f08843de29fa069d" prot="public" virt="non-virtual"><scope>FetchScanTasksResponseInvalidParam</scope><name>expected_error_kind</name></member>
+      <member refid="structFetchScanTasksResponseInvalidParam_1a9679462e43dc0f37eecf8a56de25bb6e" prot="public" virt="non-virtual"><scope>FetchScanTasksResponseInvalidParam</scope><name>expected_error_msg</name></member>
+      <member refid="structFetchScanTasksResponseInvalidParam_1a6776174477105e6db0361d638d1dae5a" prot="public" virt="non-virtual"><scope>FetchScanTasksResponseInvalidParam</scope><name>json_str</name></member>
+      <member refid="structFetchScanTasksResponseInvalidParam_1aa83b1c1425050ab8247fd98f31c281cd" prot="public" virt="non-virtual"><scope>FetchScanTasksResponseInvalidParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

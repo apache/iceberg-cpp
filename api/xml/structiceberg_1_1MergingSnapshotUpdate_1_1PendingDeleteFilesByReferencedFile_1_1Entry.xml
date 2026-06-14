@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry_1a8b03146da0f9b80545aacef6a51ca81b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry::referenced_file</definition>
+        <argsstring></argsstring>
+        <name>referenced_file</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry::referenced_file</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="303" column="19" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="303" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry_1ac6256c428800177a49410db49346c40b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; PendingDeleteFile &gt;</type>
+        <definition>std::vector&lt;PendingDeleteFile&gt; iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry::files</definition>
+        <argsstring></argsstring>
+        <name>files</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry::files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="304" column="19" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="304" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="7">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::MergingSnapshotUpdate::PendingDeleteFile</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>file</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry</label>
+        <link refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>referenced_file</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>files</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="16">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="10">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="11">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; PendingDeleteFile &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/merging_snapshot_update.h" line="302" column="5" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="302" bodyend="305"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry_1ac6256c428800177a49410db49346c40b" prot="public" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry</scope><name>files</name></member>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry_1a8b03146da0f9b80545aacef6a51ca81b" prot="public" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry</scope><name>referenced_file</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

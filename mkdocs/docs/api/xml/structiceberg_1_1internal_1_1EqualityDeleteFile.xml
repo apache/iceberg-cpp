@@ -1,0 +1,412 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1internal_1_1EqualityDeleteFile" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::internal::EqualityDeleteFile</compoundname>
+    <includes refid="delete__file__index_8h" local="no">delete_file_index.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1ae2efbf435c9be20105a8bfd1d1371804" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+        <definition>const Schema* iceberg::internal::EqualityDeleteFile::schema</definition>
+        <argsstring></argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="46" column="16" bodyfile="iceberg/delete_file_index.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1aaa42e5eb7e3d2d2cc6e2f629bfefdf19" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref></type>
+        <definition>ManifestEntry iceberg::internal::EqualityDeleteFile::wrapped</definition>
+        <argsstring></argsstring>
+        <name>wrapped</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::wrapped</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="47" column="17" bodyfile="iceberg/delete_file_index.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1ad24ee72a21e237dec433b868981ccd0a" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::internal::EqualityDeleteFile::apply_sequence_number</definition>
+        <argsstring></argsstring>
+        <name>apply_sequence_number</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::apply_sequence_number</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="48" column="11" bodyfile="iceberg/delete_file_index.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1a98a289a1e868f4bfbd3425101f70607d" prot="public" static="no" mutable="yes">
+        <type>std::unordered_map&lt; int32_t, <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, Literal&gt; iceberg::internal::EqualityDeleteFile::lower_bounds</definition>
+        <argsstring></argsstring>
+        <name>lower_bounds</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::lower_bounds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="51" column="30" bodyfile="iceberg/delete_file_index.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1a5b8c7a67eb731d4004dac8e7735ec150" prot="public" static="no" mutable="yes">
+        <type>std::unordered_map&lt; int32_t, <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, Literal&gt; iceberg::internal::EqualityDeleteFile::upper_bounds</definition>
+        <argsstring></argsstring>
+        <name>upper_bounds</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::upper_bounds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="52" column="30" bodyfile="iceberg/delete_file_index.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1a7694420c07838be9efdeab59b5516f59" prot="public" static="no" mutable="yes">
+        <type>bool</type>
+        <definition>bool iceberg::internal::EqualityDeleteFile::bounds_converted</definition>
+        <argsstring></argsstring>
+        <name>bounds_converted</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::bounds_converted</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="53" column="16" bodyfile="iceberg/delete_file_index.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1ae3781ce73499dc94c905d71b9b5caa37" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::EqualityDeleteFile::EqualityDeleteFile</definition>
+        <argsstring>(const Schema *schema, ManifestEntry &amp;&amp;entry)</argsstring>
+        <name>EqualityDeleteFile</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::EqualityDeleteFile</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;&amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="55" column="3" bodyfile="iceberg/delete_file_index.h" bodystart="55" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1ab98cd9e5c9dcbdfc4c339ce0240727e3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::EqualityDeleteFile::HasLowerAndUpperBounds</definition>
+        <argsstring>() const</argsstring>
+        <name>HasLowerAndUpperBounds</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::HasLowerAndUpperBounds</qualifiedname>
+        <briefdescription>
+<para>Check if this delete file has both lower and upper bounds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="61" column="8" bodyfile="iceberg/delete_file_index.h" bodystart="61" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1a8715f30ce279ca29fea1b55b02e36f1b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; std::reference_wrapper&lt; const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::reference_wrapper&lt; const Literal &gt; &gt; &gt; iceberg::internal::EqualityDeleteFile::LowerBound</definition>
+        <argsstring>(int32_t id) const</argsstring>
+        <name>LowerBound</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::LowerBound</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Get the lower bound for a field ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="67" column="10" bodyfile="iceberg/delete_file_index.h" bodystart="67" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1a0b3e2012c50ca34aef20089cd8cd5e72" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; std::reference_wrapper&lt; const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::reference_wrapper&lt; const Literal &gt; &gt; &gt; iceberg::internal::EqualityDeleteFile::UpperBound</definition>
+        <argsstring>(int32_t id) const</argsstring>
+        <name>UpperBound</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::UpperBound</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Get the upper bound for a field ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="76" column="10" bodyfile="iceberg/delete_file_index.h" bodystart="76" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="structiceberg_1_1internal_1_1EqualityDeleteFile_1ab9c65a0c63141168218a748749f65c4b" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::internal::EqualityDeleteFile::ConvertBoundsIfNeeded</definition>
+        <argsstring>() const</argsstring>
+        <name>ConvertBoundsIfNeeded</name>
+        <qualifiedname>iceberg::internal::EqualityDeleteFile::ConvertBoundsIfNeeded</qualifiedname>
+        <briefdescription>
+<para>Convert bounds from binary to <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>. Implemented in .cc file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="86" column="10" bodyfile="iceberg/delete_file_index.cc" bodystart="46" bodyend="84"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Wrapper for equality delete files that caches converted bounds. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="9">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="10">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="16">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="17" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="25" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::ManifestEntry</label>
+        <link refid="structiceberg_1_1ManifestEntry"/>
+        <childnode refid="15" relation="usage">
+          <edgelabel>data_file</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>kFileSequenceNumber</edgelabel>
+          <edgelabel>kSequenceNumber</edgelabel>
+          <edgelabel>kSnapshotId</edgelabel>
+          <edgelabel>kStatus</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>kDataFileField</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="3">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::internal::EqualityDeleteFile</label>
+        <link refid="structiceberg_1_1internal_1_1EqualityDeleteFile"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>wrapped</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="21">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="22">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="23" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="16" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="13">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="17">
+        <label>std::string</label>
+        <childnode refid="18" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::string_view</label>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>std::unordered_map&lt; int32_t, iceberg::Literal &gt;</label>
+        <childnode refid="27" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="25">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="24">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="23">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/delete_file_index.h" line="45" column="1" bodyfile="iceberg/delete_file_index.h" bodystart="45" bodyend="87"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1ad24ee72a21e237dec433b868981ccd0a" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>apply_sequence_number</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1a7694420c07838be9efdeab59b5516f59" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>bounds_converted</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1ab9c65a0c63141168218a748749f65c4b" prot="private" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>ConvertBoundsIfNeeded</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1ae3781ce73499dc94c905d71b9b5caa37" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>EqualityDeleteFile</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1ab98cd9e5c9dcbdfc4c339ce0240727e3" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>HasLowerAndUpperBounds</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1a98a289a1e868f4bfbd3425101f70607d" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>lower_bounds</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1a8715f30ce279ca29fea1b55b02e36f1b" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>LowerBound</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1ae2efbf435c9be20105a8bfd1d1371804" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>schema</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1a5b8c7a67eb731d4004dac8e7735ec150" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>upper_bounds</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1a0b3e2012c50ca34aef20089cd8cd5e72" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>UpperBound</name></member>
+      <member refid="structiceberg_1_1internal_1_1EqualityDeleteFile_1aaa42e5eb7e3d2d2cc6e2f629bfefdf19" prot="public" virt="non-virtual"><scope>iceberg::internal::EqualityDeleteFile</scope><name>wrapped</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

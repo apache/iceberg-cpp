@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::detail::ArrowArrayStreamPrivateData</compoundname>
+    <templateparamlist>
+      <param>
+        <type>ArrowArrayStreamProvider</type>
+        <declname>Source</declname>
+        <defname>Source</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1a9fb6dfee4fe663d16fb47801962e2b6a" prot="public" static="no" mutable="no">
+        <type>std::unique_ptr&lt; Source &gt;</type>
+        <definition>std::unique_ptr&lt;Source&gt; iceberg::detail::ArrowArrayStreamPrivateData&lt; Source &gt;::source</definition>
+        <argsstring></argsstring>
+        <name>source</name>
+        <qualifiedname>iceberg::detail::ArrowArrayStreamPrivateData::source</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="126" column="19" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="126" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1a850339471dee1fa9f5bc9260b39e588d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::detail::ArrowArrayStreamPrivateData&lt; Source &gt;::last_error</definition>
+        <argsstring></argsstring>
+        <name>last_error</name>
+        <qualifiedname>iceberg::detail::ArrowArrayStreamPrivateData::last_error</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="127" column="15" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1aa945ed913872cdabcf18d18c96bfc234" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::detail::ArrowArrayStreamPrivateData&lt; Source &gt;::ArrowArrayStreamPrivateData</definition>
+        <argsstring>(std::unique_ptr&lt; Source &gt; src)</argsstring>
+        <name>ArrowArrayStreamPrivateData</name>
+        <qualifiedname>iceberg::detail::ArrowArrayStreamPrivateData::ArrowArrayStreamPrivateData</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; Source &gt;</type>
+          <declname>src</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="129" column="12" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="129" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1adae43a3d8fbf4b0b65aa383b4bc69fa2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::detail::ArrowArrayStreamPrivateData&lt; Source &gt;::~ArrowArrayStreamPrivateData</definition>
+        <argsstring>()</argsstring>
+        <name>~ArrowArrayStreamPrivateData</name>
+        <qualifiedname>iceberg::detail::ArrowArrayStreamPrivateData::~ArrowArrayStreamPrivateData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="132" column="3" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="132" bodyend="136"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::detail::ArrowArrayStreamPrivateData&lt; Source &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>source</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>last_error</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unique_ptr&lt; Source &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/arrow_c_data_util_internal.h" line="125" column="1" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="125" bodyend="137"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1aa945ed913872cdabcf18d18c96bfc234" prot="public" virt="non-virtual"><scope>iceberg::detail::ArrowArrayStreamPrivateData</scope><name>ArrowArrayStreamPrivateData</name></member>
+      <member refid="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1a850339471dee1fa9f5bc9260b39e588d" prot="public" virt="non-virtual"><scope>iceberg::detail::ArrowArrayStreamPrivateData</scope><name>last_error</name></member>
+      <member refid="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1a9fb6dfee4fe663d16fb47801962e2b6a" prot="public" virt="non-virtual"><scope>iceberg::detail::ArrowArrayStreamPrivateData</scope><name>source</name></member>
+      <member refid="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData_1adae43a3d8fbf4b0b65aa383b4bc69fa2" prot="public" virt="non-virtual"><scope>iceberg::detail::ArrowArrayStreamPrivateData</scope><name>~ArrowArrayStreamPrivateData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DeleteFilter_1_1EqDeleteGroup" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DeleteFilter::EqDeleteGroup</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DeleteFilter_1_1EqDeleteGroup_1ab98fe2c7424927e96685e62b8384ea6f" prot="public" static="no" mutable="no">
+        <type>std::unique_ptr&lt; ProjectedStructLike &gt;</type>
+        <definition>std::unique_ptr&lt;ProjectedStructLike&gt; iceberg::DeleteFilter::EqDeleteGroup::row_projection</definition>
+        <argsstring></argsstring>
+        <name>row_projection</name>
+        <qualifiedname>iceberg::DeleteFilter::EqDeleteGroup::row_projection</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.cc" line="403" column="19" bodyfile="iceberg/data/delete_filter.cc" bodystart="403" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DeleteFilter_1_1EqDeleteGroup_1ad3a7481fcded5c51f38774b1c9f6a44e" prot="public" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1StructLikeSet" kindref="compound">UncheckedStructLikeSet</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;UncheckedStructLikeSet&gt; iceberg::DeleteFilter::EqDeleteGroup::delete_set</definition>
+        <argsstring></argsstring>
+        <name>delete_set</name>
+        <qualifiedname>iceberg::DeleteFilter::EqDeleteGroup::delete_set</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.cc" line="404" column="19" bodyfile="iceberg/data/delete_filter.cc" bodystart="404" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>anonymous:ptr</label>
+      </node>
+      <node id="1">
+        <label>iceberg::DeleteFilter::EqDeleteGroup</label>
+        <link refid="structiceberg_1_1DeleteFilter_1_1EqDeleteGroup"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>row_projection</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>delete_set</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructLikeSet&lt; kValidate &gt;</label>
+        <link refid="classiceberg_1_1StructLikeSet"/>
+      </node>
+      <node id="2">
+        <label>std::unique_ptr&lt; ProjectedStructLike &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unique_ptr&lt; iceberg::StructLikeSet &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/delete_filter.cc" line="402" column="1" bodyfile="iceberg/data/delete_filter.cc" bodystart="402" bodyend="405"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DeleteFilter_1_1EqDeleteGroup_1ad3a7481fcded5c51f38774b1c9f6a44e" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter::EqDeleteGroup</scope><name>delete_set</name></member>
+      <member refid="structiceberg_1_1DeleteFilter_1_1EqDeleteGroup_1ab98fe2c7424927e96685e62b8384ea6f" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter::EqDeleteGroup</scope><name>row_projection</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

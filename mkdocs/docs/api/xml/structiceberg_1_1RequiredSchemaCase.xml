@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1RequiredSchemaCase" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::RequiredSchemaCase</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1abb0f7eb764c5909b41dd54e092db9c5d" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* iceberg::RequiredSchemaCase::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="263" column="14" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="263" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1aabb9ea960705cc42450bdb5d412ff99e" prot="public" static="no" mutable="no">
+        <type>RequiredSchemaRequest</type>
+        <definition>RequiredSchemaRequest iceberg::RequiredSchemaCase::request</definition>
+        <argsstring></argsstring>
+        <name>request</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::request</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="264" column="25" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="264" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1a8abd5c1390af4f10c4b4e17c25389eb1" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::RequiredSchemaCase::requested_field_ids</definition>
+        <argsstring></argsstring>
+        <name>requested_field_ids</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::requested_field_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="265" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="265" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1a7221aa7dc457338268bce60792c2ed73" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::vector&lt; int32_t &gt; &gt;</type>
+        <definition>std::vector&lt;std::vector&lt;int32_t&gt; &gt; iceberg::RequiredSchemaCase::equality_ids_by_file</definition>
+        <argsstring></argsstring>
+        <name>equality_ids_by_file</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::equality_ids_by_file</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="266" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="266" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1a61c573344a67223611b10324a09d03c8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::RequiredSchemaCase::has_pos_delete</definition>
+        <argsstring></argsstring>
+        <name>has_pos_delete</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::has_pos_delete</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="267" column="8" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="267" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1a6e9a23ac8ce6c4ad4cf371108db365f3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::RequiredSchemaCase::need_row_pos_col</definition>
+        <argsstring></argsstring>
+        <name>need_row_pos_col</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::need_row_pos_col</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="268" column="8" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="268" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1a60d3eead7172ef5759f9b0472e369324" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::RequiredSchemaCase::expected_field_ids</definition>
+        <argsstring></argsstring>
+        <name>expected_field_ids</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::expected_field_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="269" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="269" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1a2090d0b6a13570aaaa38fbd2c2fb412a" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::RequiredSchemaCase::expected_field_names</definition>
+        <argsstring></argsstring>
+        <name>expected_field_names</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::expected_field_names</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="270" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="270" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1aed0a8a007bf1cb962898a01203b40f22" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::RequiredSchemaCase::expected_has_position_deletes</definition>
+        <argsstring></argsstring>
+        <name>expected_has_position_deletes</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::expected_has_position_deletes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="271" column="8" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="271" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RequiredSchemaCase_1ac8086961e3a5ec6c9318ea34caea9fc9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::RequiredSchemaCase::expected_has_equality_deletes</definition>
+        <argsstring></argsstring>
+        <name>expected_has_equality_deletes</name>
+        <qualifiedname>iceberg::RequiredSchemaCase::expected_has_equality_deletes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="272" column="8" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="272" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::RequiredSchemaCase</label>
+        <link refid="structiceberg_1_1RequiredSchemaCase"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_field_ids</edgelabel>
+          <edgelabel>requested_field_ids</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>equality_ids_by_file</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>expected_field_names</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::vector&lt; int32_t &gt; &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/delete_filter_test.cc" line="262" column="1" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="262" bodyend="273"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1a7221aa7dc457338268bce60792c2ed73" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>equality_ids_by_file</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1a60d3eead7172ef5759f9b0472e369324" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>expected_field_ids</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1a2090d0b6a13570aaaa38fbd2c2fb412a" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>expected_field_names</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1ac8086961e3a5ec6c9318ea34caea9fc9" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>expected_has_equality_deletes</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1aed0a8a007bf1cb962898a01203b40f22" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>expected_has_position_deletes</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1a61c573344a67223611b10324a09d03c8" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>has_pos_delete</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1abb0f7eb764c5909b41dd54e092db9c5d" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>name</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1a6e9a23ac8ce6c4ad4cf371108db365f3" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>need_row_pos_col</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1aabb9ea960705cc42450bdb5d412ff99e" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>request</name></member>
+      <member refid="structiceberg_1_1RequiredSchemaCase_1a8abd5c1390af4f10c4b4e17c25389eb1" prot="public" virt="non-virtual"><scope>iceberg::RequiredSchemaCase</scope><name>requested_field_ids</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

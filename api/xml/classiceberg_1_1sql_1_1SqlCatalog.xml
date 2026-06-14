@@ -1,0 +1,1167 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1sql_1_1SqlCatalog" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::sql::SqlCatalog</compoundname>
+    <basecompoundref refid="classiceberg_1_1Catalog" prot="public" virt="non-virtual">iceberg::Catalog</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">std::enable_shared_from_this&lt; SqlCatalog &gt;</basecompoundref>
+    <includes refid="sql__catalog_8h" local="no">sql_catalog.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SqlCatalog_1a0354497efea2d1c4cc41edb7b268990c" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig" kindref="compound">SqlCatalogConfig</ref></type>
+        <definition>SqlCatalogConfig iceberg::sql::SqlCatalog::config_</definition>
+        <argsstring></argsstring>
+        <name>config_</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="184" column="20" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="184" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SqlCatalog_1a63565e1c4d88b2222a19c4851e4dcf88" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::sql::SqlCatalog::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="185" column="19" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SqlCatalog_1aafe65dad4dd4040de153e0a1108ae995" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;CatalogStore&gt; iceberg::sql::SqlCatalog::store_</definition>
+        <argsstring></argsstring>
+        <name>store_</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::store_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="186" column="19" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="186" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a9a2b01325e67e416d297861477979a8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::SqlCatalog::~SqlCatalog</definition>
+        <argsstring>() override</argsstring>
+        <name>~SqlCatalog</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::~SqlCatalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="69" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a4d4611465122f8fe881bac842ba05ecf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::SqlCatalog::SqlCatalog</definition>
+        <argsstring>(const SqlCatalog &amp;)=delete</argsstring>
+        <name>SqlCatalog</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::SqlCatalog</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="71" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1af90f4f72260385e719857133c5ee9667" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &amp;</type>
+        <definition>SqlCatalog &amp; iceberg::sql::SqlCatalog::operator=</definition>
+        <argsstring>(const SqlCatalog &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="72" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a8c6b19cc3bbab83668db7837f88291b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::SqlCatalog::SqlCatalog</definition>
+        <argsstring>(SqlCatalog &amp;&amp;)=delete</argsstring>
+        <name>SqlCatalog</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::SqlCatalog</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="73" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a966e1d51dbb055fe9e3898e3f086694c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &amp;</type>
+        <definition>SqlCatalog &amp; iceberg::sql::SqlCatalog::operator=</definition>
+        <argsstring>(SqlCatalog &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="74" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a4c7df0b381fcd39d1935694708714374" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::sql::SqlCatalog::name</definition>
+        <argsstring>() const override</argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::name</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a6ca1f4412051d707d228c34716f0df77">name</reimplements>
+        <briefdescription>
+<para>Return the name for this catalog. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="90" column="20" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="152" bodyend="152"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a2a37e1c45a1c2265f19bcaa451a31176" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::SqlCatalog::CreateNamespace</definition>
+        <argsstring>(const Namespace &amp;ns, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties) override</argsstring>
+        <name>CreateNamespace</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::CreateNamespace</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1afe33407448157e9f930c6c59857674ad">CreateNamespace</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a namespace with associated properties. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the namespace to create </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a key-value map of metadata for the namespace </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if created successfully; ErrorKind::kAlreadyExists if the namespace already exists; ErrorKind::kNotSupported if the operation is not supported </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="92" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="174" bodyend="199"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a7b29be7c29c73e4e9c7040bc27fd3e14" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; Namespace &gt; &gt; iceberg::sql::SqlCatalog::ListNamespaces</definition>
+        <argsstring>(const Namespace &amp;ns) const override</argsstring>
+        <name>ListNamespaces</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::ListNamespaces</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1ad952c6a9e417565a982719c94a071f4c">ListNamespaces</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>List child namespaces from the given namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the parent namespace </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a list of child namespaces; ErrorKind::kNoSuchNamespace if the given namespace does not exist </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="96" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="201" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a8dd4454e8e9b9a5038be2f1ce73d401d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::sql::SqlCatalog::GetNamespaceProperties</definition>
+        <argsstring>(const Namespace &amp;ns) const override</argsstring>
+        <name>GetNamespaceProperties</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::GetNamespaceProperties</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1afc973b299c5cf15f745e85954e343702">GetNamespaceProperties</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Get metadata properties for a namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the namespace to look up </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a key-value map of metadata properties; ErrorKind::kNoSuchNamespace if the namespace does not exist </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="98" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="235" bodyend="254"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1ab8269341489fd168833a982f34f0700f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::SqlCatalog::DropNamespace</definition>
+        <argsstring>(const Namespace &amp;ns) override</argsstring>
+        <name>DropNamespace</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::DropNamespace</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a7a4ed5b2fb8eaa877792e2a8effa2f08">DropNamespace</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Drop a namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the namespace to drop </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if dropped successfully; ErrorKind::kNoSuchNamespace if the namespace does not exist; ErrorKind::kNotAllowed if the namespace is not empty </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="101" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="256" bodyend="290"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a553d82f760b586e6cea7c6ab765fae4b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::sql::SqlCatalog::NamespaceExists</definition>
+        <argsstring>(const Namespace &amp;ns) const override</argsstring>
+        <name>NamespaceExists</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::NamespaceExists</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a10b42f8d47abcaf04e4af1e112dbb5ff">NamespaceExists</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Check whether the namespace exists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the namespace to check </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the namespace exists, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="103" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="158" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1acd9d6b81e29f3a52ebae536af567f7e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::SqlCatalog::UpdateNamespaceProperties</definition>
+        <argsstring>(const Namespace &amp;ns, const std::unordered_map&lt; std::string, std::string &gt; &amp;updates, const std::unordered_set&lt; std::string &gt; &amp;removals) override</argsstring>
+        <name>UpdateNamespaceProperties</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::UpdateNamespaceProperties</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a45740f35337266cce1dcf7257e561e0d">UpdateNamespaceProperties</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>updates</declname>
+        </param>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>removals</declname>
+        </param>
+        <briefdescription>
+<para>Update a namespace&apos;s properties by applying additions and removals. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the namespace to update </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a set of properties to add or overwrite </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>removals</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a set of property keys to remove </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the update is successful; ErrorKind::kNoSuchNamespace if the namespace does not exist; ErrorKind::kUnsupported if the operation is not supported </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="105" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="292" bodyend="323"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1ac82582385b20a955064c25b99af3056a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; TableIdentifier &gt; &gt; iceberg::sql::SqlCatalog::ListTables</definition>
+        <argsstring>(const Namespace &amp;ns) const override</argsstring>
+        <name>ListTables</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::ListTables</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1acc91fba906944a22b3c9eb279335150f">ListTables</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Return all the identifiers under this namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a namespace </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a list of identifiers for tables or ErrorKind::kNoSuchNamespace if the namespace does not exist </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="109" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="329" bodyend="349"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1acca2f2561bb3123442485d190c0bee29" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Table &gt; &gt; iceberg::sql::SqlCatalog::CreateTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, const std::shared_ptr&lt; Schema &gt; &amp;schema, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const std::shared_ptr&lt; SortOrder &gt; &amp;order, const std::string &amp;location, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties) override</argsstring>
+        <name>CreateTable</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::CreateTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a2061c315402a11ac7ecc1921513588db">CreateTable</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt; &amp;</type>
+          <declname>order</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a table identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a schema </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>order</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a sort order </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a location for the table; leave empty if unspecified </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a string map of table properties </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> instance or ErrorKind::kAlreadyExists if the table already exists </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="111" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="382" bodyend="413"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a7aa815bc4971c045763ec42d1f804b51" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Table &gt; &gt; iceberg::sql::SqlCatalog::UpdateTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, const std::vector&lt; std::unique_ptr&lt; TableRequirement &gt; &gt; &amp;requirements, const std::vector&lt; std::unique_ptr&lt; TableUpdate &gt; &gt; &amp;updates) override</argsstring>
+        <name>UpdateTable</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::UpdateTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a6af4029f0916dea3671d54c45ead31e5">UpdateTable</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &amp;</type>
+          <declname>requirements</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt; &amp;</type>
+          <declname>updates</declname>
+        </param>
+        <briefdescription>
+<para>Update a table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a table identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>requirements</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a list of table requirements </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a list of table updates </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> instance or ErrorKind::kAlreadyExists if the table already exists </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="117" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="415" bodyend="478"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1ac5d7096f8538cbbade82a91a397cad20" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Transaction &gt; &gt; iceberg::sql::SqlCatalog::StageCreateTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, const std::shared_ptr&lt; Schema &gt; &amp;schema, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const std::shared_ptr&lt; SortOrder &gt; &amp;order, const std::string &amp;location, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties) override</argsstring>
+        <name>StageCreateTable</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::StageCreateTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a26a46a17e3553c82ad4979562f4f05d5">StageCreateTable</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt; &amp;</type>
+          <declname>order</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Start a transaction to create a table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a table identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a schema </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>order</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a sort order </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a location for the table; leave empty if unspecified </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a string map of table properties </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> to create the table or ErrorKind::kAlreadyExists if the table already exists </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="122" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="480" bodyend="506"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1aed262279818cfdc45aaed44c2a2112ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::sql::SqlCatalog::TableExists</definition>
+        <argsstring>(const TableIdentifier &amp;identifier) const override</argsstring>
+        <name>TableExists</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::TableExists</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1ab66f167fbdf318d497bd9f41e740e7cd">TableExists</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <briefdescription>
+<para>Check whether table exists. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a table identifier </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Result&lt;bool&gt; indicating table exists or not.<itemizedlist>
+<listitem><para>On success, the table existence was successfully checked (actual existence may be inferred elsewhere).</para>
+</listitem><listitem><para>On failure, contains error information. </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="128" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="351" bodyend="355"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1acb8b780ad7a8b1730a3e7d2378842869" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::SqlCatalog::DropTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, bool purge) override</argsstring>
+        <name>DropTable</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::DropTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1a12fe952356fb24be53f753cb1b4cf380">DropTable</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>purge</declname>
+        </param>
+        <briefdescription>
+<para>Drop a table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> currently removes only the catalog entry. Support for deleting table data and metadata files when <computeroutput>purge</computeroutput> is true is not implemented yet. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="134" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="508" bodyend="520"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1ac8e469489a93c4e5e2853acfea469379" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::SqlCatalog::RenameTable</definition>
+        <argsstring>(const TableIdentifier &amp;from, const TableIdentifier &amp;to) override</argsstring>
+        <name>RenameTable</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::RenameTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1afab77ea12f9a8d2db3fa6e0f731656d1">RenameTable</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>from</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>to</declname>
+        </param>
+        <briefdescription>
+<para>Rename a table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>from</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the current table identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>to</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the new table identifier </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating the outcome of the operation.<itemizedlist>
+<listitem><para>On success, the table was renamed.</para>
+</listitem><listitem><para>On failure, contains error information. </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="136" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="522" bodyend="548"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a92d295d5e6d56b666b9bf4cc93324a30" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Table &gt; &gt; iceberg::sql::SqlCatalog::LoadTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier) override</argsstring>
+        <name>LoadTable</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::LoadTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1ab82d66ec150bb58007b9ece678461260">LoadTable</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <briefdescription>
+<para>Load a table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a table identifier </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>instance of <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> implementation referred to by identifier or ErrorKind::kNoSuchTable if the table does not exist </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="138" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="377" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1af4541d0c68f876ad1bf19b9fb59b4c7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Table &gt; &gt; iceberg::sql::SqlCatalog::RegisterTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, const std::string &amp;metadata_file_location) override</argsstring>
+        <name>RegisterTable</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::RegisterTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1Catalog_1af51de918a47128398c0c5dcabb9ae781">RegisterTable</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>metadata_file_location</declname>
+        </param>
+        <briefdescription>
+<para>Register a table with the catalog if it does not exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>identifier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a table identifier </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata_file_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the location of a metadata file </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> instance or ErrorKind::kAlreadyExists if the table already exists </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="140" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="550" bodyend="571"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a49cd9edb8ddd8fe3b9108a39b159ef33" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; SqlCatalog &gt; &gt; iceberg::sql::SqlCatalog::Make</definition>
+        <argsstring>(const SqlCatalogConfig &amp;config, std::shared_ptr&lt; FileIO &gt; file_io, std::shared_ptr&lt; CatalogStore &gt; store)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig" kindref="compound">SqlCatalogConfig</ref> &amp;</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt;</type>
+          <declname>store</declname>
+        </param>
+        <briefdescription>
+<para>Create a catalog backed by a user-supplied <computeroutput><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref></computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is the extension point for custom databases/drivers: implement <computeroutput><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref></computeroutput> and pass it here. The catalog initializes its schema (creating the backing tables if they do not exist) before returning.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> configuration (name and warehouse location are used; <computeroutput>uri</computeroutput> is informational because the store is already constructed). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO used to read and write table metadata files. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>store</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The catalog metadata store. Must not be null. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="86" column="17" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="137" bodyend="150"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1ad2c48688237c19f24a119228b01e1fef" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; SqlCatalog &gt; &gt; iceberg::sql::SqlCatalog::MakeSqliteCatalog</definition>
+        <argsstring>(const SqlCatalogConfig &amp;config, std::shared_ptr&lt; FileIO &gt; file_io)</argsstring>
+        <name>MakeSqliteCatalog</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::MakeSqliteCatalog</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig" kindref="compound">SqlCatalogConfig</ref> &amp;</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <briefdescription>
+<para>Create a catalog backed by the built-in SQLite client. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><computeroutput>uri</computeroutput> is the SQLite database file path (or &quot;:memory:&quot;). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO used to read and write table metadata files. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog instance, or ErrorKind::kNotSupported if the SQLite connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="150" column="17" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="577" bodyend="587"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a424c9adbe07655f6ae88194174cd7c42" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; SqlCatalog &gt; &gt; iceberg::sql::SqlCatalog::MakePostgreSqlCatalog</definition>
+        <argsstring>(const SqlCatalogConfig &amp;config, std::shared_ptr&lt; FileIO &gt; file_io)</argsstring>
+        <name>MakePostgreSqlCatalog</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::MakePostgreSqlCatalog</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig" kindref="compound">SqlCatalogConfig</ref> &amp;</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <briefdescription>
+<para>Create a catalog backed by the built-in PostgreSQL (libpq) client. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><computeroutput>uri</computeroutput> is parsed as <computeroutput>[scheme://][user[:password]@]host[:port][/database]</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO used to read and write table metadata files. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog instance, or ErrorKind::kNotSupported if the PostgreSQL connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="160" column="17" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="589" bodyend="599"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1ae5cfd9a17af61ee8ff07cb25921427e8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; SqlCatalog &gt; &gt; iceberg::sql::SqlCatalog::MakeMySqlCatalog</definition>
+        <argsstring>(const SqlCatalogConfig &amp;config, std::shared_ptr&lt; FileIO &gt; file_io)</argsstring>
+        <name>MakeMySqlCatalog</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::MakeMySqlCatalog</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig" kindref="compound">SqlCatalogConfig</ref> &amp;</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <briefdescription>
+<para>Create a catalog backed by the built-in MySQL client. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><computeroutput>uri</computeroutput> is parsed as <computeroutput>[scheme://][user[:password]@]host[:port][/database]</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO used to read and write table metadata files. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog instance, or ErrorKind::kNotSupported if the MySQL connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="170" column="17" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="601" bodyend="611"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a8d0767d906dc024af14d4de2b1623522" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::SqlCatalog::SqlCatalog</definition>
+        <argsstring>(SqlCatalogConfig config, std::shared_ptr&lt; FileIO &gt; file_io, std::shared_ptr&lt; CatalogStore &gt; store)</argsstring>
+        <name>SqlCatalog</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::SqlCatalog</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig" kindref="compound">SqlCatalogConfig</ref></type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt;</type>
+          <declname>store</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="174" column="3" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="129" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a7832d65790c5ebafdd5851e35a064d9e" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::sql::SqlCatalog::GetTableMetadataLocation</definition>
+        <argsstring>(const TableIdentifier &amp;identifier) const</argsstring>
+        <name>GetTableMetadataLocation</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::GetTableMetadataLocation</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <briefdescription>
+<para>Resolve the current metadata location for a table, or NoSuchTable. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="178" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="357" bodyend="367"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalog_1a419ab6ef6dfa2fe493910afc59108af5" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Table &gt; &gt; iceberg::sql::SqlCatalog::LoadTableFrom</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, const std::string &amp;metadata_location)</argsstring>
+        <name>LoadTableFrom</name>
+        <qualifiedname>iceberg::sql::SqlCatalog::LoadTableFrom</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>metadata_location</declname>
+        </param>
+        <briefdescription>
+<para>Build a <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> object from a metadata location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="181" column="10" bodyfile="iceberg/catalog/sql/sql_catalog.cc" bodystart="369" bodyend="375"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SQL-backed Iceberg catalog. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::Catalog</label>
+        <link refid="classiceberg_1_1Catalog"/>
+      </node>
+      <node id="1">
+        <label>iceberg::sql::SqlCatalog</label>
+        <link refid="classiceberg_1_1sql_1_1SqlCatalog"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::enable_shared_from_this&lt; SqlCatalog &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Catalog</label>
+        <link refid="classiceberg_1_1Catalog"/>
+      </node>
+      <node id="1">
+        <label>iceberg::sql::SqlCatalog</label>
+        <link refid="classiceberg_1_1sql_1_1SqlCatalog"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::enable_shared_from_this&lt; SqlCatalog &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/sql/sql_catalog.h" line="65" column="1" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="67" bodyend="187"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a0354497efea2d1c4cc41edb7b268990c" prot="private" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>config_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a2a37e1c45a1c2265f19bcaa451a31176" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>CreateNamespace</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1acca2f2561bb3123442485d190c0bee29" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>CreateTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1ab8269341489fd168833a982f34f0700f" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>DropNamespace</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1acb8b780ad7a8b1730a3e7d2378842869" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>DropTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a63565e1c4d88b2222a19c4851e4dcf88" prot="private" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a8dd4454e8e9b9a5038be2f1ce73d401d" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>GetNamespaceProperties</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a7832d65790c5ebafdd5851e35a064d9e" prot="private" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>GetTableMetadataLocation</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a7b29be7c29c73e4e9c7040bc27fd3e14" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>ListNamespaces</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1ac82582385b20a955064c25b99af3056a" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>ListTables</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a92d295d5e6d56b666b9bf4cc93324a30" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>LoadTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a419ab6ef6dfa2fe493910afc59108af5" prot="private" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>LoadTableFrom</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a49cd9edb8ddd8fe3b9108a39b159ef33" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1ae5cfd9a17af61ee8ff07cb25921427e8" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>MakeMySqlCatalog</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a424c9adbe07655f6ae88194174cd7c42" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>MakePostgreSqlCatalog</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1ad2c48688237c19f24a119228b01e1fef" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>MakeSqliteCatalog</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a4c7df0b381fcd39d1935694708714374" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>name</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a553d82f760b586e6cea7c6ab765fae4b" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>NamespaceExists</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1af90f4f72260385e719857133c5ee9667" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a966e1d51dbb055fe9e3898e3f086694c" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1af4541d0c68f876ad1bf19b9fb59b4c7a" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>RegisterTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1ac8e469489a93c4e5e2853acfea469379" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>RenameTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a4d4611465122f8fe881bac842ba05ecf" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>SqlCatalog</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a8c6b19cc3bbab83668db7837f88291b8" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>SqlCatalog</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a8d0767d906dc024af14d4de2b1623522" prot="private" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>SqlCatalog</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1ac5d7096f8538cbbade82a91a397cad20" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>StageCreateTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1aafe65dad4dd4040de153e0a1108ae995" prot="private" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>store_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1aed262279818cfdc45aaed44c2a2112ca" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>TableExists</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1acd9d6b81e29f3a52ebae536af567f7e5" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>UpdateNamespaceProperties</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a7aa815bc4971c045763ec42d1f804b51" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>UpdateTable</name></member>
+      <member refid="classiceberg_1_1Catalog_1aa4682426cafc01734008ca9be9acb6f6" prot="public" virt="virtual"><scope>iceberg::sql::SqlCatalog</scope><name>~Catalog</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalog_1a9a2b01325e67e416d297861477979a8f" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalog</scope><name>~SqlCatalog</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

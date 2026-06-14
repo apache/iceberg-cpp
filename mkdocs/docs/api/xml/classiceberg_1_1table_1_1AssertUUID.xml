@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1AssertUUID" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::AssertUUID</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableRequirement" prot="public" virt="non-virtual">iceberg::TableRequirement</basecompoundref>
+    <includes refid="table__requirement_8h" local="no">table_requirement.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AssertUUID_1adcab522b350e9aa44a8e7ecc3447d531" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::table::AssertUUID::uuid_</definition>
+        <argsstring></argsstring>
+        <name>uuid_</name>
+        <qualifiedname>iceberg::table::AssertUUID::uuid_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="135" column="15" bodyfile="iceberg/table_requirement.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertUUID_1a0d2feb219f451bf56a60bdc4779eb185" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::AssertUUID::AssertUUID</definition>
+        <argsstring>(std::string uuid)</argsstring>
+        <name>AssertUUID</name>
+        <qualifiedname>iceberg::table::AssertUUID::AssertUUID</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>uuid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="114" column="12" bodyfile="iceberg/table_requirement.h" bodystart="114" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertUUID_1af5a7c3f00dc5e94edbe64002a690b983" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::table::AssertUUID::uuid</definition>
+        <argsstring>() const</argsstring>
+        <name>uuid</name>
+        <qualifiedname>iceberg::table::AssertUUID::uuid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="116" column="21" bodyfile="iceberg/table_requirement.h" bodystart="116" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertUUID_1a71761cc1d765eee5f58610df23ad51cd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::AssertUUID::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::AssertUUID::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="118" column="8" bodyfile="iceberg/table_requirement.h" bodystart="118" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertUUID_1a40a0b6fda5e482c8c23d7807dc19f0a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::table::AssertUUID::Validate</definition>
+        <argsstring>(const TableMetadata *base) const override</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::table::AssertUUID::Validate</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15">Validate</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Validate this requirement against table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to validate against (may be nullptr) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure with error details </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="120" column="10" bodyfile="iceberg/table_requirement.cc" bodystart="37" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertUUID_1a11766552aaf57d52404300e5ec45892b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::table::AssertUUID::Equals</definition>
+        <argsstring>(const TableRequirement &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::table::AssertUUID::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The requirement to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the requirements are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="122" column="8" bodyfile="iceberg/table_requirement.h" bodystart="122" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertUUID_1ae88f244b6ba758d2466e4d2accd1405a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; TableRequirement &gt; iceberg::table::AssertUUID::Clone</definition>
+        <argsstring>() const override</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::table::AssertUUID::Clone</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1a2bbf72ce6649e04a8dc1bc2f7bcff353">Clone</reimplements>
+        <briefdescription>
+<para>Create a deep copy of this requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="130" column="19" bodyfile="iceberg/table_requirement.h" bodystart="130" bodyend="132"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Requirement that the table UUID matches the expected value. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This ensures the table hasn&apos;t been replaced or recreated between reading the metadata and attempting to update it. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertUUID</label>
+        <link refid="classiceberg_1_1table_1_1AssertUUID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertUUID</label>
+        <link refid="classiceberg_1_1table_1_1AssertUUID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_requirement.h" line="112" column="1" bodyfile="iceberg/table_requirement.h" bodystart="112" bodyend="136"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1AssertUUID_1a0d2feb219f451bf56a60bdc4779eb185" prot="public" virt="non-virtual"><scope>iceberg::table::AssertUUID</scope><name>AssertUUID</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertUUID_1ae88f244b6ba758d2466e4d2accd1405a" prot="public" virt="virtual"><scope>iceberg::table::AssertUUID</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertUUID_1a11766552aaf57d52404300e5ec45892b" prot="public" virt="virtual"><scope>iceberg::table::AssertUUID</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertUUID_1a71761cc1d765eee5f58610df23ad51cd" prot="public" virt="virtual"><scope>iceberg::table::AssertUUID</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79" prot="public" virt="non-virtual"><scope>iceberg::table::AssertUUID</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertUUID_1af5a7c3f00dc5e94edbe64002a690b983" prot="public" virt="non-virtual"><scope>iceberg::table::AssertUUID</scope><name>uuid</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertUUID_1adcab522b350e9aa44a8e7ecc3447d531" prot="private" virt="non-virtual"><scope>iceberg::table::AssertUUID</scope><name>uuid_</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertUUID_1a40a0b6fda5e482c8c23d7807dc19f0a5" prot="public" virt="virtual"><scope>iceberg::table::AssertUUID</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a91a754d5e846ec2607aec5bf09896270" prot="public" virt="virtual"><scope>iceberg::table::AssertUUID</scope><name>~TableRequirement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

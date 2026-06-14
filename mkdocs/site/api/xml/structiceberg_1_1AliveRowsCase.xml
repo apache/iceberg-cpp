@@ -1,0 +1,180 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1AliveRowsCase" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::AliveRowsCase</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1abfbc29b7638b0c48d90c2ea80afab933" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* iceberg::AliveRowsCase::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::AliveRowsCase::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="537" column="14" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="537" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1af9d9fa5b1f88c1e36409fe6ce30f0e1f" prot="public" static="no" mutable="no">
+        <type>AliveRowsDeleteKind</type>
+        <definition>AliveRowsDeleteKind iceberg::AliveRowsCase::delete_kind</definition>
+        <argsstring></argsstring>
+        <name>delete_kind</name>
+        <qualifiedname>iceberg::AliveRowsCase::delete_kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="538" column="23" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="538" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1a3a79bc8ff3451f9688cefbde20a25d22" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::AliveRowsCase::position_delete_positions</definition>
+        <argsstring></argsstring>
+        <name>position_delete_positions</name>
+        <qualifiedname>iceberg::AliveRowsCase::position_delete_positions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="539" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="539" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1a48d657fe0b1a93702aab6567dfeb5712" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::AliveRowsCase::position_delete_data_path</definition>
+        <argsstring></argsstring>
+        <name>position_delete_data_path</name>
+        <qualifiedname>iceberg::AliveRowsCase::position_delete_data_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="540" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="540" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1a17364bc920a992ae6627ed5f73457092" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::AliveRowsCase::need_row_pos_col</definition>
+        <argsstring></argsstring>
+        <name>need_row_pos_col</name>
+        <qualifiedname>iceberg::AliveRowsCase::need_row_pos_col</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="541" column="8" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="541" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1a79471df1aa101407ff7e75b349e3272f" prot="public" static="no" mutable="no">
+        <type>CounterMode</type>
+        <definition>CounterMode iceberg::AliveRowsCase::counter_mode</definition>
+        <argsstring></argsstring>
+        <name>counter_mode</name>
+        <qualifiedname>iceberg::AliveRowsCase::counter_mode</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="542" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="542" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1a22242dd0ef9314a499066c96014e06e3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::AliveRowsCase::batch_json</definition>
+        <argsstring></argsstring>
+        <name>batch_json</name>
+        <qualifiedname>iceberg::AliveRowsCase::batch_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="543" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="543" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1a91e2aa3f9069447288523c16f026c22d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::AliveRowsCase::expected_alive_rows</definition>
+        <argsstring></argsstring>
+        <name>expected_alive_rows</name>
+        <qualifiedname>iceberg::AliveRowsCase::expected_alive_rows</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="544" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="544" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowsCase_1a960e045a7cf0f4b4fc58b50e25dae688" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::AliveRowsCase::expected_delete_count</definition>
+        <argsstring></argsstring>
+        <name>expected_delete_count</name>
+        <qualifiedname>iceberg::AliveRowsCase::expected_delete_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="545" column="17" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="545" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::AliveRowsCase</label>
+        <link refid="structiceberg_1_1AliveRowsCase"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>position_delete_positions</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>batch_json</edgelabel>
+          <edgelabel>position_delete_data_path</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>expected_alive_rows</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/delete_filter_test.cc" line="536" column="1" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="536" bodyend="546"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1AliveRowsCase_1a22242dd0ef9314a499066c96014e06e3" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>batch_json</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1a79471df1aa101407ff7e75b349e3272f" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>counter_mode</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1af9d9fa5b1f88c1e36409fe6ce30f0e1f" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>delete_kind</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1a91e2aa3f9069447288523c16f026c22d" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>expected_alive_rows</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1a960e045a7cf0f4b4fc58b50e25dae688" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>expected_delete_count</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1abfbc29b7638b0c48d90c2ea80afab933" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>name</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1a17364bc920a992ae6627ed5f73457092" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>need_row_pos_col</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1a48d657fe0b1a93702aab6567dfeb5712" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>position_delete_data_path</name></member>
+      <member refid="structiceberg_1_1AliveRowsCase_1a3a79bc8ff3451f9688cefbde20a25d22" prot="public" virt="non-virtual"><scope>iceberg::AliveRowsCase</scope><name>position_delete_positions</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

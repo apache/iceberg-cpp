@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ReportRequiredFieldParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ReportRequiredFieldParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ReportRequiredFieldParam_1a8d31e73e6c2ecb29e6664c3a7035961c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ReportRequiredFieldParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::ReportRequiredFieldParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test.cc" line="1051" column="15" bodyfile="iceberg/test/metrics_test.cc" bodystart="1051" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ReportRequiredFieldParam_1ad99cf8292f9904a295306400f983463d" prot="public" static="no" mutable="no">
+        <type>nlohmann::json</type>
+        <definition>nlohmann::json iceberg::ReportRequiredFieldParam::json</definition>
+        <argsstring></argsstring>
+        <name>json</name>
+        <qualifiedname>iceberg::ReportRequiredFieldParam::json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test.cc" line="1052" column="18" bodyfile="iceberg/test/metrics_test.cc" bodystart="1052" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ReportRequiredFieldParam_1ae3077a16c75341e5baa70d3bf78f26ec" prot="public" static="no" mutable="no">
+        <type>std::function&lt; bool(const nlohmann::json &amp;)&gt;</type>
+        <definition>std::function&lt;bool(const nlohmann::json&amp;)&gt; iceberg::ReportRequiredFieldParam::has_value</definition>
+        <argsstring></argsstring>
+        <name>has_value</name>
+        <qualifiedname>iceberg::ReportRequiredFieldParam::has_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test.cc" line="1053" column="17" bodyfile="iceberg/test/metrics_test.cc" bodystart="1053" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ReportRequiredFieldParam</label>
+        <link refid="structiceberg_1_1ReportRequiredFieldParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/metrics_test.cc" line="1050" column="1" bodyfile="iceberg/test/metrics_test.cc" bodystart="1050" bodyend="1054"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ReportRequiredFieldParam_1ae3077a16c75341e5baa70d3bf78f26ec" prot="public" virt="non-virtual"><scope>iceberg::ReportRequiredFieldParam</scope><name>has_value</name></member>
+      <member refid="structiceberg_1_1ReportRequiredFieldParam_1ad99cf8292f9904a295306400f983463d" prot="public" virt="non-virtual"><scope>iceberg::ReportRequiredFieldParam</scope><name>json</name></member>
+      <member refid="structiceberg_1_1ReportRequiredFieldParam_1a8d31e73e6c2ecb29e6664c3a7035961c" prot="public" virt="non-virtual"><scope>iceberg::ReportRequiredFieldParam</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

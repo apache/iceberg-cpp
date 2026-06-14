@@ -1,0 +1,267 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="base64__test_8cc" kind="file" language="C++">
+    <compoundname>base64_test.cc</compoundname>
+    <includes refid="base64_8h" local="yes">iceberg/util/base64.h</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <incdepgraph>
+      <node id="16">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="6">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/base64_test.cc</label>
+        <link refid="base64__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/util/base64.h</label>
+        <link refid="base64_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>cassert</label>
+      </node>
+      <node id="7">
+        <label>concepts</label>
+      </node>
+      <node id="8">
+        <label>expected</label>
+      </node>
+      <node id="9">
+        <label>format</label>
+      </node>
+      <node id="13">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="11">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="17">
+        <label>stdexcept</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+      <node id="4">
+        <label>string_view</label>
+      </node>
+      <node id="10">
+        <label>type_traits</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="base64_8h" kindref="compound">iceberg/util/base64.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal">TEST(Base64Test,<sp/>Encode)<sp/>{</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Empty<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Single<sp/>character</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YQ==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;a&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWI=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;ab&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJj&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;abc&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Multiple<sp/>of<sp/>3<sp/>characters</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJjZGU=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;abcde&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJjZGVm&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;abcdef&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Common<sp/>strings</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;U29tZSBkYXRhIHdpdGggY2hhcmFjdGVycw==&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;Some<sp/>data<sp/>with<sp/>characters&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;aGVsbG8=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;dGVzdCBzdHJpbmc=&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;test<sp/>string&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Unicode</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;8J+EgA==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>(</highlight><highlight class="stringliteral">&quot;\xF0\x9F\x84\x80&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Null<sp/>byte</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;AA==&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a07442a059d0877c5b6ed22cf2e7fedff" kindref="member">Base64::Encode</ref>({</highlight><highlight class="stringliteral">&quot;\x00&quot;</highlight><highlight class="normal">,<sp/>1}));</highlight></codeline>
+<codeline lineno="51"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal">TEST(Base64Test,<sp/>Decode)<sp/>{</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Empty<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>empty,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/>empty);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Round-trip<sp/>with<sp/>Base64::Encode</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>a,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;YQ==&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;a&quot;</highlight><highlight class="normal">,<sp/>a);</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ab,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;YWI=&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;ab&quot;</highlight><highlight class="normal">,<sp/>ab);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>abc,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;YWJj&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;abc&quot;</highlight><highlight class="normal">,<sp/>abc);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>abcde,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;YWJjZGU=&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;abcde&quot;</highlight><highlight class="normal">,<sp/>abcde);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>abcdef,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;YWJjZGVm&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;abcdef&quot;</highlight><highlight class="normal">,<sp/>abcdef);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>hello,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;aGVsbG8=&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">,<sp/>hello);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>test_str,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;dGVzdCBzdHJpbmc=&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;test<sp/>string&quot;</highlight><highlight class="normal">,<sp/>test_str);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Without<sp/>padding<sp/>(should<sp/>still<sp/>work)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>a2,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;YQ&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;a&quot;</highlight><highlight class="normal">,<sp/>a2);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>ab2,<sp/><ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;YWI&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;ab&quot;</highlight><highlight class="normal">,<sp/>ab2);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Invalid<sp/>characters<sp/>return<sp/>error</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>EXPECT_THAT(<ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(</highlight><highlight class="stringliteral">&quot;!!!&quot;</highlight><highlight class="normal">),<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Invalid<sp/>padding<sp/>and<sp/>impossible<sp/>unpadded<sp/>lengths<sp/>return<sp/>error</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/>invalid<sp/>:</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight><highlight class="stringliteral">&quot;=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;====&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Y=Q=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;YQ=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;YQ===&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;YWJj=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;aGVsbG8==&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;A&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;AAAAA&quot;</highlight><highlight class="normal">})<sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_THAT(<ref refid="classiceberg_1_1Base64_1abc43a88604683b2e3c781c5ee565fc3c" kindref="member">Base64::Decode</ref>(invalid),<sp/>IsError(ErrorKind::kInvalidArgument))<sp/>&lt;&lt;<sp/>invalid;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="88"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal">TEST(Base64Test,<sp/>UrlEncode)<sp/>{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Empty<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a0191f0cfc0a6ceec3e60ddbd43f7d71c" kindref="member">Base64::UrlEncode</ref>(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>No<sp/>padding<sp/>is<sp/>emitted<sp/>(unlike<sp/>standard<sp/>base64)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YQ&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a0191f0cfc0a6ceec3e60ddbd43f7d71c" kindref="member">Base64::UrlEncode</ref>(</highlight><highlight class="stringliteral">&quot;a&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWI&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a0191f0cfc0a6ceec3e60ddbd43f7d71c" kindref="member">Base64::UrlEncode</ref>(</highlight><highlight class="stringliteral">&quot;ab&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;YWJj&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a0191f0cfc0a6ceec3e60ddbd43f7d71c" kindref="member">Base64::UrlEncode</ref>(</highlight><highlight class="stringliteral">&quot;abc&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;aGVsbG8&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a0191f0cfc0a6ceec3e60ddbd43f7d71c" kindref="member">Base64::UrlEncode</ref>(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>URL-safe<sp/>characters:<sp/>&apos;-&apos;<sp/>and<sp/>&apos;_&apos;<sp/>instead<sp/>of<sp/>&apos;+&apos;<sp/>and<sp/>&apos;/&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>bytes<sp/>{0xFB,<sp/>0xFF,<sp/>0xFE}<sp/>encode<sp/>to<sp/>&quot;+//+&quot;<sp/>in<sp/>standard<sp/>base64,<sp/>&quot;-__-&quot;<sp/>in<sp/>base64url</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;-__-&quot;</highlight><highlight class="normal">,<sp/><ref refid="classiceberg_1_1Base64_1a0191f0cfc0a6ceec3e60ddbd43f7d71c" kindref="member">Base64::UrlEncode</ref>(</highlight><highlight class="stringliteral">&quot;\xFB\xFF\xFE&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Round-trip<sp/>with<sp/>UrlDecode</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>decoded,<sp/><ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(<ref refid="classiceberg_1_1Base64_1a0191f0cfc0a6ceec3e60ddbd43f7d71c" kindref="member">Base64::UrlEncode</ref>(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">)));</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">,<sp/>decoded);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal">TEST(Base64Test,<sp/>UrlDecode)<sp/>{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Empty<sp/>string</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>empty,<sp/><ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">,<sp/>empty);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Standard<sp/>cases<sp/>(same<sp/>as<sp/>Base64::Decode<sp/>for<sp/>alphanumeric)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>hello,<sp/><ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(</highlight><highlight class="stringliteral">&quot;aGVsbG8&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">,<sp/>hello);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>abc,<sp/><ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(</highlight><highlight class="stringliteral">&quot;YWJj&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;abc&quot;</highlight><highlight class="normal">,<sp/>abc);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>URL-safe<sp/>characters:<sp/>&apos;-&apos;<sp/>and<sp/>&apos;_&apos;<sp/>instead<sp/>of<sp/>&apos;+&apos;<sp/>and<sp/>&apos;/&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>bytes<sp/>{0xFB,<sp/>0xFF,<sp/>0xFE}<sp/>encode<sp/>to<sp/>&quot;+//+&quot;<sp/>in<sp/>standard<sp/>base64,<sp/>&quot;-__-&quot;<sp/>in<sp/>base64url</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>decoded,<sp/><ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(</highlight><highlight class="stringliteral">&quot;-__-&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>EXPECT_EQ(3u,<sp/>decoded.size());</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&apos;\xFB&apos;</highlight><highlight class="normal">,<sp/>decoded[0]);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&apos;\xFF&apos;</highlight><highlight class="normal">,<sp/>decoded[1]);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&apos;\xFE&apos;</highlight><highlight class="normal">,<sp/>decoded[2]);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Standard<sp/>base64<sp/>chars<sp/>&apos;+&apos;<sp/>and<sp/>&apos;/&apos;<sp/>should<sp/>be<sp/>invalid<sp/>in<sp/>base64url</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/>EXPECT_THAT(<ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(</highlight><highlight class="stringliteral">&quot;+//+&quot;</highlight><highlight class="normal">),<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>With<sp/>padding<sp/>(should<sp/>handle<sp/>gracefully)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/>ICEBERG_UNWRAP_OR_FAIL(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>hello2,<sp/><ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(</highlight><highlight class="stringliteral">&quot;aGVsbG8=&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>EXPECT_EQ(</highlight><highlight class="stringliteral">&quot;hello&quot;</highlight><highlight class="normal">,<sp/>hello2);</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Invalid<sp/>characters<sp/>return<sp/>error</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/>EXPECT_THAT(<ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(</highlight><highlight class="stringliteral">&quot;!!!invalid!!!&quot;</highlight><highlight class="normal">),<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Invalid<sp/>padding<sp/>and<sp/>impossible<sp/>unpadded<sp/>lengths<sp/>return<sp/>error</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/>invalid<sp/>:</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight><highlight class="stringliteral">&quot;=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;====&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;Y=Q=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;YQ=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;YQ===&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;YWJj=&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;aGVsbG8==&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;A&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;AAAAA&quot;</highlight><highlight class="normal">})<sp/>{</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_THAT(<ref refid="classiceberg_1_1Base64_1a88ddfaaa9367eef4e2317505f194a577" kindref="member">Base64::UrlDecode</ref>(invalid),<sp/>IsError(ErrorKind::kInvalidArgument))</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/>invalid;</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="144"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/base64_test.cc"/>
+  </compounddef>
+</doxygen>

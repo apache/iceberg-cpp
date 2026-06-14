@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1parquet_1_1ParquetMetrics" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ParquetMetrics</compoundname>
+    <includes refid="parquet__metrics__internal_8h" local="no">parquet_metrics_internal.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetMetrics_1a9bd29feb6d399ecb73afd816f9dba205" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::parquet::ParquetMetrics::ParquetMetrics</definition>
+        <argsstring>()=delete</argsstring>
+        <name>ParquetMetrics</name>
+        <qualifiedname>iceberg::parquet::ParquetMetrics::ParquetMetrics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_metrics_internal.h" line="39" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetMetrics_1a781a180c11cb858cab7425e4bac779ef" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>Result&lt; Metrics &gt; iceberg::parquet::ParquetMetrics::GetMetrics</definition>
+        <argsstring>(const Schema &amp;schema, const ::parquet::SchemaDescriptor &amp;parquet_schema, const MetricsConfig &amp;metrics_config, const ::parquet::FileMetaData &amp;metadata, const std::unordered_map&lt; int32_t, FieldMetrics &gt; &amp;field_metrics={})</argsstring>
+        <name>GetMetrics</name>
+        <qualifiedname>iceberg::parquet::ParquetMetrics::GetMetrics</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const ::parquet::SchemaDescriptor &amp;</type>
+          <declname>parquet_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &amp;</type>
+          <declname>metrics_config</declname>
+        </param>
+        <param>
+          <type>const ::parquet::FileMetaData &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; int32_t, <ref refid="structiceberg_1_1FieldMetrics" kindref="compound">FieldMetrics</ref> &gt; &amp;</type>
+          <declname>field_metrics</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Compute file-level metrics from Parquet file metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function extracts metrics including row count, column sizes, value counts, null value counts, and lower/upper bounds from Parquet file metadata. NaN value counts are not currently collected from Parquet metadata. The metrics are computed according to the provided <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref>, which determines which columns to collect metrics for and at what granularity (counts only, truncated bounds, or full bounds).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Iceberg schema for the table. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parquet_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Parquet schema descriptor. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metrics_config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The configuration specifying how to collect metrics. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Parquet file metadata containing row group statistics. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field_metrics</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional per-field metrics computed during write. If provided, these take precedence over footer statistics. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Result containing the computed <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_metrics_internal.h" line="57" column="17" bodyfile="iceberg/parquet/parquet_metrics.cc" bodystart="499" bodyend="514"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utility class for computing metrics from Parquet files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/parquet/parquet_metrics_internal.h" line="37" column="1" bodyfile="iceberg/parquet/parquet_metrics_internal.h" bodystart="37" bodyend="61"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1parquet_1_1ParquetMetrics_1a781a180c11cb858cab7425e4bac779ef" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetMetrics</scope><name>GetMetrics</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetMetrics_1a9bd29feb6d399ecb73afd816f9dba205" prot="public" virt="non-virtual"><scope>iceberg::parquet::ParquetMetrics</scope><name>ParquetMetrics</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

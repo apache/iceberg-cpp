@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1IcebergNamespaceProperties__" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::IcebergNamespaceProperties_</compoundname>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1CatalogName" prot="public">iceberg::sql::IcebergNamespaceProperties_::CatalogName</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace" prot="public">iceberg::sql::IcebergNamespaceProperties_::Namespace</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1PropertyKey" prot="public">iceberg::sql::IcebergNamespaceProperties_::PropertyKey</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1PropertyValue" prot="public">iceberg::sql::IcebergNamespaceProperties_::PropertyValue</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1a7cb2510b9673b919bd2cc30df29dbed3" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>sqlpp::table_columns&lt; T, <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1CatalogName" kindref="compound">CatalogName</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace" kindref="compound">Namespace</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1PropertyKey" kindref="compound">PropertyKey</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1PropertyValue" kindref="compound">PropertyValue</ref> &gt;</type>
+        <definition>using iceberg::sql::IcebergNamespaceProperties_::_table_columns =  sqlpp::table_columns&lt;T, CatalogName, Namespace, PropertyKey, PropertyValue&gt;</definition>
+        <argsstring></argsstring>
+        <name>_table_columns</name>
+        <qualifiedname>iceberg::sql::IcebergNamespaceProperties_::_table_columns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="123" column="3" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1a78fac6052ccd0edb497a5a6e055108b3" prot="public" static="no">
+        <type>sqlpp::detail::type_set&lt; sqlpp::column_t&lt; sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties__" kindref="compound">IcebergNamespaceProperties_</ref> &gt;, <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1CatalogName" kindref="compound">CatalogName</ref> &gt;, sqlpp::column_t&lt; sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties__" kindref="compound">IcebergNamespaceProperties_</ref> &gt;, <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace" kindref="compound">Namespace</ref> &gt;, sqlpp::column_t&lt; sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties__" kindref="compound">IcebergNamespaceProperties_</ref> &gt;, <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1PropertyKey" kindref="compound">PropertyKey</ref> &gt; &gt;</type>
+        <definition>using iceberg::sql::IcebergNamespaceProperties_::_required_insert_columns =  sqlpp::detail::type_set&lt; sqlpp::column_t&lt;sqlpp::table_t&lt;IcebergNamespaceProperties_&gt;, CatalogName&gt;, sqlpp::column_t&lt;sqlpp::table_t&lt;IcebergNamespaceProperties_&gt;, Namespace&gt;, sqlpp::column_t&lt;sqlpp::table_t&lt;IcebergNamespaceProperties_&gt;, PropertyKey&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>_required_insert_columns</name>
+        <qualifiedname>iceberg::sql::IcebergNamespaceProperties_::_required_insert_columns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="128" column="3" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1a4b7df35c5081afa64f512e08d4e9fd83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::IcebergNamespaceProperties_::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</definition>
+        <argsstring>(iceberg_namespace_properties, icebergNamespaceProperties)</argsstring>
+        <name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name>
+        <qualifiedname>iceberg::sql::IcebergNamespaceProperties_::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</qualifiedname>
+        <param>
+          <type>iceberg_namespace_properties</type>
+        </param>
+        <param>
+          <type>icebergNamespaceProperties</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="119" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="96" column="1" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="96" bodyend="132"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1a78fac6052ccd0edb497a5a6e055108b3" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergNamespaceProperties_</scope><name>_required_insert_columns</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1a7cb2510b9673b919bd2cc30df29dbed3" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergNamespaceProperties_</scope><name>_table_columns</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1a4b7df35c5081afa64f512e08d4e9fd83" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergNamespaceProperties_</scope><name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

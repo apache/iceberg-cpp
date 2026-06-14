@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1ParquetMetricsTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::test::ParquetMetricsTest</compoundname>
+    <basecompoundref refid="classiceberg_1_1test_1_1MetricsTestBase" prot="public" virt="non-virtual">iceberg::test::MetricsTestBase</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1ParquetMetricsTest_1a933e464f808217d5188b8413bbf9336b" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::test::ParquetMetricsTest::temp_parquet_file_</definition>
+        <argsstring></argsstring>
+        <name>temp_parquet_file_</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::temp_parquet_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="111" column="15" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1ParquetMetricsTest_1ae12005aaf684ecc3c5af4062a0deb697" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1WriterProperties" kindref="compound">WriterProperties</ref></type>
+        <definition>WriterProperties iceberg::test::ParquetMetricsTest::writer_properties_</definition>
+        <argsstring></argsstring>
+        <name>writer_properties_</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::writer_properties_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="112" column="20" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="112" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1aa7f3c27625890edfcdaff0b963c8636d" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::test::ParquetMetricsTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="41" column="15" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="41" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1a13b84da66192b910058fd7d974347782" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::test::ParquetMetricsTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::SetUp</qualifiedname>
+        <reimplements refid="classiceberg_1_1test_1_1MetricsTestBase_1a02caaa6f82c562f8f68fd0a50c532ca9">SetUp</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="43" column="8" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="43" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1a9acbcadc01236d18a07008ae87543a95" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>Result&lt; Metrics &gt; iceberg::test::ParquetMetricsTest::GetMetrics</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, std::shared_ptr&lt;::arrow::Array &gt; records) override</argsstring>
+        <name>GetMetrics</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::GetMetrics</qualifiedname>
+        <reimplements refid="classiceberg_1_1test_1_1MetricsTestBase_1a1828a29f65d959ab66eae1872b5baeab">GetMetrics</reimplements>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::Array &gt;</type>
+          <declname>records</declname>
+        </param>
+        <briefdescription>
+<para>Get metrics for the given schema and records. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="52" column="10" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="52" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1a100294b68e5c9a8267ca9c398ea1aa30" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>Result&lt; Metrics &gt; iceberg::test::ParquetMetricsTest::GetMetrics</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, std::shared_ptr&lt; MetricsConfig &gt; config, std::shared_ptr&lt;::arrow::Array &gt; records) override</argsstring>
+        <name>GetMetrics</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::GetMetrics</qualifiedname>
+        <reimplements refid="classiceberg_1_1test_1_1MetricsTestBase_1a0eb8fd220e4466536806947026a3295a">GetMetrics</reimplements>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &gt;</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::Array &gt;</type>
+          <declname>records</declname>
+        </param>
+        <briefdescription>
+<para>Get metrics with custom <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="57" column="10" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="57" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1ad2f2fa10a6f1073459a1701046c6e38e" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::test::ParquetMetricsTest::CreateOutputFile</definition>
+        <argsstring>() override</argsstring>
+        <name>CreateOutputFile</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::CreateOutputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1test_1_1MetricsTestBase_1afa327a958d3a52e08202a1e89a9e3ae6">CreateOutputFile</reimplements>
+        <briefdescription>
+<para>Create an output file for testing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="75" column="15" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1a0428f1a6ba273af0357f2283f62849f4" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int &gt;</type>
+        <definition>Result&lt; int &gt; iceberg::test::ParquetMetricsTest::GetSplitCount</definition>
+        <argsstring>() override</argsstring>
+        <name>GetSplitCount</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::GetSplitCount</qualifiedname>
+        <reimplements refid="classiceberg_1_1test_1_1MetricsTestBase_1a33ed3eb096d5d4b998287e5b88f419d6">GetSplitCount</reimplements>
+        <briefdescription>
+<para>Get the number of row groups/splits in a file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="77" column="10" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="77" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1a991dc6ec0f1b646b243a4155b864444f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>Result&lt; Metrics &gt; iceberg::test::ParquetMetricsTest::GetMetricsWithFieldMetrics</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, std::shared_ptr&lt; MetricsConfig &gt; config, std::shared_ptr&lt;::arrow::Array &gt; records, const std::unordered_map&lt; int32_t, FieldMetrics &gt; &amp;field_metrics)</argsstring>
+        <name>GetMetricsWithFieldMetrics</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::GetMetricsWithFieldMetrics</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &gt;</type>
+          <declname>config</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::Array &gt;</type>
+          <declname>records</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; int32_t, <ref refid="structiceberg_1_1FieldMetrics" kindref="compound">FieldMetrics</ref> &gt; &amp;</type>
+          <declname>field_metrics</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="84" column="10" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="84" bodyend="106"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ParquetMetricsTest_1a4932b50cb6f29cef74d808013e682f4c" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::test::ParquetMetricsTest::SupportsSmallRowGroups</definition>
+        <argsstring>() const override</argsstring>
+        <name>SupportsSmallRowGroups</name>
+        <qualifiedname>iceberg::test::ParquetMetricsTest::SupportsSmallRowGroups</qualifiedname>
+        <reimplements refid="classiceberg_1_1test_1_1MetricsTestBase_1ad8f75d591d61f4506bd505f93280c00b">SupportsSmallRowGroups</reimplements>
+        <briefdescription>
+<para>Whether the format supports small row groups for testing. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="108" column="8" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="108" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::test::MetricsTestBase</label>
+        <link refid="classiceberg_1_1test_1_1MetricsTestBase"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::ParquetMetricsTest</label>
+        <link refid="classiceberg_1_1test_1_1ParquetMetricsTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="2">
+        <label>iceberg::test::MetricsTestBase</label>
+        <link refid="classiceberg_1_1test_1_1MetricsTestBase"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>path_</edgelabel>
+          <edgelabel>temp_dir_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::test::ParquetMetricsTest</label>
+        <link refid="classiceberg_1_1test_1_1ParquetMetricsTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/parquet_metrics_test.cc" line="39" column="1" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="39" bodyend="113"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1acad828f8766511834385121b38508eaa" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>AssertBounds</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a6ec41e067e89fbe7516ac014c2eb7e62" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>AssertColumnSizeFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1abb7038734e04d7f1f66afd0a4f7ab34e" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>AssertCounts</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a3e11bae974ce12270d2f9c23e3276667" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>AssertCounts</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1aa58bb5ababfaae2bda13c881f9a20de2" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>ColumnBoundsWithNaNValueAtEnd</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a2fcc5c8e582d1a26f393fb84da0b9039" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>ColumnBoundsWithNaNValueAtFront</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1ad007d84a542dd08414d35851b0a22d0f" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>ColumnBoundsWithNaNValueInMiddle</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a4f1775f182cd3b38e506dd30ff2831c1" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>CountsMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1ad2f2fa10a6f1073459a1701046c6e38e" prot="protected" virt="virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>CreateOutputFile</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a1cab1f097343b9281e10a455568f02a7" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>CreateRecordArrays</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a32f0c6c4c6911329e5817ef5bd58f53e" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1aa630fdceb1e8f286775eaf1fb4aff0d5" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>FloatDoubleSchema</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a28a76dff7c706cb5a6c32a8bf449f452" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>FullMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a9acbcadc01236d18a07008ae87543a95" prot="protected" virt="virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>GetMetrics</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a100294b68e5c9a8267ca9c398ea1aa30" prot="protected" virt="virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>GetMetrics</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a991dc6ec0f1b646b243a4155b864444f" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>GetMetricsWithFieldMetrics</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a0428f1a6ba273af0357f2283f62849f4" prot="protected" virt="virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>GetSplitCount</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1ab2e525c252533436b1edfbe7e3c75b1d" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForDecimals</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a87ec03fbe262b19e67104fcbdd496d5b" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForListAndMapElements</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a9f753c802b87cdc2d91a033f4001ee5a" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForNaNColumns</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a80ff2e6973233399a3ff81e43f397fe8" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForNestedStructFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a1beb196dccdfe5fb96ebc0adb0d5b1f8" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForNestedStructFieldsWithMultipleRowGroup</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a85e35eb2cc8788d29138808280a2abb3" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForNullColumns</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a95a4ec1b074f195a900286a61a5196d2" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForRepeatedValues</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a5b2051da326d7ea738de72fe29dcfa43" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForTopLevelFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1acf1df959da7b3e26dcc6a9e6c8ea4959" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsForTopLevelWithMultipleRowGroup</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1ab3117fac5f06b53c110165dcce56f5bb" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>MetricsModeForNestedStructFields</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a0b0e789a342b5003e242bd54d4f698e9" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>NestedSchema</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a3eceb458e4113bb9610fd17707abc1f5" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>NoneMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a5fb163b915a34b6f1f1c2253db5d4881" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>path_</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a13b84da66192b910058fd7d974347782" prot="protected" virt="virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1aa7f3c27625890edfcdaff0b963c8636d" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1afd163812e0a8beb31f9ef7601a3e7c6b" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>SimpleSchema</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a4932b50cb6f29cef74d808013e682f4c" prot="protected" virt="virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>SupportsSmallRowGroups</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a1873add6727dfa5c69808ee2fe2a8570" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>temp_dir_</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1a933e464f808217d5188b8413bbf9336b" prot="private" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>temp_parquet_file_</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a6dee85955e1d6b01d409a597848295d7" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>TruncateBinaryMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1MetricsTestBase_1a635960676653d24bddbf02f36a7cef37" prot="protected" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>TruncateStringMetricsMode</name></member>
+      <member refid="classiceberg_1_1test_1_1ParquetMetricsTest_1ae12005aaf684ecc3c5af4062a0deb697" prot="private" virt="non-virtual"><scope>iceberg::test::ParquetMetricsTest</scope><name>writer_properties_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

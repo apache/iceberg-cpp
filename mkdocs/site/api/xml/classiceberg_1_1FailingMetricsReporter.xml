@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FailingMetricsReporter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FailingMetricsReporter</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetricsReporter" prot="public" virt="non-virtual">iceberg::MetricsReporter</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FailingMetricsReporter_1a4aec49eabd58686c218a4d2341721d41" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::FailingMetricsReporter::Report</definition>
+        <argsstring>(const MetricsReport &amp;) override</argsstring>
+        <name>Report</name>
+        <qualifiedname>iceberg::FailingMetricsReporter::Report</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetricsReporter_1ada754787bbf4f5625b4739ee489296c7">Report</reimplements>
+        <param>
+          <type>const MetricsReport &amp;</type>
+          <declname>report</declname>
+        </param>
+        <briefdescription>
+<para>Report a metrics report. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations should handle the report according to their purpose (e.g., logging, sending to a metrics service, etc.).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>report</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metrics report to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="203" column="10" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="203" bodyend="205"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::FailingMetricsReporter</label>
+        <link refid="classiceberg_1_1FailingMetricsReporter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::FailingMetricsReporter</label>
+        <link refid="classiceberg_1_1FailingMetricsReporter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/metrics_reporter_test.cc" line="201" column="1" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="201" bodyend="206"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetricsReporter_1a4a61bb9e321d19b3cbf3364c849e08f7" prot="public" virt="virtual"><scope>iceberg::FailingMetricsReporter</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1FailingMetricsReporter_1a4aec49eabd58686c218a4d2341721d41" prot="public" virt="virtual"><scope>iceberg::FailingMetricsReporter</scope><name>Report</name></member>
+      <member refid="classiceberg_1_1MetricsReporter_1a67e7d83391a15f8c28b608ca2949cef1" prot="public" virt="virtual"><scope>iceberg::FailingMetricsReporter</scope><name>~MetricsReporter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

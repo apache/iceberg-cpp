@@ -1,0 +1,429 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="scan__report_8h" kind="file" language="C++">
+    <compoundname>scan_report.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes refid="constants_8h" local="yes">iceberg/constants.h</includes>
+    <includes refid="expression_8h" local="yes">iceberg/expression/expression.h</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="metrics__context_8h" local="yes">iceberg/metrics/metrics_context.h</includes>
+    <includes refid="metrics__types_8h" local="yes">iceberg/metrics/metrics_types.h</includes>
+    <includes refid="timer_8h" local="yes">iceberg/metrics/timer.h</includes>
+    <includedby refid="metrics_2json__serde__internal_8h" local="yes">iceberg/metrics/json_serde_internal.h</includedby>
+    <includedby refid="metrics__reporter_8h" local="yes">iceberg/metrics/metrics_reporter.h</includedby>
+    <includedby refid="scan__report_8cc" local="yes">iceberg/metrics/scan_report.cc</includedby>
+    <includedby refid="metrics__test_8cc" local="yes">iceberg/test/metrics_test.cc</includedby>
+    <incdepgraph>
+      <node id="7">
+        <label>iceberg/constants.h</label>
+        <link refid="constants_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/expression/expression.h</label>
+        <link refid="expression_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="24">
+        <label>iceberg/metrics/counter.h</label>
+        <link refid="counter_8h_source"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/metrics/metrics_context.h</label>
+        <link refid="metrics__context_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/metrics/metrics_types.h</label>
+        <link refid="metrics__types_8h"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/metrics/scan_report.h</label>
+        <link refid="scan__report_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>iceberg/metrics/timer.h</label>
+        <link refid="timer_8h_source"/>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="18">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>algorithm</label>
+      </node>
+      <node id="25">
+        <label>atomic</label>
+      </node>
+      <node id="20">
+        <label>cassert</label>
+      </node>
+      <node id="29">
+        <label>cerrno</label>
+      </node>
+      <node id="30">
+        <label>charconv</label>
+      </node>
+      <node id="34">
+        <label>chrono</label>
+      </node>
+      <node id="13">
+        <label>concepts</label>
+      </node>
+      <node id="8">
+        <label>cstdint</label>
+      </node>
+      <node id="14">
+        <label>expected</label>
+      </node>
+      <node id="15">
+        <label>format</label>
+      </node>
+      <node id="35">
+        <label>functional</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="3">
+        <label>optional</label>
+      </node>
+      <node id="31">
+        <label>ranges</label>
+      </node>
+      <node id="22">
+        <label>stdexcept</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>string_view</label>
+      </node>
+      <node id="16">
+        <label>type_traits</label>
+      </node>
+      <node id="32">
+        <label>typeinfo</label>
+      </node>
+      <node id="5">
+        <label>unordered_map</label>
+      </node>
+      <node id="26">
+        <label>utility</label>
+      </node>
+      <node id="6">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>iceberg/metrics/json_serde_internal.h</label>
+        <link refid="metrics_2json__serde__internal_8h_source"/>
+      </node>
+      <node id="3">
+        <label>iceberg/metrics/metrics_reporter.h</label>
+        <link refid="metrics__reporter_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg/metrics/metrics_reporters.h</label>
+        <link refid="metrics__reporters_8h"/>
+      </node>
+      <node id="1">
+        <label>iceberg/metrics/scan_report.h</label>
+        <link refid="scan__report_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structiceberg_1_1ScanMetricsResult" prot="public">iceberg::ScanMetricsResult</innerclass>
+    <innerclass refid="classiceberg_1_1ScanMetrics" prot="public">iceberg::ScanMetrics</innerclass>
+    <innerclass refid="structiceberg_1_1ScanReport" prot="public">iceberg::ScanReport</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="constants_8h" kindref="compound">iceberg/constants.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="expression_8h" kindref="compound">iceberg/expression/expression.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="metrics__context_8h" kindref="compound">iceberg/metrics/metrics_context.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="metrics__types_8h" kindref="compound">iceberg/metrics/metrics_types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/metrics/timer.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Forward<sp/>declaration:<sp/>ScanMetrics<sp/>is<sp/>defined<sp/>later<sp/>in<sp/>this<sp/>header.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">ScanMetrics;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="structiceberg_1_1ScanMetricsResult" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref><sp/>{</highlight></codeline>
+<codeline lineno="45" refid="structiceberg_1_1ScanMetricsResult_1a0bad97252ada931792f094064dfe31f4" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;TimerResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a0bad97252ada931792f094064dfe31f4" kindref="member">total_planning_duration</ref>;</highlight></codeline>
+<codeline lineno="47" refid="structiceberg_1_1ScanMetricsResult_1aa0d265681bf064b1e1f9d16ceb8984b3" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1aa0d265681bf064b1e1f9d16ceb8984b3" kindref="member">result_data_files</ref>;</highlight></codeline>
+<codeline lineno="49" refid="structiceberg_1_1ScanMetricsResult_1abae2ba65e6efdc9b3da9ef23a835bd41" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1abae2ba65e6efdc9b3da9ef23a835bd41" kindref="member">result_delete_files</ref>;</highlight></codeline>
+<codeline lineno="51" refid="structiceberg_1_1ScanMetricsResult_1aaab4912dac12d249db8d7a7adda35e26" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1aaab4912dac12d249db8d7a7adda35e26" kindref="member">scanned_data_manifests</ref>;</highlight></codeline>
+<codeline lineno="53" refid="structiceberg_1_1ScanMetricsResult_1afa0f6d6a3069cb549e2463555d2c1950" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1afa0f6d6a3069cb549e2463555d2c1950" kindref="member">scanned_delete_manifests</ref>;</highlight></codeline>
+<codeline lineno="55" refid="structiceberg_1_1ScanMetricsResult_1a1534e3b0d1cf4994bc9e441d41b178af" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a1534e3b0d1cf4994bc9e441d41b178af" kindref="member">total_data_manifests</ref>;</highlight></codeline>
+<codeline lineno="57" refid="structiceberg_1_1ScanMetricsResult_1a8db5a4c57d115d451dc63565e1adcbfa" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a8db5a4c57d115d451dc63565e1adcbfa" kindref="member">total_delete_manifests</ref>;</highlight></codeline>
+<codeline lineno="59" refid="structiceberg_1_1ScanMetricsResult_1a28cb5434595150a60cdefbb9306384ea" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a28cb5434595150a60cdefbb9306384ea" kindref="member">total_file_size_in_bytes</ref>;</highlight></codeline>
+<codeline lineno="61" refid="structiceberg_1_1ScanMetricsResult_1a95650e9b7986fa718d65904084175277" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a95650e9b7986fa718d65904084175277" kindref="member">total_delete_file_size_in_bytes</ref>;</highlight></codeline>
+<codeline lineno="63" refid="structiceberg_1_1ScanMetricsResult_1abee069249143ffccc4a46749ef545f6c" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1abee069249143ffccc4a46749ef545f6c" kindref="member">skipped_data_manifests</ref>;</highlight></codeline>
+<codeline lineno="65" refid="structiceberg_1_1ScanMetricsResult_1a966945cd62d095f1e4d26e406de17e26" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a966945cd62d095f1e4d26e406de17e26" kindref="member">skipped_delete_manifests</ref>;</highlight></codeline>
+<codeline lineno="67" refid="structiceberg_1_1ScanMetricsResult_1a0c8c733275745e2690e7759802473f01" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a0c8c733275745e2690e7759802473f01" kindref="member">skipped_data_files</ref>;</highlight></codeline>
+<codeline lineno="69" refid="structiceberg_1_1ScanMetricsResult_1a1db5aabe44923227008407ef8ef5f55c" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a1db5aabe44923227008407ef8ef5f55c" kindref="member">skipped_delete_files</ref>;</highlight></codeline>
+<codeline lineno="71" refid="structiceberg_1_1ScanMetricsResult_1ad3f82c94d0869704045774493f1830c7" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1ad3f82c94d0869704045774493f1830c7" kindref="member">indexed_delete_files</ref>;</highlight></codeline>
+<codeline lineno="73" refid="structiceberg_1_1ScanMetricsResult_1a9859494079158f00988e9dd2c6424190" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a9859494079158f00988e9dd2c6424190" kindref="member">equality_delete_files</ref>;</highlight></codeline>
+<codeline lineno="75" refid="structiceberg_1_1ScanMetricsResult_1a8a49aa2101e754ac818201243ab6cf95" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1a8a49aa2101e754ac818201243ab6cf95" kindref="member">positional_delete_files</ref>;</highlight></codeline>
+<codeline lineno="77" refid="structiceberg_1_1ScanMetricsResult_1aab9175ea4cc292e811498e351d4eff50" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;CounterResult&gt;<sp/><ref refid="structiceberg_1_1ScanMetricsResult_1aab9175ea4cc292e811498e351d4eff50" kindref="member">dvs</ref>;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref><sp/>From(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref>&amp;<sp/>scan_metrics);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="classiceberg_1_1ScanMetrics" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref><sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;ScanMetrics&gt;<sp/>Make(<ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref>&amp;<sp/>context);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;ScanMetrics&gt;<sp/>Noop();</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref><sp/>ToResult()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Timer&gt;<sp/>total_planning_duration;</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>result_data_files;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>result_delete_files;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>scanned_data_manifests;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>scanned_delete_manifests;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>total_data_manifests;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>total_delete_manifests;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>total_file_size_in_bytes;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>total_delete_file_size_in_bytes;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>skipped_data_manifests;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>skipped_delete_manifests;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>skipped_data_files;</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>skipped_delete_files;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>indexed_delete_files;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>equality_delete_files;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>positional_delete_files;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Counter&gt;<sp/>dvs;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128" refid="structiceberg_1_1ScanReport" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1ScanReport" kindref="compound">ScanReport</ref><sp/>{</highlight></codeline>
+<codeline lineno="130" refid="structiceberg_1_1ScanReport_1abc161296ef9e1b89536f8f6bb46e18cf" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1ScanReport_1abc161296ef9e1b89536f8f6bb46e18cf" kindref="member">table_name</ref>;</highlight></codeline>
+<codeline lineno="132" refid="structiceberg_1_1ScanReport_1ae4828a6c6ffad2ef516dacde7e153f32" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/>snapshot_id<sp/>=<sp/>kInvalidSnapshotId;</highlight></codeline>
+<codeline lineno="134" refid="structiceberg_1_1ScanReport_1ae63b1a68ead475bb4834e7d2d79b0534" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Expression&gt;<sp/><ref refid="structiceberg_1_1ScanReport_1ae63b1a68ead475bb4834e7d2d79b0534" kindref="member">filter</ref>;</highlight></codeline>
+<codeline lineno="136" refid="structiceberg_1_1ScanReport_1a40625c69ed22ebac32fec49119c6b38c" refkind="member"><highlight class="normal"><sp/><sp/>int32_t<sp/>schema_id<sp/>=<sp/>kInvalidSchemaId;</highlight></codeline>
+<codeline lineno="138" refid="structiceberg_1_1ScanReport_1a2198a16bf30531c8819e02921cd71713" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;int32_t&gt;<sp/><ref refid="structiceberg_1_1ScanReport_1a2198a16bf30531c8819e02921cd71713" kindref="member">projected_field_ids</ref>;</highlight></codeline>
+<codeline lineno="140" refid="structiceberg_1_1ScanReport_1a9d3365b4cc7406d9cd6e75b69890a40a" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/><ref refid="structiceberg_1_1ScanReport_1a9d3365b4cc7406d9cd6e75b69890a40a" kindref="member">projected_field_names</ref>;</highlight></codeline>
+<codeline lineno="142" refid="structiceberg_1_1ScanReport_1af511720e6d75778159ddb339fc420af7" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref><sp/><ref refid="structiceberg_1_1ScanReport_1af511720e6d75778159ddb339fc420af7" kindref="member">scan_metrics</ref>;</highlight></codeline>
+<codeline lineno="144" refid="structiceberg_1_1ScanReport_1ae0ffd9a428087d48e322d542bd37e4ba" refkind="member"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/><ref refid="structiceberg_1_1ScanReport_1ae0ffd9a428087d48e322d542bd37e4ba" kindref="member">metadata</ref>;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/metrics/scan_report.h"/>
+  </compounddef>
+</doxygen>

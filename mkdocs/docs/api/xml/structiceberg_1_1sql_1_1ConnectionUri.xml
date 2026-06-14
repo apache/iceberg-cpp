@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1ConnectionUri" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::ConnectionUri</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1ConnectionUri_1a09ef51e312be8032c379331020ed4e99" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::ConnectionUri::user</definition>
+        <argsstring></argsstring>
+        <name>user</name>
+        <qualifiedname>iceberg::sql::ConnectionUri::user</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/connection_uri_internal.h" line="36" column="15" bodyfile="iceberg/catalog/sql/connection_uri_internal.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1ConnectionUri_1a0da2d22a908e953c47db3de6b0087700" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::ConnectionUri::password</definition>
+        <argsstring></argsstring>
+        <name>password</name>
+        <qualifiedname>iceberg::sql::ConnectionUri::password</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/connection_uri_internal.h" line="37" column="15" bodyfile="iceberg/catalog/sql/connection_uri_internal.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1ConnectionUri_1a18682b5df85bd0002e52dfbf04425a5f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::ConnectionUri::host</definition>
+        <argsstring></argsstring>
+        <name>host</name>
+        <qualifiedname>iceberg::sql::ConnectionUri::host</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/connection_uri_internal.h" line="38" column="15" bodyfile="iceberg/catalog/sql/connection_uri_internal.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1ConnectionUri_1a952d962b84d7ecf78ad1378d62261c8c" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; uint32_t &gt;</type>
+        <definition>std::optional&lt;uint32_t&gt; iceberg::sql::ConnectionUri::port</definition>
+        <argsstring></argsstring>
+        <name>port</name>
+        <qualifiedname>iceberg::sql::ConnectionUri::port</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/connection_uri_internal.h" line="39" column="17" bodyfile="iceberg/catalog/sql/connection_uri_internal.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1ConnectionUri_1aec8638876c95e1acc71c01e6528e7470" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::ConnectionUri::database</definition>
+        <argsstring></argsstring>
+        <name>database</name>
+        <qualifiedname>iceberg::sql::ConnectionUri::database</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/connection_uri_internal.h" line="40" column="15" bodyfile="iceberg/catalog/sql/connection_uri_internal.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::sql::ConnectionUri</label>
+        <link refid="structiceberg_1_1sql_1_1ConnectionUri"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>database</edgelabel>
+          <edgelabel>host</edgelabel>
+          <edgelabel>password</edgelabel>
+          <edgelabel>user</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/sql/connection_uri_internal.h" line="35" column="1" bodyfile="iceberg/catalog/sql/connection_uri_internal.h" bodystart="35" bodyend="41"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1ConnectionUri_1aec8638876c95e1acc71c01e6528e7470" prot="public" virt="non-virtual"><scope>iceberg::sql::ConnectionUri</scope><name>database</name></member>
+      <member refid="structiceberg_1_1sql_1_1ConnectionUri_1a18682b5df85bd0002e52dfbf04425a5f" prot="public" virt="non-virtual"><scope>iceberg::sql::ConnectionUri</scope><name>host</name></member>
+      <member refid="structiceberg_1_1sql_1_1ConnectionUri_1a0da2d22a908e953c47db3de6b0087700" prot="public" virt="non-virtual"><scope>iceberg::sql::ConnectionUri</scope><name>password</name></member>
+      <member refid="structiceberg_1_1sql_1_1ConnectionUri_1a952d962b84d7ecf78ad1378d62261c8c" prot="public" virt="non-virtual"><scope>iceberg::sql::ConnectionUri</scope><name>port</name></member>
+      <member refid="structiceberg_1_1sql_1_1ConnectionUri_1a09ef51e312be8032c379331020ed4e99" prot="public" virt="non-virtual"><scope>iceberg::sql::ConnectionUri</scope><name>user</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

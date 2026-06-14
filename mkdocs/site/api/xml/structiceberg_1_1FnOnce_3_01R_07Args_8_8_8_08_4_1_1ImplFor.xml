@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor" kind="struct" language="C++" prot="private" final="yes">
+    <compoundname>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">iceberg::FnOnce&lt; R(Args...)&gt;::Impl</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename Fn</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor_1acba1151d5635a18139dab74d7427b71b" prot="public" static="no" mutable="no">
+        <type>std::remove_cvref_t&lt; Fn &gt;</type>
+        <definition>std::remove_cvref_t&lt;Fn&gt; iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor&lt; Fn &gt;::fn_</definition>
+        <argsstring></argsstring>
+        <name>fn_</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor::fn_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="76" column="25" bodyfile="iceberg/util/functional.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor_1af165d9f60277f2bd4786b5f232125b60" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor&lt; Fn &gt;::ImplFor</definition>
+        <argsstring>(Fn &amp;&amp;fn)</argsstring>
+        <name>ImplFor</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor::ImplFor</qualifiedname>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>fn</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="72" column="14" bodyfile="iceberg/util/functional.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor_1a10dd9fc38d34f1d7218a79edbe662ba1" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="rvalue" virt="non-virtual">
+        <type>R</type>
+        <definition>R iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor&lt; Fn &gt;::Invoke</definition>
+        <argsstring>(Args &amp;&amp;... args) &amp;&amp;override</argsstring>
+        <name>Invoke</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor::Invoke</qualifiedname>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="73" column="7" bodyfile="iceberg/util/functional.h" bodystart="73" bodyend="75"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FnOnce&lt; R(Args...)&gt;::Impl</label>
+      </node>
+      <node id="1">
+        <label>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor&lt; Fn &gt;</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FnOnce&lt; R(Args...)&gt;::Impl</label>
+      </node>
+      <node id="1">
+        <label>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor&lt; Fn &gt;</label>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/functional.h" line="71" column="3" bodyfile="iceberg/util/functional.h" bodystart="71" bodyend="77"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor_1acba1151d5635a18139dab74d7427b71b" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor</scope><name>fn_</name></member>
+      <member refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor_1af165d9f60277f2bd4786b5f232125b60" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor</scope><name>ImplFor</name></member>
+      <member refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor_1a10dd9fc38d34f1d7218a79edbe662ba1" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor</scope><name>Invoke</name></member>
+      <member refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1Impl_1a9eae7649aaa6dc15a0384d8d9625ec46" prot="public" virt="virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor</scope><name>~Impl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

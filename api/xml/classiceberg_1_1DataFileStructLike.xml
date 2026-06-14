@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DataFileStructLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DataFileStructLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1StructLike" prot="public" virt="non-virtual">iceberg::StructLike</basecompoundref>
+    <includes refid="manifest__wrapper_8h" local="no">manifest_wrapper.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DataFileStructLike_1a57f0a740127e768b052f37ddf5198bf9" prot="private" static="no" mutable="no">
+        <type>std::reference_wrapper&lt; const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::reference_wrapper&lt;const DataFile&gt; iceberg::DataFileStructLike::data_file_</definition>
+        <argsstring></argsstring>
+        <name>data_file_</name>
+        <qualifiedname>iceberg::DataFileStructLike::data_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="117" column="26" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DataFileStructLike_1af120deec896d1978af61357910c6f29b" prot="private" static="no" mutable="yes">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;StructLike&gt; iceberg::DataFileStructLike::partition_</definition>
+        <argsstring></argsstring>
+        <name>partition_</name>
+        <qualifiedname>iceberg::DataFileStructLike::partition_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="118" column="27" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DataFileStructLike_1a6e932a80e11f311eddb389847150ed04" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DataFileStructLike::DataFileStructLike</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>DataFileStructLike</name>
+        <qualifiedname>iceberg::DataFileStructLike::DataFileStructLike</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="104" column="12" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="104" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileStructLike_1add976175a5cecebfe249f72b1789f3ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DataFileStructLike::~DataFileStructLike</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~DataFileStructLike</name>
+        <qualifiedname>iceberg::DataFileStructLike::~DataFileStructLike</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="105" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileStructLike_1a354249f0e26c7204580f49018efd44e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DataFileStructLike::DataFileStructLike</definition>
+        <argsstring>(const DataFileStructLike &amp;)=delete</argsstring>
+        <name>DataFileStructLike</name>
+        <qualifiedname>iceberg::DataFileStructLike::DataFileStructLike</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DataFileStructLike" kindref="compound">DataFileStructLike</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="107" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileStructLike_1ab6a513aecfca77d627736264a424147d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1DataFileStructLike" kindref="compound">DataFileStructLike</ref> &amp;</type>
+        <definition>DataFileStructLike &amp; iceberg::DataFileStructLike::operator=</definition>
+        <argsstring>(const DataFileStructLike &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::DataFileStructLike::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DataFileStructLike" kindref="compound">DataFileStructLike</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="108" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileStructLike_1a7cc8f9c030800a0e1539f7ac2f762588" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::DataFileStructLike::GetField</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetField</name>
+        <qualifiedname>iceberg::DataFileStructLike::GetField</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11">GetField</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="110" column="10" bodyfile="iceberg/row/manifest_wrapper.cc" bodystart="249" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileStructLike_1a6a35f3f1fb92f5c94811df33cddd1694" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::DataFileStructLike::num_fields</definition>
+        <argsstring>() const override</argsstring>
+        <name>num_fields</name>
+        <qualifiedname>iceberg::DataFileStructLike::num_fields</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914">num_fields</reimplements>
+        <briefdescription>
+<para>Get the number of fields in the struct. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="112" column="10" bodyfile="iceberg/row/manifest_wrapper.cc" bodystart="306" bodyend="308"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DataFileStructLike_1a05d881dabe3a2b7202621dcf36b698a3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DataFileStructLike::Reset</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::DataFileStructLike::Reset</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="114" column="8" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="114" bodyend="114"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> wrapper for <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> metadata. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DataFileStructLike</label>
+        <link refid="classiceberg_1_1DataFileStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DataFileStructLike</label>
+        <link refid="classiceberg_1_1DataFileStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/row/manifest_wrapper.h" line="102" column="1" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="102" bodyend="119"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DataFileStructLike_1a57f0a740127e768b052f37ddf5198bf9" prot="private" virt="non-virtual"><scope>iceberg::DataFileStructLike</scope><name>data_file_</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1a6e932a80e11f311eddb389847150ed04" prot="public" virt="non-virtual"><scope>iceberg::DataFileStructLike</scope><name>DataFileStructLike</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1a354249f0e26c7204580f49018efd44e0" prot="public" virt="non-virtual"><scope>iceberg::DataFileStructLike</scope><name>DataFileStructLike</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1a7cc8f9c030800a0e1539f7ac2f762588" prot="public" virt="virtual"><scope>iceberg::DataFileStructLike</scope><name>GetField</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1a6a35f3f1fb92f5c94811df33cddd1694" prot="public" virt="virtual"><scope>iceberg::DataFileStructLike</scope><name>num_fields</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1ab6a513aecfca77d627736264a424147d" prot="public" virt="non-virtual"><scope>iceberg::DataFileStructLike</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1af120deec896d1978af61357910c6f29b" prot="private" virt="non-virtual"><scope>iceberg::DataFileStructLike</scope><name>partition_</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1a05d881dabe3a2b7202621dcf36b698a3" prot="public" virt="non-virtual"><scope>iceberg::DataFileStructLike</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1DataFileStructLike_1add976175a5cecebfe249f72b1789f3ec" prot="public" virt="non-virtual"><scope>iceberg::DataFileStructLike</scope><name>~DataFileStructLike</name></member>
+      <member refid="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" virt="virtual"><scope>iceberg::DataFileStructLike</scope><name>~StructLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

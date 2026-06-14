@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TimestampTzNsType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TimestampTzNsType</compoundname>
+    <basecompoundref refid="classiceberg_1_1TimestampBase" prot="public" virt="non-virtual">iceberg::TimestampBase</basecompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TimestampTzNsType_1a906fa27a0741bc72983a48a99cf3442a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr const TypeId iceberg::TimestampTzNsType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::TimestampTzNsType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kTimestampTzNs</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="422" column="33" bodyfile="iceberg/type.h" bodystart="422" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TimestampTzNsType_1a291b3f5433a23fa3b17576ec73a8264e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TimestampTzNsType::TimestampTzNsType</definition>
+        <argsstring>()=default</argsstring>
+        <name>TimestampTzNsType</name>
+        <qualifiedname>iceberg::TimestampTzNsType::TimestampTzNsType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="424" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimestampTzNsType_1ab19b90d0b8a27dc4c1cf76ba303bcbbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TimestampTzNsType::~TimestampTzNsType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~TimestampTzNsType</name>
+        <qualifiedname>iceberg::TimestampTzNsType::~TimestampTzNsType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="425" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimestampTzNsType_1ab66e67b7bae2d39ca575a4b2190f15f2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TimestampTzNsType::is_zoned</definition>
+        <argsstring>() const override</argsstring>
+        <name>is_zoned</name>
+        <qualifiedname>iceberg::TimestampTzNsType::is_zoned</qualifiedname>
+        <reimplements refid="classiceberg_1_1TimestampBase_1ab062d6f49e7f378a81d20601d41e0994">is_zoned</reimplements>
+        <briefdescription>
+<para>Is this type zoned or naive? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="427" column="8" bodyfile="iceberg/type.cc" bodystart="337" bodyend="337"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimestampTzNsType_1a5848b2f12a1b82c44a37bf9c0aa64e81" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1a4082287dfe7a2b960a8c638d5f0cf39a" kindref="member">TimeUnit</ref></type>
+        <definition>TimeUnit iceberg::TimestampTzNsType::time_unit</definition>
+        <argsstring>() const override</argsstring>
+        <name>time_unit</name>
+        <qualifiedname>iceberg::TimestampTzNsType::time_unit</qualifiedname>
+        <reimplements refid="classiceberg_1_1TimestampBase_1ac7c5676ebebea0df936a4ada5b7294c3">time_unit</reimplements>
+        <briefdescription>
+<para>The time resolution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="428" column="12" bodyfile="iceberg/type.cc" bodystart="338" bodyend="338"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimestampTzNsType_1a177b9d0e6810bd955e63ac9a1bf2ce13" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::TimestampTzNsType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::TimestampTzNsType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="430" column="10" bodyfile="iceberg/type.cc" bodystart="339" bodyend="339"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimestampTzNsType_1ab7de7fe9d972128ce6bfaf2a354b2820" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TimestampTzNsType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::TimestampTzNsType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="431" column="15" bodyfile="iceberg/type.cc" bodystart="340" bodyend="340"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1TimestampTzNsType_1ab88eb1336231486cc8c3ef608e450941" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TimestampTzNsType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::TimestampTzNsType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="434" column="8" bodyfile="iceberg/type.cc" bodystart="341" bodyend="343"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing a timestamp as nanoseconds since the epoch in UTC. A time zone or offset is not stored. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TimestampBase</label>
+        <link refid="classiceberg_1_1TimestampBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TimestampTzNsType</label>
+        <link refid="classiceberg_1_1TimestampTzNsType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TimestampBase</label>
+        <link refid="classiceberg_1_1TimestampBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TimestampTzNsType</label>
+        <link refid="classiceberg_1_1TimestampTzNsType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="420" column="1" bodyfile="iceberg/type.h" bodystart="420" bodyend="435"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TimestampTzNsType_1ab88eb1336231486cc8c3ef608e450941" prot="protected" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1TimestampTzNsType_1ab66e67b7bae2d39ca575a4b2190f15f2" prot="public" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>is_zoned</name></member>
+      <member refid="classiceberg_1_1TimestampTzNsType_1a906fa27a0741bc72983a48a99cf3442a" prot="public" virt="non-virtual"><scope>iceberg::TimestampTzNsType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1TimestampTzNsType_1a5848b2f12a1b82c44a37bf9c0aa64e81" prot="public" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>time_unit</name></member>
+      <member refid="classiceberg_1_1TimestampTzNsType_1a291b3f5433a23fa3b17576ec73a8264e" prot="public" virt="non-virtual"><scope>iceberg::TimestampTzNsType</scope><name>TimestampTzNsType</name></member>
+      <member refid="classiceberg_1_1TimestampTzNsType_1ab7de7fe9d972128ce6bfaf2a354b2820" prot="public" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1TimestampTzNsType_1a177b9d0e6810bd955e63ac9a1bf2ce13" prot="public" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::TimestampTzNsType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1TimestampTzNsType_1ab19b90d0b8a27dc4c1cf76ba303bcbbf" prot="public" virt="non-virtual"><scope>iceberg::TimestampTzNsType</scope><name>~TimestampTzNsType</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::TimestampTzNsType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile</compoundname>
+    <innerclass refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry" prot="public">iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Entry</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a917979b1e79faeb38dc2d4b39b6f6754" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry" kindref="compound">Entry</ref> &gt;</type>
+        <definition>std::vector&lt;Entry&gt; iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::entries_</definition>
+        <argsstring></argsstring>
+        <name>entries_</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::entries_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="313" column="17" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="313" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a465acbe3ab596578bca9607e3fe8c2ad" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, size_t &gt;</type>
+        <definition>std::unordered_map&lt;std::string, size_t&gt; iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::index_by_referenced_file_</definition>
+        <argsstring></argsstring>
+        <name>index_by_referenced_file_</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::index_by_referenced_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="314" column="24" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="314" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a290bc149690e5caa3b7c96e1dbae5f7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Add</definition>
+        <argsstring>(std::string referenced_file, PendingDeleteFile file)</argsstring>
+        <name>Add</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::Add</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>referenced_file</declname>
+        </param>
+        <param>
+          <type>PendingDeleteFile</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="307" column="10" bodyfile="iceberg/update/merging_snapshot_update.cc" bodystart="523" bodyend="531"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a67865183e428fd88a76c23f81ff9352c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::empty</definition>
+        <argsstring>() const</argsstring>
+        <name>empty</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::empty</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="308" column="10" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="308" bodyend="308"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1ae6e6edc9043bbf16ecb29824d91e2c6e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="309" column="12" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="309" bodyend="309"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a7be4ecba721a3091db4b1af230f412cb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1_1Entry" kindref="compound">Entry</ref> &gt; &amp;</type>
+        <definition>const std::vector&lt; Entry &gt; &amp; iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::entries</definition>
+        <argsstring>() const</argsstring>
+        <name>entries</name>
+        <qualifiedname>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile::entries</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/merging_snapshot_update.h" line="310" column="23" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="310" bodyend="310"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Ordered map from referenced data file path to pending DVs. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Mirrors Java&apos;s LinkedHashMap-backed dvsByReferencedFile: lookup is by referenced data file, and iteration preserves the first-seen key order. </para>
+    </detaileddescription>
+    <location file="iceberg/update/merging_snapshot_update.h" line="301" column="3" bodyfile="iceberg/update/merging_snapshot_update.h" bodystart="301" bodyend="315"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a290bc149690e5caa3b7c96e1dbae5f7c" prot="public" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile</scope><name>Add</name></member>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a67865183e428fd88a76c23f81ff9352c" prot="public" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile</scope><name>empty</name></member>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a7be4ecba721a3091db4b1af230f412cb" prot="public" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile</scope><name>entries</name></member>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a917979b1e79faeb38dc2d4b39b6f6754" prot="private" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile</scope><name>entries_</name></member>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1a465acbe3ab596578bca9607e3fe8c2ad" prot="private" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile</scope><name>index_by_referenced_file_</name></member>
+      <member refid="structiceberg_1_1MergingSnapshotUpdate_1_1PendingDeleteFilesByReferencedFile_1ae6e6edc9043bbf16ecb29824d91e2c6e" prot="public" virt="non-virtual"><scope>iceberg::MergingSnapshotUpdate::PendingDeleteFilesByReferencedFile</scope><name>size</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

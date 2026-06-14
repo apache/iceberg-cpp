@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1BooleanStringParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::BooleanStringParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1BooleanStringParam_1a9197fa6c6ba5b17e6e82f5aa52a1578b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::BooleanStringParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::BooleanStringParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="249" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="249" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BooleanStringParam_1a7ddc47a2697a90960ecce8714352b897" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::BooleanStringParam::json_value</definition>
+        <argsstring></argsstring>
+        <name>json_value</name>
+        <qualifiedname>iceberg::BooleanStringParam::json_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="250" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="250" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BooleanStringParam_1a3d6587c4ed750fee7ff95730dd9c1758" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+        <definition>Expression::Operation iceberg::BooleanStringParam::expected_op</definition>
+        <argsstring></argsstring>
+        <name>expected_op</name>
+        <qualifiedname>iceberg::BooleanStringParam::expected_op</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="251" column="25" bodyfile="iceberg/test/expression_json_test.cc" bodystart="251" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::BooleanStringParam</label>
+        <link refid="structiceberg_1_1BooleanStringParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>json_value</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="248" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="248" bodyend="252"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1BooleanStringParam_1a3d6587c4ed750fee7ff95730dd9c1758" prot="public" virt="non-virtual"><scope>iceberg::BooleanStringParam</scope><name>expected_op</name></member>
+      <member refid="structiceberg_1_1BooleanStringParam_1a7ddc47a2697a90960ecce8714352b897" prot="public" virt="non-virtual"><scope>iceberg::BooleanStringParam</scope><name>json_value</name></member>
+      <member refid="structiceberg_1_1BooleanStringParam_1a9197fa6c6ba5b17e6e82f5aa52a1578b" prot="public" virt="non-virtual"><scope>iceberg::BooleanStringParam</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

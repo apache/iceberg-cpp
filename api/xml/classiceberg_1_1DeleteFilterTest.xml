@@ -1,0 +1,368 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DeleteFilterTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DeleteFilterTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1DeleteFilterAliveRowsTest" prot="public" virt="non-virtual">iceberg::DeleteFilterAliveRowsTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1DeleteFilterMakeErrorTest" prot="public" virt="non-virtual">iceberg::DeleteFilterMakeErrorTest</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1DeleteFilterRequiredSchemaTest" prot="public" virt="non-virtual">iceberg::DeleteFilterRequiredSchemaTest</derivedcompoundref>
+    <sectiondef kind="protected-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilterTest_1a13a1cbdf8c45624f59b97a13f82d2198" prot="protected" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::DeleteFilterTest::kDataPath</definition>
+        <argsstring></argsstring>
+        <name>kDataPath</name>
+        <qualifiedname>iceberg::DeleteFilterTest::kDataPath</qualifiedname>
+        <initializer>= &quot;data.parquet&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="250" column="37" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="250" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilterTest_1a2c241fe20eaded2774f4ef87e4a07f89" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::DeleteFilterTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::DeleteFilterTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="252" column="19" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="252" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilterTest_1a95a66e77f642f51ff24d27482692ea3d" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::DeleteFilterTest::table_schema_</definition>
+        <argsstring></argsstring>
+        <name>table_schema_</name>
+        <qualifiedname>iceberg::DeleteFilterTest::table_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="253" column="19" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="253" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilterTest_1a0eaa6a3c9c2281eec7c567c8e154b762" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::DeleteFilterTest::partition_spec_</definition>
+        <argsstring></argsstring>
+        <name>partition_spec_</name>
+        <qualifiedname>iceberg::DeleteFilterTest::partition_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="254" column="19" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="254" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilterTest_1acb85f2b6eab5d8287807fea4aa58169d" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::DeleteFilterTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::DeleteFilterTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="163" column="15" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="163" bodyend="163"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilterTest_1a10f503d8bf59eb7178f7bc8661deaa94" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DeleteFilterTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::DeleteFilterTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="165" column="8" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="165" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilterTest_1ac360948c2e0c211933ff30f992154524" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::DeleteFilterTest::Project</definition>
+        <argsstring>(std::initializer_list&lt; int32_t &gt; field_ids) const</argsstring>
+        <name>Project</name>
+        <qualifiedname>iceberg::DeleteFilterTest::Project</qualifiedname>
+        <param>
+          <type>std::initializer_list&lt; int32_t &gt;</type>
+          <declname>field_ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="174" column="19" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="174" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilterTest_1ad7fb0b892e14c2d936dbcffda1cbd2e7" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; ExportedBatch &gt;</type>
+        <definition>Result&lt; ExportedBatch &gt; iceberg::DeleteFilterTest::MakeBatch</definition>
+        <argsstring>(const Schema &amp;schema, const std::string &amp;json_data) const</argsstring>
+        <name>MakeBatch</name>
+        <qualifiedname>iceberg::DeleteFilterTest::MakeBatch</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="181" column="10" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="181" bodyend="203"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilterTest_1a0a513cf2fcb83a2f9563aaa58f6d45b2" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::DeleteFilterTest::PositionDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, const std::vector&lt; int64_t &gt; &amp;positions, const std::string &amp;data_path=std::string(kDataPath))</argsstring>
+        <name>PositionDeleteFile</name>
+        <qualifiedname>iceberg::DeleteFilterTest::PositionDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>positions</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>data_path</declname>
+          <defval>std::string(kDataPath)</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="205" column="10" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="205" bodyend="226"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilterTest_1a7c98b8144b0cd70cbd35851e70d66faa" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::DeleteFilterTest::EqualityDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, const std::string &amp;json_data, std::vector&lt; int32_t &gt; equality_field_ids)</argsstring>
+        <name>EqualityDeleteFile</name>
+        <qualifiedname>iceberg::DeleteFilterTest::EqualityDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; int32_t &gt;</type>
+          <declname>equality_field_ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="228" column="10" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="228" bodyend="248"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::DeleteFilterAliveRowsTest</label>
+        <link refid="classiceberg_1_1DeleteFilterAliveRowsTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::DeleteFilterMakeErrorTest</label>
+        <link refid="classiceberg_1_1DeleteFilterMakeErrorTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::DeleteFilterRequiredSchemaTest</label>
+        <link refid="classiceberg_1_1DeleteFilterRequiredSchemaTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::DeleteFilterTest</label>
+        <link refid="classiceberg_1_1DeleteFilterTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="15">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="17">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>iceberg::DeleteFilterTest</label>
+        <link refid="classiceberg_1_1DeleteFilterTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>kDataPath</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>table_schema_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>partition_spec_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="10">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string_view</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="14" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/delete_filter_test.cc" line="161" column="1" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="161" bodyend="255"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DeleteFilterTest_1a7c98b8144b0cd70cbd35851e70d66faa" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>EqualityDeleteFile</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1a2c241fe20eaded2774f4ef87e4a07f89" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1a13a1cbdf8c45624f59b97a13f82d2198" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>kDataPath</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1ad7fb0b892e14c2d936dbcffda1cbd2e7" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>MakeBatch</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1a0eaa6a3c9c2281eec7c567c8e154b762" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>partition_spec_</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1a0a513cf2fcb83a2f9563aaa58f6d45b2" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>PositionDeleteFile</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1ac360948c2e0c211933ff30f992154524" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>Project</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1a10f503d8bf59eb7178f7bc8661deaa94" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1acb85f2b6eab5d8287807fea4aa58169d" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1DeleteFilterTest_1a95a66e77f642f51ff24d27482692ea3d" prot="protected" virt="non-virtual"><scope>iceberg::DeleteFilterTest</scope><name>table_schema_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

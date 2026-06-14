@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ScopedRetryTestHooks" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ScopedRetryTestHooks</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ScopedRetryTestHooks_1a77dd74e5638e4283d1c7f0e04218f4d5" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structiceberg_1_1RetryTestHooks" kindref="compound">RetryTestHooks</ref> *</type>
+        <definition>const RetryTestHooks* iceberg::ScopedRetryTestHooks::previous_hooks_</definition>
+        <argsstring></argsstring>
+        <name>previous_hooks_</name>
+        <qualifiedname>iceberg::ScopedRetryTestHooks::previous_hooks_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util_internal.h" line="58" column="24" bodyfile="iceberg/util/retry_util_internal.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ScopedRetryTestHooks_1a4042daff97d68efad78e6562e1ed9092" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedRetryTestHooks::ScopedRetryTestHooks</definition>
+        <argsstring>(const RetryTestHooks &amp;hooks)</argsstring>
+        <name>ScopedRetryTestHooks</name>
+        <qualifiedname>iceberg::ScopedRetryTestHooks::ScopedRetryTestHooks</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1RetryTestHooks" kindref="compound">RetryTestHooks</ref> &amp;</type>
+          <declname>hooks</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util_internal.h" line="45" column="12" bodyfile="iceberg/util/retry_util_internal.h" bodystart="45" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedRetryTestHooks_1a16c1696a6c5f990fdc81b8d8a1ecd561" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedRetryTestHooks::ScopedRetryTestHooks</definition>
+        <argsstring>(const ScopedRetryTestHooks &amp;)=delete</argsstring>
+        <name>ScopedRetryTestHooks</name>
+        <qualifiedname>iceberg::ScopedRetryTestHooks::ScopedRetryTestHooks</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ScopedRetryTestHooks" kindref="compound">ScopedRetryTestHooks</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util_internal.h" line="50" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedRetryTestHooks_1aa3a3b0524e95fc960c2be616fbc2396d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ScopedRetryTestHooks" kindref="compound">ScopedRetryTestHooks</ref> &amp;</type>
+        <definition>ScopedRetryTestHooks &amp; iceberg::ScopedRetryTestHooks::operator=</definition>
+        <argsstring>(const ScopedRetryTestHooks &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ScopedRetryTestHooks::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ScopedRetryTestHooks" kindref="compound">ScopedRetryTestHooks</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util_internal.h" line="51" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedRetryTestHooks_1a5a6958c446ac30e35b6a35a70301cfaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedRetryTestHooks::ScopedRetryTestHooks</definition>
+        <argsstring>(ScopedRetryTestHooks &amp;&amp;)=delete</argsstring>
+        <name>ScopedRetryTestHooks</name>
+        <qualifiedname>iceberg::ScopedRetryTestHooks::ScopedRetryTestHooks</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ScopedRetryTestHooks" kindref="compound">ScopedRetryTestHooks</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util_internal.h" line="52" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedRetryTestHooks_1a107ecec8e48021f5543a1e4f7b65c59f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ScopedRetryTestHooks" kindref="compound">ScopedRetryTestHooks</ref> &amp;</type>
+        <definition>ScopedRetryTestHooks &amp; iceberg::ScopedRetryTestHooks::operator=</definition>
+        <argsstring>(ScopedRetryTestHooks &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ScopedRetryTestHooks::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ScopedRetryTestHooks" kindref="compound">ScopedRetryTestHooks</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util_internal.h" line="53" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedRetryTestHooks_1a577dbb817ec0044e8910a65e5b9e3744" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedRetryTestHooks::~ScopedRetryTestHooks</definition>
+        <argsstring>()</argsstring>
+        <name>~ScopedRetryTestHooks</name>
+        <qualifiedname>iceberg::ScopedRetryTestHooks::~ScopedRetryTestHooks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util_internal.h" line="55" column="3" bodyfile="iceberg/util/retry_util_internal.h" bodystart="55" bodyend="55"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/retry_util_internal.h" line="43" column="1" bodyfile="iceberg/util/retry_util_internal.h" bodystart="43" bodyend="59"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ScopedRetryTestHooks_1aa3a3b0524e95fc960c2be616fbc2396d" prot="public" virt="non-virtual"><scope>iceberg::ScopedRetryTestHooks</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ScopedRetryTestHooks_1a107ecec8e48021f5543a1e4f7b65c59f" prot="public" virt="non-virtual"><scope>iceberg::ScopedRetryTestHooks</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ScopedRetryTestHooks_1a77dd74e5638e4283d1c7f0e04218f4d5" prot="private" virt="non-virtual"><scope>iceberg::ScopedRetryTestHooks</scope><name>previous_hooks_</name></member>
+      <member refid="classiceberg_1_1ScopedRetryTestHooks_1a4042daff97d68efad78e6562e1ed9092" prot="public" virt="non-virtual"><scope>iceberg::ScopedRetryTestHooks</scope><name>ScopedRetryTestHooks</name></member>
+      <member refid="classiceberg_1_1ScopedRetryTestHooks_1a16c1696a6c5f990fdc81b8d8a1ecd561" prot="public" virt="non-virtual"><scope>iceberg::ScopedRetryTestHooks</scope><name>ScopedRetryTestHooks</name></member>
+      <member refid="classiceberg_1_1ScopedRetryTestHooks_1a5a6958c446ac30e35b6a35a70301cfaa" prot="public" virt="non-virtual"><scope>iceberg::ScopedRetryTestHooks</scope><name>ScopedRetryTestHooks</name></member>
+      <member refid="classiceberg_1_1ScopedRetryTestHooks_1a577dbb817ec0044e8910a65e5b9e3744" prot="public" virt="non-virtual"><scope>iceberg::ScopedRetryTestHooks</scope><name>~ScopedRetryTestHooks</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

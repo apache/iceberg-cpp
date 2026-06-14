@@ -1,0 +1,654 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="commit__report_8cc" kind="file" language="C++">
+    <compoundname>commit_report.cc</compoundname>
+    <includes refid="commit__report_8h" local="yes">iceberg/metrics/commit_report.h</includes>
+    <includes refid="snapshot_8h" local="yes">iceberg/snapshot.h</includes>
+    <includes refid="string__util_8h" local="yes">iceberg/util/string_util.h</includes>
+    <incdepgraph>
+      <node id="7">
+        <label>iceberg/constants.h</label>
+        <link refid="constants_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="34">
+        <label>iceberg/manifest/manifest_list.h</label>
+        <link refid="manifest__list_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="53" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/metrics/commit_report.cc</label>
+        <link refid="commit__report_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/metrics/commit_report.h</label>
+        <link refid="commit__report_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/metrics/counter.h</label>
+        <link refid="counter_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/metrics/metrics_context.h</label>
+        <link refid="metrics__context_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg/metrics/metrics_types.h</label>
+        <link refid="metrics__types_8h"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/metrics/timer.h</label>
+        <link refid="timer_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/partition_field.h</label>
+        <link refid="partition__field_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>iceberg/partition_spec.h</label>
+        <link refid="partition__spec_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/snapshot.h</label>
+        <link refid="snapshot_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="46">
+        <label>iceberg/table_metadata.h</label>
+        <link refid="table__metadata_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+      </node>
+      <node id="47">
+        <label>iceberg/table_properties.h</label>
+        <link refid="table__properties_8h_source"/>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+      </node>
+      <node id="53">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="50">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+      </node>
+      <node id="41">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>iceberg/util/timepoint.h</label>
+        <link refid="timepoint_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>algorithm</label>
+      </node>
+      <node id="54">
+        <label>array</label>
+      </node>
+      <node id="13">
+        <label>atomic</label>
+      </node>
+      <node id="42">
+        <label>cassert</label>
+      </node>
+      <node id="22">
+        <label>cerrno</label>
+      </node>
+      <node id="23">
+        <label>charconv</label>
+      </node>
+      <node id="28">
+        <label>chrono</label>
+      </node>
+      <node id="16">
+        <label>concepts</label>
+      </node>
+      <node id="8">
+        <label>cstdint</label>
+      </node>
+      <node id="17">
+        <label>expected</label>
+      </node>
+      <node id="18">
+        <label>format</label>
+      </node>
+      <node id="29">
+        <label>functional</label>
+      </node>
+      <node id="48">
+        <label>limits</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="40">
+        <label>mutex</label>
+      </node>
+      <node id="4">
+        <label>optional</label>
+      </node>
+      <node id="24">
+        <label>ranges</label>
+      </node>
+      <node id="32">
+        <label>span</label>
+      </node>
+      <node id="44">
+        <label>stdexcept</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>string_view</label>
+      </node>
+      <node id="19">
+        <label>type_traits</label>
+      </node>
+      <node id="25">
+        <label>typeinfo</label>
+      </node>
+      <node id="6">
+        <label>unordered_map</label>
+      </node>
+      <node id="49">
+        <label>unordered_set</label>
+      </node>
+      <node id="14">
+        <label>utility</label>
+      </node>
+      <node id="33">
+        <label>variant</label>
+      </node>
+      <node id="26">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/metrics/commit_report.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/snapshot.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/util/string_util.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal">std::unique_ptr&lt;CommitMetrics&gt;<sp/><ref refid="classiceberg_1_1CommitMetrics_1a68a19764f37ac27352299e29b01f7c61" kindref="member">CommitMetrics::Make</ref>(MetricsContext&amp;<sp/>context)<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>m<sp/>=<sp/>std::unique_ptr&lt;CommitMetrics&gt;(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/>CommitMetrics());</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/>m-&gt;total_duration<sp/>=<sp/>context.GetTimer(</highlight><highlight class="stringliteral">&quot;total-duration&quot;</highlight><highlight class="normal">,<sp/>TimerUnit::kNanoseconds);</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>m-&gt;attempts<sp/>=<sp/>context.GetCounter(</highlight><highlight class="stringliteral">&quot;attempts&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>m;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal">std::unique_ptr&lt;CommitMetrics&gt;<sp/><ref refid="classiceberg_1_1CommitMetrics_1a455c0814c4b11ec65db9f737c3107450" kindref="member">CommitMetrics::Noop</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1CommitMetrics_1a68a19764f37ac27352299e29b01f7c61" kindref="member">CommitMetrics::Make</ref>(*<ref refid="classiceberg_1_1MetricsContext_1a20983f330d636be0ee523b8f5fcb664d" kindref="member">MetricsContext::Noop</ref>());</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">CommitMetricsResult<sp/><ref refid="classiceberg_1_1CommitMetrics_1a92090e152d2c313d58543333b8783d43" kindref="member">CommitMetrics::ToResult</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>CommitMetricsResult<sp/>result;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classiceberg_1_1CommitMetrics_1ae82deb2c9694b7e306537b5fac4bd269" kindref="member">total_duration</ref><sp/>&amp;&amp;<sp/>!<ref refid="classiceberg_1_1CommitMetrics_1ae82deb2c9694b7e306537b5fac4bd269" kindref="member">total_duration</ref>-&gt;IsNoop())<sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/>result.total_duration<sp/>=</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>TimerResult{.unit<sp/>=<sp/>std::string(<ref refid="classiceberg_1_1CommitMetrics_1ae82deb2c9694b7e306537b5fac4bd269" kindref="member">total_duration</ref>-&gt;Unit()),</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.count<sp/>=<sp/><ref refid="classiceberg_1_1CommitMetrics_1ae82deb2c9694b7e306537b5fac4bd269" kindref="member">total_duration</ref>-&gt;Count(),</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.total_duration<sp/>=<sp/><ref refid="classiceberg_1_1CommitMetrics_1ae82deb2c9694b7e306537b5fac4bd269" kindref="member">total_duration</ref>-&gt;TotalDuration()};</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(<ref refid="classiceberg_1_1CommitMetrics_1a71ff1dd05486fd70cbc6c9cfd5e7eec1" kindref="member">attempts</ref><sp/>&amp;&amp;<sp/>!<ref refid="classiceberg_1_1CommitMetrics_1a71ff1dd05486fd70cbc6c9cfd5e7eec1" kindref="member">attempts</ref>-&gt;IsNoop())<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>result.attempts<sp/>=<sp/>CounterResult{.unit<sp/>=<sp/><ref refid="classiceberg_1_1CommitMetrics_1a71ff1dd05486fd70cbc6c9cfd5e7eec1" kindref="member">attempts</ref>-&gt;unit(),<sp/>.value<sp/>=<sp/><ref refid="classiceberg_1_1CommitMetrics_1a71ff1dd05486fd70cbc6c9cfd5e7eec1" kindref="member">attempts</ref>-&gt;value()};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal">CommitMetricsResult<sp/><ref refid="structiceberg_1_1CommitMetricsResult_1a1c7207fbee97a78a4679b11e8202e252" kindref="member">CommitMetricsResult::From</ref>(</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CommitMetrics&amp;<sp/>live_metrics,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>snapshot_summary)<sp/>{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>live_metrics.ToResult();</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>count_field<sp/>=</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>[&amp;snapshot_summary](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>key)<sp/>-&gt;<sp/>std::optional&lt;CounterResult&gt;<sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>it<sp/>=<sp/>snapshot_summary.find(key);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(it<sp/>==<sp/>snapshot_summary.end())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::nullopt;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed<sp/>=<sp/>StringUtils::ParseNumber&lt;int64_t&gt;(it-&gt;second);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!parsed.has_value())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::nullopt;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>CounterResult{.unit<sp/>=<sp/>CounterUnit::kCount,<sp/>.value<sp/>=<sp/>parsed.value()};</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>bytes_field<sp/>=</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>[&amp;snapshot_summary](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>key)<sp/>-&gt;<sp/>std::optional&lt;CounterResult&gt;<sp/>{</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>it<sp/>=<sp/>snapshot_summary.find(key);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(it<sp/>==<sp/>snapshot_summary.end())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::nullopt;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parsed<sp/>=<sp/>StringUtils::ParseNumber&lt;int64_t&gt;(it-&gt;second);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!parsed.has_value())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::nullopt;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>CounterResult{.unit<sp/>=<sp/>CounterUnit::kBytes,<sp/>.value<sp/>=<sp/>parsed.value()};</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>result.added_data_files<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" kindref="member">SnapshotSummaryFields::kAddedDataFiles</ref>);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/>result.removed_data_files<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" kindref="member">SnapshotSummaryFields::kDeletedDataFiles</ref>);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>result.total_data_files<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1ad314de2d955f77cd7d14ddccb6370134" kindref="member">SnapshotSummaryFields::kTotalDataFiles</ref>);</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/>result.added_delete_files<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" kindref="member">SnapshotSummaryFields::kAddedDeleteFiles</ref>);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>result.added_equality_delete_files<sp/>=</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a4c932bf17d7418013939fdd7b802f123" kindref="member">SnapshotSummaryFields::kAddedEqDeleteFiles</ref>);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>result.added_positional_delete_files<sp/>=</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" kindref="member">SnapshotSummaryFields::kAddedPosDeleteFiles</ref>);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/>result.added_dvs<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a5080e87bce473ae588c774f534e2001a" kindref="member">SnapshotSummaryFields::kAddedDVs</ref>);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>result.removed_delete_files<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a9d24f8c6cbc618551b06cbb442fc3648" kindref="member">SnapshotSummaryFields::kRemovedDeleteFiles</ref>);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>result.removed_positional_delete_files<sp/>=</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1afdde47b2cffe3f60e169b754bbfe439c" kindref="member">SnapshotSummaryFields::kRemovedPosDeleteFiles</ref>);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/>result.removed_dvs<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a303e5e4d65a75816ee5c883e146bc4e5" kindref="member">SnapshotSummaryFields::kRemovedDVs</ref>);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/>result.removed_equality_delete_files<sp/>=</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a94fa76aad9462ef4f9e3e069c2a24645" kindref="member">SnapshotSummaryFields::kRemovedEqDeleteFiles</ref>);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/>result.total_delete_files<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a65fbe108a5aa316dad4977e789e4e71f" kindref="member">SnapshotSummaryFields::kTotalDeleteFiles</ref>);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>result.added_records<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" kindref="member">SnapshotSummaryFields::kAddedRecords</ref>);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>result.removed_records<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1ac33705014c833f33714170c7f14ccae6" kindref="member">SnapshotSummaryFields::kDeletedRecords</ref>);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/>result.total_records<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a80def77f8cc4f4383fb384334cd8cd27" kindref="member">SnapshotSummaryFields::kTotalRecords</ref>);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>result.added_files_size_bytes<sp/>=<sp/>bytes_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" kindref="member">SnapshotSummaryFields::kAddedFileSize</ref>);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>result.removed_files_size_bytes<sp/>=<sp/>bytes_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" kindref="member">SnapshotSummaryFields::kRemovedFileSize</ref>);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/>result.total_files_size_bytes<sp/>=<sp/>bytes_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a5d0e0fdd138a86f767d89498e251cf00" kindref="member">SnapshotSummaryFields::kTotalFileSize</ref>);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/>result.added_positional_deletes<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a380bd771050985107b9eedf47ada2971" kindref="member">SnapshotSummaryFields::kAddedPosDeletes</ref>);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/>result.removed_positional_deletes<sp/>=</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a7ea7416ee086d74d4ccb7259d17f55ab" kindref="member">SnapshotSummaryFields::kRemovedPosDeletes</ref>);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>result.total_positional_deletes<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a13125d9c90d79c55a71fc93b48d6f8a3" kindref="member">SnapshotSummaryFields::kTotalPosDeletes</ref>);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>result.added_equality_deletes<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a98f4256862a48cea377ecc2da11d48d3" kindref="member">SnapshotSummaryFields::kAddedEqDeletes</ref>);</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>result.removed_equality_deletes<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1adf57b3f74d94d4061040647dcb40de0a" kindref="member">SnapshotSummaryFields::kRemovedEqDeletes</ref>);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>result.total_equality_deletes<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a12a98242c22498ab0a06257d817342c8" kindref="member">SnapshotSummaryFields::kTotalEqDeletes</ref>);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>result.kept_manifest_count<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1ab525d5ecc8f2e18307a2f3bac04e4b7e" kindref="member">SnapshotSummaryFields::kManifestsKept</ref>);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>result.created_manifest_count<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a5a1161c5b716f77c7de652fbc7953e81" kindref="member">SnapshotSummaryFields::kManifestsCreated</ref>);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>result.replaced_manifest_count<sp/>=<sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1ac64b1239d07fa9f2973980b67e0bd0c2" kindref="member">SnapshotSummaryFields::kManifestsReplaced</ref>);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>result.processed_manifest_entries_count<sp/>=</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>count_field(<ref refid="structiceberg_1_1SnapshotSummaryFields_1a1887f72168261587466ae196542f483d" kindref="member">SnapshotSummaryFields::kEntriesProcessed</ref>);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/metrics/commit_report.cc"/>
+  </compounddef>
+</doxygen>

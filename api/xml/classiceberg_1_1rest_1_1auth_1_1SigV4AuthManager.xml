@@ -1,0 +1,355 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::SigV4AuthManager</compoundname>
+    <basecompoundref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" prot="public" virt="non-virtual">iceberg::rest::auth::AuthManager</basecompoundref>
+    <includes refid="sigv4__auth__manager__internal_8h" local="no">sigv4_auth_manager_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a3b5268ee7c471ea0eb8ced66ca174702" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;AuthManager&gt; iceberg::rest::auth::SigV4AuthManager::delegate_</definition>
+        <argsstring></argsstring>
+        <name>delegate_</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::delegate_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="145" column="19" bodyfile="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" bodystart="145" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a0d1455f91de4f76fadff1a88af0dbaab" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::auth::SigV4AuthManager::catalog_properties_</definition>
+        <argsstring></argsstring>
+        <name>catalog_properties_</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::catalog_properties_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="146" column="22" bodyfile="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1ad3a7f0fa4dba716018437b50dbc10060" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::SigV4AuthManager::SigV4AuthManager</definition>
+        <argsstring>(std::unique_ptr&lt; AuthManager &gt; delegate)</argsstring>
+        <name>SigV4AuthManager</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::SigV4AuthManager</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt;</type>
+          <declname>delegate</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="117" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a545ece011d073fa48314843a1f055ab8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::SigV4AuthManager::~SigV4AuthManager</definition>
+        <argsstring>() override</argsstring>
+        <name>~SigV4AuthManager</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::~SigV4AuthManager</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="118" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a0372f509f456e081fbbbc024ca6c3289" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::SigV4AuthManager::InitSession</definition>
+        <argsstring>(HttpClient &amp;init_client, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties) override</argsstring>
+        <name>InitSession</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::InitSession</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a1f528489ce3e2a9a3a7463a40042cb95">InitSession</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>init_client</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a short-lived session used to contact the configuration endpoint. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This session is used only during catalog initialization to fetch server configuration and perform initial authentication. It is typically discarded after initialization.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>init_client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client used for initialization requests. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Client configuration supplied by the catalog. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Session for initialization or an error if credentials cannot be acquired. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="120" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1dd2ec088c6e291b5a06b51c7e4cf9f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::SigV4AuthManager::CatalogSession</definition>
+        <argsstring>(HttpClient &amp;shared_client, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties) override</argsstring>
+        <name>CatalogSession</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::CatalogSession</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a105441c178b9a8153e604433ad719563">CatalogSession</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>shared_client</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create the long-lived catalog session that acts as the parent session. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This session is used for all catalog-level operations (list namespaces, list tables, etc.) and serves as the parent session for contextual and table-specific sessions. It is owned by the catalog and reused throughout the catalog&apos;s lifetime.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>shared_client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client owned by the catalog and reused for auth calls. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> properties (client config + server defaults). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Session for catalog operations or an error if authentication cannot be set up. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="124" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a5613f76cf1487cb3178aa6cdc6fc69f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::SigV4AuthManager::ContextualSession</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;context, std::shared_ptr&lt; AuthSession &gt; parent) override</argsstring>
+        <name>ContextualSession</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::ContextualSession</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a4179a49fc1addd0c0f1fd50239feb028">ContextualSession</reimplements>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+<para>Create or reuse a session for a specific context. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is used by SessionCatalog to create sessions for different contexts (e.g., different users or tenants).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Context properties (e.g., user credentials, tenant info). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> session to inherit from or return as-is. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A context-specific session, or the parent session if no context-specific session is needed, or an error if session creation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="128" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1ae47b4d964476dffe5cbfe32ba724257c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::SigV4AuthManager::TableSession</definition>
+        <argsstring>(const TableIdentifier &amp;table, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties, std::shared_ptr&lt; AuthSession &gt; parent) override</argsstring>
+        <name>TableSession</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::TableSession</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1ad495d10f88c41f093ac03bffb239fc29">TableSession</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+<para>Create or reuse a session scoped to a single table/view. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is called when loading a table that may have table-specific auth properties returned by the server.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>table</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target table identifier. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Table-specific auth properties returned by the server. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> or contextual session to inherit from or return as-is. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A table-specific session, or the parent session if no table-specific session is needed, or an error if session creation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="132" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1e14adf3688c1a3de4c680536f7d1bda" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::auth::SigV4AuthManager::Close</definition>
+        <argsstring>() override</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::Close</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a617f8870e1eb865bc443f059bf12cf94">Close</reimplements>
+        <briefdescription>
+<para>Release resources held by the manager. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Status of the close operation. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="137" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a12f9eb4ba93173a3373c0a5dd002d518" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; AuthSession &gt; &gt; iceberg::rest::auth::SigV4AuthManager::WrapSession</definition>
+        <argsstring>(std::shared_ptr&lt; AuthSession &gt; delegate_session, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties, std::shared_ptr&lt; Aws::Auth::AWSCredentialsProvider &gt; credentials_provider)</argsstring>
+        <name>WrapSession</name>
+        <qualifiedname>iceberg::rest::auth::SigV4AuthManager::WrapSession</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &gt;</type>
+          <declname>delegate_session</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; Aws::Auth::AWSCredentialsProvider &gt;</type>
+          <declname>credentials_provider</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="140" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> that produces <ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession" kindref="compound">SigV4AuthSession</ref> instances. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Wraps a delegate <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> to handle double authentication (e.g., OAuth2 + SigV4). </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::rest::auth::AuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthManager"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::auth::SigV4AuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::rest::auth::AuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthManager"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::auth::SigV4AuthManager</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" line="115" column="1" bodyfile="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h" bodystart="115" bodyend="147"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a0d1455f91de4f76fadff1a88af0dbaab" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>catalog_properties_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1dd2ec088c6e291b5a06b51c7e4cf9f1" prot="public" virt="virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>CatalogSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1e14adf3688c1a3de4c680536f7d1bda" prot="public" virt="virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a5613f76cf1487cb3178aa6cdc6fc69f6" prot="public" virt="virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>ContextualSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a3b5268ee7c471ea0eb8ced66ca174702" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>delegate_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a0372f509f456e081fbbbc024ca6c3289" prot="public" virt="virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>InitSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1ad3a7f0fa4dba716018437b50dbc10060" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>SigV4AuthManager</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1ae47b4d964476dffe5cbfe32ba724257c" prot="public" virt="virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>TableSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a12f9eb4ba93173a3373c0a5dd002d518" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>WrapSession</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1AuthManager_1a96e6dd5ca93833cf9d39199a16b4e2eb" prot="public" virt="virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>~AuthManager</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a545ece011d073fa48314843a1f055ab8" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::SigV4AuthManager</scope><name>~SigV4AuthManager</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

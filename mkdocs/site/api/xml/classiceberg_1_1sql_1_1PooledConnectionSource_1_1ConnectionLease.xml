@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease" kind="class" language="C++" prot="private">
+    <compoundname>iceberg::sql::PooledConnectionSource::ConnectionLease</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1aede019ad561781e6e88f1745c419d770" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1sql_1_1PooledConnectionSource" kindref="compound">PooledConnectionSource</ref> &amp;</type>
+        <definition>PooledConnectionSource&amp; iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ConnectionLease::source_</definition>
+        <argsstring></argsstring>
+        <name>source_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ConnectionLease::source_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="187" column="28" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="187" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1a320a9d12c52dcf8618e6e3dca57edf3a" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ConnectionLease::ConnectionLease</definition>
+        <argsstring>(PooledConnectionSource &amp;source)</argsstring>
+        <name>ConnectionLease</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ConnectionLease::ConnectionLease</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1PooledConnectionSource" kindref="compound">PooledConnectionSource</ref> &amp;</type>
+          <declname>source</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="166" column="14" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="166" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1afceb77d0896a37a921cb1af66a079880" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ConnectionLease::ConnectionLease</definition>
+        <argsstring>(const ConnectionLease &amp;)=delete</argsstring>
+        <name>ConnectionLease</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ConnectionLease::ConnectionLease</qualifiedname>
+        <param>
+          <type>const ConnectionLease &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="173" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1a92f94ae23bf7e472f46bbdd01ee23462" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ConnectionLease &amp;</type>
+        <definition>ConnectionLease &amp; iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ConnectionLease::operator=</definition>
+        <argsstring>(const ConnectionLease &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ConnectionLease::operator=</qualifiedname>
+        <param>
+          <type>const ConnectionLease &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="174" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1ac3e0f4ec166e53a90a7f27abe335ca64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ConnectionLease::ConnectionLease</definition>
+        <argsstring>(ConnectionLease &amp;&amp;)=delete</argsstring>
+        <name>ConnectionLease</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ConnectionLease::ConnectionLease</qualifiedname>
+        <param>
+          <type>ConnectionLease &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="175" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1ade2331d5a197fad0063a03bc4c49dc26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ConnectionLease &amp;</type>
+        <definition>ConnectionLease &amp; iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ConnectionLease::operator=</definition>
+        <argsstring>(ConnectionLease &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ConnectionLease::operator=</qualifiedname>
+        <param>
+          <type>ConnectionLease &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="176" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1ade3803c6bd3db3f1ffcaa98229b8de4d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ConnectionLease::~ConnectionLease</definition>
+        <argsstring>()</argsstring>
+        <name>~ConnectionLease</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ConnectionLease::~ConnectionLease</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="178" column="5" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="178" bodyend="184"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="164" column="3" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="164" bodyend="188"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1a320a9d12c52dcf8618e6e3dca57edf3a" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ConnectionLease</scope><name>ConnectionLease</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1afceb77d0896a37a921cb1af66a079880" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ConnectionLease</scope><name>ConnectionLease</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1ac3e0f4ec166e53a90a7f27abe335ca64" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ConnectionLease</scope><name>ConnectionLease</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1a92f94ae23bf7e472f46bbdd01ee23462" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ConnectionLease</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1ade2331d5a197fad0063a03bc4c49dc26" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ConnectionLease</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1aede019ad561781e6e88f1745c419d770" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ConnectionLease</scope><name>source_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease_1ade3803c6bd3db3f1ffcaa98229b8de4d" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ConnectionLease</scope><name>~ConnectionLease</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

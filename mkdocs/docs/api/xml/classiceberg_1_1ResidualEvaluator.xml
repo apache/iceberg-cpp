@@ -1,0 +1,298 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ResidualEvaluator" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ResidualEvaluator</compoundname>
+    <includes refid="residual__evaluator_8h" local="no">residual_evaluator.h</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ResidualEvaluator_1a8c9fdb3b208009da474d6bf12a92f02a" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::ResidualEvaluator::expr_</definition>
+        <argsstring></argsstring>
+        <name>expr_</name>
+        <qualifiedname>iceberg::ResidualEvaluator::expr_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="81" column="19" bodyfile="iceberg/expression/residual_evaluator.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ResidualEvaluator_1a377a2d9a46b0c44f750e35ce25dffa79" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+        <definition>const PartitionSpec&amp; iceberg::ResidualEvaluator::spec_</definition>
+        <argsstring></argsstring>
+        <name>spec_</name>
+        <qualifiedname>iceberg::ResidualEvaluator::spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="84" column="23" bodyfile="iceberg/expression/residual_evaluator.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ResidualEvaluator_1a3aeaa972e081e41e4dad8468d7ce92e8" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+        <definition>const Schema&amp; iceberg::ResidualEvaluator::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ResidualEvaluator::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="85" column="16" bodyfile="iceberg/expression/residual_evaluator.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ResidualEvaluator_1af4b0cfc52594a2cced7288a640e8438f" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ResidualEvaluator::case_sensitive_</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive_</name>
+        <qualifiedname>iceberg::ResidualEvaluator::case_sensitive_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="86" column="8" bodyfile="iceberg/expression/residual_evaluator.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluator_1a5d37d795c01b4a26449d98837190ffbc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ResidualEvaluator" kindref="compound">ResidualEvaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ResidualEvaluator &gt; &gt; iceberg::ResidualEvaluator::Unpartitioned</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr)</argsstring>
+        <name>Unpartitioned</name>
+        <qualifiedname>iceberg::ResidualEvaluator::Unpartitioned</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Return a residual evaluator for an unpartitioned <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An expression </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A residual evaluator that always returns the expression </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="53" column="17" bodyfile="iceberg/expression/residual_evaluator.cc" bodystart="322" bodyend="326"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluator_1adae93a63d0d5dc528b7b0ab0812a12f7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ResidualEvaluator" kindref="compound">ResidualEvaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ResidualEvaluator &gt; &gt; iceberg::ResidualEvaluator::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr, const PartitionSpec &amp;spec, const Schema &amp;schema, bool case_sensitive=true)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ResidualEvaluator::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Return a residual evaluator for a <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> and <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>An expression </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to bind expressions against </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether field name matching is case-sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A residual evaluator for the expression </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="63" column="17" bodyfile="iceberg/expression/residual_evaluator.cc" bodystart="328" bodyend="336"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluator_1a4324e70a9fe8e96a9bba33b9ef2f4aea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ResidualEvaluator::~ResidualEvaluator</definition>
+        <argsstring>()</argsstring>
+        <name>~ResidualEvaluator</name>
+        <qualifiedname>iceberg::ResidualEvaluator::~ResidualEvaluator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="68" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluator_1a0d74f5478222d2892046c998cbd0a11b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::ResidualEvaluator::ResidualFor</definition>
+        <argsstring>(const StructLike &amp;partition_data) const</argsstring>
+        <name>ResidualFor</name>
+        <qualifiedname>iceberg::ResidualEvaluator::ResidualFor</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>partition_data</declname>
+        </param>
+        <briefdescription>
+<para>Returns a residual expression for the given partition values. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>partition_data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Partition data values </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The residual of this evaluator&apos;s expression from the partition values </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="74" column="18" bodyfile="iceberg/expression/residual_evaluator.cc" bodystart="338" bodyend="344"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluator_1a90448f0c66da7bbe89bacd179138ee4a" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ResidualEvaluator::ResidualEvaluator</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr, const PartitionSpec &amp;spec, const Schema &amp;schema, bool case_sensitive)</argsstring>
+        <name>ResidualEvaluator</name>
+        <qualifiedname>iceberg::ResidualEvaluator::ResidualEvaluator</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/residual_evaluator.h" line="78" column="3" bodyfile="iceberg/expression/residual_evaluator.cc" bodystart="312" bodyend="318"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Finds the residuals for an <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> using the partitions in the given <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>A residual expression is made by partially evaluating an expression using partition values. For example, if a table is partitioned by day(utc_timestamp) and is read with a filter expression utc_timestamp &gt;= a and utc_timestamp &lt;= b, then there are 4 possible residual expressions for the partition data, d:</para>
+<para><itemizedlist>
+<listitem><para>If d &gt; day(a) and d &lt; day(b), the residual is always true</para>
+</listitem><listitem><para>If d == day(a) and d != day(b), the residual is utc_timestamp &gt;= a</para>
+</listitem><listitem><para>If d == day(b) and d != day(a), the residual is utc_timestamp &lt;= b</para>
+</listitem><listitem><para>If d == day(a) == day(b), the residual is utc_timestamp &gt;= a and utc_timestamp &lt;= b</para>
+</listitem></itemizedlist>
+</para>
+<para>Partition data is passed using <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref>. Residuals are returned by <ref refid="classiceberg_1_1ResidualEvaluator_1a0d74f5478222d2892046c998cbd0a11b" kindref="member">ResidualFor()</ref>. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ResidualEvaluator</label>
+        <link refid="classiceberg_1_1ResidualEvaluator"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expr_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::Expression &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/residual_evaluator.h" line="47" column="1" bodyfile="iceberg/expression/residual_evaluator.h" bodystart="47" bodyend="87"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ResidualEvaluator_1af4b0cfc52594a2cced7288a640e8438f" prot="private" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>case_sensitive_</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1a8c9fdb3b208009da474d6bf12a92f02a" prot="protected" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>expr_</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1adae93a63d0d5dc528b7b0ab0812a12f7" prot="public" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1a90448f0c66da7bbe89bacd179138ee4a" prot="protected" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>ResidualEvaluator</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1a0d74f5478222d2892046c998cbd0a11b" prot="public" virt="virtual"><scope>iceberg::ResidualEvaluator</scope><name>ResidualFor</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1a3aeaa972e081e41e4dad8468d7ce92e8" prot="private" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1a377a2d9a46b0c44f750e35ce25dffa79" prot="private" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>spec_</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1a5d37d795c01b4a26449d98837190ffbc" prot="public" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>Unpartitioned</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluator_1a4324e70a9fe8e96a9bba33b9ef2f4aea" prot="public" virt="non-virtual"><scope>iceberg::ResidualEvaluator</scope><name>~ResidualEvaluator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

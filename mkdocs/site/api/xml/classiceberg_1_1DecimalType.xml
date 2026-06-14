@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DecimalType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DecimalType</compoundname>
+    <basecompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</basecompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DecimalType_1a742e19911cda5f238eb560717659d7e4" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr const TypeId iceberg::DecimalType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::DecimalType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kDecimal</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="295" column="33" bodyfile="iceberg/type.h" bodystart="295" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DecimalType_1ade63ccd1fbb00b7d399135ef02cc313f" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const int32_t</type>
+        <definition>constexpr const int32_t iceberg::DecimalType::kMaxPrecision</definition>
+        <argsstring></argsstring>
+        <name>kMaxPrecision</name>
+        <qualifiedname>iceberg::DecimalType::kMaxPrecision</qualifiedname>
+        <initializer>= 38</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="296" column="34" bodyfile="iceberg/type.h" bodystart="296" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DecimalType_1a890d2aefd5734fbc13f68b2fd6ecc507" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::DecimalType::precision_</definition>
+        <argsstring></argsstring>
+        <name>precision_</name>
+        <qualifiedname>iceberg::DecimalType::precision_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="315" column="11" bodyfile="iceberg/type.h" bodystart="315" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DecimalType_1ade7558e63398dc5e58ff576a10f63c4e" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::DecimalType::scale_</definition>
+        <argsstring></argsstring>
+        <name>scale_</name>
+        <qualifiedname>iceberg::DecimalType::scale_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="316" column="11" bodyfile="iceberg/type.h" bodystart="316" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DecimalType_1af1f4a3e4b701af2fd463062ba68b4632" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DecimalType::DecimalType</definition>
+        <argsstring>(int32_t precision, int32_t scale)</argsstring>
+        <name>DecimalType</name>
+        <qualifiedname>iceberg::DecimalType::DecimalType</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>precision</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+<para>Construct a decimal type with the given precision and scale. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="299" column="3" bodyfile="iceberg/type.cc" bodystart="287" bodyend="291"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DecimalType_1ab0d14bcb21526e1af6bd4a030b9025bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DecimalType::~DecimalType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~DecimalType</name>
+        <qualifiedname>iceberg::DecimalType::~DecimalType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="300" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DecimalType_1afa8bab4d9addbb97870359bf2ab06f4a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::DecimalType::precision</definition>
+        <argsstring>() const</argsstring>
+        <name>precision</name>
+        <qualifiedname>iceberg::DecimalType::precision</qualifiedname>
+        <briefdescription>
+<para>Get the precision (the number of decimal digits). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="303" column="12" bodyfile="iceberg/type.cc" bodystart="293" bodyend="293"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DecimalType_1a9e964b1152f389bedc4f3812a50a3069" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::DecimalType::scale</definition>
+        <argsstring>() const</argsstring>
+        <name>scale</name>
+        <qualifiedname>iceberg::DecimalType::scale</qualifiedname>
+        <briefdescription>
+<para>Get the scale (essentially, the number of decimal digits after the decimal point; precisely, the value is scaled by $$10^{-s}$$.). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="306" column="12" bodyfile="iceberg/type.cc" bodystart="294" bodyend="294"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DecimalType_1aa99e13b91dec926f40361ba16d4aeb2b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::DecimalType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::DecimalType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="308" column="10" bodyfile="iceberg/type.cc" bodystart="295" bodyend="295"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DecimalType_1a9e9d5d37f2b1db318eabb0082b5f976d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::DecimalType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::DecimalType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="309" column="15" bodyfile="iceberg/type.cc" bodystart="296" bodyend="298"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1DecimalType_1a007634af36bc1840174cd4f8e858932a" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DecimalType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::DecimalType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="312" column="8" bodyfile="iceberg/type.cc" bodystart="299" bodyend="305"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing a fixed-precision decimal. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DecimalType</label>
+        <link refid="classiceberg_1_1DecimalType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DecimalType</label>
+        <link refid="classiceberg_1_1DecimalType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="293" column="1" bodyfile="iceberg/type.h" bodystart="293" bodyend="317"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DecimalType_1af1f4a3e4b701af2fd463062ba68b4632" prot="public" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>DecimalType</name></member>
+      <member refid="classiceberg_1_1DecimalType_1a007634af36bc1840174cd4f8e858932a" prot="protected" virt="virtual"><scope>iceberg::DecimalType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::DecimalType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::DecimalType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1DecimalType_1ade63ccd1fbb00b7d399135ef02cc313f" prot="public" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>kMaxPrecision</name></member>
+      <member refid="classiceberg_1_1DecimalType_1a742e19911cda5f238eb560717659d7e4" prot="public" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1DecimalType_1afa8bab4d9addbb97870359bf2ab06f4a" prot="public" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>precision</name></member>
+      <member refid="classiceberg_1_1DecimalType_1a890d2aefd5734fbc13f68b2fd6ecc507" prot="private" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>precision_</name></member>
+      <member refid="classiceberg_1_1DecimalType_1a9e964b1152f389bedc4f3812a50a3069" prot="public" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>scale</name></member>
+      <member refid="classiceberg_1_1DecimalType_1ade7558e63398dc5e58ff576a10f63c4e" prot="private" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>scale_</name></member>
+      <member refid="classiceberg_1_1DecimalType_1a9e9d5d37f2b1db318eabb0082b5f976d" prot="public" virt="virtual"><scope>iceberg::DecimalType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1DecimalType_1aa99e13b91dec926f40361ba16d4aeb2b" prot="public" virt="virtual"><scope>iceberg::DecimalType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1DecimalType_1ab0d14bcb21526e1af6bd4a030b9025bc" prot="public" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>~DecimalType</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::DecimalType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::DecimalType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

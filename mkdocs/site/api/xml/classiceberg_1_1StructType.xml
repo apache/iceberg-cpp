@@ -1,0 +1,500 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1StructType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::StructType</compoundname>
+    <basecompoundref refid="classiceberg_1_1NestedType" prot="public" virt="non-virtual">iceberg::NestedType</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1Schema" prot="public" virt="non-virtual">iceberg::Schema</derivedcompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1StructType_1a9ffc6c8564bbc187bef15933de34c3cd" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr TypeId iceberg::StructType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::StructType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kStruct</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="110" column="27" bodyfile="iceberg/type.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1StructType_1a327c88bf1366c1ff8df01ee92b55a8ca" prot="protected" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>std::vector&lt;SchemaField&gt; iceberg::StructType::fields_</definition>
+        <argsstring></argsstring>
+        <name>fields_</name>
+        <qualifiedname>iceberg::StructType::fields_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="138" column="15" bodyfile="iceberg/type.h" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StructType_1a5655beee2ab506fc7d3146d2946d26b2" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitFieldById &gt;</type>
+        <definition>Lazy&lt;InitFieldById&gt; iceberg::StructType::field_by_id_</definition>
+        <argsstring></argsstring>
+        <name>field_by_id_</name>
+        <qualifiedname>iceberg::StructType::field_by_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="139" column="8" bodyfile="iceberg/type.h" bodystart="139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StructType_1aa77c6676945a053932ce5b799b979453" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitFieldByName &gt;</type>
+        <definition>Lazy&lt;InitFieldByName&gt; iceberg::StructType::field_by_name_</definition>
+        <argsstring></argsstring>
+        <name>field_by_name_</name>
+        <qualifiedname>iceberg::StructType::field_by_name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="140" column="8" bodyfile="iceberg/type.h" bodystart="140" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1StructType_1a085ae2da9c1b842d0c86eca458d8f431" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitFieldByLowerCaseName &gt;</type>
+        <definition>Lazy&lt;InitFieldByLowerCaseName&gt; iceberg::StructType::field_by_lowercase_name_</definition>
+        <argsstring></argsstring>
+        <name>field_by_lowercase_name_</name>
+        <qualifiedname>iceberg::StructType::field_by_lowercase_name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="141" column="8" bodyfile="iceberg/type.h" bodystart="141" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1StructType_1ae302f07109f0f1a519653e43fc745032" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::StructType::StructType</definition>
+        <argsstring>(std::vector&lt; SchemaField &gt; fields)</argsstring>
+        <name>StructType</name>
+        <qualifiedname>iceberg::StructType::StructType</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+          <declname>fields</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="111" column="12" bodyfile="iceberg/type.cc" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1ae3dde09c581bd05c344a44c29431184f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::StructType::~StructType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~StructType</name>
+        <qualifiedname>iceberg::StructType::~StructType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="112" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a1281cfc082575d9656a1e72ba07bdbd1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::StructType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::StructType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="114" column="10" bodyfile="iceberg/type.cc" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a5f17aa7e1e75de4893b77f0ad574cb58" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::StructType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::StructType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="115" column="15" bodyfile="iceberg/type.cc" bodystart="46" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a450d536bde2a559ac3781cd6c5ebc719" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::span&lt; const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>std::span&lt; const SchemaField &gt; iceberg::StructType::fields</definition>
+        <argsstring>() const override</argsstring>
+        <name>fields</name>
+        <qualifiedname>iceberg::StructType::fields</qualifiedname>
+        <reimplements refid="classiceberg_1_1NestedType_1a021e35b83f544695fe139c101ff3d0e3">fields</reimplements>
+        <briefdescription>
+<para>Get a view of the child fields. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="117" column="13" bodyfile="iceberg/type.cc" bodystart="55" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a29472346ff0ab4cd57b6bbebe2168d52" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; NestedType::SchemaFieldConstRef &gt; &gt; iceberg::StructType::GetFieldById</definition>
+        <argsstring>(int32_t field_id) const override</argsstring>
+        <name>GetFieldById</name>
+        <qualifiedname>iceberg::StructType::GetFieldById</qualifiedname>
+        <reimplements refid="classiceberg_1_1NestedType_1a3c2c55a9e9cbd6cbb9338feaddd839f9">GetFieldById</reimplements>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by field ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This is O(1) complexity. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="118" column="10" bodyfile="iceberg/type.cc" bodystart="56" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a6839caa3cd828fc09282e9cf4f6b69cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; NestedType::SchemaFieldConstRef &gt; &gt; iceberg::StructType::GetFieldByIndex</definition>
+        <argsstring>(int32_t index) const override</argsstring>
+        <name>GetFieldByIndex</name>
+        <qualifiedname>iceberg::StructType::GetFieldByIndex</qualifiedname>
+        <reimplements refid="classiceberg_1_1NestedType_1a79fa68dd07b2d1f731d172017205fe6b">GetFieldByIndex</reimplements>
+        <param>
+          <type>int32_t</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by index. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This is O(1) complexity. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="120" column="10" bodyfile="iceberg/type.cc" bodystart="64" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a3fd3403e743eba662f0ed50681e015b4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; NestedType::SchemaFieldConstRef &gt; &gt; iceberg::StructType::GetFieldByName</definition>
+        <argsstring>(std::string_view name, bool case_sensitive) const override</argsstring>
+        <name>GetFieldByName</name>
+        <qualifiedname>iceberg::StructType::GetFieldByName</qualifiedname>
+        <reimplements refid="classiceberg_1_1NestedType_1a270387144b5d75a84ab868bd5553cde2">GetFieldByName</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by name. Return an error Status if the field name is not unique; prefer GetFieldById or GetFieldByIndex when possible. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This is O(1) complexity. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="122" column="10" bodyfile="iceberg/type.cc" bodystart="72" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a65f155223e50ca85d206e50ceee928b8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; Schema &gt; iceberg::StructType::ToSchema</definition>
+        <argsstring>() const</argsstring>
+        <name>ToSchema</name>
+        <qualifiedname>iceberg::StructType::ToSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="126" column="19" bodyfile="iceberg/type.cc" bodystart="91" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a2213c2a9f6606cfc7276faac253d8753" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>virtual Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt; iceberg::NestedType::GetFieldByName</definition>
+        <argsstring>(std::string_view name, bool case_sensitive) const=0</argsstring>
+        <name>GetFieldByName</name>
+        <qualifiedname>iceberg::StructType::GetFieldByName</qualifiedname>
+        <reimplements refid="classiceberg_1_1NestedType_1a270387144b5d75a84ab868bd5553cde2">GetFieldByName</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by name. Return an error Status if the field name is not unique; prefer GetFieldById or GetFieldByIndex when possible. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This is O(1) complexity. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="124" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a4eaddf68ef7fbdf4ae44d3a67f1fc99d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; NestedType::SchemaFieldConstRef &gt; &gt; iceberg::NestedType::GetFieldByName</definition>
+        <argsstring>(std::string_view name) const</argsstring>
+        <name>GetFieldByName</name>
+        <qualifiedname>iceberg::StructType::GetFieldByName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Get a field by name (case-sensitive). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="124" column="3" bodyfile="iceberg/type.cc" bodystart="37" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1StructType_1ac409fbe5fd9f8f37b398bb737795da7f" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StructType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::StructType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="129" column="8" bodyfile="iceberg/type.cc" bodystart="95" bodyend="101"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a18f9f394cb75a590d848dd3735c344a7" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; int32_t, SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; int32_t, StructType::SchemaFieldConstRef &gt; &gt; iceberg::StructType::InitFieldById</definition>
+        <argsstring>(const StructType &amp;)</argsstring>
+        <name>InitFieldById</name>
+        <qualifiedname>iceberg::StructType::InitFieldById</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <defname>self</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="131" column="17" bodyfile="iceberg/type.cc" bodystart="104" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1a4a88a995db7cf27e9b338137cac34d98" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string_view, SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string_view, StructType::SchemaFieldConstRef &gt; &gt; iceberg::StructType::InitFieldByName</definition>
+        <argsstring>(const StructType &amp;)</argsstring>
+        <name>InitFieldByName</name>
+        <qualifiedname>iceberg::StructType::InitFieldByName</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <defname>self</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="134" column="3" bodyfile="iceberg/type.cc" bodystart="117" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructType_1ab476b47b25cbe844fa5299e5f5cf11d1" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, SchemaFieldConstRef &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string, StructType::SchemaFieldConstRef &gt; &gt; iceberg::StructType::InitFieldByLowerCaseName</definition>
+        <argsstring>(const StructType &amp;)</argsstring>
+        <name>InitFieldByLowerCaseName</name>
+        <qualifiedname>iceberg::StructType::InitFieldByLowerCaseName</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <defname>self</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="136" column="3" bodyfile="iceberg/type.cc" bodystart="131" bodyend="143"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing a struct with nested fields. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="7">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="9">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="8">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="2">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="108" column="1" bodyfile="iceberg/type.h" bodystart="108" bodyend="142"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1StructType_1ac409fbe5fd9f8f37b398bb737795da7f" prot="protected" virt="virtual"><scope>iceberg::StructType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1StructType_1a5655beee2ab506fc7d3146d2946d26b2" prot="protected" virt="non-virtual"><scope>iceberg::StructType</scope><name>field_by_id_</name></member>
+      <member refid="classiceberg_1_1StructType_1a085ae2da9c1b842d0c86eca458d8f431" prot="protected" virt="non-virtual"><scope>iceberg::StructType</scope><name>field_by_lowercase_name_</name></member>
+      <member refid="classiceberg_1_1StructType_1aa77c6676945a053932ce5b799b979453" prot="protected" virt="non-virtual"><scope>iceberg::StructType</scope><name>field_by_name_</name></member>
+      <member refid="classiceberg_1_1StructType_1a450d536bde2a559ac3781cd6c5ebc719" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>fields</name></member>
+      <member refid="classiceberg_1_1StructType_1a327c88bf1366c1ff8df01ee92b55a8ca" prot="protected" virt="non-virtual"><scope>iceberg::StructType</scope><name>fields_</name></member>
+      <member refid="classiceberg_1_1StructType_1a29472346ff0ab4cd57b6bbebe2168d52" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>GetFieldById</name></member>
+      <member refid="classiceberg_1_1StructType_1a6839caa3cd828fc09282e9cf4f6b69cd" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>GetFieldByIndex</name></member>
+      <member refid="classiceberg_1_1StructType_1a3fd3403e743eba662f0ed50681e015b4" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>GetFieldByName</name></member>
+      <member refid="classiceberg_1_1StructType_1a2213c2a9f6606cfc7276faac253d8753" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>GetFieldByName</name></member>
+      <member refid="classiceberg_1_1StructType_1a4eaddf68ef7fbdf4ae44d3a67f1fc99d" prot="public" virt="non-virtual"><scope>iceberg::StructType</scope><name>GetFieldByName</name></member>
+      <member refid="classiceberg_1_1StructType_1a18f9f394cb75a590d848dd3735c344a7" prot="protected" virt="non-virtual"><scope>iceberg::StructType</scope><name>InitFieldById</name></member>
+      <member refid="classiceberg_1_1StructType_1ab476b47b25cbe844fa5299e5f5cf11d1" prot="protected" virt="non-virtual"><scope>iceberg::StructType</scope><name>InitFieldByLowerCaseName</name></member>
+      <member refid="classiceberg_1_1StructType_1a4a88a995db7cf27e9b338137cac34d98" prot="protected" virt="non-virtual"><scope>iceberg::StructType</scope><name>InitFieldByName</name></member>
+      <member refid="classiceberg_1_1NestedType_1ad658681f880385907591f637fb20f44b" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1NestedType_1a973f9a2e897d90e2f7be02c953bc2246" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1StructType_1a9ffc6c8564bbc187bef15933de34c3cd" prot="public" virt="non-virtual"><scope>iceberg::StructType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1NestedType_1a2c000477a9f8bd01766fffc5aeefd309" prot="public" virt="non-virtual"><scope>iceberg::StructType</scope><name>SchemaFieldConstRef</name></member>
+      <member refid="classiceberg_1_1StructType_1ae302f07109f0f1a519653e43fc745032" prot="public" virt="non-virtual"><scope>iceberg::StructType</scope><name>StructType</name></member>
+      <member refid="classiceberg_1_1StructType_1a65f155223e50ca85d206e50ceee928b8" prot="public" virt="non-virtual"><scope>iceberg::StructType</scope><name>ToSchema</name></member>
+      <member refid="classiceberg_1_1StructType_1a5f17aa7e1e75de4893b77f0ad574cb58" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1StructType_1a1281cfc082575d9656a1e72ba07bdbd1" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::StructType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1StructType_1ae3dde09c581bd05c344a44c29431184f" prot="public" virt="non-virtual"><scope>iceberg::StructType</scope><name>~StructType</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::StructType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,484 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ProjectionContext" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ProjectionContext</compoundname>
+    <includes refid="arrow__c__data__util__internal_8h" local="no">arrow_c_data_util_internal.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1ProjectionContext_1a48a88e41c63459b7c55895dd17dfb17f" prot="public" static="no">
+        <type>std::shared_ptr&lt; void &gt;</type>
+        <definition>using iceberg::ProjectionContext::ProjectBatchState =  std::shared_ptr&lt;void&gt;</definition>
+        <argsstring></argsstring>
+        <name>ProjectBatchState</name>
+        <qualifiedname>iceberg::ProjectionContext::ProjectBatchState</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="45" column="3" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1ProjectionContext_1a3befc89319049297272b186eba9f935b" prot="public" static="no">
+        <type>auto(*)(<ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *input_batch, std::span&lt; const int32_t &gt; row_indices, <ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &amp;projection) -&gt; Result&lt; <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &gt;</type>
+        <definition>using iceberg::ProjectionContext::ProjectBatchFunction =  auto (*)(ArrowArray* input_batch, std::span&lt;const int32_t&gt; row_indices, ProjectionContext&amp; projection) -&gt; Result&lt;ArrowArray&gt;</definition>
+        <argsstring></argsstring>
+        <name>ProjectBatchFunction</name>
+        <qualifiedname>iceberg::ProjectionContext::ProjectBatchFunction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="47" column="3" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionContext_1a5a1f1077cc53971f423adb0bb25a8103" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+        <definition>const Schema* iceberg::ProjectionContext::input_schema_</definition>
+        <argsstring></argsstring>
+        <name>input_schema_</name>
+        <qualifiedname>iceberg::ProjectionContext::input_schema_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="105" column="16" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionContext_1aad6932313e72630612708eb4f56ad753" prot="private" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> *</type>
+        <definition>const Schema* iceberg::ProjectionContext::output_schema_</definition>
+        <argsstring></argsstring>
+        <name>output_schema_</name>
+        <qualifiedname>iceberg::ProjectionContext::output_schema_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="106" column="16" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionContext_1a0ab7b5788c7cc061a0906a4f31c72ce8" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::ProjectionContext::selected_field_indices_</definition>
+        <argsstring></argsstring>
+        <name>selected_field_indices_</name>
+        <qualifiedname>iceberg::ProjectionContext::selected_field_indices_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="107" column="15" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionContext_1a2ad6d0a1c8aa18979b0592f518ad7d21" prot="private" static="no" mutable="no">
+        <type><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref></type>
+        <definition>ArrowSchema iceberg::ProjectionContext::input_arrow_schema_</definition>
+        <argsstring></argsstring>
+        <name>input_arrow_schema_</name>
+        <qualifiedname>iceberg::ProjectionContext::input_arrow_schema_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="108" column="15" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="108" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionContext_1a690da59a244e28ee2f382a3186e1c55e" prot="private" static="no" mutable="no">
+        <type><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref></type>
+        <definition>ArrowSchema iceberg::ProjectionContext::output_arrow_schema_</definition>
+        <argsstring></argsstring>
+        <name>output_arrow_schema_</name>
+        <qualifiedname>iceberg::ProjectionContext::output_arrow_schema_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="109" column="15" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="109" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionContext_1a6e32485a4cedff6af7f9fa4bcdab4739" prot="private" static="no" mutable="no">
+        <type>ProjectBatchFunction</type>
+        <definition>ProjectBatchFunction iceberg::ProjectionContext::project_batch_function_</definition>
+        <argsstring></argsstring>
+        <name>project_batch_function_</name>
+        <qualifiedname>iceberg::ProjectionContext::project_batch_function_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="110" column="24" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionContext_1acac488fff9cc6d57b7bccf45fbce1447" prot="private" static="no" mutable="no">
+        <type>ProjectBatchState</type>
+        <definition>ProjectBatchState iceberg::ProjectionContext::project_batch_state_</definition>
+        <argsstring></argsstring>
+        <name>project_batch_state_</name>
+        <qualifiedname>iceberg::ProjectionContext::project_batch_state_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="111" column="21" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a204b134b7c74c202257b552e7d46cb17" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ProjectionContext::RegisterProjectBatchFunction</definition>
+        <argsstring>(ProjectBatchFunction project_batch_function)</argsstring>
+        <name>RegisterProjectBatchFunction</name>
+        <qualifiedname>iceberg::ProjectionContext::RegisterProjectBatchFunction</qualifiedname>
+        <param>
+          <type>ProjectBatchFunction</type>
+          <declname>project_batch_function</declname>
+        </param>
+        <briefdescription>
+<para>Register a custom implementation for ProjectBatch. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Registration is process-wide. If multiple implementations are registered, the last non-null implementation wins. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="56" column="15" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="311" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1ada42b4c6c4f7eb3770bc91076833e24a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ProjectionContext::HasProjectBatchFunction</definition>
+        <argsstring>()</argsstring>
+        <name>HasProjectBatchFunction</name>
+        <qualifiedname>iceberg::ProjectionContext::HasProjectBatchFunction</qualifiedname>
+        <briefdescription>
+<para>Returns true when a custom implementation has been registered. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="59" column="15" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="322" bodyend="324"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a22d496b40be22746f865cc44d22ecf22" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>auto</type>
+        <definition>auto iceberg::ProjectionContext::ResolveProjectBatchFunction</definition>
+        <argsstring>() -&gt; ProjectBatchFunction</argsstring>
+        <name>ResolveProjectBatchFunction</name>
+        <qualifiedname>iceberg::ProjectionContext::ResolveProjectBatchFunction</qualifiedname>
+        <briefdescription>
+<para>Resolve the registered ProjectBatch implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="62" column="15" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="326" bodyend="329"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a1273dbc29a77df9905aa527707cfa2b2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &gt;</type>
+        <definition>Result&lt; ProjectionContext &gt; iceberg::ProjectionContext::Make</definition>
+        <argsstring>(const Schema &amp;input_schema, const Schema &amp;output_schema, ProjectBatchFunction project_batch_function)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ProjectionContext::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>input_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>output_schema</declname>
+        </param>
+        <param>
+          <type>ProjectBatchFunction</type>
+          <declname>project_batch_function</declname>
+        </param>
+        <briefdescription>
+<para>Build reusable projection state for a validated schema pair. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>input_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> that describes every input batch. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>output_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Final schema and column order requested by the caller. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>project_batch_function</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional implementation returned by <ref refid="classiceberg_1_1ProjectionContext_1a22d496b40be22746f865cc44d22ecf22" kindref="member">ProjectionContext::ResolveProjectBatchFunction</ref>, or nullptr to use the nanoarrow path. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>It validates that output_schema selects or reorders complete top-level fields by field id. Nested pruning and type changes are rejected. The input_schema and output_schema passed to Make must outlive the context. ProjectBatch may lazily initialize backend cache; do not share one context across concurrent calls. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="75" column="17" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="268" bodyend="284"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1ac510918c702ac95f3a01d3c12b165349" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ProjectionContext::ProjectionContext</definition>
+        <argsstring>(ProjectionContext &amp;&amp;) noexcept</argsstring>
+        <name>ProjectionContext</name>
+        <qualifiedname>iceberg::ProjectionContext::ProjectionContext</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &amp;&amp;</type>
+          <defname>other</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="79" column="3" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="223" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1ad911309a63fd1b787155e9a5e875ce51" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &amp;</type>
+        <definition>ProjectionContext &amp; iceberg::ProjectionContext::operator=</definition>
+        <argsstring>(ProjectionContext &amp;&amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ProjectionContext::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &amp;&amp;</type>
+          <defname>other</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="80" column="21" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="235" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a9220f0265d9ccfa347d18b3c74025fb0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ProjectionContext::~ProjectionContext</definition>
+        <argsstring>()</argsstring>
+        <name>~ProjectionContext</name>
+        <qualifiedname>iceberg::ProjectionContext::~ProjectionContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="81" column="3" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="259" bodyend="266"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a8c2fd16ed2988b2fe7df4bc02e5f0bef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ProjectionContext::ProjectionContext</definition>
+        <argsstring>(const ProjectionContext &amp;)=delete</argsstring>
+        <name>ProjectionContext</name>
+        <qualifiedname>iceberg::ProjectionContext::ProjectionContext</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="83" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a16bf2d7743dfdd4e8cd2001e3a7ccbf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &amp;</type>
+        <definition>ProjectionContext &amp; iceberg::ProjectionContext::operator=</definition>
+        <argsstring>(const ProjectionContext &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ProjectionContext::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ProjectionContext" kindref="compound">ProjectionContext</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="84" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1ad400dc591a4cf98d2addec51d6f7fa53" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+        <definition>const Schema &amp; iceberg::ProjectionContext::input_schema</definition>
+        <argsstring>() const</argsstring>
+        <name>input_schema</name>
+        <qualifiedname>iceberg::ProjectionContext::input_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="86" column="16" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="286" bodyend="286"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a771925af32996e37eabe4e64181c03ce" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+        <definition>const Schema &amp; iceberg::ProjectionContext::output_schema</definition>
+        <argsstring>() const</argsstring>
+        <name>output_schema</name>
+        <qualifiedname>iceberg::ProjectionContext::output_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="88" column="16" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="288" bodyend="288"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1aaeb5ff4062ccea8666d051d5a51bde4c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &amp;</type>
+        <definition>const ArrowSchema &amp; iceberg::ProjectionContext::input_arrow_schema</definition>
+        <argsstring>() const</argsstring>
+        <name>input_arrow_schema</name>
+        <qualifiedname>iceberg::ProjectionContext::input_arrow_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="90" column="21" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="290" bodyend="292"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1af1548388c8f97a010ba76c4b8e2dfaae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &amp;</type>
+        <definition>const ArrowSchema &amp; iceberg::ProjectionContext::output_arrow_schema</definition>
+        <argsstring>() const</argsstring>
+        <name>output_arrow_schema</name>
+        <qualifiedname>iceberg::ProjectionContext::output_arrow_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="92" column="21" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="294" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1ac41cb1e0e0fc0b85742fb34005427625" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::span&lt; const int32_t &gt;</type>
+        <definition>std::span&lt; const int32_t &gt; iceberg::ProjectionContext::selected_field_indices</definition>
+        <argsstring>() const</argsstring>
+        <name>selected_field_indices</name>
+        <qualifiedname>iceberg::ProjectionContext::selected_field_indices</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="94" column="13" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="298" bodyend="300"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a272095af4899a8a06328833b465451fb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>ProjectBatchFunction</type>
+        <definition>ProjectionContext::ProjectBatchFunction iceberg::ProjectionContext::project_batch_function</definition>
+        <argsstring>() const</argsstring>
+        <name>project_batch_function</name>
+        <qualifiedname>iceberg::ProjectionContext::project_batch_function</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="96" column="24" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="302" bodyend="305"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a2644d41b08f601e12c5c076025e7d7c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ProjectBatchState &amp;</type>
+        <definition>ProjectionContext::ProjectBatchState &amp; iceberg::ProjectionContext::project_batch_state</definition>
+        <argsstring>()</argsstring>
+        <name>project_batch_state</name>
+        <qualifiedname>iceberg::ProjectionContext::project_batch_state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="98" column="21" bodyfile="iceberg/arrow_c_data_util.cc" bodystart="307" bodyend="309"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ProjectionContext_1a2e4c26721769bf86aa076cdd2de0d33d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ProjectionContext::ProjectionContext</definition>
+        <argsstring>()=default</argsstring>
+        <name>ProjectionContext</name>
+        <qualifiedname>iceberg::ProjectionContext::ProjectionContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="101" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Cached state for ProjectBatch over one input/output schema pair. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Exported because this internal utility is shared across library translation units. </para>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_util_internal.h" line="43" column="1" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="43" bodyend="112"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ProjectionContext_1ada42b4c6c4f7eb3770bc91076833e24a" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>HasProjectBatchFunction</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1aaeb5ff4062ccea8666d051d5a51bde4c" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>input_arrow_schema</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a2ad6d0a1c8aa18979b0592f518ad7d21" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>input_arrow_schema_</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1ad400dc591a4cf98d2addec51d6f7fa53" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>input_schema</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a5a1f1077cc53971f423adb0bb25a8103" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>input_schema_</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a1273dbc29a77df9905aa527707cfa2b2" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1ad911309a63fd1b787155e9a5e875ce51" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a16bf2d7743dfdd4e8cd2001e3a7ccbf7" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1af1548388c8f97a010ba76c4b8e2dfaae" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>output_arrow_schema</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a690da59a244e28ee2f382a3186e1c55e" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>output_arrow_schema_</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a771925af32996e37eabe4e64181c03ce" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>output_schema</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1aad6932313e72630612708eb4f56ad753" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>output_schema_</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a272095af4899a8a06328833b465451fb" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>project_batch_function</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a6e32485a4cedff6af7f9fa4bcdab4739" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>project_batch_function_</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a2644d41b08f601e12c5c076025e7d7c3" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>project_batch_state</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1acac488fff9cc6d57b7bccf45fbce1447" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>project_batch_state_</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a3befc89319049297272b186eba9f935b" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>ProjectBatchFunction</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a48a88e41c63459b7c55895dd17dfb17f" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>ProjectBatchState</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1ac510918c702ac95f3a01d3c12b165349" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>ProjectionContext</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a8c2fd16ed2988b2fe7df4bc02e5f0bef" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>ProjectionContext</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a2e4c26721769bf86aa076cdd2de0d33d" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>ProjectionContext</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a204b134b7c74c202257b552e7d46cb17" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>RegisterProjectBatchFunction</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a22d496b40be22746f865cc44d22ecf22" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>ResolveProjectBatchFunction</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1ac41cb1e0e0fc0b85742fb34005427625" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>selected_field_indices</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a0ab7b5788c7cc061a0906a4f31c72ce8" prot="private" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>selected_field_indices_</name></member>
+      <member refid="classiceberg_1_1ProjectionContext_1a9220f0265d9ccfa347d18b3c74025fb0" prot="public" virt="non-virtual"><scope>iceberg::ProjectionContext</scope><name>~ProjectionContext</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

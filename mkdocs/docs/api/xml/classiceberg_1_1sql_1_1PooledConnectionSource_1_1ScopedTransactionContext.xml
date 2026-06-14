@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext" kind="class" language="C++" prot="private">
+    <compoundname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1af923bffad0bf81d5ac68ec01dfaa8af6" prot="private" static="no" mutable="no">
+        <type>TransactionContext *</type>
+        <definition>TransactionContext* iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ScopedTransactionContext::previous_</definition>
+        <argsstring></argsstring>
+        <name>previous_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext::previous_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="161" column="24" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="161" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a8bc3826f781caf967185f80626500201" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ScopedTransactionContext::ScopedTransactionContext</definition>
+        <argsstring>(TransactionContext &amp;context)</argsstring>
+        <name>ScopedTransactionContext</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext::ScopedTransactionContext</qualifiedname>
+        <param>
+          <type>TransactionContext &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="148" column="14" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="148" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a0b799150b8404fb1f7edd013f9888b7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ScopedTransactionContext::ScopedTransactionContext</definition>
+        <argsstring>(const ScopedTransactionContext &amp;)=delete</argsstring>
+        <name>ScopedTransactionContext</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext::ScopedTransactionContext</qualifiedname>
+        <param>
+          <type>const ScopedTransactionContext &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="153" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a64f1ff94569e9b27fbcab74894e0d1ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ScopedTransactionContext &amp;</type>
+        <definition>ScopedTransactionContext &amp; iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ScopedTransactionContext::operator=</definition>
+        <argsstring>(const ScopedTransactionContext &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext::operator=</qualifiedname>
+        <param>
+          <type>const ScopedTransactionContext &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="154" column="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a5328499e16da90702a3a92cc6a06f8a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ScopedTransactionContext::ScopedTransactionContext</definition>
+        <argsstring>(ScopedTransactionContext &amp;&amp;)=delete</argsstring>
+        <name>ScopedTransactionContext</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext::ScopedTransactionContext</qualifiedname>
+        <param>
+          <type>ScopedTransactionContext &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="155" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a736561a89a27a453e3c182ad06d6065e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ScopedTransactionContext &amp;</type>
+        <definition>ScopedTransactionContext &amp; iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ScopedTransactionContext::operator=</definition>
+        <argsstring>(ScopedTransactionContext &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext::operator=</qualifiedname>
+        <param>
+          <type>ScopedTransactionContext &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="156" column="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a9562745fe9f83a0fb723a3c3f8225d57" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ScopedTransactionContext::~ScopedTransactionContext</definition>
+        <argsstring>()</argsstring>
+        <name>~ScopedTransactionContext</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ScopedTransactionContext::~ScopedTransactionContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="158" column="5" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="158" bodyend="158"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="146" column="3" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="146" bodyend="162"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a64f1ff94569e9b27fbcab74894e0d1ab" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a736561a89a27a453e3c182ad06d6065e" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1af923bffad0bf81d5ac68ec01dfaa8af6" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</scope><name>previous_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a8bc3826f781caf967185f80626500201" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</scope><name>ScopedTransactionContext</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a0b799150b8404fb1f7edd013f9888b7a" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</scope><name>ScopedTransactionContext</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a5328499e16da90702a3a92cc6a06f8a3" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</scope><name>ScopedTransactionContext</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext_1a9562745fe9f83a0fb723a3c3f8225d57" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource::ScopedTransactionContext</scope><name>~ScopedTransactionContext</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
