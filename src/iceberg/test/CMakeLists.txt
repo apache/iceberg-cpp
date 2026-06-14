@@ -243,6 +243,10 @@ if(ICEBERG_BUILD_BUNDLE)
                    delete_loader_test.cc
                    file_scan_task_reader_test.cc)
 
+  add_iceberg_test(metadata_table_test SOURCES metadata_table_test.cc)
+
+  add_iceberg_test(data_writer_test USE_BUNDLE SOURCES data_writer_test.cc)
+
 endif()
 
 if(ICEBERG_BUILD_SQL_CATALOG

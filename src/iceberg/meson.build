@@ -65,6 +65,9 @@ iceberg_sources = files(
     'file_reader.cc',
     'file_writer.cc',
     'inheritable_metadata.cc',
+    'inspect/history_table.cc',
+    'inspect/metadata_table.cc',
+    'inspect/snapshots_table.cc',
     'json_serde.cc',
     'location_provider.cc',
     'manifest/manifest_adapter.cc',
@@ -296,6 +299,7 @@ subdir('puffin')
 subdir('row')
 subdir('update')
 subdir('util')
+subdir('inspect')
 
 if get_option('tests').enabled()
     subdir('test')

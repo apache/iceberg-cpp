@@ -41,6 +41,9 @@ set(ICEBERG_SOURCES
     file_io_registry.cc
     file_reader.cc
     file_writer.cc
+    inspect/history_table.cc
+    inspect/metadata_table.cc
+    inspect/snapshots_table.cc
     inheritable_metadata.cc
     json_serde.cc
     location_provider.cc
