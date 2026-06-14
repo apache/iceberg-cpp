@@ -34,6 +34,8 @@ Result<std::unique_ptr<ResourcePaths>> ResourcePaths::Make(
   if (base_uri.empty()) {
     return InvalidArgument("Base URI is empty");
   }
+  ICEBERG_PRECHECK(!namespace_separator.empty(),
+                   "REST namespace separator cannot be empty");
   return std::unique_ptr<ResourcePaths>(
       new ResourcePaths(std::move(base_uri), prefix, namespace_separator));
 }
