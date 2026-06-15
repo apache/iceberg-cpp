@@ -29,23 +29,18 @@ For the full changelog of each release, see the [GitHub Releases page](https://g
 
 ## 0.3.0
 
-- Incremental scan APIs, incremental append scans, and incremental changelog scans for planning table changes between snapshots
-- Merge-on-read data access with a MOR file scan task reader, delete filter support, and a DeleteLoader for v2 position and equality delete files
-- Column selection in table scan planning and ManifestGroup file filtering
-- Roaring-based position bitmaps, a position delete index, and range coalescing for position deletes
-- MergingSnapshotUpdate lays the groundwork for table overwrite, delete, update, and various maintenance operations.
-- SnapshotManager support and retried transaction commits
-- Snapshot expiration cleanup strategies for reachable file cleanup and incremental file cleanup
-- Partition statistics updates and schema update mapping
-- REST catalog improvements including initial OAuth2 support, OAuth2 token auto-refresh, basic authentication, snapshot loading mode, namespace separators, and server-side scan planning endpoints
-- S3 FileIO integration built on Arrow filesystem support
-- FileIO interface enrichment with new InputFile and OutputFile interfaces and bulk delete support
+- Extend table scan planning with v2 delete support, manifest filtering, and projection
+- Incremental scan planning with append-only and basic changelog scan support
+- REST catalog improvements including initial OAuth2 support with auto-refresh, basic authentication, snapshot loading mode, namespace separators, and server-side scan planning
+- New table metadata update including partition statistics, schema update, and expire snapshots with file cleanup support
+- Transaction with retry, and scaffolding work on MergingSnapshotUpdate for update, delete, overwrite, etc.
 - SQL catalog support backed by SQLite, PostgreSQL, and MySQL stores
-- Metrics reporter support with report JSON serialization and reporter loading
-- Avro writer metrics and Parquet writer metrics
-- Puffin support with basic data structures, format constants and JSON serialization, and file reader/writer support
-- Iceberg v3 support for the unknown type and nanosecond timestamp types
-- Expression serialization with operation JSON serialization, expression JSON serialization, and typed literal binding after serialization
+- File scan task reader with v2 deletes support
+- V2 data writer support and writer metrics collection
+- Groundwork for scan and commit metrics reporting
+- Puffin metadata and reader/writer support
+- Initial v3 support with the unknown and nanosecond timestamp types
+- FileIO enrichment including new InputFile and OutputFile interfaces, bulk delete and S3 integration
 
 ## 0.2.0
 
