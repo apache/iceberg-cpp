@@ -25,6 +25,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
@@ -131,6 +132,61 @@ TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
   EXPECT_THAT(
       unknown_schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
       iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateRejectsInitialDefaultBeforeFormatV3) {
+  iceberg::Schema schema({iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(42)))});
+
+  auto status = schema.Validate(2);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("is not supported until v3"));
+
+  EXPECT_THAT(schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateDoesNotVersionGateWriteDefault) {
+  // A write-default does not reinterpret existing data, so it is not gated on
+  // format version: a write-default alone is accepted below v3.
+  iceberg::Schema schema({iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{}, /*initial_default=*/nullptr,
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(7)))});
+
+  EXPECT_THAT(schema.Validate(2), iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
+  iceberg::Schema schema({iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{}, /*initial_default=*/nullptr,
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::String("oops")))});
+
+  auto status = schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("write-default"));
+}
+
+TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {
+  // Reassigning field IDs rebuilds each SchemaField, so the rebuild must carry the
+  // default values over to the field with the new ID.
+  std::vector<iceberg::SchemaField> fields;
+  fields.push_back(iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(42)),
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(7))));
+  auto reassign_id = [](int32_t old_id) { return old_id + 1000; };
+
+  iceberg::Schema schema(std::move(fields), iceberg::Schema::kInitialSchemaId,
+                         reassign_id);
+
+  ASSERT_EQ(schema.fields().size(), 1);
+  const iceberg::SchemaField& field = schema.fields()[0];
+  EXPECT_EQ(field.field_id(), 1001);
+  ASSERT_TRUE(field.initial_default().has_value());
+  EXPECT_EQ(field.initial_default()->get(), iceberg::Literal::Int(42));
+  ASSERT_TRUE(field.write_default().has_value());
+  EXPECT_EQ(field.write_default()->get(), iceberg::Literal::Int(7));
 }
 
 TEST(SchemaTest, ValidateRejectsInvalidUnknownFields) {
