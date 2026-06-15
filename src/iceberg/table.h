@@ -212,7 +212,7 @@ class ICEBERG_EXPORT StagedTable final : public Table {
 
 /// \brief A read-only table.
 
-class ICEBERG_EXPORT StaticTable final : public Table {
+class ICEBERG_EXPORT StaticTable : public Table {
  public:
   static Result<std::shared_ptr<StaticTable>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
@@ -227,6 +227,23 @@ class ICEBERG_EXPORT StaticTable final : public Table {
   Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties() override;
 
   Result<std::shared_ptr<UpdateSchema>> NewUpdateSchema() override;
+
+  Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation() override;
+
+  Result<std::shared_ptr<UpdatePartitionSpec>> NewUpdatePartitionSpec() override;
+
+  Result<std::shared_ptr<UpdateSortOrder>> NewUpdateSortOrder() override;
+
+  Result<std::shared_ptr<ExpireSnapshots>> NewExpireSnapshots() override;
+
+  Result<std::shared_ptr<UpdateStatistics>> NewUpdateStatistics() override;
+
+  Result<std::shared_ptr<UpdatePartitionStatistics>> NewUpdatePartitionStatistics()
+      override;
+
+  Result<std::shared_ptr<FastAppend>> NewFastAppend() override;
+
+  Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 
  private:
   using Table::Table;

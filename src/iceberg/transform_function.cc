@@ -131,7 +131,7 @@ Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
 }
 
 YearTransform::YearTransform(std::shared_ptr<Type> const& source_type)
-    : TransformFunction(TransformType::kTruncate, source_type) {}
+    : TransformFunction(TransformType::kYear, source_type) {}
 
 Result<Literal> YearTransform::Transform(const Literal& literal) {
   ICEBERG_DCHECK(*literal.type() == *source_type(),

@@ -89,6 +89,7 @@ add_iceberg_test(schema_test
 add_iceberg_test(table_test
                  SOURCES
                  location_provider_test.cc
+                 metadata_table_test.cc
                  metrics_config_test.cc
                  metrics_reporter_test.cc
                  metrics_test.cc
@@ -289,6 +290,11 @@ if(ICEBERG_BUILD_REST)
                         rest_file_io_test.cc
                         rest_json_serde_test.cc
                         rest_util_test.cc)
+
+  if(ICEBERG_SIGV4)
+    add_rest_iceberg_test(sigv4_auth_test SOURCES sigv4_auth_test.cc)
+    target_link_libraries(sigv4_auth_test PRIVATE aws-cpp-sdk-core)
+  endif()
 
   if(ICEBERG_BUILD_REST_INTEGRATION_TESTS)
     add_rest_iceberg_test(rest_catalog_integration_test

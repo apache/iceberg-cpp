@@ -240,6 +240,12 @@ class UpdateStatistics;
 class DeleteLoader;
 class PositionDeleteIndex;
 
+/// \brief Metadata tables.
+class HistoryTable;
+class MetadataTable;
+class SnapshotsTable;
+
+/// \brief Table encryption
 struct EncryptedKey;
 
 }  // namespace iceberg

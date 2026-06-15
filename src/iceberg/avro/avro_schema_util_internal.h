@@ -147,6 +147,14 @@ std::string ToString(const ::avro::NodePtr& node);
 std::string ToString(const ::avro::LogicalType& logical_type);
 std::string ToString(const ::avro::LogicalType::Type& logical_type);
 
+/// \brief Check if an Avro node can be read as an Iceberg date.
+///
+/// Iceberg dates are encoded as Avro ints with the date logical type. Readers
+/// also accept plain ints where the expected Iceberg type is date.
+/// \param node The Avro node to check.
+/// \return True if the node is an Avro date or a plain Avro int.
+bool IsAvroDateOrPlainInt(const ::avro::NodePtr& node);
+
 /// \brief Check if an Avro node has a map logical type.
 /// \param node The Avro node to check.
 /// \return True if the node has a map logical type, false otherwise.

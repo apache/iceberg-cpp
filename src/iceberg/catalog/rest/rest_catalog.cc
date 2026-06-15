@@ -355,7 +355,11 @@ Result<LoadTableResult> RestCatalog::CreateTableInternal(
                     *catalog_session_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  return LoadTableResultFromJson(json);
+  ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  // TODO: Wire table-specific auth config from LoadTableResponse once C++ has
+  // table-scoped REST operations or a table-scoped catalog wrapper. The current
+  // Table implementation routes refresh and commit back through Catalog.
+  return load_result;
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
@@ -479,7 +483,8 @@ Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& ide
   ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-  /// FIXME: support per-table FileIO creation
+  // TODO: Support table-specific auth config and per-table FileIO from the REST
+  // load response when table-scoped REST operations are introduced.
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());
@@ -503,6 +508,8 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  // TODO: Support table-specific auth config and per-table FileIO from the REST
+  // register response when table-scoped REST operations are introduced.
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());

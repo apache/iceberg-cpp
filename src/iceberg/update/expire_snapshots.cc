@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <exception>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -41,8 +42,10 @@
 #include "iceberg/transaction.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/retry_util.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg {
 
@@ -61,8 +64,11 @@ Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
 class FileCleanupStrategy {
  public:
   FileCleanupStrategy(std::shared_ptr<FileIO> file_io,
-                      std::function<void(const std::string&)> delete_func)
-      : file_io_(std::move(file_io)), delete_func_(std::move(delete_func)) {}
+                      std::function<void(const std::string&)> delete_func,
+                      OptionalExecutor executor)
+      : file_io_(std::move(file_io)),
+        delete_func_(std::move(delete_func)),
+        executor_(std::move(executor)) {}
 
   virtual ~FileCleanupStrategy() = default;
 
@@ -94,20 +100,36 @@ class FileCleanupStrategy {
     return expired;
   }
 
-  /// \brief Delete files at the given locations.
+  /// \brief Best-effort delete with bounded retry.
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
-    try {
-      if (delete_func_) {
-        for (const auto& path : paths) {
-          delete_func_(path);
-        }
-      } else {
-        std::vector<std::string> path_list(paths.begin(), paths.end());
-        std::ignore = file_io_->DeleteFiles(path_list);
-      }
-    } catch (...) {
-      // TODO(shangxinli): add retry
+    if (paths.empty()) return;
+
+    if (!delete_func_) {
+      std::vector<std::string> path_list(paths.begin(), paths.end());
+
+      TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
+      group.Submit([this, paths = std::move(path_list)]() -> Status {
+        return file_io_->DeleteFiles(paths);
+      });
+      std::ignore = std::move(group).Run();
+      return;
     }
+
+    TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
+    group.SetExecutor(executor_);
+    for (const auto& path : paths) {
+      group.Submit([this, path]() -> Status {
+        try {
+          delete_func_(path);
+          return {};
+        } catch (const std::exception& e) {
+          return IOError("Delete callback failed for {}: {}", path, e.what());
+        } catch (...) {
+          return IOError("Delete callback failed for {}", path);
+        }
+      });
+    }
+    std::ignore = std::move(group).Run();
   }
 
   bool HasAnyStatisticsFiles(const TableMetadata& metadata) const {
@@ -149,6 +171,18 @@ class FileCleanupStrategy {
 
   std::shared_ptr<FileIO> file_io_;
   std::function<void(const std::string&)> delete_func_;
+  OptionalExecutor executor_;
+
+ private:
+  /// Retry budget for the FileIO bulk `DeleteFiles` path. Tight on purpose: file
+  /// cleanup is best-effort and runs after a successful commit, so we'd rather give
+  /// up than block the caller for minutes on a flaky storage layer.
+  static constexpr RetryConfig kDeleteRetryConfig{
+      .num_retries = 2,
+      .min_wait_ms = 100,
+      .max_wait_ms = 1000,
+      .total_timeout_ms = 5000,
+  };
 };
 
 /// \brief File cleanup strategy that determines safe deletions via full reachability.
@@ -157,7 +191,7 @@ class FileCleanupStrategy {
 /// still referenced by retained snapshots, then deletes orphaned manifests, data
 /// files, and manifest lists.
 ///
-/// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
+/// TODO(shangxinli): Add multi-threaded manifest reading support.
 class ReachableFileCleanup : public FileCleanupStrategy {
  public:
   using FileCleanupStrategy::FileCleanupStrategy;
@@ -362,7 +396,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
 /// logically introduced by a snapshot whose changes are still present in the
 /// current state under a different id.
 ///
-/// TODO(shangxinli): Add multi-threaded manifest reading and file deletion support.
+/// TODO(shangxinli): Add multi-threaded manifest reading support.
 class IncrementalFileCleanup : public FileCleanupStrategy {
  public:
   using FileCleanupStrategy::FileCleanupStrategy;
@@ -699,6 +733,11 @@ ExpireSnapshots& ExpireSnapshots::CleanExpiredMetadata(bool clean) {
   return *this;
 }
 
+ExpireSnapshots& ExpireSnapshots::ExecuteDeleteWith(OptionalExecutor executor) {
+  executor_ = std::move(executor);
+  return *this;
+}
+
 Result<std::unordered_set<int64_t>> ExpireSnapshots::ComputeBranchSnapshotsToRetain(
     int64_t snapshot_id, TimePointMs expire_snapshot_older_than,
     int32_t min_snapshots_to_keep) const {
@@ -930,11 +969,11 @@ Status ExpireSnapshots::Finalize(Result<const TableMetadata*> commit_result) {
       !HasNonMainSnapshots(metadata_after_expiration);
 
   if (can_use_incremental) {
-    return IncrementalFileCleanup(ctx_->table->io(), delete_func_)
+    return IncrementalFileCleanup(ctx_->table->io(), delete_func_, executor_)
         .CleanFiles(metadata_before_expiration, metadata_after_expiration,
                     cleanup_level_);
   }
-  return ReachableFileCleanup(ctx_->table->io(), delete_func_)
+  return ReachableFileCleanup(ctx_->table->io(), delete_func_, executor_)
       .CleanFiles(metadata_before_expiration, metadata_after_expiration, cleanup_level_);
 }
 

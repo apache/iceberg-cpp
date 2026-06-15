@@ -83,6 +83,9 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
   repository="${repository%.git}"
 
   echo "Looking for GitHub Actions workflow on ${repository}:${rc_tag}"
+  # If this script is interrupted or times out after the RC tag is pushed,
+  # resume from the existing GitHub Actions run without creating the tag again:
+  #   RELEASE_PULL=0 RELEASE_PUSH_TAG=0 RELEASE_RUN_ID=<run_id> ./dev/release/release_rc.sh <version> <rc>
   run_id="${RELEASE_RUN_ID:-}"
   while [ -z "${run_id}" ]; do
     echo "Waiting for run to start..."

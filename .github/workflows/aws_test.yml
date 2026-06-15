@@ -1,0 +1,174 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: AWS Tests
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!dependabot/**'
+    tags:
+      - '**'
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  ICEBERG_HOME: /tmp/iceberg
+
+jobs:
+  aws:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    name: AWS (${{ matrix.title }})
+    runs-on: ${{ matrix.runs-on }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - title: Ubuntu 24.04, S3 + SigV4, bundled AWS SDK
+            runs-on: ubuntu-24.04
+            CC: gcc-14
+            CXX: g++-14
+            s3: "ON"
+            sigv4: "ON"
+            bundle_awssdk: "ON"
+          - title: Ubuntu 24.04, S3 + SigV4, system AWS SDK
+            runs-on: ubuntu-24.04
+            CC: gcc-14
+            CXX: g++-14
+            s3: "ON"
+            sigv4: "ON"
+            bundle_awssdk: "OFF"
+            aws-sdk-features: core,config,s3,identity-management,sts,transfer
+          - title: macOS 26 ARM64, S3, bundled AWS SDK
+            runs-on: macos-26
+            s3: "ON"
+            sigv4: "OFF"
+            bundle_awssdk: "ON"
+    env:
+      ICEBERG_TEST_S3_URI: s3://iceberg-test
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ENDPOINT_URL: http://127.0.0.1:9000
+      AWS_EC2_METADATA_DISABLED: "TRUE"
+    steps:
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Install dependencies on Ubuntu
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+      - name: Cache vcpkg packages
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        id: vcpkg-cache
+        with:
+          path: /usr/local/share/vcpkg/installed
+          key: vcpkg-x64-linux-aws-sdk-cpp-s3-${{ matrix.s3 }}-sigv4-${{ matrix.sigv4 }}-${{ hashFiles('.github/workflows/aws_test.yml') }}
+      - name: Install AWS SDK via vcpkg
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && steps.vcpkg-cache.outputs.cache-hit != 'true' }}
+        shell: bash
+        # Retry to ride out transient GitHub/mirror download failures (504s).
+        run: |
+          for attempt in 1 2 3; do
+            if vcpkg install "aws-sdk-cpp[${{ matrix.aws-sdk-features }}]:x64-linux"; then
+              exit 0
+            fi
+            echo "::warning::vcpkg install failed (attempt ${attempt}/3), retrying in 30s"
+            sleep 30
+          done
+          echo "::error::vcpkg install failed after 3 attempts"
+          exit 1
+      - name: Set Ubuntu Compilers
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
+        run: |
+          echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
+          echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
+      - name: Start MinIO
+        if: ${{ matrix.s3 == 'ON' }}
+        shell: bash
+        run: bash ci/scripts/start_minio.sh
+      - name: Build and test Iceberg
+        shell: bash
+        env:
+          CMAKE_TOOLCHAIN_FILE: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
+        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF OFF ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
+
+  # Exercise the Meson build with SigV4 enabled (resolves aws-cpp-sdk-core via
+  # its CMake config, not pkg-config whose Cflags force -std=c++11).
+  meson-sigv4:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    name: Meson SigV4 (AMD64 Ubuntu 24.04)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.x'
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements.txt
+      - name: Cache vcpkg packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        id: vcpkg-cache
+        with:
+          path: /usr/local/share/vcpkg/installed
+          key: vcpkg-x64-linux-aws-sdk-cpp-core-${{ hashFiles('.github/workflows/aws_test.yml') }}
+      - name: Install AWS SDK via vcpkg
+        if: ${{ steps.vcpkg-cache.outputs.cache-hit != 'true' }}
+        shell: bash
+        # Retry to ride out transient GitHub/mirror download failures (504s).
+        run: |
+          for attempt in 1 2 3; do
+            if vcpkg install aws-sdk-cpp[core]:x64-linux; then
+              exit 0
+            fi
+            echo "::warning::vcpkg install failed (attempt ${attempt}/3), retrying in 30s"
+            sleep 30
+          done
+          echo "::error::vcpkg install failed after 3 attempts"
+          exit 1
+      - name: Set Ubuntu Compilers
+        run: |
+          echo "CC=gcc-14" >> $GITHUB_ENV
+          echo "CXX=g++-14" >> $GITHUB_ENV
+      - name: Build and test Iceberg
+        shell: bash
+        env:
+          CMAKE_PREFIX_PATH: /usr/local/share/vcpkg/installed/x64-linux
+        run: |
+          meson setup builddir -Dsigv4=enabled
+          meson compile -C builddir
+          meson test -C builddir --timeout-multiplier 0 --print-errorlogs

@@ -30,6 +30,7 @@
 #include <arrow/io/interfaces.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
+#include <arrow/util/uri.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
@@ -473,11 +474,26 @@ class ArrowOutputFile : public OutputFile {
 }  // namespace
 
 Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
-  if (file_location.find("://") != std::string::npos) {
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto path, arrow_fs_->PathFromUri(file_location));
-    return path;
+  const auto pos = file_location.find("://");
+  if (pos == std::string::npos) {
+    return file_location;
   }
-  return file_location;
+
+  auto path = arrow_fs_->PathFromUri(file_location);
+  if (path.ok()) {
+    return std::move(path).ValueOrDie();
+  }
+
+  // Foreign alias (s3a/s3n): validate via Arrow's parser, then percent-decode the
+  // scheme-less key (substring keeps a Windows drive letter's ':' that host() drops).
+  if (auto parsed = ::arrow::util::Uri::FromString(file_location); !parsed.ok()) {
+    const auto& status = parsed.status();
+    return std::unexpected<Error>{
+        {.kind = ToErrorKind(status), .message = status.ToString()}};
+  }
+  std::string bucket_key = file_location.substr(pos + 3);
+  bucket_key = bucket_key.substr(0, bucket_key.find_first_of("?#"));
+  return ::arrow::util::UriUnescape(bucket_key);
 }
 
 Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(

@@ -15,28 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: "Run License Check"
-
-on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-
-permissions:
-  contents: read
-
-jobs:
-  license-check:
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: "License Check"
-    runs-on: ubuntu-slim
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          persist-credentials: false
-      - name: Check license header
-        uses: apache/skywalking-eyes@61275cc80d0798a405cb070f7d3a8aaf7cf2c2c1 # v0.8.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          config: .github/.licenserc.yaml
+install_headers(
+    ['history_table.h', 'metadata_table.h', 'snapshots_table.h'],
+    subdir: 'iceberg/inspect',
+)

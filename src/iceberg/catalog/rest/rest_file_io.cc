@@ -45,7 +45,7 @@ Result<BuiltinFileIOKind> DetectBuiltinFileIO(std::string_view location) {
   if (scheme == "file") {
     return BuiltinFileIOKind::kArrowLocal;
   }
-  if (scheme == "s3") {
+  if (scheme == "s3" || scheme == "s3a" || scheme == "s3n") {
     return BuiltinFileIOKind::kArrowS3;
   }
 

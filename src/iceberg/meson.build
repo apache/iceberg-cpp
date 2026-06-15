@@ -17,6 +17,7 @@
 
 conf_data = configuration_data()
 version = meson.project_version()
+version_suffix = '-SNAPSHOT'
 components = version.split('.')
 assert(
     components.length() >= 3,
@@ -28,7 +29,7 @@ ver_patch = components[2]
 conf_data.set('PROJECT_VERSION_MAJOR', ver_major)
 conf_data.set('PROJECT_VERSION_MINOR', ver_minor)
 conf_data.set('PROJECT_VERSION_PATCH', ver_patch)
-conf_data.set('PROJECT_VERSION', version)
+conf_data.set('ICEBERG_VERSION_STRING', version + version_suffix)
 conf_data.set('PROJECT_NAME', meson.project_name())
 configure_file(
     input: 'version.h.in',
@@ -64,6 +65,9 @@ iceberg_sources = files(
     'file_reader.cc',
     'file_writer.cc',
     'inheritable_metadata.cc',
+    'inspect/history_table.cc',
+    'inspect/metadata_table.cc',
+    'inspect/snapshots_table.cc',
     'json_serde.cc',
     'location_provider.cc',
     'manifest/manifest_adapter.cc',
@@ -180,9 +184,10 @@ croaring_needs_static = (
 croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
+spdlog_dep = dependency('spdlog')
 zlib_dep = dependency('zlib')
 
-iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, zlib_dep]
+iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, spdlog_dep, zlib_dep]
 
 iceberg_lib = library(
     'iceberg',
@@ -295,6 +300,7 @@ subdir('puffin')
 subdir('row')
 subdir('update')
 subdir('util')
+subdir('inspect')
 
 if get_option('tests').enabled()
     subdir('test')

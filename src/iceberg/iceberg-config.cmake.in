@@ -38,6 +38,9 @@
 set(ICEBERG_BUILD_STATIC "@ICEBERG_BUILD_STATIC@")
 set(ICEBERG_SYSTEM_DEPENDENCIES "@ICEBERG_SYSTEM_DEPENDENCIES@")
 
+# Extra args forwarded to find_dependency() for specific dependencies.
+set(ICEBERG_FIND_EXTRA_ARGS_AWSSDK "@ICEBERG_FIND_EXTRA_ARGS_AWSSDK@")
+
 include(CMakeFindDependencyMacro)
 
 macro(iceberg_find_dependencies dependencies)
@@ -49,7 +52,7 @@ macro(iceberg_find_dependencies dependencies)
   set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
 
   foreach(dependency ${dependencies})
-    find_dependency(${dependency})
+    find_dependency(${dependency} ${ICEBERG_FIND_EXTRA_ARGS_${dependency}})
   endforeach()
 
   if(DEFINED ICEBERG_CMAKE_MODULE_PATH_OLD)
