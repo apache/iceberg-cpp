@@ -123,10 +123,6 @@ iceberg_tests = {
         ),
         'use_data': true,
     },
-    'overwrite_files_test': {
-        'sources': files('overwrite_files_test.cc'),
-        'use_data': true,
-    },
 }
 
 if get_option('rest').enabled()

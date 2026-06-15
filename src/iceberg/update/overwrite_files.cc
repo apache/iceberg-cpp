@@ -76,14 +76,26 @@ OverwriteFiles& OverwriteFiles::DeleteFiles(const DataFileSet& data_files_to_del
                                             const DeleteFileSet& delete_files_to_delete) {
   // Bulk equivalent of repeated DeleteFile(...) plus explicit delete-file removal. Empty
   // sets are no-ops; the set types handle deduplication of repeated entries.
+  //
+  // Because both sets hold std::shared_ptr<DataFile>, content is validated here so a data
+  // file cannot be registered as a delete file (or vice versa): a data file must have
+  // content kData, and a delete file must be a position/equality delete (content !=
+  // kData). This restores the type safety the C++ shared DataFile representation cannot
+  // enforce at compile time.
   for (const auto& file : data_files_to_delete) {
     ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
+    ICEBERG_BUILDER_CHECK(file->content == DataFile::Content::kData,
+                          "Invalid data file to delete: {} has delete-file content",
+                          file->file_path);
     // Dual-track: record for delete-conflict validation AND register for removal.
     deleted_data_files_.insert(file);
     ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(file));
   }
   for (const auto& file : delete_files_to_delete) {
     ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid delete file: null");
+    ICEBERG_BUILDER_CHECK(file->content != DataFile::Content::kData,
+                          "Invalid delete file to delete: {} has data-file content",
+                          file->file_path);
     ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDeleteFile(file));
   }
   return *this;

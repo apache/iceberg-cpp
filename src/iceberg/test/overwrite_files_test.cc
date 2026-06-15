@@ -526,6 +526,48 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesEquivalentToRepeatedDeleteFile) {
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "0");
 }
 
+// Content validation: because both sets hold std::shared_ptr<DataFile>, DeleteFiles
+// guards content so a data file cannot be passed as a delete file (or vice versa). A
+// delete file (position/equality) in the data-file set is rejected; the error surfaces
+// at Commit().
+TEST_F(OverwriteFilesTest, BulkDeleteFilesRejectsDeleteFileInDataSet) {
+  auto del_file =
+      MakeDeleteFile("/delete/del_a.parquet", 1L);  // content = positionDeletes
+  DataFileSet data_files;
+  data_files.insert(del_file);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->DeleteFiles(data_files, DeleteFileSet{});
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("has delete-file content"));
+}
+
+// A data file (content kData) in the delete-file set is rejected.
+TEST_F(OverwriteFilesTest, BulkDeleteFilesRejectsDataFileInDeleteSet) {
+  DeleteFileSet delete_files;
+  delete_files.insert(file_a_);  // content = kData
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->DeleteFiles(DataFileSet{}, delete_files);
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("has data-file content"));
+}
+
+// An equality delete file is a valid delete file (content != kData) and is accepted in
+// the delete-file set.
+TEST_F(OverwriteFilesTest, BulkDeleteFilesAcceptsEqualityDeleteInDeleteSet) {
+  auto eq_delete = MakeEqualityDeleteFile("/delete/eq_a.parquet", 1L);
+  DeleteFileSet delete_files;
+  delete_files.insert(eq_delete);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->DeleteFiles(DataFileSet{}, delete_files);
+  op->AddFile(file_b_);
+  EXPECT_THAT(op->Commit(), IsOk());
+}
+
 // =====================================================================================
 // 9.6 Concurrency-validation tests (Req 8.2, 8.3, 9.2-9.5; Properties 6, 7)
 // =====================================================================================
