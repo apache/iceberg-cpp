@@ -518,7 +518,35 @@ Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge)
 Status InMemoryCatalog::RenameTable(const TableIdentifier& from,
                                     const TableIdentifier& to) {
   std::unique_lock lock(mutex_);
-  return NotImplemented("rename table");
+
+  // Renaming a table to itself is a no-op.
+  if (from == to) {
+    return {};
+  }
+
+  // Verify the source table exists.
+  ICEBERG_ASSIGN_OR_RAISE(auto from_exists, root_namespace_->TableExists(from));
+  if (!from_exists) {
+    return NoSuchTable("Source table does not exist: {}", from);
+  }
+
+  // Verify the destination table does not already exist.
+  ICEBERG_ASSIGN_OR_RAISE(auto to_exists, root_namespace_->TableExists(to));
+  if (to_exists) {
+    return AlreadyExists("Destination table already exists: {}", to);
+  }
+
+  // Get the metadata location from the source table.
+  ICEBERG_ASSIGN_OR_RAISE(auto metadata_location,
+                          root_namespace_->GetTableMetadataLocation(from));
+
+  // Register the destination with the same metadata location.
+  ICEBERG_RETURN_UNEXPECTED(root_namespace_->RegisterTable(to, metadata_location));
+
+  // Unregister the source table.
+  ICEBERG_RETURN_UNEXPECTED(root_namespace_->UnregisterTable(from));
+
+  return {};
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::LoadTable(
