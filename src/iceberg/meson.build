@@ -109,6 +109,7 @@ iceberg_sources = files(
     'location_provider.cc',
     'logging/cerr_logger.cc',
     'logging/logger.cc',
+    'logging/loggers.cc',
     'manifest/manifest_adapter.cc',
     'manifest/manifest_entry.cc',
     'manifest/manifest_filter_manager.cc',
