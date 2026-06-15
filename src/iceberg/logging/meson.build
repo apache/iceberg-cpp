@@ -31,6 +31,7 @@ install_headers(
         'log_level.h',
         'log_macros.h',
         'logger.h',
+        'loggers.h',
         'short_log_macros.h',
     ],
     subdir: 'iceberg/logging',

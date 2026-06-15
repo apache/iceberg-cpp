@@ -67,6 +67,8 @@ iceberg_tests = {
             'cerr_logger_test.cc',
             'log_level_test.cc',
             'logger_test.cc',
+            'loggers_test.cc',
+            'logging_end_to_end_test.cc',
             'macros_active_level_test.cc',
             'macros_test.cc',
             'spdlog_logger_test.cc',
