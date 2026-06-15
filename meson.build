@@ -33,7 +33,11 @@ project(
 cpp = meson.get_compiler('cpp')
 # Hide two noisy MSVC warnings (C4251/C4275) about standard-library types used in
 # our public classes. They're harmless because the whole library ships as one DLL.
-args = cpp.get_supported_arguments(['/bigobj', '/wd4251', '/wd4275'])
+# /Zc:preprocessor: MSVC's conforming preprocessor, required for the __VA_OPT__
+# used by the logging macros. get_supported_arguments drops these on non-MSVC.
+args = cpp.get_supported_arguments(
+    ['/bigobj', '/wd4251', '/wd4275', '/Zc:preprocessor'],
+)
 add_project_arguments(args, language: 'cpp')
 
 subdir('src')
