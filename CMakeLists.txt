@@ -55,6 +55,7 @@ option(ICEBERG_SQL_MYSQL "Build the MySQL connector for the SQL catalog" OFF)
 option(ICEBERG_S3 "Build with S3 support" OFF)
 option(ICEBERG_SIGV4 "Build with SigV4 support" OFF)
 option(ICEBERG_BUNDLE_AWSSDK "Bundle AWS SDK for S3/SigV4 support" ON)
+option(ICEBERG_SPDLOG "Use spdlog as the default logging backend" ON)
 option(ICEBERG_ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(ICEBERG_ENABLE_UBSAN "Enable Undefined Behavior Sanitizer" OFF)
 
