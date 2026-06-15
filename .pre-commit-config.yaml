@@ -25,15 +25,19 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^src/iceberg/catalog/hive/gen-cpp/
       - id: end-of-file-fixer
+        exclude: ^src/iceberg/catalog/hive/gen-cpp/
       - id: check-yaml
       - id: check-added-large-files
+        exclude: ^src/iceberg/catalog/hive/gen-cpp/
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v20.1.8
     hooks:
       - id: clang-format
         exclude_types: [json]
+        exclude: ^src/iceberg/catalog/hive/gen-cpp/
 
   - repo: https://github.com/cheshirekow/cmake-format-precommit
     rev: v0.6.10
