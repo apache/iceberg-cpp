@@ -19,30 +19,26 @@
 
 #pragma once
 
-/// \file iceberg/catalog/rest/type_fwd.h
-/// Forward declarations and enum definitions for Iceberg REST API types.
+#include <string>
+#include <unordered_map>
 
-namespace iceberg::rest {
+#include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/result.h"
 
-struct ErrorResponse;
-struct CommitTableResponse;
-struct LoadTableResult;
-struct OAuthTokenResponse;
-struct StorageCredential;
+#if ICEBERG_S3_ENABLED
+#  include <arrow/filesystem/s3fs.h>
+#endif
 
-class Endpoint;
-class ErrorHandler;
-class HttpClient;
-class ResourcePaths;
-class RestCatalog;
-class RestCatalogProperties;
+namespace iceberg::arrow {
 
-}  // namespace iceberg::rest
+#if ICEBERG_S3_ENABLED
+/// \brief Build Arrow ``S3Options`` from an Iceberg properties map.
+///
+/// Production code should use MakeS3FileIO(); this is exposed so the
+/// property-to-option mapping (region resolution, endpoint scheme handling,
+/// addressing style) can be unit tested without a live S3 endpoint.
+ICEBERG_BUNDLE_EXPORT Result<::arrow::fs::S3Options> ConfigureS3Options(
+    const std::unordered_map<std::string, std::string>& properties);
+#endif
 
-namespace iceberg::rest::auth {
-
-class AuthManager;
-class AuthProperties;
-class AuthSession;
-
-}  // namespace iceberg::rest::auth
+}  // namespace iceberg::arrow

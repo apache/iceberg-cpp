@@ -20,7 +20,9 @@
 #include "iceberg/catalog/rest/rest_file_io.h"
 
 #include <string>
+#include <vector>
 
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/util/macros.h"
 
@@ -90,6 +92,18 @@ Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& c
   // TODO(gangwu): Support Java-style customized FileIO creation flows instead of
   // resolving a single catalog-scoped FileIO instance only from properties.
   return FileIORegistry::Load(io_impl, config.configs());
+}
+
+const StorageCredential* SelectS3StorageCredential(
+    const std::vector<StorageCredential>& credentials) {
+  const StorageCredential* best = nullptr;
+  for (const auto& cred : credentials) {
+    if (cred.prefix.starts_with("s3") &&
+        (best == nullptr || cred.prefix.size() > best->prefix.size())) {
+      best = &cred;
+    }
+  }
+  return best;
 }
 
 }  // namespace iceberg::rest

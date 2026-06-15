@@ -22,9 +22,11 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/result.h"
@@ -43,5 +45,10 @@ ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
 
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
+
+/// \brief Returns the longest-prefix S3-family vended credential (prefix
+/// starting with "s3"), or nullptr if none.
+ICEBERG_REST_EXPORT const StorageCredential* SelectS3StorageCredential(
+    const std::vector<StorageCredential>& credentials);
 
 }  // namespace iceberg::rest

@@ -37,8 +37,10 @@ struct S3Properties {
   static constexpr std::string_view kSecretAccessKey = "s3.secret-access-key";
   /// AWS session token (for temporary credentials)
   static constexpr std::string_view kSessionToken = "s3.session-token";
-  /// AWS region
+  /// AWS region (legacy, non-standard key kept for compatibility)
   static constexpr std::string_view kRegion = "s3.region";
+  /// AWS region, standard Iceberg client property (preferred over kRegion).
+  static constexpr std::string_view kClientRegion = "client.region";
   /// Custom endpoint override (for MinIO, LocalStack, etc.)
   static constexpr std::string_view kEndpoint = "s3.endpoint";
   /// Whether to use path-style access (needed for MinIO)

@@ -27,6 +27,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_util.h"
+#include "iceberg/arrow/s3/arrow_s3_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/test/matchers.h"
 
@@ -76,6 +77,11 @@ namespace {
 
 class ArrowS3FileIOTest : public ::testing::Test {
  protected:
+  static void SetUpTestSuite() {
+    auto io = MakeS3FileIO({});
+    ASSERT_THAT(io, IsOk());
+  }
+
   static void TearDownTestSuite() {
     auto status = FinalizeS3();
     if (!status.has_value()) {
@@ -180,5 +186,60 @@ TEST_F(ArrowS3FileIOTest, MakeS3FileIOWithTimeouts) {
   auto io_res = MakeS3FileIO(properties);
   ASSERT_THAT(io_res, IsOk());
 }
+
+#if ICEBERG_S3_ENABLED
+TEST_F(ArrowS3FileIOTest, ConfigureS3OptionsPrefersClientRegionOverS3Region) {
+  auto result =
+      ConfigureS3Options({{std::string(S3Properties::kClientRegion), "cn-hangzhou"},
+                          {std::string(S3Properties::kRegion), "us-east-1"}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->region, "cn-hangzhou");
+}
+
+TEST_F(ArrowS3FileIOTest, ConfigureS3OptionsFallsBackToS3Region) {
+  auto result = ConfigureS3Options({{std::string(S3Properties::kRegion), "us-east-1"}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->region, "us-east-1");
+}
+
+TEST_F(ArrowS3FileIOTest, ConfigureS3OptionsStripsHttpsEndpointScheme) {
+  auto result = ConfigureS3Options({{std::string(S3Properties::kEndpoint),
+                                     "https://oss-cn-hangzhou.aliyuncs.com:443"}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->endpoint_override, "oss-cn-hangzhou.aliyuncs.com:443");
+  EXPECT_EQ(result->scheme, "https");
+}
+
+TEST_F(ArrowS3FileIOTest, ConfigureS3OptionsStripsHttpEndpointScheme) {
+  auto result = ConfigureS3Options(
+      {{std::string(S3Properties::kEndpoint), "http://localhost:9000"}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->endpoint_override, "localhost:9000");
+  EXPECT_EQ(result->scheme, "http");
+}
+
+TEST_F(ArrowS3FileIOTest, ConfigureS3OptionsKeepsSchemelessEndpoint) {
+  auto result =
+      ConfigureS3Options({{std::string(S3Properties::kEndpoint), "localhost:9000"}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result->endpoint_override, "localhost:9000");
+}
+
+TEST_F(ArrowS3FileIOTest,
+       ConfigureS3OptionsPathStyleAccessFalseEnablesVirtualAddressing) {
+  auto result =
+      ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "false"}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_TRUE(result->force_virtual_addressing);
+}
+
+TEST_F(ArrowS3FileIOTest,
+       ConfigureS3OptionsPathStyleAccessTrueDisablesVirtualAddressing) {
+  auto result =
+      ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "true"}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_FALSE(result->force_virtual_addressing);
+}
+#endif
 
 }  // namespace iceberg::arrow

@@ -19,9 +19,12 @@
 
 #include "iceberg/catalog/rest/rest_file_io.h"
 
+#include <vector>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/test/matchers.h"
 
@@ -145,6 +148,35 @@ TEST(RestFileIOTest, MakeCatalogFileIOSkipsCheckWhenWarehouseAbsent) {
       {{"io-impl", std::string(FileIORegistry::kArrowLocalFileIO)}});
   auto result = MakeCatalogFileIO(config);
   ASSERT_THAT(result, IsOk());
+}
+
+TEST(RestFileIOTest, SelectS3StorageCredentialPicksLongestS3Prefix) {
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "s3", .config = {{"s3.access-key-id", "a"}}},
+      {.prefix = "s3://bucket/data", .config = {{"s3.access-key-id", "b"}}},
+      {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "c"}}},
+  };
+  const auto* cred = SelectS3StorageCredential(credentials);
+  ASSERT_NE(cred, nullptr);
+  EXPECT_EQ(cred->prefix, "s3://bucket/data");
+}
+
+TEST(RestFileIOTest, SelectS3StorageCredentialIgnoresNonS3Prefixes) {
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "gs://bucket", .config = {{"k", "v"}}},
+      {.prefix = "s3", .config = {{"s3.access-key-id", "a"}}},
+  };
+  const auto* cred = SelectS3StorageCredential(credentials);
+  ASSERT_NE(cred, nullptr);
+  EXPECT_EQ(cred->prefix, "s3");
+}
+
+TEST(RestFileIOTest, SelectS3StorageCredentialReturnsNullWhenNoneMatch) {
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "gs://bucket", .config = {{"k", "v"}}},
+  };
+  EXPECT_EQ(SelectS3StorageCredential(credentials), nullptr);
+  EXPECT_EQ(SelectS3StorageCredential({}), nullptr);
 }
 
 }  // namespace iceberg::rest

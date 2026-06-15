@@ -30,6 +30,7 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/s3/arrow_s3_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -74,6 +75,12 @@ Status EnsureS3Initialized() {
   return {};
 }
 
+#endif
+
+}  // namespace
+
+#if ICEBERG_S3_ENABLED
+
 /// \brief Configure S3Options from a properties map.
 ///
 /// \param properties The configuration properties map.
@@ -100,15 +107,25 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
   }
 
   // Configure region
-  if (const auto* region = FindProperty(properties, S3Properties::kRegion);
-      region != nullptr) {
+  // Prefer the standard `client.region`; fall back to legacy `s3.region`.
+  const auto* region = FindProperty(properties, S3Properties::kClientRegion);
+  if (region == nullptr) {
+    region = FindProperty(properties, S3Properties::kRegion);
+  }
+  if (region != nullptr) {
     options.region = *region;
   }
 
-  // Configure endpoint (for MinIO, LocalStack, etc.)
+  // Configure endpoint (for MinIO, LocalStack, OSS, etc.)
   if (const auto* endpoint = FindProperty(properties, S3Properties::kEndpoint);
       endpoint != nullptr) {
-    options.endpoint_override = *endpoint;
+    // `s3.endpoint` may be a full URI; Arrow wants host[:port], so strip the scheme.
+    std::string_view ep = *endpoint;
+    if (const auto pos = ep.find("://"); pos != std::string_view::npos) {
+      options.scheme = std::string(ep.substr(0, pos));
+      ep = ep.substr(pos + 3);
+    }
+    options.endpoint_override = std::string(ep);
   } else {
     // Fall back to AWS standard environment variables for endpoint override
     const char* s3_endpoint_env = std::getenv("AWS_ENDPOINT_URL_S3");
@@ -153,8 +170,6 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
   return options;
 }
 #endif
-
-}  // namespace
 
 Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::unordered_map<std::string, std::string>& properties) {
