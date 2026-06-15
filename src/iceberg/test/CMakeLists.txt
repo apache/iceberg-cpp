@@ -110,7 +110,8 @@ add_iceberg_test(logging_test
                  log_level_test.cc
                  logger_test.cc
                  macros_active_level_test.cc
-                 macros_test.cc)
+                 macros_test.cc
+                 spdlog_logger_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
