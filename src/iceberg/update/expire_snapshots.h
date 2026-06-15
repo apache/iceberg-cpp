@@ -116,8 +116,7 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// If this method is not called, unnecessary manifests and data files will still be
   /// deleted.
   ///
-  /// \note When an executor is configured via ExecuteDeleteWith(), this callback may
-  /// be invoked concurrently from worker threads; implementations must be thread-safe.
+  /// \note With ExecuteDeleteWith(), callbacks may run concurrently.
   ///
   /// \param delete_func A function that will be called to delete manifests and data files
   /// \return Reference to this for method chaining.
@@ -144,15 +143,10 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// \return Reference to this for method chaining.
   ExpireSnapshots& CleanExpiredMetadata(bool clean);
 
-  /// \brief Configure an executor used to parallelize best-effort file deletion.
+  /// \brief Configure an executor for DeleteWith() callbacks.
   ///
-  /// Only meaningful in combination with DeleteWith(): when both are set the custom
-  /// delete callback is invoked concurrently for each path through the supplied
-  /// executor. Without DeleteWith(), file deletion uses FileIO's bulk DeleteFiles
-  /// API and the executor is unused. The caller retains ownership and must keep the
-  /// executor alive until Finalize() returns.
-  ///
-  /// Named after Java's `ExpireSnapshots.executeDeleteWith(ExecutorService)`.
+  /// Only used with DeleteWith(). The caller must keep the executor alive until
+  /// Finalize() returns.
   ///
   /// \param executor An executor reference, or std::nullopt for serial deletion.
   /// \return Reference to this for method chaining.

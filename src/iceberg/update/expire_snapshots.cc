@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <exception>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -40,7 +41,6 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
 #include "iceberg/util/error_collector.h"
-#include "iceberg/util/executor.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/retry_util.h"
 #include "iceberg/util/snapshot_util_internal.h"
@@ -100,51 +100,34 @@ class FileCleanupStrategy {
     return expired;
   }
 
-  /// \brief Delete files at the given locations.
-  ///
-  /// Best-effort: errors are suppressed to mirror Java's suppressFailureWhenFinished.
-  /// When a custom delete function was provided, deletes are invoked one path at a
-  /// time, optionally parallelized via the strategy's executor. Otherwise the FileIO
-  /// bulk `DeleteFiles` API is invoked once. In both modes the submitted task is
-  /// wrapped in a bounded retry that stops on kNotFound.
+  /// \brief Best-effort delete with bounded retry.
   void DeleteFiles(const std::unordered_set<std::string>& paths) {
     if (paths.empty()) return;
-    std::vector<std::string> path_list(paths.begin(), paths.end());
-
-    TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
-    group.SetExecutor(executor_);
 
     if (!delete_func_) {
-      // Bulk path: single FileIO::DeleteFiles call. The retry helps atomic-bulk
-      // implementations (e.g. an S3 DeleteObjects-backed FileIO) ride out a
-      // transient throttle or network blip on the single round trip.
-      //
-      // Caveat: for the default fail-fast iterative impl, a retried attempt
-      // re-submits the full path_list, so files already deleted on a prior
-      // attempt come back as kNotFound and short-circuit the retry (kNotFound
-      // is in StopRetryOn). That is best-effort cleanup -- still no worse than
-      // the prior behaviour of a single un-retried call -- and we discard the
-      // final Status to match Java's suppressFailureWhenFinished semantics.
+      std::vector<std::string> path_list(paths.begin(), paths.end());
+
+      TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
       group.Submit([this, paths = std::move(path_list)]() -> Status {
         return file_io_->DeleteFiles(paths);
       });
-    } else {
-      // Custom callback path: invoke one path at a time, optionally on a worker
-      // thread pulled from the configured executor. Without an executor TaskGroup
-      // runs the callbacks synchronously on the calling thread. The retry policy
-      // is a no-op here since the lambda swallows exceptions and always returns
-      // OK, but it keeps both paths under a single TaskGroup construct.
-      for (auto& path : path_list) {
-        group.Submit([this, path = std::move(path)]() -> Status {
-          try {
-            delete_func_(path);
-          } catch (...) {
-            // Suppress all exceptions during file cleanup to match Java's
-            // suppressFailureWhenFinished behavior.
-          }
+      std::ignore = std::move(group).Run();
+      return;
+    }
+
+    TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
+    group.SetExecutor(executor_);
+    for (const auto& path : paths) {
+      group.Submit([this, path]() -> Status {
+        try {
+          delete_func_(path);
           return {};
-        });
-      }
+        } catch (const std::exception& e) {
+          return IOError("Delete callback failed for {}: {}", path, e.what());
+        } catch (...) {
+          return IOError("Delete callback failed for {}", path);
+        }
+      });
     }
     std::ignore = std::move(group).Run();
   }
