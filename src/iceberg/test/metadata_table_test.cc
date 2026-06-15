@@ -22,7 +22,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table.h"
@@ -31,8 +30,33 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
+namespace {
+
+std::shared_ptr<Schema> MakeSnapshotsSchema() {
+  return std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "committed_at", timestamp_tz()),
+      SchemaField::MakeRequired(2, "snapshot_id", int64()),
+      SchemaField::MakeOptional(3, "parent_id", int64()),
+      SchemaField::MakeOptional(4, "operation", string()),
+      SchemaField::MakeOptional(5, "manifest_list", string()),
+      SchemaField::MakeOptional(
+          6, "summary",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
+                                    SchemaField::MakeRequired(8, "value", string())))});
+}
+
+std::shared_ptr<Schema> MakeHistorySchema() {
+  return std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "made_current_at", timestamp_tz()),
+      SchemaField::MakeRequired(2, "snapshot_id", int64()),
+      SchemaField::MakeOptional(3, "parent_id", int64()),
+      SchemaField::MakeRequired(4, "is_current_ancestor", boolean())});
+}
+
+}  // namespace
 
 class MetadataTableTest : public ::testing::Test {
  protected:
@@ -54,8 +78,8 @@ class MetadataTableTest : public ::testing::Test {
     EXPECT_THAT(source_table_result, IsOk());
     source_table_ = *source_table_result;
 
-    auto snapshots_table_result = MetadataTableFactory::CreateMetadataTable(
-        source_table_, MetadataTableType::kSnapshots);
+    auto snapshots_table_result =
+        MetadataTable::Make(source_table_, MetadataTable::Kind::kSnapshots);
     EXPECT_THAT(snapshots_table_result, IsOk());
     snapshots_table_ = std::move(*snapshots_table_result);
   }
@@ -68,68 +92,29 @@ class MetadataTableTest : public ::testing::Test {
 };
 
 TEST_F(MetadataTableTest, Constructor) {
+  EXPECT_EQ(snapshots_table_->kind(), MetadataTable::Kind::kSnapshots);
+  EXPECT_EQ(snapshots_table_->source_table(), source_table_);
   EXPECT_EQ(snapshots_table_->name().name, "source_table.snapshots");
-  EXPECT_FALSE(snapshots_table_->uuid().empty());
-  auto schema_result = snapshots_table_->schema();
-  EXPECT_THAT(schema_result, IsOk());
+  EXPECT_EQ(snapshots_table_->name().ns.levels, (std::vector<std::string>{"db"}));
+  EXPECT_NE(snapshots_table_->schema(), nullptr);
 }
 
-TEST_F(MetadataTableTest, DelegatesToSourceTable) {
-  EXPECT_EQ(snapshots_table_->location(), source_table_->location());
-  EXPECT_EQ(snapshots_table_->last_updated_ms(), source_table_->last_updated_ms());
-  EXPECT_EQ(snapshots_table_->catalog(), source_table_->catalog());
+TEST_F(MetadataTableTest, SnapshotsSchemaMatchesIcebergSchema) {
+  EXPECT_TRUE(*snapshots_table_->schema() == *MakeSnapshotsSchema());
 }
 
-TEST_F(MetadataTableTest, NotSupportedOperations) {
-  EXPECT_THAT(snapshots_table_->NewTransaction(), HasErrorMessage("Cannot"));
-  EXPECT_THAT(snapshots_table_->NewUpdateProperties(), HasErrorMessage("Cannot"));
-  EXPECT_THAT(snapshots_table_->NewUpdateSchema(), HasErrorMessage("Cannot"));
-  EXPECT_THAT(snapshots_table_->NewUpdateLocation(), HasErrorMessage("Cannot"));
-  EXPECT_THAT(snapshots_table_->NewUpdatePartitionSpec(), HasErrorMessage("Cannot"));
-  EXPECT_THAT(snapshots_table_->NewUpdateSortOrder(), HasErrorMessage("Cannot"));
-  EXPECT_THAT(snapshots_table_->NewExpireSnapshots(), HasErrorMessage("Cannot"));
+TEST_F(MetadataTableTest, HistorySchemaMatchesIcebergSchema) {
+  auto history_table_result =
+      MetadataTable::Make(source_table_, MetadataTable::Kind::kHistory);
+  ASSERT_THAT(history_table_result, IsOk());
+
+  EXPECT_TRUE(*(*history_table_result)->schema() == *MakeHistorySchema());
 }
 
-TEST_F(MetadataTableTest, SchemasAndSpecs) {
-  auto schemas_result = snapshots_table_->schemas();
-  EXPECT_THAT(schemas_result, IsOk());
-  EXPECT_EQ(schemas_result->get().size(), 1);
-
-  auto spec_result = snapshots_table_->spec();
-  EXPECT_THAT(spec_result, IsOk());
-
-  auto specs_result = snapshots_table_->specs();
-  EXPECT_THAT(specs_result, IsOk());
-  EXPECT_EQ(specs_result->get().size(), 1);
-}
-
-TEST_F(MetadataTableTest, SortOrders) {
-  auto sort_order_result = snapshots_table_->sort_order();
-  EXPECT_THAT(sort_order_result, IsOk());
-
-  auto sort_orders_result = snapshots_table_->sort_orders();
-  EXPECT_THAT(sort_orders_result, IsOk());
-  EXPECT_EQ(sort_orders_result->get().size(), 1);
-}
-
-TEST_F(MetadataTableTest, Properties) {
-  EXPECT_EQ(snapshots_table_->properties().configs().size(), 0);
-}
-
-TEST_F(MetadataTableTest, Snapshots) {
-  // Assuming source table has no current snapshot
-  auto cur_snapshot_result = snapshots_table_->current_snapshot();
-  EXPECT_THAT(cur_snapshot_result, IsError(ErrorKind::kNotFound));
-  auto snapshot_result = snapshots_table_->SnapshotById(1);
-  EXPECT_THAT(snapshot_result, IsError(ErrorKind::kNotFound));
-  EXPECT_TRUE(snapshots_table_->snapshots().empty());
-}
-
-TEST_F(MetadataTableTest, History) { EXPECT_TRUE(snapshots_table_->history().empty()); }
-
-TEST_F(MetadataTableTest, LocationProvider) {
-  auto lp_result = snapshots_table_->location_provider();
-  EXPECT_THAT(lp_result, IsOk());
+TEST_F(MetadataTableTest, FactoryRejectsNullSourceTable) {
+  auto result = MetadataTable::Make(nullptr, MetadataTable::Kind::kSnapshots);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Table cannot be null"));
 }
 
 }  // namespace iceberg

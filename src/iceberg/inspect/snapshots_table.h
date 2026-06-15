@@ -24,38 +24,21 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/result.h"
-#include "iceberg/table.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-/// \brief Snapshots metadata table
-///
-/// Exposes all snapshots in the table as rows with columns:
-/// - committed_at (timestamp)
-/// - snapshot_id (long)
-/// - parent_id (long)
-/// - manifest_list (string)
-/// - summary (map<string, string>)
+/// \brief Snapshots metadata table.
 class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
  public:
-  /// \brief Create a SnapshotsTable from table metadata
-  ///
-  /// \param[in] table The source table
-  /// \return A SnapshotsTable instance or error status
   static Result<std::unique_ptr<SnapshotsTable>> Make(std::shared_ptr<Table> table);
 
   ~SnapshotsTable() override;
 
-  MetadataTableType type() const noexcept override {
-    return MetadataTableType::kSnapshots;
-  }
-
-  std::shared_ptr<Schema> GetSchema() const override;
+  Kind kind() const noexcept override { return Kind::kSnapshots; }
 
  private:
   explicit SnapshotsTable(std::shared_ptr<Table> table);
-
-  TableIdentifier CreateName(const TableIdentifier& source_name);
 };
 
 }  // namespace iceberg

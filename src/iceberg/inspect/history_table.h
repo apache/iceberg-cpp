@@ -24,36 +24,21 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/result.h"
-#include "iceberg/table.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-/// \brief History metadata table
-///
-/// History is based on the table's snapshot log, which logs each update
-/// to the table's current snapshot. Each row has columns:
-/// - made_current_at (long, timestamp)
-/// - snapshot_id (long)
-/// - parent_id (long, optional)
-/// - is_current_ancestor (bool)
+/// \brief History metadata table.
 class ICEBERG_EXPORT HistoryTable : public MetadataTable {
  public:
-  /// \brief Create a HistoryTable from table metadata
-  ///
-  /// \param[in] table The source table
-  /// \return A HistoryTable instance or error status
   static Result<std::unique_ptr<HistoryTable>> Make(std::shared_ptr<Table> table);
 
   ~HistoryTable() override;
 
-  MetadataTableType type() const noexcept override { return MetadataTableType::kHistory; }
-
-  std::shared_ptr<Schema> GetSchema() const override;
+  Kind kind() const noexcept override { return Kind::kHistory; }
 
  private:
   explicit HistoryTable(std::shared_ptr<Table> table);
-
-  TableIdentifier CreateName(const TableIdentifier& source_name);
 };
 
 }  // namespace iceberg

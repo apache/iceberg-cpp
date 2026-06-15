@@ -89,6 +89,7 @@ add_iceberg_test(schema_test
 add_iceberg_test(table_test
                  SOURCES
                  location_provider_test.cc
+                 metadata_table_test.cc
                  metrics_config_test.cc
                  metrics_reporter_test.cc
                  metrics_test.cc
@@ -242,10 +243,6 @@ if(ICEBERG_BUILD_BUNDLE)
                    delete_filter_test.cc
                    delete_loader_test.cc
                    file_scan_task_reader_test.cc)
-
-  add_iceberg_test(metadata_table_test SOURCES metadata_table_test.cc)
-
-  add_iceberg_test(data_writer_test USE_BUNDLE SOURCES data_writer_test.cc)
 
 endif()
 

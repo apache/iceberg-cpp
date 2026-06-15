@@ -52,7 +52,7 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   virtual ~Table();
 
   /// \brief Returns the identifier of this table
-  virtual const TableIdentifier& name() const { return identifier_; }
+  const TableIdentifier& name() const { return identifier_; }
 
   /// \brief Returns the UUID of the table
   const std::string& uuid() const;
@@ -235,6 +235,15 @@ class ICEBERG_EXPORT StaticTable : public Table {
   Result<std::shared_ptr<UpdateSortOrder>> NewUpdateSortOrder() override;
 
   Result<std::shared_ptr<ExpireSnapshots>> NewExpireSnapshots() override;
+
+  Result<std::shared_ptr<UpdateStatistics>> NewUpdateStatistics() override;
+
+  Result<std::shared_ptr<UpdatePartitionStatistics>> NewUpdatePartitionStatistics()
+      override;
+
+  Result<std::shared_ptr<FastAppend>> NewFastAppend() override;
+
+  Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 
  private:
   using Table::Table;

@@ -20,76 +20,35 @@
 #include "iceberg/inspect/metadata_table.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
-#include "iceberg/file_io.h"
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/snapshots_table.h"
-#include "iceberg/partition_spec.h"
-#include "iceberg/schema.h"
-#include "iceberg/schema_field.h"
-#include "iceberg/sort_order.h"
-#include "iceberg/table_identifier.h"
-#include "iceberg/table_metadata.h"
-#include "iceberg/table_properties.h"
-#include "iceberg/table_scan.h"
-#include "iceberg/type.h"
-#include "iceberg/type_fwd.h"
-#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
 MetadataTable::MetadataTable(std::shared_ptr<Table> source_table,
-                             TableIdentifier identifier)
-    : StaticTable(identifier, source_table->metadata(),
-                  std::string(source_table->metadata_file_location()), source_table->io(),
-                  source_table->catalog()),
-      source_table_(std::move(source_table)) {
-  auto schema = GetSchema();
-  if (!schema) {
-    schema = std::make_shared<Schema>(std::vector<SchemaField>{}, 1);
-  }
-
-  auto builder =
-      TableMetadataBuilder::BuildFromEmpty(TableMetadata::kDefaultTableFormatVersion);
-  auto result = builder->AssignUUID(Uuid::GenerateV4().ToString())
-                    .SetLocation(std::string(source_table_->location()))
-                    .SetCurrentSchema(schema, schema->schema_id())
-                    .SetDefaultSortOrder(SortOrder::Unsorted())
-                    .SetDefaultPartitionSpec(PartitionSpec::Unpartitioned())
-                    .SetProperties({})
-                    .Build();
-
-  if (!result.has_value()) {
-    // If metadata building fails, keep the original metadata from source_table
-    return;
-  }
-
-  std::shared_ptr<TableMetadata> built_metadata = std::move(result.value());
-
-  metadata_ = built_metadata;
-  metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
-}
+                             TableIdentifier identifier, std::shared_ptr<Schema> schema)
+    : identifier_(std::move(identifier)),
+      schema_(std::move(schema)),
+      source_table_(std::move(source_table)) {}
 
 MetadataTable::~MetadataTable() = default;
 
-Status MetadataTable::Refresh() { return source_table_->Refresh(); }
+Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(std::shared_ptr<Table> table,
+                                                           Kind kind) {
+  if (table == nullptr) [[unlikely]] {
+    return InvalidArgument("Table cannot be null");
+  }
 
-Result<std::unique_ptr<DataTableScanBuilder>> MetadataTable::NewScan() const {
-  return NotSupported("TODO: Scanning metadata tables is not yet supported");
-};
-
-Result<std::unique_ptr<MetadataTable>> MetadataTableFactory::CreateMetadataTable(
-    std::shared_ptr<Table> table, MetadataTableType type) {
-  switch (type) {
-    case MetadataTableType::kSnapshots:
+  switch (kind) {
+    case Kind::kSnapshots:
       return SnapshotsTable::Make(table);
-    case MetadataTableType::kHistory:
+    case Kind::kHistory:
       return HistoryTable::Make(table);
   }
 
-  return Invalid("Unsupported metadata table type");
+  return NotSupported("Unsupported metadata table type");
 }
 
 }  // namespace iceberg

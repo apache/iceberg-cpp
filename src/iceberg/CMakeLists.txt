@@ -239,6 +239,7 @@ add_subdirectory(puffin)
 add_subdirectory(row)
 add_subdirectory(update)
 add_subdirectory(util)
+add_subdirectory(inspect)
 add_subdirectory(metrics)
 
 if(ICEBERG_BUILD_BUNDLE)
