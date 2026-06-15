@@ -63,6 +63,12 @@ configure_file(
     install_dir: get_option('includedir') / 'iceberg',
 )
 
+# spdlog logging backend, mirroring CMake's ICEBERG_SPDLOG. Resolved before
+# subdir('logging') because config.h's ICEBERG_HAS_SPDLOG depends on it.
+spdlog_enabled = get_option('spdlog').allowed()
+
+# Generate iceberg/logging/config.h (must precede the library() that compiles
+# the logging sources which include it).
 subdir('logging')
 
 iceberg_include_dir = include_directories('..')
@@ -198,6 +204,12 @@ iceberg_sources = files(
     'util/uuid.cc',
 )
 
+# The spdlog sink is compiled only when the backend is enabled; with it off the
+# core library has no spdlog dependency and CerrLogger is the default sink.
+if spdlog_enabled
+    iceberg_sources += files('logging/internal/spdlog_logger.cc')
+endif
+
 iceberg_data_sources = files(
     'data/data_writer.cc',
     'data/delete_filter.cc',
@@ -228,7 +240,6 @@ croaring_needs_static = (
 croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
-spdlog_dep = dependency('spdlog')
 # utf8proc's header declares its functions __declspec(dllimport) on Windows unless
 # UTF8PROC_STATIC is defined, and the wrap does not propagate that define to consumers.
 # Define it whenever utf8proc is linked statically, so the header's declarations match
@@ -243,13 +254,14 @@ if utf8proc_needs_static
 endif
 zlib_dep = dependency('zlib')
 
-iceberg_deps = [
-    nanoarrow_dep,
-    nlohmann_json_dep,
-    spdlog_dep,
-    utf8proc_dep,
-    zlib_dep,
-]
+iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, utf8proc_dep, zlib_dep]
+
+# spdlog is looked up and linked only when the backend is enabled, so a
+# -Dspdlog=disabled build needs neither the dependency nor the sink.
+if spdlog_enabled
+    spdlog_dep = dependency('spdlog')
+    iceberg_deps += spdlog_dep
+endif
 
 iceberg_lib = library(
     'iceberg',
