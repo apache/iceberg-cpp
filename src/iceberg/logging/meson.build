@@ -15,4 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-install_headers(['log_level.h'], subdir: 'iceberg/logging')
+install_headers(['log_level.h', 'logger.h'], subdir: 'iceberg/logging')

@@ -61,7 +61,7 @@ iceberg_tests = {
             'table_update_test.cc',
         ),
     },
-    'logging_test': {'sources': files('log_level_test.cc')},
+    'logging_test': {'sources': files('log_level_test.cc', 'logger_test.cc')},
     'expression_test': {
         'sources': files(
             'aggregate_test.cc',
