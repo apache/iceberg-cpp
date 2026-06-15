@@ -69,6 +69,7 @@ iceberg_tests = {
             'logger_test.cc',
             'macros_active_level_test.cc',
             'macros_test.cc',
+            'spdlog_logger_test.cc',
         ),
     },
     'expression_test': {
