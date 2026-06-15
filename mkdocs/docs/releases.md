@@ -33,7 +33,7 @@ For the full changelog of each release, see the [GitHub Releases page](https://g
 - Merge-on-read data access with a MOR file scan task reader, delete filter support, and a DeleteLoader for v2 position and equality delete files
 - Column selection in table scan planning and ManifestGroup file filtering
 - Roaring-based position bitmaps, a position delete index, and range coalescing for position deletes
-- MergingSnapshotUpdate lays the groundwork for table overwrite, delete, update, and various maintainances.
+- MergingSnapshotUpdate lays the groundwork for table overwrite, delete, update, and various maintenance operations.
 - SnapshotManager support and retried transaction commits
 - Snapshot expiration cleanup strategies for reachable file cleanup and incremental file cleanup
 - Partition statistics updates and schema update mapping
