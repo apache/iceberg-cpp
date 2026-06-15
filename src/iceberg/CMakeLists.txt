@@ -57,6 +57,7 @@ set(ICEBERG_SOURCES
     location_provider.cc
     logging/cerr_logger.cc
     logging/logger.cc
+    logging/loggers.cc
     logging/spdlog_logger.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
