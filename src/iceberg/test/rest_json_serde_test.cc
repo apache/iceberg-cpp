@@ -1236,7 +1236,31 @@ INSTANTIATE_TEST_SUITE_P(
         CommitTableRequestDeserializeParam{
             .test_name = "MissingIdentifier",
             .json_str = R"({"requirements":[],"updates":[]})",
-            .expected_model = {}}),
+            .expected_model = {}},
+        // Requirements field is missing (should deserialize to empty requirements)
+        CommitTableRequestDeserializeParam{
+            .test_name = "MissingRequirements",
+            .json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"updates":[]})",
+            .expected_model = {.identifier = TableIdentifier{Namespace{{"ns1"}},
+                                                             "table1"}}},
+        // Updates field is missing (should deserialize to empty updates)
+        CommitTableRequestDeserializeParam{
+            .test_name = "MissingUpdates",
+            .json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[]})",
+            .expected_model = {.identifier = TableIdentifier{Namespace{{"ns1"}},
+                                                             "table1"}}},
+        // Null requirements and updates are treated as absent
+        CommitTableRequestDeserializeParam{
+            .test_name = "NullRequirementsAndUpdates",
+            .json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":null,"updates":null})",
+            .expected_model = {.identifier = TableIdentifier{Namespace{{"ns1"}},
+                                                             "table1"}}},
+        // Empty JSON object
+        CommitTableRequestDeserializeParam{
+            .test_name = "EmptyJson", .json_str = R"({})", .expected_model = {}}),
     [](const ::testing::TestParamInfo<CommitTableRequestDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -1304,24 +1328,7 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "InvalidUpdatesNotArray",
             .invalid_json_str =
                 R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":{"action":"assign-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"}})",
-            .expected_error_message = "Expected 'updates' to be an array"},
-        // Missing required requirements field
-        CommitTableRequestInvalidParam{
-            .test_name = "MissingRequirements",
-            .invalid_json_str =
-                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"updates":[]})",
-            .expected_error_message = "Missing 'requirements'"},
-        // Missing required updates field
-        CommitTableRequestInvalidParam{
-            .test_name = "MissingUpdates",
-            .invalid_json_str =
-                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[]})",
-            .expected_error_message = "Missing 'updates'"},
-        // Empty JSON object
-        CommitTableRequestInvalidParam{
-            .test_name = "EmptyJson",
-            .invalid_json_str = R"({})",
-            .expected_error_message = "Missing 'requirements'"}),
+            .expected_error_message = "Expected 'updates' to be an array"}),
     [](const ::testing::TestParamInfo<CommitTableRequestInvalidParam>& info) {
       return info.param.test_name;
     });
