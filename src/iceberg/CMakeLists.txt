@@ -239,6 +239,7 @@ add_subdirectory(row)
 add_subdirectory(update)
 add_subdirectory(util)
 add_subdirectory(metrics)
+add_subdirectory(logging)
 
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES

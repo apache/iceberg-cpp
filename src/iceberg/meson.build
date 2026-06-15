@@ -38,6 +38,8 @@ configure_file(
     install_dir: get_option('includedir') / 'iceberg',
 )
 
+subdir('logging')
+
 iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
