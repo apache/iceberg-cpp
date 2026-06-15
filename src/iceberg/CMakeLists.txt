@@ -49,6 +49,7 @@ set(ICEBERG_SOURCES
     inheritable_metadata.cc
     json_serde.cc
     location_provider.cc
+    logging/cerr_logger.cc
     logging/logger.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
@@ -133,6 +134,7 @@ set(ICEBERG_SOURCES
     util/struct_like_set.cc
     util/task_group.cc
     util/temporal_util.cc
+    util/thread_util.cc
     util/timepoint.cc
     util/transform_util.cc
     util/truncate_util.cc

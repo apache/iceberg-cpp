@@ -127,8 +127,8 @@ class ICEBERG_EXPORT LogMessage::Builder {
 /// \brief Well-known Logger::Initialize() property keys.
 ///
 /// `level` is honored by the base Logger::Initialize (parsed via
-/// LogLevelFromString). `pattern` is honored by the formatting sinks
-/// (CerrLogger, SpdLogger).
+/// LogLevelFromString) on every backend. `pattern` is honored only by the
+/// spdlog backend; CerrLogger uses a fixed layout and ignores it.
 inline constexpr std::string_view kLevelProperty = "level";
 inline constexpr std::string_view kPatternProperty = "pattern";
 
@@ -150,8 +150,8 @@ class ICEBERG_EXPORT Logger {
   ///
   /// The base implementation applies the "level" property (parsed via
   /// LogLevelFromString); an unrecognized value is an InvalidArgument error.
-  /// Formatting sinks override this to also apply "pattern" and then delegate
-  /// to this base for "level".
+  /// The spdlog backend overrides this to also apply "pattern" and then delegates
+  /// to this base for "level"; CerrLogger uses the base as-is (fixed layout).
   virtual Status Initialize(
       const std::unordered_map<std::string, std::string>& properties) {
     if (auto it = properties.find(std::string(kLevelProperty)); it != properties.end()) {
