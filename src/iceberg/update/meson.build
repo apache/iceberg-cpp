@@ -21,6 +21,7 @@ install_headers(
         'fast_append.h',
         'merging_snapshot_update.h',
         'pending_update.h',
+        'rewrite_files.h',
         'set_snapshot.h',
         'snapshot_manager.h',
         'snapshot_update.h',
