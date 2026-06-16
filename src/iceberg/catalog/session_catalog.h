@@ -40,7 +40,7 @@ class Catalog;
 /// the caller has an explicit session identity, properties, or credentials.
 class ICEBERG_EXPORT SessionCatalog {
  public:
-  virtual ~SessionCatalog() = default;
+  virtual ~SessionCatalog();
 
   /// \brief Catalog name.
   virtual std::string_view name() const = 0;
@@ -57,6 +57,9 @@ class ICEBERG_EXPORT SessionCatalog {
   /// `SessionContext::session_id`. Returned catalog views use the normal
   /// `Catalog` interface for all table and namespace operations.
   virtual Result<std::shared_ptr<Catalog>> WithContext(SessionContext context) = 0;
+
+ protected:
+  SessionCatalog();
 };
 
 }  // namespace iceberg
