@@ -1451,6 +1451,43 @@ TEST_F(MergingSnapshotUpdateTest,
 }
 
 TEST_F(MergingSnapshotUpdateTest,
+       ValidateNoNewDeletesForDataFilesIgnoresEqualityDeletesWhenFlagIsTrue) {
+  // This tests the behavior that RewriteFiles::SetDataSequenceNumber() and
+  // RewriteFiles::RewriteDataFiles() enable: when a data sequence number is
+  // set for rewritten data files, concurrent equality deletes at higher
+  // sequence numbers still apply to the new files and are NOT a conflict.
+  // Only position deletes should still fail (tested separately by
+  // ValidateNoNewDeletesForDataFilesFailsOnPositionDeleteWhenIgnoringEqualityDeletes).
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto del_file = MakeEqualityDeleteFile("/delete/del_a.parquet", 1L);
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
+  EXPECT_THAT(op->AddDelete(del_file), IsOk());
+  const int64_t second_snapshot_id = op->GeneratedSnapshotId();
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second_snapshot,
+      MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
+                            first_snapshot->snapshot_id,
+                            first_snapshot->sequence_number + 1, manifests));
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+  metadata->snapshots.push_back(second_snapshot);
+  metadata->current_snapshot_id = second_snapshot->snapshot_id;
+  metadata->last_sequence_number = second_snapshot->sequence_number;
+
+  DataFileSet replaced_files;
+  replaced_files.insert(file_a_);
+  // With ignore_equality_deletes=true, concurrently-added equality deletes
+  // should NOT cause a conflict.
+  EXPECT_THAT(TestMergeAppend::ValidateNoNewDeletesForDataFilesForTest(
+                  *metadata, first_snapshot->snapshot_id, replaced_files, second_snapshot,
+                  file_io_, /*ignore_equality_deletes=*/true),
+              IsOk());
+}
+
+TEST_F(MergingSnapshotUpdateTest,
        ValidateNoNewDeletesForDataFilesUsesConfiguredCaseSensitivity) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());

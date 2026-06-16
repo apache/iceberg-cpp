@@ -118,6 +118,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Create a new OverwriteFiles to overwrite data files and commit the changes.
   Result<std::shared_ptr<OverwriteFiles>> NewOverwrite();
 
+  /// \brief Create a new RewriteFiles to replace files in this table and commit the
+  /// changes.
+  Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles();
+
   /// \brief Create a new SnapshotManager to manage snapshots.
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
