@@ -239,6 +239,11 @@ Status ValidateParquetSchemaEvolution(
       break;
     case TypeId::kUnknown:
       return {};
+    case TypeId::kVariant:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
+      return NotSupported("Reading Iceberg type {} from Parquet is not supported",
+                          expected_type);
     case TypeId::kStruct:
       if (arrow_type->id() == ::arrow::Type::STRUCT) {
         return {};

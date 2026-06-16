@@ -23,6 +23,7 @@
 #include <format>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "iceberg/exception.h"
@@ -264,6 +265,10 @@ bool MapType::Equals(const Type& other) const {
   return fields_ == map.fields_;
 }
 
+TypeId VariantType::type_id() const { return kTypeId; }
+std::string VariantType::ToString() const { return "variant"; }
+bool VariantType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
+
 TypeId BooleanType::type_id() const { return kTypeId; }
 std::string BooleanType::ToString() const { return "boolean"; }
 bool BooleanType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
@@ -354,6 +359,70 @@ TypeId UnknownType::type_id() const { return kTypeId; }
 std::string UnknownType::ToString() const { return "unknown"; }
 bool UnknownType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
+GeometryType::GeometryType(std::string crs) {
+  ICEBERG_CHECK_OR_DIE(!crs.empty(), "GeometryType: CRS cannot be empty");
+  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
+    crs_ = std::move(crs);
+  }
+}
+
+std::string_view GeometryType::crs() const {
+  return crs_.has_value() ? std::string_view(*crs_) : kDefaultCrs;
+}
+TypeId GeometryType::type_id() const { return kTypeId; }
+std::string GeometryType::ToString() const {
+  if (!crs_.has_value()) {
+    return "geometry";
+  }
+  return std::format("geometry({})", *crs_);
+}
+bool GeometryType::Equals(const Type& other) const {
+  if (other.type_id() != kTypeId) {
+    return false;
+  }
+  const auto& geometry = static_cast<const GeometryType&>(other);
+  return crs() == geometry.crs();
+}
+
+GeographyType::GeographyType(std::string crs) {
+  ICEBERG_CHECK_OR_DIE(!crs.empty(), "GeographyType: CRS cannot be empty");
+  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
+    crs_ = std::move(crs);
+  }
+}
+
+GeographyType::GeographyType(std::string crs, EdgeAlgorithm algorithm)
+    : algorithm_(algorithm) {
+  ICEBERG_CHECK_OR_DIE(!crs.empty(), "GeographyType: CRS cannot be empty");
+  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
+    crs_ = std::move(crs);
+  }
+}
+
+std::string_view GeographyType::crs() const {
+  return crs_.has_value() ? std::string_view(*crs_) : kDefaultCrs;
+}
+EdgeAlgorithm GeographyType::algorithm() const {
+  return algorithm_.value_or(kDefaultAlgorithm);
+}
+TypeId GeographyType::type_id() const { return kTypeId; }
+std::string GeographyType::ToString() const {
+  if (algorithm_.has_value()) {
+    return std::format("geography({}, {})", crs(), iceberg::ToString(*algorithm_));
+  }
+  if (crs_.has_value()) {
+    return std::format("geography({})", *crs_);
+  }
+  return "geography";
+}
+bool GeographyType::Equals(const Type& other) const {
+  if (other.type_id() != kTypeId) {
+    return false;
+  }
+  const auto& geography = static_cast<const GeographyType&>(other);
+  return crs() == geography.crs() && algorithm() == geography.algorithm();
+}
+
 FixedType::FixedType(int32_t length) : length_(length) {
   ICEBERG_CHECK_OR_DIE(length >= 0, "FixedType: length must be >= 0, was {}", length);
 }
@@ -374,7 +443,7 @@ std::string BinaryType::ToString() const { return "binary"; }
 bool BinaryType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 // ----------------------------------------------------------------------
-// Factory functions for creating primitive data types
+// Factory functions for creating data types
 
 #define TYPE_FACTORY(NAME, KLASS)                                     \
   const std::shared_ptr<KLASS>& NAME() {                              \
@@ -397,6 +466,9 @@ TYPE_FACTORY(binary, BinaryType)
 TYPE_FACTORY(string, StringType)
 TYPE_FACTORY(uuid, UuidType)
 TYPE_FACTORY(unknown, UnknownType)
+TYPE_FACTORY(variant, VariantType)
+TYPE_FACTORY(geometry, GeometryType)
+TYPE_FACTORY(geography, GeographyType)
 
 #undef TYPE_FACTORY
 
@@ -406,6 +478,18 @@ std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale) {
 
 std::shared_ptr<FixedType> fixed(int32_t length) {
   return std::make_shared<FixedType>(length);
+}
+
+std::shared_ptr<GeometryType> geometry(std::string crs) {
+  return std::make_shared<GeometryType>(std::move(crs));
+}
+
+std::shared_ptr<GeographyType> geography(std::string crs) {
+  return std::make_shared<GeographyType>(std::move(crs));
+}
+
+std::shared_ptr<GeographyType> geography(std::string crs, EdgeAlgorithm algorithm) {
+  return std::make_shared<GeographyType>(std::move(crs), algorithm);
 }
 
 std::shared_ptr<MapType> map(SchemaField key, SchemaField value) {
@@ -462,9 +546,52 @@ std::string_view ToString(TypeId id) {
       return "binary";
     case TypeId::kUnknown:
       return "unknown";
+    case TypeId::kVariant:
+      return "variant";
+    case TypeId::kGeometry:
+      return "geometry";
+    case TypeId::kGeography:
+      return "geography";
   }
 
   std::unreachable();
+}
+
+std::string_view ToString(EdgeAlgorithm algorithm) {
+  switch (algorithm) {
+    case EdgeAlgorithm::kSpherical:
+      return "spherical";
+    case EdgeAlgorithm::kVincenty:
+      return "vincenty";
+    case EdgeAlgorithm::kThomas:
+      return "thomas";
+    case EdgeAlgorithm::kAndoyer:
+      return "andoyer";
+    case EdgeAlgorithm::kKarney:
+      return "karney";
+  }
+
+  std::unreachable();
+}
+
+Result<EdgeAlgorithm> EdgeAlgorithmFromString(std::string_view name) {
+  auto lower_name = StringUtils::ToLower(name);
+  if (lower_name == "spherical") {
+    return EdgeAlgorithm::kSpherical;
+  }
+  if (lower_name == "vincenty") {
+    return EdgeAlgorithm::kVincenty;
+  }
+  if (lower_name == "thomas") {
+    return EdgeAlgorithm::kThomas;
+  }
+  if (lower_name == "andoyer") {
+    return EdgeAlgorithm::kAndoyer;
+  }
+  if (lower_name == "karney") {
+    return EdgeAlgorithm::kKarney;
+  }
+  return InvalidArgument("Invalid edge interpolation algorithm: {}", name);
 }
 
 }  // namespace iceberg

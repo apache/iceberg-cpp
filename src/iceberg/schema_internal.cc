@@ -21,9 +21,11 @@
 
 #include <charconv>
 #include <cstring>
+#include <format>
 #include <optional>
 #include <string>
 
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
@@ -39,129 +41,165 @@ constexpr const char* kArrowExtensionMetadata = "ARROW:extension:metadata";
 constexpr const char* kArrowUuidExtensionName = "arrow.uuid";
 constexpr int32_t kUnknownFieldId = -1;
 
-// Convert an Iceberg type to Arrow schema. Return value is Nanoarrow error code.
-ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view name,
-                             std::optional<int32_t> field_id, ArrowSchema* schema) {
+Status CheckArrowSchemaConversion(ArrowErrorCode error_code) {
+  if (error_code != NANOARROW_OK) {
+    return InvalidSchema(
+        "Failed to convert Iceberg schema to Arrow schema, error code: {}", error_code);
+  }
+  return {};
+}
+
+Status ToArrowSchemaInternal(const Type& type, bool optional, std::string_view name,
+                             std::string_view path, std::optional<int32_t> field_id,
+                             ArrowSchema* schema) {
   ArrowBuffer metadata_buffer;
-  NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderInit(&metadata_buffer, nullptr));
+  ICEBERG_RETURN_UNEXPECTED(
+      CheckArrowSchemaConversion(ArrowMetadataBuilderInit(&metadata_buffer, nullptr)));
+  internal::ArrowArrayBufferGuard metadata_guard(&metadata_buffer);
   if (field_id.has_value()) {
-    NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderAppend(
+    ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowMetadataBuilderAppend(
         &metadata_buffer, ArrowCharView(std::string(kParquetFieldIdKey).c_str()),
-        ArrowCharView(std::to_string(field_id.value()).c_str())));
+        ArrowCharView(std::to_string(field_id.value()).c_str()))));
   }
 
   switch (type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = static_cast<const StructType&>(type);
       const auto& fields = struct_type.fields();
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeStruct(schema, fields.size()));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetTypeStruct(schema, fields.size())));
 
       for (size_t i = 0; i < fields.size(); i++) {
         const auto& field = fields[i];
-        NANOARROW_RETURN_NOT_OK(ToArrowSchema(*field.type(), field.optional(),
-                                              field.name(), field.field_id(),
-                                              schema->children[i]));
+        auto field_path = path.empty() ? std::string(field.name())
+                                       : std::format("{}.{}", path, field.name());
+        ICEBERG_RETURN_UNEXPECTED(
+            ToArrowSchemaInternal(*field.type(), field.optional(), field.name(),
+                                  field_path, field.field_id(), schema->children[i]));
       }
     } break;
     case TypeId::kList: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_LIST));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_LIST)));
 
       const auto& list_type = static_cast<const ListType&>(type);
       const auto& elem_field = list_type.fields()[0];
-      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*elem_field.type(), elem_field.optional(),
-                                            elem_field.name(), elem_field.field_id(),
-                                            schema->children[0]));
+      auto element_path = path.empty()
+                              ? std::string(ListType::kElementName)
+                              : std::format("{}.{}", path, ListType::kElementName);
+      ICEBERG_RETURN_UNEXPECTED(ToArrowSchemaInternal(
+          *elem_field.type(), elem_field.optional(), elem_field.name(), element_path,
+          elem_field.field_id(), schema->children[0]));
     } break;
     case TypeId::kMap: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_MAP));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_MAP)));
 
       const auto& map_type = static_cast<const MapType&>(type);
       const auto& key_field = map_type.key();
       const auto& value_field = map_type.value();
-      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*key_field.type(), key_field.optional(),
-                                            key_field.name(), key_field.field_id(),
-                                            schema->children[0]->children[0]));
-      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*value_field.type(), value_field.optional(),
-                                            value_field.name(), value_field.field_id(),
-                                            schema->children[0]->children[1]));
+      auto key_path = path.empty() ? std::string(MapType::kKeyName)
+                                   : std::format("{}.{}", path, MapType::kKeyName);
+      ICEBERG_RETURN_UNEXPECTED(ToArrowSchemaInternal(
+          *key_field.type(), key_field.optional(), key_field.name(), key_path,
+          key_field.field_id(), schema->children[0]->children[0]));
+      auto value_path = path.empty() ? std::string(MapType::kValueName)
+                                     : std::format("{}.{}", path, MapType::kValueName);
+      ICEBERG_RETURN_UNEXPECTED(ToArrowSchemaInternal(
+          *value_field.type(), value_field.optional(), value_field.name(), value_path,
+          value_field.field_id(), schema->children[0]->children[1]));
     } break;
     case TypeId::kBoolean:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_BOOL));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_BOOL)));
       break;
     case TypeId::kInt:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_INT32));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_INT32)));
       break;
     case TypeId::kLong:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_INT64));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_INT64)));
       break;
     case TypeId::kFloat:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_FLOAT));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_FLOAT)));
       break;
     case TypeId::kDouble:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_DOUBLE));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_DOUBLE)));
       break;
     case TypeId::kDecimal: {
       const auto& decimal_type = static_cast<const DecimalType&>(type);
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDecimal(schema, NANOARROW_TYPE_DECIMAL128,
-                                                        decimal_type.precision(),
-                                                        decimal_type.scale()));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(
+          ArrowSchemaSetTypeDecimal(schema, NANOARROW_TYPE_DECIMAL128,
+                                    decimal_type.precision(), decimal_type.scale())));
     } break;
     case TypeId::kDate:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_DATE32));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_DATE32)));
       break;
     case TypeId::kTime: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(schema, NANOARROW_TYPE_TIME64,
-                                                         NANOARROW_TIME_UNIT_MICRO,
-                                                         /*timezone=*/nullptr));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetTypeDateTime(
+          schema, NANOARROW_TYPE_TIME64, NANOARROW_TIME_UNIT_MICRO,
+          /*timezone=*/nullptr)));
     } break;
     case TypeId::kTimestamp: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(schema, NANOARROW_TYPE_TIMESTAMP,
-                                                         NANOARROW_TIME_UNIT_MICRO,
-                                                         /*timezone=*/nullptr));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetTypeDateTime(
+          schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_MICRO,
+          /*timezone=*/nullptr)));
     } break;
     case TypeId::kTimestampTz: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(
-          schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_MICRO, "UTC"));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetTypeDateTime(
+          schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_MICRO, "UTC")));
     } break;
     case TypeId::kTimestampNs: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(schema, NANOARROW_TYPE_TIMESTAMP,
-                                                         NANOARROW_TIME_UNIT_NANO,
-                                                         /*timezone=*/nullptr));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetTypeDateTime(
+          schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_NANO,
+          /*timezone=*/nullptr)));
     } break;
     case TypeId::kTimestampTzNs: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(
-          schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_NANO, "UTC"));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetTypeDateTime(
+          schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_NANO, "UTC")));
     } break;
     case TypeId::kString:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_STRING));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_STRING)));
       break;
     case TypeId::kBinary:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_BINARY));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_BINARY)));
       break;
     case TypeId::kFixed: {
       const auto& fixed_type = static_cast<const FixedType&>(type);
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeFixedSize(
-          schema, NANOARROW_TYPE_FIXED_SIZE_BINARY, fixed_type.length()));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetTypeFixedSize(
+          schema, NANOARROW_TYPE_FIXED_SIZE_BINARY, fixed_type.length())));
     } break;
     case TypeId::kUuid: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeFixedSize(
-          schema, NANOARROW_TYPE_FIXED_SIZE_BINARY, /*fixed_size=*/16));
-      NANOARROW_RETURN_NOT_OK(
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetTypeFixedSize(
+          schema, NANOARROW_TYPE_FIXED_SIZE_BINARY, /*fixed_size=*/16)));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(
           ArrowMetadataBuilderAppend(&metadata_buffer, ArrowCharView(kArrowExtensionName),
-                                     ArrowCharView(kArrowUuidExtensionName)));
+                                     ArrowCharView(kArrowUuidExtensionName))));
     } break;
     case TypeId::kUnknown:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA));
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowSchemaConversion(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA)));
       break;
+    case TypeId::kVariant:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
+      return NotSupported("Iceberg type {} at '{}' is not supported by Arrow conversion",
+                          type.ToString(), path);
   }
 
   if (!name.empty()) {
-    NANOARROW_RETURN_NOT_OK(ArrowSchemaSetName(schema, std::string(name).c_str()));
+    ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(
+        ArrowSchemaSetName(schema, std::string(name).c_str())));
   }
 
-  NANOARROW_RETURN_NOT_OK(ArrowSchemaSetMetadata(
-      schema, reinterpret_cast<const char*>(metadata_buffer.data)));
-  ArrowBufferReset(&metadata_buffer);
+  ICEBERG_RETURN_UNEXPECTED(CheckArrowSchemaConversion(ArrowSchemaSetMetadata(
+      schema, reinterpret_cast<const char*>(metadata_buffer.data))));
 
   if (optional) {
     schema->flags |= ARROW_FLAG_NULLABLE;
@@ -169,7 +207,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
     schema->flags &= ~ARROW_FLAG_NULLABLE;
   }
 
-  return NANOARROW_OK;
+  return {};
 }
 
 }  // namespace
@@ -181,11 +219,14 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
 
   ArrowSchemaInit(out);
 
-  if (ArrowErrorCode errorCode = ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
-                                               /*field_id=*/std::nullopt, out);
-      errorCode != NANOARROW_OK) {
-    return InvalidSchema(
-        "Failed to convert Iceberg schema to Arrow schema, error code: {}", errorCode);
+  auto status =
+      ToArrowSchemaInternal(schema, /*optional=*/false, /*name=*/"", /*path=*/"",
+                            /*field_id=*/std::nullopt, out);
+  if (!status.has_value()) {
+    if (out->release != nullptr) {
+      ArrowSchemaRelease(out);
+    }
+    return status;
   }
 
   return {};

@@ -389,6 +389,12 @@ nlohmann::json ToJson(const Type& type) {
       return "uuid";
     case TypeId::kUnknown:
       return "unknown";
+    case TypeId::kVariant:
+      return "variant";
+    case TypeId::kGeometry:
+      return type.ToString();
+    case TypeId::kGeography:
+      return type.ToString();
   }
   std::unreachable();
 }
@@ -486,49 +492,52 @@ Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
 Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
   if (json.is_string()) {
     std::string type_str = json.get<std::string>();
-    if (type_str == "boolean") {
+    std::string lower_type_str = StringUtils::ToLower(type_str);
+    if (lower_type_str == "boolean") {
       return std::make_unique<BooleanType>();
-    } else if (type_str == "int") {
+    } else if (lower_type_str == "int") {
       return std::make_unique<IntType>();
-    } else if (type_str == "long") {
+    } else if (lower_type_str == "long") {
       return std::make_unique<LongType>();
-    } else if (type_str == "float") {
+    } else if (lower_type_str == "float") {
       return std::make_unique<FloatType>();
-    } else if (type_str == "double") {
+    } else if (lower_type_str == "double") {
       return std::make_unique<DoubleType>();
-    } else if (type_str == "date") {
+    } else if (lower_type_str == "date") {
       return std::make_unique<DateType>();
-    } else if (type_str == "time") {
+    } else if (lower_type_str == "time") {
       return std::make_unique<TimeType>();
-    } else if (type_str == "timestamp") {
+    } else if (lower_type_str == "timestamp") {
       return std::make_unique<TimestampType>();
-    } else if (type_str == "timestamptz") {
+    } else if (lower_type_str == "timestamptz") {
       return std::make_unique<TimestampTzType>();
-    } else if (type_str == "timestamp_ns") {
+    } else if (lower_type_str == "timestamp_ns") {
       return std::make_unique<TimestampNsType>();
-    } else if (type_str == "timestamptz_ns") {
+    } else if (lower_type_str == "timestamptz_ns") {
       return std::make_unique<TimestampTzNsType>();
-    } else if (type_str == "string") {
+    } else if (lower_type_str == "string") {
       return std::make_unique<StringType>();
-    } else if (type_str == "binary") {
+    } else if (lower_type_str == "binary") {
       return std::make_unique<BinaryType>();
-    } else if (type_str == "uuid") {
+    } else if (lower_type_str == "uuid") {
       return std::make_unique<UuidType>();
-    } else if (type_str == "unknown") {
+    } else if (lower_type_str == "unknown") {
       return std::make_unique<UnknownType>();
-    } else if (type_str.starts_with("fixed")) {
-      std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
+    } else if (lower_type_str == "variant") {
+      return std::make_unique<VariantType>();
+    } else if (lower_type_str.starts_with("fixed")) {
+      static const std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
       std::smatch match;
-      if (std::regex_match(type_str, match, fixed_regex)) {
+      if (std::regex_match(lower_type_str, match, fixed_regex)) {
         ICEBERG_ASSIGN_OR_RAISE(auto length,
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         return std::make_unique<FixedType>(length);
       }
       return JsonParseError("Invalid fixed type: {}", type_str);
-    } else if (type_str.starts_with("decimal")) {
-      std::regex decimal_regex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
+    } else if (lower_type_str.starts_with("decimal")) {
+      static const std::regex decimal_regex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
       std::smatch match;
-      if (std::regex_match(type_str, match, decimal_regex)) {
+      if (std::regex_match(lower_type_str, match, decimal_regex)) {
         ICEBERG_ASSIGN_OR_RAISE(auto precision,
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         ICEBERG_ASSIGN_OR_RAISE(auto scale,
@@ -536,8 +545,44 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
         return std::make_unique<DecimalType>(precision, scale);
       }
       return JsonParseError("Invalid decimal type: {}", type_str);
+    } else if (lower_type_str.starts_with("geometry")) {
+      static const std::regex geometry_regex(R"(\s*(?:\(\s*([^)]*?)\s*\))?)");
+      std::smatch match;
+      const auto type_params = type_str.substr(std::string_view("geometry").size());
+      if (std::regex_match(type_params, match, geometry_regex)) {
+        if (match[1].matched) {
+          auto crs = match[1].str();
+          if (crs.empty()) {
+            return JsonParseError("Invalid geometry type: {}", type_str);
+          }
+          return std::make_unique<GeometryType>(std::move(crs));
+        }
+        return std::make_unique<GeometryType>();
+      }
+      return JsonParseError("Invalid geometry type: {}", type_str);
+    } else if (lower_type_str.starts_with("geography")) {
+      static const std::regex geography_regex(
+          R"(\s*(?:\(\s*([^,]*?)\s*(?:,\s*(\w*)\s*)?\))?)");
+      std::smatch match;
+      const auto type_params = type_str.substr(std::string_view("geography").size());
+      if (std::regex_match(type_params, match, geography_regex)) {
+        auto crs = match[1].str();
+        if (match[1].matched && crs.empty()) {
+          return JsonParseError("Invalid geography type: {}", type_str);
+        }
+        if (match[2].matched) {
+          ICEBERG_ASSIGN_OR_RAISE(auto algorithm,
+                                  EdgeAlgorithmFromString(match[2].str()));
+          return std::make_unique<GeographyType>(std::move(crs), algorithm);
+        }
+        if (match[1].matched) {
+          return std::make_unique<GeographyType>(std::move(crs));
+        }
+        return std::make_unique<GeographyType>();
+      }
+      return JsonParseError("Invalid geography type: {}", type_str);
     } else {
-      return JsonParseError("Unknown primitive type: {}", type_str);
+      return JsonParseError("Cannot parse type string: {}", type_str);
     }
   }
 

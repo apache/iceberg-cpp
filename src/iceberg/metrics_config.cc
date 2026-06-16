@@ -197,6 +197,8 @@ Result<std::unordered_set<int32_t>> MetricsConfig::LimitFieldIds(const Schema& s
     Status Visit(const Type& type) {
       if (type.is_nested()) {
         return VisitNested(internal::checked_cast<const NestedType&>(type));
+      } else if (type.type_id() == TypeId::kVariant) {
+        return {};
       } else {
         return VisitPrimitive(internal::checked_cast<const PrimitiveType&>(type));
       }
@@ -207,8 +209,7 @@ Result<std::unordered_set<int32_t>> MetricsConfig::LimitFieldIds(const Schema& s
         if (!ShouldContinue()) {
           break;
         }
-        // TODO(zhuo.wang): variant type should also be handled here
-        if (field.type()->is_primitive()) {
+        if (!field.type()->is_nested()) {
           ids_.insert(field.field_id());
         }
       }

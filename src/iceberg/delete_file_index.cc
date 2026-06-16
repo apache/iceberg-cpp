@@ -56,7 +56,7 @@ Status EqualityDeleteFile::ConvertBoundsIfNeeded() const {
     }
 
     const auto& schema_field = field.value().get();
-    if (schema_field.type()->is_nested()) {
+    if (!schema_field.type()->is_primitive()) {
       continue;
     }
 
@@ -103,7 +103,7 @@ Result<bool> CanContainEqDeletesForFile(const DataFile& data_file,
     }
 
     const auto& field = found_field.value().get();
-    if (field.type()->is_nested()) {
+    if (!field.type()->is_primitive()) {
       continue;
     }
 

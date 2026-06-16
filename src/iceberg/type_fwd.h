@@ -53,12 +53,24 @@ enum class TypeId {
   kFixed,
   kBinary,
   kUnknown,
+  kVariant,
+  kGeometry,
+  kGeography,
 };
 
 /// \brief The time unit.  In Iceberg V3 nanoseconds are also supported.
 enum class TimeUnit {
   kMicrosecond,
   kNanosecond,
+};
+
+/// \brief The algorithm used to interpolate geography edges.
+enum class EdgeAlgorithm {
+  kSpherical,
+  kVincenty,
+  kThomas,
+  kAndoyer,
+  kKarney,
 };
 
 /// \brief Data type family.
@@ -86,6 +98,9 @@ class TimestampTzNsType;
 class Type;
 class UnknownType;
 class UuidType;
+class VariantType;
+class GeographyType;
+class GeometryType;
 
 /// \brief Data values.
 class Decimal;

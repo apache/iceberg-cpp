@@ -423,6 +423,10 @@ class CollectMetricsVisitor {
 
   Status VisitMap(const MapType& /*type*/, const std::string& /*prefix*/) { return {}; }
 
+  Status VisitVariant(const VariantType& /*type*/, const std::string& /*prefix*/) {
+    return {};
+  }
+
   Status VisitPrimitive(const PrimitiveType& /*type*/, const std::string& /*prefix*/) {
     return {};
   }

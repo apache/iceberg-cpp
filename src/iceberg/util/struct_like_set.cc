@@ -342,6 +342,11 @@ Status ValidateScalarAgainstType(const Scalar& scalar, const Type& type) {
       return ValidateMapLikeAgainstType(*map,
                                         internal::checked_cast<const MapType&>(type));
     }
+    case TypeId::kVariant:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
+      return NotSupported("Scalar validation for type {} is not supported",
+                          type.ToString());
   }
 
   std::unreachable();

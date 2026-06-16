@@ -1078,7 +1078,7 @@ INSTANTIATE_TEST_SUITE_P(
         CreateTableRequestInvalidParam{
             .test_name = "WrongSchemaType",
             .invalid_json_str = R"({"name":"my_table","schema":"invalid"})",
-            .expected_error_message = "Unknown primitive type: invalid"}),
+            .expected_error_message = "Cannot parse type string: invalid"}),
     [](const ::testing::TestParamInfo<CreateTableRequestInvalidParam>& info) {
       return info.param.test_name;
     });

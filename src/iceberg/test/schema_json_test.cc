@@ -65,6 +65,15 @@ INSTANTIATE_TEST_SUITE_P(
         SchemaJsonParam{.json = "\"binary\"", .type = iceberg::binary()},
         SchemaJsonParam{.json = "\"uuid\"", .type = iceberg::uuid()},
         SchemaJsonParam{.json = "\"unknown\"", .type = iceberg::unknown()},
+        SchemaJsonParam{.json = "\"variant\"", .type = iceberg::variant()},
+        SchemaJsonParam{.json = "\"geometry\"", .type = iceberg::geometry()},
+        SchemaJsonParam{.json = "\"geometry(srid:4326)\"",
+                        .type = iceberg::geometry("srid:4326")},
+        SchemaJsonParam{.json = "\"geography\"", .type = iceberg::geography()},
+        SchemaJsonParam{.json = "\"geography(srid:4326)\"",
+                        .type = iceberg::geography("srid:4326")},
+        SchemaJsonParam{.json = "\"geography(srid:4326, karney)\"",
+                        .type = iceberg::geography("srid:4326", EdgeAlgorithm::kKarney)},
         SchemaJsonParam{.json = "\"fixed[8]\"", .type = iceberg::fixed(8)},
         SchemaJsonParam{.json = "\"decimal(10,2)\"", .type = iceberg::decimal(10, 2)},
         SchemaJsonParam{.json = "\"date\"", .type = iceberg::date()},
@@ -109,6 +118,48 @@ TEST(TypeJsonTest, FromJsonWithSpaces) {
   ASSERT_NE(decimal, nullptr);
   ASSERT_EQ(decimal->precision(), 10);
   ASSERT_EQ(decimal->scale(), 2);
+}
+
+TEST(TypeJsonTest, FromJsonV3TypesWithSpacesAndCase) {
+  auto variant_result = TypeFromJson(nlohmann::json::parse("\"Variant\""));
+  ASSERT_TRUE(variant_result.has_value());
+  ASSERT_EQ(*variant_result.value(), *iceberg::variant());
+
+  auto geometry_result =
+      TypeFromJson(nlohmann::json::parse("\"GEOMETRY( srid: 3857 )\""));
+  ASSERT_TRUE(geometry_result.has_value());
+  ASSERT_EQ(*geometry_result.value(), *iceberg::geometry("srid: 3857"));
+
+  auto geography_result =
+      TypeFromJson(nlohmann::json::parse("\"geography(srid:4269,karney)\""));
+  ASSERT_TRUE(geography_result.has_value());
+  ASSERT_EQ(*geography_result.value(),
+            *iceberg::geography("srid:4269", EdgeAlgorithm::kKarney));
+}
+
+TEST(TypeJsonTest, InvalidV3Types) {
+  auto invalid_geometry = TypeFromJson(nlohmann::json::parse("\"geometry()\""));
+  ASSERT_THAT(invalid_geometry, HasErrorMessage("Invalid geometry type"));
+
+  auto invalid_geometry_with_spaces =
+      TypeFromJson(nlohmann::json::parse("\"geometry( )\""));
+  ASSERT_THAT(invalid_geometry_with_spaces, HasErrorMessage("Invalid geometry type"));
+
+  auto invalid_geography = TypeFromJson(nlohmann::json::parse("\"geography()\""));
+  ASSERT_THAT(invalid_geography, HasErrorMessage("Invalid geography type"));
+
+  auto invalid_geography_with_algorithm =
+      TypeFromJson(nlohmann::json::parse("\"geography( , spherical)\""));
+  ASSERT_THAT(invalid_geography_with_algorithm,
+              HasErrorMessage("Invalid geography type"));
+
+  auto invalid_geography_algorithm =
+      TypeFromJson(nlohmann::json::parse("\"geography(srid:4269, BadAlgorithm)\""));
+  ASSERT_THAT(invalid_geography_algorithm,
+              HasErrorMessage("Invalid edge interpolation algorithm"));
+
+  auto unknown_type = TypeFromJson(nlohmann::json::parse("\"nonsense\""));
+  ASSERT_THAT(unknown_type, HasErrorMessage("Cannot parse type string"));
 }
 
 TEST(SchemaJsonTest, RoundTrip) {

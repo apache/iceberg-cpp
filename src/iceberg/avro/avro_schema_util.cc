@@ -248,6 +248,18 @@ Status ToAvroNodeVisitor::Visit(const UnknownType&, ::avro::NodePtr* node) {
   return {};
 }
 
+Status ToAvroNodeVisitor::Visit(const VariantType&, ::avro::NodePtr*) {
+  return NotSupported("Writing Iceberg variant type to Avro is not supported");
+}
+
+Status ToAvroNodeVisitor::Visit(const GeometryType&, ::avro::NodePtr*) {
+  return NotSupported("Writing Iceberg geometry type to Avro is not supported");
+}
+
+Status ToAvroNodeVisitor::Visit(const GeographyType&, ::avro::NodePtr*) {
+  return NotSupported("Writing Iceberg geography type to Avro is not supported");
+}
+
 Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodeRecord>();
 
@@ -631,6 +643,11 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
       break;
     case TypeId::kUnknown:
       return {};
+    case TypeId::kVariant:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
+      return NotSupported("Reading Iceberg type {} from Avro is not supported",
+                          expected_type);
     default:
       break;
   }

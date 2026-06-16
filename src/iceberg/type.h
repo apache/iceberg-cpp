@@ -208,6 +208,30 @@ class ICEBERG_EXPORT MapType : public NestedType {
 
 /// @}
 
+/// \defgroup type-semi-structured Semi-structured Types
+/// Semi-structured types may contain values whose structure varies across rows.
+/// @{
+
+/// \brief A semi-structured type whose structure may vary across rows.
+class ICEBERG_EXPORT VariantType : public Type {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kVariant;
+
+  VariantType() = default;
+  ~VariantType() override = default;
+
+  bool is_primitive() const override { return false; }
+  bool is_nested() const override { return false; }
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+};
+
+/// @}
+
 /// \defgroup type-primitive Primitive Types
 /// Primitive types do not have nested fields.
 /// @{
@@ -518,11 +542,59 @@ class ICEBERG_EXPORT UnknownType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
+/// \brief A data type representing OGC geometry in WKB format.
+class ICEBERG_EXPORT GeometryType : public PrimitiveType {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kGeometry;
+  constexpr static std::string_view kDefaultCrs = "OGC:CRS84";
+
+  GeometryType() = default;
+  explicit GeometryType(std::string crs);
+  ~GeometryType() override = default;
+
+  [[nodiscard]] std::string_view crs() const;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+
+ private:
+  std::optional<std::string> crs_;
+};
+
+/// \brief A data type representing OGC geography in WKB format.
+class ICEBERG_EXPORT GeographyType : public PrimitiveType {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kGeography;
+  constexpr static std::string_view kDefaultCrs = "OGC:CRS84";
+  constexpr static EdgeAlgorithm kDefaultAlgorithm = EdgeAlgorithm::kSpherical;
+
+  GeographyType() = default;
+  explicit GeographyType(std::string crs);
+  GeographyType(std::string crs, EdgeAlgorithm algorithm);
+  ~GeographyType() override = default;
+
+  [[nodiscard]] std::string_view crs() const;
+  [[nodiscard]] EdgeAlgorithm algorithm() const;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+
+ private:
+  std::optional<std::string> crs_;
+  std::optional<EdgeAlgorithm> algorithm_;
+};
+
 /// @}
 
-/// \defgroup type-factories Factory functions for creating primitive data types
+/// \defgroup type-factories Factory functions for creating data types
 ///
-/// Factory functions for creating primitive data types
+/// Factory functions for creating data types
 /// @{
 
 /// \brief Return a BooleanType instance.
@@ -555,6 +627,12 @@ ICEBERG_EXPORT const std::shared_ptr<StringType>& string();
 ICEBERG_EXPORT const std::shared_ptr<UuidType>& uuid();
 /// \brief Return an UnknownType instance.
 ICEBERG_EXPORT const std::shared_ptr<UnknownType>& unknown();
+/// \brief Return a VariantType instance.
+ICEBERG_EXPORT const std::shared_ptr<VariantType>& variant();
+/// \brief Return the default GeometryType instance.
+ICEBERG_EXPORT const std::shared_ptr<GeometryType>& geometry();
+/// \brief Return the default GeographyType instance.
+ICEBERG_EXPORT const std::shared_ptr<GeographyType>& geography();
 
 /// \brief Create a DecimalType with the given precision and scale.
 /// \param precision The number of decimal digits (max 38).
@@ -566,6 +644,16 @@ ICEBERG_EXPORT std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t s
 /// \param length The number of bytes to store (must be >= 0).
 /// \return A shared pointer to the FixedType instance.
 ICEBERG_EXPORT std::shared_ptr<FixedType> fixed(int32_t length);
+
+/// \brief Create a GeometryType with the given CRS.
+ICEBERG_EXPORT std::shared_ptr<GeometryType> geometry(std::string crs);
+
+/// \brief Create a GeographyType with the given CRS.
+ICEBERG_EXPORT std::shared_ptr<GeographyType> geography(std::string crs);
+
+/// \brief Create a GeographyType with the given CRS and edge algorithm.
+ICEBERG_EXPORT std::shared_ptr<GeographyType> geography(std::string crs,
+                                                        EdgeAlgorithm algorithm);
 
 /// \brief Create a StructType with the given fields.
 /// \param fields The fields of the struct.
@@ -593,5 +681,11 @@ ICEBERG_EXPORT std::shared_ptr<MapType> map(SchemaField key, SchemaField value);
 /// \param id The TypeId to convert to string
 /// \return A string_view containing the lowercase type name
 ICEBERG_EXPORT std::string_view ToString(TypeId id);
+
+/// \brief Get the lowercase string representation of an EdgeAlgorithm.
+ICEBERG_EXPORT std::string_view ToString(EdgeAlgorithm algorithm);
+
+/// \brief Parse a lowercase edge algorithm name.
+ICEBERG_EXPORT Result<EdgeAlgorithm> EdgeAlgorithmFromString(std::string_view name);
 
 }  // namespace iceberg
