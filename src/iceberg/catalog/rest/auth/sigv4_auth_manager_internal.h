@@ -126,8 +126,7 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
       const std::unordered_map<std::string, std::string>& properties) override;
 
   Result<std::shared_ptr<AuthSession>> ContextualSession(
-      const std::unordered_map<std::string, std::string>& context,
-      std::shared_ptr<AuthSession> parent) override;
+      const SessionContext& context, std::shared_ptr<AuthSession> parent) override;
 
   Result<std::shared_ptr<AuthSession>> TableSession(
       const TableIdentifier& table,

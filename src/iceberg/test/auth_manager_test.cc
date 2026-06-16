@@ -40,6 +40,7 @@
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_serde_internal.h"
+#include "iceberg/catalog/session_context.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/base64.h"
@@ -88,6 +89,21 @@ TEST_F(AuthManagerTest, LoadNoopAuthManagerExplicit) {
 TEST_F(AuthManagerTest, LoadNoopAuthManagerInferred) {
   auto manager_result = AuthManagers::Load("test-catalog", {});
   ASSERT_THAT(manager_result, IsOk());
+}
+
+TEST_F(AuthManagerTest, NoopContextualSessionReturnsParentSession) {
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", {}));
+  ICEBERG_UNWRAP_OR_FAIL(auto parent, manager->CatalogSession(client_, {}));
+
+  SessionContext context{
+      .session_id = "tenant-a",
+      .identity = "user-a",
+      .credentials = {{"credential-key", "credential-value"}},
+      .properties = {{"property-key", "property-value"}},
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto contextual, manager->ContextualSession(context, parent));
+
+  EXPECT_EQ(contextual, parent);
 }
 
 TEST_F(AuthManagerTest, HttpHeadersAreCaseInsensitiveSingleValueMap) {

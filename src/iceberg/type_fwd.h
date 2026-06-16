@@ -207,6 +207,8 @@ using UncheckedStructLikeSet = StructLikeSet<false>;
 /// \brief Catalog
 class Catalog;
 class LocationProvider;
+class SessionCatalog;
+struct SessionContext;
 
 /// \brief Table.
 class Table;

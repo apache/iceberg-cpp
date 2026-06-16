@@ -21,6 +21,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"

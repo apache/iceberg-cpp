@@ -38,6 +38,7 @@
 #  include "iceberg/catalog/rest/auth/auth_session.h"
 #  include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
 #  include "iceberg/catalog/rest/http_client.h"
+#  include "iceberg/catalog/session_context.h"
 #  include "iceberg/table_identifier.h"
 #  include "iceberg/test/matchers.h"
 
@@ -403,7 +404,10 @@ TEST_F(SigV4AuthTest, DerivedCredentialOverridesMustBeComplete) {
                          manager->CatalogSession(client_, properties));
 
   auto context_result = manager->ContextualSession(
-      {{AuthProperties::kSigV4SecretAccessKey, "context-secret"}}, catalog_session);
+      SessionContext{
+          .session_id = "ctx-incomplete",
+          .properties = {{AuthProperties::kSigV4SecretAccessKey, "context-secret"}}},
+      catalog_session);
   EXPECT_THAT(context_result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(context_result, HasErrorMessage("must be set together"));
 
@@ -447,10 +451,13 @@ TEST_F(SigV4AuthTest, ContextualSessionOverridesProperties) {
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto ctx_session,
-      manager->ContextualSession({{AuthProperties::kSigV4AccessKeyId, "id2"},
-                                  {AuthProperties::kSigV4SecretAccessKey, "secret2"},
-                                  {AuthProperties::kSigV4SigningRegion, "eu-west-1"}},
-                                 catalog_session));
+      manager->ContextualSession(
+          SessionContext{
+              .session_id = "ctx-overrides",
+              .credentials = {{AuthProperties::kSigV4AccessKeyId, "id2"},
+                              {AuthProperties::kSigV4SecretAccessKey, "secret2"}},
+              .properties = {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}}},
+          catalog_session));
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto signed_request,
@@ -492,8 +499,11 @@ TEST_F(SigV4AuthTest, TableSessionIgnoresContextualOverrides) {
                          manager->CatalogSession(client_, properties));
   ICEBERG_UNWRAP_OR_FAIL(
       auto ctx_session,
-      manager->ContextualSession({{AuthProperties::kSigV4SigningRegion, "eu-west-1"}},
-                                 catalog_session));
+      manager->ContextualSession(
+          SessionContext{
+              .session_id = "ctx-region",
+              .properties = {{AuthProperties::kSigV4SigningRegion, "eu-west-1"}}},
+          catalog_session));
 
   iceberg::TableIdentifier table_id{.ns = iceberg::Namespace{{"db1"}}, .name = "table1"};
   ICEBERG_UNWRAP_OR_FAIL(auto table_session,
@@ -505,6 +515,23 @@ TEST_F(SigV4AuthTest, TableSessionIgnoresContextualOverrides) {
                                    .url = "https://example.com/v1/db1/tables/table1"}));
   EXPECT_THAT(HeaderValue(signed_request.headers, "authorization"),
               HasSubstr("us-west-2"));
+}
+
+TEST_F(SigV4AuthTest, ContextualSessionRejectsConflictingKeys) {
+  auto properties = MakeSigV4Properties();
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog_session,
+                         manager->CatalogSession(client_, properties));
+
+  auto result = manager->ContextualSession(
+      SessionContext{
+          .session_id = "ctx-conflict",
+          .credentials = {{AuthProperties::kSigV4AccessKeyId, "credential-id"}},
+          .properties = {{AuthProperties::kSigV4AccessKeyId, "property-id"}}},
+      catalog_session);
+
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("conflicting values"));
 }
 
 }  // namespace iceberg::rest::auth

@@ -17,31 +17,14 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/catalog/session_context.h"
 
-/// \file iceberg/catalog/rest/type_fwd.h
-/// Forward declarations and enum definitions for Iceberg REST API types.
+#include "iceberg/util/uuid.h"
 
-namespace iceberg::rest {
+namespace iceberg {
 
-struct ErrorResponse;
-struct CommitTableResponse;
-struct LoadTableResult;
-struct OAuthTokenResponse;
+SessionContext SessionContext::Empty() {
+  return SessionContext{.session_id = Uuid::GenerateV4().ToString()};
+}
 
-class Endpoint;
-class ErrorHandler;
-class HttpClient;
-class ResourcePaths;
-class RestCatalog;
-class RestCatalogProperties;
-
-}  // namespace iceberg::rest
-
-namespace iceberg::rest::auth {
-
-class AuthManager;
-class AuthProperties;
-class AuthSession;
-
-}  // namespace iceberg::rest::auth
+}  // namespace iceberg

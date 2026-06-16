@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/auth/auth_manager_internal.h"
 #include "iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"
+#include "iceberg/catalog/session_context.h"
 #include "iceberg/result.h"
 
 #if ICEBERG_SIGV4_ENABLED
@@ -142,6 +143,19 @@ std::unordered_map<std::string, std::string> MergeProperties(
   auto merged = base;
   for (const auto& [key, value] : overrides) {
     merged.insert_or_assign(key, value);
+  }
+  return merged;
+}
+
+Result<std::unordered_map<std::string, std::string>> ContextProperties(
+    const SessionContext& context) {
+  auto merged = context.properties;
+  for (const auto& [key, value] : context.credentials) {
+    auto [it, inserted] = merged.emplace(key, value);
+    if (!inserted && it->second != value) {
+      return InvalidArgument("Session context has conflicting values for property '{}'",
+                             key);
+    }
   }
   return merged;
 }
@@ -386,8 +400,7 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
-    const std::unordered_map<std::string, std::string>& context,
-    std::shared_ptr<AuthSession> parent) {
+    const SessionContext& context, std::shared_ptr<AuthSession> parent) {
   auto sigv4_parent = std::dynamic_pointer_cast<SigV4AuthSession>(std::move(parent));
   ICEBERG_PRECHECK(sigv4_parent != nullptr,
                    "SigV4AuthManager parent must be a SigV4AuthSession");
@@ -395,10 +408,11 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::ContextualSession(
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session, delegate_->ContextualSession(
                                                      context, sigv4_parent->delegate()));
 
-  auto merged = MergeProperties(catalog_properties_, context);
+  ICEBERG_ASSIGN_OR_RAISE(auto context_properties, ContextProperties(context));
+  auto merged = MergeProperties(catalog_properties_, context_properties);
   ICEBERG_ASSIGN_OR_RAISE(
-      auto credentials,
-      ResolveCredentialsProvider(context, sigv4_parent->credentials_provider()));
+      auto credentials, ResolveCredentialsProvider(context_properties,
+                                                   sigv4_parent->credentials_provider()));
   return WrapSession(std::move(delegate_session), merged, std::move(credentials));
 }
 

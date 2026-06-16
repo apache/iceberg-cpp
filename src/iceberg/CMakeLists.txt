@@ -21,6 +21,7 @@ set(ICEBERG_SOURCES
     arrow_c_data_util.cc
     arrow_c_data_guard_internal.cc
     catalog/memory/in_memory_catalog.cc
+    catalog/session_context.cc
     delete_file_index.cc
     expression/aggregate.cc
     expression/binder.cc
