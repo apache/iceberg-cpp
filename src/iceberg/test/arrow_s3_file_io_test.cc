@@ -77,10 +77,12 @@ namespace {
 
 class ArrowS3FileIOTest : public ::testing::Test {
  protected:
+#if ICEBERG_S3_ENABLED
   static void SetUpTestSuite() {
     auto io = MakeS3FileIO({});
     ASSERT_THAT(io, IsOk());
   }
+#endif
 
   static void TearDownTestSuite() {
     auto status = FinalizeS3();

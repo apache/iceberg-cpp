@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/rest_file_io.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "iceberg/catalog/rest/types.h"
@@ -104,6 +105,20 @@ const StorageCredential* SelectS3StorageCredential(
     }
   }
   return best;
+}
+
+Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredential(
+    const std::unordered_map<std::string, std::string>& catalog_config,
+    const std::unordered_map<std::string, std::string>& table_config,
+    const StorageCredential& s3_cred) {
+  auto properties = catalog_config;
+  for (const auto& [key, value] : table_config) {
+    properties[key] = value;
+  }
+  for (const auto& [key, value] : s3_cred.config) {
+    properties[key] = value;
+  }
+  return FileIORegistry::Load(std::string(FileIORegistry::kArrowS3FileIO), properties);
 }
 
 }  // namespace iceberg::rest

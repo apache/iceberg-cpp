@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "iceberg/catalog/rest/catalog_properties.h"
@@ -50,5 +51,12 @@ ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
 /// starting with "s3"), or nullptr if none.
 ICEBERG_REST_EXPORT const StorageCredential* SelectS3StorageCredential(
     const std::vector<StorageCredential>& credentials);
+
+/// \brief Builds an `arrow-fs-s3` FileIO, merging catalog, table, then
+/// credential config (later wins).
+ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredential(
+    const std::unordered_map<std::string, std::string>& catalog_config,
+    const std::unordered_map<std::string, std::string>& table_config,
+    const StorageCredential& s3_cred);
 
 }  // namespace iceberg::rest

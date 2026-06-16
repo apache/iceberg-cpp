@@ -722,8 +722,8 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
   if (auto it = json.find(kStorageCredentials); it != json.end() && !it->is_null()) {
     if (!it->is_array()) {
-      return JsonParseError("Cannot parse storage credentials from non-array: {}",
-                            SafeDumpJson(*it));
+      // Don't echo the value — it may carry credential material.
+      return JsonParseError("Cannot parse storage credentials from non-array");
     }
     for (const auto& entry : *it) {
       StorageCredential cred;

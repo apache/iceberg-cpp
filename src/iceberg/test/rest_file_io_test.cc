@@ -19,6 +19,8 @@
 
 #include "iceberg/catalog/rest/rest_file_io.h"
 
+#include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -177,6 +179,25 @@ TEST(RestFileIOTest, SelectS3StorageCredentialReturnsNullWhenNoneMatch) {
   };
   EXPECT_EQ(SelectS3StorageCredential(credentials), nullptr);
   EXPECT_EQ(SelectS3StorageCredential({}), nullptr);
+}
+
+TEST(RestFileIOTest, MakeS3FileIOFromCredentialMergesConfigWithPrecedence) {
+  auto captured = std::make_shared<std::unordered_map<std::string, std::string>>();
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowS3FileIO),
+      [captured](const std::unordered_map<std::string, std::string>& properties)
+          -> Result<std::unique_ptr<FileIO>> {
+        *captured = properties;
+        return std::make_unique<MockFileIO>();
+      });
+  auto result = MakeS3FileIOFromCredential(
+      {{"a", "catalog"}, {"shared", "catalog"}}, {{"b", "table"}, {"shared", "table"}},
+      StorageCredential{.prefix = "s3", .config = {{"c", "cred"}, {"shared", "cred"}}});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ((*captured)["a"], "catalog");
+  EXPECT_EQ((*captured)["b"], "table");
+  EXPECT_EQ((*captured)["c"], "cred");
+  EXPECT_EQ((*captured)["shared"], "cred");
 }
 
 }  // namespace iceberg::rest

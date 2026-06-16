@@ -41,7 +41,6 @@
 #include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
-#include "iceberg/file_io_registry.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -522,22 +521,13 @@ Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
     const SessionContext& /*context*/,
     const std::unordered_map<std::string, std::string>& table_config,
     const std::vector<StorageCredential>& storage_credentials) const {
-  // Longest-prefix S3-family vended credential, matching the Java client's
-  // VendedCredentialsProvider. When present, build a per-table S3 FileIO from
-  // catalog + table config + the credential; its ResolvePath resolves oss:// and
-  // other S3-compatible schemes.
+  // Longest-prefix "s3" vended credential. Java's VendedCredentialsProvider
+  // resolves per path against the table location; we bind one at load time
+  // (fine for the common one-credential-per-table case).
   if (const StorageCredential* s3_cred = SelectS3StorageCredential(storage_credentials);
       s3_cred != nullptr) {
-    auto properties = config_.configs();
-    for (const auto& [key, value] : table_config) {
-      properties[key] = value;
-    }
-    for (const auto& [key, value] : s3_cred->config) {
-      properties[key] = value;
-    }
     ICEBERG_ASSIGN_OR_RAISE(
-        auto io,
-        FileIORegistry::Load(std::string(FileIORegistry::kArrowS3FileIO), properties));
+        auto io, MakeS3FileIOFromCredential(config_.configs(), table_config, *s3_cred));
     return std::shared_ptr<FileIO>(std::move(io));
   }
   ICEBERG_RETURN_UNEXPECTED(ValidateNoFileIOConfig(table_config));

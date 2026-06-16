@@ -145,7 +145,8 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     options.force_virtual_addressing = !*path_style_access;
   }
 
-  // Configure SSL
+  // Configure SSL. Explicit `s3.ssl.enabled` overrides any scheme derived from
+  // the endpoint above.
   ICEBERG_ASSIGN_OR_RAISE(const auto ssl_enabled,
                           ParseOptionalBool(properties, S3Properties::kSslEnabled));
   if (ssl_enabled.has_value() && !*ssl_enabled) {
