@@ -20,6 +20,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cctype>
 #include <cerrno>
 #include <charconv>
 #include <ranges>
@@ -40,19 +41,22 @@ concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 
 class ICEBERG_EXPORT StringUtils {
  public:
+  // NOTE: These only convert ASCII letters (under the default C locale); non-ASCII
+  // (multibyte UTF-8) bytes are left unchanged.
+  // See https://github.com/apache/iceberg-cpp/issues/613.
   static std::string ToLower(std::string_view str) {
-    return str | std::ranges::views::transform([](char c) { return std::tolower(c); }) |
+    return str | std::ranges::views::transform(ToLowerAscii) |
            std::ranges::to<std::string>();
   }
 
   static std::string ToUpper(std::string_view str) {
-    return str | std::ranges::views::transform([](char c) { return std::toupper(c); }) |
+    return str | std::ranges::views::transform(ToUpperAscii) |
            std::ranges::to<std::string>();
   }
 
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
     return std::ranges::equal(
-        lhs, rhs, [](char lc, char rc) { return std::tolower(lc) == std::tolower(rc); });
+        lhs, rhs, [](char lc, char rc) { return ToLowerAscii(lc) == ToLowerAscii(rc); });
   }
 
   static bool StartsWithIgnoreCase(std::string_view str, std::string_view prefix) {
@@ -127,6 +131,18 @@ class ICEBERG_EXPORT StringUtils {
                              typeid(T).name(), str);
     }
     return value;
+  }
+
+ private:
+  // std::tolower/std::toupper require their argument to be representable as
+  // unsigned char (or EOF); passing a raw char with a non-ASCII (negative) value is
+  // undefined behavior, so cast through unsigned char first.
+  static char ToLowerAscii(char c) {
+    return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  }
+
+  static char ToUpperAscii(char c) {
+    return static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
   }
 };
 

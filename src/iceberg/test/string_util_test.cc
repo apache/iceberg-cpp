@@ -41,4 +41,26 @@ TEST(StringUtilsTest, ToUpper) {
   ASSERT_EQ(StringUtils::ToUpper("123"), "123");
 }
 
+// Non-ASCII (multibyte UTF-8) bytes have the high bit set, i.e. are negative
+// when stored in a signed char. Passing them straight to std::tolower/toupper is
+// undefined behavior. Conversion only touches ASCII; multibyte bytes pass through
+// unchanged. See https://github.com/apache/iceberg-cpp/issues/613.
+TEST(StringUtilsTest, NonAsciiPassThrough) {
+  ASSERT_EQ(StringUtils::ToLower("Naïve"), "naïve");
+  ASSERT_EQ(StringUtils::ToUpper("café"), "CAFé");
+  // Pure non-ASCII input is returned verbatim.
+  ASSERT_EQ(StringUtils::ToLower("日本語"), "日本語");
+  ASSERT_EQ(StringUtils::ToUpper("日本語"), "日本語");
+}
+
+TEST(StringUtilsTest, EqualsIgnoreCase) {
+  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("AbC", "abc"));
+  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("", ""));
+  ASSERT_FALSE(StringUtils::EqualsIgnoreCase("abc", "abcd"));
+  ASSERT_FALSE(StringUtils::EqualsIgnoreCase("abc", "abd"));
+  // ASCII case is folded; non-ASCII bytes are compared as-is (no UB).
+  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("Café", "café"));
+  ASSERT_FALSE(StringUtils::EqualsIgnoreCase("café", "cafe"));
+}
+
 }  // namespace iceberg
