@@ -68,7 +68,7 @@ jobs:
           files-changed-only: true
           lines-changed-only: true
           thread-comments: true
-          ignore: 'build|cmake_modules|ci'
+          ignore: 'build|cmake_modules|ci|src/iceberg/catalog/hive/gen-cpp'
           database: build
           verbosity: 'debug'
           # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
