@@ -535,9 +535,13 @@ Result<bool> StrictMetricsEvaluator::Evaluate(const DataFile& data_file) const {
   if (data_file.record_count == 0) {
     return kRowsMustMatch;
   }
-  // A negative record count is used as a sentinel for an unknown row count (e.g. when
-  // writer metrics do not include a row count). Treat it as unknown and fall through to
-  // normal strict metrics evaluation rather than assuming all rows must match.
+  // Only -1 is a valid sentinel for an unknown row count (set when writer metrics omit
+  // the count); any value below -1 is invalid metadata.
+  if (data_file.record_count < -1) {
+    return InvalidArgument("Invalid record count: {}", data_file.record_count);
+  }
+  // For -1, fall through to normal strict metrics evaluation rather than
+  // assuming all rows must match.
   StrictMetricsVisitor visitor(data_file, *schema_);
   return Visit<bool, StrictMetricsVisitor>(expr_, visitor);
 }
