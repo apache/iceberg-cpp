@@ -227,6 +227,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    manifest_filter_manager_test.cc
                    merging_snapshot_update_test.cc
                    name_mapping_update_test.cc
+                   rewrite_files_test.cc
                    snapshot_manager_test.cc
                    transaction_test.cc
                    update_location_test.cc
