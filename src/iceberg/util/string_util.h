@@ -41,8 +41,8 @@ concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 
 class ICEBERG_EXPORT StringUtils {
  public:
-  // NOTE: These only convert ASCII letters (under the default C locale); non-ASCII
-  // (multibyte UTF-8) bytes are left unchanged.
+  // NOTE: These convert ASCII letters only; all other bytes, including non-ASCII
+  // (multibyte UTF-8) bytes, are passed through unchanged.
   // See https://github.com/apache/iceberg-cpp/issues/613.
   static std::string ToLower(std::string_view str) {
     return str | std::ranges::views::transform(ToLowerAscii) |
@@ -134,15 +134,16 @@ class ICEBERG_EXPORT StringUtils {
   }
 
  private:
-  // std::tolower/std::toupper require their argument to be representable as
-  // unsigned char (or EOF); passing a raw char with a non-ASCII (negative) value is
-  // undefined behavior, so cast through unsigned char first.
-  static char ToLowerAscii(char c) {
-    return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  // ASCII-only case conversion using explicit range checks rather than
+  // std::tolower/std::toupper. This is independent of the current C locale and never
+  // touches non-ASCII (high-bit) bytes, so multibyte UTF-8 sequences are preserved. It
+  // also sidesteps the undefined behavior of passing a negative char to <cctype>.
+  static constexpr char ToLowerAscii(char c) noexcept {
+    return (c >= 'A' && c <= 'Z') ? static_cast<char>(c - 'A' + 'a') : c;
   }
 
-  static char ToUpperAscii(char c) {
-    return static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+  static constexpr char ToUpperAscii(char c) noexcept {
+    return (c >= 'a' && c <= 'z') ? static_cast<char>(c - 'a' + 'A') : c;
   }
 };
 
