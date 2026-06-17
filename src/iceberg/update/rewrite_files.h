@@ -180,15 +180,6 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
 
   /// \brief Optional snapshot ID boundary for validation scope.
   std::optional<int64_t> starting_snapshot_id_;
-
-  /// \brief Whether a data sequence number has been set for this operation.
-  ///
-  /// Mirrors MergingSnapshotUpdate::new_data_files_data_seq_number_ which is private.
-  /// Needed because calling the instance overload of ValidateNoNewDeletesForDataFiles
-  /// is ambiguous with the static overload (which has a default bool argument). The
-  /// instance overload derives ignore_equality_deletes from the base class private
-  /// field, so we track it here to pass explicitly to the static overload.
-  bool data_sequence_number_set_ = false;
 };
 
 }  // namespace iceberg

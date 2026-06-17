@@ -79,7 +79,6 @@ RewriteFiles& RewriteFiles::AddDeleteFile(const std::shared_ptr<DataFile>& delet
 
 RewriteFiles& RewriteFiles::SetDataSequenceNumber(int64_t sequence_number) {
   SetNewDataFilesDataSequenceNumber(sequence_number);
-  data_sequence_number_set_ = true;
   return *this;
 }
 
@@ -87,7 +86,6 @@ RewriteFiles& RewriteFiles::RewriteDataFiles(
     const std::vector<std::shared_ptr<DataFile>>& files_to_delete,
     const std::vector<std::shared_ptr<DataFile>>& files_to_add, int64_t sequence_number) {
   SetNewDataFilesDataSequenceNumber(sequence_number);
-  data_sequence_number_set_ = true;
   Rewrite(files_to_delete, {}, files_to_add, {});
   return *this;
 }
@@ -169,7 +167,7 @@ Status RewriteFiles::Validate(const TableMetadata& current_metadata,
     auto io = ctx_->table->io();
     ICEBERG_RETURN_UNEXPECTED(MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
         current_metadata, starting_snapshot_id_, replaced_data_files_, snapshot,
-        std::move(io), data_sequence_number_set_));
+        std::move(io), HasDataSequenceNumber()));
   }
 
   return {};
