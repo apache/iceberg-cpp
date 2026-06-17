@@ -546,10 +546,10 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
       }
       return JsonParseError("Invalid decimal type: {}", type_str);
     } else if (lower_type_str.starts_with("geometry")) {
-      static const std::regex geometry_regex(R"(\s*(?:\(\s*([^)]*?)\s*\))?)");
+      static const std::regex geometry_regex(R"(geometry\s*(?:\(\s*([^)]*?)\s*\))?)",
+                                             std::regex_constants::icase);
       std::smatch match;
-      const auto type_params = type_str.substr(std::string_view("geometry").size());
-      if (std::regex_match(type_params, match, geometry_regex)) {
+      if (std::regex_match(type_str, match, geometry_regex)) {
         if (match[1].matched) {
           auto crs = match[1].str();
           if (crs.empty()) {
@@ -562,10 +562,10 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
       return JsonParseError("Invalid geometry type: {}", type_str);
     } else if (lower_type_str.starts_with("geography")) {
       static const std::regex geography_regex(
-          R"(\s*(?:\(\s*([^,]*?)\s*(?:,\s*(\w*)\s*)?\))?)");
+          R"(geography\s*(?:\(\s*([^,]*?)\s*(?:,\s*(\w*)\s*)?\))?)",
+          std::regex_constants::icase);
       std::smatch match;
-      const auto type_params = type_str.substr(std::string_view("geography").size());
-      if (std::regex_match(type_params, match, geography_regex)) {
+      if (std::regex_match(type_str, match, geography_regex)) {
         auto crs = match[1].str();
         if (match[1].matched && crs.empty()) {
           return JsonParseError("Invalid geography type: {}", type_str);
