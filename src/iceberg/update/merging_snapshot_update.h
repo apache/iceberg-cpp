@@ -135,6 +135,11 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Override the data sequence number assigned to all newly-added data files.
   void SetNewDataFilesDataSequenceNumber(int64_t sequence_number);
 
+  /// \brief Returns true if SetNewDataFilesDataSequenceNumber was called.
+  bool HasDataSequenceNumber() const {
+    return new_data_files_data_seq_number_.has_value();
+  }
+
   /// \brief Set case sensitivity for row filter and expression evaluation.
   void CaseSensitive(bool case_sensitive);
 
