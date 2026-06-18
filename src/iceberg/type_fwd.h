@@ -226,6 +226,7 @@ class TransactionContext;
 class ExpireSnapshots;
 class FastAppend;
 class PendingUpdate;
+class RewriteFiles;
 class SetSnapshot;
 class SnapshotManager;
 class SnapshotUpdate;
