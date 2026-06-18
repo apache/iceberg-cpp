@@ -22,11 +22,13 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/int128.h"
 
 namespace iceberg {
 
@@ -84,7 +86,15 @@ class ICEBERG_EXPORT TruncateUtils {
   template <typename T>
     requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
   static inline T TruncateInteger(T v, int32_t W) {
-    return v - (((v % W) + W) % W);
+    using WideInt = std::conditional_t<std::is_same_v<T, int32_t>, int64_t, int128_t>;
+    using UnsignedT = std::make_unsigned_t<T>;
+
+    const auto value = static_cast<WideInt>(v);
+    const auto width = static_cast<WideInt>(W);
+    const auto remainder = ((value % width) + width) % width;
+    const auto truncated = value - remainder;
+    // Preserve modulo conversion when the mathematical result is below the signed range.
+    return static_cast<T>(static_cast<UnsignedT>(truncated));
   }
 
   /// \brief Truncate a Decimal to a specified width.
