@@ -230,6 +230,60 @@ TEST_P(TableScanTest, UseRefPreservesInt64SnapshotIds) {
   EXPECT_EQ(snapshot->snapshot_id, kLargeSnapshotId);
 }
 
+TEST_P(TableScanTest, IncludeColumnStatsUsesFinalSnapshotSchema) {
+  constexpr int64_t kBaseSnapshotId = 1000L;
+  constexpr int64_t kEvolvedSnapshotId = 2000L;
+  constexpr int32_t kBaseIdFieldId = 1;
+  constexpr int32_t kEvolvedIdFieldId = 10;
+  constexpr int32_t kEvolvedDataFieldId = 11;
+  constexpr int32_t kEvolvedSchemaId = 1;
+
+  auto evolved_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{
+          SchemaField::MakeRequired(kEvolvedIdFieldId, "id", int32()),
+          SchemaField::MakeRequired(kEvolvedDataFieldId, "data", string())},
+      kEvolvedSchemaId);
+  table_metadata_->schemas.push_back(evolved_schema);
+  table_metadata_->last_column_id = kEvolvedDataFieldId;
+  table_metadata_->snapshots.push_back(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = kEvolvedSnapshotId,
+               .parent_snapshot_id = kBaseSnapshotId,
+               .sequence_number = 2L,
+               .timestamp_ms = TimePointMsFromUnixMs(1609459201000L),
+               .manifest_list = "/tmp/metadata/snap-2000-2-manifest-list.avro",
+               .schema_id = evolved_schema->schema_id()}));
+  table_metadata_->refs["evolved-branch"] = std::make_shared<SnapshotRef>(
+      SnapshotRef{.snapshot_id = kEvolvedSnapshotId, .retention = SnapshotRef::Branch{}});
+
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                           DataTableScanBuilder::Make(table_metadata_, file_io_));
+    builder->IncludeColumnStats({"id"}).UseSnapshot(kEvolvedSnapshotId);
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
+
+    EXPECT_EQ(scan_schema->schema_id(), evolved_schema->schema_id());
+    const auto& stats_fields = scan->context().columns_to_keep_stats;
+    EXPECT_EQ(stats_fields.size(), 1);
+    EXPECT_TRUE(stats_fields.contains(kEvolvedIdFieldId));
+    EXPECT_FALSE(stats_fields.contains(kBaseIdFieldId));
+  }
+
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                           DataTableScanBuilder::Make(table_metadata_, file_io_));
+    builder->IncludeColumnStats({"id"}).UseRef("evolved-branch");
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
+
+    EXPECT_EQ(scan_schema->schema_id(), evolved_schema->schema_id());
+    const auto& stats_fields = scan->context().columns_to_keep_stats;
+    EXPECT_EQ(stats_fields.size(), 1);
+    EXPECT_TRUE(stats_fields.contains(kEvolvedIdFieldId));
+    EXPECT_FALSE(stats_fields.contains(kBaseIdFieldId));
+  }
+}
+
 TEST_P(TableScanTest, TableScanBuilderValidationErrors) {
   // Test negative min rows
   ICEBERG_UNWRAP_OR_FAIL(auto builder,

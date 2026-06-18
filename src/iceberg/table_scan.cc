@@ -239,6 +239,8 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::CaseSensitive(
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::IncludeColumnStats() {
   context_.return_column_stats = true;
+  context_.columns_to_keep_stats.clear();
+  requested_column_stats_.reset();
   return *this;
 }
 
@@ -246,17 +248,8 @@ template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::IncludeColumnStats(
     const std::vector<std::string>& requested_columns) {
   context_.return_column_stats = true;
-  context_.columns_to_keep_stats.clear();
-  context_.columns_to_keep_stats.reserve(requested_columns.size());
-
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema_ref, ResolveSnapshotSchema());
-  const auto& schema = schema_ref.get();
-  for (const auto& column_name : requested_columns) {
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field, schema->FindFieldByName(column_name));
-    if (field.has_value()) {
-      context_.columns_to_keep_stats.insert(field.value().get().field_id());
-    }
-  }
+  requested_column_stats_ = requested_columns;
+  ICEBERG_BUILDER_RETURN_IF_ERROR(ResolveColumnStatsSelection());
 
   return *this;
 }
@@ -295,14 +288,15 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snap
                         context_.snapshot_id.value());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
+  InvalidateSnapshotSchema();
   return *this;
 }
 
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string& ref) {
   if (ref == SnapshotRef::kMainBranch) {
-    snapshot_schema_ = nullptr;
     context_.snapshot_id.reset();
+    InvalidateSnapshotSchema();
     return *this;
   }
 
@@ -315,6 +309,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string
   const int64_t snapshot_id = iter->second->snapshot_id;
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
+  InvalidateSnapshotSchema();
 
   return *this;
 }
@@ -339,6 +334,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::FromSnapshot(
   }
   this->context_.from_snapshot_id = from_snapshot_id;
   this->context_.from_snapshot_id_inclusive = inclusive;
+  InvalidateSnapshotSchema();
   return *this;
 }
 
@@ -361,6 +357,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ToSnapshot(int64_t to_sn
 {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(to_snapshot_id));
   context_.to_snapshot_id = to_snapshot_id;
+  InvalidateSnapshotSchema();
   return *this;
 }
 
@@ -387,7 +384,34 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseBranch(
   ICEBERG_BUILDER_CHECK(iter->second->type() == SnapshotRefType::kBranch,
                         "Ref {} is not a branch", branch);
   context_.branch = branch;
+  InvalidateSnapshotSchema();
   return *this;
+}
+
+template <typename ScanType>
+void TableScanBuilder<ScanType>::InvalidateSnapshotSchema() {
+  snapshot_schema_ = nullptr;
+}
+
+template <typename ScanType>
+Status TableScanBuilder<ScanType>::ResolveColumnStatsSelection() {
+  if (!requested_column_stats_.has_value()) {
+    return {};
+  }
+
+  context_.columns_to_keep_stats.clear();
+  context_.columns_to_keep_stats.reserve(requested_column_stats_->size());
+
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_ref, ResolveSnapshotSchema());
+  const auto& schema = schema_ref.get();
+  for (const auto& column_name : *requested_column_stats_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field, schema->FindFieldByName(column_name));
+    if (field.has_value()) {
+      context_.columns_to_keep_stats.insert(field.value().get().field_id());
+    }
+  }
+
+  return {};
 }
 
 template <typename ScanType>
@@ -410,6 +434,7 @@ TableScanBuilder<ScanType>::ResolveSnapshotSchema() {
 template <typename ScanType>
 Result<std::unique_ptr<ScanType>> TableScanBuilder<ScanType>::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  ICEBERG_RETURN_UNEXPECTED(ResolveColumnStatsSelection());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
