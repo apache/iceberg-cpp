@@ -681,7 +681,19 @@ Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
                                               const std::vector<std::string>& columns,
                                               bool case_sensitive) {
   if (!columns.empty()) {
-    return schema->Select(columns, case_sensitive);
+    if (std::ranges::contains(columns, Schema::kAllColumns)) {
+      return schema->Select(columns, case_sensitive);
+    }
+
+    std::vector<std::string> existing_columns;
+    existing_columns.reserve(columns.size());
+    for (const auto& column : columns) {
+      ICEBERG_ASSIGN_OR_RAISE(auto field, schema->FindFieldByName(column, case_sensitive));
+      if (field.has_value()) {
+        existing_columns.push_back(column);
+      }
+    }
+    return schema->Select(existing_columns, case_sensitive);
   }
   return schema;
 }

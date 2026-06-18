@@ -677,6 +677,13 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
   }
 }
 
+TEST_P(TableScanTest, SelectMissingColumnFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
+  builder->Select({"id", "typo"});
+  EXPECT_THAT(builder->Build(), IsError(ErrorKind::kInvalidArgument));
+}
+
 INSTANTIATE_TEST_SUITE_P(TableScanVersions, TableScanTest, testing::Values(1, 2, 3));
 
 }  // namespace iceberg

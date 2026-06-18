@@ -816,13 +816,15 @@ INSTANTIATE_TEST_SUITE_P(
                         .create_schema = []() { return BasicSchema(); },
                         .select_fields = {"nonexistent"},
                         .expected_schema = []() { return MakeSchema(); },
-                        .should_succeed = true},
+                        .should_succeed = false,
+                        .expected_error_message = "Cannot find selected column: nonexistent"},
 
         SelectTestParam{.test_name = "SelectCaseSensitive",
                         .create_schema = []() { return BasicSchema(); },
                         .select_fields = {"Name"},  // case-sensitive
                         .expected_schema = []() { return MakeSchema(); },
-                        .should_succeed = true},
+                        .should_succeed = false,
+                        .expected_error_message = "Cannot find selected column: Name"},
 
         SelectTestParam{.test_name = "SelectCaseInsensitive",
                         .create_schema = []() { return BasicSchema(); },
@@ -839,6 +841,14 @@ INSTANTIATE_TEST_SUITE_P(
                           .select_fields = {"id", "name"},
                           .expected_schema = []() { return MakeSchema(Id(), Name()); },
                           .should_succeed = true},
+
+                      SelectTestParam{
+                          .test_name = "SelectPartialMissingField",
+                          .create_schema = []() { return AddressSchema(); },
+                          .select_fields = {"id", "typo"},
+                          .expected_schema = []() { return MakeSchema(); },
+                          .should_succeed = false,
+                          .expected_error_message = "Cannot find selected column: typo"},
 
                       SelectTestParam{.test_name = "SelectNestedField",
                                       .create_schema = []() { return AddressSchema(); },
