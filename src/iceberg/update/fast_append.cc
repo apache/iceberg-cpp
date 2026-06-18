@@ -95,6 +95,8 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
   std::vector<ManifestFile> manifests;
 
   ICEBERG_ASSIGN_OR_RAISE(auto new_written_manifests, WriteNewManifests());
+  // A retry cleanup deletes copied append manifests and clears the rewritten
+  // list; rebuild them from the original appended manifests before re-applying.
   if (rewritten_append_manifests_.empty() && !append_manifests_to_copy_.empty()) {
     for (const auto& manifest : append_manifests_to_copy_) {
       ICEBERG_ASSIGN_OR_RAISE(auto copied_manifest,
@@ -132,6 +134,9 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
                      snapshot_manifests.end());
   }
 
+  manifest_count_summary_ =
+      BuildManifestCountSummary(manifests, /*replaced_manifests_count=*/0);
+
   return manifests;
 }
 
@@ -144,6 +149,7 @@ std::unordered_map<std::string, std::string> FastAppend::Summary() {
   for (const auto& [property, value] : custom_summary_properties_) {
     summary_.Set(property, value);
   }
+  summary_.Merge(manifest_count_summary_);
   return summary_.Build();
 }
 
@@ -179,9 +185,9 @@ Status FastAppend::CleanUncommitted(const std::unordered_set<std::string>& commi
 }
 
 bool FastAppend::CleanupAfterCommit() const {
-  // Cleanup after committing is disabled for FastAppend unless there are
-  // rewritten_append_manifests_ because:
-  // 1.) Appended manifests are never rewritten
+  // Cleanup after committing is disabled for FastAppend unless append manifests
+  // were copied or need to be copied on retry because:
+  // 1.) Directly appended manifests are never rewritten
   // 2.) Manifests which are written out as part of AppendFile are already cleaned
   //     up between commit attempts in WriteNewManifests
   return !rewritten_append_manifests_.empty() || !append_manifests_to_copy_.empty();

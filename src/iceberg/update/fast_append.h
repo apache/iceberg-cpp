@@ -85,6 +85,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   /// \brief Copy a manifest file with a new snapshot ID.
   ///
   /// \param manifest The manifest to copy
+  /// \param update_summary Whether to add copied entries to the append summary
   /// \return The copied manifest file
   Result<ManifestFile> CopyManifest(const ManifestFile& manifest, bool update_summary);
 
@@ -96,13 +97,18 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
  private:
   std::string table_name_;
   std::unordered_map<int32_t, DataFileSet> new_data_files_by_spec_;
+  // Stable input summaries for retry-safe summary_ rebuilds.
   SnapshotSummaryBuilder added_data_files_summary_;
   SnapshotSummaryBuilder appended_manifests_summary_;
+  // User-provided summary properties restored after summary_ rebuilds.
   std::unordered_map<std::string, std::string> custom_summary_properties_;
   std::vector<ManifestFile> append_manifests_;
+  // Original manifests kept to recreate copied manifests after retry cleanup.
   std::vector<ManifestFile> append_manifests_to_copy_;
   std::vector<ManifestFile> rewritten_append_manifests_;
   std::vector<ManifestFile> new_manifests_;
+  // Manifest count summary from the latest Apply() result.
+  SnapshotSummaryBuilder manifest_count_summary_;
   bool has_new_files_{false};
 };
 
