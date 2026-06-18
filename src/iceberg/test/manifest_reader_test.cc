@@ -288,6 +288,47 @@ TEST_P(TestManifestReader, TestManifestReaderWithPartitionMetadata) {
   EXPECT_EQ(read_entry.data_file->partition.values()[0], Literal::Int(0));
 }
 
+TEST_P(TestManifestReader, NullPartitionValueDoesNotSkipSubsequentRows) {
+  auto version = GetParam();
+
+  // The first entry has a null partition value, followed by entries with
+  // non-null partition values. A null value must only skip its own row, not
+  // abort parsing of the remaining rows for that partition column (regression
+  // test: the inner loop previously used `break` instead of `continue`).
+  auto file_null = MakeDataFile("/path/to/data-null.parquet",
+                                PartitionValues({Literal::Null(int32())}));
+  auto file_b =
+      MakeDataFile("/path/to/data-b.parquet", PartitionValues({Literal::Int(5)}));
+  auto file_c =
+      MakeDataFile("/path/to/data-c.parquet", PartitionValues({Literal::Int(7)}));
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(MakeEntry(ManifestStatus::kAdded, 1000L, std::move(file_null)));
+  entries.push_back(MakeEntry(ManifestStatus::kAdded, 1000L, std::move(file_b)));
+  entries.push_back(MakeEntry(ManifestStatus::kAdded, 1000L, std::move(file_c)));
+
+  auto manifest = WriteManifest(version, /*snapshot_id=*/1000L, std::move(entries));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto read_entries, reader->Entries());
+
+  ASSERT_EQ(read_entries.size(), 3U);
+
+  // The null-partition row contributes no partition value.
+  EXPECT_EQ(read_entries[0].data_file->file_path, "/path/to/data-null.parquet");
+  EXPECT_EQ(read_entries[0].data_file->partition.num_fields(), 0);
+
+  // Rows after the null one must still have their partition values parsed.
+  EXPECT_EQ(read_entries[1].data_file->file_path, "/path/to/data-b.parquet");
+  ASSERT_EQ(read_entries[1].data_file->partition.num_fields(), 1);
+  EXPECT_EQ(read_entries[1].data_file->partition.values()[0], Literal::Int(5));
+
+  EXPECT_EQ(read_entries[2].data_file->file_path, "/path/to/data-c.parquet");
+  ASSERT_EQ(read_entries[2].data_file->partition.num_fields(), 1);
+  EXPECT_EQ(read_entries[2].data_file->partition.values()[0], Literal::Int(7));
+}
+
 TEST_P(TestManifestReader, ReadsEntriesWhenPartitionSourceFieldIsMissing) {
   auto version = GetParam();
   auto file = MakeDataFile("/path/to/historical-data.parquet",

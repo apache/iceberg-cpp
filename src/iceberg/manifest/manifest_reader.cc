@@ -477,7 +477,7 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
           auto part_view = field_view->children[part_idx];
           for (int64_t row_idx = 0; row_idx < part_view->length; row_idx++) {
             if (ArrowArrayViewIsNull(part_view, row_idx)) {
-              break;
+              continue;
             }
             ICEBERG_RETURN_UNEXPECTED(
                 ParsePartitionValues(part_view, row_idx, manifest_entries));
