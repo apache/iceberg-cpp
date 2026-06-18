@@ -27,6 +27,7 @@
 #include "iceberg/expression/term.h"
 #include "iceberg/result.h"
 #include "iceberg/transform_function.h"
+#include "iceberg/transform_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/checked_cast.h"
@@ -230,6 +231,19 @@ bool Transform::CanTransform(const Type& source_type) const {
       }
   }
   std::unreachable();
+}
+
+Status Transform::Validate(const std::shared_ptr<Type>& source_type) const {
+  if (!source_type) {
+    return InvalidArgument("Source type cannot be null for transform {}", ToString());
+  }
+  // Keep type mismatches as InvalidArgument; Bind reports them as NotSupported.
+  if (!CanTransform(*source_type)) {
+    return InvalidArgument("Invalid source type {} for transform {}",
+                           source_type->ToString(), ToString());
+  }
+  ICEBERG_RETURN_UNEXPECTED(Bind(source_type));
+  return {};
 }
 
 bool Transform::PreservesOrder() const {
@@ -554,9 +568,11 @@ Result<std::shared_ptr<Transform>> TransformFromString(std::string_view transfor
                             StringUtils::ParseNumber<int32_t>(match[2].str()));
 
     if (type_str == kBucketName) {
+      ICEBERG_RETURN_UNEXPECTED(internal::ValidateBucketTransformParameter(param));
       return Transform::Bucket(param);
     }
     if (type_str == kTruncateName) {
+      ICEBERG_RETURN_UNEXPECTED(internal::ValidateTruncateTransformParameter(param));
       return Transform::Truncate(param);
     }
   }

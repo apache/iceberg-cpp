@@ -192,10 +192,7 @@ Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) 
                                partition_field);
       }
       const auto& source_type = source_field.value().get().type();
-      if (!field_transform->CanTransform(*source_type)) {
-        return InvalidArgument("Invalid source type {} for transform {}",
-                               source_type->ToString(), field_transform->ToString());
-      }
+      ICEBERG_RETURN_UNEXPECTED(field_transform->Validate(source_type));
 
       // The only valid parent types for a PartitionField are StructTypes. This must be
       // checked recursively.
