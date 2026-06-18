@@ -450,7 +450,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return std::nullopt;
     }
 
-    if (!(lower.value() == upper.value())) {
+    if (lower.value() != upper.value()) {
       return std::nullopt;
     }
 
