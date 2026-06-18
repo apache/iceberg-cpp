@@ -367,21 +367,21 @@ GeometryType::GeometryType(std::string crs) {
 }
 
 std::string_view GeometryType::crs() const {
-  return crs_.has_value() ? std::string_view(*crs_) : kDefaultCrs;
+  return crs_.empty() ? kDefaultCrs : std::string_view(crs_);
 }
 TypeId GeometryType::type_id() const { return kTypeId; }
 std::string GeometryType::ToString() const {
-  if (!crs_.has_value()) {
+  if (crs_.empty()) {
     return "geometry";
   }
-  return std::format("geometry({})", *crs_);
+  return std::format("geometry({})", crs_);
 }
 bool GeometryType::Equals(const Type& other) const {
   if (other.type_id() != kTypeId) {
     return false;
   }
   const auto& geometry = static_cast<const GeometryType&>(other);
-  return crs() == geometry.crs();
+  return crs_ == geometry.crs_;
 }
 
 GeographyType::GeographyType(std::string crs) {
@@ -400,18 +400,16 @@ GeographyType::GeographyType(std::string crs, EdgeAlgorithm algorithm)
 }
 
 std::string_view GeographyType::crs() const {
-  return crs_.has_value() ? std::string_view(*crs_) : kDefaultCrs;
+  return crs_.empty() ? kDefaultCrs : std::string_view(crs_);
 }
-EdgeAlgorithm GeographyType::algorithm() const {
-  return algorithm_.value_or(kDefaultAlgorithm);
-}
+EdgeAlgorithm GeographyType::algorithm() const { return algorithm_; }
 TypeId GeographyType::type_id() const { return kTypeId; }
 std::string GeographyType::ToString() const {
-  if (algorithm_.has_value()) {
-    return std::format("geography({}, {})", crs(), iceberg::ToString(*algorithm_));
+  if (algorithm_ != kDefaultAlgorithm) {
+    return std::format("geography({}, {})", crs(), iceberg::ToString(algorithm_));
   }
-  if (crs_.has_value()) {
-    return std::format("geography({})", *crs_);
+  if (!crs_.empty()) {
+    return std::format("geography({})", crs_);
   }
   return "geography";
 }
@@ -420,7 +418,7 @@ bool GeographyType::Equals(const Type& other) const {
     return false;
   }
   const auto& geography = static_cast<const GeographyType&>(other);
-  return crs() == geography.crs() && algorithm() == geography.algorithm();
+  return crs_ == geography.crs_ && algorithm_ == geography.algorithm_;
 }
 
 FixedType::FixedType(int32_t length) : length_(length) {
