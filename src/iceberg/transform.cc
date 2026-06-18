@@ -232,6 +232,18 @@ bool Transform::CanTransform(const Type& source_type) const {
   std::unreachable();
 }
 
+Status Transform::Validate(const std::shared_ptr<Type>& source_type) const {
+  if (!source_type) {
+    return InvalidArgument("Source type cannot be null for transform {}", ToString());
+  }
+  if (!CanTransform(*source_type)) {
+    return InvalidArgument("Invalid source type {} for transform {}",
+                           source_type->ToString(), ToString());
+  }
+  ICEBERG_RETURN_UNEXPECTED(Bind(source_type));
+  return {};
+}
+
 bool Transform::PreservesOrder() const {
   switch (transform_type_) {
     case TransformType::kUnknown:
@@ -554,9 +566,15 @@ Result<std::shared_ptr<Transform>> TransformFromString(std::string_view transfor
                             StringUtils::ParseNumber<int32_t>(match[2].str()));
 
     if (type_str == kBucketName) {
+      if (param <= 0) {
+        return InvalidArgument("Number of buckets must be positive, got {}", param);
+      }
       return Transform::Bucket(param);
     }
     if (type_str == kTruncateName) {
+      if (param <= 0) {
+        return InvalidArgument("Width must be positive, got {}", param);
+      }
       return Transform::Truncate(param);
     }
   }
