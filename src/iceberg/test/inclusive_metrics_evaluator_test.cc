@@ -945,4 +945,158 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, IntegerNotInTest) {
   RunTest(Expressions::NotIn("id", ids), kRowsMightMatch, file1_);
 }
 
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, NotEqWithSingleValue) {
+  // file has a range of values, cannot prune based on a single literal
+  auto range_of_values = std::make_shared<DataFile>();
+  range_of_values->file_path = "range_of_values";
+  range_of_values->file_format = FileFormatType::kParquet;
+  range_of_values->record_count = 10;
+  range_of_values->value_counts = {{3, 10L}};
+  range_of_values->null_value_counts = {{3, 0L}};
+  range_of_values->nan_value_counts = {{3, 0L}};
+  range_of_values->lower_bounds = {{3, Literal::String("aaa").Serialize().value()}};
+  range_of_values->upper_bounds = {{3, Literal::String("zzz").Serialize().value()}};
+  RunTest(Expressions::NotEqual("required", Literal::String("aaa")), kRowsMightMatch,
+          range_of_values);
+
+  // file contains a single value (lower == upper) with no nulls/NaNs
+  auto single_value = std::make_shared<DataFile>();
+  single_value->file_path = "single_value";
+  single_value->file_format = FileFormatType::kParquet;
+  single_value->record_count = 10;
+  single_value->value_counts = {{3, 10L}};
+  single_value->null_value_counts = {{3, 0L}};
+  single_value->nan_value_counts = {{3, 0L}};
+  single_value->lower_bounds = {{3, Literal::String("abc").Serialize().value()}};
+  single_value->upper_bounds = {{3, Literal::String("abc").Serialize().value()}};
+  // single value equals the literal -> rows cannot match
+  RunTest(Expressions::NotEqual("required", Literal::String("abc")), kRowCannotMatch,
+          single_value);
+  // single value differs from the literal -> rows might match
+  RunTest(Expressions::NotEqual("required", Literal::String("def")), kRowsMightMatch,
+          single_value);
+
+  // single value but the file has nulls, which satisfy the != predicate
+  auto single_value_with_nulls = std::make_shared<DataFile>();
+  single_value_with_nulls->file_path = "single_value_nulls";
+  single_value_with_nulls->file_format = FileFormatType::kParquet;
+  single_value_with_nulls->record_count = 10;
+  single_value_with_nulls->value_counts = {{3, 10L}};
+  single_value_with_nulls->null_value_counts = {{3, 2L}};
+  single_value_with_nulls->nan_value_counts = {{3, 0L}};
+  single_value_with_nulls->lower_bounds = {
+      {3, Literal::String("abc").Serialize().value()}};
+  single_value_with_nulls->upper_bounds = {
+      {3, Literal::String("abc").Serialize().value()}};
+  RunTest(Expressions::NotEqual("required", Literal::String("abc")), kRowsMightMatch,
+          single_value_with_nulls);
+
+  // single value but the file has NaNs, which satisfy the != predicate
+  auto single_value_with_nan = std::make_shared<DataFile>();
+  single_value_with_nan->file_path = "single_value_nan";
+  single_value_with_nan->file_format = FileFormatType::kParquet;
+  single_value_with_nan->record_count = 10;
+  single_value_with_nan->value_counts = {{9, 10L}};
+  single_value_with_nan->null_value_counts = {{9, 0L}};
+  single_value_with_nan->nan_value_counts = {{9, 2L}};
+  single_value_with_nan->lower_bounds = {{9, Literal::Float(5.0F).Serialize().value()}};
+  single_value_with_nan->upper_bounds = {{9, Literal::Float(5.0F).Serialize().value()}};
+  RunTest(Expressions::NotEqual("no_nans", Literal::Float(5.0F)), kRowsMightMatch,
+          single_value_with_nan);
+
+  // bounds are NaN -> unreliable, cannot prune
+  auto single_value_nan_bounds = std::make_shared<DataFile>();
+  single_value_nan_bounds->file_path = "single_value_nan_bounds";
+  single_value_nan_bounds->file_format = FileFormatType::kParquet;
+  single_value_nan_bounds->record_count = 10;
+  single_value_nan_bounds->value_counts = {{9, 10L}};
+  single_value_nan_bounds->null_value_counts = {{9, 0L}};
+  single_value_nan_bounds->nan_value_counts = {{9, 0L}};
+  single_value_nan_bounds->lower_bounds = {
+      {9, Literal::Float(kFloatNan).Serialize().value()}};
+  single_value_nan_bounds->upper_bounds = {
+      {9, Literal::Float(kFloatNan).Serialize().value()}};
+  RunTest(Expressions::NotEqual("no_nans", Literal::Float(5.0F)), kRowsMightMatch,
+          single_value_nan_bounds);
+}
+
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, NotInWithSingleValue) {
+  // file has a range of values, cannot prune based on the exclusion set
+  auto range_of_values = std::make_shared<DataFile>();
+  range_of_values->file_path = "range_of_values";
+  range_of_values->file_format = FileFormatType::kParquet;
+  range_of_values->record_count = 10;
+  range_of_values->value_counts = {{3, 10L}};
+  range_of_values->null_value_counts = {{3, 0L}};
+  range_of_values->nan_value_counts = {{3, 0L}};
+  range_of_values->lower_bounds = {{3, Literal::String("aaa").Serialize().value()}};
+  range_of_values->upper_bounds = {{3, Literal::String("zzz").Serialize().value()}};
+  RunTest(
+      Expressions::NotIn("required", {Literal::String("aaa"), Literal::String("bbb")}),
+      kRowsMightMatch, range_of_values);
+
+  // file contains a single value (lower == upper) with no nulls/NaNs
+  auto single_value = std::make_shared<DataFile>();
+  single_value->file_path = "single_value";
+  single_value->file_format = FileFormatType::kParquet;
+  single_value->record_count = 10;
+  single_value->value_counts = {{3, 10L}};
+  single_value->null_value_counts = {{3, 0L}};
+  single_value->nan_value_counts = {{3, 0L}};
+  single_value->lower_bounds = {{3, Literal::String("abc").Serialize().value()}};
+  single_value->upper_bounds = {{3, Literal::String("abc").Serialize().value()}};
+  // single value is in the exclusion set -> rows cannot match
+  RunTest(
+      Expressions::NotIn("required", {Literal::String("abc"), Literal::String("def")}),
+      kRowCannotMatch, single_value);
+  // single value is not in the exclusion set -> rows might match
+  RunTest(
+      Expressions::NotIn("required", {Literal::String("def"), Literal::String("ghi")}),
+      kRowsMightMatch, single_value);
+
+  // single value but the file has nulls, which satisfy the notIn predicate
+  auto single_value_with_nulls = std::make_shared<DataFile>();
+  single_value_with_nulls->file_path = "single_value_nulls";
+  single_value_with_nulls->file_format = FileFormatType::kParquet;
+  single_value_with_nulls->record_count = 10;
+  single_value_with_nulls->value_counts = {{3, 10L}};
+  single_value_with_nulls->null_value_counts = {{3, 2L}};
+  single_value_with_nulls->nan_value_counts = {{3, 0L}};
+  single_value_with_nulls->lower_bounds = {
+      {3, Literal::String("abc").Serialize().value()}};
+  single_value_with_nulls->upper_bounds = {
+      {3, Literal::String("abc").Serialize().value()}};
+  RunTest(
+      Expressions::NotIn("required", {Literal::String("abc"), Literal::String("def")}),
+      kRowsMightMatch, single_value_with_nulls);
+
+  // single value but the file has NaNs, which satisfy the notIn predicate
+  auto single_value_with_nan = std::make_shared<DataFile>();
+  single_value_with_nan->file_path = "single_value_nan";
+  single_value_with_nan->file_format = FileFormatType::kParquet;
+  single_value_with_nan->record_count = 10;
+  single_value_with_nan->value_counts = {{9, 10L}};
+  single_value_with_nan->null_value_counts = {{9, 0L}};
+  single_value_with_nan->nan_value_counts = {{9, 2L}};
+  single_value_with_nan->lower_bounds = {{9, Literal::Float(5.0F).Serialize().value()}};
+  single_value_with_nan->upper_bounds = {{9, Literal::Float(5.0F).Serialize().value()}};
+  RunTest(Expressions::NotIn("no_nans", {Literal::Float(5.0F)}), kRowsMightMatch,
+          single_value_with_nan);
+
+  // bounds are NaN -> unreliable, cannot prune
+  auto single_value_nan_bounds = std::make_shared<DataFile>();
+  single_value_nan_bounds->file_path = "single_value_nan_bounds";
+  single_value_nan_bounds->file_format = FileFormatType::kParquet;
+  single_value_nan_bounds->record_count = 10;
+  single_value_nan_bounds->value_counts = {{9, 10L}};
+  single_value_nan_bounds->null_value_counts = {{9, 0L}};
+  single_value_nan_bounds->nan_value_counts = {{9, 0L}};
+  single_value_nan_bounds->lower_bounds = {
+      {9, Literal::Float(kFloatNan).Serialize().value()}};
+  single_value_nan_bounds->upper_bounds = {
+      {9, Literal::Float(kFloatNan).Serialize().value()}};
+  RunTest(Expressions::NotIn("no_nans", {Literal::Float(5.0F)}), kRowsMightMatch,
+          single_value_nan_bounds);
+}
+
 }  // namespace iceberg
