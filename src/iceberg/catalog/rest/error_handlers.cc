@@ -31,8 +31,26 @@ constexpr std::string_view kIllegalArgumentException = "IllegalArgumentException
 constexpr std::string_view kNoSuchNamespaceException = "NoSuchNamespaceException";
 constexpr std::string_view kNamespaceNotEmptyException = "NamespaceNotEmptyException";
 constexpr std::string_view kNoSuchTableException = "NoSuchTableException";
-constexpr std::string_view kNoSuchPlanIdException = "NoSuchPlanIdException";
-constexpr std::string_view kNoSuchPlanTaskException = "NoSuchPlanTaskException";
+constexpr std::string_view kNotFoundException = "NotFoundException";
+constexpr std::string_view kInvalidClient = "invalid_client";
+constexpr std::string_view kInvalidRequest = "invalid_request";
+constexpr std::string_view kInvalidGrant = "invalid_grant";
+constexpr std::string_view kUnauthorizedClient = "unauthorized_client";
+constexpr std::string_view kUnsupportedGrantType = "unsupported_grant_type";
+constexpr std::string_view kInvalidScope = "invalid_scope";
+constexpr std::string_view kNull = "null";
+
+std::string_view NullIfEmpty(const std::string& value) {
+  if (value.empty()) {
+    return kNull;
+  }
+  return value;
+}
+
+Status CreateRestError(const ErrorResponse& error) {
+  return RestError("Unable to process (code: {}, type: {}): {}", error.code,
+                   NullIfEmpty(error.type), NullIfEmpty(error.message));
+}
 
 }  // namespace
 
@@ -63,7 +81,7 @@ Status DefaultErrorHandler::Accept(const ErrorResponse& error) const {
       return ServiceUnavailable("Service unavailable: {}", error.message);
   }
 
-  return RestError("Code: {}, message: {}", error.code, error.message);
+  return CreateRestError(error);
 }
 
 const std::shared_ptr<NamespaceErrorHandler>& NamespaceErrorHandler::Instance() {
@@ -84,7 +102,7 @@ Status NamespaceErrorHandler::Accept(const ErrorResponse& error) const {
     case 409:
       return AlreadyExists(error.message);
     case 422:
-      return RestError("Unable to process: {}", error.message);
+      return CreateRestError(error);
   }
 
   return DefaultErrorHandler::Accept(error);
@@ -104,6 +122,19 @@ Status DropNamespaceErrorHandler::Accept(const ErrorResponse& error) const {
   return NamespaceErrorHandler::Accept(error);
 }
 
+const std::shared_ptr<ConfigErrorHandler>& ConfigErrorHandler::Instance() {
+  static const std::shared_ptr<ConfigErrorHandler> instance{new ConfigErrorHandler()};
+  return instance;
+}
+
+Status ConfigErrorHandler::Accept(const ErrorResponse& error) const {
+  if (error.code == 404 && !error.type.empty()) {
+    return NoSuchWarehouse(error.message);
+  }
+
+  return DefaultErrorHandler::Accept(error);
+}
+
 const std::shared_ptr<TableErrorHandler>& TableErrorHandler::Instance() {
   static const std::shared_ptr<TableErrorHandler> instance{new TableErrorHandler()};
   return instance;
@@ -115,26 +146,10 @@ Status TableErrorHandler::Accept(const ErrorResponse& error) const {
       if (error.type == kNoSuchNamespaceException) {
         return NoSuchNamespace(error.message);
       }
-      return NoSuchTable(error.message);
-    case 409:
-      return AlreadyExists(error.message);
-  }
-
-  return DefaultErrorHandler::Accept(error);
-}
-
-const std::shared_ptr<ViewErrorHandler>& ViewErrorHandler::Instance() {
-  static const std::shared_ptr<ViewErrorHandler> instance{new ViewErrorHandler()};
-  return instance;
-}
-
-Status ViewErrorHandler::Accept(const ErrorResponse& error) const {
-  switch (error.code) {
-    case 404:
-      if (error.type == kNoSuchNamespaceException) {
-        return NoSuchNamespace(error.message);
+      if (error.type == kNotFoundException) {
+        return NotFound(error.message);
       }
-      return NoSuchView(error.message);
+      return NoSuchTable(error.message);
     case 409:
       return AlreadyExists(error.message);
   }
@@ -164,6 +179,23 @@ Status TableCommitErrorHandler::Accept(const ErrorResponse& error) const {
   return DefaultErrorHandler::Accept(error);
 }
 
+const std::shared_ptr<CreateTableErrorHandler>& CreateTableErrorHandler::Instance() {
+  static const std::shared_ptr<CreateTableErrorHandler> instance{
+      new CreateTableErrorHandler()};
+  return instance;
+}
+
+Status CreateTableErrorHandler::Accept(const ErrorResponse& error) const {
+  switch (error.code) {
+    case 404:
+      return NoSuchNamespace(error.message);
+    case 409:
+      return AlreadyExists(error.message);
+  }
+
+  return TableCommitErrorHandler::Accept(error);
+}
+
 const std::shared_ptr<ViewCommitErrorHandler>& ViewCommitErrorHandler::Instance() {
   static const std::shared_ptr<ViewCommitErrorHandler> instance{
       new ViewCommitErrorHandler()};
@@ -186,6 +218,25 @@ Status ViewCommitErrorHandler::Accept(const ErrorResponse& error) const {
   return DefaultErrorHandler::Accept(error);
 }
 
+const std::shared_ptr<ViewErrorHandler>& ViewErrorHandler::Instance() {
+  static const std::shared_ptr<ViewErrorHandler> instance{new ViewErrorHandler()};
+  return instance;
+}
+
+Status ViewErrorHandler::Accept(const ErrorResponse& error) const {
+  switch (error.code) {
+    case 404:
+      if (error.type == kNoSuchNamespaceException) {
+        return NoSuchNamespace(error.message);
+      }
+      return NoSuchView(error.message);
+    case 409:
+      return AlreadyExists(error.message);
+  }
+
+  return DefaultErrorHandler::Accept(error);
+}
+
 const std::shared_ptr<PlanErrorHandler>& PlanErrorHandler::Instance() {
   static const std::shared_ptr<PlanErrorHandler> instance{new PlanErrorHandler()};
   return instance;
@@ -200,12 +251,7 @@ Status PlanErrorHandler::Accept(const ErrorResponse& error) const {
       if (error.type == kNoSuchTableException) {
         return NoSuchTable(error.message);
       }
-      if (error.type == kNoSuchPlanIdException) {
-        return NoSuchPlanId(error.message);
-      }
-      return NotFound(error.message);
-    case 406:
-      return NotSupported(error.message);
+      return NoSuchPlanId(error.message);
   }
 
   return DefaultErrorHandler::Accept(error);
@@ -225,13 +271,32 @@ Status PlanTaskErrorHandler::Accept(const ErrorResponse& error) const {
       if (error.type == kNoSuchTableException) {
         return NoSuchTable(error.message);
       }
-      if (error.type == kNoSuchPlanTaskException) {
-        return NoSuchPlanTask(error.message);
-      }
-      return NotFound(error.message);
+      return NoSuchPlanTask(error.message);
   }
 
   return DefaultErrorHandler::Accept(error);
+}
+
+const std::shared_ptr<OAuthErrorHandler>& OAuthErrorHandler::Instance() {
+  static const std::shared_ptr<OAuthErrorHandler> instance{new OAuthErrorHandler()};
+  return instance;
+}
+
+Status OAuthErrorHandler::Accept(const ErrorResponse& error) const {
+  if (!error.type.empty()) {
+    if (error.type == kInvalidClient) {
+      return NotAuthorized("Not authorized: {}: {}", error.type,
+                           NullIfEmpty(error.message));
+    }
+    if (error.type == kInvalidRequest || error.type == kInvalidGrant ||
+        error.type == kUnauthorizedClient || error.type == kUnsupportedGrantType ||
+        error.type == kInvalidScope) {
+      return BadRequest("Malformed request: {}: {}", error.type,
+                        NullIfEmpty(error.message));
+    }
+  }
+
+  return CreateRestError(error);
 }
 
 }  // namespace iceberg::rest

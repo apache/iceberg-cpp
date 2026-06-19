@@ -53,6 +53,7 @@ enum class ErrorKind {
   kNoSuchPlanId,
   kNoSuchPlanTask,
   kNoSuchTable,
+  kNoSuchWarehouse,
   kNoSuchView,
   kNotAllowed,
   kNotAuthorized,
@@ -118,6 +119,7 @@ DEFINE_ERROR_FUNCTION(NoSuchNamespace)
 DEFINE_ERROR_FUNCTION(NoSuchPlanId)
 DEFINE_ERROR_FUNCTION(NoSuchPlanTask)
 DEFINE_ERROR_FUNCTION(NoSuchTable)
+DEFINE_ERROR_FUNCTION(NoSuchWarehouse)
 DEFINE_ERROR_FUNCTION(NoSuchView)
 DEFINE_ERROR_FUNCTION(NotAllowed)
 DEFINE_ERROR_FUNCTION(NotAuthorized)

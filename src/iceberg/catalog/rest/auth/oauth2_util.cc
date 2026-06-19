@@ -66,7 +66,7 @@ Result<OAuthTokenResponse> FetchToken(HttpClient& client, AuthSession& session,
   ICEBERG_ASSIGN_OR_RAISE(
       auto response,
       client.PostForm(properties.oauth2_server_uri(), form_data,
-                      /*headers=*/{}, *DefaultErrorHandler::Instance(), session));
+                      /*headers=*/{}, *OAuthErrorHandler::Instance(), session));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto token_response, FromJson<OAuthTokenResponse>(json));
