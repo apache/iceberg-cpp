@@ -20,7 +20,6 @@
 #pragma once
 
 #include <algorithm>
-#include <cctype>
 #include <cerrno>
 #include <charconv>
 #include <ranges>
@@ -41,22 +40,24 @@ concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 
 class ICEBERG_EXPORT StringUtils {
  public:
-  // NOTE: These convert ASCII letters only; all other bytes, including non-ASCII
-  // (multibyte UTF-8) bytes, are passed through unchanged.
-  // See https://github.com/apache/iceberg-cpp/issues/613.
-  static std::string ToLower(std::string_view str) {
-    return str | std::ranges::views::transform(ToLowerAscii) |
-           std::ranges::to<std::string>();
-  }
+  /// \brief Lower-case a UTF-8 string using Unicode simple case mapping.
+  ///
+  /// Mirrors Iceberg Java's case-insensitive handling, which lower-cases names with
+  /// toLowerCase(Locale.ROOT). Invalid UTF-8 input is returned unchanged.
+  /// See https://github.com/apache/iceberg-cpp/issues/613.
+  static std::string ToLower(std::string_view str);
 
+  /// \brief Upper-case ASCII letters; non-ASCII (multibyte UTF-8) bytes pass through
+  /// unchanged.
+  ///
+  /// Unlike ToLower this is ASCII-only, since upper-casing is not used for name matching.
   static std::string ToUpper(std::string_view str) {
     return str | std::ranges::views::transform(ToUpperAscii) |
            std::ranges::to<std::string>();
   }
 
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
-    return std::ranges::equal(
-        lhs, rhs, [](char lc, char rc) { return ToLowerAscii(lc) == ToLowerAscii(rc); });
+    return ToLower(lhs) == ToLower(rhs);
   }
 
   static bool StartsWithIgnoreCase(std::string_view str, std::string_view prefix) {
@@ -134,14 +135,8 @@ class ICEBERG_EXPORT StringUtils {
   }
 
  private:
-  // ASCII-only case conversion using explicit range checks rather than
-  // std::tolower/std::toupper. This is independent of the current C locale and never
-  // touches non-ASCII (high-bit) bytes, so multibyte UTF-8 sequences are preserved. It
-  // also sidesteps the undefined behavior of passing a negative char to <cctype>.
-  static constexpr char ToLowerAscii(char c) noexcept {
-    return (c >= 'A' && c <= 'Z') ? static_cast<char>(c - 'A' + 'a') : c;
-  }
-
+  // Avoids std::toupper, which is locale-dependent and has undefined behavior for
+  // negative char values.
   static constexpr char ToUpperAscii(char c) noexcept {
     return (c >= 'a' && c <= 'z') ? static_cast<char>(c - 'a' + 'A') : c;
   }

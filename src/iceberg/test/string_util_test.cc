@@ -41,19 +41,30 @@ TEST(StringUtilsTest, ToUpper) {
   ASSERT_EQ(StringUtils::ToUpper("123"), "123");
 }
 
-// Non-ASCII (multibyte UTF-8) bytes have the high bit set, i.e. are negative when stored
-// in a signed char. Only ASCII letters are converted; multibyte bytes pass through
-// unchanged. The non-ASCII strings are written as explicit UTF-8 byte escapes so the test
-// does not depend on the source-file encoding. See
-// https://github.com/apache/iceberg-cpp/issues/613.
-TEST(StringUtilsTest, NonAsciiPassThrough) {
-  // "Naïve" -> "naïve" (ï = U+00EF = 0xC3 0xAF; only the ASCII letters change).
-  ASSERT_EQ(StringUtils::ToLower("Na\xC3\xAFve"), "na\xC3\xAFve");
-  // "café" -> "CAFé" (é = U+00E9 = 0xC3 0xA9 stays unchanged).
-  ASSERT_EQ(StringUtils::ToUpper("caf\xC3\xA9"), "CAF\xC3\xA9");
-  // "日本語" (0xE6 0x97 0xA5 0xE6 0x9C 0xAC 0xE8 0xAA 0x9E) is returned verbatim.
+// Non-ASCII strings are written as explicit UTF-8 byte escapes so the test does not
+// depend on the source-file encoding. An escape is split before a following hex digit
+// (e.g. "...\x9E" "E") so the \x does not absorb it.
+// See https://github.com/apache/iceberg-cpp/issues/613.
+TEST(StringUtilsTest, ToLowerUnicode) {
+  // "CAFÉ" -> "café" (É U+00C9 = 0xC3 0x89 -> é U+00E9 = 0xC3 0xA9).
+  ASSERT_EQ(StringUtils::ToLower("CAF\xC3\x89"), "caf\xC3\xA9");
+  // "GROẞE" -> "große": capital sharp S (ẞ U+1E9E) lower-cases to ß (U+00DF), not "ss"
+  // as casefolding would produce.
+  ASSERT_EQ(StringUtils::ToLower("GRO\xE1\xBA\x9E"
+                                 "E"),
+            "gro\xC3\x9F"
+            "e");
+  // "日本語" has no case mapping and is returned verbatim.
   ASSERT_EQ(StringUtils::ToLower("\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"),
             "\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E");
+  // Invalid UTF-8 (a lone 0xFF byte) is returned unchanged rather than erroring.
+  ASSERT_EQ(StringUtils::ToLower("\xFF"), "\xFF");
+}
+
+// ToUpper is intentionally ASCII-only; non-ASCII (multibyte UTF-8) bytes pass through.
+TEST(StringUtilsTest, ToUpperAsciiOnly) {
+  // "café" -> "CAFé" (é stays unchanged).
+  ASSERT_EQ(StringUtils::ToUpper("caf\xC3\xA9"), "CAF\xC3\xA9");
   ASSERT_EQ(StringUtils::ToUpper("\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"),
             "\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E");
 }
@@ -63,9 +74,15 @@ TEST(StringUtilsTest, EqualsIgnoreCase) {
   ASSERT_TRUE(StringUtils::EqualsIgnoreCase("", ""));
   ASSERT_FALSE(StringUtils::EqualsIgnoreCase("abc", "abcd"));
   ASSERT_FALSE(StringUtils::EqualsIgnoreCase("abc", "abd"));
-  // ASCII case is folded; non-ASCII bytes are compared as-is. ("Café" vs "café")
-  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("Caf\xC3\xA9", "caf\xC3\xA9"));
-  // "café" vs "cafe": the multibyte é differs from ASCII 'e'.
+  // Unicode-aware: "CAFÉ" matches "café".
+  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("CAF\xC3\x89", "caf\xC3\xA9"));
+  // "GROẞE" matches "große" under lowercasing (ẞ -> ß).
+  ASSERT_TRUE(
+      StringUtils::EqualsIgnoreCase("GRO\xE1\xBA\x9E"
+                                    "E",
+                                    "gro\xC3\x9F"
+                                    "e"));
+  // Different letters still differ ("café" vs "cafe").
   ASSERT_FALSE(StringUtils::EqualsIgnoreCase("caf\xC3\xA9", "cafe"));
 }
 
