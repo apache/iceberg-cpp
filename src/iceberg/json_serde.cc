@@ -273,8 +273,14 @@ Result<std::unique_ptr<SortField>> SortFieldFromJson(const nlohmann::json& json)
                                      null_order);
 }
 
-Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
-    const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema) {
+namespace {
+
+struct ParsedSortOrder {
+  int32_t order_id;
+  std::vector<SortField> fields;
+};
+
+Result<ParsedSortOrder> ParseSortOrder(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
   ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
 
@@ -283,19 +289,30 @@ Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto sort_field, SortFieldFromJson(field_json));
     sort_fields.push_back(std::move(*sort_field));
   }
-  return SortOrder::Make(*current_schema, order_id, std::move(sort_fields));
+  return ParsedSortOrder{.order_id = order_id, .fields = std::move(sort_fields)};
+}
+
+}  // namespace
+
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
+    const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema,
+    int32_t default_sort_order_id) {
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed, ParseSortOrder(json));
+  if (parsed.order_id == default_sort_order_id) {
+    return SortOrder::Make(*current_schema, parsed.order_id, std::move(parsed.fields));
+  }
+  return SortOrder::Make(parsed.order_id, std::move(parsed.fields));
+}
+
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
+    const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema) {
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed, ParseSortOrder(json));
+  return SortOrder::Make(*current_schema, parsed.order_id, std::move(parsed.fields));
 }
 
 Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json) {
-  ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
-  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
-
-  std::vector<SortField> sort_fields;
-  for (const auto& field_json : fields) {
-    ICEBERG_ASSIGN_OR_RAISE(auto sort_field, SortFieldFromJson(field_json));
-    sort_fields.push_back(std::move(*sort_field));
-  }
-  return SortOrder::Make(order_id, std::move(sort_fields));
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed, ParseSortOrder(json));
+  return SortOrder::Make(parsed.order_id, std::move(parsed.fields));
 }
 
 nlohmann::json ToJson(const SchemaField& field) {
@@ -1107,8 +1124,9 @@ Status ParseSortOrders(const nlohmann::json& json, int8_t format_version,
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_array,
                             GetJsonValue<nlohmann::json>(json, kSortOrders));
     for (const auto& sort_order_json : sort_order_array) {
-      ICEBERG_ASSIGN_OR_RAISE(auto sort_order,
-                              SortOrderFromJson(sort_order_json, current_schema));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto sort_order,
+          SortOrderFromJson(sort_order_json, current_schema, default_sort_order_id));
       sort_orders.push_back(std::move(sort_order));
     }
   } else {
