@@ -246,6 +246,8 @@ class ICEBERG_EXPORT StaticTable : public Table {
 
   Result<std::shared_ptr<FastAppend>> NewFastAppend() override;
 
+  Result<std::shared_ptr<MergeAppend>> NewMergeAppend() override;
+
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 
  private:
