@@ -24,6 +24,7 @@
 #include <memory>
 #include <mutex>
 #include <utility>
+#include <vector>
 
 namespace iceberg {
 
@@ -32,10 +33,10 @@ namespace {
 /// \brief Logger that drops every record.
 class NoopLogger final : public Logger {
  public:
-  bool ShouldLog(LogLevel /*level*/) const override { return false; }
+  bool ShouldLog(LogLevel /*level*/) const noexcept override { return false; }
   void Log(LogMessage&& /*message*/) noexcept override {}
-  void SetLevel(LogLevel /*level*/) override {}
-  LogLevel level() const override { return LogLevel::kOff; }
+  void SetLevel(LogLevel /*level*/) noexcept override {}
+  LogLevel level() const noexcept override { return LogLevel::kOff; }
   bool IsNoop() const override { return true; }
 };
 
@@ -60,6 +61,34 @@ struct DefaultSlot {
 DefaultSlot& Slot() {
   static auto* slot = new DefaultSlot();
   return *slot;
+}
+
+/// \brief A thread's cached view of the default logger and the generation it was
+/// cached at. Heap-allocated and intentionally never freed (see CurrentLogger).
+struct ThreadCache {
+  std::shared_ptr<Logger> logger;
+  uint64_t gen = 0;  // 0 != Slot().gen (seeded to 1) -> first use always refreshes
+};
+
+/// \brief Keeps every leaked ThreadCache reachable so LeakSanitizer does not flag
+/// the intentional per-thread leak. Immortal (leaked) itself, like the slot.
+struct CacheRegistry {
+  std::mutex mtx;
+  std::vector<ThreadCache*> caches;
+};
+CacheRegistry& Registry() {
+  static auto* registry = new CacheRegistry();
+  return *registry;
+}
+
+/// \brief Allocate a per-thread cache that is never destroyed and register it so
+/// it stays reachable for LSan.
+ThreadCache* NewThreadCache() {
+  auto* cache = new ThreadCache();  // intentionally leaked; see CurrentLogger
+  CacheRegistry& registry = Registry();
+  std::lock_guard<std::mutex> lock(registry.mtx);
+  registry.caches.push_back(cache);
+  return cache;
 }
 
 }  // namespace
@@ -97,30 +126,22 @@ void SetDefaultLevel(LogLevel level) {
 namespace detail {
 
 const std::shared_ptr<Logger>& CurrentLogger() noexcept {
-  static thread_local std::shared_ptr<Logger> tls;
-  static thread_local uint64_t tls_gen = 0;
-  // Sentinel whose destructor marks the cache dead at thread exit. It is
-  // declared after tls/tls_gen, so it is destroyed FIRST (reverse order); once
-  // dead, a log from any later-destroyed thread_local destructor must not touch
-  // the (about-to-be / already) destroyed tls slot.
-  static thread_local struct AliveFlag {
-    bool value = true;
-    ~AliveFlag() { value = false; }
-  } alive;
-  if (!alive.value) {
-    // Thread teardown: the TLS cache is unsafe. Fall back to an immortal logger
-    // (leaked, never destroyed) so logging during teardown stays safe.
-    static const std::shared_ptr<Logger> kFallback = Logger::Noop();
-    return kFallback;
-  }
+  // The per-thread cache is reached through a trivially-destructible thread_local
+  // raw pointer to a heap object that is intentionally NEVER destroyed. This makes
+  // the accessor safe to call during thread teardown -- including from another
+  // thread_local's destructor, in any destruction order: the pointer has no
+  // destructor (so it stays readable throughout teardown), and the cached
+  // shared_ptr outlives every thread_local, so there is no use-after-destruction.
+  // The intentional per-thread leak is kept LSan-reachable via the registry.
+  static thread_local ThreadCache* cache = NewThreadCache();
   DefaultSlot& slot = Slot();
   uint64_t current = slot.gen.load(std::memory_order_relaxed);
-  if (current != tls_gen) {
+  if (current != cache->gen) {
     std::lock_guard<std::mutex> lock(slot.mtx);
-    tls = slot.logger;
-    tls_gen = current;
+    cache->logger = slot.logger;
+    cache->gen = current;
   }
-  return tls;
+  return cache->logger;
 }
 
 void Emit(Logger& logger, LogLevel level, const std::source_location& location,

@@ -22,12 +22,14 @@
 #include <atomic>
 #include <memory>
 #include <thread>
+#include <tuple>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include "iceberg/logging/log_level.h"
 #include "iceberg/test/logging_test_helpers.h"
+#include "iceberg/test/matchers.h"
 
 namespace iceberg {
 
@@ -100,8 +102,8 @@ TEST(LoggerTest, ConcurrentSwapAndReadIsSafe) {
       while (!stop.load(std::memory_order_relaxed)) {
         const auto& l = detail::CurrentLogger();
         if (!l) saw_null.store(true, std::memory_order_relaxed);
-        (void)l->ShouldLog(LogLevel::kError);
-        (void)GetDefaultLogger();
+        std::ignore = l->ShouldLog(LogLevel::kError);
+        std::ignore = GetDefaultLogger();
       }
     });
   }
@@ -123,12 +125,15 @@ TEST(LoggerTest, InitializeRejectsInvalidLevel) {
   auto status =
       logger.Initialize({{std::string(kLevelProperty), std::string("not-a-level")}});
   ASSERT_FALSE(status.has_value());
-  EXPECT_EQ(status.error().kind, ErrorKind::kInvalidArgument);
+  EXPECT_THAT(status, IsError(ErrorKind::kInvalidArgument));
 }
 
-// Logging during thread teardown (from a thread_local destructor) must not crash:
-// CurrentLogger() serves the live cache or falls back to an immortal logger. Run
-// under ASan in CI for full signal.
+// Logging during thread teardown (from a thread_local destructor) must not crash.
+// CurrentLogger()'s per-thread cache is reached via a trivially-destructible
+// pointer to a never-freed heap object, so it is safe even when the logging
+// statement runs from a thread_local that is destroyed AFTER the cache -- the
+// hard case. Probe is constructed before CurrentLogger() is first touched on the
+// thread, so it is destroyed last. Run under ASan in CI for full signal.
 TEST(LoggerTest, LoggingFromThreadLocalDestructorIsSafe) {
   std::thread([] {
     struct Probe {
@@ -141,7 +146,8 @@ TEST(LoggerTest, LoggingFromThreadLocalDestructorIsSafe) {
       }
     };
     static thread_local Probe probe;
-    (void)probe;
+    (void)probe;                     // construct Probe first ...
+    (void)detail::CurrentLogger();   // ... then the logger cache (destroyed first)
   }).join();
   SUCCEED();
 }

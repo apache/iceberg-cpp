@@ -20,8 +20,7 @@
 #pragma once
 
 /// \file iceberg/logging/logger.h
-/// \brief Pluggable logging interface, the process-global default logger, and
-/// the logging macros.
+/// \brief Pluggable logging interface and the process-global default logger.
 ///
 /// This header is backend-agnostic: it never includes the build-generated
 /// backend configuration header and never references the spdlog feature macro,
@@ -48,7 +47,7 @@ namespace iceberg {
 /// Both key and value are owned so a sink may retain the record safely.
 /// Unused in v1; reserved so structured logging can be added without an ABI
 /// break to LogMessage.
-struct LogAttribute {
+struct ICEBERG_EXPORT LogAttribute {
   std::string key;
   std::string value;
 };
@@ -58,7 +57,7 @@ struct LogAttribute {
 /// The formatted message is owned (moved in by the logging macros), so a sink
 /// may safely retain the record beyond the Log() call. The member set must not
 /// depend on the build's logging backend (the spdlog backend never appears here).
-struct LogMessage {
+struct ICEBERG_EXPORT LogMessage {
   LogLevel level = LogLevel::kOff;
   std::string message;
   std::source_location location = std::source_location::current();
@@ -104,16 +103,16 @@ class ICEBERG_EXPORT Logger {
   }
 
   /// \brief Cheap check whether a record at \p level would be emitted.
-  virtual bool ShouldLog(LogLevel level) const = 0;
+  virtual bool ShouldLog(LogLevel level) const noexcept = 0;
 
   /// \brief Emit one (already-formatted) record, taking ownership. Must not throw.
   virtual void Log(LogMessage&& message) noexcept = 0;
 
   /// \brief Set the minimum level this logger emits.
-  virtual void SetLevel(LogLevel level) = 0;
+  virtual void SetLevel(LogLevel level) noexcept = 0;
 
   /// \brief Return the minimum level this logger emits.
-  virtual LogLevel level() const = 0;
+  virtual LogLevel level() const noexcept = 0;
 
   /// \brief Flush any buffered output. Must not throw; best-effort on the fatal path.
   virtual void Flush() noexcept {}
@@ -150,10 +149,10 @@ ICEBERG_EXPORT void SetDefaultLevel(LogLevel level);
 //
 //   class MySink : public Logger {
 //    public:
-//     bool ShouldLog(LogLevel level) const override { return level >= level_; }
+//     bool ShouldLog(LogLevel level) const noexcept override { return level >= level_; }
 //     void Log(LogMessage&& m) noexcept override { write_line(m.message); }
-//     void SetLevel(LogLevel level) override { level_ = level; }
-//     LogLevel level() const override { return level_; }
+//     void SetLevel(LogLevel level) noexcept override { level_ = level; }
+//     LogLevel level() const noexcept override { return level_; }
 //    private:
 //     std::atomic<LogLevel> level_{LogLevel::kInfo};
 //   };
