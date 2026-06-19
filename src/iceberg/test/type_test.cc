@@ -94,7 +94,7 @@ TEST_P(TypeTest, StdFormat) {
   ASSERT_EQ(test_case.repr, std::format("{}", *test_case.type));
 }
 
-const static std::array<TypeTestCase, 22> kPrimitiveTypes = {{
+const static std::array<TypeTestCase, 21> kPrimitiveTypes = {{
     {
         .name = "boolean",
         .type = iceberg::boolean(),
@@ -229,13 +229,6 @@ const static std::array<TypeTestCase, 22> kPrimitiveTypes = {{
         .repr = "unknown",
     },
     {
-        .name = "variant",
-        .type = iceberg::variant(),
-        .type_id = iceberg::TypeId::kVariant,
-        .primitive = false,
-        .repr = "variant",
-    },
-    {
         .name = "geometry",
         .type = iceberg::geometry(),
         .type_id = iceberg::TypeId::kGeometry,
@@ -250,6 +243,14 @@ const static std::array<TypeTestCase, 22> kPrimitiveTypes = {{
         .repr = "geography",
     },
 }};
+
+const static TypeTestCase kVariantType = {
+    .name = "variant",
+    .type = iceberg::variant(),
+    .type_id = iceberg::TypeId::kVariant,
+    .primitive = false,
+    .repr = "variant",
+};
 
 const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
@@ -298,6 +299,9 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
 INSTANTIATE_TEST_SUITE_P(Primitive, TypeTest, ::testing::ValuesIn(kPrimitiveTypes),
                          TypeTestCaseToString);
 
+INSTANTIATE_TEST_SUITE_P(Variant, TypeTest, ::testing::Values(kVariantType),
+                         TypeTestCaseToString);
+
 INSTANTIATE_TEST_SUITE_P(Nested, TypeTest, ::testing::ValuesIn(kNestedTypes),
                          TypeTestCaseToString);
 
@@ -306,6 +310,7 @@ TEST(TypeTest, Equality) {
   for (const auto& test_case : kPrimitiveTypes) {
     alltypes.push_back(test_case.type);
   }
+  alltypes.push_back(kVariantType.type);
   for (const auto& test_case : kNestedTypes) {
     alltypes.push_back(test_case.type);
   }

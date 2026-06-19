@@ -54,7 +54,7 @@ std::string TypeTestCaseToString(const ::testing::TestParamInfo<TypeTestCase>& i
   return info.param.name;
 }
 
-const static std::array<TypeTestCase, 22> kPrimitiveTypes = {{
+const static std::array<TypeTestCase, 21> kPrimitiveTypes = {{
     {
         .name = "boolean",
         .type = iceberg::boolean(),
@@ -189,13 +189,6 @@ const static std::array<TypeTestCase, 22> kPrimitiveTypes = {{
         .repr = "unknown",
     },
     {
-        .name = "variant",
-        .type = iceberg::variant(),
-        .type_id = iceberg::TypeId::kVariant,
-        .primitive = false,
-        .repr = "variant",
-    },
-    {
         .name = "geometry",
         .type = iceberg::geometry(),
         .type_id = iceberg::TypeId::kGeometry,
@@ -210,6 +203,14 @@ const static std::array<TypeTestCase, 22> kPrimitiveTypes = {{
         .repr = "geography",
     },
 }};
+
+const static TypeTestCase kVariantType = {
+    .name = "variant",
+    .type = iceberg::variant(),
+    .type_id = iceberg::TypeId::kVariant,
+    .primitive = false,
+    .repr = "variant",
+};
 
 const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
@@ -260,6 +261,9 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
 class VisitTypeTest : public ::testing::TestWithParam<TypeTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(Primitive, VisitTypeTest, ::testing::ValuesIn(kPrimitiveTypes),
+                         TypeTestCaseToString);
+
+INSTANTIATE_TEST_SUITE_P(Variant, VisitTypeTest, ::testing::Values(kVariantType),
                          TypeTestCaseToString);
 
 INSTANTIATE_TEST_SUITE_P(Nested, VisitTypeTest, ::testing::ValuesIn(kNestedTypes),
