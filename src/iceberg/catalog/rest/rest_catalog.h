@@ -181,7 +181,7 @@ class ICEBERG_REST_EXPORT RestCatalog final
   std::shared_ptr<auth::AuthSession> catalog_session_;
   SnapshotMode snapshot_mode_;
   SessionContext default_context_;
-  std::shared_ptr<Catalog> default_catalog_;
+  std::weak_ptr<Catalog> default_catalog_;
 };
 
 }  // namespace iceberg::rest

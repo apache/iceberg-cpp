@@ -487,11 +487,13 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
 std::string_view RestCatalog::name() const { return name_; }
 
 Result<std::shared_ptr<Catalog>> RestCatalog::AsCatalog() {
-  if (!default_catalog_) {
-    default_catalog_ =
-        std::make_shared<ContextCatalog>(shared_from_this(), default_context_);
+  if (auto catalog = default_catalog_.lock()) {
+    return catalog;
   }
-  return default_catalog_;
+
+  auto catalog = std::make_shared<ContextCatalog>(shared_from_this(), default_context_);
+  default_catalog_ = catalog;
+  return catalog;
 }
 
 Result<std::shared_ptr<Catalog>> RestCatalog::WithContext(SessionContext context) {

@@ -203,6 +203,31 @@ TEST_F(RestCatalogIntegrationTest, MakeCatalogSuccess) {
   EXPECT_THAT(root->WithContext(SessionContext{}), IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST_F(RestCatalogIntegrationTest, DefaultCatalogCacheDoesNotKeepRootAlive) {
+  std::weak_ptr<RestCatalog> weak_root;
+  std::weak_ptr<Catalog> weak_catalog;
+
+  {
+    auto config = RestCatalogProperties::default_properties();
+    config.Set(RestCatalogProperties::kUri, CatalogUri())
+        .Set(RestCatalogProperties::kName, std::string(kCatalogName))
+        .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
+    config.mutable_configs()[std::string(RestCatalogProperties::kIOImpl.key())] =
+        std::string(kStdFileIOImpl);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto root, RestCatalog::Make(config));
+    ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+    ICEBERG_UNWRAP_OR_FAIL(auto same_catalog, root->AsCatalog());
+
+    weak_root = root;
+    weak_catalog = catalog;
+    EXPECT_EQ(catalog, same_catalog);
+  }
+
+  EXPECT_TRUE(weak_catalog.expired());
+  EXPECT_TRUE(weak_root.expired());
+}
+
 TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
   HttpClient client({});
   auto noop_session = auth::AuthSession::MakeDefault({});
