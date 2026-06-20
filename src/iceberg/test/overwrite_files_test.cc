@@ -50,11 +50,8 @@
 
 namespace iceberg {
 
-// Test harness for OverwriteFiles.
-//
 // The base table (TableMetadataV2ValidMinimal.json) has schema {x: long (id 1),
-// y: long (id 2), z: long (id 3)} and a single partition spec (spec id 0) that
-// partitions by identity(x).
+// y: long (id 2), z: long (id 3)} and partitions by identity(x).
 class OverwriteFilesTest : public UpdateTestBase {
  protected:
   static void SetUpTestSuite() { avro::RegisterAll(); }
@@ -73,7 +70,6 @@ class OverwriteFilesTest : public UpdateTestBase {
     file_b_ = MakeDataFile("/data/file_b.parquet", /*partition_x=*/2L);
   }
 
-  // A plain data file in spec 0 (identity(x)) with the given partition value for x.
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path, int64_t partition_x,
                                          int64_t record_count = 100) {
     auto f = std::make_shared<DataFile>();
@@ -87,8 +83,7 @@ class OverwriteFilesTest : public UpdateTestBase {
     return f;
   }
 
-  // A data file carrying column metrics for column y (field id 2): lower/upper bounds
-  // plus value/null counts, so the StrictMetricsEvaluator can reason about it.
+  // Add y metrics so StrictMetricsEvaluator can prove row-filter containment.
   std::shared_ptr<DataFile> MakeDataFileWithYBounds(const std::string& path,
                                                     int64_t partition_x, int64_t y_lower,
                                                     int64_t y_upper) {
@@ -106,7 +101,6 @@ class OverwriteFilesTest : public UpdateTestBase {
     return f;
   }
 
-  // An equality delete file in spec 0 (partition x = partition_x).
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
                                                    int64_t partition_x) {
     auto f = MakeDeleteFile(path, partition_x);
@@ -115,9 +109,7 @@ class OverwriteFilesTest : public UpdateTestBase {
     return f;
   }
 
-  // Write a delete manifest containing the given delete files, with the snapshot id and
-  // sequence number assigned on each entry (so the manifest list writer does not need to
-  // inherit them).
+  // Entries carry assigned snapshot and sequence numbers.
   Result<ManifestFile> WriteDeleteManifest(
       const std::string& path, const std::vector<std::shared_ptr<DataFile>>& files,
       int64_t snapshot_id, int64_t sequence_number) {
@@ -137,8 +129,6 @@ class OverwriteFilesTest : public UpdateTestBase {
     return writer->ToManifestFile();
   }
 
-  // Build a synthetic snapshot from the given manifests (mirrors the merging-update test
-  // harness). Used to inject a concurrent commit between read and validate.
   Result<std::shared_ptr<Snapshot>> MakeSyntheticSnapshot(
       std::string operation, int64_t snapshot_id,
       std::optional<int64_t> parent_snapshot_id, int64_t sequence_number,
@@ -161,10 +151,7 @@ class OverwriteFilesTest : public UpdateTestBase {
     return std::shared_ptr<Snapshot>(std::move(snapshot));
   }
 
-  // Inject a concurrent snapshot that adds an equality delete file covering partition
-  // `partition_x`, layered on top of `parent`. Returns the metadata containing the new
-  // snapshot (as current) plus the new snapshot itself, so a subsequent Validate(...) can
-  // scan the range (parent, new] for new deletes.
+  // Build metadata with a synthetic concurrent equality delete after `parent`.
   struct ConcurrentDelete {
     std::shared_ptr<TableMetadata> metadata;
     std::shared_ptr<Snapshot> snapshot;
@@ -199,7 +186,6 @@ class OverwriteFilesTest : public UpdateTestBase {
     return table_->NewOverwrite();
   }
 
-  // Commit file_a_ with FastAppend and refresh the table; returns its snapshot id.
   int64_t CommitFileA() {
     auto fa = table_->NewFastAppend();
     EXPECT_TRUE(fa.has_value());
@@ -211,7 +197,6 @@ class OverwriteFilesTest : public UpdateTestBase {
     return snap.value()->snapshot_id;
   }
 
-  // Append a single file via FastAppend and refresh; returns the new snapshot.
   std::shared_ptr<Snapshot> CommitFastAppend(const std::shared_ptr<DataFile>& file) {
     auto fa = table_->NewFastAppend();
     EXPECT_TRUE(fa.has_value());
@@ -406,11 +391,7 @@ TEST_F(OverwriteFilesTest, CommitCustomSummaryProperty) {
   EXPECT_EQ(snapshot->summary.at("custom-prop"), "custom-value");
 }
 
-// A DataFileSet + DeleteFileSet forwards data files to DeleteDataFile and delete files
-// to DeleteDeleteFile; the committed snapshot reflects the data-file removal. (The
-// delete file is forwarded to DeleteDeleteFile; with no matching committed delete file
-// present its removal is a harmless no-op, mirroring the inherited missing-delete
-// behavior.)
+// With no matching committed delete file, deleting `del_file` is a harmless no-op.
 TEST_F(OverwriteFilesTest, BulkDeleteFilesRemovesDataAndDeleteFiles) {
   {
     ICEBERG_UNWRAP_OR_FAIL(auto seed, NewOverwrite());
@@ -475,7 +456,30 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesEquivalentToRepeatedDeleteFile) {
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "0");
 }
 
-// DeleteFiles validates content because both input sets store DataFile pointers.
+// OverwriteFiles validates content because the C++ API stores data and delete files in
+// DataFile pointers, while Java uses separate DataFile/DeleteFile types.
+TEST_F(OverwriteFilesTest, AddFileRejectsDeleteFileContent) {
+  auto del_file = MakeDeleteFile("/delete/del_as_data.parquet", 1L);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->AddFile(del_file);
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Invalid data file to add"));
+  EXPECT_THAT(result, HasErrorMessage("has delete-file content"));
+}
+
+TEST_F(OverwriteFilesTest, DeleteFileRejectsDeleteFileContent) {
+  auto del_file = MakeDeleteFile("/delete/del_as_delete.parquet", 1L);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->DeleteFile(del_file);
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Invalid data file to delete"));
+  EXPECT_THAT(result, HasErrorMessage("has delete-file content"));
+}
+
 TEST_F(OverwriteFilesTest, BulkDeleteFilesRejectsDeleteFileInDataSet) {
   auto del_file =
       MakeDeleteFile("/delete/del_a.parquet", 1L);  // content = positionDeletes
@@ -511,8 +515,6 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesAcceptsEqualityDeleteInDeleteSet) {
   EXPECT_THAT(op->Commit(), IsOk());
 }
 
-// ValidateNoConflictingData: a competing FastAppend that added a data file matching the
-// resolved conflict-detection filter makes the overwrite commit fail.
 TEST_F(OverwriteFilesTest, ValidateNoConflictingDataDetectsConflictingAdd) {
   const int64_t first_id = CommitFileA();
   CommitFastAppend(file_b_);
@@ -543,8 +545,6 @@ TEST_F(OverwriteFilesTest, ValidateNoConflictingDataAllowsNonConflictingChange) 
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation), expected_operation);
 }
 
-// ValidateNoConflictingDeletes: a competing snapshot that deleted a data file in the
-// overwrite range makes the commit fail.
 TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesDetectsConflictingDelete) {
   const int64_t first_id = CommitFileA();
 
@@ -563,10 +563,8 @@ TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesDetectsConflictingDelete)
   EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
 }
 
-// ValidateNoConflictingDeletes allows a non-conflicting concurrent append to commit.
 TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesAllowsNonConflictingChange) {
   const int64_t first_id = CommitFileA();
-  // Competing append in partition x=2 (no deletes in the x=1 range).
   CommitFastAppend(file_b_);
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -577,8 +575,7 @@ TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesAllowsNonConflictingChang
   EXPECT_THAT(op->Commit(), IsOk());
 }
 
-// Explicit replaced-file validation applies ConflictDetectionFilter to concurrent delete
-// files that cover replaced data files.
+// Explicit replaced-file validation checks concurrent deletes covering replaced files.
 TEST_F(OverwriteFilesTest, PathBExplicitDeletesDetectsConcurrentDeleteWithoutFilter) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
@@ -595,8 +592,7 @@ TEST_F(OverwriteFilesTest, PathBExplicitDeletesDetectsConcurrentDeleteWithoutFil
               IsError(ErrorKind::kValidationFailed));
 }
 
-// A conflict filter that does not cover the replaced file's partition narrows the scope,
-// so the concurrent delete is filtered out and validation succeeds.
+// A narrower conflict filter can exclude the concurrent delete.
 TEST_F(OverwriteFilesTest, PathBExplicitDeletesConflictFilterNarrowsScope) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
@@ -613,10 +609,6 @@ TEST_F(OverwriteFilesTest, PathBExplicitDeletesConflictFilterNarrowsScope) {
   EXPECT_THAT(op->Validate(*concurrent.metadata, concurrent.snapshot), IsOk());
 }
 
-// These exercise OverwriteFiles::Validate(...) directly (the same entry point the commit
-// kernel invokes), which is sufficient and deterministic: the strict-range branch does
-// not depend on concurrent snapshots.
-
 TEST_F(OverwriteFilesTest, StrictRangeAcceptedByStrictProjection) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
@@ -625,8 +617,6 @@ TEST_F(OverwriteFilesTest, StrictRangeAcceptedByStrictProjection) {
   EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr), IsOk());
 }
 
-// Strict partition projection is insufficient (filter on a non-partition column) but the
-// StrictMetricsEvaluator proves containment from the file's bounds.
 TEST_F(OverwriteFilesTest, StrictRangeAcceptedByStrictMetrics) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("y", Literal::Long(5L)));
@@ -636,7 +626,6 @@ TEST_F(OverwriteFilesTest, StrictRangeAcceptedByStrictMetrics) {
   EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr), IsOk());
 }
 
-// Neither the strict projection nor the metrics can prove containment.
 TEST_F(OverwriteFilesTest, StrictRangeRejectedWhenNotProvable) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("y", Literal::Long(5L)));
@@ -664,10 +653,8 @@ TEST_F(OverwriteFilesTest, StrictRangeRequiresRowFilter) {
               IsError(ErrorKind::kValidationFailed));
 }
 
-// ValidateAddedFilesMatchOverwriteFilter resolves one data spec for all added files.
 TEST_F(OverwriteFilesTest, StrictRangeRejectsMultiplePartitionSpecs) {
-  // Add a second partition spec before creating the builder,
-  // so the producer's base metadata can resolve both specs when files are staged.
+  // Add the second spec before creating the builder so staged files can resolve it.
   ICEBERG_UNWRAP_OR_FAIL(
       auto spec1, PartitionSpec::Make(*schema_, /*spec_id=*/1,
                                       {PartitionField(/*source_id=*/1, /*field_id=*/1001,
@@ -699,9 +686,7 @@ TEST_F(OverwriteFilesTest, StrictRangeRejectsEmptyAddedFiles) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
-// Case-insensitive binding accepts a differently-cased column name where the
-// case-sensitive (default) binding rejects it. Observed through the strict-range
-// validation, which binds the row filter using the configured case sensitivity.
+// Strict-range validation binds the row filter with the configured case sensitivity.
 TEST_F(OverwriteFilesTest, CaseSensitivityAffectsFilterBinding) {
   {
     ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -721,8 +706,6 @@ TEST_F(OverwriteFilesTest, CaseSensitivityAffectsFilterBinding) {
   }
 }
 
-// Null arguments to the pointer-taking builder methods surface at Commit() without
-// crashing.
 TEST_F(OverwriteFilesTest, NullAddFileRejectedAtCommit) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->AddFile(nullptr);
@@ -764,8 +747,7 @@ TEST_F(OverwriteFilesTest, NullArgumentDoesNotCrashBuilderChain) {
   EXPECT_THAT(result, HasErrorMessage("Invalid data file: null"));
 }
 
-// A null element cannot enter a DataFileSet / DeleteFileSet (insert() rejects nullptr),
-// so DeleteFiles({null...}, {null...}) is a no-op rather than an error.
+// DataFileSet/DeleteFileSet reject nullptr on insert.
 TEST_F(OverwriteFilesTest, DeleteFilesNullElementsCannotEnterSets) {
   DataFileSet data_files;
   data_files.insert(std::shared_ptr<DataFile>{nullptr});
@@ -780,9 +762,7 @@ TEST_F(OverwriteFilesTest, DeleteFilesNullElementsCannotEnterSets) {
   EXPECT_THAT(op->Commit(), IsOk());
 }
 
-// ValidateFromSnapshot accepts a non-negative id (0 is in the generated id range
-// [0, INT64_MAX]) and rejects a negative id (including kInvalidSnapshotId == -1) as a
-// deferred error surfaced at Commit().
+// Snapshot id 0 is valid; negative ids are rejected as builder errors.
 TEST_F(OverwriteFilesTest, ValidateFromSnapshotRejectsNegativeSnapshotId) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->AddFile(file_a_).ValidateFromSnapshot(-1);
@@ -797,11 +777,6 @@ TEST_F(OverwriteFilesTest, ValidateFromSnapshotAcceptsZeroSnapshotId) {
   EXPECT_THAT(op->Commit(), IsOk());
 }
 
-// AddedDataFiles() / deleted_data_files_ are not publicly observable, so the properties
-// are checked indirectly through operation(): for any non-null file, AddFile-only yields
-// `append` (the file was added and the row filter is untouched), while DeleteFile-only
-// and DeleteFiles-only (data portion) yield `delete` (the file was registered for
-// deletion and DeletesDataFiles() became true).
 TEST_F(OverwriteFilesTest, PropertyBuilderForwardingAndDualTracking) {
   const std::vector<std::shared_ptr<DataFile>> files = {
       MakeDataFile("/data/p0.parquet", 1L),
@@ -903,10 +878,7 @@ TEST_F(OverwriteFilesTest, PropertyOperationTruthTable) {
   }
 }
 
-// DataConflictDetectionFilter() is private, so its three resolution outcomes are observed
-// indirectly through ValidateNoConflictingData against a competing concurrent add of
-// file_b (partition x=2):
-// explicit filter, row filter only, and explicit file replacement.
+// Exercise explicit filter, row-filter-only, and explicit file replacement resolution.
 TEST_F(OverwriteFilesTest, PropertyConflictFilterResolution) {
   {
     const int64_t first_id = CommitFileA();

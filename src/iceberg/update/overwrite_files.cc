@@ -56,12 +56,18 @@ OverwriteFiles::~OverwriteFiles() = default;
 
 OverwriteFiles& OverwriteFiles::AddFile(const std::shared_ptr<DataFile>& file) {
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
+  ICEBERG_BUILDER_CHECK(file->content == DataFile::Content::kData,
+                        "Invalid data file to add: {} has delete-file content",
+                        file->file_path);
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(file));
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::DeleteFile(const std::shared_ptr<DataFile>& file) {
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
+  ICEBERG_BUILDER_CHECK(file->content == DataFile::Content::kData,
+                        "Invalid data file to delete: {} has delete-file content",
+                        file->file_path);
   deleted_data_files_.insert(file);
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(file));
   return *this;
