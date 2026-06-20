@@ -36,17 +36,10 @@ namespace iceberg {
 
 /// \brief Overwrite data files in a table.
 ///
-/// OverwriteFiles expresses a logical overwrite transaction: either explicit file
-/// replacement (`DeleteFile(old)` + `AddFile(new)`) or range-based replacement
-/// (`OverwriteByRowFilter(expr)` + `AddFile(new...)`). It is a concrete subclass of
-/// MergingSnapshotUpdate that adds only the overwrite-specific builder surface and the
-/// overwrite-specific `Validate(...)` logic, reusing the inherited filter → write →
-/// merge pipeline, summary building, commit retry, and cleanup unchanged.
+/// Supports explicit file replacement and range-based replacement by row filter.
 class ICEBERG_EXPORT OverwriteFiles : public MergingSnapshotUpdate {
  public:
   /// \brief Create a new OverwriteFiles instance.
-  ///
-  /// Mirrors FastAppend::Make: validates inputs and returns a heap instance.
   ///
   /// \param table_name The name of the table
   /// \param ctx The transaction context to use for this update
@@ -55,8 +48,6 @@ class ICEBERG_EXPORT OverwriteFiles : public MergingSnapshotUpdate {
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
   ~OverwriteFiles() override;
-
-  // --- Overwrite builder surface (chained, ErrorCollector-deferred) ---
 
   /// \brief Add a new data file to the overwrite.
   ///
@@ -70,8 +61,7 @@ class ICEBERG_EXPORT OverwriteFiles : public MergingSnapshotUpdate {
   /// \return Reference to this for method chaining
   OverwriteFiles& DeleteFile(const std::shared_ptr<DataFile>& file);
 
-  /// \brief Bulk equivalent of repeated DeleteFile(...) plus explicit delete-file
-  /// removal.
+  /// \brief Remove data files and delete files as part of the overwrite.
   ///
   /// \param data_files_to_delete The data files to delete
   /// \param delete_files_to_delete The delete files to remove
@@ -84,8 +74,6 @@ class ICEBERG_EXPORT OverwriteFiles : public MergingSnapshotUpdate {
   /// \param expr The row filter expression defining the overwrite range
   /// \return Reference to this for method chaining
   OverwriteFiles& OverwriteByRowFilter(std::shared_ptr<Expression> expr);
-
-  // --- Concurrency / correctness controls ---
 
   /// \brief Set the lower bound snapshot id for concurrency scans.
   ///
@@ -117,14 +105,9 @@ class ICEBERG_EXPORT OverwriteFiles : public MergingSnapshotUpdate {
 
   /// \brief Set case sensitivity for binding, projection, and metrics evaluation.
   ///
-  /// Forwards to the protected MergingSnapshotUpdate::CaseSensitive(bool); the public
-  /// name differs to avoid the public/protected name clash and keep a fluent return.
-  ///
   /// \param case_sensitive Whether matching should be case-sensitive
   /// \return Reference to this for method chaining
   OverwriteFiles& WithCaseSensitivity(bool case_sensitive);
-
-  // --- SnapshotUpdate / MergingSnapshotUpdate overrides ---
 
   std::string operation() override;
 
