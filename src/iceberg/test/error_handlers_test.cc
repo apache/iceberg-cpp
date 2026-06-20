@@ -222,8 +222,8 @@ TEST(ErrorHandlersTest, OAuthErrorHandlerMapsClientErrorsToBadRequest) {
 TEST(ErrorHandlersTest, ConfigErrorHandlerMapsTyped404ToNoSuchWarehouse) {
   ErrorResponse error{
       .code = 404,
-      .type = "NoSuchWarehouseException",
-      .message = "Warehouse does not exist",
+      .type = "NotFoundException",
+      .message = "Warehouse not found",
   };
 
   EXPECT_THAT(ConfigErrorHandler::Instance()->Accept(error),
@@ -234,6 +234,19 @@ TEST(ErrorHandlersTest, ConfigErrorHandlerDelegatesUntyped404ToDefaultHandler) {
   ErrorResponse error{
       .code = 404,
       .type = "",
+      .message = "Not Found",
+  };
+
+  EXPECT_THAT(ConfigErrorHandler::Instance()->Accept(error),
+              IsError(ErrorKind::kRestError));
+  EXPECT_THAT(ConfigErrorHandler::Instance()->Accept(error),
+              HasErrorMessage("Not Found"));
+}
+
+TEST(ErrorHandlersTest, ConfigErrorHandlerDelegatesFallback404ToDefaultHandler) {
+  ErrorResponse error{
+      .code = 404,
+      .type = "RESTException",
       .message = "Not Found",
   };
 

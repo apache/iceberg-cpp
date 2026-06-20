@@ -32,6 +32,7 @@ constexpr std::string_view kNoSuchNamespaceException = "NoSuchNamespaceException
 constexpr std::string_view kNamespaceNotEmptyException = "NamespaceNotEmptyException";
 constexpr std::string_view kNoSuchTableException = "NoSuchTableException";
 constexpr std::string_view kNotFoundException = "NotFoundException";
+constexpr std::string_view kRestException = "RESTException";
 constexpr std::string_view kInvalidClient = "invalid_client";
 constexpr std::string_view kInvalidRequest = "invalid_request";
 constexpr std::string_view kInvalidGrant = "invalid_grant";
@@ -128,7 +129,7 @@ const std::shared_ptr<ConfigErrorHandler>& ConfigErrorHandler::Instance() {
 }
 
 Status ConfigErrorHandler::Accept(const ErrorResponse& error) const {
-  if (error.code == 404 && !error.type.empty()) {
+  if (error.code == 404 && !error.type.empty() && error.type != kRestException) {
     return NoSuchWarehouse(error.message);
   }
 
