@@ -207,6 +207,8 @@ using UncheckedStructLikeSet = StructLikeSet<false>;
 /// \brief Catalog
 class Catalog;
 class LocationProvider;
+class SessionCatalog;
+struct SessionContext;
 
 /// \brief Table.
 class Table;
@@ -223,6 +225,7 @@ class TransactionContext;
 /// \brief Update family.
 class ExpireSnapshots;
 class FastAppend;
+class MergeAppend;
 class PendingUpdate;
 class SetSnapshot;
 class SnapshotManager;
@@ -240,10 +243,12 @@ class UpdateStatistics;
 class DeleteLoader;
 class PositionDeleteIndex;
 
-/// ----------------------------------------------------------------------------
-/// TODO: Forward declarations below are not added yet.
-/// ----------------------------------------------------------------------------
+/// \brief Metadata tables.
+class HistoryTable;
+class MetadataTable;
+class SnapshotsTable;
 
-class EncryptedKey;
+/// \brief Table encryption
+struct EncryptedKey;
 
 }  // namespace iceberg

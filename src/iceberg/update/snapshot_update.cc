@@ -424,6 +424,28 @@ std::string SnapshotUpdate::ManifestListPath() {
   return ctx_->MetadataFileLocation(filename);
 }
 
+SnapshotSummaryBuilder SnapshotUpdate::BuildManifestCountSummary(
+    std::span<const ManifestFile> manifests, int32_t replaced_manifests_count) {
+  SnapshotSummaryBuilder summary;
+  int32_t manifests_created = 0;
+  int32_t manifests_kept = 0;
+  int64_t snapshot_id = SnapshotId();
+  for (const auto& manifest : manifests) {
+    if (manifest.added_snapshot_id == snapshot_id) {
+      ++manifests_created;
+    } else if (manifest.added_snapshot_id != kInvalidSnapshotId) {
+      ++manifests_kept;
+    }
+  }
+
+  summary.Set(SnapshotSummaryFields::kManifestsCreated,
+              std::to_string(manifests_created));
+  summary.Set(SnapshotSummaryFields::kManifestsKept, std::to_string(manifests_kept));
+  summary.Set(SnapshotSummaryFields::kManifestsReplaced,
+              std::to_string(replaced_manifests_count));
+  return summary;
+}
+
 std::string SnapshotUpdate::ManifestPath() {
   // Generate manifest path
   // Format: {metadata_location}/{uuid}-m{manifest_count}.avro

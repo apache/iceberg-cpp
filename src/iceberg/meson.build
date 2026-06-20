@@ -17,6 +17,7 @@
 
 conf_data = configuration_data()
 version = meson.project_version()
+version_suffix = '-SNAPSHOT'
 components = version.split('.')
 assert(
     components.length() >= 3,
@@ -28,7 +29,7 @@ ver_patch = components[2]
 conf_data.set('PROJECT_VERSION_MAJOR', ver_major)
 conf_data.set('PROJECT_VERSION_MINOR', ver_minor)
 conf_data.set('PROJECT_VERSION_PATCH', ver_patch)
-conf_data.set('PROJECT_VERSION', version)
+conf_data.set('ICEBERG_VERSION_STRING', version + version_suffix)
 conf_data.set('PROJECT_NAME', meson.project_name())
 configure_file(
     input: 'version.h.in',
@@ -38,11 +39,15 @@ configure_file(
     install_dir: get_option('includedir') / 'iceberg',
 )
 
+subdir('logging')
+
 iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
     'arrow_c_data_util.cc',
     'catalog/memory/in_memory_catalog.cc',
+    'catalog/session_catalog.cc',
+    'catalog/session_context.cc',
     'delete_file_index.cc',
     'expression/aggregate.cc',
     'expression/binder.cc',
@@ -64,6 +69,9 @@ iceberg_sources = files(
     'file_reader.cc',
     'file_writer.cc',
     'inheritable_metadata.cc',
+    'inspect/history_table.cc',
+    'inspect/metadata_table.cc',
+    'inspect/snapshots_table.cc',
     'json_serde.cc',
     'location_provider.cc',
     'manifest/manifest_adapter.cc',
@@ -118,6 +126,7 @@ iceberg_sources = files(
     'type.cc',
     'update/expire_snapshots.cc',
     'update/fast_append.cc',
+    'update/merge_append.cc',
     'update/merging_snapshot_update.cc',
     'update/pending_update.cc',
     'update/set_snapshot.cc',
@@ -180,9 +189,10 @@ croaring_needs_static = (
 croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
+spdlog_dep = dependency('spdlog')
 zlib_dep = dependency('zlib')
 
-iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, zlib_dep]
+iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, spdlog_dep, zlib_dep]
 
 iceberg_lib = library(
     'iceberg',
@@ -287,6 +297,7 @@ install_headers(
 subdir('catalog')
 subdir('data')
 subdir('deletes')
+subdir('encryption')
 subdir('expression')
 subdir('manifest')
 subdir('metrics')
@@ -294,6 +305,7 @@ subdir('puffin')
 subdir('row')
 subdir('update')
 subdir('util')
+subdir('inspect')
 
 if get_option('tests').enabled()
     subdir('test')

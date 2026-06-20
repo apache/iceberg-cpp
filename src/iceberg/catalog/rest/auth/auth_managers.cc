@@ -46,6 +46,12 @@ const std::unordered_set<std::string, StringHash, StringEqual>& KnownAuthTypes()
 // Infer the authentication type from properties.
 std::string InferAuthType(
     const std::unordered_map<std::string, std::string>& properties) {
+  // Deprecated alias: rest.sigv4-enabled=true forces SigV4.
+  if (auto it = properties.find(AuthProperties::kSigV4Enabled);
+      it != properties.end() && StringUtils::EqualsIgnoreCase(it->second, "true")) {
+    return AuthProperties::kAuthTypeSigV4;
+  }
+
   auto it = properties.find(AuthProperties::kAuthType);
   if (it != properties.end() && !it->second.empty()) {
     return StringUtils::ToLower(it->second);
@@ -61,17 +67,13 @@ std::string InferAuthType(
   return AuthProperties::kAuthTypeNone;
 }
 
-AuthManagerRegistry CreateDefaultRegistry() {
-  return {
+AuthManagerRegistry& GetRegistry() {
+  static AuthManagerRegistry registry = {
       {AuthProperties::kAuthTypeNone, MakeNoopAuthManager},
       {AuthProperties::kAuthTypeBasic, MakeBasicAuthManager},
       {AuthProperties::kAuthTypeOAuth2, MakeOAuth2Manager},
+      {AuthProperties::kAuthTypeSigV4, MakeSigV4AuthManager},
   };
-}
-
-// Get the global registry of auth manager factories.
-AuthManagerRegistry& GetRegistry() {
-  static AuthManagerRegistry registry = CreateDefaultRegistry();
   return registry;
 }
 

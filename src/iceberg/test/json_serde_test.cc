@@ -38,6 +38,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/base64.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"     // IWYU pragma: keep
 #include "iceberg/util/timepoint.h"
@@ -430,6 +431,23 @@ TEST(JsonInternalTest, TableUpdateAddSchema) {
   EXPECT_EQ(*actual->schema(), *update.schema());
 }
 
+TEST(JsonInternalTest, TableUpdateAddSchemaWithoutDeprecatedLastColumnId) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(1, "id", int64(), false),
+                               SchemaField(3, "name", string(), true)},
+      /*schema_id=*/1);
+  nlohmann::json json = {
+      {"action", "add-schema"},
+      {"schema", ToJson(*schema)},
+  };
+
+  auto parsed = TableUpdateFromJson(json);
+  ASSERT_THAT(parsed, IsOk());
+  auto* actual = internal::checked_cast<table::AddSchema*>(parsed.value().get());
+  EXPECT_EQ(*actual->schema(), *schema);
+  EXPECT_EQ(actual->last_column_id(), 3);
+}
+
 TEST(JsonInternalTest, TableUpdateSetCurrentSchema) {
   table::SetCurrentSchema update(1);
   nlohmann::json expected = R"({"action":"set-current-schema","schema-id":1})"_json;
@@ -609,6 +627,23 @@ TEST(JsonInternalTest, TableUpdateSetProperties) {
   EXPECT_EQ(*internal::checked_cast<table::SetProperties*>(parsed.value().get()), update);
 }
 
+TEST(JsonInternalTest, TableUpdateSetPropertiesLegacyUpdatedField) {
+  nlohmann::json json =
+      R"({"action":"set-properties","updated":{"key1":"value1","key2":"value2"}})"_json;
+
+  auto parsed = TableUpdateFromJson(json);
+  ASSERT_THAT(parsed, IsOk());
+  table::SetProperties expected({{"key1", "value1"}, {"key2", "value2"}});
+  EXPECT_EQ(*internal::checked_cast<table::SetProperties*>(parsed.value().get()),
+            expected);
+}
+
+TEST(JsonInternalTest, TableUpdateSetPropertiesMissingCanonicalField) {
+  auto parsed = TableUpdateFromJson(R"({"action":"set-properties"})"_json);
+  EXPECT_THAT(parsed, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(parsed, HasErrorMessage("Missing 'updates'"));
+}
+
 TEST(JsonInternalTest, TableUpdateRemoveProperties) {
   table::RemoveProperties update({"key1", "key2"});
 
@@ -620,6 +655,23 @@ TEST(JsonInternalTest, TableUpdateRemoveProperties) {
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemoveProperties*>(parsed.value().get()),
             update);
+}
+
+TEST(JsonInternalTest, TableUpdateRemovePropertiesLegacyRemovedField) {
+  nlohmann::json json =
+      R"({"action":"remove-properties","removed":["key1","key2"]})"_json;
+
+  auto parsed = TableUpdateFromJson(json);
+  ASSERT_THAT(parsed, IsOk());
+  table::RemoveProperties expected({"key1", "key2"});
+  EXPECT_EQ(*internal::checked_cast<table::RemoveProperties*>(parsed.value().get()),
+            expected);
+}
+
+TEST(JsonInternalTest, TableUpdateRemovePropertiesMissingCanonicalField) {
+  auto parsed = TableUpdateFromJson(R"({"action":"remove-properties"})"_json);
+  EXPECT_THAT(parsed, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(parsed, HasErrorMessage("Missing 'removals'"));
 }
 
 TEST(JsonInternalTest, TableUpdateSetLocation) {
@@ -716,6 +768,50 @@ TEST(JsonInternalTest, TableUpdateRemovePartitionStatistics) {
   EXPECT_EQ(
       *internal::checked_cast<table::RemovePartitionStatistics*>(parsed.value().get()),
       update);
+}
+
+TEST(JsonInternalTest, TableUpdateAddEncryptionKey) {
+  EncryptedKey key{
+      .key_id = "key-1",
+      .encrypted_key_metadata = "secret-key-metadata",
+      .encrypted_by_id = "kek-1",
+      .properties = {{"scope", "table"}},
+  };
+  table::AddEncryptionKey update(key);
+
+  nlohmann::json expected = {
+      {"action", "add-encryption-key"},
+      {"encryption-key",
+       {{"key-id", "key-1"},
+        {"encrypted-key-metadata", Base64::Encode("secret-key-metadata")},
+        {"encrypted-by-id", "kek-1"},
+        {"properties", {{"scope", "table"}}}}},
+  };
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::AddEncryptionKey*>(parsed.value().get()),
+            update);
+}
+
+TEST(JsonInternalTest, TableUpdateAddEncryptionKeyRejectsNonObjectKey) {
+  nlohmann::json json = R"({"action":"add-encryption-key","encryption-key":null})"_json;
+
+  auto parsed = TableUpdateFromJson(json);
+  EXPECT_THAT(parsed, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(parsed, HasErrorMessage("Invalid encryption key"));
+}
+
+TEST(JsonInternalTest, TableUpdateRemoveEncryptionKey) {
+  table::RemoveEncryptionKey update("key-1");
+  nlohmann::json expected = R"({"action":"remove-encryption-key","key-id":"key-1"})"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::RemoveEncryptionKey*>(parsed.value().get()),
+            update);
 }
 
 TEST(JsonInternalTest, TableUpdateUnknownAction) {

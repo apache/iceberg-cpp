@@ -20,13 +20,20 @@
 #include "iceberg/update/fast_append.h"
 
 #include <format>
+#include <optional>
+#include <string>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/constants.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/test_resource.h"
@@ -72,6 +79,23 @@ class FastAppendTest : public UpdateTestBase {
     return data_file;
   }
 
+  Result<ManifestFile> WriteManifest(
+      const std::string& path, const std::vector<std::shared_ptr<DataFile>>& files) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto writer, ManifestWriter::MakeWriter(table_->metadata()->format_version,
+                                                kInvalidSnapshotId, path, file_io_, spec_,
+                                                schema_, ManifestContent::kData));
+    for (const auto& file : files) {
+      ManifestEntry entry;
+      entry.status = ManifestStatus::kAdded;
+      entry.snapshot_id = std::nullopt;
+      entry.data_file = file;
+      ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(entry));
+    }
+    ICEBERG_RETURN_UNEXPECTED(writer->Close());
+    return writer->ToManifestFile();
+  }
+
   std::shared_ptr<PartitionSpec> spec_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<DataFile> file_a_;
@@ -90,6 +114,9 @@ TEST_F(FastAppendTest, AppendDataFile) {
   EXPECT_EQ(snapshot->summary.at("added-data-files"), "1");
   EXPECT_EQ(snapshot->summary.at("added-records"), "100");
   EXPECT_EQ(snapshot->summary.at("added-files-size"), "1024");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsCreated), "1");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsKept), "0");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsReplaced), "0");
 }
 
 TEST_F(FastAppendTest, AppendMultipleDataFiles) {
@@ -170,6 +197,40 @@ TEST_F(FastAppendTest, FinalizeIgnoresCleanupDeleteFailure) {
   EXPECT_THAT(fast_append->Finalize(Result<const TableMetadata*>(
                   std::unexpected(CommitFailed("commit failed").error()))),
               IsOk());
+}
+
+TEST_F(FastAppendTest, RetryCopiesAppendManifestAgain) {
+  table_->metadata()->format_version = 1;
+  const auto path = table_location_ + "/metadata/input.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest, WriteManifest(path, {file_a_}));
+
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  std::vector<std::string> deleted_paths;
+  fast_append->DeleteWith([&](const std::string& deleted_path) {
+    deleted_paths.push_back(deleted_path);
+    return file_io_->DeleteFile(deleted_path);
+  });
+  fast_append->AppendManifest(manifest);
+
+  auto& update = static_cast<SnapshotUpdate&>(*fast_append);
+  // First Apply() copies the input manifest because v1 cannot inherit snapshot IDs.
+  ICEBERG_UNWRAP_OR_FAIL(auto first_apply, update.Apply());
+  SnapshotCache first_cache(first_apply.snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_manifests, first_cache.Manifests(file_io_));
+  ASSERT_EQ(first_manifests.size(), 1U);
+  const auto first_rewritten_path = first_manifests[0].manifest_path;
+  EXPECT_NE(first_rewritten_path, path);
+
+  // Second Apply() simulates retry cleanup, then copies the original manifest again.
+  ICEBERG_UNWRAP_OR_FAIL(auto second_apply, update.Apply());
+  EXPECT_THAT(deleted_paths, testing::Contains(first_rewritten_path));
+
+  SnapshotCache second_cache(second_apply.snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto second_manifests, second_cache.Manifests(file_io_));
+  ASSERT_EQ(second_manifests.size(), 1U);
+  EXPECT_NE(second_manifests[0].manifest_path, path);
+  EXPECT_NE(second_manifests[0].manifest_path, first_rewritten_path);
 }
 
 TEST_F(FastAppendTest, AppendDuplicateFile) {

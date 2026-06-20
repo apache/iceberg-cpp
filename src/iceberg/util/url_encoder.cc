@@ -46,12 +46,13 @@ std::string UrlEncoder::Encode(std::string_view str_to_encode) {
   result.reserve(str_to_encode.size() * 3 / 2 /* Heuristic reservation */);
 
   for (char c : str_to_encode) {
-    if (IsUnreserved(c)) {
+    auto b = static_cast<unsigned char>(c);
+    if (IsUnreserved(b)) {
       result += c;
     } else {
       result += '%';
-      result += kHexChars[c >> 4];
-      result += kHexChars[c & 0xF];
+      result += kHexChars[b >> 4];
+      result += kHexChars[b & 0xF];
     }
   }
 

@@ -389,39 +389,40 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* arrow_schema,
 }
 
 Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
+                            const std::shared_ptr<PrimitiveType>& field_type,
                             std::vector<ManifestEntry>& manifest_entries) {
+  auto& partition = manifest_entries[row_idx].data_file->partition;
+  if (view->storage_type == ArrowType::NANOARROW_TYPE_NA ||
+      ArrowArrayViewIsNull(view, row_idx)) {
+    partition.AddValue(Literal::Null(field_type));
+    return {};
+  }
   switch (view->storage_type) {
-    case ArrowType::NANOARROW_TYPE_BOOL: {
-      auto value = ArrowArrayViewGetUIntUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(
-          Literal::Boolean(value != 0));
-    } break;
-    case ArrowType::NANOARROW_TYPE_INT32: {
-      auto value = ArrowArrayViewGetIntUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Int(value));
-    } break;
-    case ArrowType::NANOARROW_TYPE_INT64: {
-      auto value = ArrowArrayViewGetIntUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Long(value));
-    } break;
-    case ArrowType::NANOARROW_TYPE_FLOAT: {
-      auto value = ArrowArrayViewGetDoubleUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Float(value));
-    } break;
-    case ArrowType::NANOARROW_TYPE_DOUBLE: {
-      auto value = ArrowArrayViewGetDoubleUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Double(value));
-    } break;
+    case ArrowType::NANOARROW_TYPE_BOOL:
+      partition.AddValue(
+          Literal::Boolean(ArrowArrayViewGetUIntUnsafe(view, row_idx) != 0));
+      break;
+    case ArrowType::NANOARROW_TYPE_INT32:
+      partition.AddValue(Literal::Int(ArrowArrayViewGetIntUnsafe(view, row_idx)));
+      break;
+    case ArrowType::NANOARROW_TYPE_INT64:
+      partition.AddValue(Literal::Long(ArrowArrayViewGetIntUnsafe(view, row_idx)));
+      break;
+    case ArrowType::NANOARROW_TYPE_FLOAT:
+      partition.AddValue(Literal::Float(ArrowArrayViewGetDoubleUnsafe(view, row_idx)));
+      break;
+    case ArrowType::NANOARROW_TYPE_DOUBLE:
+      partition.AddValue(Literal::Double(ArrowArrayViewGetDoubleUnsafe(view, row_idx)));
+      break;
     case ArrowType::NANOARROW_TYPE_STRING: {
-      auto value = ArrowArrayViewGetStringUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(
-          Literal::String(std::string(value.data, value.size_bytes)));
+      auto str_value = ArrowArrayViewGetStringUnsafe(view, row_idx);
+      partition.AddValue(
+          Literal::String(std::string(str_value.data, str_value.size_bytes)));
     } break;
     case ArrowType::NANOARROW_TYPE_BINARY: {
-      auto buffer = ArrowArrayViewGetBytesUnsafe(view, row_idx);
-      manifest_entries[row_idx].data_file->partition.AddValue(
-          Literal::Binary(std::vector<uint8_t>(buffer.data.as_char,
-                                               buffer.data.as_char + buffer.size_bytes)));
+      auto buf_value = ArrowArrayViewGetBytesUnsafe(view, row_idx);
+      partition.AddValue(Literal::Binary(std::vector<uint8_t>(
+          buf_value.data.as_char, buf_value.data.as_char + buf_value.size_bytes)));
     } break;
     default:
       return InvalidManifest("Unsupported type {} for partition values",
@@ -473,14 +474,15 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
       case DataFile::kPartitionFieldId: {
         ICEBERG_RETURN_UNEXPECTED(
             AssertViewType(field_view, ArrowType::NANOARROW_TYPE_STRUCT, field_name));
+        const auto& partition_type =
+            internal::checked_cast<const StructType&>(*field->get().type());
         for (int64_t part_idx = 0; part_idx < field_view->n_children; part_idx++) {
           auto part_view = field_view->children[part_idx];
+          auto part_field_type = internal::checked_pointer_cast<PrimitiveType>(
+              partition_type.fields()[part_idx].type());
           for (int64_t row_idx = 0; row_idx < part_view->length; row_idx++) {
-            if (ArrowArrayViewIsNull(part_view, row_idx)) {
-              break;
-            }
-            ICEBERG_RETURN_UNEXPECTED(
-                ParsePartitionValues(part_view, row_idx, manifest_entries));
+            ICEBERG_RETURN_UNEXPECTED(ParsePartitionValues(
+                part_view, row_idx, part_field_type, manifest_entries));
           }
         }
       } break;

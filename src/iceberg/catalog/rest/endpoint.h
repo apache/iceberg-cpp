@@ -22,6 +22,7 @@
 #include <string>
 #include <string_view>
 
+#include "iceberg/catalog/rest/http_request.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
 
@@ -29,12 +30,6 @@
 /// Endpoint definitions for Iceberg REST API operations.
 
 namespace iceberg::rest {
-
-/// \brief HTTP method enumeration.
-enum class HttpMethod : uint8_t { kGet, kPost, kPut, kDelete, kHead };
-
-/// \brief Convert HttpMethod to string representation.
-constexpr std::string_view ToString(HttpMethod method);
 
 /// \brief An Endpoint is an immutable value object identifying a specific REST API
 /// operation. It consists of:

@@ -24,6 +24,7 @@
 #include <string>
 
 #include "iceberg/catalog/sql/config.h"
+#include "iceberg/file_io.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
@@ -507,11 +508,25 @@ Result<std::shared_ptr<Transaction>> SqlCatalog::StageCreateTable(
 
 Status SqlCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
   ICEBERG_RETURN_UNEXPECTED(ValidateTableIdentifier(identifier));
-  if (purge) {
-    // TODO(zhjwpku): Delete the table data and metadata files when purge is requested.
-  }
 
   const std::string ns_str = NamespaceToString(identifier.ns);
+
+  if (purge && file_io_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto metadata_location,
+                            store_->GetTableMetadataLocation(ns_str, identifier.name));
+    if (metadata_location.has_value()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto metadata,
+                              TableMetadataUtil::Read(*file_io_, *metadata_location));
+      // Delete previous metadata files from the log first, so that if deletion
+      // fails and is retried, the current metadata file still exists as an
+      // anchor to locate any remaining old files.
+      for (const auto& entry : metadata->metadata_log) {
+        std::ignore = file_io_->DeleteFile(entry.metadata_file);
+      }
+      std::ignore = file_io_->DeleteFile(*metadata_location);
+    }
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(auto affected, store_->DeleteTable(ns_str, identifier.name));
   if (affected == 0) {
     return NoSuchTable("Table does not exist: {}", identifier.ToString());

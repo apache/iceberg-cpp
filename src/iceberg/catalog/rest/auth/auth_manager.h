@@ -70,13 +70,13 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// This method is used by SessionCatalog to create sessions for different contexts
   /// (e.g., different users or tenants).
   ///
-  /// \param context Context properties (e.g., user credentials, tenant info).
+  /// \param context Session context (e.g., session ID, identity, credentials,
+  /// properties).
   /// \param parent Catalog session to inherit from or return as-is.
   /// \return A context-specific session, or the parent session if no context-specific
   /// session is needed, or an error if session creation fails.
   virtual Result<std::shared_ptr<AuthSession>> ContextualSession(
-      const std::unordered_map<std::string, std::string>& context,
-      std::shared_ptr<AuthSession> parent);
+      const SessionContext& context, std::shared_ptr<AuthSession> parent);
 
   /// \brief Create or reuse a session scoped to a single table/view.
   ///

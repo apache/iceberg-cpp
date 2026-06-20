@@ -39,6 +39,7 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/rest_catalog.h"
+#include "iceberg/catalog/session_context.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -123,12 +124,12 @@ class RestCatalogIntegrationTest : public ::testing::Test {
   static void TearDownTestSuite() { docker_compose_.reset(); }
 
   /// Create a catalog with default configuration.
-  Result<std::shared_ptr<RestCatalog>> CreateCatalog() {
+  Result<std::shared_ptr<Catalog>> CreateCatalog() {
     return CreateCatalogWithProperties({});
   }
 
   /// Create a catalog with additional properties merged on top of defaults.
-  Result<std::shared_ptr<RestCatalog>> CreateCatalogWithProperties(
+  Result<std::shared_ptr<Catalog>> CreateCatalogWithProperties(
       const std::unordered_map<std::string, std::string>& extra) {
     auto config = RestCatalogProperties::default_properties();
     config.Set(RestCatalogProperties::kUri, CatalogUri())
@@ -139,18 +140,19 @@ class RestCatalogIntegrationTest : public ::testing::Test {
     for (const auto& [k, v] : extra) {
       config.mutable_configs()[k] = v;
     }
-    return RestCatalog::Make(config);
+    ICEBERG_ASSIGN_OR_RAISE(auto root, RestCatalog::Make(config));
+    return root->AsCatalog();
   }
 
   /// Create a catalog configured with a specific snapshot loading mode.
-  Result<std::shared_ptr<RestCatalog>> CreateCatalogWithSnapshotMode(
+  Result<std::shared_ptr<Catalog>> CreateCatalogWithSnapshotMode(
       const std::string& mode) {
     return CreateCatalogWithProperties(
         {{RestCatalogProperties::kSnapshotLoadingMode.key(), mode}});
   }
 
   /// Convenience: create a namespace and return the catalog.
-  Result<std::shared_ptr<RestCatalog>> CreateCatalogAndNamespace(const Namespace& ns) {
+  Result<std::shared_ptr<Catalog>> CreateCatalogAndNamespace(const Namespace& ns) {
     ICEBERG_ASSIGN_OR_RAISE(auto catalog, CreateCatalog());
     auto status = catalog->CreateNamespace(ns, {});
     if (!status.has_value()) {
@@ -169,7 +171,7 @@ class RestCatalogIntegrationTest : public ::testing::Test {
 
   /// Create a table with default schema and no partitioning.
   Result<std::shared_ptr<Table>> CreateDefaultTable(
-      const std::shared_ptr<RestCatalog>& catalog, const TableIdentifier& table_id,
+      const std::shared_ptr<Catalog>& catalog, const TableIdentifier& table_id,
       const std::unordered_map<std::string, std::string>& props = {}) {
     return catalog->CreateTable(table_id, DefaultSchema(), PartitionSpec::Unpartitioned(),
                                 SortOrder::Unsorted(), "", props);
@@ -179,8 +181,51 @@ class RestCatalogIntegrationTest : public ::testing::Test {
 };
 
 TEST_F(RestCatalogIntegrationTest, MakeCatalogSuccess) {
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalog());
-  EXPECT_EQ(catalog->name(), kCatalogName);
+  auto config = RestCatalogProperties::default_properties();
+  config.Set(RestCatalogProperties::kUri, CatalogUri())
+      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
+      .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
+  config.mutable_configs()[std::string(RestCatalogProperties::kIOImpl.key())] =
+      std::string(kStdFileIOImpl);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto root, RestCatalog::Make(config));
+  EXPECT_EQ(root->name(), kCatalogName);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_default, root->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto second_default, root->AsCatalog());
+  EXPECT_EQ(first_default, second_default);
+
+  SessionContext context{.session_id = "tenant-a"};
+  ICEBERG_UNWRAP_OR_FAIL(auto first_context, root->WithContext(context));
+  ICEBERG_UNWRAP_OR_FAIL(auto second_context, root->WithContext(context));
+  EXPECT_NE(first_context, second_context);
+
+  EXPECT_THAT(root->WithContext(SessionContext{}), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(RestCatalogIntegrationTest, DefaultCatalogCacheDoesNotKeepRootAlive) {
+  std::weak_ptr<RestCatalog> weak_root;
+  std::weak_ptr<Catalog> weak_catalog;
+
+  {
+    auto config = RestCatalogProperties::default_properties();
+    config.Set(RestCatalogProperties::kUri, CatalogUri())
+        .Set(RestCatalogProperties::kName, std::string(kCatalogName))
+        .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
+    config.mutable_configs()[std::string(RestCatalogProperties::kIOImpl.key())] =
+        std::string(kStdFileIOImpl);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto root, RestCatalog::Make(config));
+    ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+    ICEBERG_UNWRAP_OR_FAIL(auto same_catalog, root->AsCatalog());
+
+    weak_root = root;
+    weak_catalog = catalog;
+    EXPECT_EQ(catalog, same_catalog);
+  }
+
+  EXPECT_TRUE(weak_catalog.expired());
+  EXPECT_TRUE(weak_root.expired());
 }
 
 TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
@@ -418,6 +463,49 @@ TEST_F(RestCatalogIntegrationTest, UpdateTable) {
   EXPECT_EQ(updated->metadata()->properties.configs().at("key1"), "value1");
 }
 
+TEST_F(RestCatalogIntegrationTest, LoadedTableUsesTableScopedCatalog) {
+  // TODO(gangwu): Add a focused mock REST server/auth manager test that
+  // asserts exact ContextualSession and TableSession inputs, including table
+  // response config. The Docker REST fixture currently returns empty config.
+  Namespace ns{.levels = {"test_table_scoped_catalog"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
+
+  TableIdentifier table_id{.ns = ns, .name = "t1"};
+  ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog->LoadTable(table_id));
+  ASSERT_THAT(loaded->Refresh(), IsOk());
+
+  TableIdentifier other_id{.ns = ns, .name = "other"};
+  EXPECT_THAT(loaded->catalog()->LoadTable(other_id),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(loaded->catalog()->CreateTable(other_id, DefaultSchema(),
+                                             PartitionSpec::Unpartitioned(),
+                                             SortOrder::Unsorted(), "", {}),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(loaded->catalog()->StageCreateTable(other_id, DefaultSchema(),
+                                                  PartitionSpec::Unpartitioned(),
+                                                  SortOrder::Unsorted(), "", {}),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(loaded->catalog()->RegisterTable(other_id, "file:/tmp/metadata.json"),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(loaded->catalog()->DropTable(other_id, /*purge=*/false),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(loaded->catalog()->DropTable(table_id, /*purge=*/false),
+              IsError(ErrorKind::kNotSupported));
+
+  std::vector<std::unique_ptr<TableRequirement>> requirements;
+  requirements.push_back(std::make_unique<table::AssertUUID>(loaded->uuid()));
+
+  std::vector<std::unique_ptr<TableUpdate>> updates;
+  updates.push_back(std::make_unique<table::SetProperties>(
+      std::unordered_map<std::string, std::string>{{"scoped", "true"}}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto updated,
+                         loaded->catalog()->UpdateTable(table_id, requirements, updates));
+  EXPECT_EQ(updated->metadata()->properties.configs().at("scoped"), "true");
+}
+
 TEST_F(RestCatalogIntegrationTest, RegisterTable) {
   Namespace ns{.levels = {"test_register_table"}};
   ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalogAndNamespace(ns));
@@ -446,6 +534,12 @@ TEST_F(RestCatalogIntegrationTest, StageCreateTable) {
                                 SortOrder::Unsorted(), "", {{"key1", "value1"}}));
 
   EXPECT_EQ(txn->table()->name(), table_id);
+
+  TableIdentifier other_id{.ns = ns, .name = "other"};
+  EXPECT_THAT(txn->table()->catalog()->LoadTable(other_id),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(txn->table()->catalog()->DropTable(table_id, /*purge=*/false),
+              IsError(ErrorKind::kNotSupported));
 
   // Not yet visible in catalog
   ICEBERG_UNWRAP_OR_FAIL(auto before, catalog->TableExists(table_id));

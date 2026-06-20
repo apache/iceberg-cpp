@@ -45,6 +45,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/base64.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/json_util_internal.h"
@@ -92,6 +93,8 @@ constexpr std::string_view kValueId = "value-id";
 constexpr std::string_view kRequired = "required";
 constexpr std::string_view kElementRequired = "element-required";
 constexpr std::string_view kValueRequired = "value-required";
+constexpr std::string_view kEncryptedKeyMetadata = "encrypted-key-metadata";
+constexpr std::string_view kEncryptedById = "encrypted-by-id";
 
 // Snapshot constants
 constexpr std::string_view kSpecId = "spec-id";
@@ -168,6 +171,7 @@ constexpr std::string_view kRefs = "refs";
 constexpr std::string_view kStatistics = "statistics";
 constexpr std::string_view kPartitionStatistics = "partition-statistics";
 constexpr std::string_view kNextRowId = "next-row-id";
+constexpr std::string_view kEncryptionKeys = "encryption-keys";
 constexpr std::string_view kMetadataFile = "metadata-file";
 constexpr std::string_view kStatisticsPath = "statistics-path";
 constexpr std::string_view kFileSizeInBytes = "file-size-in-bytes";
@@ -198,6 +202,8 @@ constexpr std::string_view kActionRemoveStatistics = "remove-statistics";
 constexpr std::string_view kActionSetPartitionStatistics = "set-partition-statistics";
 constexpr std::string_view kActionRemovePartitionStatistics =
     "remove-partition-statistics";
+constexpr std::string_view kActionAddEncryptionKey = "add-encryption-key";
+constexpr std::string_view kActionRemoveEncryptionKey = "remove-encryption-key";
 
 // TableUpdate field constants
 constexpr std::string_view kUUID = "uuid";
@@ -212,6 +218,9 @@ constexpr std::string_view kRefName = "ref-name";
 constexpr std::string_view kRef = "ref";
 constexpr std::string_view kUpdates = "updates";
 constexpr std::string_view kRemovals = "removals";
+constexpr std::string_view kUpdated = "updated";
+constexpr std::string_view kRemoved = "removed";
+constexpr std::string_view kEncryptionKey = "encryption-key";
 
 // TableRequirement type constants
 constexpr std::string_view kRequirementAssertDoesNotExist = "assert-create";
@@ -879,6 +888,41 @@ Result<MetadataLogEntry> MetadataLogEntryFromJson(const nlohmann::json& json) {
   return metadata_log_entry;
 }
 
+nlohmann::json ToJson(const EncryptedKey& encrypted_key) {
+  nlohmann::json json;
+  json[kKeyId] = encrypted_key.key_id;
+  json[kEncryptedKeyMetadata] = Base64::Encode(encrypted_key.encrypted_key_metadata);
+  SetOptionalField(json, kEncryptedById, encrypted_key.encrypted_by_id);
+  if (!encrypted_key.properties.empty()) {
+    json[kProperties] = encrypted_key.properties;
+  }
+  return json;
+}
+
+Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json) {
+  using StringMap = std::unordered_map<std::string, std::string>;
+
+  if (!json.is_object()) {
+    return JsonParseError("Invalid encryption key, must be non-null object: {}",
+                          SafeDumpJson(json));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValue<std::string>(json, kKeyId));
+  ICEBERG_ASSIGN_OR_RAISE(auto encoded_metadata,
+                          GetJsonValue<std::string>(json, kEncryptedKeyMetadata));
+  ICEBERG_ASSIGN_OR_RAISE(auto encrypted_key_metadata, Base64::Decode(encoded_metadata));
+  ICEBERG_ASSIGN_OR_RAISE(auto encrypted_by_id,
+                          GetJsonValueOptional<std::string>(json, kEncryptedById));
+  ICEBERG_ASSIGN_OR_RAISE(auto properties,
+                          GetJsonValueOrDefault<StringMap>(json, kProperties));
+  return EncryptedKey{
+      .key_id = std::move(key_id),
+      .encrypted_key_metadata = std::move(encrypted_key_metadata),
+      .encrypted_by_id = std::move(encrypted_by_id),
+      .properties = std::move(properties),
+  };
+}
+
 nlohmann::json ToJson(const TableMetadata& table_metadata) {
   nlohmann::json json;
 
@@ -945,6 +989,9 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   json[kSnapshots] = ToJsonList(table_metadata.snapshots);
   json[kStatistics] = ToJsonList(table_metadata.statistics);
   json[kPartitionStatistics] = ToJsonList(table_metadata.partition_statistics);
+  if (!table_metadata.encryption_keys.empty()) {
+    json[kEncryptionKeys] = ToJsonList(table_metadata.encryption_keys);
+  }
   json[kSnapshotLog] = ToJsonList(table_metadata.snapshot_log);
   json[kMetadataLog] = ToJsonList(table_metadata.metadata_log);
 
@@ -1210,6 +1257,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
       table_metadata->partition_statistics,
       FromJsonList<PartitionStatisticsFile>(json, kPartitionStatistics,
                                             PartitionStatisticsFileFromJson));
+  ICEBERG_ASSIGN_OR_RAISE(
+      table_metadata->encryption_keys,
+      FromJsonList<EncryptedKey>(json, kEncryptionKeys, EncryptedKeyFromJson));
   ICEBERG_ASSIGN_OR_RAISE(
       table_metadata->snapshot_log,
       FromJsonList<SnapshotLogEntry>(json, kSnapshotLog, SnapshotLogEntryFromJson));
@@ -1514,6 +1564,18 @@ nlohmann::json ToJson(const TableUpdate& update) {
       json[kSnapshotId] = u.snapshot_id();
       break;
     }
+    case TableUpdate::Kind::kAddEncryptionKey: {
+      const auto& u = internal::checked_cast<const table::AddEncryptionKey&>(update);
+      json[kAction] = kActionAddEncryptionKey;
+      json[kEncryptionKey] = ToJson(u.key());
+      break;
+    }
+    case TableUpdate::Kind::kRemoveEncryptionKey: {
+      const auto& u = internal::checked_cast<const table::RemoveEncryptionKey&>(update);
+      json[kAction] = kActionRemoveEncryptionKey;
+      json[kKeyId] = u.key_id();
+      break;
+    }
   }
   return json;
 }
@@ -1534,7 +1596,6 @@ nlohmann::json ToJson(const TableRequirement& requirement) {
       const auto& r =
           internal::checked_cast<const table::AssertRefSnapshotID&>(requirement);
       json[kType] = kRequirementAssertRefSnapshotID;
-      // REST spec names this field "ref", not "ref-name".
       json[kRef] = r.ref_name();
       if (r.snapshot_id().has_value()) {
         json[kSnapshotId] = r.snapshot_id().value();
@@ -1598,8 +1659,10 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
     ICEBERG_ASSIGN_OR_RAISE(auto schema_json,
                             GetJsonValue<nlohmann::json>(json, kSchema));
     ICEBERG_ASSIGN_OR_RAISE(auto parsed_schema, SchemaFromJson(schema_json));
-    ICEBERG_ASSIGN_OR_RAISE(auto last_column_id,
-                            GetJsonValue<int32_t>(json, kLastColumnId));
+    ICEBERG_ASSIGN_OR_RAISE(auto highest_field_id, parsed_schema->HighestFieldId());
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto last_column_id,
+        GetJsonValueOrDefault<int32_t>(json, kLastColumnId, highest_field_id));
     return std::make_unique<table::AddSchema>(std::move(parsed_schema), last_column_id);
   }
   if (action == kActionSetCurrentSchema) {
@@ -1678,12 +1741,17 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   }
   if (action == kActionSetProperties) {
     using StringMap = std::unordered_map<std::string, std::string>;
-    ICEBERG_ASSIGN_OR_RAISE(auto updates, GetJsonValue<StringMap>(json, kUpdates));
+    ICEBERG_ASSIGN_OR_RAISE(auto updates,
+                            json.contains(kUpdates) || !json.contains(kUpdated)
+                                ? GetJsonValue<StringMap>(json, kUpdates)
+                                : GetJsonValue<StringMap>(json, kUpdated));
     return std::make_unique<table::SetProperties>(std::move(updates));
   }
   if (action == kActionRemoveProperties) {
     ICEBERG_ASSIGN_OR_RAISE(auto removals_vec,
-                            GetJsonValue<std::vector<std::string>>(json, kRemovals));
+                            json.contains(kRemovals) || !json.contains(kRemoved)
+                                ? GetJsonValue<std::vector<std::string>>(json, kRemovals)
+                                : GetJsonValue<std::vector<std::string>>(json, kRemoved));
     std::unordered_set<std::string> removals(
         std::make_move_iterator(removals_vec.begin()),
         std::make_move_iterator(removals_vec.end()));
@@ -1715,6 +1783,17 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   if (action == kActionRemovePartitionStatistics) {
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
     return std::make_unique<table::RemovePartitionStatistics>(snapshot_id);
+  }
+  if (action == kActionAddEncryptionKey) {
+    if (!json.contains(kEncryptionKey)) {
+      return JsonParseError("Invalid encryption key, must be non-null object: null");
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto key, EncryptedKeyFromJson(json.at(kEncryptionKey)));
+    return std::make_unique<table::AddEncryptionKey>(std::move(key));
+  }
+  if (action == kActionRemoveEncryptionKey) {
+    ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValue<std::string>(json, kKeyId));
+    return std::make_unique<table::RemoveEncryptionKey>(std::move(key_id));
   }
 
   return JsonParseError("Unknown table update action: {}", action);

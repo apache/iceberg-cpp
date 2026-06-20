@@ -89,6 +89,7 @@ add_iceberg_test(schema_test
 add_iceberg_test(table_test
                  SOURCES
                  location_provider_test.cc
+                 metadata_table_test.cc
                  metrics_config_test.cc
                  metrics_reporter_test.cc
                  metrics_test.cc
@@ -100,6 +101,8 @@ add_iceberg_test(table_test
                  table_requirements_test.cc
                  table_test.cc
                  table_update_test.cc)
+
+add_iceberg_test(logging_test SOURCES log_level_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
@@ -222,6 +225,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    expire_snapshots_test.cc
                    fast_append_test.cc
                    manifest_filter_manager_test.cc
+                   merge_append_test.cc
                    merging_snapshot_update_test.cc
                    name_mapping_update_test.cc
                    snapshot_manager_test.cc
@@ -289,6 +293,11 @@ if(ICEBERG_BUILD_REST)
                         rest_file_io_test.cc
                         rest_json_serde_test.cc
                         rest_util_test.cc)
+
+  if(ICEBERG_SIGV4)
+    add_rest_iceberg_test(sigv4_auth_test SOURCES sigv4_auth_test.cc)
+    target_link_libraries(sigv4_auth_test PRIVATE aws-cpp-sdk-core)
+  endif()
 
   if(ICEBERG_BUILD_REST_INTEGRATION_TESTS)
     add_rest_iceberg_test(rest_catalog_integration_test

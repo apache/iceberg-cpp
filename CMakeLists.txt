@@ -24,11 +24,11 @@ endif()
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 
 project(Iceberg
-        VERSION 0.3.0
+        VERSION 0.4.0
         DESCRIPTION "Iceberg C++ Project"
         LANGUAGES CXX)
 
-set(ICEBERG_VERSION_SUFFIX "")
+set(ICEBERG_VERSION_SUFFIX "-SNAPSHOT")
 set(ICEBERG_VERSION_STRING "${PROJECT_VERSION}${ICEBERG_VERSION_SUFFIX}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
                "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
@@ -53,6 +53,8 @@ option(ICEBERG_SQL_SQLITE "Build the SQLite connector for the SQL catalog" OFF)
 option(ICEBERG_SQL_POSTGRESQL "Build the PostgreSQL connector for the SQL catalog" OFF)
 option(ICEBERG_SQL_MYSQL "Build the MySQL connector for the SQL catalog" OFF)
 option(ICEBERG_S3 "Build with S3 support" OFF)
+option(ICEBERG_SIGV4 "Build with SigV4 support" OFF)
+option(ICEBERG_BUNDLE_AWSSDK "Bundle AWS SDK for S3/SigV4 support" ON)
 option(ICEBERG_ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(ICEBERG_ENABLE_UBSAN "Enable Undefined Behavior Sanitizer" OFF)
 
@@ -74,12 +76,6 @@ endif()
 if(ICEBERG_BUILD_REST_INTEGRATION_TESTS AND WIN32)
   set(ICEBERG_BUILD_REST_INTEGRATION_TESTS OFF)
   message(WARNING "Cannot build rest integration test on Windows, turning it off.")
-endif()
-
-# ICEBERG_S3 requires ICEBERG_BUILD_BUNDLE
-if(NOT ICEBERG_BUILD_BUNDLE AND ICEBERG_S3)
-  set(ICEBERG_S3 OFF)
-  message(STATUS "ICEBERG_S3 is disabled because ICEBERG_BUILD_BUNDLE is OFF")
 endif()
 
 include(CMakeParseArguments)

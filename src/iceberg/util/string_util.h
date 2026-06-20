@@ -20,6 +20,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cctype>
 #include <cerrno>
 #include <charconv>
 #include <ranges>
@@ -40,19 +41,22 @@ concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 
 class ICEBERG_EXPORT StringUtils {
  public:
+  // NOTE: These convert ASCII letters only; all other bytes, including non-ASCII
+  // (multibyte UTF-8) bytes, are passed through unchanged.
+  // See https://github.com/apache/iceberg-cpp/issues/613.
   static std::string ToLower(std::string_view str) {
-    return str | std::ranges::views::transform([](char c) { return std::tolower(c); }) |
+    return str | std::ranges::views::transform(ToLowerAscii) |
            std::ranges::to<std::string>();
   }
 
   static std::string ToUpper(std::string_view str) {
-    return str | std::ranges::views::transform([](char c) { return std::toupper(c); }) |
+    return str | std::ranges::views::transform(ToUpperAscii) |
            std::ranges::to<std::string>();
   }
 
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
     return std::ranges::equal(
-        lhs, rhs, [](char lc, char rc) { return std::tolower(lc) == std::tolower(rc); });
+        lhs, rhs, [](char lc, char rc) { return ToLowerAscii(lc) == ToLowerAscii(rc); });
   }
 
   static bool StartsWithIgnoreCase(std::string_view str, std::string_view prefix) {
@@ -127,6 +131,19 @@ class ICEBERG_EXPORT StringUtils {
                              typeid(T).name(), str);
     }
     return value;
+  }
+
+ private:
+  // ASCII-only case conversion using explicit range checks rather than
+  // std::tolower/std::toupper. This is independent of the current C locale and never
+  // touches non-ASCII (high-bit) bytes, so multibyte UTF-8 sequences are preserved. It
+  // also sidesteps the undefined behavior of passing a negative char to <cctype>.
+  static constexpr char ToLowerAscii(char c) noexcept {
+    return (c >= 'A' && c <= 'Z') ? static_cast<char>(c - 'A' + 'a') : c;
+  }
+
+  static constexpr char ToUpperAscii(char c) noexcept {
+    return (c >= 'a' && c <= 'z') ? static_cast<char>(c - 'a' + 'A') : c;
   }
 };
 

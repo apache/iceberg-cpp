@@ -288,6 +288,81 @@ TEST_P(TestManifestReader, TestManifestReaderWithPartitionMetadata) {
   EXPECT_EQ(read_entry.data_file->partition.values()[0], Literal::Int(0));
 }
 
+TEST_P(TestManifestReader, NullPartitionValuePreservedPositionallyAcrossRows) {
+  auto version = GetParam();
+
+  // Two partition fields, with several entries. The first entry has a null in
+  // partition field 0. The null must be preserved as a typed null in place so
+  // that (a) the tuple keeps one value per partition field (arity matches the
+  // spec), (b) the non-null value for field 1 stays in position 1 instead of
+  // shifting into position 0, and (c) parsing of the remaining rows is not
+  // aborted. This mirrors Iceberg Java's PartitionData, a fixed-size positional
+  // array that stores null in place.
+  auto multi_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(/*field_id=*/3, "id", int32()),
+      SchemaField::MakeRequired(/*field_id=*/4, "data", string())});
+
+  std::shared_ptr<PartitionSpec> multi_spec;
+  ICEBERG_UNWRAP_OR_FAIL(
+      multi_spec,
+      PartitionSpec::Make(
+          /*spec_id=*/0, {PartitionField(/*source_id=*/3, /*field_id=*/1000, "id_part",
+                                         Transform::Identity()),
+                          PartitionField(/*source_id=*/4, /*field_id=*/1001,
+                                         "data_bucket", Transform::Bucket(16))}));
+
+  const std::string manifest_path = MakeManifestPath();
+  auto writer_result = ManifestWriter::MakeWriter(
+      version, /*snapshot_id=*/1000L, manifest_path, file_io_, multi_spec, multi_schema,
+      ManifestContent::kData, /*first_row_id=*/0L);
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  // First entry: partition field 0 (identity int) is null, field 1 (bucket) is 9.
+  auto file_null =
+      MakeDataFile("/path/to/data-null.parquet",
+                   PartitionValues({Literal::Null(int32()), Literal::Int(9)}));
+  auto file_b = MakeDataFile("/path/to/data-b.parquet",
+                             PartitionValues({Literal::Int(1), Literal::Int(5)}));
+  auto file_c = MakeDataFile("/path/to/data-c.parquet",
+                             PartitionValues({Literal::Int(2), Literal::Int(7)}));
+  ASSERT_THAT(
+      writer->WriteEntry(MakeEntry(ManifestStatus::kAdded, 1000L, std::move(file_null))),
+      IsOk());
+  ASSERT_THAT(
+      writer->WriteEntry(MakeEntry(ManifestStatus::kAdded, 1000L, std::move(file_b))),
+      IsOk());
+  ASSERT_THAT(
+      writer->WriteEntry(MakeEntry(ManifestStatus::kAdded, 1000L, std::move(file_c))),
+      IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest, writer->ToManifestFile());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ManifestReader::Make(manifest, file_io_, multi_schema, multi_spec));
+  ICEBERG_UNWRAP_OR_FAIL(auto read_entries, reader->Entries());
+
+  ASSERT_EQ(read_entries.size(), 3U);
+
+  // The null-partition row keeps both fields: a null in position 0 and the
+  // non-null value in position 1 (no shifting).
+  EXPECT_EQ(read_entries[0].data_file->file_path, "/path/to/data-null.parquet");
+  ASSERT_EQ(read_entries[0].data_file->partition.num_fields(), 2);
+  EXPECT_TRUE(read_entries[0].data_file->partition.values()[0].IsNull());
+  EXPECT_EQ(read_entries[0].data_file->partition.values()[1], Literal::Int(9));
+
+  // Rows after the null one must still have their partition values parsed.
+  EXPECT_EQ(read_entries[1].data_file->file_path, "/path/to/data-b.parquet");
+  ASSERT_EQ(read_entries[1].data_file->partition.num_fields(), 2);
+  EXPECT_EQ(read_entries[1].data_file->partition.values()[0], Literal::Int(1));
+  EXPECT_EQ(read_entries[1].data_file->partition.values()[1], Literal::Int(5));
+
+  EXPECT_EQ(read_entries[2].data_file->file_path, "/path/to/data-c.parquet");
+  ASSERT_EQ(read_entries[2].data_file->partition.num_fields(), 2);
+  EXPECT_EQ(read_entries[2].data_file->partition.values()[0], Literal::Int(2));
+  EXPECT_EQ(read_entries[2].data_file->partition.values()[1], Literal::Int(7));
+}
+
 TEST_P(TestManifestReader, ReadsEntriesWhenPartitionSourceFieldIsMissing) {
   auto version = GetParam();
   auto file = MakeDataFile("/path/to/historical-data.parquet",

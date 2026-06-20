@@ -305,6 +305,49 @@ TEST_F(InMemoryCatalogTest, DropTable) {
   EXPECT_THAT(result, IsOk());
 }
 
+TEST_F(InMemoryCatalogTest, RenameTable) {
+  // Create a table first.
+  TableIdentifier ident{.ns = {}, .name = "t1"};
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())},
+      /*schema_id=*/1);
+  auto spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, catalog_->CreateTable(ident, schema, spec, sort_order,
+                                        GenerateTestTableLocation(ident.name), {}));
+
+  // Rename to itself is a no-op.
+  EXPECT_THAT(catalog_->RenameTable(ident, ident), IsOk());
+
+  // Rename non-existent source table.
+  TableIdentifier nonexist{.ns = {}, .name = "nonexist"};
+  EXPECT_THAT(catalog_->RenameTable(nonexist, ident), IsError(ErrorKind::kNoSuchTable));
+
+  // Rename to an existing destination table.
+  TableIdentifier ident2{.ns = {}, .name = "t2"};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table2, catalog_->CreateTable(ident2, schema, spec, sort_order,
+                                         GenerateTestTableLocation(ident2.name), {}));
+  EXPECT_THAT(catalog_->RenameTable(ident, ident2), IsError(ErrorKind::kAlreadyExists));
+
+  // Drop ident2 to clear the destination, then rename.
+  EXPECT_THAT(catalog_->DropTable(ident2, /*purge=*/false), IsOk());
+
+  // Rename ident -> ident2.
+  TableIdentifier renamed{.ns = {}, .name = "t2"};
+  EXPECT_THAT(catalog_->RenameTable(ident, renamed), IsOk());
+  EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
+  EXPECT_THAT(catalog_->TableExists(renamed), HasValue(::testing::Eq(true)));
+
+  // Load the renamed table to verify it's intact.
+  auto loaded = catalog_->LoadTable(renamed);
+  ASSERT_THAT(loaded, IsOk());
+  EXPECT_EQ(loaded.value()->name().name, "t2");
+  EXPECT_EQ(loaded.value()->uuid(), table->uuid());
+}
+
 TEST_F(InMemoryCatalogTest, Namespace) {
   Namespace ns{.levels = {"n1", "n2"}};
   std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"},

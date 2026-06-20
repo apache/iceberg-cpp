@@ -31,6 +31,7 @@ header:
     - 'requirements.txt'
     - 'src/iceberg/util/murmurhash3_internal.*'
     - 'src/iceberg/test/resources/**'
+    - 'src/iceberg/catalog/hive/gen-cpp/**'
     - 'thirdparty/**'
 
   comment: on-failure

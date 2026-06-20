@@ -34,7 +34,7 @@ is reproducible and future updates are deterministic.
 
 | File | Upstream | Tag | Commit |
 | --- | --- | --- | --- |
-| `hive_metastore.thrift` | [apache/hive](https://github.com/apache/hive) — `standalone-metastore/src/main/thrift/hive_metastore.thrift` | `rel/release-3.1.3` | [`04c1b307d1bbd1ae268ad47dc36ca4f50c6d9cd8`](https://github.com/apache/hive/blob/04c1b307d1bbd1ae268ad47dc36ca4f50c6d9cd8/standalone-metastore/src/main/thrift/hive_metastore.thrift) |
+| `hive_metastore.thrift` | [apache/hive](https://github.com/apache/hive) — `standalone-metastore/metastore-common/src/main/thrift/hive_metastore.thrift` | `rel/release-4.0.1` | [`d4c36d45eb3b23abf17d9a9848371a145291ffd4`](https://github.com/apache/hive/blob/d4c36d45eb3b23abf17d9a9848371a145291ffd4/standalone-metastore/metastore-common/src/main/thrift/hive_metastore.thrift) |
 | `share/fb303/if/fb303.thrift` | [apache/thrift](https://github.com/apache/thrift) — `contrib/fb303/if/fb303.thrift` | `v0.14.0` | [`8411e189b0af09e5baad34031555870cf692c1ad`](https://github.com/apache/thrift/blob/8411e189b0af09e5baad34031555870cf692c1ad/contrib/fb303/if/fb303.thrift) |
 
 `fb303.thrift` is the Facebook fb303 management service IDL, transitively

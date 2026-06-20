@@ -536,6 +536,24 @@ class StrictMetricsEvaluatorMigratedTest : public StrictMetricsEvaluatorTest {
     return data_file;
   }
 
+  std::shared_ptr<DataFile> MakeUnknownRecordCountFile() {
+    auto data_file = std::make_shared<DataFile>();
+    data_file->file_path = "unknown.parquet";
+    data_file->file_format = FileFormatType::kParquet;
+    // -1 is the sentinel for an unknown row count.
+    data_file->record_count = -1;
+    return data_file;
+  }
+
+  std::shared_ptr<DataFile> MakeInvalidRecordCountFile() {
+    auto data_file = std::make_shared<DataFile>();
+    data_file->file_path = "invalid.parquet";
+    data_file->file_format = FileFormatType::kParquet;
+    // Anything below the -1 sentinel is invalid metadata.
+    data_file->record_count = -2;
+    return data_file;
+  }
+
   void ExpectShouldRead(const std::shared_ptr<Expression>& expr, bool expected,
                         std::shared_ptr<DataFile> file = nullptr,
                         bool case_sensitive = true) {
@@ -648,6 +666,23 @@ TEST_F(StrictMetricsEvaluatorMigratedTest, ZeroRecordFile) {
   for (const auto& expr : expressions) {
     ExpectShouldRead(expr, true, zero_record_file);
   }
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, UnknownRecordCountFile) {
+  // A file with an unknown row count (record_count == -1) must not be treated as if
+  // every row matches the predicate. AlwaysFalse can never match all rows.
+  auto unknown_record_count_file = MakeUnknownRecordCountFile();
+  ExpectShouldRead(Expressions::AlwaysFalse(), false, unknown_record_count_file);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, InvalidRecordCountFile) {
+  // A record count below the -1 unknown sentinel is invalid and must error out.
+  auto invalid_record_count_file = MakeInvalidRecordCountFile();
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, StrictMetricsEvaluator::Make(
+                                             Expressions::AlwaysFalse(), schema_, true));
+  auto result = evaluator->Evaluate(*invalid_record_count_file);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().kind, ErrorKind::kInvalidArgument);
 }
 
 TEST_F(StrictMetricsEvaluatorMigratedTest, Not) {

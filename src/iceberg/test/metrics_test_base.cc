@@ -541,8 +541,9 @@ void MetricsTestBase::MetricsForNaNColumns() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 2);
-  AssertCounts(1, 2, 0, metrics);
-  AssertCounts(2, 2, 0, metrics);
+  auto expected_nan_count = ReportsNanCounts() ? std::optional<int64_t>(2) : std::nullopt;
+  AssertCounts(1, 2, 0, expected_nan_count, metrics);
+  AssertCounts(2, 2, 0, expected_nan_count, metrics);
 
   // When all values are NaN, bounds should not be set
   AssertBounds<float>(1, float32(), std::nullopt, std::nullopt, metrics);
@@ -579,8 +580,9 @@ void MetricsTestBase::ColumnBoundsWithNaNValueAtFront() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 3);
-  AssertCounts(1, 3, 0, metrics);
-  AssertCounts(2, 3, 0, metrics);
+  auto expected_nan_count = ReportsNanCounts() ? std::optional<int64_t>(1) : std::nullopt;
+  AssertCounts(1, 3, 0, expected_nan_count, metrics);
+  AssertCounts(2, 3, 0, expected_nan_count, metrics);
 
   // Bounds should be computed from non-NaN values
   if (metrics.lower_bounds.contains(1)) {
@@ -619,8 +621,9 @@ void MetricsTestBase::ColumnBoundsWithNaNValueInMiddle() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 3);
-  AssertCounts(1, 3, 0, metrics);
-  AssertCounts(2, 3, 0, metrics);
+  auto expected_nan_count = ReportsNanCounts() ? std::optional<int64_t>(1) : std::nullopt;
+  AssertCounts(1, 3, 0, expected_nan_count, metrics);
+  AssertCounts(2, 3, 0, expected_nan_count, metrics);
 
   if (metrics.lower_bounds.contains(1)) {
     AssertBounds<float>(1, float32(), 1.2F, 5.6F, metrics);
@@ -658,8 +661,9 @@ void MetricsTestBase::ColumnBoundsWithNaNValueAtEnd() {
 
   ASSERT_TRUE(metrics.row_count.has_value()) << "row_count should be set";
   EXPECT_EQ(*metrics.row_count, 3);
-  AssertCounts(1, 3, 0, metrics);
-  AssertCounts(2, 3, 0, metrics);
+  auto expected_nan_count = ReportsNanCounts() ? std::optional<int64_t>(1) : std::nullopt;
+  AssertCounts(1, 3, 0, expected_nan_count, metrics);
+  AssertCounts(2, 3, 0, expected_nan_count, metrics);
 
   if (metrics.lower_bounds.contains(1)) {
     AssertBounds<float>(1, float32(), 1.2F, 5.6F, metrics);

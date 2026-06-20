@@ -649,20 +649,23 @@ Status MergingSnapshotUpdate::AddManifest(ManifestFile manifest) {
     appended_manifests_summary_.AddedManifest(manifest);
     append_manifests_.push_back(std::move(manifest));
   } else {
-    ICEBERG_ASSIGN_OR_RAISE(auto copied, CopyManifest(manifest));
+    ICEBERG_ASSIGN_OR_RAISE(auto copied, CopyManifest(manifest, /*update_summary=*/true));
+    append_manifests_to_copy_.push_back(std::move(manifest));
     rewritten_append_manifests_.push_back(std::move(copied));
   }
   return {};
 }
 
-Result<ManifestFile> MergingSnapshotUpdate::CopyManifest(const ManifestFile& manifest) {
+Result<ManifestFile> MergingSnapshotUpdate::CopyManifest(const ManifestFile& manifest,
+                                                         bool update_summary) {
   const TableMetadata& current = base();
   ICEBERG_ASSIGN_OR_RAISE(auto schema, SnapshotUtil::SchemaFor(current, target_branch()));
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           current.PartitionSpecById(manifest.partition_spec_id));
   std::string path = ManifestPath();
   return CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, SnapshotId(), path,
-                            current.format_version, &appended_manifests_summary_);
+                            current.format_version,
+                            update_summary ? &appended_manifests_summary_ : nullptr);
 }
 
 // -------------------------------------------------------------------------
@@ -890,6 +893,13 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
 
   // Step 4: Write (or retrieve cached) new data manifests.
   ICEBERG_ASSIGN_OR_RAISE(auto written_data_manifests, WriteNewDataManifests());
+  if (rewritten_append_manifests_.empty() && !append_manifests_to_copy_.empty()) {
+    for (const auto& manifest : append_manifests_to_copy_) {
+      ICEBERG_ASSIGN_OR_RAISE(auto copied, CopyManifest(manifest,
+                                                        /*update_summary=*/false));
+      rewritten_append_manifests_.push_back(std::move(copied));
+    }
+  }
 
   // Incorporate append manifests (from AddManifest), stamping each with the
   // current snapshot ID. append_manifests_ are used directly (inherit path);
@@ -944,26 +954,11 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   result.insert(result.end(), std::make_move_iterator(merged_deletes.begin()),
                 std::make_move_iterator(merged_deletes.end()));
 
-  // Manifest count summary: unassigned manifests count as neither created nor kept.
-  int32_t manifests_created = 0;
-  int32_t manifests_kept = 0;
-  for (const auto& m : result) {
-    if (m.added_snapshot_id == snapshot_id) {
-      ++manifests_created;
-    } else if (m.added_snapshot_id != kInvalidSnapshotId) {
-      ++manifests_kept;
-    }
-  }
   int32_t replaced_manifests_count = data_filter_manager_->ReplacedManifestsCount() +
                                      delete_filter_manager_->ReplacedManifestsCount() +
                                      data_merge_manager_->ReplacedManifestsCount() +
                                      delete_merge_manager_->ReplacedManifestsCount();
-  summary_builder().Set(SnapshotSummaryFields::kManifestsCreated,
-                        std::to_string(manifests_created));
-  summary_builder().Set(SnapshotSummaryFields::kManifestsKept,
-                        std::to_string(manifests_kept));
-  summary_builder().Set(SnapshotSummaryFields::kManifestsReplaced,
-                        std::to_string(replaced_manifests_count));
+  summary_builder().Merge(BuildManifestCountSummary(result, replaced_manifests_count));
 
   return result;
 }
@@ -987,7 +982,7 @@ Status MergingSnapshotUpdate::CleanUncommittedAppends(
       DeleteUncommitted(cached_new_delete_manifests_, committed, /*clear=*/true));
   // rewritten_append_manifests_ are always owned by the table.
   ICEBERG_RETURN_UNEXPECTED(
-      DeleteUncommitted(rewritten_append_manifests_, committed, /*clear=*/false));
+      DeleteUncommitted(rewritten_append_manifests_, committed, /*clear=*/true));
 
   // append_manifests_ are only owned by the table if the commit succeeded.
   if (!committed.empty()) {

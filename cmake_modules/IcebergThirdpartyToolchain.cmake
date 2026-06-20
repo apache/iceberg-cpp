@@ -19,6 +19,48 @@
 # third party libraries.
 set(ICEBERG_SYSTEM_DEPENDENCIES)
 set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
+set(ICEBERG_AWSSDK_BUNDLED FALSE)
+if(ICEBERG_S3 AND ICEBERG_BUNDLE_AWSSDK)
+  if(NOT ICEBERG_BUILD_BUNDLE)
+    message(FATAL_ERROR "ICEBERG_BUNDLE_AWSSDK requires ICEBERG_BUILD_BUNDLE to be ON")
+  endif()
+  set(ICEBERG_AWSSDK_BUNDLED TRUE)
+endif()
+
+set(ICEBERG_AWSSDK_COMPONENTS)
+if(NOT ICEBERG_AWSSDK_BUNDLED)
+  if(ICEBERG_S3)
+    list(APPEND
+         ICEBERG_AWSSDK_COMPONENTS
+         core
+         config
+         s3
+         transfer
+         identity-management
+         sts)
+  elseif(ICEBERG_SIGV4)
+    list(APPEND ICEBERG_AWSSDK_COMPONENTS core)
+  endif()
+endif()
+
+# ----------------------------------------------------------------------
+# AWS SDK for C++
+
+function(resolve_aws_sdk_dependency)
+  if(NOT ICEBERG_AWSSDK_COMPONENTS)
+    return()
+  endif()
+  find_package(AWSSDK REQUIRED COMPONENTS ${ICEBERG_AWSSDK_COMPONENTS})
+  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES AWSSDK)
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  # Forwarded to find_dependency(AWSSDK ...) in iceberg-config.cmake.in so
+  # downstream installed builds load the same AWS SDK targets.
+  set(ICEBERG_FIND_EXTRA_ARGS_AWSSDK
+      "COMPONENTS;${ICEBERG_AWSSDK_COMPONENTS}"
+      PARENT_SCOPE)
+endfunction()
 
 # ----------------------------------------------------------------------
 # Versions and URLs for toolchain builds
@@ -31,6 +73,7 @@ set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 # ICEBERG_NANOARROW_URL      - Nanoarrow tarball URL
 # ICEBERG_CROARING_URL       - CRoaring tarball URL
 # ICEBERG_NLOHMANN_JSON_URL  - nlohmann-json tarball URL
+# ICEBERG_SPDLOG_URL         - spdlog tarball URL
 # ICEBERG_CPR_URL            - cpr tarball URL
 #
 # Example usage:
@@ -111,6 +154,9 @@ function(resolve_arrow_dependency)
   set(ARROW_POSITION_INDEPENDENT_CODE ON)
   set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
   set(ARROW_WITH_ZLIB ON)
+  if(ICEBERG_S3 AND NOT ICEBERG_AWSSDK_BUNDLED)
+    set(AWSSDK_SOURCE "SYSTEM")
+  endif()
   set(ZLIB_SOURCE "SYSTEM")
   set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
   set(CMAKE_CXX_STANDARD 20)
@@ -438,6 +484,61 @@ function(resolve_nlohmann_json_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
+# spdlog
+
+function(resolve_spdlog_dependency)
+  prepare_fetchcontent()
+
+  find_package(Threads REQUIRED)
+
+  set(SPDLOG_USE_STD_FORMAT
+      ON
+      CACHE BOOL "" FORCE)
+  set(SPDLOG_BUILD_PIC
+      ON
+      CACHE BOOL "" FORCE)
+
+  if(DEFINED ENV{ICEBERG_SPDLOG_URL})
+    set(SPDLOG_URL "$ENV{ICEBERG_SPDLOG_URL}")
+  else()
+    set(SPDLOG_URL "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz")
+  endif()
+
+  fetchcontent_declare(spdlog
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL ${SPDLOG_URL}
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           spdlog
+                           CONFIG)
+  fetchcontent_makeavailable(spdlog)
+
+  if(spdlog_SOURCE_DIR)
+    set_target_properties(spdlog PROPERTIES OUTPUT_NAME "iceberg_vendored_spdlog"
+                                            POSITION_INDEPENDENT_CODE ON)
+    target_link_libraries(spdlog INTERFACE Threads::Threads)
+    install(TARGETS spdlog
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+    set(SPDLOG_VENDORED TRUE)
+  else()
+    set(SPDLOG_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES spdlog)
+  endif()
+
+  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads)
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(SPDLOG_VENDORED
+      ${SPDLOG_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+# ----------------------------------------------------------------------
 # zlib
 
 function(resolve_zlib_dependency)
@@ -619,6 +720,14 @@ resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
 resolve_nlohmann_json_dependency()
+resolve_spdlog_dependency()
+
+if(ICEBERG_S3 OR ICEBERG_SIGV4)
+  if(ICEBERG_SIGV4 AND NOT ICEBERG_BUILD_REST)
+    message(FATAL_ERROR "ICEBERG_SIGV4 requires ICEBERG_BUILD_REST to be ON")
+  endif()
+  resolve_aws_sdk_dependency()
+endif()
 
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()

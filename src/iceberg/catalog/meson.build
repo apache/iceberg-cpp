@@ -17,6 +17,11 @@
 
 subdir('memory')
 
+install_headers(
+    ['session_catalog.h', 'session_context.h'],
+    subdir: 'iceberg/catalog',
+)
+
 if get_option('rest').enabled()
     subdir('rest')
 endif

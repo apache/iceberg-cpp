@@ -28,6 +28,7 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#include "iceberg/encryption/encrypted_key.h"
 #include "iceberg/result.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
@@ -282,6 +283,18 @@ ICEBERG_EXPORT nlohmann::json ToJson(const MetadataLogEntry& metadata_log_entry)
 /// \return A `MetadataLogEntry` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<MetadataLogEntry> MetadataLogEntryFromJson(
     const nlohmann::json& json);
+
+/// \brief Serializes an `EncryptedKey` object to JSON.
+///
+/// \param encrypted_key The `EncryptedKey` object to be serialized.
+/// \return A JSON object representing the `EncryptedKey`.
+ICEBERG_EXPORT nlohmann::json ToJson(const EncryptedKey& encrypted_key);
+
+/// \brief Deserializes a JSON object into an `EncryptedKey` object.
+///
+/// \param json The JSON object representing an `EncryptedKey`.
+/// \return An `EncryptedKey` object or an error if the conversion fails.
+ICEBERG_EXPORT Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json);
 
 /// \brief Serializes a `TableMetadata` object to JSON.
 ///

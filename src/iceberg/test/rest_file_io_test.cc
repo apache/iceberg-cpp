@@ -49,6 +49,10 @@ class MockFileIO : public FileIO {
 TEST(RestFileIOTest, DetectBuiltinKindFromScheme) {
   EXPECT_THAT(DetectBuiltinFileIO("s3://bucket/path"),
               HasValue(::testing::Eq(BuiltinFileIOKind::kArrowS3)));
+  EXPECT_THAT(DetectBuiltinFileIO("s3a://bucket/path"),
+              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowS3)));
+  EXPECT_THAT(DetectBuiltinFileIO("s3n://bucket/path"),
+              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowS3)));
   EXPECT_THAT(DetectBuiltinFileIO("/tmp/warehouse"),
               HasValue(::testing::Eq(BuiltinFileIOKind::kArrowLocal)));
   EXPECT_THAT(DetectBuiltinFileIO("file:///tmp/warehouse"),

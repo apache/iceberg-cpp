@@ -223,6 +223,13 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   Result<bool> NotEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
     // because the bounds are not necessarily a min or max value, this cannot be answered
     // using them. notEq(col, X) with (X, Y) doesn't guarantee that X is a value in col.
+    // However, when min == max and the file has no nulls or NaN values, we can safely
+    // prune if that value equals the literal.
+    ICEBERG_ASSIGN_OR_RAISE(auto value, UniqueValue(expr));
+    if (value.has_value() && value.value() == lit) {
+      return kRowCannotMatch;
+    }
+
     return kRowsMightMatch;
   }
 
@@ -271,7 +278,13 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
                      const BoundSetPredicate::LiteralSet& literal_set) override {
     // because the bounds are not necessarily a min or max value, this cannot be answered
     // using them. notIn(col, {X, ...}) with (X, Y) doesn't guarantee that X is a value in
-    // col.
+    // col. However, when min == max and the file has no nulls or NaN values, we can
+    // safely prune if that value is in the exclusion set.
+    ICEBERG_ASSIGN_OR_RAISE(auto value, UniqueValue(expr));
+    if (value.has_value() && literal_set.contains(value.value())) {
+      return kRowCannotMatch;
+    }
+
     return kRowsMightMatch;
   }
 
@@ -414,6 +427,34 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return std::nullopt;
     }
     // TODO(xiao.dong) handle extract lower and upper bounds
+  }
+
+  /// Returns the column's single value if all rows contain the same value. Defined as a
+  /// column with no nulls, no NaNs, and lower bound equals upper bound. Returns
+  /// std::nullopt otherwise.
+  Result<std::optional<Literal>> UniqueValue(const std::shared_ptr<Bound>& expr) {
+    int32_t id = expr->reference()->field().field_id();
+    if (MayContainNull(id)) {
+      return std::nullopt;
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if (!lower.has_value() || !upper.has_value() || lower->IsNull() || upper->IsNull() ||
+        lower->IsNaN() || upper->IsNaN()) {
+      return std::nullopt;
+    }
+
+    auto nan_it = data_file_.nan_value_counts.find(id);
+    if (nan_it != data_file_.nan_value_counts.cend() && nan_it->second != 0) {
+      return std::nullopt;
+    }
+
+    if (lower.value() != upper.value()) {
+      return std::nullopt;
+    }
+
+    return lower;
   }
 
   Result<std::optional<Literal>> ParseLowerBound(const BoundReference& ref) {
