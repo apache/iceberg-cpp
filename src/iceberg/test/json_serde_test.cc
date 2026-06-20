@@ -150,8 +150,8 @@ TEST(JsonInternalTest, SchemaFieldDefaultValuesRoundTripAllTypes) {
                       std::make_shared<const Literal>(literal));
     auto json = ToJson(field);
     ICEBERG_UNWRAP_OR_FAIL(auto parsed, FieldFromJson(json));
-    EXPECT_EQ(field, *parsed)
-        << "round-trip mismatch for type " << type->ToString() << ", json=" << json.dump();
+    EXPECT_EQ(field, *parsed) << "round-trip mismatch for type " << type->ToString()
+                              << ", json=" << json.dump();
   }
 }
 
