@@ -99,7 +99,14 @@ jobs:
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
         with:
           arch: x64
+      - name: Cache vcpkg packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        id: vcpkg-cache
+        with:
+          path: C:/vcpkg/installed
+          key: vcpkg-x64-windows-test-${{ hashFiles('.github/workflows/test.yml') }}
       - name: Install dependencies
+        if: ${{ steps.vcpkg-cache.outputs.cache-hit != 'true' }}
         shell: pwsh
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
