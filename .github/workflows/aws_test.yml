@@ -74,6 +74,8 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
       AWS_ENDPOINT_URL: http://127.0.0.1:9000
       AWS_EC2_METADATA_DISABLED: "TRUE"
+      SCCACHE_DIR: ${{ github.workspace }}/.sccache
+      SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -113,11 +115,29 @@ jobs:
         if: ${{ matrix.s3 == 'ON' }}
         shell: bash
         run: bash ci/scripts/start_minio.sh
+      - name: Restore sccache cache
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-${{ github.run_id }}
+          restore-keys: |
+            sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: Build and test Iceberg
         shell: bash
         env:
           CMAKE_TOOLCHAIN_FILE: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
-        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF OFF ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
+        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF ON ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
+      - name: Show sccache stats
+        shell: bash
+        run: sccache --show-stats
+      - name: Save sccache cache
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-${{ github.run_id }}
 
   # Exercise the Meson build with SigV4 enabled (resolves aws-cpp-sdk-core via
   # its CMake config, not pkg-config whose Cflags force -std=c++11).
