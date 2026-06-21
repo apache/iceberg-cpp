@@ -116,6 +116,7 @@ class ICEBERG_EXPORT LogMessage::Builder {
  private:
   LogLevel level_;
   std::string message_;
+  // `location_` is a trivially copyable members no need to move.
   std::source_location location_ = std::source_location::current();
   std::vector<LogAttribute> attributes_;
 };
