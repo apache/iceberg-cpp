@@ -81,11 +81,14 @@ struct ICEBERG_EXPORT LogMessage {
 ///                     .Build();
 ///   logger->Log(std::move(record));
 ///
-/// The location defaults to where the Builder is constructed; override it with
-/// Location() (e.g. to forward a caller's std::source_location).
+/// The location defaults to the caller's construction site (captured via the
+/// constructor's default argument); override it with Location() (e.g. to forward
+/// a caller's std::source_location).
 class ICEBERG_EXPORT LogMessage::Builder {
  public:
-  explicit Builder(LogLevel level) : level_(level), location_(std::source_location::current()) {}
+  explicit Builder(LogLevel level,
+                   std::source_location location = std::source_location::current())
+      : level_(level), location_(location) {}
 
   /// \brief Set the already-formatted message text.
   Builder& Message(std::string message) {

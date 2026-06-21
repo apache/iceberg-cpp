@@ -21,7 +21,6 @@
 
 #include <atomic>
 #include <memory>
-#include <string_view>
 #include <thread>
 #include <tuple>
 #include <vector>
@@ -430,16 +429,14 @@ TEST(LoggerTest, BuilderDefaultsAndEmitToSink) {
   EXPECT_NE(records[0].location.line(), 0u);  // location defaulted at build site
 }
 
-// location_ is initialized in the Builder constructor, so when Location() is not
-// called the default points at the constructor itself (in logger.h), not at the
-// caller and not at line 0.
-TEST(LoggerTest, BuilderDefaultLocationIsConstructorSite) {
+// The constructor captures source_location as a default argument, so without
+// Location() the default is the caller's construction site (this file), not
+// logger.h. The Builder is constructed exactly one line below `here`.
+TEST(LoggerTest, BuilderDefaultLocationIsCallerSite) {
+  auto here = std::source_location::current();
   auto record = LogMessage::Builder(LogLevel::kInfo).Message("m").Build();
-  EXPECT_NE(record.location.line(), 0u);
-  EXPECT_NE(std::string_view(record.location.file_name()).find("logger.h"),
-            std::string_view::npos);
-  EXPECT_NE(std::string_view(record.location.function_name()).find("Builder"),
-            std::string_view::npos);
+  EXPECT_STREQ(record.location.file_name(), here.file_name());
+  EXPECT_EQ(record.location.line(), here.line() + 1);
 }
 
 // Location() replaces the constructor default with the caller's site (file + line).
