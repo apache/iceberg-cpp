@@ -187,6 +187,14 @@ class ICEBERG_EXPORT Logger {
 /// logging macros use the cheaper internal hot-path accessor instead.
 ICEBERG_EXPORT std::shared_ptr<Logger> GetDefaultLogger();
 
+/// \brief Return the effective logger for this thread (never null): the active
+/// ScopedLogger binding if any, else the global default.
+///
+/// Off the hot path -- returns an owning copy, e.g. to capture the current logger
+/// and re-bind it on a worker thread (see ScopedLogger). During teardown, prefer
+/// the Log(...) overloads over emitting through this handle.
+ICEBERG_EXPORT std::shared_ptr<Logger> GetCurrentLogger();
+
 /// \brief Install a new process-global default logger.
 ///
 /// A null argument installs the no-op logger. Thread-safe; intended for
@@ -199,6 +207,41 @@ ICEBERG_EXPORT void SetDefaultLogger(std::shared_ptr<Logger> logger);
 /// decided by the logger's own ShouldLog(), so changing a logger's level by any
 /// means (this, SetLevel on a held handle, or Initialize) takes effect immediately.
 ICEBERG_EXPORT void SetDefaultLevel(LogLevel level);
+
+/// \brief Bind a logger for the current thread until this object leaves scope.
+///
+/// The default logging path on this thread -- CurrentLogger(), Log(level, ...),
+/// and the LOG_* macros -- routes to \p logger instead of the global default;
+/// explicit Log(logger, ...) is unaffected. Bindings nest and restore on exit, and
+/// nullptr masks any enclosing binding back to the global default. Lets an engine
+/// route Iceberg's own logs into a per catalog/session/query/task context with no
+/// call-site changes.
+///
+/// \code
+///   auto query_log = std::make_shared<MySink>();
+///   iceberg::ScopedLogger bind(query_log);            // this thread, this scope
+///   iceberg::Log(LogLevel::kInfo, "scan {}", id);     // -> query_log
+/// \endcode
+///
+/// Stack-only and same-thread (non-copyable, non-movable). For thread pools,
+/// capture on the submitting thread and re-bind on the worker:
+/// \code
+///   auto captured = iceberg::GetCurrentLogger();
+///   pool.submit([captured, work] { iceberg::ScopedLogger bind(captured); work(); });
+/// \endcode
+class ICEBERG_EXPORT ScopedLogger {
+ public:
+  explicit ScopedLogger(std::shared_ptr<Logger> logger) noexcept;
+  ~ScopedLogger();
+
+  ScopedLogger(const ScopedLogger&) = delete;
+  ScopedLogger& operator=(const ScopedLogger&) = delete;
+  ScopedLogger(ScopedLogger&&) = delete;
+  ScopedLogger& operator=(ScopedLogger&&) = delete;
+
+ private:
+  std::shared_ptr<Logger> previous_;
+};
 
 // ---------------------------------------------------------------------------
 // Using the API directly (the LOG_* macros that wrap this are added later in

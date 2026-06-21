@@ -188,6 +188,190 @@ TEST(LoggerTest, ConcurrentTeardownAndSwapIsSafe) {
   SUCCEED();
 }
 
+// --- Per-context routing: ScopedLogger + GetCurrentLogger ---
+
+TEST(LoggerTest, ScopedLoggerOverridesDefaultPath) {
+  auto global = std::make_shared<CapturingLogger>();
+  auto scoped = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  {
+    ScopedLogger bind(scoped);
+    EXPECT_EQ(internal::CurrentLogger().get(), scoped.get());
+    Log(LogLevel::kInfo, "hi {}", 1);
+  }
+  EXPECT_EQ(scoped->count(), 1u);
+  EXPECT_EQ(global->count(), 0u);
+}
+
+TEST(LoggerTest, ScopedLoggerRestoresOnScopeExit) {
+  auto global = std::make_shared<CapturingLogger>();
+  auto scoped = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  {
+    ScopedLogger bind(scoped);
+  }
+  EXPECT_EQ(internal::CurrentLogger().get(), global.get());
+  Log(LogLevel::kInfo, "back");
+  EXPECT_EQ(global->count(), 1u);
+  EXPECT_EQ(scoped->count(), 0u);
+}
+
+TEST(LoggerTest, ExplicitLoggerBypassesOverride) {
+  auto scoped = std::make_shared<CapturingLogger>();
+  auto explicit_sink = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(std::make_shared<CapturingLogger>());
+  ScopedLogger bind(scoped);
+  Log(*explicit_sink, LogLevel::kInfo, "e {}", 1);
+  EXPECT_EQ(explicit_sink->count(), 1u);
+  EXPECT_EQ(scoped->count(), 0u);
+}
+
+TEST(LoggerTest, NestedScopedLoggersRestoreInLifo) {
+  auto global = std::make_shared<CapturingLogger>();
+  auto x = std::make_shared<CapturingLogger>();
+  auto y = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  {
+    ScopedLogger a(x);
+    EXPECT_EQ(internal::CurrentLogger().get(), x.get());
+    {
+      ScopedLogger b(y);
+      EXPECT_EQ(internal::CurrentLogger().get(), y.get());
+    }
+    EXPECT_EQ(internal::CurrentLogger().get(), x.get());
+  }
+  EXPECT_EQ(internal::CurrentLogger().get(), global.get());
+}
+
+TEST(LoggerTest, ScopedLoggerNullMasksToGlobalDefault) {
+  auto global = std::make_shared<CapturingLogger>();
+  auto x = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  ScopedLogger a(x);
+  {
+    ScopedLogger mask(nullptr);
+    EXPECT_EQ(internal::CurrentLogger().get(), global.get());  // not x, not Noop
+    EXPECT_FALSE(internal::CurrentLogger()->IsNoop());
+  }
+  EXPECT_EQ(internal::CurrentLogger().get(), x.get());  // enclosing binding restored
+}
+
+TEST(LoggerTest, GetCurrentLoggerReturnsOverrideThenDefault) {
+  auto global = std::make_shared<CapturingLogger>();
+  auto scoped = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  EXPECT_EQ(GetCurrentLogger().get(), global.get());
+  {
+    ScopedLogger bind(scoped);
+    EXPECT_EQ(GetCurrentLogger().get(), scoped.get());
+  }
+  EXPECT_EQ(GetCurrentLogger().get(), global.get());
+}
+
+TEST(LoggerTest, GetCurrentLoggerOnFreshThreadReturnsDefault) {
+  auto global = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  Logger* seen = nullptr;
+  std::thread([&] { seen = GetCurrentLogger().get(); }).join();  // never used a scope
+  EXPECT_EQ(seen, global.get());
+}
+
+TEST(LoggerTest, ThreadPoolPropagationPattern) {
+  auto global = std::make_shared<CapturingLogger>();
+  auto scoped = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  ScopedLogger bind(scoped);
+  auto captured = GetCurrentLogger();  // capture the effective logger at "submit"
+  EXPECT_EQ(captured.get(), scoped.get());
+  std::thread([captured] {
+    ScopedLogger rebind(captured);  // re-bind on the worker thread
+    Log(LogLevel::kInfo, "task {}", 7);
+  }).join();
+  EXPECT_EQ(scoped->count(), 1u);
+  EXPECT_EQ(global->count(), 0u);
+}
+
+TEST(LoggerTest, WorkerOverrideDoesNotLeakAcrossTasksOnReusedThread) {
+  auto global = std::make_shared<CapturingLogger>();
+  auto o1 = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(global);
+  Logger* during = nullptr;
+  Logger* between = nullptr;
+  std::thread([&] {
+    {
+      ScopedLogger b1(o1);
+      during = GetCurrentLogger().get();
+    }
+    between = GetCurrentLogger().get();  // no scope active -> global default
+  }).join();
+  EXPECT_EQ(during, o1.get());
+  EXPECT_EQ(between, global.get());
+}
+
+// Binding/unbinding a ScopedLogger from a thread_local destructor that runs after
+// the per-thread cache was freed (Probe constructed before CurrentLogger is first
+// touched) must no-op against the dead cache, never touch freed memory. Run under
+// ASan/TSan in CI for full signal.
+TEST(LoggerTest, ScopedLoggerBindUnbindDuringTeardownIsSafe) {
+  std::thread([] {
+    struct Probe {
+      ~Probe() {
+        ScopedLogger late(std::make_shared<CapturingLogger>());  // ctor: no-op on dead
+        const auto& l = internal::CurrentLogger();               // -> Noop fallback
+        if (l) l->ShouldLog(LogLevel::kError);
+      }  // ~ScopedLogger: restore is a no-op on dead
+    };
+    static thread_local Probe probe;
+    std::ignore = probe;                      // constructed first
+    std::ignore = internal::CurrentLogger();  // cache created after -> freed first
+  }).join();
+  SUCCEED();
+}
+
+// The override path deliberately skips the generation refresh, but a swap that
+// happened while an override was active must still be observed on the first call
+// after the override is popped (gen is monotonic).
+TEST(LoggerTest, OverrideActiveSkipsGenRefreshButSwapStillSeenAfterPop) {
+  auto a = std::make_shared<CapturingLogger>();
+  auto b = std::make_shared<CapturingLogger>();
+  auto c = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(a);
+  EXPECT_EQ(internal::CurrentLogger().get(), a.get());
+  {
+    ScopedLogger bind(b);
+    SetDefaultLogger(c);  // bump gen while the override is active
+    EXPECT_EQ(internal::CurrentLogger().get(), b.get());  // override wins
+  }
+  EXPECT_EQ(internal::CurrentLogger().get(), c.get());  // swap seen after pop
+}
+
+// Many short-lived threads each bind a ScopedLogger and tear down while another
+// thread swaps the global default. Run under ASan/TSan in CI.
+TEST(LoggerTest, ConcurrentOverrideTeardownAndSwapIsSafe) {
+  auto a = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(a);
+  std::atomic<bool> stop{false};
+  std::thread swapper([&] {
+    auto b = std::make_shared<CapturingLogger>();
+    while (!stop.load(std::memory_order_relaxed)) {
+      SetDefaultLogger(b);
+      SetDefaultLogger(a);
+    }
+  });
+  for (int i = 0; i < 100; ++i) {
+    std::thread worker([] {
+      auto local = std::make_shared<CapturingLogger>();
+      ScopedLogger bind(local);
+      const auto& l = internal::CurrentLogger();
+      if (l) l->ShouldLog(LogLevel::kError);
+    });
+    worker.join();
+  }
+  stop.store(true, std::memory_order_relaxed);
+  swapper.join();
+  SUCCEED();
+}
+
 // --- Function-style API (non-macro): overloaded Log() ---
 
 TEST(LoggerTest, LogToExplicitLoggerFormats) {

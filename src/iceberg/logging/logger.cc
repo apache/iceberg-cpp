@@ -64,10 +64,13 @@ DefaultSlot& Slot() {
 }
 
 /// \brief A thread's cached view of the default logger and the generation it was
-/// cached at. Heap-allocated per thread and freed at thread exit (see CurrentLogger).
+/// cached at. Heap-allocated per thread and freed at thread exit (see
+/// AccessThreadCache). `override_` is the active ScopedLogger binding for this
+/// thread (empty when none); when set it supersedes the cached default.
 struct ThreadCache {
   std::shared_ptr<Logger> logger;
   uint64_t gen = 0;  // 0 != Slot().gen (seeded to 1) -> first use always refreshes
+  std::shared_ptr<Logger> override_;  // active ScopedLogger binding, empty if none
 };
 
 }  // namespace
@@ -104,21 +107,20 @@ void SetDefaultLevel(LogLevel level) {
 
 namespace internal {
 
-const std::shared_ptr<Logger>& CurrentLogger() noexcept {
-  // Per-thread cache, freed at thread exit, yet safe to read from ANY other
-  // thread_local's destructor during teardown, in any destruction order. The
-  // three thread_locals are split by lifetime on purpose:
-  //
-  //   * `dead` and `cache` are trivially destructible, so their storage stays
-  //     valid for the WHOLE thread (their lifetime is not ended by a destructor);
-  //     they remain readable throughout the teardown of every other thread_local.
-  //   * `guard` is the only one with a destructor. At thread exit it sets `dead`
-  //     and frees the cache. A thread_local destroyed AFTER `guard` reads
-  //     `dead == true` and falls back instead of touching freed memory; one
-  //     destroyed BEFORE `guard` still sees a live cache. Either order is safe.
-  //
-  // (The earlier AliveFlag was wrong because the flag itself had a destructor, so
-  // reading it after that destructor ran was UB -- the very bug it tried to avoid.)
+namespace {
+
+/// \brief The one place the per-thread cache's lifetime is managed; shared by
+/// CurrentLogger, GetCurrentLogger, and the ScopedLogger helpers.
+///
+/// Safe to call from any thread_local destructor during teardown: `dead`/`cache`
+/// are trivially destructible so their storage lives the whole thread, and `guard`
+/// (the only one with a destructor) sets `dead` before freeing the cache -- so a
+/// late caller gets nullptr instead of touching freed memory, in any order.
+///
+/// \param create allocate the cache if absent (writers pass true; read-only
+///   callers pass false so a query never allocates). Returns nullptr while tearing
+///   down, or when !create and no cache exists -- caller falls back to global/noop.
+ThreadCache* AccessThreadCache(bool create) noexcept {
   static thread_local bool dead = false;
   static thread_local ThreadCache* cache = nullptr;
   static thread_local struct Guard {
@@ -131,15 +133,25 @@ const std::shared_ptr<Logger>& CurrentLogger() noexcept {
   std::ignore = guard;  // mark the thread_local as intentionally used (its dtor is
                         // registered by reaching the declaration above)
 
-  if (dead) {
+  if (dead) return nullptr;
+  if (cache == nullptr && create) cache = new ThreadCache();
+  return cache;
+}
+
+}  // namespace
+
+const std::shared_ptr<Logger>& CurrentLogger() noexcept {
+  ThreadCache* cache = AccessThreadCache(/*create=*/true);
+  if (cache == nullptr) {
     // Thread teardown after the cache was freed: serve an immortal no-op so a log
     // from a later thread_local destructor is safe. Such teardown logs are dropped.
     static auto* fallback = new std::shared_ptr<Logger>(Logger::Noop());
     return *fallback;
   }
-  if (cache == nullptr) {
-    cache = new ThreadCache();
-  }
+
+  // A scoped override wins -- no lock, no gen load. After the cache check (deref is
+  // teardown-safe), before the refresh (keeps the override path cheapest).
+  if (cache->override_) return cache->override_;
 
   DefaultSlot& slot = Slot();
   uint64_t current = slot.gen.load(std::memory_order_relaxed);
@@ -149,6 +161,20 @@ const std::shared_ptr<Logger>& CurrentLogger() noexcept {
     cache->gen = current;
   }
   return cache->logger;
+}
+
+std::shared_ptr<Logger> ExchangeThreadOverride(std::shared_ptr<Logger> next) noexcept {
+  ThreadCache* cache = AccessThreadCache(/*create=*/true);
+  if (cache == nullptr) return {};  // tearing down -> binding a scope is a no-op
+  std::shared_ptr<Logger> prev = std::move(cache->override_);
+  cache->override_ = std::move(next);
+  return prev;  // empty == no override was active
+}
+
+void RestoreThreadOverride(std::shared_ptr<Logger> prev) noexcept {
+  ThreadCache* cache = AccessThreadCache(/*create=*/false);  // never allocate to restore
+  if (cache == nullptr) return;  // dead or never created -> nothing to restore
+  cache->override_ = std::move(prev);
 }
 
 void Emit(Logger& logger, LogLevel level, const std::source_location& location,
@@ -170,5 +196,22 @@ void EmitFormatError(Logger& logger, LogLevel level,
 }
 
 }  // namespace internal
+
+ScopedLogger::ScopedLogger(std::shared_ptr<Logger> logger) noexcept
+    : previous_(internal::ExchangeThreadOverride(std::move(logger))) {}
+
+ScopedLogger::~ScopedLogger() { internal::RestoreThreadOverride(std::move(previous_)); }
+
+std::shared_ptr<Logger> GetCurrentLogger() {
+  ThreadCache* cache = internal::AccessThreadCache(/*create=*/false);
+  if (cache == nullptr) {
+    // Teardown, or no per-thread cache ever created -> no override possible.
+    // GetDefaultLogger() touches only the immortal slot (no thread_local), so it
+    // stays valid during teardown, and is never null.
+    return GetDefaultLogger();
+  }
+  if (cache->override_) return cache->override_;
+  return GetDefaultLogger();
+}
 
 }  // namespace iceberg
