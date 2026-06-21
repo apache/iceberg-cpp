@@ -226,7 +226,7 @@ ICEBERG_EXPORT void SetDefaultLevel(LogLevel level);
 //   auto status = sink->Initialize({{std::string(kLevelProperty), "warn"}});  // -> kWarn
 // ---------------------------------------------------------------------------
 
-namespace detail {
+namespace internal {
 
 /// \brief Hot-path accessor for the default logger.
 ///
@@ -276,7 +276,8 @@ struct FmtWithLoc {
 
   template <typename T>
     requires std::convertible_to<const T&, std::format_string<Args...>>
-  consteval FmtWithLoc(  // NOLINT(google-explicit-constructor): mirrors std::format_string
+  consteval FmtWithLoc(  // NOLINT(google-explicit-constructor): mirrors
+                         // std::format_string
       const T& s, std::source_location loc = std::source_location::current())
       : fmt(s), loc(loc) {}
 };
@@ -286,8 +287,8 @@ struct FmtWithLoc {
 /// Formats only when the logger is enabled for \p level, and never throws (a
 /// formatting failure routes to EmitFormatError, matching the macros).
 template <typename... Args>
-void Dispatch(Logger& logger, LogLevel level, const std::source_location& loc,
-              std::format_string<Args...> fmt, Args&&... args) noexcept {
+void FormatAndEmit(Logger& logger, LogLevel level, const std::source_location& loc,
+                   std::format_string<Args...> fmt, Args&&... args) noexcept {
   if (!logger.ShouldLog(level)) return;
   try {
     Emit(logger, level, loc, std::format(fmt, std::forward<Args>(args)...));
@@ -296,18 +297,19 @@ void Dispatch(Logger& logger, LogLevel level, const std::source_location& loc,
   }
 }
 
-}  // namespace detail
+}  // namespace internal
 
 /// \brief Log to the process-default logger, std::format style. Formats only if
 /// the level is enabled; never throws.
 ///
 /// Example: `iceberg::Log(LogLevel::kInfo, "loaded {} files", n);`
 template <typename... Args>
-void Log(LogLevel level, detail::FmtWithLoc<std::type_identity_t<Args>...> fmt,
+void Log(LogLevel level, internal::FmtWithLoc<std::type_identity_t<Args>...> fmt,
          Args&&... args) {
-  const std::shared_ptr<Logger>& logger = detail::CurrentLogger();
+  const std::shared_ptr<Logger>& logger = internal::CurrentLogger();
   if (logger) {
-    detail::Dispatch(*logger, level, fmt.loc, fmt.fmt, std::forward<Args>(args)...);
+    internal::FormatAndEmit(*logger, level, fmt.loc, fmt.fmt,
+                            std::forward<Args>(args)...);
   }
 }
 
@@ -316,8 +318,8 @@ void Log(LogLevel level, detail::FmtWithLoc<std::type_identity_t<Args>...> fmt,
 /// Example: `iceberg::Log(logger, LogLevel::kWarn, "retry {}", attempt);`
 template <typename... Args>
 void Log(Logger& logger, LogLevel level,
-         detail::FmtWithLoc<std::type_identity_t<Args>...> fmt, Args&&... args) {
-  detail::Dispatch(logger, level, fmt.loc, fmt.fmt, std::forward<Args>(args)...);
+         internal::FmtWithLoc<std::type_identity_t<Args>...> fmt, Args&&... args) {
+  internal::FormatAndEmit(logger, level, fmt.loc, fmt.fmt, std::forward<Args>(args)...);
 }
 
 }  // namespace iceberg

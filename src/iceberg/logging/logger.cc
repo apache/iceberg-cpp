@@ -123,7 +123,7 @@ void SetDefaultLevel(LogLevel level) {
   slot.logger->SetLevel(level);
 }
 
-namespace detail {
+namespace internal {
 
 const std::shared_ptr<Logger>& CurrentLogger() noexcept {
   // The per-thread cache is reached through a trivially-destructible thread_local
@@ -162,6 +162,6 @@ void EmitFormatError(Logger& logger, LogLevel level,
                         .attributes = {}});
 }
 
-}  // namespace detail
+}  // namespace internal
 
 }  // namespace iceberg

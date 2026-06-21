@@ -49,7 +49,7 @@ TEST(LoggerTest, SetAndGetDefaultLogger) {
   auto capturing = std::make_shared<CapturingLogger>();
   ScopedDefaultLogger guard(capturing);
   EXPECT_EQ(GetDefaultLogger().get(), capturing.get());
-  EXPECT_EQ(detail::CurrentLogger().get(), capturing.get());
+  EXPECT_EQ(internal::CurrentLogger().get(), capturing.get());
 }
 
 TEST(LoggerTest, SetNullFallsBackToNoop) {
@@ -62,10 +62,10 @@ TEST(LoggerTest, CurrentLoggerTracksSwaps) {
   auto first = std::make_shared<CapturingLogger>();
   auto second = std::make_shared<CapturingLogger>();
   ScopedDefaultLogger guard(first);
-  EXPECT_EQ(detail::CurrentLogger().get(), first.get());
+  EXPECT_EQ(internal::CurrentLogger().get(), first.get());
   SetDefaultLogger(second);
   // Generation bump must invalidate the thread-local cache.
-  EXPECT_EQ(detail::CurrentLogger().get(), second.get());
+  EXPECT_EQ(internal::CurrentLogger().get(), second.get());
 }
 
 TEST(LoggerTest, SetDefaultLevelUpdatesLogger) {
@@ -82,9 +82,9 @@ TEST(LoggerTest, OutOfBandLevelLoweringTakesEffect) {
   auto capturing = std::make_shared<CapturingLogger>();
   capturing->SetLevel(LogLevel::kError);
   ScopedDefaultLogger guard(capturing);
-  EXPECT_FALSE(detail::CurrentLogger()->ShouldLog(LogLevel::kInfo));
+  EXPECT_FALSE(internal::CurrentLogger()->ShouldLog(LogLevel::kInfo));
   capturing->SetLevel(LogLevel::kTrace);  // lowered directly on the handle
-  EXPECT_TRUE(detail::CurrentLogger()->ShouldLog(LogLevel::kInfo));
+  EXPECT_TRUE(internal::CurrentLogger()->ShouldLog(LogLevel::kInfo));
 }
 
 TEST(LoggerTest, ConcurrentSwapAndReadIsSafe) {
@@ -100,7 +100,7 @@ TEST(LoggerTest, ConcurrentSwapAndReadIsSafe) {
     readers.emplace_back([&stop, &saw_null] {
       // ASSERT_* doesn't propagate from non-main threads; record via a flag.
       while (!stop.load(std::memory_order_relaxed)) {
-        const auto& l = detail::CurrentLogger();
+        const auto& l = internal::CurrentLogger();
         if (!l) saw_null.store(true, std::memory_order_relaxed);
         std::ignore = l->ShouldLog(LogLevel::kError);
         std::ignore = GetDefaultLogger();
@@ -138,16 +138,17 @@ TEST(LoggerTest, LoggingFromThreadLocalDestructorIsSafe) {
   std::thread([] {
     struct Probe {
       ~Probe() {
-        const auto& logger = detail::CurrentLogger();
+        const auto& logger = internal::CurrentLogger();
         if (logger) {
-          detail::Emit(*logger, LogLevel::kInfo, std::source_location::current(),
-                       "from thread_local dtor");
+          internal::Emit(*logger, LogLevel::kInfo, std::source_location::current(),
+                         "from thread_local dtor");
         }
       }
     };
     static thread_local Probe probe;
-    (void)probe;                     // construct Probe first ...
-    (void)detail::CurrentLogger();   // ... then the logger cache (destroyed first)
+    std::ignore = probe;  // construct Probe first ...
+    std::ignore =
+        internal::CurrentLogger();  // ... then the logger cache (destroyed first)
   }).join();
   SUCCEED();
 }
