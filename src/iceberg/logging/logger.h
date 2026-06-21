@@ -349,7 +349,7 @@ void FormatAndEmit(Logger& logger, LogLevel level, const std::source_location& l
 /// Example: `iceberg::Log(LogLevel::kInfo, "loaded {} files", n);`
 template <typename... Args>
 void Log(LogLevel level, internal::FmtWithLoc<std::type_identity_t<Args>...> fmt,
-         Args&&... args) {
+         Args&&... args) noexcept {
   const std::shared_ptr<Logger>& logger = internal::CurrentLogger();
   if (logger) {
     internal::FormatAndEmit(*logger, level, fmt.loc, fmt.fmt,
@@ -362,7 +362,8 @@ void Log(LogLevel level, internal::FmtWithLoc<std::type_identity_t<Args>...> fmt
 /// Example: `iceberg::Log(logger, LogLevel::kWarn, "retry {}", attempt);`
 template <typename... Args>
 void Log(Logger& logger, LogLevel level,
-         internal::FmtWithLoc<std::type_identity_t<Args>...> fmt, Args&&... args) {
+         internal::FmtWithLoc<std::type_identity_t<Args>...> fmt,
+         Args&&... args) noexcept {
   internal::FormatAndEmit(logger, level, fmt.loc, fmt.fmt, std::forward<Args>(args)...);
 }
 
