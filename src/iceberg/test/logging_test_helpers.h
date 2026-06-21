@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <utility>
@@ -31,15 +32,21 @@ namespace iceberg {
 /// \brief Test sink that records every emitted LogMessage under a mutex.
 class CapturingLogger : public Logger {
  public:
-  bool ShouldLog(LogLevel level) const noexcept override { return level >= level_; }
+  bool ShouldLog(LogLevel level) const noexcept override {
+    return level >= level_.load(std::memory_order_relaxed);
+  }
 
   void Log(LogMessage&& message) noexcept override {
     std::lock_guard<std::mutex> lock(mutex_);
     records_.push_back(std::move(message));
   }
 
-  void SetLevel(LogLevel level) noexcept override { level_ = level; }
-  LogLevel level() const noexcept override { return level_; }
+  void SetLevel(LogLevel level) noexcept override {
+    level_.store(level, std::memory_order_relaxed);
+  }
+  LogLevel level() const noexcept override {
+    return level_.load(std::memory_order_relaxed);
+  }
 
   std::vector<LogMessage> records() const {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -53,7 +60,7 @@ class CapturingLogger : public Logger {
 
  private:
   mutable std::mutex mutex_;
-  LogLevel level_ = LogLevel::kTrace;
+  std::atomic<LogLevel> level_ = LogLevel::kTrace;
   std::vector<LogMessage> records_;
 };
 

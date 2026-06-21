@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <tuple>
 #include <utility>
 
 namespace iceberg {
@@ -127,7 +128,8 @@ const std::shared_ptr<Logger>& CurrentLogger() noexcept {
       cache = nullptr;
     }
   } guard;
-  (void)guard;  // force initialization so its destructor is registered
+  std::ignore = guard;  // mark the thread_local as intentionally used (its dtor is
+                        // registered by reaching the declaration above)
 
   if (dead) {
     // Thread teardown after the cache was freed: serve an immortal no-op so a log
