@@ -21,6 +21,7 @@
 
 #include <atomic>
 #include <memory>
+#include <string_view>
 #include <thread>
 #include <tuple>
 #include <vector>
@@ -429,10 +430,24 @@ TEST(LoggerTest, BuilderDefaultsAndEmitToSink) {
   EXPECT_NE(records[0].location.line(), 0u);  // location defaulted at build site
 }
 
-TEST(LoggerTest, BuilderLocationOverride) {
-  auto loc = std::source_location::current();
-  auto record = LogMessage::Builder(LogLevel::kDebug).Location(loc).Build();
-  EXPECT_EQ(record.location.line(), loc.line());
+// location_ is initialized in the Builder constructor, so when Location() is not
+// called the default points at the constructor itself (in logger.h), not at the
+// caller and not at line 0.
+TEST(LoggerTest, BuilderDefaultLocationIsConstructorSite) {
+  auto record = LogMessage::Builder(LogLevel::kInfo).Message("m").Build();
+  EXPECT_NE(record.location.line(), 0u);
+  EXPECT_NE(std::string_view(record.location.file_name()).find("logger.h"),
+            std::string_view::npos);
+  EXPECT_NE(std::string_view(record.location.function_name()).find("Builder"),
+            std::string_view::npos);
+}
+
+// Location() replaces the constructor default with the caller's site (file + line).
+TEST(LoggerTest, BuilderLocationOverrideUsesCallerSite) {
+  auto caller = std::source_location::current();
+  auto record = LogMessage::Builder(LogLevel::kDebug).Location(caller).Build();
+  EXPECT_EQ(record.location.line(), caller.line());
+  EXPECT_STREQ(record.location.file_name(), caller.file_name());
 }
 
 }  // namespace iceberg

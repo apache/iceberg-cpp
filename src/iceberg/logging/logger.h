@@ -85,7 +85,7 @@ struct ICEBERG_EXPORT LogMessage {
 /// Location() (e.g. to forward a caller's std::source_location).
 class ICEBERG_EXPORT LogMessage::Builder {
  public:
-  explicit Builder(LogLevel level) : level_(level) {}
+  explicit Builder(LogLevel level) : level_(level), location_(std::source_location::current()) {}
 
   /// \brief Set the already-formatted message text.
   Builder& Message(std::string message) {
@@ -117,7 +117,7 @@ class ICEBERG_EXPORT LogMessage::Builder {
   LogLevel level_;
   std::string message_;
   // `location_` is a trivially copyable members no need to move.
-  std::source_location location_ = std::source_location::current();
+  std::source_location location_;
   std::vector<LogAttribute> attributes_;
 };
 
