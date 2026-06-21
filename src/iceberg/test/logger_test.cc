@@ -152,4 +152,33 @@ TEST(LoggerTest, LoggingFromThreadLocalDestructorIsSafe) {
   SUCCEED();
 }
 
+// --- Function-style API (non-macro): overloaded Log() ---
+
+TEST(LoggerTest, LogToExplicitLoggerFormats) {
+  auto sink = std::make_shared<CapturingLogger>();
+  Log(*sink, LogLevel::kInfo, "x={} y={}", 1, 2);
+  auto records = sink->records();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_EQ(records[0].level, LogLevel::kInfo);
+  EXPECT_EQ(records[0].message, "x=1 y=2");
+  EXPECT_NE(records[0].location.line(), 0u);  // call-site location captured
+}
+
+TEST(LoggerTest, LogRespectsLevelAndDoesNotFormatWhenDisabled) {
+  auto sink = std::make_shared<CapturingLogger>();
+  sink->SetLevel(LogLevel::kError);
+  Log(*sink, LogLevel::kInfo, "dropped {}", 1);
+  EXPECT_EQ(sink->count(), 0u);
+}
+
+TEST(LoggerTest, LogToDefaultLoggerFormatStyle) {
+  auto sink = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(sink);
+  Log(LogLevel::kWarn, "v={}", 7);
+  auto records = sink->records();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_EQ(records[0].level, LogLevel::kWarn);
+  EXPECT_EQ(records[0].message, "v=7");
+}
+
 }  // namespace iceberg

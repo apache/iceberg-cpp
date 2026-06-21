@@ -26,12 +26,14 @@
 /// backend configuration header and never references the spdlog feature macro,
 /// so consumers see one stable API regardless of how the backend was configured.
 
+#include <concepts>
 #include <cstdlib>
 #include <format>
 #include <memory>
 #include <source_location>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -207,6 +209,61 @@ std::string VFormat(std::string_view fmt, Args&&... args) {
   return std::vformat(fmt, store);
 }
 
+/// \brief A checked format string bundled with the caller's source_location.
+///
+/// The consteval constructor preserves std::format's compile-time format-string
+/// checking while capturing the call site (the std::print/println technique),
+/// so the function-style Log() can record an accurate file:line without a macro.
+/// Used as a non-deduced parameter so the trailing args drive deduction.
+template <typename... Args>
+struct FmtWithLoc {
+  std::format_string<Args...> fmt;
+  std::source_location loc;
+
+  template <typename T>
+    requires std::convertible_to<const T&, std::format_string<Args...>>
+  consteval FmtWithLoc(  // NOLINT(google-explicit-constructor): mirrors std::format_string
+      const T& s, std::source_location loc = std::source_location::current())
+      : fmt(s), loc(loc) {}
+};
+
+/// \brief Shared gate -> format -> emit body for the function-style Log() API.
+///
+/// Formats only when the logger is enabled for \p level, and never throws (a
+/// formatting failure routes to EmitFormatError, matching the macros).
+template <typename... Args>
+void Dispatch(Logger& logger, LogLevel level, const std::source_location& loc,
+              std::format_string<Args...> fmt, Args&&... args) noexcept {
+  if (!logger.ShouldLog(level)) return;
+  try {
+    Emit(logger, level, loc, std::format(fmt, std::forward<Args>(args)...));
+  } catch (...) {
+    EmitFormatError(logger, level, loc);
+  }
+}
+
 }  // namespace detail
+
+/// \brief Log to the process-default logger, std::format style. Formats only if
+/// the level is enabled; never throws.
+///
+/// Example: `iceberg::Log(LogLevel::kInfo, "loaded {} files", n);`
+template <typename... Args>
+void Log(LogLevel level, detail::FmtWithLoc<std::type_identity_t<Args>...> fmt,
+         Args&&... args) {
+  const std::shared_ptr<Logger>& logger = detail::CurrentLogger();
+  if (logger) {
+    detail::Dispatch(*logger, level, fmt.loc, fmt.fmt, std::forward<Args>(args)...);
+  }
+}
+
+/// \brief Log to an explicit logger, std::format style. Formats only if enabled.
+///
+/// Example: `iceberg::Log(logger, LogLevel::kWarn, "retry {}", attempt);`
+template <typename... Args>
+void Log(Logger& logger, LogLevel level,
+         detail::FmtWithLoc<std::type_identity_t<Args>...> fmt, Args&&... args) {
+  detail::Dispatch(logger, level, fmt.loc, fmt.fmt, std::forward<Args>(args)...);
+}
 
 }  // namespace iceberg
