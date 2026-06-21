@@ -129,11 +129,12 @@ TEST(LoggerTest, InitializeRejectsInvalidLevel) {
 }
 
 // Logging during thread teardown (from a thread_local destructor) must not crash.
-// CurrentLogger()'s per-thread cache is reached via a trivially-destructible
-// pointer to a never-freed heap object, so it is safe even when the logging
-// statement runs from a thread_local that is destroyed AFTER the cache -- the
-// hard case. Probe is constructed before CurrentLogger() is first touched on the
-// thread, so it is destroyed last. Run under ASan in CI for full signal.
+// The per-thread cache is freed at thread exit, but CurrentLogger()'s teardown
+// guard (a trivially-destructible "dead" flag whose storage outlives every
+// thread_local) makes it safe even when the logging statement runs from a
+// thread_local destroyed AFTER the cache -- the hard case. Probe is constructed
+// before CurrentLogger() is first touched, so it is destroyed last. Run under
+// ASan/TSan in CI for full signal.
 TEST(LoggerTest, LoggingFromThreadLocalDestructorIsSafe) {
   std::thread([] {
     struct Probe {
@@ -150,6 +151,40 @@ TEST(LoggerTest, LoggingFromThreadLocalDestructorIsSafe) {
     std::ignore =
         internal::CurrentLogger();  // ... then the logger cache (destroyed first)
   }).join();
+  SUCCEED();
+}
+
+// Teardown interleaved with concurrent default-logger swaps: many short-lived
+// threads each log from a thread_local destructor while another thread swaps the
+// default logger. Exercises the per-thread cache being freed at thread exit at
+// the same time the global slot is mutated. Run under ASan/TSan in CI.
+TEST(LoggerTest, ConcurrentTeardownAndSwapIsSafe) {
+  auto a = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger guard(a);
+  std::atomic<bool> stop{false};
+  std::thread swapper([&] {
+    auto b = std::make_shared<CapturingLogger>();
+    while (!stop.load(std::memory_order_relaxed)) {
+      SetDefaultLogger(b);
+      SetDefaultLogger(a);
+    }
+  });
+  for (int i = 0; i < 100; ++i) {
+    std::thread worker([] {
+      struct Probe {
+        ~Probe() {
+          const auto& l = internal::CurrentLogger();
+          if (l) l->ShouldLog(LogLevel::kError);
+        }
+      };
+      static thread_local Probe probe;
+      std::ignore = probe;                      // constructed before the cache
+      std::ignore = internal::CurrentLogger();  // touch the cache in normal code
+    });
+    worker.join();  // teardown runs concurrently with the swapper
+  }
+  stop.store(true, std::memory_order_relaxed);
+  swapper.join();
   SUCCEED();
 }
 

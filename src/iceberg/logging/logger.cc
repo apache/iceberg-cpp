@@ -24,7 +24,6 @@
 #include <memory>
 #include <mutex>
 #include <utility>
-#include <vector>
 
 namespace iceberg {
 
@@ -64,32 +63,11 @@ DefaultSlot& Slot() {
 }
 
 /// \brief A thread's cached view of the default logger and the generation it was
-/// cached at. Heap-allocated and intentionally never freed (see CurrentLogger).
+/// cached at. Heap-allocated per thread and freed at thread exit (see CurrentLogger).
 struct ThreadCache {
   std::shared_ptr<Logger> logger;
   uint64_t gen = 0;  // 0 != Slot().gen (seeded to 1) -> first use always refreshes
 };
-
-/// \brief Keeps every leaked ThreadCache reachable so LeakSanitizer does not flag
-/// the intentional per-thread leak. Immortal (leaked) itself, like the slot.
-struct CacheRegistry {
-  std::mutex mtx;
-  std::vector<ThreadCache*> caches;
-};
-CacheRegistry& Registry() {
-  static auto* registry = new CacheRegistry();
-  return *registry;
-}
-
-/// \brief Allocate a per-thread cache that is never destroyed and register it so
-/// it stays reachable for LSan.
-ThreadCache* NewThreadCache() {
-  auto* cache = new ThreadCache();  // intentionally leaked; see CurrentLogger
-  CacheRegistry& registry = Registry();
-  std::lock_guard<std::mutex> lock(registry.mtx);
-  registry.caches.push_back(cache);
-  return cache;
-}
 
 }  // namespace
 
@@ -126,14 +104,41 @@ void SetDefaultLevel(LogLevel level) {
 namespace internal {
 
 const std::shared_ptr<Logger>& CurrentLogger() noexcept {
-  // The per-thread cache is reached through a trivially-destructible thread_local
-  // raw pointer to a heap object that is intentionally NEVER destroyed. This makes
-  // the accessor safe to call during thread teardown -- including from another
-  // thread_local's destructor, in any destruction order: the pointer has no
-  // destructor (so it stays readable throughout teardown), and the cached
-  // shared_ptr outlives every thread_local, so there is no use-after-destruction.
-  // The intentional per-thread leak is kept LSan-reachable via the registry.
-  static thread_local ThreadCache* cache = NewThreadCache();
+  // Per-thread cache, freed at thread exit, yet safe to read from ANY other
+  // thread_local's destructor during teardown, in any destruction order. The
+  // three thread_locals are split by lifetime on purpose:
+  //
+  //   * `dead` and `cache` are trivially destructible, so their storage stays
+  //     valid for the WHOLE thread (their lifetime is not ended by a destructor);
+  //     they remain readable throughout the teardown of every other thread_local.
+  //   * `guard` is the only one with a destructor. At thread exit it sets `dead`
+  //     and frees the cache. A thread_local destroyed AFTER `guard` reads
+  //     `dead == true` and falls back instead of touching freed memory; one
+  //     destroyed BEFORE `guard` still sees a live cache. Either order is safe.
+  //
+  // (The earlier AliveFlag was wrong because the flag itself had a destructor, so
+  // reading it after that destructor ran was UB -- the very bug it tried to avoid.)
+  static thread_local bool dead = false;
+  static thread_local ThreadCache* cache = nullptr;
+  static thread_local struct Guard {
+    ~Guard() {
+      dead = true;  // mark BEFORE freeing, so a re-entrant log hits the fallback
+      delete cache;
+      cache = nullptr;
+    }
+  } guard;
+  (void)guard;  // force initialization so its destructor is registered
+
+  if (dead) {
+    // Thread teardown after the cache was freed: serve an immortal no-op so a log
+    // from a later thread_local destructor is safe. Such teardown logs are dropped.
+    static auto* fallback = new std::shared_ptr<Logger>(Logger::Noop());
+    return *fallback;
+  }
+  if (cache == nullptr) {
+    cache = new ThreadCache();
+  }
+
   DefaultSlot& slot = Slot();
   uint64_t current = slot.gen.load(std::memory_order_relaxed);
   if (current != cache->gen) {
