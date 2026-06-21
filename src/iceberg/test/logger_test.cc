@@ -181,4 +181,38 @@ TEST(LoggerTest, LogToDefaultLoggerFormatStyle) {
   EXPECT_EQ(records[0].message, "v=7");
 }
 
+// --- LogMessage::Builder (structured attributes) ---
+
+TEST(LoggerTest, BuilderAssemblesMessageAndAttributes) {
+  auto record = LogMessage::Builder(LogLevel::kInfo)
+                    .Message("scan finished")
+                    .Attribute("table", "db.t")
+                    .Attribute("snapshot_id", "42")
+                    .Build();
+  EXPECT_EQ(record.level, LogLevel::kInfo);
+  EXPECT_EQ(record.message, "scan finished");
+  ASSERT_EQ(record.attributes.size(), 2u);
+  EXPECT_EQ(record.attributes[0].key, "table");
+  EXPECT_EQ(record.attributes[0].value, "db.t");
+  EXPECT_EQ(record.attributes[1].key, "snapshot_id");
+  EXPECT_EQ(record.attributes[1].value, "42");
+}
+
+TEST(LoggerTest, BuilderDefaultsAndEmitToSink) {
+  auto sink = std::make_shared<CapturingLogger>();
+  sink->Log(LogMessage::Builder(LogLevel::kError).Message("boom").Build());
+  auto records = sink->records();
+  ASSERT_EQ(records.size(), 1u);
+  EXPECT_EQ(records[0].level, LogLevel::kError);
+  EXPECT_EQ(records[0].message, "boom");
+  EXPECT_TRUE(records[0].attributes.empty());
+  EXPECT_NE(records[0].location.line(), 0u);  // location defaulted at build site
+}
+
+TEST(LoggerTest, BuilderLocationOverride) {
+  auto loc = std::source_location::current();
+  auto record = LogMessage::Builder(LogLevel::kDebug).Location(loc).Build();
+  EXPECT_EQ(record.location.line(), loc.line());
+}
+
 }  // namespace iceberg

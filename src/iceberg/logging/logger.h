@@ -46,9 +46,9 @@ namespace iceberg {
 
 /// \brief A structured key/value attribute attached to a log record.
 ///
-/// Both key and value are owned so a sink may retain the record safely.
-/// Unused in v1; reserved so structured logging can be added without an ABI
-/// break to LogMessage.
+/// Both key and value are owned so a sink may retain the record safely. Engine
+/// loggers can surface these as discrete fields (query id, task id, table name,
+/// snapshot id, file path, ...); see LogMessage::Builder to populate them.
 struct ICEBERG_EXPORT LogAttribute {
   std::string key;
   std::string value;
@@ -59,11 +59,65 @@ struct ICEBERG_EXPORT LogAttribute {
 /// The formatted message is owned (moved in by the logging macros), so a sink
 /// may safely retain the record beyond the Log() call. The member set must not
 /// depend on the build's logging backend (the spdlog backend never appears here).
+/// Use LogMessage::Builder for a readable way to assemble one, especially with
+/// structured attributes.
 struct ICEBERG_EXPORT LogMessage {
   LogLevel level = LogLevel::kOff;
   std::string message;
   std::source_location location = std::source_location::current();
   std::vector<LogAttribute> attributes;
+
+  class Builder;
+};
+
+/// \brief Fluent builder for LogMessage, the easy path to attach structured
+/// attributes.
+///
+/// Example:
+///   auto record = LogMessage::Builder(LogLevel::kInfo)
+///                     .Message("scan finished")
+///                     .Attribute("table", table_name)
+///                     .Attribute("snapshot_id", std::to_string(id))
+///                     .Build();
+///   logger->Log(std::move(record));
+///
+/// The location defaults to where the Builder is constructed; override it with
+/// Location() (e.g. to forward a caller's std::source_location).
+class ICEBERG_EXPORT LogMessage::Builder {
+ public:
+  explicit Builder(LogLevel level) : level_(level) {}
+
+  /// \brief Set the already-formatted message text.
+  Builder& Message(std::string message) {
+    message_ = std::move(message);
+    return *this;
+  }
+
+  /// \brief Append a structured key/value attribute.
+  Builder& Attribute(std::string key, std::string value) {
+    attributes_.push_back(LogAttribute{.key = std::move(key), .value = std::move(value)});
+    return *this;
+  }
+
+  /// \brief Override the record's source location (defaults to the build site).
+  Builder& Location(std::source_location location) {
+    location_ = location;
+    return *this;
+  }
+
+  /// \brief Materialize the LogMessage, moving the accumulated state out.
+  LogMessage Build() {
+    return LogMessage{.level = level_,
+                      .message = std::move(message_),
+                      .location = location_,
+                      .attributes = std::move(attributes_)};
+  }
+
+ private:
+  LogLevel level_;
+  std::string message_;
+  std::source_location location_ = std::source_location::current();
+  std::vector<LogAttribute> attributes_;
 };
 
 /// \brief Well-known Logger::Initialize() property keys.
