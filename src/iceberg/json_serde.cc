@@ -74,6 +74,7 @@ constexpr std::string_view kType = "type";
 constexpr std::string_view kStruct = "struct";
 constexpr std::string_view kList = "list";
 constexpr std::string_view kMap = "map";
+constexpr std::string_view kVariant = "variant";
 constexpr std::string_view kElement = "element";
 constexpr std::string_view kKey = "key";
 constexpr std::string_view kValue = "value";
@@ -389,6 +390,8 @@ nlohmann::json ToJson(const Type& type) {
       return "uuid";
     case TypeId::kUnknown:
       return "unknown";
+    case TypeId::kVariant:
+      return "variant";
   }
   std::unreachable();
 }
@@ -516,6 +519,8 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
       return std::make_unique<UuidType>();
     } else if (type_str == "unknown") {
       return std::make_unique<UnknownType>();
+    } else if (type_str == kVariant) {
+      return std::make_unique<VariantType>();
     } else if (type_str.starts_with("fixed")) {
       std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
       std::smatch match;

@@ -37,6 +37,8 @@ IdToFieldVisitor::IdToFieldVisitor(
 
 Status IdToFieldVisitor::Visit(const PrimitiveType& type) { return {}; }
 
+Status IdToFieldVisitor::Visit(const VariantType& type) { return {}; }
+
 Status IdToFieldVisitor::Visit(const NestedType& type) {
   const auto& nested = internal::checked_cast<const NestedType&>(type);
   const auto& fields = nested.fields();
@@ -128,6 +130,11 @@ Status NameToIdVisitor::Visit(const PrimitiveType& type, const std::string& path
   return {};
 }
 
+Status NameToIdVisitor::Visit(const VariantType& type, const std::string& path,
+                              const std::string& short_path) {
+  return {};
+}
+
 std::string NameToIdVisitor::BuildPath(std::string_view prefix,
                                        std::string_view field_name, bool case_sensitive) {
   std::string quoted_name;
@@ -155,6 +162,20 @@ void NameToIdVisitor::Finish() {
 }
 
 Status PositionPathVisitor::Visit(const PrimitiveType& type) {
+  if (current_field_id_ == kUnassignedFieldId) {
+    return InvalidSchema("Current field id is not assigned, type: {}", type.ToString());
+  }
+
+  if (auto ret = position_path_.try_emplace(current_field_id_, current_path_);
+      !ret.second) {
+    return InvalidSchema("Duplicate field id found: {}, prev path: {}, curr path: {}",
+                         current_field_id_, ret.first->second, current_path_);
+  }
+
+  return {};
+}
+
+Status PositionPathVisitor::Visit(const VariantType& type) {
   if (current_field_id_ == kUnassignedFieldId) {
     return InvalidSchema("Current field id is not assigned, type: {}", type.ToString());
   }
@@ -208,8 +229,10 @@ Result<std::shared_ptr<Type>> PruneColumnVisitor::Visit(
 
 Result<std::shared_ptr<Type>> PruneColumnVisitor::Visit(const SchemaField& field) const {
   if (selected_ids_.contains(field.field_id())) {
-    return (select_full_types_ || field.type()->is_primitive()) ? field.type()
-                                                                : Visit(field.type());
+    return (select_full_types_ || field.type()->is_primitive() ||
+            field.type()->is_variant())
+               ? field.type()
+               : Visit(field.type());
   }
   return Visit(field.type());
 }
@@ -278,6 +301,8 @@ GetProjectedIdsVisitor::GetProjectedIdsVisitor(bool include_struct_ids)
 Status GetProjectedIdsVisitor::Visit(const Type& type) {
   if (type.is_nested()) {
     return VisitNested(internal::checked_cast<const NestedType&>(type));
+  } else if (type.is_variant()) {
+    return VisitVariant(internal::checked_cast<const VariantType&>(type));
   } else {
     return VisitPrimitive(internal::checked_cast<const PrimitiveType&>(type));
   }
@@ -288,9 +313,8 @@ Status GetProjectedIdsVisitor::VisitNested(const NestedType& type) {
     ICEBERG_RETURN_UNEXPECTED(Visit(*field.type()));
   }
   for (auto& field : type.fields()) {
-    // TODO(zhuo.wang) or is_variant
     if ((include_struct_ids_ && field.type()->type_id() == TypeId::kStruct) ||
-        field.type()->is_primitive()) {
+        field.type()->is_primitive() || field.type()->is_variant()) {
       ids_.insert(field.field_id());
     }
   }
@@ -298,6 +322,8 @@ Status GetProjectedIdsVisitor::VisitNested(const NestedType& type) {
 }
 
 Status GetProjectedIdsVisitor::VisitPrimitive(const PrimitiveType& type) { return {}; }
+
+Status GetProjectedIdsVisitor::VisitVariant(const VariantType& type) { return {}; }
 
 std::unordered_set<int32_t> GetProjectedIdsVisitor::Finish() const { return ids_; }
 

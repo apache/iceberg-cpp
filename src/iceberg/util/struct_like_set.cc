@@ -318,6 +318,8 @@ Status ValidateScalarAgainstType(const Scalar& scalar, const Type& type) {
                        value.size());
       return {};
     }
+    case TypeId::kVariant:
+      return NotSupported("StructLike variant values are not supported");
     case TypeId::kStruct: {
       ICEBERG_PRECHECK(std::holds_alternative<std::shared_ptr<StructLike>>(scalar),
                        "Expected struct but got {}", ScalarTypeName(scalar));

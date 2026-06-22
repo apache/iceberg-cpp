@@ -27,7 +27,9 @@
 
 #include <arrow/api.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension/parquet_variant.h>
 #include <arrow/extension/uuid.h>
+#include <arrow/extension_type.h>
 #include <arrow/result.h>
 #include <arrow/type_fwd.h>
 #include <arrow/util/config.h>
@@ -41,10 +43,31 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/executor.h"
 #include "iceberg/util/task_group.h"
 
 namespace iceberg {
+
+namespace {
+
+std::shared_ptr<::arrow::DataType> ArrowVariantType() {
+  return ::arrow::extension::variant(::arrow::struct_({
+      ::arrow::field("metadata", ::arrow::binary(), /*nullable=*/false),
+      ::arrow::field("value", ::arrow::binary(), /*nullable=*/false),
+  }));
+}
+
+void EnsureArrowVariantExtensionRegistered() {
+  if (::arrow::GetExtensionType("arrow.parquet.variant") != nullptr) {
+    return;
+  }
+  ASSERT_TRUE(::arrow::RegisterExtensionType(
+                  std::static_pointer_cast<::arrow::ExtensionType>(ArrowVariantType()))
+                  .ok());
+}
+
+}  // namespace
 
 struct ToArrowSchemaParam {
   std::shared_ptr<Type> iceberg_type;
@@ -121,6 +144,42 @@ INSTANTIATE_TEST_SUITE_P(
                            .arrow_type = ::arrow::fixed_size_binary(20)},
         ToArrowSchemaParam{.iceberg_type = iceberg::unknown(),
                            .arrow_type = ::arrow::null()}));
+
+TEST(ToArrowSchemaTest, VariantType) {
+  EnsureArrowVariantExtensionRegistered();
+
+  Schema schema({SchemaField::MakeOptional(3, "payload", iceberg::variant())},
+                /*schema_id=*/0);
+  ArrowSchema arrow_schema;
+  ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
+
+  auto imported_schema = ::arrow::ImportSchema(&arrow_schema).ValueOrDie();
+  ASSERT_EQ(imported_schema->num_fields(), 1);
+
+  auto field = imported_schema->field(0);
+  ASSERT_EQ(field->name(), "payload");
+  ASSERT_TRUE(field->nullable());
+  ASSERT_EQ(field->type()->id(), ::arrow::Type::EXTENSION);
+  const auto& extension_type =
+      internal::checked_cast<const ::arrow::ExtensionType&>(*field->type());
+  ASSERT_EQ(extension_type.extension_name(), "arrow.parquet.variant");
+  ASSERT_TRUE(field->metadata()->Contains(kParquetFieldIdKey));
+  ASSERT_EQ(field->metadata()->Get(kParquetFieldIdKey), "3");
+
+  const auto& storage_type =
+      internal::checked_cast<const ::arrow::StructType&>(*extension_type.storage_type());
+  ASSERT_EQ(storage_type.num_fields(), 2);
+  ASSERT_EQ(storage_type.field(0)->name(), "metadata");
+  ASSERT_EQ(storage_type.field(0)->type()->id(), ::arrow::Type::BINARY);
+  ASSERT_FALSE(storage_type.field(0)->nullable());
+  ASSERT_TRUE(storage_type.field(0)->metadata() == nullptr ||
+              !storage_type.field(0)->metadata()->Contains(kParquetFieldIdKey));
+  ASSERT_EQ(storage_type.field(1)->name(), "value");
+  ASSERT_EQ(storage_type.field(1)->type()->id(), ::arrow::Type::BINARY);
+  ASSERT_FALSE(storage_type.field(1)->nullable());
+  ASSERT_TRUE(storage_type.field(1)->metadata() == nullptr ||
+              !storage_type.field(1)->metadata()->Contains(kParquetFieldIdKey));
+}
 
 namespace {
 
@@ -394,6 +453,8 @@ INSTANTIATE_TEST_SUITE_P(
                              .iceberg_type = iceberg::binary()},
         FromArrowSchemaParam{.arrow_type = ::arrow::extension::uuid(),
                              .iceberg_type = iceberg::uuid()},
+        FromArrowSchemaParam{.arrow_type = ArrowVariantType(),
+                             .iceberg_type = iceberg::variant()},
         FromArrowSchemaParam{.arrow_type = ::arrow::fixed_size_binary(20),
                              .iceberg_type = iceberg::fixed(20)},
         FromArrowSchemaParam{.arrow_type = ::arrow::null(),

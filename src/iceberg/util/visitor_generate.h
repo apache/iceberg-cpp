@@ -39,6 +39,7 @@ namespace iceberg {
   ACTION(Fixed);                               \
   ACTION(Binary);                              \
   ACTION(Unknown);                             \
+  ACTION(Variant);                             \
   ACTION(Struct);                              \
   ACTION(List);                                \
   ACTION(Map);
@@ -49,6 +50,7 @@ namespace iceberg {
 /// - Struct types -> calls ACTION with Struct
 /// - List types -> calls ACTION with List
 /// - Map types -> calls ACTION with Map
+/// - Variant type -> calls ACTION with Variant
 /// - All primitive types (default) -> calls ACTION with Primitive
 #define ICEBERG_TYPE_SWITCH_WITH_PRIMITIVE_DEFAULT(ACTION) \
   case ::iceberg::TypeId::kStruct:                         \
@@ -57,6 +59,8 @@ namespace iceberg {
     ACTION(List)                                           \
   case ::iceberg::TypeId::kMap:                            \
     ACTION(Map)                                            \
+  case ::iceberg::TypeId::kVariant:                        \
+    ACTION(Variant)                                        \
   default:                                                 \
     ACTION(Primitive)
 

@@ -54,6 +54,9 @@ class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
   /// \brief Is this a nested type (may have child fields)?
   [[nodiscard]] virtual bool is_nested() const = 0;
 
+  /// \brief Is this a variant type?
+  [[nodiscard]] virtual bool is_variant() const { return false; }
+
   /// \brief Compare two types for equality.
   friend bool operator==(const Type& lhs, const Type& rhs) { return lhs.Equals(rhs); }
 
@@ -207,6 +210,28 @@ class ICEBERG_EXPORT MapType : public NestedType {
 };
 
 /// @}
+
+/// \brief Iceberg v3 semi-structured Variant type.
+///
+/// Variant is a leaf type, but the Iceberg spec does not classify it as a
+/// primitive type.
+class ICEBERG_EXPORT VariantType : public Type {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kVariant;
+
+  VariantType() = default;
+  ~VariantType() override = default;
+
+  bool is_primitive() const override { return false; }
+  bool is_nested() const override { return false; }
+  bool is_variant() const override { return true; }
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+};
 
 /// \defgroup type-primitive Primitive Types
 /// Primitive types do not have nested fields.
@@ -520,9 +545,9 @@ class ICEBERG_EXPORT UnknownType : public PrimitiveType {
 
 /// @}
 
-/// \defgroup type-factories Factory functions for creating primitive data types
+/// \defgroup type-factories Factory functions for creating data types
 ///
-/// Factory functions for creating primitive data types
+/// Factory functions for creating data types.
 /// @{
 
 /// \brief Return a BooleanType instance.
@@ -555,6 +580,9 @@ ICEBERG_EXPORT const std::shared_ptr<StringType>& string();
 ICEBERG_EXPORT const std::shared_ptr<UuidType>& uuid();
 /// \brief Return an UnknownType instance.
 ICEBERG_EXPORT const std::shared_ptr<UnknownType>& unknown();
+
+/// \brief Return a VariantType instance.
+ICEBERG_EXPORT const std::shared_ptr<VariantType>& variant();
 
 /// \brief Create a DecimalType with the given precision and scale.
 /// \param precision The number of decimal digits (max 38).

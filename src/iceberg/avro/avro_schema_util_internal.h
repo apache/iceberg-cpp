@@ -39,6 +39,10 @@ struct MapLogicalType : public ::avro::CustomLogicalType {
   MapLogicalType() : ::avro::CustomLogicalType("map") {}
 };
 
+struct VariantLogicalType : public ::avro::CustomLogicalType {
+  VariantLogicalType() : ::avro::CustomLogicalType("variant") {}
+};
+
 /// \brief A visitor that converts an Iceberg type to an Avro node.
 class ToAvroNodeVisitor {
  public:
@@ -59,6 +63,7 @@ class ToAvroNodeVisitor {
   Status Visit(const FixedType& type, ::avro::NodePtr* node);
   Status Visit(const BinaryType& type, ::avro::NodePtr* node);
   Status Visit(const UnknownType&, ::avro::NodePtr*);
+  Status Visit(const VariantType& type, ::avro::NodePtr* node);
   Status Visit(const StructType& type, ::avro::NodePtr* node);
   Status Visit(const ListType& type, ::avro::NodePtr* node);
   Status Visit(const MapType& type, ::avro::NodePtr* node);
@@ -159,6 +164,11 @@ bool IsAvroDateOrPlainInt(const ::avro::NodePtr& node);
 /// \param node The Avro node to check.
 /// \return True if the node has a map logical type, false otherwise.
 bool HasMapLogicalType(const ::avro::NodePtr& node);
+
+/// \brief Check if an Avro node has a variant logical type.
+/// \param node The Avro node to check.
+/// \return True if the node has a variant logical type, false otherwise.
+bool HasVariantLogicalType(const ::avro::NodePtr& node);
 
 /// \brief Check if a string is a valid Avro name.
 ///

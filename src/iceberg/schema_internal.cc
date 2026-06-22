@@ -37,6 +37,7 @@ namespace {
 constexpr const char* kArrowExtensionName = "ARROW:extension:name";
 constexpr const char* kArrowExtensionMetadata = "ARROW:extension:metadata";
 constexpr const char* kArrowUuidExtensionName = "arrow.uuid";
+constexpr const char* kArrowVariantExtensionName = "arrow.parquet.variant";
 constexpr int32_t kUnknownFieldId = -1;
 
 // Convert an Iceberg type to Arrow schema. Return value is Nanoarrow error code.
@@ -153,6 +154,20 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
     case TypeId::kUnknown:
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA));
       break;
+    case TypeId::kVariant: {
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeStruct(schema, 2));
+      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*binary(), /*optional=*/false, "metadata",
+                                            /*field_id=*/std::nullopt,
+                                            schema->children[0]));
+      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*binary(), /*optional=*/false, "value",
+                                            /*field_id=*/std::nullopt,
+                                            schema->children[1]));
+      NANOARROW_RETURN_NOT_OK(
+          ArrowMetadataBuilderAppend(&metadata_buffer, ArrowCharView(kArrowExtensionName),
+                                     ArrowCharView(kArrowVariantExtensionName)));
+      NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderAppend(
+          &metadata_buffer, ArrowCharView(kArrowExtensionMetadata), ArrowCharView("")));
+    } break;
   }
 
   if (!name.empty()) {
@@ -235,6 +250,46 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
       error_code != NANOARROW_OK) {
     return InvalidSchema("Failed to read Arrow schema, code: {}, message: {}", error_code,
                          arrow_error.message);
+  }
+
+  auto extension_name = std::string_view(schema_view.extension_name.data,
+                                         schema_view.extension_name.size_bytes);
+  if (extension_name == kArrowVariantExtensionName ||
+      extension_name == "parquet.variant") {
+    if (schema_view.type != NANOARROW_TYPE_STRUCT || schema.n_children != 2) {
+      return InvalidSchema("Variant Arrow storage must be a struct with 2 fields");
+    }
+    for (int i = 0; i < schema.n_children; ++i) {
+      ArrowError child_error;
+      ArrowErrorInit(&child_error);
+      ArrowSchemaView child_view;
+      if (auto error_code =
+              ArrowSchemaViewInit(&child_view, schema.children[i], &child_error);
+          error_code != NANOARROW_OK) {
+        return InvalidSchema(
+            "Failed to read Variant child Arrow schema, code: {}, "
+            "message: {}",
+            error_code, child_error.message);
+      }
+      if (child_view.type != NANOARROW_TYPE_BINARY &&
+          child_view.type != NANOARROW_TYPE_LARGE_BINARY) {
+        return InvalidSchema("Variant Arrow child '{}' must be binary",
+                             schema.children[i]->name);
+      }
+      if ((schema.children[i]->flags & ARROW_FLAG_NULLABLE) != 0) {
+        return InvalidSchema("Variant Arrow child '{}' must be non-nullable",
+                             schema.children[i]->name);
+      }
+    }
+    std::string_view child0_name = schema.children[0]->name;
+    std::string_view child1_name = schema.children[1]->name;
+    bool has_metadata_and_value = (child0_name == "metadata" && child1_name == "value") ||
+                                  (child0_name == "value" && child1_name == "metadata");
+    if (!has_metadata_and_value) {
+      return InvalidSchema(
+          "Variant Arrow storage must contain metadata and value fields");
+    }
+    return iceberg::variant();
   }
 
   switch (schema_view.type) {

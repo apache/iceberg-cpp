@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <format>
 #include <string>
 
 #include <avro/Compiler.hh>
@@ -254,6 +255,64 @@ TEST(ToAvroNodeVisitorTest, UnknownType) {
   ::avro::NodePtr node;
   EXPECT_THAT(ToAvroNodeVisitor{}.Visit(UnknownType{}, &node), IsOk());
   EXPECT_EQ(node->type(), ::avro::AVRO_NULL);
+}
+
+TEST(ToAvroNodeVisitorTest, VariantType) {
+  ::avro::NodePtr node;
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(VariantType{}, &node), IsOk());
+  EXPECT_EQ(node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(node->name().fullname(), "variant");
+  ASSERT_NO_FATAL_FAILURE(CheckCustomLogicalType(node, "variant"));
+
+  ASSERT_EQ(node->names(), 2);
+  EXPECT_EQ(node->nameAt(0), "metadata");
+  EXPECT_EQ(node->nameAt(1), "value");
+  ASSERT_EQ(node->leaves(), 2);
+  EXPECT_EQ(node->leafAt(0)->type(), ::avro::AVRO_BYTES);
+  EXPECT_EQ(node->leafAt(1)->type(), ::avro::AVRO_BYTES);
+  EXPECT_EQ(node->customAttributes(), 0);
+}
+
+TEST(ToAvroNodeVisitorTest, VariantFieldType) {
+  ::avro::NodePtr node;
+  EXPECT_THAT(
+      ToAvroNodeVisitor{}.Visit(
+          SchemaField::MakeOptional(/*field_id=*/7, "payload", iceberg::variant()),
+          &node),
+      IsOk());
+
+  ASSERT_EQ(node->type(), ::avro::AVRO_UNION);
+  ASSERT_EQ(node->leaves(), 2);
+  EXPECT_EQ(node->leafAt(0)->type(), ::avro::AVRO_NULL);
+  auto variant_node = node->leafAt(1);
+  ASSERT_EQ(variant_node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(variant_node->name().fullname(), "r7");
+  ASSERT_NO_FATAL_FAILURE(CheckCustomLogicalType(variant_node, "variant"));
+}
+
+TEST(ToAvroNodeVisitorTest, VariantSchemaConversionUsesFieldIdsForRecordNames) {
+  Schema schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "variantCol1", iceberg::variant()),
+      SchemaField::MakeRequired(/*field_id=*/2, "variantCol2", iceberg::variant()),
+  });
+
+  ::avro::NodePtr node;
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(schema, &node), IsOk());
+  ASSERT_EQ(node->type(), ::avro::AVRO_RECORD);
+  ASSERT_EQ(node->leaves(), 2);
+
+  for (int id = 1; id <= 2; ++id) {
+    auto variant_node = node->leafAt(id - 1);
+    ASSERT_EQ(variant_node->type(), ::avro::AVRO_RECORD);
+    EXPECT_EQ(variant_node->name().fullname(), std::format("r{}", id));
+    ASSERT_NO_FATAL_FAILURE(CheckCustomLogicalType(variant_node, "variant"));
+    ASSERT_EQ(variant_node->names(), 2);
+    EXPECT_EQ(variant_node->nameAt(0), "metadata");
+    EXPECT_EQ(variant_node->nameAt(1), "value");
+    ASSERT_EQ(variant_node->leaves(), 2);
+    EXPECT_EQ(variant_node->leafAt(0)->type(), ::avro::AVRO_BYTES);
+    EXPECT_EQ(variant_node->leafAt(1)->type(), ::avro::AVRO_BYTES);
+  }
 }
 
 TEST(ToAvroNodeVisitorTest, StructType) {
@@ -743,6 +802,18 @@ TEST(HasIdVisitorTest, ArrayBackedMapWithPartialIds) {
   EXPECT_FALSE(visitor.AllHaveIds());
 }
 
+TEST(HasIdVisitorTest, VariantField) {
+  ::avro::NodePtr node;
+  Schema schema(
+      {SchemaField::MakeRequired(/*field_id=*/1, "payload", iceberg::variant())});
+  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(schema, &node), IsOk());
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(node), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.AllHaveIds());
+}
+
 TEST(AvroSchemaProjectionTest, ProjectIdenticalSchemas) {
   // Create an iceberg schema
   Schema expected_schema({
@@ -922,6 +993,22 @@ TEST(AvroSchemaProjectionTest, ProjectMetadataColumn) {
   ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
   ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
   ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kMetadata);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectVariantField) {
+  Schema expected_schema(
+      {SchemaField::MakeRequired(/*field_id=*/1, "payload", iceberg::variant())});
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(expected_schema, &avro_node), IsOk());
+
+  auto projection_result = Project(expected_schema, avro_node, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
 }
 
 TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIntToLong) {

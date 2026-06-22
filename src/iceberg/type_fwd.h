@@ -53,6 +53,7 @@ enum class TypeId {
   kFixed,
   kBinary,
   kUnknown,
+  kVariant,
 };
 
 /// \brief The time unit.  In Iceberg V3 nanoseconds are also supported.
@@ -86,6 +87,7 @@ class TimestampTzNsType;
 class Type;
 class UnknownType;
 class UuidType;
+class VariantType;
 
 /// \brief Data values.
 class Decimal;

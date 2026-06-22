@@ -21,16 +21,19 @@
 #include <string_view>
 #include <vector>
 
+#include <arrow/c/bridge.h>
 #include <arrow/type.h>
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
+#include <parquet/properties.h>
 #include <parquet/schema.h>
 #include <parquet/types.h>
 
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 
@@ -61,6 +64,14 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
   return ::parquet::schema::PrimitiveNode::Make(
       name, optional ? ::parquet::Repetition::OPTIONAL : ::parquet::Repetition::REQUIRED,
       ::parquet::LogicalType::String(), ::parquet::Type::BYTE_ARRAY,
+      /*primitive_length=*/-1, field_id);
+}
+
+::parquet::schema::NodePtr MakeBinaryNode(const std::string& name, int field_id = -1,
+                                          bool optional = true) {
+  return ::parquet::schema::PrimitiveNode::Make(
+      name, optional ? ::parquet::Repetition::OPTIONAL : ::parquet::Repetition::REQUIRED,
+      ::parquet::LogicalType::None(), ::parquet::Type::BYTE_ARRAY,
       /*primitive_length=*/-1, field_id);
 }
 
@@ -109,14 +120,26 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
       {key_value_group}, ::parquet::LogicalType::Map(), field_id);
 }
 
+::parquet::schema::NodePtr MakeVariantNode(const std::string& name, int field_id = -1,
+                                           bool optional = true) {
+  return ::parquet::schema::GroupNode::Make(
+      name, optional ? ::parquet::Repetition::OPTIONAL : ::parquet::Repetition::REQUIRED,
+      {
+          MakeBinaryNode("metadata", /*field_id=*/-1, /*optional=*/false),
+          MakeBinaryNode("value", /*field_id=*/-1, /*optional=*/false),
+      },
+      ::parquet::LogicalType::Variant(), field_id);
+}
+
 // Helper to create SchemaManifest from Parquet schema
 ::parquet::arrow::SchemaManifest MakeSchemaManifest(
-    const ::parquet::schema::NodePtr& parquet_schema) {
+    const ::parquet::schema::NodePtr& parquet_schema,
+    bool arrow_extensions_enabled = true) {
   auto parquet_schema_descriptor = std::make_shared<::parquet::SchemaDescriptor>();
   parquet_schema_descriptor->Init(parquet_schema);
 
   auto properties = ::parquet::default_arrow_reader_properties();
-  properties.set_arrow_extensions_enabled(true);
+  properties.set_arrow_extensions_enabled(arrow_extensions_enabled);
 
   ::parquet::arrow::SchemaManifest manifest;
   auto status = ::parquet::arrow::SchemaManifest::Make(parquet_schema_descriptor.get(),
@@ -165,6 +188,49 @@ TEST(HasFieldIdsTest, PrimitiveNode) {
   EXPECT_FALSE(HasFieldIds(MakeInt32Node("test_field")));
   EXPECT_TRUE(HasFieldIds(MakeInt32Node("test_field", /*field_id=*/1)));
   EXPECT_FALSE(HasFieldIds(MakeInt32Node("test_field", /*field_id=*/-1)));
+}
+
+TEST(ParquetSchemaConversionTest, VariantType) {
+  ASSERT_THAT(EnsureParquetVariantExtensionRegistered(), IsOk());
+
+  Schema schema(
+      {SchemaField::MakeOptional(/*field_id=*/7, "payload", iceberg::variant())});
+  ArrowSchema c_schema;
+  ASSERT_THAT(ToArrowSchema(schema, &c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+
+  std::shared_ptr<::parquet::SchemaDescriptor> schema_descriptor;
+  auto writer_properties = ::parquet::default_writer_properties();
+  auto arrow_writer_properties = ::parquet::default_arrow_writer_properties();
+  ASSERT_TRUE(::parquet::arrow::ToParquetSchema(arrow_schema.get(), *writer_properties,
+                                                *arrow_writer_properties,
+                                                &schema_descriptor)
+                  .ok());
+
+  auto root = std::static_pointer_cast<const ::parquet::schema::GroupNode>(
+      schema_descriptor->schema_root());
+  ASSERT_EQ(root->field_count(), 1);
+  auto variant_node =
+      std::static_pointer_cast<const ::parquet::schema::GroupNode>(root->field(0));
+  ASSERT_EQ(variant_node->name(), "payload");
+  ASSERT_EQ(variant_node->field_id(), 7);
+  ASSERT_EQ(variant_node->repetition(), ::parquet::Repetition::OPTIONAL);
+  ASSERT_TRUE(variant_node->logical_type()->is_variant());
+  ASSERT_EQ(variant_node->field_count(), 2);
+
+  auto metadata_node = std::static_pointer_cast<const ::parquet::schema::PrimitiveNode>(
+      variant_node->field(0));
+  ASSERT_EQ(metadata_node->name(), "metadata");
+  ASSERT_EQ(metadata_node->repetition(), ::parquet::Repetition::REQUIRED);
+  ASSERT_EQ(metadata_node->physical_type(), ::parquet::Type::BYTE_ARRAY);
+  ASSERT_EQ(metadata_node->field_id(), -1);
+
+  auto value_node = std::static_pointer_cast<const ::parquet::schema::PrimitiveNode>(
+      variant_node->field(1));
+  ASSERT_EQ(value_node->name(), "value");
+  ASSERT_EQ(value_node->repetition(), ::parquet::Repetition::REQUIRED);
+  ASSERT_EQ(value_node->physical_type(), ::parquet::Type::BYTE_ARRAY);
+  ASSERT_EQ(value_node->field_id(), -1);
 }
 
 // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks)
@@ -654,6 +720,186 @@ TEST(ParquetSchemaProjectionTest, ProjectMapType) {
   ASSERT_PROJECTED_FIELD(projection.fields[0].children[1], 1);
 
   ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1}));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectVariantType) {
+  ASSERT_THAT(EnsureParquetVariantExtensionRegistered(), IsOk());
+
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "payload", iceberg::variant()),
+  });
+
+  auto parquet_schema =
+      MakeGroupNode("iceberg_schema", {
+                                          MakeVariantNode("payload", /*field_id=*/1),
+                                      });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+
+  ASSERT_EQ(projection.fields[0].children.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[0].children[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[0].children[1], 1);
+
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1}));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectPrunesUnselectedVariantFields) {
+  ASSERT_THAT(EnsureParquetVariantExtensionRegistered(), IsOk());
+
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int32()),
+      SchemaField::MakeRequired(/*field_id=*/2, "variant_1", iceberg::variant()),
+  });
+
+  auto parquet_schema =
+      MakeGroupNode("iceberg_schema", {
+                                          MakeInt32Node("id", /*field_id=*/1),
+                                          MakeVariantNode("variant_1", /*field_id=*/2),
+                                          MakeVariantNode("variant_2", /*field_id=*/3),
+                                      });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[1], 1);
+
+  ASSERT_EQ(projection.fields[1].children.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[1].children[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[1].children[1], 1);
+
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1, 2}));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectListOfVariant) {
+  ASSERT_THAT(EnsureParquetVariantExtensionRegistered(), IsOk());
+
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "payloads",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/101, "element", iceberg::variant()))),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {
+          MakeListNode("payloads", MakeVariantNode("element", /*field_id=*/101),
+                       /*field_id=*/1),
+      });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+
+  ASSERT_EQ(projection.fields[0].children.size(), 1);
+  const auto& element_projection = projection.fields[0].children[0];
+  ASSERT_PROJECTED_FIELD(element_projection, 0);
+  ASSERT_EQ(element_projection.children.size(), 2);
+  ASSERT_PROJECTED_FIELD(element_projection.children[0], 0);
+  ASSERT_PROJECTED_FIELD(element_projection.children[1], 1);
+
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1}));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectMapWithVariantValue) {
+  ASSERT_THAT(EnsureParquetVariantExtensionRegistered(), IsOk());
+
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "payloads",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/101, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/102, "value", iceberg::variant()))),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {
+          MakeMapNode("payloads",
+                      MakeStringNode("key", /*field_id=*/101, /*optional=*/false),
+                      MakeVariantNode("value", /*field_id=*/102), /*field_id=*/1),
+      });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+
+  ASSERT_EQ(projection.fields[0].children.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[0].children[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[0].children[1], 1);
+
+  const auto& value_projection = projection.fields[0].children[1];
+  ASSERT_EQ(value_projection.children.size(), 2);
+  ASSERT_PROJECTED_FIELD(value_projection.children[0], 0);
+  ASSERT_PROJECTED_FIELD(value_projection.children[1], 1);
+
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1, 2}));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectShreddedVariantNotSupported) {
+  ASSERT_THAT(EnsureParquetVariantExtensionRegistered(), IsOk());
+
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "payload", iceberg::variant()),
+  });
+
+  auto shredded_variant = ::parquet::schema::GroupNode::Make(
+      "payload", ::parquet::Repetition::OPTIONAL,
+      {
+          MakeBinaryNode("metadata", /*field_id=*/-1, /*optional=*/false),
+          MakeBinaryNode("value", /*field_id=*/-1, /*optional=*/false),
+          MakeStringNode("typed_value", /*field_id=*/-1),
+      },
+      ::parquet::LogicalType::Variant(), /*field_id=*/1);
+  auto parquet_schema = MakeGroupNode("iceberg_schema", {shredded_variant});
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema,
+                                            /*arrow_extensions_enabled=*/false);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kNotSupported));
+  ASSERT_THAT(projection_result, HasErrorMessage("Reading shredded Variant columns"));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectVariantRequiresRequiredBinaryChildren) {
+  ASSERT_THAT(EnsureParquetVariantExtensionRegistered(), IsOk());
+
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "payload", iceberg::variant()),
+  });
+
+  auto variant_with_optional_value = ::parquet::schema::GroupNode::Make(
+      "payload", ::parquet::Repetition::OPTIONAL,
+      {
+          MakeBinaryNode("metadata", /*field_id=*/-1, /*optional=*/false),
+          MakeBinaryNode("value", /*field_id=*/-1, /*optional=*/true),
+      },
+      ::parquet::LogicalType::Variant(), /*field_id=*/1);
+  auto parquet_schema = MakeGroupNode("iceberg_schema", {variant_with_optional_value});
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema,
+                                            /*arrow_extensions_enabled=*/false);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result,
+              HasErrorMessage("metadata and value fields must be required"));
 }
 
 TEST(ParquetSchemaProjectionTest, ProjectListOfStruct) {

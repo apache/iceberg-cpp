@@ -28,6 +28,9 @@ void RegisterLogicalTypes() {
   // See https://github.com/apache/avro/pull/3326 for details.
   ::avro::CustomLogicalTypeRegistry::instance().registerType(
       "map", [](const std::string&) { return std::make_shared<MapLogicalType>(); });
+  ::avro::CustomLogicalTypeRegistry::instance().registerType(
+      "variant",
+      [](const std::string&) { return std::make_shared<VariantLogicalType>(); });
 }
 
 void RegisterAll() {

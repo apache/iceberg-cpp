@@ -48,6 +48,10 @@ namespace {
   return ::avro::LogicalType(std::make_shared<MapLogicalType>());
 }
 
+::avro::LogicalType GetVariantLogicalType() {
+  return ::avro::LogicalType(std::make_shared<VariantLogicalType>());
+}
+
 ::avro::CustomAttributes GetAttributesWithFieldId(int32_t field_id) {
   ::avro::CustomAttributes attributes;
   attributes.addAttribute(std::string(kFieldIdProp), std::to_string(field_id),
@@ -248,6 +252,22 @@ Status ToAvroNodeVisitor::Visit(const UnknownType&, ::avro::NodePtr* node) {
   return {};
 }
 
+Status ToAvroNodeVisitor::Visit(const VariantType& type, ::avro::NodePtr* node) {
+  *node = std::make_shared<::avro::NodeRecord>();
+  if (field_ids_.empty()) {
+    (*node)->setName(::avro::Name(std::string(kVariantLogicalType)));
+  } else {
+    (*node)->setName(::avro::Name(std::format("r{}", field_ids_.top())));
+  }
+  (*node)->setLogicalType(GetVariantLogicalType());
+
+  (*node)->addName(std::string(kMetadata));
+  (*node)->addLeaf(std::make_shared<::avro::NodePrimitive>(::avro::AVRO_BYTES));
+  (*node)->addName(std::string(kValue));
+  (*node)->addLeaf(std::make_shared<::avro::NodePrimitive>(::avro::AVRO_BYTES));
+  return {};
+}
+
 Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodeRecord>();
 
@@ -403,6 +423,10 @@ Status HasIdVisitor::Visit(const ::avro::NodePtr& node) {
 }
 
 Status HasIdVisitor::VisitRecord(const ::avro::NodePtr& node) {
+  if (HasVariantLogicalType(node)) {
+    return {};
+  }
+
   static const std::string kFieldIdKey{kFieldIdProp};
   total_fields_ += node->leaves();
   for (size_t i = 0; i < node->leaves(); ++i) {
@@ -521,6 +545,13 @@ Result<int32_t> GetFieldId(const ::avro::NodePtr& node, size_t field_idx) {
   return GetId(node, kFieldIdKey, field_idx);
 }
 
+bool IsVariantAvroSchema(const ::avro::NodePtr& node) {
+  return HasVariantLogicalType(node) && node->type() == ::avro::AVRO_RECORD &&
+         node->leaves() == 2 && node->names() == 2 && node->nameAt(0) == kMetadata &&
+         node->nameAt(1) == kValue && node->leafAt(0)->type() == ::avro::AVRO_BYTES &&
+         node->leafAt(1)->type() == ::avro::AVRO_BYTES;
+}
+
 Status ValidateAvroSchemaEvolution(const Type& expected_type,
                                    const ::avro::NodePtr& avro_node) {
   if (avro_node->type() == ::avro::AVRO_NULL) {
@@ -631,6 +662,11 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
       break;
     case TypeId::kUnknown:
       return {};
+    case TypeId::kVariant:
+      if (IsVariantAvroSchema(avro_node)) {
+        return {};
+      }
+      break;
     default:
       break;
   }
@@ -864,7 +900,13 @@ Result<FieldProjection> ProjectNested(const Type& expected_type,
 bool HasMapLogicalType(const ::avro::NodePtr& node) {
   return node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
          node->logicalType().customLogicalType() != nullptr &&
-         node->logicalType().customLogicalType()->name() == "map";
+         node->logicalType().customLogicalType()->name() == kMapLogicalType;
+}
+
+bool HasVariantLogicalType(const ::avro::NodePtr& node) {
+  return node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
+         node->logicalType().customLogicalType() != nullptr &&
+         node->logicalType().customLogicalType()->name() == kVariantLogicalType;
 }
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
@@ -1049,6 +1091,10 @@ Result<::avro::NodePtr> MakeUnionNodeWithFieldIds(const ::avro::NodePtr& origina
 Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
                                                  const NameMapping& mapping,
                                                  std::vector<std::string>& names) {
+  if (HasVariantLogicalType(original_node)) {
+    return original_node;
+  }
+
   switch (original_node->type()) {
     case ::avro::AVRO_RECORD:
       return MakeRecordNodeWithFieldIds(original_node, mapping, names);
