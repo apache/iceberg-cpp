@@ -43,7 +43,7 @@
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
-#include "iceberg/util/executor_util.h"
+#include "iceberg/util/executor_util_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {

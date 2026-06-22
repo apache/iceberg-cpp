@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/util/executor_util.h"
-
 #include <atomic>
 #include <concepts>
 #include <functional>
@@ -37,6 +35,7 @@
 #include "iceberg/result.h"
 #include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/executor_util_internal.h"
 
 namespace iceberg {
 
@@ -169,37 +168,6 @@ TEST(ParallelCollectTest, CollectsMultipleRanges) {
   EXPECT_THAT(std::get<0>(*result), UnorderedElementsAre(1, 2));
   EXPECT_THAT(std::get<1>(*result), ElementsAre("a", "b"));
   EXPECT_EQ(executor.submit_count(), 4);
-}
-
-namespace {
-struct CustomValues {
-  std::vector<int> values;
-};
-}  // namespace
-
-template <>
-struct ParallelReduce<CustomValues> {
-  using result_type = CustomValues;
-
-  template <std::ranges::input_range Values>
-  static result_type Reduce(Values&& values) {
-    result_type result;
-    for (const auto& value : values) {
-      result.values.insert(result.values.end(), value.values.begin(), value.values.end());
-    }
-    return result;
-  }
-};
-
-TEST(ParallelCollectTest, CollectsCustomContainer) {
-  std::vector<int> input = {1, 2, 3};
-
-  auto result = ParallelCollect(std::nullopt, input, [](int value) {
-    return Result<CustomValues>{CustomValues{{value, value * 10}}};
-  });
-
-  EXPECT_THAT(result, IsOk());
-  EXPECT_THAT(result->values, ElementsAre(1, 10, 2, 20, 3, 30));
 }
 
 TEST(ParallelCollectTest, PropagatesTaskErrors) {
