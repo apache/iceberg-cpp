@@ -19,10 +19,12 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <string>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/catalog/rest/type_fwd.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/error_handlers.h
@@ -41,6 +43,14 @@ class ICEBERG_REST_EXPORT ErrorHandler {
   /// \param error The error response parsed from the HTTP response body
   /// \return An Error object with appropriate ErrorKind and message
   virtual Status Accept(const ErrorResponse& error) const = 0;
+
+  /// \brief Parse an HTTP error response body.
+  ///
+  /// \param code The HTTP status code from the failed response
+  /// \param text The HTTP response body
+  /// \return The parsed error response
+  virtual Result<ErrorResponse> ParseResponse(uint32_t code,
+                                              const std::string& text) const = 0;
 };
 
 /// \brief Default error handler for REST API responses.
@@ -50,6 +60,8 @@ class ICEBERG_REST_EXPORT DefaultErrorHandler : public ErrorHandler {
   static const std::shared_ptr<DefaultErrorHandler>& Instance();
 
   Status Accept(const ErrorResponse& error) const override;
+  Result<ErrorResponse> ParseResponse(uint32_t code,
+                                      const std::string& text) const override;
 
  protected:
   constexpr DefaultErrorHandler() = default;
@@ -179,6 +191,8 @@ class ICEBERG_REST_EXPORT OAuthErrorHandler final : public ErrorHandler {
   static const std::shared_ptr<OAuthErrorHandler>& Instance();
 
   Status Accept(const ErrorResponse& error) const override;
+  Result<ErrorResponse> ParseResponse(uint32_t code,
+                                      const std::string& text) const override;
 
  private:
   constexpr OAuthErrorHandler() = default;

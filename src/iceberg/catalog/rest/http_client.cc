@@ -22,16 +22,12 @@
 #include <map>
 
 #include <cpr/cpr.h>
-#include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/error_handlers.h"
-#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/rest_util.h"
-#include "iceberg/json_serde_internal.h"
 #include "iceberg/result.h"
-#include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -70,8 +66,6 @@ namespace {
 
 /// \brief Default error type for unparseable REST responses.
 constexpr std::string_view kRestExceptionType = "RESTException";
-constexpr std::string_view kOAuthError = "error";
-constexpr std::string_view kOAuthErrorDescription = "error_description";
 
 /// \brief Merge default headers with per-request headers (per-request wins).
 HttpHeaders MergeHeaders(
@@ -144,44 +138,14 @@ ErrorResponse BuildDefaultErrorResponse(const cpr::Response& response) {
   };
 }
 
-/// \brief Tries to parse the response body as a REST ErrorResponse.
-Result<ErrorResponse> TryParseErrorResponse(const std::string& text) {
-  if (text.empty()) {
-    return InvalidArgument("Empty response body");
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto json_result, FromJsonString(text));
-  ICEBERG_ASSIGN_OR_RAISE(auto error_result, ErrorResponseFromJson(json_result));
-  return error_result;
-}
-
-/// \brief Tries to parse the response body as an OAuth error response.
-Result<ErrorResponse> TryParseOAuthErrorResponse(uint32_t code, const std::string& text) {
-  if (text.empty()) {
-    return InvalidArgument("Empty response body");
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto json_result, FromJsonString(text));
-
-  ErrorResponse error;
-  error.code = code;
-  ICEBERG_ASSIGN_OR_RAISE(error.type,
-                          GetJsonValue<std::string>(json_result, kOAuthError));
-  ICEBERG_ASSIGN_OR_RAISE(error.message, GetJsonValueOrDefault<std::string>(
-                                             json_result, kOAuthErrorDescription));
-  return error;
-}
-
 /// \brief Handles failure responses by invoking the provided error handler.
 Status HandleFailureResponse(const cpr::Response& response,
                              const ErrorHandler& error_handler) {
   if (IsSuccessful(response.status_code)) {
     return {};
   }
-  auto parse_result =
-      dynamic_cast<const OAuthErrorHandler*>(&error_handler) != nullptr
-          ? TryParseOAuthErrorResponse(static_cast<uint32_t>(response.status_code),
-                                       response.text)
-          : TryParseErrorResponse(response.text);
+  auto parse_result = error_handler.ParseResponse(
+      static_cast<uint32_t>(response.status_code), response.text);
   const ErrorResponse final_error =
       parse_result.value_or(BuildDefaultErrorResponse(response));
   return error_handler.Accept(final_error);

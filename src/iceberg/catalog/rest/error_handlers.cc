@@ -21,7 +21,11 @@
 
 #include <string_view>
 
+#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/json_serde_internal.h"
+#include "iceberg/util/json_util_internal.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
 
@@ -40,6 +44,8 @@ constexpr std::string_view kUnauthorizedClient = "unauthorized_client";
 constexpr std::string_view kUnsupportedGrantType = "unsupported_grant_type";
 constexpr std::string_view kInvalidScope = "invalid_scope";
 constexpr std::string_view kNull = "null";
+constexpr std::string_view kOAuthError = "error";
+constexpr std::string_view kOAuthErrorDescription = "error_description";
 
 std::string_view NullIfEmpty(const std::string& value) {
   if (value.empty()) {
@@ -83,6 +89,16 @@ Status DefaultErrorHandler::Accept(const ErrorResponse& error) const {
   }
 
   return CreateRestError(error);
+}
+
+Result<ErrorResponse> DefaultErrorHandler::ParseResponse(uint32_t /*code*/,
+                                                         const std::string& text) const {
+  if (text.empty()) {
+    return InvalidArgument("Empty response body");
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto json_result, FromJsonString(text));
+  ICEBERG_ASSIGN_OR_RAISE(auto error_result, ErrorResponseFromJson(json_result));
+  return error_result;
 }
 
 const std::shared_ptr<NamespaceErrorHandler>& NamespaceErrorHandler::Instance() {
@@ -298,6 +314,23 @@ Status OAuthErrorHandler::Accept(const ErrorResponse& error) const {
   }
 
   return CreateRestError(error);
+}
+
+Result<ErrorResponse> OAuthErrorHandler::ParseResponse(uint32_t code,
+                                                       const std::string& text) const {
+  if (text.empty()) {
+    return InvalidArgument("Empty response body");
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto json_result, FromJsonString(text));
+
+  ErrorResponse error;
+  error.code = code;
+  ICEBERG_ASSIGN_OR_RAISE(error.type,
+                          GetJsonValue<std::string>(json_result, kOAuthError));
+  ICEBERG_ASSIGN_OR_RAISE(error.message, GetJsonValueOrDefault<std::string>(
+                                             json_result, kOAuthErrorDescription));
+  return error;
 }
 
 }  // namespace iceberg::rest
