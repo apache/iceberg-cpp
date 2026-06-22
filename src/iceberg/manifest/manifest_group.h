@@ -36,6 +36,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
@@ -94,6 +95,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
 
   /// \brief Set a custom manifest entry filter predicate.
   ///
+  /// When an executor is configured with PlanWith(), this predicate may be called
+  /// concurrently. Callers must synchronize any captured mutable state.
+  ///
   /// \param predicate A function that returns true if the entry should be included.
   ManifestGroup& FilterManifestEntries(
       std::function<bool(const ManifestEntry&)> predicate);
@@ -119,6 +123,12 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   ///
   /// \param column_ids Field IDs of columns whose statistics should be preserved.
   ManifestGroup& ColumnsToKeepStats(std::unordered_set<int32_t> column_ids);
+
+  /// \brief Configure an optional executor for manifest planning.
+  ///
+  /// \param executor Executor to use, or std::nullopt to plan manifests serially.
+  /// \return Reference to this for method chaining.
+  ManifestGroup& PlanWith(OptionalExecutor executor);
 
   /// \brief Plan scan tasks for all matching data files.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles();
@@ -158,6 +168,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   std::function<bool(const ManifestEntry&)> manifest_entry_predicate_;
   std::vector<std::string> columns_;
   std::unordered_set<int32_t> columns_to_keep_stats_;
+  OptionalExecutor executor_;
   bool case_sensitive_ = true;
   bool ignore_deleted_ = false;
   bool ignore_existing_ = false;

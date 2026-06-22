@@ -139,6 +139,7 @@ add_iceberg_test(util_test
                  lazy_test.cc
                  location_util_test.cc
                  math_util_internal_test.cc
+                 executor_util_test.cc
                  roaring_position_bitmap_test.cc
                  position_delete_index_test.cc
                  position_delete_range_consumer_test.cc
