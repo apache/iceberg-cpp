@@ -89,6 +89,50 @@ void AssertSnapshotById(const TableMetadata& metadata, int64_t snapshot_id,
   EXPECT_EQ(*snapshot.value(), expected_snapshot);
 }
 
+nlohmann::json HistoricalSortOrderWithDroppedFieldMetadataJson(
+    int32_t default_sort_order_id) {
+  nlohmann::json metadata_json = R"({
+    "format-version": 2,
+    "table-uuid": "test-uuid-1234",
+    "location": "s3://bucket/test",
+    "last-sequence-number": 0,
+    "last-updated-ms": 0,
+    "last-column-id": 2,
+    "schemas": [
+      {
+        "type": "struct",
+        "schema-id": 1,
+        "fields": [
+          {"id": 1, "name": "id", "type": "int", "required": true}
+        ]
+      }
+    ],
+    "current-schema-id": 1,
+    "partition-specs": [{"spec-id": 0, "fields": []}],
+    "default-spec-id": 0,
+    "last-partition-id": 999,
+    "sort-orders": [
+      {"order-id": 1, "fields": [
+        {"transform": "identity", "source-id": 1, "direction": "asc", "null-order": "nulls-first"},
+        {"transform": "identity", "source-id": 2, "direction": "asc", "null-order": "nulls-first"}
+      ]},
+      {"order-id": 2, "fields": [
+        {"transform": "identity", "source-id": 1, "direction": "asc", "null-order": "nulls-first"}
+      ]}
+    ],
+    "properties": {},
+    "current-snapshot-id": null,
+    "refs": {},
+    "snapshots": [],
+    "statistics": [],
+    "partition-statistics": [],
+    "snapshot-log": [],
+    "metadata-log": []
+  })"_json;
+  metadata_json["default-sort-order-id"] = default_sort_order_id;
+  return metadata_json;
+}
+
 }  // namespace
 
 TEST(MetadataSerdeTest, DeserializeV1Valid) {
@@ -487,51 +531,22 @@ TEST(MetadataSerdeTest, DeserializeV2MissingSortOrder) {
 }
 
 TEST(MetadataSerdeTest, DeserializeHistoricalSortOrderWithDroppedField) {
-  nlohmann::json metadata_json = R"({
-    "format-version": 2,
-    "table-uuid": "test-uuid-1234",
-    "location": "s3://bucket/test",
-    "last-sequence-number": 0,
-    "last-updated-ms": 0,
-    "last-column-id": 2,
-    "schemas": [
-      {
-        "type": "struct",
-        "schema-id": 1,
-        "fields": [
-          {"id": 1, "name": "id", "type": "int", "required": true}
-        ]
-      }
-    ],
-    "current-schema-id": 1,
-    "partition-specs": [{"spec-id": 0, "fields": []}],
-    "default-spec-id": 0,
-    "last-partition-id": 999,
-    "sort-orders": [
-      {"order-id": 1, "fields": [
-        {"transform": "identity", "source-id": 1, "direction": "asc", "null-order": "nulls-first"},
-        {"transform": "identity", "source-id": 2, "direction": "asc", "null-order": "nulls-first"}
-      ]},
-      {"order-id": 2, "fields": [
-        {"transform": "identity", "source-id": 1, "direction": "asc", "null-order": "nulls-first"}
-      ]}
-    ],
-    "default-sort-order-id": 2,
-    "properties": {},
-    "current-snapshot-id": null,
-    "refs": {},
-    "snapshots": [],
-    "statistics": [],
-    "partition-statistics": [],
-    "snapshot-log": [],
-    "metadata-log": []
-  })"_json;
-
-  auto metadata = TableMetadataFromJson(metadata_json);
+  auto metadata =
+      TableMetadataFromJson(HistoricalSortOrderWithDroppedFieldMetadataJson(2));
   ASSERT_THAT(metadata, IsOk());
   ASSERT_EQ(metadata.value()->sort_orders.size(), 2);
   EXPECT_EQ(metadata.value()->sort_orders[0]->order_id(), 1);
+  ASSERT_EQ(metadata.value()->sort_orders[0]->fields().size(), 2);
+  EXPECT_EQ(metadata.value()->sort_orders[0]->fields()[0].source_id(), 1);
+  EXPECT_EQ(metadata.value()->sort_orders[0]->fields()[1].source_id(), 2);
   EXPECT_EQ(metadata.value()->sort_orders[1]->order_id(), 2);
+}
+
+TEST(MetadataSerdeTest, DeserializeDefaultSortOrderWithDroppedFieldFails) {
+  auto metadata =
+      TableMetadataFromJson(HistoricalSortOrderWithDroppedFieldMetadataJson(1));
+  ASSERT_THAT(metadata, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(metadata, HasErrorMessage("Cannot find source column for sort field"));
 }
 
 TEST(MetadataSerdeTest, EncryptionKeysRoundTrip) {
