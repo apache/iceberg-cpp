@@ -38,7 +38,7 @@ jobs:
   sanitizer-test:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: "ASAN and UBSAN Tests"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"

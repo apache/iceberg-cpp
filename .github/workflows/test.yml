@@ -40,8 +40,8 @@ env:
 jobs:
   ubuntu:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: AMD64 Ubuntu 24.04
-    runs-on: ubuntu-24.04
+    name: AMD64 Ubuntu 26.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -195,8 +195,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - title: AMD64 Ubuntu 24.04
-            runs-on: ubuntu-24.04
+          - title: AMD64 Ubuntu 26.04
+            runs-on: ubuntu-26.04
             CC: gcc-14
             CXX: g++-14
             meson-setup-args: -Drest_integration_test=enabled

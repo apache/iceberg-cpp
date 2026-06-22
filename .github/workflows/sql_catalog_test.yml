@@ -47,8 +47,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - title: AMD64 Ubuntu 24.04
-            runs-on: ubuntu-24.04
+          - title: AMD64 Ubuntu 26.04
+            runs-on: ubuntu-26.04
             CC: gcc-14
             CXX: g++-14
             cmake_build_type: Debug
