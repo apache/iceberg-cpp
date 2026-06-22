@@ -194,6 +194,7 @@ ManifestGroup& ManifestGroup::ColumnsToKeepStats(std::unordered_set<int32_t> col
 
 ManifestGroup& ManifestGroup::PlanWith(OptionalExecutor executor) {
   executor_ = executor;
+  delete_index_builder_.PlanWith(executor);
   return *this;
 }
 
@@ -314,8 +315,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
 
   auto columns = columns_;
   if (file_filter_ && file_filter_->op() != Expression::Operation::kTrue &&
-      !columns.empty() &&
-      std::ranges::find(columns, Schema::kAllColumns) == columns.end()) {
+      !columns.empty() && !std::ranges::contains(columns, Schema::kAllColumns)) {
     auto data_file_schema = DataFileFilterSchema();
     ICEBERG_ASSIGN_OR_RAISE(
         auto bound_file_filter,

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -33,6 +34,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
@@ -78,6 +80,15 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \return This update for method chaining.
   auto& StageOnly(this auto& self) {
     self.stage_only_ = true;
+    return self;
+  }
+
+  /// \brief Configure an executor for manifest planning work.
+  ///
+  /// \param executor Executor to use while planning manifests.
+  /// \return Reference to this for method chaining.
+  auto& ScanManifestsWith(this auto& self, Executor& executor) {
+    self.plan_executor_ = std::ref(executor);
     return self;
   }
 
@@ -152,8 +163,10 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   const std::string& target_branch() const { return target_branch_; }
   bool can_inherit_snapshot_id() const { return can_inherit_snapshot_id_; }
   const std::string& commit_uuid() const { return commit_uuid_; }
-  int32_t manifest_count() const { return manifest_count_; }
-  int32_t attempt() const { return attempt_; }
+  int32_t manifest_count() const {
+    return manifest_count_.load(std::memory_order_relaxed);
+  }
+  int32_t attempt() const { return attempt_.load(std::memory_order_relaxed); }
   int64_t target_manifest_size_bytes() const { return target_manifest_size_bytes_; }
 
   /// \brief Clean up any uncommitted manifests that were created.
@@ -238,11 +251,12 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
  private:
   const bool can_inherit_snapshot_id_{true};
   const std::string commit_uuid_;
-  int32_t manifest_count_{0};
-  int32_t attempt_{0};
+  std::atomic<int32_t> manifest_count_{0};
+  std::atomic<int32_t> attempt_{0};
   std::vector<std::string> manifest_lists_;
   const int64_t target_manifest_size_bytes_;
   std::optional<int64_t> snapshot_id_;
+  OptionalExecutor plan_executor_;
   bool stage_only_{false};
   std::function<Status(const std::string&)> delete_func_;
   std::string target_branch_{SnapshotRef::kMainBranch};
