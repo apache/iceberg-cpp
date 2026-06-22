@@ -206,6 +206,19 @@ TEST(ErrorHandlersTest, OAuthErrorHandlerMapsInvalidClientToNotAuthorized) {
       HasErrorMessage("Not authorized: invalid_client: Credentials given were invalid"));
 }
 
+TEST(ErrorHandlersTest, OAuthErrorHandlerParsesOAuthErrorResponse) {
+  auto parse_result = OAuthErrorHandler::Instance()->ParseResponse(
+      400,
+      R"({"error":"invalid_client","error_description":"Credentials given were invalid"})");
+  ASSERT_TRUE(parse_result.has_value());
+
+  EXPECT_EQ(parse_result->code, 400);
+  EXPECT_EQ(parse_result->type, "invalid_client");
+  EXPECT_EQ(parse_result->message, "Credentials given were invalid");
+  EXPECT_THAT(OAuthErrorHandler::Instance()->Accept(*parse_result),
+              IsError(ErrorKind::kNotAuthorized));
+}
+
 TEST(ErrorHandlersTest, OAuthErrorHandlerMapsClientErrorsToBadRequest) {
   ErrorResponse error{
       .code = 400,
