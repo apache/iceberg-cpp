@@ -378,6 +378,13 @@ class ArrowPositionOutputStream : public PositionOutputStream {
     return position;
   }
 
+  Result<int64_t> StoredLength() const override {
+    if (!output_->closed()) {
+      return Position();
+    }
+    return closed_position_;
+  }
+
   Status Write(std::span<const std::byte> data) override {
     ICEBERG_ASSIGN_OR_RAISE(auto size, ToInt64Length(data.size()));
     ICEBERG_ARROW_RETURN_NOT_OK(output_->Write(data.data(), size));
@@ -393,12 +400,15 @@ class ArrowPositionOutputStream : public PositionOutputStream {
     if (output_->closed()) {
       return {};
     }
+    ICEBERG_ASSIGN_OR_RAISE(auto position, Position());
     ICEBERG_ARROW_RETURN_NOT_OK(output_->Close());
+    closed_position_ = position;
     return {};
   }
 
  private:
   std::shared_ptr<::arrow::io::OutputStream> output_;
+  int64_t closed_position_ = 0;
 };
 
 class ArrowInputFile : public InputFile {

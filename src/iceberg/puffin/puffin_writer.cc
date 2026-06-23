@@ -155,7 +155,7 @@ Status PuffinWriter::Finish() {
   footer_written_ = true;
   ICEBERG_RETURN_UNEXPECTED(stream_->Flush());
   ICEBERG_RETURN_UNEXPECTED(stream_->Close());
-  ICEBERG_ASSIGN_OR_RAISE(file_size_, stream_->Position());
+  ICEBERG_ASSIGN_OR_RAISE(file_size_, stream_->StoredLength());
   finished_ = true;
   return {};
 }

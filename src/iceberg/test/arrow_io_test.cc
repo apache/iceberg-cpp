@@ -410,6 +410,21 @@ TEST_F(LocalFileIOTest, StdReadKeepsPositionAvailableAtEof) {
   EXPECT_THAT(stream->Position(), HasValue(::testing::Eq(3)));
 }
 
+TEST(ArrowFileIOTest, OutputStoredLengthAfterClose) {
+  auto file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  ICEBERG_UNWRAP_OR_FAIL(auto output_file, file_io->NewOutputFile("output"));
+  ICEBERG_UNWRAP_OR_FAIL(auto output, output_file->Create());
+
+  std::array<std::byte, 3> data = {std::byte{'a'}, std::byte{'b'}, std::byte{'c'}};
+  ASSERT_THAT(output->Write(data), IsOk());
+  ASSERT_THAT(output->Close(), IsOk());
+
+  auto position = output->Position();
+  ASSERT_FALSE(position.has_value());
+  EXPECT_THAT(position.error().message, ::testing::HasSubstr("closed"));
+  EXPECT_THAT(output->StoredLength(), HasValue(::testing::Eq(3)));
+}
+
 TEST_F(LocalFileIOTest, ResolvesForeignSchemeToUnderlyingPath) {
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "hello world"), IsOk());
 

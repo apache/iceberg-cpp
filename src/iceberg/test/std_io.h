@@ -170,6 +170,18 @@ class StdPositionOutputStream : public PositionOutputStream {
     return static_cast<int64_t>(position);
   }
 
+  Result<int64_t> StoredLength() const override {
+    if (file_.is_open()) {
+      return Position();
+    }
+    std::error_code ec;
+    auto size = std::filesystem::file_size(location_, ec);
+    if (ec) {
+      return IOError("Failed to get file size for {}: {}", location_, ec.message());
+    }
+    return detail::ToInt64FileSize(size, location_);
+  }
+
   Status Write(std::span<const std::byte> data) override {
     if (data.empty()) {
       return {};
