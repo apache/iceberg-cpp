@@ -36,6 +36,7 @@
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
 #include "iceberg/update/overwrite_files.h"
+#include "iceberg/update/rewrite_manifests.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_manager.h"
@@ -245,6 +246,12 @@ Result<std::shared_ptr<OverwriteFiles>> Table::NewOverwrite() {
   return OverwriteFiles::Make(name().name, std::move(ctx));
 }
 
+Result<std::shared_ptr<RewriteManifests>> Table::NewRewriteManifests() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
+  return RewriteManifests::Make(name().name, std::move(ctx));
+}
+
 Result<std::shared_ptr<UpdateStatistics>> Table::NewUpdateStatistics() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
@@ -358,6 +365,10 @@ Result<std::shared_ptr<RowDelta>> StaticTable::NewRowDelta() {
 
 Result<std::shared_ptr<OverwriteFiles>> StaticTable::NewOverwrite() {
   return NotSupported("Cannot create an overwrite for a static table");
+}
+
+Result<std::shared_ptr<RewriteManifests>> StaticTable::NewRewriteManifests() {
+  return NotSupported("Cannot create a rewrite manifests for a static table");
 }
 
 Result<std::shared_ptr<SnapshotManager>> StaticTable::NewSnapshotManager() {

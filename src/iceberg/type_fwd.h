@@ -244,6 +244,7 @@ class FastAppend;
 class MergeAppend;
 class OverwriteFiles;
 class PendingUpdate;
+class RewriteManifests;
 class RowDelta;
 class SetSnapshot;
 class SnapshotManager;
