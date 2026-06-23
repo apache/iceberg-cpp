@@ -84,7 +84,7 @@ jobs:
       - name: Install dependencies on Ubuntu
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libjitterentropy3-dev
       - name: Cache vcpkg packages
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -160,7 +160,7 @@ jobs:
       - name: Install build dependencies
         shell: bash
         run: |
-          sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libjitterentropy3-dev
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
       - name: Cache vcpkg packages
