@@ -68,4 +68,35 @@ Result<ManifestFile> CopyAppendManifest(
   return writer->ToManifestFile();
 }
 
+Result<ManifestFile> CopyRewriteManifest(
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
+    const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
+    int64_t snapshot_id, const std::string& output_path, int8_t format_version) {
+  // Require explicit snapshot IDs and preserve them in the copied entries.
+  ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata, InheritableMetadataFactory::Empty());
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto reader, ManifestReader::Make(
+                       manifest.manifest_path, manifest.manifest_length, file_io, schema,
+                       spec, std::move(inheritable_metadata), manifest.first_row_id,
+                       /*is_committed=*/false));
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      ManifestWriter::MakeWriter(format_version, snapshot_id, output_path, file_io, spec,
+                                 schema, manifest.content, manifest.first_row_id));
+  for (const auto& entry : entries) {
+    // A rewritten added manifest may only contain existing entries.
+    if (entry.status == ManifestStatus::kAdded) {
+      return ValidationFailed("Cannot add manifest with added files");
+    }
+    if (entry.status == ManifestStatus::kDeleted) {
+      return ValidationFailed("Cannot add manifest with deleted files");
+    }
+    ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(entry));
+  }
+  ICEBERG_RETURN_UNEXPECTED(writer->Close());
+  return writer->ToManifestFile();
+}
+
 }  // namespace iceberg

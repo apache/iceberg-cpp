@@ -264,6 +264,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     return {};
   };
 
+  /// \brief Validate whether this update can target the given branch.
+  virtual Status ValidateTargetBranch(const std::string& branch) const { return {}; }
+
   /// \brief Apply the update's changes to the given metadata and snapshot.
   ///
   /// \param metadata_to_update The base table metadata to apply changes to
@@ -295,6 +298,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   std::string ManifestPath();
   std::string ManifestListPath();
+  OptionalExecutor plan_executor() const { return plan_executor_; }
   SnapshotSummaryBuilder& summary_builder() { return summary_; }
   SnapshotSummaryBuilder BuildManifestCountSummary(
       std::span<const ManifestFile> manifests, int32_t replaced_manifests_count);
@@ -329,6 +333,11 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   void SetTargetBranch(const std::string& branch) {
     if (branch.empty()) [[unlikely]] {
       AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
+      return;
+    }
+
+    if (auto status = ValidateTargetBranch(branch); !status) [[unlikely]] {
+      AddError(status.error());
       return;
     }
 
