@@ -297,7 +297,8 @@ TEST_F(RowDeltaTest, ValidateDataFilesExistSkipsConcurrentDeleteByDefault) {
   EXPECT_THAT(row_delta->Commit(), IsOk());
 }
 
-TEST_F(RowDeltaTest, ValidateDataFilesExistFailsForConcurrentDeleteWithValidateDeletedFiles) {
+TEST_F(RowDeltaTest,
+       ValidateDataFilesExistFailsForConcurrentDeleteWithValidateDeletedFiles) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
 
