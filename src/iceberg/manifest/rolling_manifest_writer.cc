@@ -54,6 +54,13 @@ Status RollingManifestWriter::WriteExistingEntry(
   return {};
 }
 
+Status RollingManifestWriter::WriteExistingEntry(const ManifestEntry& entry) {
+  ICEBERG_ASSIGN_OR_RAISE(auto* writer, CurrentWriter());
+  ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(entry));
+  current_file_rows_++;
+  return {};
+}
+
 Status RollingManifestWriter::WriteDeletedEntry(
     std::shared_ptr<DataFile> file, int64_t data_sequence_number,
     std::optional<int64_t> file_sequence_number) {

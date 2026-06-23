@@ -21,13 +21,18 @@
 
 #include <format>
 #include <memory>
+#include <span>
 #include <string>
+#include <tuple>
+#include <vector>
 
 #include <arrow/filesystem/mockfs.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/catalog/memory/in_memory_catalog.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
@@ -133,6 +138,114 @@ class UpdateTestBase : public ::testing::Test {
   void ExpectCommitError(const T& result, ErrorKind kind, const std::string& message) {
     EXPECT_THAT(result, IsError(kind));
     EXPECT_THAT(result, HasErrorMessage(message));
+  }
+
+  Result<std::vector<ManifestEntry>> ReadManifestEntries(const ManifestFile& manifest) {
+    return ReadManifestEntries(std::span<const ManifestFile>(&manifest, 1));
+  }
+
+  Result<std::vector<ManifestEntry>> ReadManifestEntries(
+      std::span<const ManifestFile> manifests) {
+    std::vector<ManifestEntry> result;
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, table_->metadata()->Schema());
+    for (const auto& manifest : manifests) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto spec, table_->metadata()->PartitionSpecById(manifest.partition_spec_id));
+      ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                              ManifestReader::Make(manifest, file_io_, schema, spec));
+      ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
+      result.insert(result.end(), entries.begin(), entries.end());
+    }
+    return result;
+  }
+
+  void ExpectManifestEntries(const ManifestFile& manifest,
+                             std::vector<std::string> expected_paths,
+                             std::vector<ManifestStatus> expected_statuses) {
+    ASSERT_EQ(expected_statuses.size(), expected_paths.size());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifest));
+    ASSERT_EQ(entries.size(), expected_paths.size());
+
+    std::vector<std::pair<std::string, ManifestStatus>> actual;
+    actual.reserve(entries.size());
+    for (const auto& entry : entries) {
+      ASSERT_NE(entry.data_file, nullptr);
+      actual.emplace_back(entry.data_file->file_path, entry.status);
+    }
+
+    std::vector<std::pair<std::string, ManifestStatus>> expected;
+    expected.reserve(expected_paths.size());
+    for (size_t i = 0; i < expected_paths.size(); ++i) {
+      expected.emplace_back(std::move(expected_paths[i]), expected_statuses[i]);
+    }
+    EXPECT_THAT(actual, ::testing::UnorderedElementsAreArray(expected));
+  }
+
+  void ExpectManifestEntriesWithSnapshotIds(const ManifestFile& manifest,
+                                            std::vector<std::string> expected_paths,
+                                            std::vector<ManifestStatus> expected_statuses,
+                                            std::vector<int64_t> expected_snapshot_ids) {
+    ASSERT_EQ(expected_statuses.size(), expected_paths.size());
+    ASSERT_EQ(expected_snapshot_ids.size(), expected_paths.size());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifest));
+    ASSERT_EQ(entries.size(), expected_paths.size());
+
+    std::vector<std::tuple<std::string, ManifestStatus, int64_t>> actual;
+    actual.reserve(entries.size());
+    for (const auto& entry : entries) {
+      ASSERT_NE(entry.data_file, nullptr);
+      ASSERT_TRUE(entry.snapshot_id.has_value());
+      actual.emplace_back(entry.data_file->file_path, entry.status,
+                          entry.snapshot_id.value());
+    }
+
+    std::vector<std::tuple<std::string, ManifestStatus, int64_t>> expected;
+    expected.reserve(expected_paths.size());
+    for (size_t i = 0; i < expected_paths.size(); ++i) {
+      expected.emplace_back(std::move(expected_paths[i]), expected_statuses[i],
+                            expected_snapshot_ids[i]);
+    }
+    EXPECT_THAT(actual, ::testing::UnorderedElementsAreArray(expected));
+  }
+
+  void ExpectManifestEntriesWithSequenceNumbers(
+      const ManifestFile& manifest, std::vector<std::string> expected_paths,
+      std::vector<ManifestStatus> expected_statuses,
+      std::vector<int64_t> expected_snapshot_ids,
+      std::vector<int64_t> expected_data_sequence_numbers,
+      std::vector<int64_t> expected_file_sequence_numbers) {
+    ASSERT_EQ(expected_statuses.size(), expected_paths.size());
+    ASSERT_EQ(expected_snapshot_ids.size(), expected_paths.size());
+    ASSERT_EQ(expected_data_sequence_numbers.size(), expected_paths.size());
+    ASSERT_EQ(expected_file_sequence_numbers.size(), expected_paths.size());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifest));
+    ASSERT_EQ(entries.size(), expected_paths.size());
+
+    std::vector<std::tuple<std::string, ManifestStatus, int64_t, int64_t, int64_t>>
+        actual;
+    actual.reserve(entries.size());
+    for (const auto& entry : entries) {
+      ASSERT_NE(entry.data_file, nullptr);
+      ASSERT_TRUE(entry.snapshot_id.has_value());
+      ASSERT_TRUE(entry.sequence_number.has_value());
+      ASSERT_TRUE(entry.file_sequence_number.has_value());
+      actual.emplace_back(entry.data_file->file_path, entry.status,
+                          entry.snapshot_id.value(), entry.sequence_number.value(),
+                          entry.file_sequence_number.value());
+    }
+
+    std::vector<std::tuple<std::string, ManifestStatus, int64_t, int64_t, int64_t>>
+        expected;
+    expected.reserve(expected_paths.size());
+    for (size_t i = 0; i < expected_paths.size(); ++i) {
+      expected.emplace_back(std::move(expected_paths[i]), expected_statuses[i],
+                            expected_snapshot_ids[i], expected_data_sequence_numbers[i],
+                            expected_file_sequence_numbers[i]);
+    }
+    EXPECT_THAT(actual, ::testing::UnorderedElementsAreArray(expected));
   }
 
   TableIdentifier table_ident_;
