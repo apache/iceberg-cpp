@@ -76,6 +76,9 @@ class ICEBERG_EXPORT RollingManifestWriter {
                             int64_t data_sequence_number,
                             std::optional<int64_t> file_sequence_number = std::nullopt);
 
+  /// \brief Add an existing entry while preserving snapshot and sequence fields.
+  Status WriteExistingEntry(const ManifestEntry& entry);
+
   /// \brief Add a delete entry for a file.
   ///
   /// \param file a deleted data file
