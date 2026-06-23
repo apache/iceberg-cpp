@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/rest_file_io.h"
 
+#include <algorithm>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -34,6 +35,18 @@ namespace {
 bool IsBuiltinImpl(std::string_view io_impl) {
   return io_impl == FileIORegistry::kArrowLocalFileIO ||
          io_impl == FileIORegistry::kArrowS3FileIO;
+}
+
+// Rewrites S3-compatible schemes (s3a/s3n/oss) to the canonical s3:// so a vended
+// credential matches a table location using an equivalent scheme (e.g. DLF vends
+// an `s3` credential for oss:// locations).
+std::string CanonicalizeS3Scheme(std::string_view location) {
+  for (std::string_view scheme : {"s3a://", "s3n://", "oss://"}) {
+    if (location.starts_with(scheme)) {
+      return std::string("s3://").append(location.substr(scheme.size()));
+    }
+  }
+  return std::string(location);
 }
 
 }  // namespace
@@ -96,15 +109,31 @@ Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& c
 }
 
 const StorageCredential* SelectS3StorageCredential(
-    const std::vector<StorageCredential>& credentials) {
+    const std::vector<StorageCredential>& credentials,
+    std::string_view storage_location) {
+  const std::string location = CanonicalizeS3Scheme(storage_location);
   const StorageCredential* best = nullptr;
+  size_t best_size = 0;
   for (const auto& cred : credentials) {
-    if (cred.prefix.starts_with("s3") &&
-        (best == nullptr || cred.prefix.size() > best->prefix.size())) {
+    if (!cred.prefix.starts_with("s3")) {
+      continue;
+    }
+    // Keep the longest S3 prefix that matches this location; matching globally
+    // would bind a credential to paths it does not cover.
+    const std::string prefix = CanonicalizeS3Scheme(cred.prefix);
+    if (location.starts_with(prefix) && (best == nullptr || prefix.size() > best_size)) {
       best = &cred;
+      best_size = prefix.size();
     }
   }
   return best;
+}
+
+bool HasOnlyNonS3StorageCredentials(const std::vector<StorageCredential>& credentials) {
+  return !credentials.empty() &&
+         std::ranges::none_of(credentials, [](const StorageCredential& cred) {
+           return cred.prefix.starts_with("s3");
+         });
 }
 
 Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredential(

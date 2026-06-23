@@ -47,9 +47,17 @@ ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
 
-/// \brief Returns the longest-prefix S3-family vended credential (prefix
-/// starting with "s3"), or nullptr if none.
+/// \brief Returns the S3-family vended credential (prefix starting with "s3")
+/// whose prefix is the longest match for `storage_location`, or nullptr if none
+/// applies (Iceberg REST spec / Java `S3FileIO` longest-prefix matching). The
+/// s3/s3a/s3n schemes are treated as equivalent when matching.
 ICEBERG_REST_EXPORT const StorageCredential* SelectS3StorageCredential(
+    const std::vector<StorageCredential>& credentials, std::string_view storage_location);
+
+/// \brief True if `credentials` is non-empty but contains no S3-family
+/// credential (prefix starting with "s3") — i.e. only unsupported schemes such
+/// as GCS/ADLS were vended, which an S3/local FileIO cannot honor.
+ICEBERG_REST_EXPORT bool HasOnlyNonS3StorageCredentials(
     const std::vector<StorageCredential>& credentials);
 
 /// \brief Builds an `arrow-fs-s3` FileIO, merging catalog, table, then

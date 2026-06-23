@@ -152,15 +152,48 @@ TEST(RestFileIOTest, MakeCatalogFileIOSkipsCheckWhenWarehouseAbsent) {
   ASSERT_THAT(result, IsOk());
 }
 
-TEST(RestFileIOTest, SelectS3StorageCredentialPicksLongestS3Prefix) {
+TEST(RestFileIOTest, SelectS3StorageCredentialPicksLongestMatchingS3Prefix) {
   std::vector<StorageCredential> credentials = {
       {.prefix = "s3", .config = {{"s3.access-key-id", "a"}}},
       {.prefix = "s3://bucket/data", .config = {{"s3.access-key-id", "b"}}},
       {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "c"}}},
   };
-  const auto* cred = SelectS3StorageCredential(credentials);
+  const auto* cred = SelectS3StorageCredential(credentials, "s3://bucket/data/db/t");
   ASSERT_NE(cred, nullptr);
   EXPECT_EQ(cred->prefix, "s3://bucket/data");
+}
+
+TEST(RestFileIOTest, SelectS3StorageCredentialMatchesAgainstStorageLocation) {
+  std::vector<StorageCredential> credentials = {
+      // Globally longest prefix, but for a path that does not cover this table.
+      {.prefix = "s3://other/very/long/prefix", .config = {{"s3.access-key-id", "x"}}},
+      {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "y"}}},
+  };
+  const auto* cred = SelectS3StorageCredential(credentials, "s3://bucket/db/t/data");
+  ASSERT_NE(cred, nullptr);
+  // The longest *matching* prefix wins, not the globally longest one.
+  EXPECT_EQ(cred->prefix, "s3://bucket");
+}
+
+TEST(RestFileIOTest, SelectS3StorageCredentialMatchesEquivalentS3Schemes) {
+  std::vector<StorageCredential> s3_cred = {
+      {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "a"}}},
+  };
+  // s3a:// and s3n:// locations match an s3:// vended prefix (same backend).
+  EXPECT_NE(SelectS3StorageCredential(s3_cred, "s3a://bucket/db/t"), nullptr);
+  EXPECT_NE(SelectS3StorageCredential(s3_cred, "s3n://bucket/db/t"), nullptr);
+
+  // ...and the inverse: an s3a:// prefix matches an s3:// location.
+  std::vector<StorageCredential> s3a_cred = {
+      {.prefix = "s3a://bucket", .config = {{"s3.access-key-id", "b"}}},
+  };
+  const auto* cred = SelectS3StorageCredential(s3a_cred, "s3://bucket/db/t");
+  ASSERT_NE(cred, nullptr);
+  EXPECT_EQ(cred->prefix, "s3a://bucket");
+
+  // OSS is S3-compatible: an `s3` credential matches an oss:// location (Alibaba
+  // DLF vends an `s3` credential for tables whose location uses the oss:// scheme).
+  EXPECT_NE(SelectS3StorageCredential(s3_cred, "oss://bucket/db/t"), nullptr);
 }
 
 TEST(RestFileIOTest, SelectS3StorageCredentialIgnoresNonS3Prefixes) {
@@ -168,7 +201,7 @@ TEST(RestFileIOTest, SelectS3StorageCredentialIgnoresNonS3Prefixes) {
       {.prefix = "gs://bucket", .config = {{"k", "v"}}},
       {.prefix = "s3", .config = {{"s3.access-key-id", "a"}}},
   };
-  const auto* cred = SelectS3StorageCredential(credentials);
+  const auto* cred = SelectS3StorageCredential(credentials, "s3://bucket/data");
   ASSERT_NE(cred, nullptr);
   EXPECT_EQ(cred->prefix, "s3");
 }
@@ -177,8 +210,28 @@ TEST(RestFileIOTest, SelectS3StorageCredentialReturnsNullWhenNoneMatch) {
   std::vector<StorageCredential> credentials = {
       {.prefix = "gs://bucket", .config = {{"k", "v"}}},
   };
-  EXPECT_EQ(SelectS3StorageCredential(credentials), nullptr);
-  EXPECT_EQ(SelectS3StorageCredential({}), nullptr);
+  // Non-S3 prefix, S3 location.
+  EXPECT_EQ(SelectS3StorageCredential(credentials, "s3://bucket"), nullptr);
+  // S3 credential whose prefix does not cover the location.
+  EXPECT_EQ(SelectS3StorageCredential(
+                {{.prefix = "s3://other", .config = {{"s3.access-key-id", "a"}}}},
+                "s3://bucket/data"),
+            nullptr);
+  // No credentials at all.
+  EXPECT_EQ(SelectS3StorageCredential({}, "s3://bucket"), nullptr);
+}
+
+TEST(RestFileIOTest, HasOnlyNonS3StorageCredentials) {
+  // Only GCS/ADLS prefixes -> unsupported, fail fast.
+  EXPECT_TRUE(HasOnlyNonS3StorageCredentials(
+      {{.prefix = "gs://bucket", .config = {{"k", "v"}}},
+       {.prefix = "abfs://c@a.dfs.core.windows.net", .config = {{"k", "v"}}}}));
+  // At least one S3 credential present -> not unsupported (may fall back).
+  EXPECT_FALSE(HasOnlyNonS3StorageCredentials(
+      {{.prefix = "gs://bucket", .config = {{"k", "v"}}},
+       {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "a"}}}}));
+  // No credentials at all -> not "only non-S3".
+  EXPECT_FALSE(HasOnlyNonS3StorageCredentials({}));
 }
 
 TEST(RestFileIOTest, MakeS3FileIOFromCredentialMergesConfigWithPrecedence) {

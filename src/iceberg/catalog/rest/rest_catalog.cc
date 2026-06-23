@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/rest_catalog.h"
 
 #include <memory>
+#include <ranges>
 #include <string_view>
 #include <tuple>
 #include <unordered_map>
@@ -51,6 +52,7 @@
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
+#include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -285,12 +287,14 @@ class RestCatalog::TableScopedCatalog final
   TableScopedCatalog(std::shared_ptr<RestCatalog> root, SessionContext context,
                      TableIdentifier identifier,
                      std::unordered_map<std::string, std::string> table_config,
-                     std::shared_ptr<auth::AuthSession> table_session)
+                     std::shared_ptr<auth::AuthSession> table_session,
+                     std::shared_ptr<FileIO> table_io)
       : root_(std::move(root)),
         context_(std::move(context)),
         identifier_(std::move(identifier)),
         table_config_(std::move(table_config)),
-        table_session_(std::move(table_session)) {}
+        table_session_(std::move(table_session)),
+        table_io_(std::move(table_io)) {}
 
   std::string_view name() const override { return root_->name(); }
 
@@ -348,7 +352,7 @@ class RestCatalog::TableScopedCatalog final
         auto response,
         root_->UpdateTableInternal(identifier, requirements, updates, *table_session_));
     return root_->MakeTableFromCommitResponse(identifier, std::move(response), context_,
-                                              table_config_, table_session_);
+                                              table_config_, table_session_, table_io_);
   }
 
   Result<std::shared_ptr<Transaction>> StageCreateTable(
@@ -395,6 +399,7 @@ class RestCatalog::TableScopedCatalog final
   TableIdentifier identifier_;
   std::unordered_map<std::string, std::string> table_config_;
   std::shared_ptr<auth::AuthSession> table_session_;
+  std::shared_ptr<FileIO> table_io_;
 };
 
 RestCatalog::~RestCatalog() {
@@ -520,16 +525,31 @@ Result<std::shared_ptr<auth::AuthSession>> RestCatalog::TableAuthSession(
 Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
     const SessionContext& /*context*/,
     const std::unordered_map<std::string, std::string>& table_config,
-    const std::vector<StorageCredential>& storage_credentials) const {
-  // Longest-prefix "s3" vended credential. Java's VendedCredentialsProvider
-  // resolves per path against the table location; we bind one at load time
-  // (fine for the common one-credential-per-table case).
-  if (const StorageCredential* s3_cred = SelectS3StorageCredential(storage_credentials);
+    const std::vector<StorageCredential>& storage_credentials,
+    std::string_view storage_location) const {
+  // Bind one S3 FileIO from the vended credential whose prefix best matches the
+  // table location (the common one-credential-per-table case).
+  // TODO: support per-path credential routing, STS refresh via credentials.uri,
+  // and non-S3 (GCS/ADLS) credentials, like Java's S3FileIO.
+  if (const StorageCredential* s3_cred =
+          SelectS3StorageCredential(storage_credentials, storage_location);
       s3_cred != nullptr) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto io, MakeS3FileIOFromCredential(config_.configs(), table_config, *s3_cred));
     return std::shared_ptr<FileIO>(std::move(io));
   }
+
+  // Only non-S3 (e.g. GCS/ADLS) credentials were vended and we can't honor them;
+  // fail fast. (S3 credentials that simply don't match fall through below.)
+  if (HasOnlyNonS3StorageCredentials(storage_credentials)) {
+    auto prefixes =
+        storage_credentials | std::views::transform(&StorageCredential::prefix);
+    return NotSupported(
+        "Vended storage credentials {} are unsupported (only S3-family "
+        "credentials are supported)",
+        FormatRange(prefixes, ", ", "[", "]"));
+  }
+
   ICEBERG_RETURN_UNEXPECTED(ValidateNoFileIOConfig(table_config));
   return file_io_;
 }
@@ -750,8 +770,10 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
+  // No table was loaded here, so there is no per-table FileIO to reuse; use the
+  // catalog FileIO (table_config carries no credentials).
   return MakeTableFromCommitResponse(identifier, std::move(response), context,
-                                     table_config, std::move(table_session));
+                                     table_config, std::move(table_session), file_io_);
 }
 
 Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
@@ -767,13 +789,15 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
                           /*stage_create=*/true, *contextual_session));
   auto table_config = std::move(result.config);
   auto storage_credentials = std::move(result.storage_credentials);
-  ICEBERG_ASSIGN_OR_RAISE(auto table_io,
-                          TableFileIO(context, table_config, storage_credentials));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto table_io,
+      TableFileIO(context, table_config, storage_credentials, result.metadata->location));
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
   auto table_catalog = std::make_shared<TableScopedCatalog>(
-      shared_from_this(), context, identifier, table_config, std::move(table_session));
+      shared_from_this(), context, identifier, table_config, std::move(table_session),
+      table_io);
   ICEBERG_ASSIGN_OR_RAISE(
       auto staged_table,
       StagedTable::Make(identifier, std::move(result.metadata),
@@ -882,13 +906,14 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
     std::shared_ptr<auth::AuthSession> contextual_session) {
   auto table_config = std::move(result.config);
   auto storage_credentials = std::move(result.storage_credentials);
-  ICEBERG_ASSIGN_OR_RAISE(auto table_io,
-                          TableFileIO(context, table_config, storage_credentials));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto table_io,
+      TableFileIO(context, table_config, storage_credentials, result.metadata->location));
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
   auto table_catalog = std::make_shared<TableScopedCatalog>(
-      shared_from_this(), context, identifier, table_config, table_session);
+      shared_from_this(), context, identifier, table_config, table_session, table_io);
   return Table::Make(identifier, std::move(result.metadata),
                      std::move(result.metadata_location), std::move(table_io),
                      std::move(table_catalog));
@@ -898,14 +923,14 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
     const TableIdentifier& identifier, CommitTableResponse response,
     const SessionContext& context,
     const std::unordered_map<std::string, std::string>& table_config,
-    std::shared_ptr<auth::AuthSession> table_session) {
-  // TODO(gangwu): If the REST commit response grows table config or
-  // storage credentials, derive a replacement table session/FileIO from that
-  // response. The current table commit response does not define config.
-  ICEBERG_ASSIGN_OR_RAISE(auto table_io,
-                          TableFileIO(context, table_config, /*storage_credentials=*/{}));
+    std::shared_ptr<auth::AuthSession> table_session, std::shared_ptr<FileIO> table_io) {
+  // Reuse the FileIO bound at load: CommitTableResponse carries no config or
+  // storage credentials, so rebuilding it would drop the vended credentials
+  // (mirrors Java RESTSessionCatalog#tableFileIO).
+  // TODO(gangwu): rebuild the FileIO if the commit response ever grows config
+  // or storage credentials.
   auto table_catalog = std::make_shared<TableScopedCatalog>(
-      shared_from_this(), context, identifier, table_config, table_session);
+      shared_from_this(), context, identifier, table_config, table_session, table_io);
   return Table::Make(identifier, std::move(response.metadata),
                      std::move(response.metadata_location), std::move(table_io),
                      std::move(table_catalog));
