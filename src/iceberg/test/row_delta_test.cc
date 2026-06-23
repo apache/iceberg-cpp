@@ -88,7 +88,7 @@ class RowDeltaTest : public MinimalUpdateTestBase {
     return file;
   }
 
-  void CommitFileA() {
+  void AppendFileAToTable() {
     ICEBERG_UNWRAP_OR_FAIL(auto fast_append, table_->NewFastAppend());
     fast_append->AppendFile(file_a_);
     EXPECT_THAT(fast_append->Commit(), IsOk());
@@ -139,7 +139,7 @@ TEST_F(RowDeltaTest, AddDeletesCommitsDeleteOperation) {
 }
 
 TEST_F(RowDeltaTest, RemoveRowsCommitsOverwriteOperation) {
-  CommitFileA();
+  AppendFileAToTable();
 
   std::shared_ptr<RowDelta> row_delta;
   ICEBERG_UNWRAP_OR_FAIL(row_delta, table_->NewRowDelta());
@@ -156,7 +156,7 @@ TEST_F(RowDeltaTest, RemoveRowsCommitsOverwriteOperation) {
 }
 
 TEST_F(RowDeltaTest, RemoveRowsAndAddDeletesCommitsDeleteOperation) {
-  CommitFileA();
+  AppendFileAToTable();
 
   auto delete_file = MakeDeleteFile("/delete/file_a_pos_deletes.parquet",
                                     /*partition_x=*/1L);
@@ -228,7 +228,7 @@ TEST_F(RowDeltaTest, AddDeletesAndRemoveDeletesCommitsDeleteOperation) {
 }
 
 TEST_F(RowDeltaTest, ValidateNoConflictingDataFilesFailsForConcurrentAppend) {
-  CommitFileA();
+  AppendFileAToTable();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
 
   ICEBERG_UNWRAP_OR_FAIL(auto concurrent_append, table_->NewFastAppend());
@@ -250,7 +250,7 @@ TEST_F(RowDeltaTest, ValidateNoConflictingDataFilesFailsForConcurrentAppend) {
 }
 
 TEST_F(RowDeltaTest, ValidateNoConflictingDeleteFilesFailsForConcurrentDelete) {
-  CommitFileA();
+  AppendFileAToTable();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
 
   auto delete_file = MakeDeleteFile("/delete/file_a_pos_deletes.parquet",
@@ -275,7 +275,7 @@ TEST_F(RowDeltaTest, ValidateNoConflictingDeleteFilesFailsForConcurrentDelete) {
 }
 
 TEST_F(RowDeltaTest, ValidateDataFilesExistSkipsConcurrentDeleteByDefault) {
-  CommitFileA();
+  AppendFileAToTable();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
 
   ICEBERG_UNWRAP_OR_FAIL(auto delete_files, table_->NewDeleteFiles());
@@ -299,7 +299,7 @@ TEST_F(RowDeltaTest, ValidateDataFilesExistSkipsConcurrentDeleteByDefault) {
 
 TEST_F(RowDeltaTest,
        ValidateDataFilesExistFailsForConcurrentDeleteWithValidateDeletedFiles) {
-  CommitFileA();
+  AppendFileAToTable();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
 
   ICEBERG_UNWRAP_OR_FAIL(auto delete_files, table_->NewDeleteFiles());
@@ -326,7 +326,7 @@ TEST_F(RowDeltaTest,
 }
 
 TEST_F(RowDeltaTest, CannotRemoveReferencedDataFile) {
-  CommitFileA();
+  AppendFileAToTable();
 
   std::shared_ptr<RowDelta> row_delta;
   ICEBERG_UNWRAP_OR_FAIL(row_delta, table_->NewRowDelta());
@@ -341,7 +341,7 @@ TEST_F(RowDeltaTest, CannotRemoveReferencedDataFile) {
 }
 
 TEST_F(RowDeltaTest, AddDeleteFileForRemovedDataFileCommitsDeleteOperation) {
-  CommitFileA();
+  AppendFileAToTable();
 
   auto delete_file = MakeDeleteFile("/delete/file_a_pos_deletes.parquet",
                                     /*partition_x=*/1L);
@@ -383,7 +383,7 @@ TEST_F(RowDeltaTest, ValidateDeletedFilesAllowsMissingDeletesOnEmptyTable) {
 }
 
 TEST_F(RowDeltaTest, AddDeletionVectorValidatesConcurrentDVs) {
-  CommitFileA();
+  AppendFileAToTable();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
   SetTableFormatVersion(3);
 

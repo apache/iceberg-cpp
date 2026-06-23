@@ -36,55 +36,121 @@
 
 namespace iceberg {
 
-/// \brief Row-level delta operation for adding rows and delete files.
+/// \brief API for encoding row-level changes to a table.
 ///
-/// RowDelta is the C++ counterpart of Java BaseRowDelta. It can add data files,
-/// add delete files, remove data/delete files, and validate conflicts against
-/// snapshots committed after a configured starting snapshot.
+/// This API accumulates data and delete file changes, produces a new Snapshot
+/// of the table, and commits that snapshot as current.
+///
+/// When committing, these changes are applied to the latest table snapshot.
+/// Commit conflicts are resolved by applying the changes to the new latest
+/// snapshot and reattempting the commit.
 class ICEBERG_EXPORT RowDelta : public MergingSnapshotUpdate {
  public:
   /// \brief Create a new RowDelta instance.
   static Result<std::unique_ptr<RowDelta>> Make(std::string table_name,
                                                 std::shared_ptr<TransactionContext> ctx);
 
-  /// \brief Add a data file containing inserted rows.
+  /// \brief Add a data file to the table.
+  ///
+  /// \param inserts A data file of rows to insert.
+  /// \return This RowDelta for method chaining.
   RowDelta& AddRows(const std::shared_ptr<DataFile>& inserts);
 
-  /// \brief Add a delete file.
+  /// \brief Add a delete file to the table.
+  ///
+  /// \param deletes A delete file of rows to delete.
+  /// \return This RowDelta for method chaining.
   RowDelta& AddDeletes(const std::shared_ptr<DataFile>& deletes);
 
   /// \brief Remove a data file from the table.
+  ///
+  /// \param file A data file.
+  /// \return This RowDelta for method chaining.
   RowDelta& RemoveRows(const std::shared_ptr<DataFile>& file);
 
-  /// \brief Remove a delete file from the table.
+  /// \brief Remove a rewritten delete file from the table.
+  ///
+  /// \param deletes A delete file that can be removed from the table.
+  /// \return This RowDelta for method chaining.
   RowDelta& RemoveDeletes(const std::shared_ptr<DataFile>& deletes);
 
-  /// \brief Validate against snapshots committed after snapshot_id.
+  /// \brief Set the snapshot ID used in any reads for this operation.
+  ///
+  /// Validations check changes after this snapshot ID. If the from snapshot is
+  /// not set, all ancestor snapshots through the table's initial snapshot are
+  /// validated.
+  ///
+  /// \param snapshot_id A snapshot ID.
+  /// \return This RowDelta for method chaining.
   RowDelta& ValidateFromSnapshot(int64_t snapshot_id);
 
-  /// \brief Set case sensitivity for conflict detection.
+  /// \brief Enable or disable case-sensitive expression binding for validations.
+  ///
+  /// \param case_sensitive Whether expression binding should be case sensitive.
+  /// \return This RowDelta for method chaining.
   RowDelta& CaseSensitive(bool case_sensitive);
 
-  /// \brief Validate that referenced data files still exist.
+  /// \brief Add data file paths that must not be removed by conflicting commits.
   ///
-  /// By default, this validation checks overwrite and replace commits. To apply
-  /// validation to delete commits, call ValidateDeletedFiles().
+  /// If any path has been removed by a conflicting commit in the table since
+  /// the snapshot passed to ValidateFromSnapshot(), the operation fails.
+  ///
+  /// By default, this validation checks only rewrite and overwrite commits. To
+  /// apply validation to delete commits, call ValidateDeletedFiles().
+  ///
+  /// \param referenced_files File paths that are referenced by a position
+  /// delete file.
+  /// \return This RowDelta for method chaining.
   RowDelta& ValidateDataFilesExist(std::span<const std::string> referenced_files);
 
-  /// \brief Enable validation for missing delete paths and delete-operation conflicts.
+  /// \brief Enable validation that referenced data files were not deleted.
   ///
-  /// This fails if any requested data/delete-file removal is missing from
-  /// manifests when the table has a current snapshot. It also makes
-  /// ValidateDataFilesExist() check delete-operation snapshots.
+  /// If a data file has a row deleted using a position delete file, rewriting
+  /// or overwriting the data file concurrently would un-delete the row. Deleting
+  /// the data file is normally allowed, but a delete may be part of a
+  /// transaction that reads and re-appends a row. This method is used to
+  /// validate deletes for the transaction case.
+  ///
+  /// \return This RowDelta for method chaining.
   RowDelta& ValidateDeletedFiles();
 
-  /// \brief Set the conflict detection filter used by validation methods.
+  /// \brief Set a conflict detection filter used to validate added files.
+  ///
+  /// If not called, a true literal is used as the conflict detection filter.
+  ///
+  /// \param filter An expression on rows in the table.
+  /// \return This RowDelta for method chaining.
   RowDelta& ConflictDetectionFilter(std::shared_ptr<Expression> filter);
 
-  /// \brief Validate that no matching data files were concurrently added.
+  /// \brief Enable validation that concurrent data files do not conflict.
+  ///
+  /// This method should be called when the table is queried to determine which
+  /// files to delete or append. If a concurrent operation commits a new file
+  /// after the data was read and that file might contain rows matching the
+  /// conflict detection filter, this operation detects that during retries and
+  /// fails.
+  ///
+  /// Calling this method is required to maintain serializable isolation for
+  /// update/delete operations. Otherwise, the isolation level is snapshot
+  /// isolation.
+  ///
+  /// Validation uses the filter passed to ConflictDetectionFilter() and applies
+  /// to operations after the snapshot passed to ValidateFromSnapshot().
+  ///
+  /// \return This RowDelta for method chaining.
   RowDelta& ValidateNoConflictingDataFiles();
 
-  /// \brief Validate that no matching delete files were concurrently added.
+  /// \brief Enable validation that concurrent delete files do not conflict.
+  ///
+  /// This method must be called when the table is queried to produce a row
+  /// delta for UPDATE and MERGE operations independently of the isolation level.
+  /// Calling this method is not required for DELETE operations because it is OK
+  /// to delete a record that is also deleted concurrently.
+  ///
+  /// Validation uses the filter passed to ConflictDetectionFilter() and applies
+  /// to operations after the snapshot passed to ValidateFromSnapshot().
+  ///
+  /// \return This RowDelta for method chaining.
   RowDelta& ValidateNoConflictingDeleteFiles();
 
   std::string operation() override;

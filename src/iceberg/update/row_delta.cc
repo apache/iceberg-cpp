@@ -154,12 +154,14 @@ Status RowDelta::Validate(const TableMetadata& current_metadata,
   }
 
   if (validate_new_delete_files_) {
+    // validate that explicitly deleted files have not had added deletes
     if (!removed_data_files_.empty()) {
       ICEBERG_RETURN_UNEXPECTED(MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
           current_metadata, starting_snapshot_id_, conflict_detection_filter_,
           removed_data_files_, snapshot, io, IsCaseSensitive()));
     }
 
+    // validate that previous deletes do not conflict with added deletes
     ICEBERG_RETURN_UNEXPECTED(MergingSnapshotUpdate::ValidateNoNewDeleteFiles(
         current_metadata, starting_snapshot_id_, conflict_detection_filter_, snapshot, io,
         IsCaseSensitive()));
