@@ -79,6 +79,14 @@ TEST_P(TypeTest, IsNested) {
   }
 }
 
+TEST_P(TypeTest, TypeKindPredicates) {
+  const auto& test_case = GetParam();
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kStruct, test_case.type->is_struct());
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kList, test_case.type->is_list());
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kMap, test_case.type->is_map());
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kVariant, test_case.type->is_variant());
+}
+
 TEST_P(TypeTest, ReflexiveEquality) {
   const auto& test_case = GetParam();
   ASSERT_EQ(*test_case.type, *test_case.type);
@@ -328,13 +336,31 @@ TEST(TypeTest, Equality) {
   }
 }
 
-TEST(TypeTest, GeographyEffectiveDefaultEquality) {
-  ASSERT_EQ(*iceberg::geography("srid:4326"),
+TEST(TypeTest, GeographyExplicitDefaultAlgorithm) {
+  ASSERT_NE(*iceberg::geography("srid:4326"),
             *iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kSpherical));
-  ASSERT_EQ(*iceberg::geography(),
+  ASSERT_NE(*iceberg::geography(),
             *iceberg::geography("OGC:CRS84", iceberg::EdgeAlgorithm::kSpherical));
+  ASSERT_EQ(
+      "geography(srid:4326, spherical)",
+      iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kSpherical)->ToString());
+  ASSERT_EQ(
+      "geography(OGC:CRS84, spherical)",
+      iceberg::geography("OGC:CRS84", iceberg::EdgeAlgorithm::kSpherical)->ToString());
   ASSERT_NE(*iceberg::geography("srid:4326"),
             *iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kKarney));
+}
+
+TEST(TypeTest, GeometryMakeRejectsEmptyCrs) {
+  auto result = iceberg::GeometryType::Make("");
+  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(result, iceberg::HasErrorMessage("GeometryType: CRS cannot be empty"));
+}
+
+TEST(TypeTest, GeographyMakeRejectsEmptyCrs) {
+  auto result = iceberg::GeographyType::Make("");
+  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(result, iceberg::HasErrorMessage("GeographyType: CRS cannot be empty"));
 }
 
 TEST(TypeTest, Decimal) {
@@ -402,11 +428,17 @@ TEST(TypeTest, List) {
   }
   ASSERT_THAT(
       []() {
-        iceberg::ListType list(
-            iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
+        iceberg::list(iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("child field name should be 'element', was 'wrongname'")));
+
+  auto make_result = iceberg::ListType::Make(
+      iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
+  ASSERT_THAT(make_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(make_result,
+              iceberg::HasErrorMessage(
+                  "ListType: child field name should be 'element', was 'wrongname'"));
 }
 
 TEST(TypeTest, Map) {
@@ -440,7 +472,7 @@ TEST(TypeTest, Map) {
       []() {
         iceberg::SchemaField key(5, "notkey", iceberg::int32(), true);
         iceberg::SchemaField value(7, "value", iceberg::string(), true);
-        iceberg::MapType map(key, value);
+        iceberg::map(key, value);
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("key field name should be 'key', was 'notkey'")));
@@ -448,10 +480,26 @@ TEST(TypeTest, Map) {
       []() {
         iceberg::SchemaField key(5, "key", iceberg::int32(), true);
         iceberg::SchemaField value(7, "notvalue", iceberg::string(), true);
-        iceberg::MapType map(key, value);
+        iceberg::map(key, value);
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("value field name should be 'value', was 'notvalue'")));
+
+  auto invalid_key_result =
+      iceberg::MapType::Make(iceberg::SchemaField(5, "notkey", iceberg::int32(), true),
+                             iceberg::SchemaField(7, "value", iceberg::string(), true));
+  ASSERT_THAT(invalid_key_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(
+      invalid_key_result,
+      iceberg::HasErrorMessage("MapType: key field name should be 'key', was 'notkey'"));
+
+  auto invalid_value_result = iceberg::MapType::Make(
+      iceberg::SchemaField(5, "key", iceberg::int32(), true),
+      iceberg::SchemaField(7, "notvalue", iceberg::string(), true));
+  ASSERT_THAT(invalid_value_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(invalid_value_result,
+              iceberg::HasErrorMessage(
+                  "MapType: value field name should be 'value', was 'notvalue'"));
 }
 
 TEST(TypeTest, Struct) {

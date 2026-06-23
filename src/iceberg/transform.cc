@@ -158,8 +158,9 @@ std::shared_ptr<Type> Transform::ResultType(
 bool Transform::CanTransform(const Type& source_type) const {
   switch (transform_type_) {
     case TransformType::kIdentity:
-      if (!source_type.is_primitive() || source_type.type_id() == TypeId::kGeometry ||
-          source_type.type_id() == TypeId::kGeography) [[unlikely]] {
+      if (source_type.is_variant() || source_type.type_id() == TypeId::kGeometry ||
+          source_type.type_id() == TypeId::kGeography || !source_type.is_primitive())
+          [[unlikely]] {
         return false;
       }
       return true;

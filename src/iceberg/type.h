@@ -54,6 +54,18 @@ class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
   /// \brief Is this a nested type (may have child fields)?
   virtual bool is_nested() const = 0;
 
+  /// \brief Is this a struct type?
+  bool is_struct() const { return type_id() == TypeId::kStruct; }
+
+  /// \brief Is this a list type?
+  bool is_list() const { return type_id() == TypeId::kList; }
+
+  /// \brief Is this a map type?
+  bool is_map() const { return type_id() == TypeId::kMap; }
+
+  /// \brief Is this a variant type?
+  bool is_variant() const { return type_id() == TypeId::kVariant; }
+
   /// \brief Compare two types for equality.
   friend bool operator==(const Type& lhs, const Type& rhs) { return lhs.Equals(rhs); }
 
@@ -146,8 +158,11 @@ class ICEBERG_EXPORT ListType : public NestedType {
   constexpr static const TypeId kTypeId = TypeId::kList;
   constexpr static const std::string_view kElementName = "element";
 
-  /// \brief Construct a list of the given element.  The name of the child
-  ///   field should be "element".
+  static Result<std::unique_ptr<ListType>> Make(SchemaField element);
+
+  /// \brief Construct a list of the given element.
+  ///
+  /// Use Make or list to validate that the element field name is "element".
   explicit ListType(SchemaField element);
   /// \brief Construct a list of the given element type.
   ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional);
@@ -179,8 +194,11 @@ class ICEBERG_EXPORT MapType : public NestedType {
   constexpr static const std::string_view kKeyName = "key";
   constexpr static const std::string_view kValueName = "value";
 
-  /// \brief Construct a map of the given key/value fields.  The field names
-  ///   should be "key" and "value", respectively.
+  static Result<std::unique_ptr<MapType>> Make(SchemaField key, SchemaField value);
+
+  /// \brief Construct a map of the given key/value fields.
+  ///
+  /// Use Make or map to validate that the field names are "key" and "value".
   explicit MapType(SchemaField key, SchemaField value);
   ~MapType() override = default;
 
@@ -319,6 +337,7 @@ class ICEBERG_EXPORT DecimalType : public PrimitiveType {
   constexpr static const int32_t kMaxPrecision = 38;
 
   /// \brief Construct a decimal type with the given precision and scale.
+  /// \throws IcebergError if precision is outside the supported range.
   DecimalType(int32_t precision, int32_t scale);
   ~DecimalType() override = default;
 
@@ -494,6 +513,7 @@ class ICEBERG_EXPORT FixedType : public PrimitiveType {
   constexpr static const TypeId kTypeId = TypeId::kFixed;
 
   /// \brief Construct a fixed type with the given length.
+  /// \throws IcebergError if length is negative.
   explicit FixedType(int32_t length);
   ~FixedType() override = default;
 
@@ -547,8 +567,8 @@ class ICEBERG_EXPORT GeometryType : public PrimitiveType {
   constexpr static const TypeId kTypeId = TypeId::kGeometry;
   constexpr static std::string_view kDefaultCrs = "OGC:CRS84";
 
-  GeometryType() = default;
-  explicit GeometryType(std::string crs);
+  static Result<std::unique_ptr<GeometryType>> Make();
+  static Result<std::unique_ptr<GeometryType>> Make(std::string crs);
   ~GeometryType() override = default;
 
   std::string_view crs() const;
@@ -560,6 +580,9 @@ class ICEBERG_EXPORT GeometryType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 
  private:
+  GeometryType() = default;
+  explicit GeometryType(std::string crs);
+
   std::string crs_;
 };
 
@@ -570,9 +593,10 @@ class ICEBERG_EXPORT GeographyType : public PrimitiveType {
   constexpr static std::string_view kDefaultCrs = "OGC:CRS84";
   constexpr static EdgeAlgorithm kDefaultAlgorithm = EdgeAlgorithm::kSpherical;
 
-  GeographyType() = default;
-  explicit GeographyType(std::string crs);
-  GeographyType(std::string crs, EdgeAlgorithm algorithm);
+  static Result<std::unique_ptr<GeographyType>> Make();
+  static Result<std::unique_ptr<GeographyType>> Make(std::string crs);
+  static Result<std::unique_ptr<GeographyType>> Make(std::string crs,
+                                                     EdgeAlgorithm algorithm);
   ~GeographyType() override = default;
 
   std::string_view crs() const;
@@ -585,8 +609,12 @@ class ICEBERG_EXPORT GeographyType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 
  private:
+  GeographyType() = default;
+  explicit GeographyType(std::string crs);
+  GeographyType(std::string crs, EdgeAlgorithm algorithm);
+
   std::string crs_;
-  EdgeAlgorithm algorithm_ = kDefaultAlgorithm;
+  std::optional<EdgeAlgorithm> algorithm_;
 };
 
 /// @}
@@ -637,20 +665,25 @@ ICEBERG_EXPORT const std::shared_ptr<GeographyType>& geography();
 /// \param precision The number of decimal digits (max 38).
 /// \param scale The number of decimal digits after the decimal point.
 /// \return A shared pointer to the DecimalType instance.
+/// \throws IcebergError if precision is outside the supported range.
 ICEBERG_EXPORT std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale);
 
 /// \brief Create a FixedType with the given length.
 /// \param length The number of bytes to store (must be >= 0).
 /// \return A shared pointer to the FixedType instance.
+/// \throws IcebergError if length is negative.
 ICEBERG_EXPORT std::shared_ptr<FixedType> fixed(int32_t length);
 
 /// \brief Create a GeometryType with the given CRS.
+/// \throws IcebergError if crs is empty.
 ICEBERG_EXPORT std::shared_ptr<GeometryType> geometry(std::string crs);
 
 /// \brief Create a GeographyType with the given CRS.
+/// \throws IcebergError if crs is empty.
 ICEBERG_EXPORT std::shared_ptr<GeographyType> geography(std::string crs);
 
 /// \brief Create a GeographyType with the given CRS and edge algorithm.
+/// \throws IcebergError if crs is empty.
 ICEBERG_EXPORT std::shared_ptr<GeographyType> geography(std::string crs,
                                                         EdgeAlgorithm algorithm);
 
@@ -662,12 +695,14 @@ ICEBERG_EXPORT std::shared_ptr<StructType> struct_(std::vector<SchemaField> fiel
 /// \brief Create a ListType with the given element field.
 /// \param element The element field of the list.
 /// \return A shared pointer to the ListType instance.
+/// \throws IcebergError if element's name is not "element".
 ICEBERG_EXPORT std::shared_ptr<ListType> list(SchemaField element);
 
 /// \brief Create a MapType with the given key and value fields.
 /// \param key The key field of the map.
 /// \param value The value field of the map.
 /// \return A shared pointer to the MapType instance.
+/// \throws IcebergError if the key or value field has an invalid name.
 ICEBERG_EXPORT std::shared_ptr<MapType> map(SchemaField key, SchemaField value);
 
 /// @}

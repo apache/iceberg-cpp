@@ -66,7 +66,7 @@ Status NameToIdVisitor::Visit(const ListType& type, const std::string& path,
   const auto& field = type.fields()[0];
   std::string new_path = BuildPath(path, field.name(), case_sensitive_);
   std::string new_short_path;
-  if (field.type()->type_id() == TypeId::kStruct) {
+  if (field.type()->is_struct()) {
     new_short_path = short_path;
   } else {
     new_short_path = BuildPath(short_path, field.name(), case_sensitive_);
@@ -88,8 +88,7 @@ Status NameToIdVisitor::Visit(const MapType& type, const std::string& path,
   const auto& fields = type.fields();
   for (const auto& field : fields) {
     new_path = BuildPath(path, field.name(), case_sensitive_);
-    if (field.name() == MapType::kValueName &&
-        field.type()->type_id() == TypeId::kStruct) {
+    if (field.name() == MapType::kValueName && field.type()->is_struct()) {
       new_short_path = short_path;
     } else {
       new_short_path = BuildPath(short_path, field.name(), case_sensitive_);
@@ -299,7 +298,7 @@ GetProjectedIdsVisitor::GetProjectedIdsVisitor(bool include_struct_ids)
 Status GetProjectedIdsVisitor::Visit(const Type& type) {
   if (type.is_nested()) {
     return VisitNested(internal::checked_cast<const NestedType&>(type));
-  } else if (type.type_id() == TypeId::kVariant) {
+  } else if (type.is_variant()) {
     return {};
   } else {
     return VisitPrimitive(internal::checked_cast<const PrimitiveType&>(type));
@@ -311,7 +310,7 @@ Status GetProjectedIdsVisitor::VisitNested(const NestedType& type) {
     ICEBERG_RETURN_UNEXPECTED(Visit(*field.type()));
   }
   for (auto& field : type.fields()) {
-    if ((include_struct_ids_ && field.type()->type_id() == TypeId::kStruct) ||
+    if ((include_struct_ids_ && field.type()->is_struct()) ||
         !field.type()->is_nested()) {
       ids_.insert(field.field_id());
     }

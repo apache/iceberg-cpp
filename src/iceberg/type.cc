@@ -143,11 +143,15 @@ StructType::InitFieldByLowerCaseName(const StructType& self) {
   return field_by_lowercase_name;
 }
 
-ListType::ListType(SchemaField element) : element_(std::move(element)) {
-  ICEBERG_CHECK_OR_DIE(element_.name() == kElementName,
-                       "ListType: child field name should be '{}', was '{}'",
-                       kElementName, element_.name());
+Result<std::unique_ptr<ListType>> ListType::Make(SchemaField element) {
+  if (element.name() != kElementName) {
+    return InvalidArgument("ListType: child field name should be '{}', was '{}'",
+                           kElementName, element.name());
+  }
+  return std::make_unique<ListType>(std::move(element));
 }
+
+ListType::ListType(SchemaField element) : element_(std::move(element)) {}
 
 ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
     : element_(field_id, std::string(kElementName), std::move(type), optional) {}
@@ -199,15 +203,20 @@ bool ListType::Equals(const Type& other) const {
   return element_ == list.element_;
 }
 
-MapType::MapType(SchemaField key, SchemaField value)
-    : fields_{std::move(key), std::move(value)} {
-  ICEBERG_CHECK_OR_DIE(this->key().name() == kKeyName,
-                       "MapType: key field name should be '{}', was '{}'", kKeyName,
-                       this->key().name());
-  ICEBERG_CHECK_OR_DIE(this->value().name() == kValueName,
-                       "MapType: value field name should be '{}', was '{}'", kValueName,
-                       this->value().name());
+Result<std::unique_ptr<MapType>> MapType::Make(SchemaField key, SchemaField value) {
+  if (key.name() != kKeyName) {
+    return InvalidArgument("MapType: key field name should be '{}', was '{}'", kKeyName,
+                           key.name());
+  }
+  if (value.name() != kValueName) {
+    return InvalidArgument("MapType: value field name should be '{}', was '{}'",
+                           kValueName, value.name());
+  }
+  return std::make_unique<MapType>(std::move(key), std::move(value));
 }
+
+MapType::MapType(SchemaField key, SchemaField value)
+    : fields_{std::move(key), std::move(value)} {}
 
 const SchemaField& MapType::key() const { return fields_[0]; }
 const SchemaField& MapType::value() const { return fields_[1]; }
@@ -359,8 +368,18 @@ TypeId UnknownType::type_id() const { return kTypeId; }
 std::string UnknownType::ToString() const { return "unknown"; }
 bool UnknownType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
+Result<std::unique_ptr<GeometryType>> GeometryType::Make() {
+  return std::unique_ptr<GeometryType>(new GeometryType());
+}
+
+Result<std::unique_ptr<GeometryType>> GeometryType::Make(std::string crs) {
+  if (crs.empty()) {
+    return InvalidArgument("GeometryType: CRS cannot be empty");
+  }
+  return std::unique_ptr<GeometryType>(new GeometryType(std::move(crs)));
+}
+
 GeometryType::GeometryType(std::string crs) {
-  ICEBERG_CHECK_OR_DIE(!crs.empty(), "GeometryType: CRS cannot be empty");
   if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
     crs_ = std::move(crs);
   }
@@ -384,8 +403,26 @@ bool GeometryType::Equals(const Type& other) const {
   return crs_ == geometry.crs_;
 }
 
+Result<std::unique_ptr<GeographyType>> GeographyType::Make() {
+  return std::unique_ptr<GeographyType>(new GeographyType());
+}
+
+Result<std::unique_ptr<GeographyType>> GeographyType::Make(std::string crs) {
+  if (crs.empty()) {
+    return InvalidArgument("GeographyType: CRS cannot be empty");
+  }
+  return std::unique_ptr<GeographyType>(new GeographyType(std::move(crs)));
+}
+
+Result<std::unique_ptr<GeographyType>> GeographyType::Make(std::string crs,
+                                                           EdgeAlgorithm algorithm) {
+  if (crs.empty()) {
+    return InvalidArgument("GeographyType: CRS cannot be empty");
+  }
+  return std::unique_ptr<GeographyType>(new GeographyType(std::move(crs), algorithm));
+}
+
 GeographyType::GeographyType(std::string crs) {
-  ICEBERG_CHECK_OR_DIE(!crs.empty(), "GeographyType: CRS cannot be empty");
   if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
     crs_ = std::move(crs);
   }
@@ -393,7 +430,6 @@ GeographyType::GeographyType(std::string crs) {
 
 GeographyType::GeographyType(std::string crs, EdgeAlgorithm algorithm)
     : algorithm_(algorithm) {
-  ICEBERG_CHECK_OR_DIE(!crs.empty(), "GeographyType: CRS cannot be empty");
   if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
     crs_ = std::move(crs);
   }
@@ -402,11 +438,13 @@ GeographyType::GeographyType(std::string crs, EdgeAlgorithm algorithm)
 std::string_view GeographyType::crs() const {
   return crs_.empty() ? kDefaultCrs : std::string_view(crs_);
 }
-EdgeAlgorithm GeographyType::algorithm() const { return algorithm_; }
+EdgeAlgorithm GeographyType::algorithm() const {
+  return algorithm_.value_or(kDefaultAlgorithm);
+}
 TypeId GeographyType::type_id() const { return kTypeId; }
 std::string GeographyType::ToString() const {
-  if (algorithm_ != kDefaultAlgorithm) {
-    return std::format("geography({}, {})", crs(), iceberg::ToString(algorithm_));
+  if (algorithm_.has_value()) {
+    return std::format("geography({}, {})", crs(), iceberg::ToString(*algorithm_));
   }
   if (!crs_.empty()) {
     return std::format("geography({})", crs_);
@@ -465,10 +503,26 @@ TYPE_FACTORY(string, StringType)
 TYPE_FACTORY(uuid, UuidType)
 TYPE_FACTORY(unknown, UnknownType)
 TYPE_FACTORY(variant, VariantType)
-TYPE_FACTORY(geometry, GeometryType)
-TYPE_FACTORY(geography, GeographyType)
 
 #undef TYPE_FACTORY
+
+const std::shared_ptr<GeometryType>& geometry() {
+  static const std::shared_ptr<GeometryType> result = [] {
+    auto type = GeometryType::Make();
+    ICEBERG_CHECK_OR_DIE(type.has_value(), "Failed to create default geometry type");
+    return std::shared_ptr<GeometryType>(std::move(type.value()));
+  }();
+  return result;
+}
+
+const std::shared_ptr<GeographyType>& geography() {
+  static const std::shared_ptr<GeographyType> result = [] {
+    auto type = GeographyType::Make();
+    ICEBERG_CHECK_OR_DIE(type.has_value(), "Failed to create default geography type");
+    return std::shared_ptr<GeographyType>(std::move(type.value()));
+  }();
+  return result;
+}
 
 std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale) {
   return std::make_shared<DecimalType>(precision, scale);
@@ -479,23 +533,43 @@ std::shared_ptr<FixedType> fixed(int32_t length) {
 }
 
 std::shared_ptr<GeometryType> geometry(std::string crs) {
-  return std::make_shared<GeometryType>(std::move(crs));
+  auto type = GeometryType::Make(std::move(crs));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
 }
 
 std::shared_ptr<GeographyType> geography(std::string crs) {
-  return std::make_shared<GeographyType>(std::move(crs));
+  auto type = GeographyType::Make(std::move(crs));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
 }
 
 std::shared_ptr<GeographyType> geography(std::string crs, EdgeAlgorithm algorithm) {
-  return std::make_shared<GeographyType>(std::move(crs), algorithm);
+  auto type = GeographyType::Make(std::move(crs), algorithm);
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
 }
 
 std::shared_ptr<MapType> map(SchemaField key, SchemaField value) {
-  return std::make_shared<MapType>(key, value);
+  auto type = MapType::Make(std::move(key), std::move(value));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
 }
 
 std::shared_ptr<ListType> list(SchemaField element) {
-  return std::make_shared<ListType>(std::move(element));
+  auto type = ListType::Make(std::move(element));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
 }
 
 std::shared_ptr<StructType> struct_(std::vector<SchemaField> fields) {

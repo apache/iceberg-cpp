@@ -72,6 +72,12 @@ INSTANTIATE_TEST_SUITE_P(
         SchemaJsonParam{.json = "\"geography\"", .type = iceberg::geography()},
         SchemaJsonParam{.json = "\"geography(srid:4326)\"",
                         .type = iceberg::geography("srid:4326")},
+        SchemaJsonParam{
+            .json = "\"geography(srid:4326, spherical)\"",
+            .type = iceberg::geography("srid:4326", EdgeAlgorithm::kSpherical)},
+        SchemaJsonParam{
+            .json = "\"geography(OGC:CRS84, spherical)\"",
+            .type = iceberg::geography("OGC:CRS84", EdgeAlgorithm::kSpherical)},
         SchemaJsonParam{.json = "\"geography(srid:4326, karney)\"",
                         .type = iceberg::geography("srid:4326", EdgeAlgorithm::kKarney)},
         SchemaJsonParam{.json = "\"fixed[8]\"", .type = iceberg::fixed(8)},

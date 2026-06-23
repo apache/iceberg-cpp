@@ -465,9 +465,10 @@ Result<std::unique_ptr<Type>> ListTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto element_required,
                           GetJsonValue<bool>(json, kElementRequired));
 
-  return std::make_unique<ListType>(
-      SchemaField(element_id, std::string(ListType::kElementName),
-                  std::move(element_type), !element_required));
+  ICEBERG_ASSIGN_OR_RAISE(auto type, ListType::Make(SchemaField(
+                                         element_id, std::string(ListType::kElementName),
+                                         std::move(element_type), !element_required)));
+  return std::unique_ptr<Type>(std::move(type));
 }
 
 Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
@@ -484,118 +485,126 @@ Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
                         /*optional=*/false);
   SchemaField value_field(value_id, std::string(MapType::kValueName),
                           std::move(value_type), !value_required);
-  return std::make_unique<MapType>(std::move(key_field), std::move(value_field));
+  ICEBERG_ASSIGN_OR_RAISE(auto type,
+                          MapType::Make(std::move(key_field), std::move(value_field)));
+  return std::unique_ptr<Type>(std::move(type));
 }
 
 }  // namespace
 
 Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
   if (json.is_string()) {
-    std::string type_str = json.get<std::string>();
-    std::string lower_type_str = StringUtils::ToLower(type_str);
-    if (lower_type_str == "boolean") {
+    const auto type_name = json.get<std::string>();
+    const auto normalized_type_name = StringUtils::ToLower(type_name);
+    if (normalized_type_name == "boolean") {
       return std::make_unique<BooleanType>();
-    } else if (lower_type_str == "int") {
+    } else if (normalized_type_name == "int") {
       return std::make_unique<IntType>();
-    } else if (lower_type_str == "long") {
+    } else if (normalized_type_name == "long") {
       return std::make_unique<LongType>();
-    } else if (lower_type_str == "float") {
+    } else if (normalized_type_name == "float") {
       return std::make_unique<FloatType>();
-    } else if (lower_type_str == "double") {
+    } else if (normalized_type_name == "double") {
       return std::make_unique<DoubleType>();
-    } else if (lower_type_str == "date") {
+    } else if (normalized_type_name == "date") {
       return std::make_unique<DateType>();
-    } else if (lower_type_str == "time") {
+    } else if (normalized_type_name == "time") {
       return std::make_unique<TimeType>();
-    } else if (lower_type_str == "timestamp") {
+    } else if (normalized_type_name == "timestamp") {
       return std::make_unique<TimestampType>();
-    } else if (lower_type_str == "timestamptz") {
+    } else if (normalized_type_name == "timestamptz") {
       return std::make_unique<TimestampTzType>();
-    } else if (lower_type_str == "timestamp_ns") {
+    } else if (normalized_type_name == "timestamp_ns") {
       return std::make_unique<TimestampNsType>();
-    } else if (lower_type_str == "timestamptz_ns") {
+    } else if (normalized_type_name == "timestamptz_ns") {
       return std::make_unique<TimestampTzNsType>();
-    } else if (lower_type_str == "string") {
+    } else if (normalized_type_name == "string") {
       return std::make_unique<StringType>();
-    } else if (lower_type_str == "binary") {
+    } else if (normalized_type_name == "binary") {
       return std::make_unique<BinaryType>();
-    } else if (lower_type_str == "uuid") {
+    } else if (normalized_type_name == "uuid") {
       return std::make_unique<UuidType>();
-    } else if (lower_type_str == "unknown") {
+    } else if (normalized_type_name == "unknown") {
       return std::make_unique<UnknownType>();
-    } else if (lower_type_str == "variant") {
+    } else if (normalized_type_name == "variant") {
       return std::make_unique<VariantType>();
-    } else if (lower_type_str.starts_with("fixed")) {
-      static const std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
+    } else if (normalized_type_name.starts_with("fixed")) {
+      static const std::regex kFixedRegex(R"(fixed\[\s*(\d+)\s*\])");
       std::smatch match;
-      if (std::regex_match(lower_type_str, match, fixed_regex)) {
+      if (std::regex_match(normalized_type_name, match, kFixedRegex)) {
         ICEBERG_ASSIGN_OR_RAISE(auto length,
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         return std::make_unique<FixedType>(length);
       }
-      return JsonParseError("Invalid fixed type: {}", type_str);
-    } else if (lower_type_str.starts_with("decimal")) {
-      static const std::regex decimal_regex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
+      return JsonParseError("Invalid fixed type: {}", type_name);
+    } else if (normalized_type_name.starts_with("decimal")) {
+      static const std::regex kDecimalRegex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
       std::smatch match;
-      if (std::regex_match(lower_type_str, match, decimal_regex)) {
+      if (std::regex_match(normalized_type_name, match, kDecimalRegex)) {
         ICEBERG_ASSIGN_OR_RAISE(auto precision,
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         ICEBERG_ASSIGN_OR_RAISE(auto scale,
                                 StringUtils::ParseNumber<int32_t>(match[2].str()));
         return std::make_unique<DecimalType>(precision, scale);
       }
-      return JsonParseError("Invalid decimal type: {}", type_str);
-    } else if (lower_type_str.starts_with("geometry")) {
-      static const std::regex geometry_regex(R"(geometry\s*(?:\(\s*([^)]*?)\s*\))?)",
+      return JsonParseError("Invalid decimal type: {}", type_name);
+    } else if (normalized_type_name.starts_with("geometry")) {
+      static const std::regex kGeometryRegex(R"(geometry\s*(?:\(\s*([^)]*?)\s*\))?)",
                                              std::regex_constants::icase);
       std::smatch match;
-      if (std::regex_match(type_str, match, geometry_regex)) {
+      if (std::regex_match(type_name, match, kGeometryRegex)) {
         if (match[1].matched) {
           auto crs = match[1].str();
           if (crs.empty()) {
-            return JsonParseError("Invalid geometry type: {}", type_str);
+            return JsonParseError("Invalid geometry type: {}", type_name);
           }
-          return std::make_unique<GeometryType>(std::move(crs));
+          ICEBERG_ASSIGN_OR_RAISE(auto type, GeometryType::Make(std::move(crs)));
+          return std::unique_ptr<Type>(std::move(type));
         }
-        return std::make_unique<GeometryType>();
+        ICEBERG_ASSIGN_OR_RAISE(auto type, GeometryType::Make());
+        return std::unique_ptr<Type>(std::move(type));
       }
-      return JsonParseError("Invalid geometry type: {}", type_str);
-    } else if (lower_type_str.starts_with("geography")) {
-      static const std::regex geography_regex(
+      return JsonParseError("Invalid geometry type: {}", type_name);
+    } else if (normalized_type_name.starts_with("geography")) {
+      static const std::regex kGeographyRegex(
           R"(geography\s*(?:\(\s*([^,]*?)\s*(?:,\s*(\w*)\s*)?\))?)",
           std::regex_constants::icase);
       std::smatch match;
-      if (std::regex_match(type_str, match, geography_regex)) {
+      if (std::regex_match(type_name, match, kGeographyRegex)) {
         auto crs = match[1].str();
         if (match[1].matched && crs.empty()) {
-          return JsonParseError("Invalid geography type: {}", type_str);
+          return JsonParseError("Invalid geography type: {}", type_name);
         }
         if (match[2].matched) {
           ICEBERG_ASSIGN_OR_RAISE(auto algorithm,
                                   EdgeAlgorithmFromString(match[2].str()));
-          return std::make_unique<GeographyType>(std::move(crs), algorithm);
+          ICEBERG_ASSIGN_OR_RAISE(auto type,
+                                  GeographyType::Make(std::move(crs), algorithm));
+          return std::unique_ptr<Type>(std::move(type));
         }
         if (match[1].matched) {
-          return std::make_unique<GeographyType>(std::move(crs));
+          ICEBERG_ASSIGN_OR_RAISE(auto type, GeographyType::Make(std::move(crs)));
+          return std::unique_ptr<Type>(std::move(type));
         }
-        return std::make_unique<GeographyType>();
+        ICEBERG_ASSIGN_OR_RAISE(auto type, GeographyType::Make());
+        return std::unique_ptr<Type>(std::move(type));
       }
-      return JsonParseError("Invalid geography type: {}", type_str);
+      return JsonParseError("Invalid geography type: {}", type_name);
     } else {
-      return JsonParseError("Cannot parse type string: {}", type_str);
+      return JsonParseError("Cannot parse type string: {}", type_name);
     }
   }
 
   // For complex types like struct, list, and map
-  ICEBERG_ASSIGN_OR_RAISE(auto type_str, GetJsonValue<std::string>(json, kType));
-  if (type_str == kStruct) {
+  ICEBERG_ASSIGN_OR_RAISE(auto complex_type_name, GetJsonValue<std::string>(json, kType));
+  if (complex_type_name == kStruct) {
     return StructTypeFromJson(json);
-  } else if (type_str == kList) {
+  } else if (complex_type_name == kList) {
     return ListTypeFromJson(json);
-  } else if (type_str == kMap) {
+  } else if (complex_type_name == kMap) {
     return MapTypeFromJson(json);
   } else {
-    return JsonParseError("Unknown complex type: {}", type_str);
+    return JsonParseError("Unknown complex type: {}", complex_type_name);
   }
 }
 
