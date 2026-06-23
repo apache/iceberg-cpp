@@ -444,6 +444,11 @@ Result<int64_t> TemporalUtils::ParseTimestampNsWithZone(std::string_view str) {
                               /*units_per_micro=*/internal::kNanosPerMicro);
 }
 
+Result<bool> TemporalUtils::IsUtcOffset(std::string_view str) {
+  ICEBERG_ASSIGN_OR_RAISE(auto timestamp_with_offset, ParseTimestampWithZoneSuffix(str));
+  return timestamp_with_offset.second == 0;
+}
+
 #define DISPATCH_EXTRACT_YEAR(type_id) \
   case type_id:                        \
     return ExtractYearImpl<type_id>(literal);

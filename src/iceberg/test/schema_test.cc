@@ -167,6 +167,23 @@ TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
   EXPECT_THAT(status, iceberg::HasErrorMessage("write-default"));
 }
 
+TEST(SchemaTest, ValidateCastsDefaultToFieldType) {
+  // Matching Java, the default literal is cast to the field type rather than required to
+  // match exactly: an int default on a long field is accepted (int -> long).
+  iceberg::Schema widened({iceberg::SchemaField(
+      1, "id", iceberg::int64(), false, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(34)))});
+  EXPECT_THAT(widened.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
+
+  // A default whose type cannot be cast to the field type is still rejected.
+  iceberg::Schema uncastable({iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::String("oops")))});
+  EXPECT_THAT(uncastable.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+}
+
 TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {
   // Reassigning field IDs rebuilds each SchemaField, so the rebuild must carry the
   // default values over to the field with the new ID.

@@ -93,14 +93,25 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
     return InvalidSchema("Invalid {} value for {}: must be a non-null value", kind,
                          field.name());
   }
+  // Defaults are only supported on primitive fields. The spec also permits JSON
+  // single-value defaults for struct/list/map (e.g. an empty struct `{}` whose
+  // sub-field defaults live in field metadata); that matches the current Java model's
+  // gap and is left as a follow-up.
   if (field.type() == nullptr || !field.type()->is_primitive()) {
     return InvalidSchema(
         "Invalid {} value for {}: default values are only supported for primitive types",
         kind, field.name());
   }
-  if (*value.type() != *field.type()) {
-    return InvalidSchema("{} of field {} has type {} but expected {}", kind, field.name(),
-                         *value.type(), *field.type());
+  // Match Java (Types.NestedField), which casts the default literal to the field type
+  // instead of requiring an exact type match (e.g. an int default on a long field, or
+  // a string default on a date/timestamp/uuid field). Reject only defaults that cannot
+  // be cast to the field type or fall outside its range (CastTo signals out-of-range as
+  // an above-max/below-min sentinel).
+  auto field_type = std::static_pointer_cast<PrimitiveType>(field.type());
+  auto cast = value.CastTo(field_type);
+  if (!cast.has_value() || cast->IsAboveMax() || cast->IsBelowMin()) {
+    return InvalidSchema("{} of field {} has type {} that cannot be cast to {}", kind,
+                         field.name(), *value.type(), *field.type());
   }
   return {};
 }

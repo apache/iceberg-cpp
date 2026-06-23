@@ -51,6 +51,7 @@
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/temporal_util.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
@@ -564,6 +565,35 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
   }
 }
 
+namespace {
+
+// The spec's JSON single-value form for `timestamptz` / `timestamptz_ns` default
+// values requires a UTC offset. The shared timestamp parser accepts any offset and
+// silently normalizes to UTC, which would let C++ accept default metadata that Java
+// rejects and then rewrite the offset on serialization. Enforce UTC for these
+// defaults at parse time, where the original offset is still visible.
+Status ValidateTimestamptzDefaultIsUtc(const Type& type, const nlohmann::json& value) {
+  const auto type_id = type.type_id();
+  if (type_id != TypeId::kTimestampTz && type_id != TypeId::kTimestampTzNs) {
+    return {};
+  }
+  if (!value.is_string()) {
+    // Let LiteralFromJson report the type mismatch.
+    return {};
+  }
+  const auto str = value.get<std::string>();
+  ICEBERG_ASSIGN_OR_RAISE(bool is_utc, TemporalUtils::IsUtcOffset(str));
+  if (!is_utc) {
+    return JsonParseError(
+        "Invalid timestamptz default '{}' for {}: default values must use UTC "
+        "(offset 'Z' or '+00:00')",
+        str, type.ToString());
+  }
+  return {};
+}
+
+}  // namespace
+
 Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto type, GetJsonValue<nlohmann::json>(json, kType).and_then(TypeFromJson));
@@ -578,12 +608,16 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
 
   std::shared_ptr<const Literal> initial_default;
   if (initial_default_json.has_value()) {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateTimestamptzDefaultIsUtc(*type, *initial_default_json));
     ICEBERG_ASSIGN_OR_RAISE(Literal literal,
                             LiteralFromJson(*initial_default_json, type.get()));
     initial_default = std::make_shared<const Literal>(std::move(literal));
   }
   std::shared_ptr<const Literal> write_default;
   if (write_default_json.has_value()) {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateTimestamptzDefaultIsUtc(*type, *write_default_json));
     ICEBERG_ASSIGN_OR_RAISE(Literal literal,
                             LiteralFromJson(*write_default_json, type.get()));
     write_default = std::make_shared<const Literal>(std::move(literal));

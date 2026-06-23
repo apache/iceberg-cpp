@@ -125,6 +125,18 @@ class ICEBERG_EXPORT TemporalUtils {
   /// \return The number of nanoseconds since epoch (UTC), or an error.
   static Result<int64_t> ParseTimestampNsWithZone(std::string_view str);
 
+  /// \brief Reports whether a timestamp-with-zone string uses a UTC offset.
+  ///
+  /// The ParseTimestamp*WithZone parsers accept any offset and silently normalize it
+  /// to UTC. The spec's JSON single-value form for `timestamptz` / `timestamptz_ns`
+  /// default values only permits UTC ("Z" or "+00:00"), so callers that must enforce
+  /// that rule check the offset here before parsing.
+  ///
+  /// \param str The timestamp-with-zone string to inspect.
+  /// \return true if the offset is UTC, false if it is a non-UTC offset, or an error
+  ///         if the timezone suffix cannot be parsed.
+  static Result<bool> IsUtcOffset(std::string_view str);
+
   /// \brief Extract a date or timestamp year, as years from 1970
   static Result<Literal> ExtractYear(const Literal& literal);
 

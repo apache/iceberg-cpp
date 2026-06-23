@@ -136,7 +136,11 @@ TEST(JsonInternalTest, SchemaFieldDefaultValuesRoundTripAllTypes) {
   cases.emplace_back(float32(), Literal::Float(1.5f));
   cases.emplace_back(float64(), Literal::Double(2.5));
   cases.emplace_back(date(), Literal::Date(19738));
+  cases.emplace_back(time(), Literal::Time(43200000000LL));
   cases.emplace_back(timestamp(), Literal::Timestamp(1719446400000000LL));
+  cases.emplace_back(timestamp_tz(), Literal::TimestampTz(1719446400000000LL));
+  cases.emplace_back(timestamp_ns(), Literal::TimestampNs(1719446400000000123LL));
+  cases.emplace_back(timestamptz_ns(), Literal::TimestampTzNs(1719446400000000123LL));
   cases.emplace_back(string(), Literal::String("hello"));
   cases.emplace_back(decimal(9, 2), Literal::Decimal(12345, 9, 2));
   cases.emplace_back(fixed(3), Literal::Fixed({0x01, 0x02, 0x03}));
@@ -153,6 +157,23 @@ TEST(JsonInternalTest, SchemaFieldDefaultValuesRoundTripAllTypes) {
     EXPECT_EQ(field, *parsed) << "round-trip mismatch for type " << type->ToString()
                               << ", json=" << json.dump();
   }
+}
+
+// The spec only permits UTC offsets for timestamptz / timestamptz_ns default values.
+// A non-UTC offset (which the shared parser would silently normalize) must be rejected,
+// while the UTC form is accepted.
+TEST(JsonInternalTest, SchemaFieldRejectsNonUtcTimestamptzDefault) {
+  auto non_utc = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz","initial-default":"2024-06-27T05:00:00+05:00"})");
+  EXPECT_FALSE(FieldFromJson(non_utc).has_value());
+
+  auto non_utc_ns = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz_ns","write-default":"2024-06-27T05:00:00-08:00"})");
+  EXPECT_FALSE(FieldFromJson(non_utc_ns).has_value());
+
+  auto utc = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz","initial-default":"2024-06-27T00:00:00+00:00"})");
+  EXPECT_TRUE(FieldFromJson(utc).has_value());
 }
 
 TEST(JsonInternalTest, SortField) {
