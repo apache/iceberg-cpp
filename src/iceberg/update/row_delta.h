@@ -66,10 +66,16 @@ class ICEBERG_EXPORT RowDelta : public MergingSnapshotUpdate {
   RowDelta& CaseSensitive(bool case_sensitive);
 
   /// \brief Validate that referenced data files still exist.
+  ///
+  /// By default, this validation checks overwrite and replace commits. To apply
+  /// validation to delete commits, call ValidateDeletedFiles().
   RowDelta& ValidateDataFilesExist(std::span<const std::string> referenced_files);
 
-  /// \brief Fail if any requested data/delete-file removal is missing from
-  /// manifests when the table has a current snapshot.
+  /// \brief Enable validation for missing delete paths and delete-operation conflicts.
+  ///
+  /// This fails if any requested data/delete-file removal is missing from
+  /// manifests when the table has a current snapshot. It also makes
+  /// ValidateDataFilesExist() check delete-operation snapshots.
   RowDelta& ValidateDeletedFiles();
 
   /// \brief Set the conflict detection filter used by validation methods.

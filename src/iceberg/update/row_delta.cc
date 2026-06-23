@@ -143,7 +143,7 @@ Status RowDelta::Validate(const TableMetadata& current_metadata,
   if (!referenced_data_files_.empty()) {
     ICEBERG_RETURN_UNEXPECTED(MergingSnapshotUpdate::ValidateDataFilesExist(
         current_metadata, starting_snapshot_id_, referenced_data_files_,
-        /*skip_deletes=*/false, conflict_detection_filter_, snapshot, io,
+        /*skip_deletes=*/!validate_deletes_, conflict_detection_filter_, snapshot, io,
         IsCaseSensitive()));
   }
 

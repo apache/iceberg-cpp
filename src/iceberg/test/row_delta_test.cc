@@ -274,7 +274,7 @@ TEST_F(RowDeltaTest, ValidateNoConflictingDeleteFilesFailsForConcurrentDelete) {
   EXPECT_THAT(result, HasErrorMessage(delete_file->file_path));
 }
 
-TEST_F(RowDeltaTest, ValidateDataFilesExistFailsForConcurrentDelete) {
+TEST_F(RowDeltaTest, ValidateDataFilesExistSkipsConcurrentDeleteByDefault) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
 
@@ -292,6 +292,30 @@ TEST_F(RowDeltaTest, ValidateDataFilesExistFailsForConcurrentDelete) {
   row_delta->ValidateFromSnapshot(starting_snapshot->snapshot_id);
   std::vector<std::string> referenced_files{file_a_->file_path};
   row_delta->ValidateDataFilesExist(referenced_files);
+  row_delta->AddDeletes(delete_file);
+
+  EXPECT_THAT(row_delta->Commit(), IsOk());
+}
+
+TEST_F(RowDeltaTest, ValidateDataFilesExistFailsForConcurrentDeleteWithValidateDeletedFiles) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_files, table_->NewDeleteFiles());
+  delete_files->DeleteFile(file_a_);
+  EXPECT_THAT(delete_files->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+
+  auto delete_file = MakeDeleteFile("/delete/file_a_pos_deletes.parquet",
+                                    /*partition_x=*/1L);
+  delete_file->referenced_data_file = file_a_->file_path;
+
+  std::shared_ptr<RowDelta> row_delta;
+  ICEBERG_UNWRAP_OR_FAIL(row_delta, table_->NewRowDelta());
+  row_delta->ValidateFromSnapshot(starting_snapshot->snapshot_id);
+  std::vector<std::string> referenced_files{file_a_->file_path};
+  row_delta->ValidateDataFilesExist(referenced_files);
+  row_delta->ValidateDeletedFiles();
   row_delta->AddDeletes(delete_file);
 
   auto result = row_delta->Commit();
