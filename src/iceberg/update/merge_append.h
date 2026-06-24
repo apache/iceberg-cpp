@@ -31,10 +31,15 @@
 
 namespace iceberg {
 
-/// \brief Append files while merging manifests when table properties allow it.
+/// \brief API for appending new files in a table while merging manifests.
 ///
-/// MergeAppend uses the shared MergingSnapshotUpdate pipeline, so it can compact
-/// newly written and existing manifests into fewer manifests during commit.
+/// This API accumulates file additions, produces a new Snapshot of the table,
+/// and commits that snapshot as current. When committing, these changes are
+/// applied to the latest table snapshot. Commit conflicts are resolved by
+/// applying the changes to the new latest snapshot and reattempting the commit.
+///
+/// MergeAppend uses the shared MergingSnapshotUpdate pipeline, so it can merge
+/// newly written and existing manifests according to table properties.
 class ICEBERG_EXPORT MergeAppend : public MergingSnapshotUpdate {
  public:
   /// \brief Create a new MergeAppend instance.
@@ -45,19 +50,20 @@ class ICEBERG_EXPORT MergeAppend : public MergingSnapshotUpdate {
   static Result<std::unique_ptr<MergeAppend>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
-  /// \brief Append a data file to this update.
+  /// \brief Append a DataFile to the table.
   ///
-  /// \param file The data file to append
-  /// \return Reference to this for method chaining
+  /// \param file A data file.
+  /// \return This MergeAppend for method chaining.
   MergeAppend& AppendFile(const std::shared_ptr<DataFile>& file);
 
-  /// \brief Append a data manifest to this update.
+  /// \brief Append a ManifestFile to the table.
   ///
-  /// The manifest must contain only added files. Snapshot ID and sequence number
-  /// assignment happen during commit.
+  /// The manifest must contain only appended files. All files in the manifest
+  /// are appended to the table in the snapshot created by this update.
+  /// Snapshot ID and sequence number assignment happen during commit.
   ///
-  /// \param manifest The manifest file to append
-  /// \return Reference to this for method chaining
+  /// \param manifest A manifest file of files to append.
+  /// \return This MergeAppend for method chaining.
   MergeAppend& AppendManifest(const ManifestFile& manifest);
 
   std::string operation() override;

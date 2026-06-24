@@ -21,7 +21,6 @@
 
 #include <vector>
 
-#include "iceberg/expression/binder.h"
 #include "iceberg/expression/evaluator.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/projections.h"
@@ -114,19 +113,19 @@ OverwriteFiles& OverwriteFiles::ConflictDetectionFilter(
   return *this;
 }
 
-OverwriteFiles& OverwriteFiles::WithCaseSensitivity(bool case_sensitive) {
-  CaseSensitive(case_sensitive);
+OverwriteFiles& OverwriteFiles::CaseSensitive(bool case_sensitive) {
+  MergingSnapshotUpdate::CaseSensitive(case_sensitive);
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::ValidateNoConflictingData() {
-  validate_no_conflicting_data_ = true;
+  validate_new_data_files_ = true;
   FailMissingDeletePaths();
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::ValidateNoConflictingDeletes() {
-  validate_no_conflicting_deletes_ = true;
+  validate_new_deletes_ = true;
   FailMissingDeletePaths();
   return *this;
 }
@@ -146,46 +145,88 @@ std::string OverwriteFiles::operation() {
   return DataOperation::kOverwrite;
 }
 
-// Pure row-filter overwrites use the row filter as the data conflict filter. Explicit
-// file replacement is more conservative unless the caller supplies a narrower filter.
 std::shared_ptr<Expression> OverwriteFiles::DataConflictDetectionFilter() const {
   if (conflict_detection_filter_ != nullptr) {
     return conflict_detection_filter_;
   }
-  if (RowFilter() != nullptr && RowFilter() != Expressions::AlwaysFalse() &&
-      deleted_data_files_.empty()) {
-    return RowFilter();
+  if (auto filter = RowFilter(); filter != nullptr &&
+                                 filter != Expressions::AlwaysFalse() &&
+                                 deleted_data_files_.empty()) {
+    return filter;
   }
   return Expressions::AlwaysTrue();
 }
 
 Status OverwriteFiles::Validate(const TableMetadata& current_metadata,
                                 const std::shared_ptr<Snapshot>& snapshot) {
+  auto row_filter = RowFilter();
+
   if (validate_added_files_match_overwrite_filter_) {
-    if (RowFilter() == nullptr || RowFilter() == Expressions::AlwaysFalse()) {
-      return ValidationFailed(
-          "Cannot validate added files match overwrite filter: row filter is not set");
+    ICEBERG_ASSIGN_OR_RAISE(auto spec, DataSpec());
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, current_metadata.Schema());
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec->PartitionType(*schema));
+    auto partition_schema = partition_type->ToSchema();
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto inclusive_expr,
+        Projections::Inclusive(*spec, *schema, IsCaseSensitive())->Project(row_filter));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto inclusive_evaluator,
+        Evaluator::Make(*partition_schema, inclusive_expr, IsCaseSensitive()));
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto strict_expr,
+        Projections::Strict(*spec, *schema, IsCaseSensitive())->Project(row_filter));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto strict_evaluator,
+        Evaluator::Make(*partition_schema, strict_expr, IsCaseSensitive()));
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto metrics_evaluator,
+        StrictMetricsEvaluator::Make(row_filter, schema, IsCaseSensitive()));
+
+    // the real test is that the strict or metrics test matches the file, indicating that
+    // all records in the file match the filter. inclusive is used to avoid testing the
+    // metrics, which is more complicated
+    const auto file_test = [&](const DataFile& file) -> Result<bool> {
+      ICEBERG_ASSIGN_OR_RAISE(bool inclusive_match,
+                              inclusive_evaluator->Evaluate(file.partition));
+      if (!inclusive_match) {
+        return false;
+      }
+      ICEBERG_ASSIGN_OR_RAISE(bool strict_match,
+                              strict_evaluator->Evaluate(file.partition));
+      if (strict_match) {
+        return true;
+      }
+      return metrics_evaluator->Evaluate(file);
+    };
+
+    for (const auto& file : AddedDataFiles()) {
+      ICEBERG_ASSIGN_OR_RAISE(bool matches_filter, file_test(*file));
+      if (!matches_filter) {
+        return ValidationFailed(
+            "Cannot append file with rows that do not match filter: {}: {}",
+            row_filter->ToString(), file->file_path);
+      }
     }
-    ICEBERG_RETURN_UNEXPECTED(
-        ValidateAddedFilesMatchOverwriteFilterImpl(current_metadata));
   }
 
-  if (validate_no_conflicting_data_) {
+  if (validate_new_data_files_) {
     ICEBERG_RETURN_UNEXPECTED(ValidateAddedDataFiles(
         current_metadata, starting_snapshot_id_, DataConflictDetectionFilter(), snapshot,
         ctx_->table->io(), IsCaseSensitive()));
   }
 
-  if (validate_no_conflicting_deletes_) {
-    if (RowFilter() != nullptr && RowFilter() != Expressions::AlwaysFalse()) {
-      auto delete_filter = conflict_detection_filter_ != nullptr
-                               ? conflict_detection_filter_
-                               : RowFilter();
+  if (validate_new_deletes_) {
+    if (row_filter != nullptr && row_filter != Expressions::AlwaysFalse()) {
+      auto filter =
+          conflict_detection_filter_ != nullptr ? conflict_detection_filter_ : row_filter;
       ICEBERG_RETURN_UNEXPECTED(
-          ValidateNoNewDeleteFiles(current_metadata, starting_snapshot_id_, delete_filter,
+          ValidateNoNewDeleteFiles(current_metadata, starting_snapshot_id_, filter,
                                    snapshot, ctx_->table->io(), IsCaseSensitive()));
       ICEBERG_RETURN_UNEXPECTED(
-          ValidateDeletedDataFiles(current_metadata, starting_snapshot_id_, delete_filter,
+          ValidateDeletedDataFiles(current_metadata, starting_snapshot_id_, filter,
                                    snapshot, ctx_->table->io(), IsCaseSensitive()));
     }
 
@@ -193,74 +234,6 @@ Status OverwriteFiles::Validate(const TableMetadata& current_metadata,
       ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeletesForDataFiles(
           current_metadata, starting_snapshot_id_, conflict_detection_filter_,
           deleted_data_files_, snapshot, ctx_->table->io(), IsCaseSensitive()));
-    }
-  }
-
-  return {};
-}
-
-// Every added data file must be fully contained in the overwrite range defined by
-// RowFilter(). Partition projection handles whole-partition proofs; strict metrics are
-// used only when the partition alone is not enough.
-Status OverwriteFiles::ValidateAddedFilesMatchOverwriteFilterImpl(
-    const TableMetadata& metadata) {
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-
-  ICEBERG_ASSIGN_OR_RAISE(auto spec, DataSpec());
-
-  // Project requires a bound expression; StrictMetricsEvaluator binds internally.
-  ICEBERG_ASSIGN_OR_RAISE(auto bound_filter,
-                          Binder::Bind(*schema, RowFilter(), IsCaseSensitive()));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto strict_metrics_evaluator,
-      StrictMetricsEvaluator::Make(RowFilter(), schema, IsCaseSensitive()));
-
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec->PartitionType(*schema));
-  auto partition_fields = partition_type->fields();
-  Schema partition_schema(
-      std::vector<SchemaField>(partition_fields.begin(), partition_fields.end()));
-
-  auto inclusive_projection = Projections::Inclusive(*spec, *schema, IsCaseSensitive());
-  ICEBERG_ASSIGN_OR_RAISE(auto inclusive_expr,
-                          inclusive_projection->Project(bound_filter));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto inclusive_evaluator,
-      Evaluator::Make(partition_schema, inclusive_expr, IsCaseSensitive()));
-
-  auto strict_projection = Projections::Strict(*spec, *schema, IsCaseSensitive());
-  ICEBERG_ASSIGN_OR_RAISE(auto strict_expr, strict_projection->Project(bound_filter));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto strict_evaluator,
-      Evaluator::Make(partition_schema, strict_expr, IsCaseSensitive()));
-
-  for (const auto& file : AddedDataFiles()) {
-    if (file == nullptr) {
-      return ValidationFailed(
-          "Cannot validate added files match overwrite filter: null data file");
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(bool inclusive_match,
-                            inclusive_evaluator->Evaluate(file->partition));
-    if (!inclusive_match) {
-      return ValidationFailed(
-          "Cannot commit file {}: added file does not match overwrite filter (outside "
-          "the overwrite range)",
-          file->file_path);
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(bool strict_match,
-                            strict_evaluator->Evaluate(file->partition));
-    if (strict_match) {
-      continue;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(bool metrics_match,
-                            strict_metrics_evaluator->Evaluate(*file));
-    if (!metrics_match) {
-      return ValidationFailed(
-          "Cannot commit file {}: added file is not fully contained in the overwrite "
-          "filter",
-          file->file_path);
     }
   }
 

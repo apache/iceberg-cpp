@@ -617,12 +617,13 @@ void MergingSnapshotUpdate::SetSummaryProperty(const std::string& property,
 
 Result<std::shared_ptr<PartitionSpec>> MergingSnapshotUpdate::DataSpec() const {
   if (new_data_files_by_spec_.empty()) {
-    return InvalidArgument("DataSpec() called before any data file was added");
+    return InvalidArgument(
+        "Cannot determine partition specs: no data files have been added");
   }
   if (new_data_files_by_spec_.size() > 1) {
     return InvalidArgument(
-        "DataSpec() requires exactly one partition spec; got {} different specs",
-        new_data_files_by_spec_.size());
+        "Cannot return a single partition spec: data files with different partition "
+        "specs have been added");
   }
   return base().PartitionSpecById(new_data_files_by_spec_.begin()->first);
 }

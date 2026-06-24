@@ -261,6 +261,8 @@ class ICEBERG_EXPORT StaticTable : public Table {
 
   Result<std::shared_ptr<RowDelta>> NewRowDelta() override;
 
+  Result<std::shared_ptr<OverwriteFiles>> NewOverwrite() override;
+
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 
  private:

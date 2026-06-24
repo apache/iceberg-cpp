@@ -35,8 +35,8 @@
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
-#include "iceberg/update/row_delta.h"
 #include "iceberg/update/overwrite_files.h"
+#include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_location.h"
@@ -354,6 +354,10 @@ Result<std::shared_ptr<DeleteFiles>> StaticTable::NewDeleteFiles() {
 
 Result<std::shared_ptr<RowDelta>> StaticTable::NewRowDelta() {
   return NotSupported("Cannot create a row delta for a static table");
+}
+
+Result<std::shared_ptr<OverwriteFiles>> StaticTable::NewOverwrite() {
+  return NotSupported("Cannot create an overwrite for a static table");
 }
 
 Result<std::shared_ptr<SnapshotManager>> StaticTable::NewSnapshotManager() {

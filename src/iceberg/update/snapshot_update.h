@@ -36,10 +36,11 @@
 
 namespace iceberg {
 
-/// \brief Base class for operations that produce snapshots.
+/// \brief API for table changes that produce snapshots.
 ///
-/// This class provides common functionality for creating new snapshots,
-/// including manifest list writing and cleanup.
+/// This class contains common methods for all updates that create a new table
+/// Snapshot. It also provides the shared implementation for snapshot ID
+/// assignment, manifest list writing, retry-safe apply, and cleanup.
 class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
  public:
   /// \brief Result of applying a snapshot update
@@ -56,9 +57,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   /// \brief Set a callback to delete files instead of the table's default.
   ///
-  /// \param delete_func A function used to delete file locations
-  /// \return Reference to this for method chaining
-  /// \note Cannot be called more than once
+  /// \param delete_func A function used to delete file locations.
+  /// \return This update for method chaining.
+  /// \note Cannot be called more than once.
   auto& DeleteWith(this auto& self,
                    std::function<Status(const std::string&)> delete_func) {
     if (self.delete_func_) {
@@ -69,18 +70,21 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     return self;
   }
 
-  /// \brief Stage a snapshot in table metadata, but not update the current snapshot id.
+  /// \brief Stage a snapshot in table metadata, but do not make it current.
   ///
-  /// \return Reference to this for method chaining
+  /// The snapshot is assigned an ID and added to table metadata. The table's
+  /// current snapshot ID is not updated.
+  ///
+  /// \return This update for method chaining.
   auto& StageOnly(this auto& self) {
     self.stage_only_ = true;
     return self;
   }
 
-  /// \brief Perform operations on a particular branch
+  /// \brief Perform operations on a particular branch.
   ///
-  /// \param branch Which is name of SnapshotRef of type branch
-  /// \return Reference to this for method chaining
+  /// \param branch The name of a SnapshotRef of type branch.
+  /// \return This update for method chaining.
   auto& SetTargetBranch(this auto& self, const std::string& branch) {
     if (branch.empty()) [[unlikely]] {
       return self.AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
@@ -99,11 +103,11 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     return self;
   }
 
-  /// \brief Set a summary property.
+  /// \brief Set a summary property in the snapshot produced by this update.
   ///
-  /// \param property The property name
-  /// \param value The property value
-  /// \return Reference to this for method chaining
+  /// \param property A String property name.
+  /// \param value A String property value.
+  /// \return This update for method chaining.
   auto& Set(this auto& self, const std::string& property, const std::string& value) {
     static_cast<SnapshotUpdate&>(self).SetSummaryProperty(property, value);
     return self;
@@ -111,11 +115,12 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   /// \brief Apply the update's changes to create a new snapshot.
   ///
-  /// This method validates the changes, applies them to the metadata,
-  /// and creates a new snapshot without committing it. The snapshot
-  /// is stored internally and can be accessed after Apply() succeeds.
+  /// This method validates the changes, applies them to the current base
+  /// metadata, and creates a new snapshot without committing it. Commit retries
+  /// call Apply() again with refreshed metadata so the same changes can be
+  /// applied to the new latest snapshot.
   ///
-  /// \return A result containing the new snapshot, or an error
+  /// \return A result containing the new snapshot, or an error.
   Result<ApplyResult> Apply();
 
   /// \brief Finalize the snapshot update, cleaning up any uncommitted files.

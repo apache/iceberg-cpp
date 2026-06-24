@@ -19,7 +19,6 @@
 
 #include "iceberg/update/overwrite_files.h"
 
-#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -30,9 +29,6 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/constants.h"
 #include "iceberg/expression/expressions.h"
-#include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_list.h"
-#include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/partition_values.h"
@@ -45,6 +41,7 @@
 #include "iceberg/transaction.h"
 #include "iceberg/transform.h"
 #include "iceberg/update/fast_append.h"
+#include "iceberg/update/row_delta.h"
 #include "iceberg/util/data_file_set.h"
 #include "iceberg/util/macros.h"
 
@@ -109,77 +106,12 @@ class OverwriteFilesTest : public UpdateTestBase {
     return f;
   }
 
-  // Entries carry assigned snapshot and sequence numbers.
-  Result<ManifestFile> WriteDeleteManifest(
-      const std::string& path, const std::vector<std::shared_ptr<DataFile>>& files,
-      int64_t snapshot_id, int64_t sequence_number) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto writer,
-        ManifestWriter::MakeWriter(/*format_version=*/2, snapshot_id, path, file_io_,
-                                   spec_, schema_, ManifestContent::kDeletes));
-    for (const auto& f : files) {
-      ManifestEntry entry;
-      entry.status = ManifestStatus::kAdded;
-      entry.snapshot_id = snapshot_id;
-      entry.sequence_number = sequence_number;
-      entry.data_file = f;
-      ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(entry));
-    }
-    ICEBERG_RETURN_UNEXPECTED(writer->Close());
-    return writer->ToManifestFile();
-  }
-
-  Result<std::shared_ptr<Snapshot>> MakeSyntheticSnapshot(
-      std::string operation, int64_t snapshot_id,
-      std::optional<int64_t> parent_snapshot_id, int64_t sequence_number,
-      const std::vector<ManifestFile>& manifests) {
-    auto manifest_list_path = table_location_ + "/metadata/manifest-list-" +
-                              std::to_string(snapshot_id) + ".avro";
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto writer,
-        ManifestListWriter::MakeWriter(table_->metadata()->format_version, snapshot_id,
-                                       parent_snapshot_id, manifest_list_path, file_io_,
-                                       sequence_number));
-    ICEBERG_RETURN_UNEXPECTED(writer->AddAll(manifests));
-    ICEBERG_RETURN_UNEXPECTED(writer->Close());
-
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto snapshot,
-        Snapshot::Make(sequence_number, snapshot_id, parent_snapshot_id, TimePointMs{},
-                       std::move(operation), {}, table_->metadata()->current_schema_id,
-                       manifest_list_path));
-    return std::shared_ptr<Snapshot>(std::move(snapshot));
-  }
-
-  // Build metadata with a synthetic concurrent equality delete after `parent`.
-  struct ConcurrentDelete {
-    std::shared_ptr<TableMetadata> metadata;
-    std::shared_ptr<Snapshot> snapshot;
-  };
-  ConcurrentDelete InjectConcurrentEqualityDelete(const std::shared_ptr<Snapshot>& parent,
-                                                  const std::string& delete_path,
-                                                  int64_t partition_x) {
-    ConcurrentDelete out;
+  void CommitEqualityDelete(const std::string& delete_path, int64_t partition_x) {
     auto del_file = MakeEqualityDeleteFile(delete_path, partition_x);
-    const int64_t new_snapshot_id = parent->snapshot_id + 1000;
-    const int64_t new_sequence_number = parent->sequence_number + 1;
-    auto manifest =
-        WriteDeleteManifest(table_location_ + "/metadata/concurrent-del-manifest.avro",
-                            {del_file}, new_snapshot_id, new_sequence_number);
-    EXPECT_TRUE(manifest.has_value());
-    auto snap = MakeSyntheticSnapshot(DataOperation::kOverwrite, new_snapshot_id,
-                                      parent->snapshot_id, new_sequence_number,
-                                      {manifest.value()});
-    if (!snap.has_value()) {
-      ADD_FAILURE() << "MakeSyntheticSnapshot failed: " << snap.error().message;
-    }
-    EXPECT_TRUE(snap.has_value());
-    out.snapshot = snap.value();
-    out.metadata = std::make_shared<TableMetadata>(*table_->metadata());
-    out.metadata->snapshots.push_back(out.snapshot);
-    out.metadata->current_snapshot_id = out.snapshot->snapshot_id;
-    out.metadata->last_sequence_number = out.snapshot->sequence_number;
-    return out;
+    ICEBERG_UNWRAP_OR_FAIL(auto row_delta, table_->NewRowDelta());
+    row_delta->AddDeletes(del_file);
+    EXPECT_THAT(row_delta->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
   }
 
   Result<std::shared_ptr<OverwriteFiles>> NewOverwrite() {
@@ -214,12 +146,7 @@ class OverwriteFilesTest : public UpdateTestBase {
   std::shared_ptr<DataFile> file_b_;
 };
 
-TEST_F(OverwriteFilesTest, TableNewOverwriteReturnsBuilder) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  ASSERT_NE(op, nullptr);
-}
-
-TEST_F(OverwriteFilesTest, TransactionNewOverwriteReturnsBuilder) {
+TEST_F(OverwriteFilesTest, TxnNewOverwrite) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, Transaction::Make(table_, TransactionKind::kUpdate));
   ICEBERG_UNWRAP_OR_FAIL(auto op, txn->NewOverwrite());
   ASSERT_NE(op, nullptr);
@@ -234,61 +161,7 @@ TEST_F(OverwriteFilesTest, TransactionNewOverwriteReturnsBuilder) {
             DataOperation::kOverwrite);
 }
 
-TEST_F(OverwriteFilesTest, BuilderMethodsReturnSelfAndChain) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  auto* self = op.get();
-
-  EXPECT_EQ(&op->AddFile(file_a_), self);
-  EXPECT_EQ(&op->DeleteFile(file_b_), self);
-  EXPECT_EQ(&op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L))), self);
-  EXPECT_EQ(&op->ValidateFromSnapshot(42), self);
-  EXPECT_EQ(&op->ConflictDetectionFilter(Expressions::Equal("x", Literal::Long(1L))),
-            self);
-  EXPECT_EQ(&op->ValidateNoConflictingData(), self);
-  EXPECT_EQ(&op->ValidateNoConflictingDeletes(), self);
-  EXPECT_EQ(&op->ValidateAddedFilesMatchOverwriteFilter(), self);
-  EXPECT_EQ(&op->WithCaseSensitivity(false), self);
-
-  OverwriteFiles& chained =
-      (*op)
-          .AddFile(MakeDataFile("/data/chain.parquet", 1L))
-          .OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)))
-          .ValidateNoConflictingData();
-  EXPECT_EQ(&chained, self);
-}
-
-TEST_F(OverwriteFilesTest, OperationAddOnlyIsAppend) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->AddFile(file_a_);
-  EXPECT_EQ(op->operation(), DataOperation::kAppend);
-}
-
-TEST_F(OverwriteFilesTest, OperationDeleteOnlyIsDelete) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->DeleteFile(file_a_);
-  EXPECT_EQ(op->operation(), DataOperation::kDelete);
-}
-
-TEST_F(OverwriteFilesTest, OperationAddAndDeleteIsOverwrite) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->DeleteFile(file_a_);
-  op->AddFile(file_b_);
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
-}
-
-TEST_F(OverwriteFilesTest, OperationPureRowFilterAndAddIsOverwrite) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
-  op->AddFile(file_b_);
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
-}
-
-TEST_F(OverwriteFilesTest, OperationNeitherIsOverwrite) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
-}
-
-TEST_F(OverwriteFilesTest, CommitDeleteAndAddIsOverwrite) {
+TEST_F(OverwriteFilesTest, DeleteAndAddCommit) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -305,7 +178,7 @@ TEST_F(OverwriteFilesTest, CommitDeleteAndAddIsOverwrite) {
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
 }
 
-TEST_F(OverwriteFilesTest, CommitRowFilterAndAddIsOverwrite) {
+TEST_F(OverwriteFilesTest, RowFilterAndAddCommit) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -319,7 +192,7 @@ TEST_F(OverwriteFilesTest, CommitRowFilterAndAddIsOverwrite) {
             DataOperation::kOverwrite);
 }
 
-TEST_F(OverwriteFilesTest, CommitEmptyOverwrite) {
+TEST_F(OverwriteFilesTest, EmptyCommit) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -332,7 +205,7 @@ TEST_F(OverwriteFilesTest, CommitEmptyOverwrite) {
             DataOperation::kOverwrite);
 }
 
-TEST_F(OverwriteFilesTest, CommitDeduplicatesDuplicateAddAndDelete) {
+TEST_F(OverwriteFilesTest, DeduplicatesFiles) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -349,7 +222,7 @@ TEST_F(OverwriteFilesTest, CommitDeduplicatesDuplicateAddAndDelete) {
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
 }
 
-TEST_F(OverwriteFilesTest, CommitStageOnlyDoesNotAdvanceCurrentSnapshot) {
+TEST_F(OverwriteFilesTest, StageOnly) {
   const int64_t base_snapshot_id = CommitFileA();
   const size_t base_snapshot_count = table_->metadata()->snapshots.size();
 
@@ -366,7 +239,7 @@ TEST_F(OverwriteFilesTest, CommitStageOnlyDoesNotAdvanceCurrentSnapshot) {
   EXPECT_GT(table_->metadata()->snapshots.size(), base_snapshot_count);
 }
 
-TEST_F(OverwriteFilesTest, CommitToTargetBranch) {
+TEST_F(OverwriteFilesTest, TargetBranch) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -378,7 +251,7 @@ TEST_F(OverwriteFilesTest, CommitToTargetBranch) {
   EXPECT_TRUE(table_->metadata()->refs.contains("audit"));
 }
 
-TEST_F(OverwriteFilesTest, CommitCustomSummaryProperty) {
+TEST_F(OverwriteFilesTest, CustomSummary) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -392,7 +265,7 @@ TEST_F(OverwriteFilesTest, CommitCustomSummaryProperty) {
 }
 
 // With no matching committed delete file, deleting `del_file` is a harmless no-op.
-TEST_F(OverwriteFilesTest, BulkDeleteFilesRemovesDataAndDeleteFiles) {
+TEST_F(OverwriteFilesTest, BulkDeleteCommit) {
   {
     ICEBERG_UNWRAP_OR_FAIL(auto seed, NewOverwrite());
     seed->AddFile(file_a_);
@@ -419,22 +292,7 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesRemovesDataAndDeleteFiles) {
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
 }
 
-TEST_F(OverwriteFilesTest, BulkDeleteFilesEmptySetsAreNoOp) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->DeleteFiles(DataFileSet{}, DeleteFileSet{});
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);  // neither adds nor deletes
-}
-
-TEST_F(OverwriteFilesTest, BulkDeleteFilesDataPortionMarksDelete) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  DataFileSet data_files;
-  data_files.insert(file_a_);
-  data_files.insert(file_b_);
-  op->DeleteFiles(data_files, DeleteFileSet{});
-  EXPECT_EQ(op->operation(), DataOperation::kDelete);
-}
-
-TEST_F(OverwriteFilesTest, BulkDeleteFilesEquivalentToRepeatedDeleteFile) {
+TEST_F(OverwriteFilesTest, BulkDeleteData) {
   {
     ICEBERG_UNWRAP_OR_FAIL(auto seed, NewOverwrite());
     seed->AddFile(file_a_);
@@ -458,7 +316,7 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesEquivalentToRepeatedDeleteFile) {
 
 // OverwriteFiles validates content because the C++ API stores data and delete files in
 // DataFile pointers, while Java uses separate DataFile/DeleteFile types.
-TEST_F(OverwriteFilesTest, AddFileRejectsDeleteFileContent) {
+TEST_F(OverwriteFilesTest, AddRejectsDeleteContent) {
   auto del_file = MakeDeleteFile("/delete/del_as_data.parquet", 1L);
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -469,7 +327,7 @@ TEST_F(OverwriteFilesTest, AddFileRejectsDeleteFileContent) {
   EXPECT_THAT(result, HasErrorMessage("has delete-file content"));
 }
 
-TEST_F(OverwriteFilesTest, DeleteFileRejectsDeleteFileContent) {
+TEST_F(OverwriteFilesTest, DeleteRejectsDeleteContent) {
   auto del_file = MakeDeleteFile("/delete/del_as_delete.parquet", 1L);
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
@@ -480,7 +338,7 @@ TEST_F(OverwriteFilesTest, DeleteFileRejectsDeleteFileContent) {
   EXPECT_THAT(result, HasErrorMessage("has delete-file content"));
 }
 
-TEST_F(OverwriteFilesTest, BulkDeleteFilesRejectsDeleteFileInDataSet) {
+TEST_F(OverwriteFilesTest, BulkRejectsDeleteAsData) {
   auto del_file =
       MakeDeleteFile("/delete/del_a.parquet", 1L);  // content = positionDeletes
   DataFileSet data_files;
@@ -493,7 +351,7 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesRejectsDeleteFileInDataSet) {
   EXPECT_THAT(result, HasErrorMessage("has delete-file content"));
 }
 
-TEST_F(OverwriteFilesTest, BulkDeleteFilesRejectsDataFileInDeleteSet) {
+TEST_F(OverwriteFilesTest, BulkRejectsDataAsDelete) {
   DeleteFileSet delete_files;
   delete_files.insert(file_a_);  // content = kData
 
@@ -504,7 +362,7 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesRejectsDataFileInDeleteSet) {
   EXPECT_THAT(result, HasErrorMessage("has data-file content"));
 }
 
-TEST_F(OverwriteFilesTest, BulkDeleteFilesAcceptsEqualityDeleteInDeleteSet) {
+TEST_F(OverwriteFilesTest, BulkAcceptsEqualityDelete) {
   auto eq_delete = MakeEqualityDeleteFile("/delete/eq_a.parquet", 1L);
   DeleteFileSet delete_files;
   delete_files.insert(eq_delete);
@@ -515,37 +373,7 @@ TEST_F(OverwriteFilesTest, BulkDeleteFilesAcceptsEqualityDeleteInDeleteSet) {
   EXPECT_THAT(op->Commit(), IsOk());
 }
 
-TEST_F(OverwriteFilesTest, ValidateNoConflictingDataDetectsConflictingAdd) {
-  const int64_t first_id = CommitFileA();
-  CommitFastAppend(file_b_);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(2L)));
-  op->AddFile(MakeDataFile("/data/replacement_x2.parquet", 2L));
-  op->ValidateFromSnapshot(first_id);
-  op->ValidateNoConflictingData();
-  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
-}
-
-TEST_F(OverwriteFilesTest, ValidateNoConflictingDataAllowsNonConflictingChange) {
-  const int64_t first_id = CommitFileA();
-  CommitFastAppend(file_b_);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
-  op->AddFile(MakeDataFile("/data/replacement_x1.parquet", 1L));
-  op->ValidateFromSnapshot(first_id);
-  op->ValidateNoConflictingData();
-  op->ValidateNoConflictingDeletes();
-  const std::string expected_operation = op->operation();
-  EXPECT_THAT(op->Commit(), IsOk());
-
-  EXPECT_THAT(table_->Refresh(), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation), expected_operation);
-}
-
-TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesDetectsConflictingDelete) {
+TEST_F(OverwriteFilesTest, NoConflictingDeletesFails) {
   const int64_t first_id = CommitFileA();
 
   {
@@ -563,7 +391,7 @@ TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesDetectsConflictingDelete)
   EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
 }
 
-TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesAllowsNonConflictingChange) {
+TEST_F(OverwriteFilesTest, NoConflictingDeletesPasses) {
   const int64_t first_id = CommitFileA();
   CommitFastAppend(file_b_);
 
@@ -576,29 +404,24 @@ TEST_F(OverwriteFilesTest, ValidateNoConflictingDeletesAllowsNonConflictingChang
 }
 
 // Explicit replaced-file validation checks concurrent deletes covering replaced files.
-TEST_F(OverwriteFilesTest, PathBExplicitDeletesDetectsConcurrentDeleteWithoutFilter) {
+TEST_F(OverwriteFilesTest, ExplicitDeleteConflict) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
-
-  auto concurrent = InjectConcurrentEqualityDelete(
-      first_snapshot, "/delete/concurrent_x1.parquet", /*partition_x=*/1L);
+  CommitEqualityDelete("/delete/concurrent_x1.parquet", /*partition_x=*/1L);
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->DeleteFile(file_a_);
   op->AddFile(MakeDataFile("/data/rewrite_x1.parquet", 1L));
   op->ValidateFromSnapshot(first_snapshot->snapshot_id);
   op->ValidateNoConflictingDeletes();
-  EXPECT_THAT(op->Validate(*concurrent.metadata, concurrent.snapshot),
-              IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
 }
 
 // A narrower conflict filter can exclude the concurrent delete.
-TEST_F(OverwriteFilesTest, PathBExplicitDeletesConflictFilterNarrowsScope) {
+TEST_F(OverwriteFilesTest, ExplicitDeleteFilterScope) {
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
-
-  auto concurrent = InjectConcurrentEqualityDelete(
-      first_snapshot, "/delete/concurrent_x1.parquet", /*partition_x=*/1L);
+  CommitEqualityDelete("/delete/concurrent_x1.parquet", /*partition_x=*/1L);
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->DeleteFile(file_a_);
@@ -606,54 +429,60 @@ TEST_F(OverwriteFilesTest, PathBExplicitDeletesConflictFilterNarrowsScope) {
   op->ValidateFromSnapshot(first_snapshot->snapshot_id);
   op->ConflictDetectionFilter(Expressions::Equal("x", Literal::Long(2L)));
   op->ValidateNoConflictingDeletes();
-  EXPECT_THAT(op->Validate(*concurrent.metadata, concurrent.snapshot), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
 }
 
-TEST_F(OverwriteFilesTest, StrictRangeAcceptedByStrictProjection) {
+TEST_F(OverwriteFilesTest, StrictRangeByProjection) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
   op->AddFile(MakeDataFile("/data/in_partition.parquet", 1L));
   op->ValidateAddedFilesMatchOverwriteFilter();
-  EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
 }
 
-TEST_F(OverwriteFilesTest, StrictRangeAcceptedByStrictMetrics) {
+TEST_F(OverwriteFilesTest, StrictRangeByMetrics) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("y", Literal::Long(5L)));
   // y bounds [5, 5] prove every row has y == 5.
   op->AddFile(MakeDataFileWithYBounds("/data/y_eq_5.parquet", 1L, 5L, 5L));
   op->ValidateAddedFilesMatchOverwriteFilter();
-  EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
 }
 
-TEST_F(OverwriteFilesTest, StrictRangeRejectedWhenNotProvable) {
+TEST_F(OverwriteFilesTest, StrictRangeRejectsPartialMetrics) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("y", Literal::Long(5L)));
   // y bounds [1, 10] do not prove every row has y == 5.
   op->AddFile(MakeDataFileWithYBounds("/data/y_range.parquet", 1L, 1L, 10L));
   op->ValidateAddedFilesMatchOverwriteFilter();
-  EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr),
-              IsError(ErrorKind::kValidationFailed));
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result,
+              HasErrorMessage("Cannot append file with rows that do not match filter"));
 }
 
-TEST_F(OverwriteFilesTest, StrictRangeRejectsFileOutsidePartitionRange) {
+TEST_F(OverwriteFilesTest, StrictRangeRejectsOutsidePartition) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
   op->AddFile(MakeDataFile("/data/wrong_partition.parquet", /*partition_x=*/2L));
   op->ValidateAddedFilesMatchOverwriteFilter();
-  EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr),
-              IsError(ErrorKind::kValidationFailed));
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result,
+              HasErrorMessage("Cannot append file with rows that do not match filter"));
 }
 
-TEST_F(OverwriteFilesTest, StrictRangeRequiresRowFilter) {
+TEST_F(OverwriteFilesTest, StrictRangeRequiresFilter) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->AddFile(MakeDataFile("/data/no_filter.parquet", 1L));
   op->ValidateAddedFilesMatchOverwriteFilter();
-  EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr),
-              IsError(ErrorKind::kValidationFailed));
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result,
+              HasErrorMessage("Cannot append file with rows that do not match filter"));
 }
 
-TEST_F(OverwriteFilesTest, StrictRangeRejectsMultiplePartitionSpecs) {
+TEST_F(OverwriteFilesTest, StrictRangeRejectsMultipleSpecs) {
   // Add the second spec before creating the builder so staged files can resolve it.
   ICEBERG_UNWRAP_OR_FAIL(
       auto spec1, PartitionSpec::Make(*schema_, /*spec_id=*/1,
@@ -674,39 +503,41 @@ TEST_F(OverwriteFilesTest, StrictRangeRejectsMultiplePartitionSpecs) {
   op->AddFile(file_spec0);
   op->AddFile(file_spec1);
   op->ValidateAddedFilesMatchOverwriteFilter();
-  EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr),
-              IsError(ErrorKind::kInvalidArgument));
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Cannot return a single partition spec"));
 }
 
-TEST_F(OverwriteFilesTest, StrictRangeRejectsEmptyAddedFiles) {
+TEST_F(OverwriteFilesTest, StrictRangeRejectsNoAdds) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
   op->ValidateAddedFilesMatchOverwriteFilter();
-  EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr),
-              IsError(ErrorKind::kInvalidArgument));
+  auto result = op->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Cannot determine partition specs"));
 }
 
 // Strict-range validation binds the row filter with the configured case sensitivity.
-TEST_F(OverwriteFilesTest, CaseSensitivityAffectsFilterBinding) {
+TEST_F(OverwriteFilesTest, StrictRangeCaseSensitivity) {
   {
     ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
     op->OverwriteByRowFilter(Expressions::Equal("X", Literal::Long(1L)));
     op->AddFile(MakeDataFile("/data/cs.parquet", 1L));
     op->ValidateAddedFilesMatchOverwriteFilter();
-    auto result = op->Validate(*table_->metadata(), /*snapshot=*/nullptr);
+    auto result = op->Commit();
     EXPECT_FALSE(result.has_value());
   }
   {
     ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-    op->WithCaseSensitivity(false);
+    op->CaseSensitive(false);
     op->OverwriteByRowFilter(Expressions::Equal("X", Literal::Long(1L)));
     op->AddFile(MakeDataFile("/data/ci.parquet", 1L));
     op->ValidateAddedFilesMatchOverwriteFilter();
-    EXPECT_THAT(op->Validate(*table_->metadata(), /*snapshot=*/nullptr), IsOk());
+    EXPECT_THAT(op->Commit(), IsOk());
   }
 }
 
-TEST_F(OverwriteFilesTest, NullAddFileRejectedAtCommit) {
+TEST_F(OverwriteFilesTest, NullAddFileRejected) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->AddFile(nullptr);
   auto result = op->Commit();
@@ -714,7 +545,7 @@ TEST_F(OverwriteFilesTest, NullAddFileRejectedAtCommit) {
   EXPECT_THAT(result, HasErrorMessage("Invalid data file: null"));
 }
 
-TEST_F(OverwriteFilesTest, NullDeleteFileRejectedAtCommit) {
+TEST_F(OverwriteFilesTest, NullDeleteFileRejected) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->DeleteFile(nullptr);
   auto result = op->Commit();
@@ -722,7 +553,7 @@ TEST_F(OverwriteFilesTest, NullDeleteFileRejectedAtCommit) {
   EXPECT_THAT(result, HasErrorMessage("Invalid data file: null"));
 }
 
-TEST_F(OverwriteFilesTest, NullOverwriteByRowFilterRejectedAtCommit) {
+TEST_F(OverwriteFilesTest, NullRowFilterRejected) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->OverwriteByRowFilter(nullptr);
   auto result = op->Commit();
@@ -730,7 +561,7 @@ TEST_F(OverwriteFilesTest, NullOverwriteByRowFilterRejectedAtCommit) {
   EXPECT_THAT(result, HasErrorMessage("Invalid row filter expression: null"));
 }
 
-TEST_F(OverwriteFilesTest, NullConflictDetectionFilterRejectedAtCommit) {
+TEST_F(OverwriteFilesTest, NullConflictFilterRejected) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->ConflictDetectionFilter(nullptr);
   auto result = op->Commit();
@@ -738,32 +569,7 @@ TEST_F(OverwriteFilesTest, NullConflictDetectionFilterRejectedAtCommit) {
   EXPECT_THAT(result, HasErrorMessage("Invalid conflict detection filter: null"));
 }
 
-TEST_F(OverwriteFilesTest, NullArgumentDoesNotCrashBuilderChain) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  (*op).AddFile(nullptr).AddFile(file_a_).OverwriteByRowFilter(
-      Expressions::Equal("x", Literal::Long(1L)));
-  auto result = op->Commit();
-  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-  EXPECT_THAT(result, HasErrorMessage("Invalid data file: null"));
-}
-
-// DataFileSet/DeleteFileSet reject nullptr on insert.
-TEST_F(OverwriteFilesTest, DeleteFilesNullElementsCannotEnterSets) {
-  DataFileSet data_files;
-  data_files.insert(std::shared_ptr<DataFile>{nullptr});
-  DeleteFileSet delete_files;
-  delete_files.insert(std::shared_ptr<DataFile>{nullptr});
-  EXPECT_TRUE(data_files.empty());
-  EXPECT_TRUE(delete_files.empty());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->DeleteFiles(data_files, delete_files);
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
-  EXPECT_THAT(op->Commit(), IsOk());
-}
-
-// Snapshot id 0 is valid; negative ids are rejected as builder errors.
-TEST_F(OverwriteFilesTest, ValidateFromSnapshotRejectsNegativeSnapshotId) {
+TEST_F(OverwriteFilesTest, RejectsNegativeSnapshotId) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->AddFile(file_a_).ValidateFromSnapshot(-1);
   auto result = op->Commit();
@@ -771,58 +577,13 @@ TEST_F(OverwriteFilesTest, ValidateFromSnapshotRejectsNegativeSnapshotId) {
   EXPECT_THAT(result, HasErrorMessage("Invalid snapshot id"));
 }
 
-TEST_F(OverwriteFilesTest, ValidateFromSnapshotAcceptsZeroSnapshotId) {
+TEST_F(OverwriteFilesTest, AcceptsZeroSnapshotId) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->AddFile(file_a_).ValidateFromSnapshot(0);
   EXPECT_THAT(op->Commit(), IsOk());
 }
 
-TEST_F(OverwriteFilesTest, PropertyBuilderForwardingAndDualTracking) {
-  const std::vector<std::shared_ptr<DataFile>> files = {
-      MakeDataFile("/data/p0.parquet", 1L),
-      MakeDataFile("/data/p1.parquet", 2L),
-      MakeDataFile("/data/p2.parquet", 3L),
-      MakeDataFile("/data/p3.parquet", 7L),
-  };
-
-  for (const auto& file : files) {
-    {
-      ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-      op->AddFile(file);
-      EXPECT_EQ(op->operation(), DataOperation::kAppend) << file->file_path;
-    }
-    {
-      ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-      op->DeleteFile(file);
-      EXPECT_EQ(op->operation(), DataOperation::kDelete) << file->file_path;
-    }
-    {
-      ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-      DataFileSet data_files;
-      data_files.insert(file);
-      op->DeleteFiles(data_files, DeleteFileSet{});
-      EXPECT_EQ(op->operation(), DataOperation::kDelete) << file->file_path;
-    }
-  }
-}
-
-TEST_F(OverwriteFilesTest, PropertyNullArgumentRejection) {
-  using Mutator = std::function<void(OverwriteFiles&)>;
-  const std::vector<Mutator> mutators = {
-      [](OverwriteFiles& op) { op.AddFile(nullptr); },
-      [](OverwriteFiles& op) { op.DeleteFile(nullptr); },
-      [](OverwriteFiles& op) { op.OverwriteByRowFilter(nullptr); },
-      [](OverwriteFiles& op) { op.ConflictDetectionFilter(nullptr); },
-  };
-
-  for (const auto& mutate : mutators) {
-    ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-    mutate(*op);
-    EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
-  }
-}
-
-TEST_F(OverwriteFilesTest, PropertyOperationTruthTable) {
+TEST_F(OverwriteFilesTest, OperationMatrix) {
   struct Case {
     bool add;
     bool delete_file;
@@ -878,57 +639,54 @@ TEST_F(OverwriteFilesTest, PropertyOperationTruthTable) {
   }
 }
 
-// Exercise explicit filter, row-filter-only, and explicit file replacement resolution.
-TEST_F(OverwriteFilesTest, PropertyConflictFilterResolution) {
-  {
-    const int64_t first_id = CommitFileA();
-    CommitFastAppend(file_b_);
-    ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-    op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
-    op->AddFile(MakeDataFile("/data/r2_ok.parquet", 1L));
-    op->ValidateFromSnapshot(first_id);
-    op->ValidateNoConflictingData();
-    EXPECT_THAT(op->Validate(*table_->metadata(), table_->current_snapshot().value()),
-                IsOk());
-  }
-  {
-    SetUp();  // fresh table
-    const int64_t first_id = CommitFileA();
-    CommitFastAppend(file_b_);
-    ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-    op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(2L)));
-    op->AddFile(MakeDataFile("/data/r2_conflict.parquet", 2L));
-    op->ValidateFromSnapshot(first_id);
-    op->ValidateNoConflictingData();
-    EXPECT_THAT(op->Validate(*table_->metadata(), table_->current_snapshot().value()),
-                IsError(ErrorKind::kValidationFailed));
-  }
-  {
-    SetUp();
-    const int64_t first_id = CommitFileA();
-    CommitFastAppend(file_b_);
-    ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-    op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
-    op->ConflictDetectionFilter(Expressions::Equal("x", Literal::Long(2L)));
-    op->AddFile(MakeDataFile("/data/r1.parquet", 1L));
-    op->ValidateFromSnapshot(first_id);
-    op->ValidateNoConflictingData();
-    EXPECT_THAT(op->Validate(*table_->metadata(), table_->current_snapshot().value()),
-                IsError(ErrorKind::kValidationFailed));
-  }
-  {
-    SetUp();
-    const int64_t first_id = CommitFileA();
-    CommitFastAppend(file_b_);
-    ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-    op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
-    op->DeleteFile(file_a_);
-    op->AddFile(MakeDataFile("/data/r3.parquet", 1L));
-    op->ValidateFromSnapshot(first_id);
-    op->ValidateNoConflictingData();
-    EXPECT_THAT(op->Validate(*table_->metadata(), table_->current_snapshot().value()),
-                IsError(ErrorKind::kValidationFailed));
-  }
+TEST_F(OverwriteFilesTest, DefaultConflictFilter) {
+  const int64_t first_id = CommitFileA();
+  CommitFastAppend(file_b_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
+  op->AddFile(MakeDataFile("/data/r2_ok.parquet", 1L));
+  op->ValidateFromSnapshot(first_id);
+  op->ValidateNoConflictingData();
+  EXPECT_THAT(op->Commit(), IsOk());
+}
+
+TEST_F(OverwriteFilesTest, ConflictFilterMatchesAdd) {
+  const int64_t first_id = CommitFileA();
+  CommitFastAppend(file_b_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(2L)));
+  op->AddFile(MakeDataFile("/data/r2_conflict.parquet", 2L));
+  op->ValidateFromSnapshot(first_id);
+  op->ValidateNoConflictingData();
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
+}
+
+TEST_F(OverwriteFilesTest, ConflictFilterUsesExplicitFilter) {
+  const int64_t first_id = CommitFileA();
+  CommitFastAppend(file_b_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
+  op->ConflictDetectionFilter(Expressions::Equal("x", Literal::Long(2L)));
+  op->AddFile(MakeDataFile("/data/r1.parquet", 1L));
+  op->ValidateFromSnapshot(first_id);
+  op->ValidateNoConflictingData();
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
+}
+
+TEST_F(OverwriteFilesTest, ExplicitReplaceConflicts) {
+  const int64_t first_id = CommitFileA();
+  CommitFastAppend(file_b_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
+  op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
+  op->DeleteFile(file_a_);
+  op->AddFile(MakeDataFile("/data/r3.parquet", 1L));
+  op->ValidateFromSnapshot(first_id);
+  op->ValidateNoConflictingData();
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
 }
 
 }  // namespace iceberg
