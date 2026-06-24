@@ -42,7 +42,6 @@ install_headers(
         'struct_like_set.h',
         'task_group.h',
         'temporal_util.h',
-        'thread_util.h',
         'timepoint.h',
         'transform_util.h',
         'truncate_util.h',

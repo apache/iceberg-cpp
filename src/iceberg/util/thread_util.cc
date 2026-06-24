@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/util/thread_util.h"
+#include "iceberg/util/thread_util_internal.h"
 
 #if defined(_WIN32)
 #  include <windows.h>

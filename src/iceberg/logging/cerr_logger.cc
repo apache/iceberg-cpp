@@ -20,26 +20,31 @@
 #include "iceberg/logging/cerr_logger.h"
 
 #include <chrono>
-#include <filesystem>
 #include <format>
 #include <iostream>
 #include <mutex>
 #include <string>
 #include <string_view>
 
-#include "iceberg/util/thread_util.h"
+#include "iceberg/util/thread_util_internal.h"
 
 namespace iceberg {
 
 namespace {
 
+/// \brief Trailing path component of a source file path.
+std::string_view Basename(std::string_view path) noexcept {
+  auto pos = path.find_last_of("/\\");
+  return pos == std::string_view::npos ? path : path.substr(pos + 1);
+}
+
 /// \brief Format a record into a single newline-terminated line.
 std::string FormatLine(const LogMessage& message) {
   auto now =
       std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now());
-  auto file = std::filesystem::path(message.location.file_name()).filename().string();
   return std::format("{:%Y-%m-%dT%H:%M:%S}Z {} [{}] [{}:{}] {}\n", now,
-                     ToString(message.level), OsThreadId(), file, message.location.line(),
+                     ToString(message.level), OsThreadId(),
+                     Basename(message.location.file_name()), message.location.line(),
                      message.message);
 }
 

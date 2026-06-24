@@ -21,8 +21,6 @@
 
 #include <cstdint>
 
-#include "iceberg/iceberg_export.h"
-
 namespace iceberg {
 
 /// \brief OS-native thread id for the calling thread, cached per thread.
@@ -33,6 +31,6 @@ namespace iceberg {
 /// (P2693) minimum-toolchain dependency. The first call on a thread performs
 /// the OS query; later calls return the cached value (no syscall per call).
 /// Declared here so the platform headers stay confined to the .cc.
-ICEBERG_EXPORT uint64_t OsThreadId() noexcept;
+uint64_t OsThreadId() noexcept;
 
 }  // namespace iceberg
