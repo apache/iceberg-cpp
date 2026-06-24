@@ -48,9 +48,10 @@ set_source_files_properties(${ICEBERG_HIVE_THRIFT_GEN_SOURCES}
 # iceberg_hive library
 
 if(NOT TARGET thrift::thrift)
-  message(FATAL_ERROR "iceberg_hive requires a `thrift::thrift` target, normally "
-                      "provided by Apache Arrow's bundled Thrift. Build with "
-                      "-DICEBERG_BUILD_BUNDLE=ON (the default).")
+  message(FATAL_ERROR "iceberg_hive requires a `thrift::thrift` target. Either keep "
+                      "ICEBERG_BUNDLE_THRIFT=ON with -DICEBERG_BUILD_BUNDLE=ON (the "
+                      "default, uses Arrow's bundled Thrift), or build with "
+                      "-DICEBERG_BUNDLE_THRIFT=OFF against a system Thrift install.")
 endif()
 
 set(ICEBERG_HIVE_SOURCES hive_catalog.cc hive_catalog_properties.cc

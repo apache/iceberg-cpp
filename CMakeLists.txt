@@ -46,6 +46,7 @@ option(ICEBERG_BUILD_BUNDLE "Build the battery included library" ON)
 option(ICEBERG_BUILD_REST "Build rest catalog client" ON)
 option(ICEBERG_BUILD_REST_INTEGRATION_TESTS "Build rest catalog integration tests" OFF)
 option(ICEBERG_BUILD_HIVE "Build hive (HMS) catalog client" OFF)
+option(ICEBERG_BUNDLE_THRIFT "Bundle Thrift (from Arrow) for the Hive catalog" ON)
 option(ICEBERG_BUILD_SQL_CATALOG "Build SQL catalog client" OFF)
 # Built-in SQL catalog database connectors. Disable all of them to build a SQL
 # catalog that only works with a user-supplied CatalogStore.
