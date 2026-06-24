@@ -89,7 +89,6 @@ add_iceberg_test(schema_test
 add_iceberg_test(table_test
                  SOURCES
                  location_provider_test.cc
-                 metadata_table_test.cc
                  metrics_config_test.cc
                  metrics_reporter_test.cc
                  metrics_test.cc
@@ -184,6 +183,12 @@ if(ICEBERG_BUILD_BUNDLE)
   endif()
 
   add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
+
+  add_iceberg_test(metadata_table_test
+                   USE_BUNDLE
+                   SOURCES
+                   metadata_table_test.cc
+                   row_builder_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE
