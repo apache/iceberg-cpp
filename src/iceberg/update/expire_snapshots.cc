@@ -236,10 +236,10 @@ class ReachableFileCleanup : public FileCleanupStrategy {
 
       if (!manifests_to_delete.empty()) {
         if (level == CleanupLevel::kAll) {
-          // Deleting data files
-          auto data_files_to_delete = FindDataFilesToDelete(
+          // Deleting data and delete files.
+          auto files_to_delete = FindFilesToDelete(
               metadata_before_expiration, manifests_to_delete, current_manifests);
-          DeleteFiles(data_files_to_delete);
+          DeleteFiles(files_to_delete);
         }
 
         // Deleting manifest files
@@ -300,25 +300,22 @@ class ReachableFileCleanup : public FileCleanupStrategy {
     return manifests_to_delete;
   }
 
-  Result<std::unordered_set<std::string>> ReadLiveDataFilePaths(
+  Result<std::unordered_set<std::string>> ReadLiveFilePaths(
       const TableMetadata& metadata, const ManifestFile& manifest) {
-    ICEBERG_PRECHECK(manifest.content == ManifestContent::kData,
-                     "Cannot read data file paths from a delete manifest: {}",
-                     manifest.manifest_path);
-
     // TODO(shangxinli): optimize by only reading file paths
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             MakeManifestReader(manifest, file_io_, metadata));
+    reader->Select({"file_path"});
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
 
-    std::unordered_set<std::string> data_file_paths;
+    std::unordered_set<std::string> file_paths;
     for (const auto& entry : entries) {
       if (entry.data_file) {
-        data_file_paths.insert(entry.data_file->file_path);
+        file_paths.insert(entry.data_file->file_path);
       }
     }
 
-    return data_file_paths;
+    return file_paths;
   }
 
   /// \brief Project manifests to manifest paths for deletion.
@@ -332,8 +329,8 @@ class ReachableFileCleanup : public FileCleanupStrategy {
     return manifest_paths;
   }
 
-  /// \brief Find data files to delete from manifests being removed.
-  std::unordered_set<std::string> FindDataFilesToDelete(
+  /// \brief Find files to delete from manifests being removed.
+  std::unordered_set<std::string> FindFilesToDelete(
       const TableMetadata& metadata,
       const std::unordered_set<ManifestFile>& manifests_to_delete,
       const std::unordered_set<ManifestFile>& current_manifests) {
@@ -342,7 +339,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
         plan_executor_, manifests_to_delete,
         [this, &metadata](
             const ManifestFile& manifest) -> Result<std::unordered_set<std::string>> {
-          auto result = ReadLiveDataFilePaths(metadata, manifest);
+          auto result = ReadLiveFilePaths(metadata, manifest);
           // Ignore expired-manifest read failures and keep scanning candidates.
           if (!result.has_value()) {
             return std::unordered_set<std::string>{};
@@ -352,26 +349,26 @@ class ReachableFileCleanup : public FileCleanupStrategy {
     if (!live_file_results.has_value()) {
       return {};
     }
-    auto data_files_to_delete = std::move(live_file_results).value();
-    if (data_files_to_delete.empty()) {
-      return data_files_to_delete;
+    auto files_to_delete = std::move(live_file_results).value();
+    if (files_to_delete.empty()) {
+      return files_to_delete;
     }
 
     // Remove files still referenced by current manifests.
     auto current_live_results =
         ParallelCollect(plan_executor_, current_manifests,
                         [this, &metadata](const ManifestFile& manifest) {
-                          return ReadLiveDataFilePaths(metadata, manifest);
+                          return ReadLiveFilePaths(metadata, manifest);
                         });
     // Fail closed if any retained manifest cannot be read safely.
     if (!current_live_results.has_value()) {
       return std::unordered_set<std::string>{};
     }
     for (const auto& file_path : current_live_results.value()) {
-      data_files_to_delete.erase(file_path);
+      files_to_delete.erase(file_path);
     }
 
-    return data_files_to_delete;
+    return files_to_delete;
   }
 };
 

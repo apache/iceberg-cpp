@@ -376,6 +376,8 @@ TEST_F(ExpireSnapshotsCleanupTest, IgnoresExpiredDeleteManifestReadFailures) {
   const auto expired_data_manifest_path = table_location_ + "/metadata/expired-data.avro";
   const auto expired_delete_manifest_path =
       table_location_ + "/metadata/expired-delete.avro";
+  const auto missing_delete_manifest_path =
+      table_location_ + "/metadata/missing-delete.avro";
   const auto expired_manifest_list_path =
       table_location_ + "/metadata/expired-manifest-list.avro";
   const auto current_manifest_list_path =
@@ -389,6 +391,7 @@ TEST_F(ExpireSnapshotsCleanupTest, IgnoresExpiredDeleteManifestReadFailures) {
       expired_delete_manifest_path, kExpiredSnapshotId,
       {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId, kExpiredSequenceNumber,
                  MakePositionDeleteFile(expired_delete_file_path))});
+  expired_delete_manifest.manifest_path = missing_delete_manifest_path;
   WriteManifestList(expired_manifest_list_path, kExpiredSnapshotId,
                     /*parent_snapshot_id=*/0, kExpiredSequenceNumber,
                     {expired_data_manifest, expired_delete_manifest});
@@ -406,7 +409,7 @@ TEST_F(ExpireSnapshotsCleanupTest, IgnoresExpiredDeleteManifestReadFailures) {
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
                                                            expired_data_manifest_path,
-                                                           expired_delete_manifest_path,
+                                                           missing_delete_manifest_path,
                                                            expired_manifest_list_path));
 }
 
@@ -443,10 +446,10 @@ TEST_F(ExpireSnapshotsCleanupTest, DeletesExpiredFiles) {
       [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
 
   EXPECT_THAT(update->Commit(), IsOk());
-  EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(expired_data_file_path,
-                                                           expired_data_manifest_path,
-                                                           expired_delete_manifest_path,
-                                                           expired_manifest_list_path));
+  EXPECT_THAT(deleted_files, testing::UnorderedElementsAre(
+                                 expired_data_file_path, expired_delete_file_path,
+                                 expired_data_manifest_path, expired_delete_manifest_path,
+                                 expired_manifest_list_path));
 }
 
 TEST_F(ExpireSnapshotsCleanupTest, ExecutorDispatchesDeletesConcurrently) {
