@@ -53,13 +53,17 @@ ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& f
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto spec, base().PartitionSpecById(spec_id));
 
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(file));
-  // DropPartition(spec_id, partition) registers the (spec_id, partition_values)
-  // tuple with both data and delete filter managers. For an unpartitioned spec
-  // the partition values are empty and naturally match every file under that
-  // spec — no separate AlwaysTrue path is needed, and validation stays scoped
-  // to the spec rather than the whole table.
-  ICEBERG_BUILDER_RETURN_IF_ERROR(DropPartition(spec_id, file->partition));
-  replaced_partitions_.add(spec_id, file->partition);
+  if (spec->fields().empty()) {
+    // Unpartitioned spec: Java's BaseReplacePartitions treats this as a
+    // table-wide replace rather than a spec-scoped DropPartition with empty
+    // partition values. Mirror that so every existing data file is dropped
+    // and conflict validation runs against AlwaysTrue.
+    ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteByRowFilter(Expressions::AlwaysTrue()));
+    replace_by_row_filter_ = true;
+  } else {
+    ICEBERG_BUILDER_RETURN_IF_ERROR(DropPartition(spec_id, file->partition));
+    replaced_partitions_.add(spec_id, file->partition);
+  }
   return *this;
 }
 
@@ -90,21 +94,43 @@ Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
   if (snapshot == nullptr) {
     return {};
   }
-  // No-op update: no partitions were staged, so there is nothing to conflict
-  // with. Calling the validators with AlwaysTrue here would turn an empty
-  // builder into a full-table conflict check.
-  if (replaced_partitions_.empty()) {
+  // No-op update: no partitions were staged and no table-wide replace was
+  // requested, so there is nothing to conflict with. Calling the validators
+  // with AlwaysTrue here would turn an empty builder into a full-table check.
+  if (!replace_by_row_filter_ && replaced_partitions_.empty()) {
     return {};
   }
 
   auto io = ctx_->table->io();
   if (validate_conflicting_data_) {
-    ICEBERG_RETURN_UNEXPECTED(ValidateAddedDataFiles(
-        current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
+    if (replace_by_row_filter_) {
+      ICEBERG_RETURN_UNEXPECTED(ValidateAddedDataFiles(
+          current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,
+          io, IsCaseSensitive()));
+    } else {
+      ICEBERG_RETURN_UNEXPECTED(ValidateAddedDataFiles(
+          current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
+    }
   }
   if (validate_conflicting_deletes_) {
-    ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
-        current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
+    // Java's BaseReplacePartitions.validate gates both ValidateNoNewDeleteFiles
+    // and ValidateDeletedDataFiles on the same validateNewDeletes flag. The
+    // second check rejects concurrent overwrite/delete commits in the replaced
+    // partitions; without it a concurrent delete in a replaced partition would
+    // commit silently.
+    if (replace_by_row_filter_) {
+      ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
+          current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,
+          io, IsCaseSensitive()));
+      ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
+          current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,
+          io, IsCaseSensitive()));
+    } else {
+      ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
+          current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
+      ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
+          current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
+    }
   }
   return {};
 }

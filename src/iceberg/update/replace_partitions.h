@@ -116,10 +116,14 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
   std::optional<int64_t> starting_snapshot_id_;
   bool validate_conflicting_data_{false};
   bool validate_conflicting_deletes_{false};
-  // Partitions touched by AddFile(); used to scope conflict validation to the
-  // overwritten partitions instead of the whole table. For unpartitioned specs
-  // the partition values are empty, and DropPartition(spec_id, {}) already
-  // matches every file in that spec — no separate "whole table" path is needed.
+  // True once an AddFile() call has staged a file whose partition spec is
+  // unpartitioned. Java's BaseReplacePartitions treats this case as a
+  // table-wide replace (DeleteByRowFilter(AlwaysTrue())) and runs conflict
+  // validation against AlwaysTrue rather than a partition set — mirror that.
+  bool replace_by_row_filter_{false};
+  // Partitions touched by AddFile() in partitioned specs. Used to scope
+  // conflict validation to the overwritten partitions in the partitioned
+  // case; ignored when replace_by_row_filter_ is true.
   PartitionSet replaced_partitions_;
 };
 
