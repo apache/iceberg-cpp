@@ -63,6 +63,8 @@ class UpdateTestBase : public ::testing::Test {
     auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(
         static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
     ASSERT_TRUE(arrow_fs != nullptr);
+    ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/data").ok());
+    ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/delete").ok());
     ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/metadata").ok());
   }
 

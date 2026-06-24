@@ -22,10 +22,9 @@
 #include <memory>
 #include <optional>
 
-#include "iceberg/catalog.h"
-#include "iceberg/schema.h"
+#include "iceberg/catalog.h"  // IWYU pragma: keep
+#include "iceberg/location_provider.h"
 #include "iceberg/snapshot.h"
-#include "iceberg/statistics_file.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
@@ -82,6 +81,11 @@ const TableMetadata* TransactionContext::base() const { return metadata_builder-
 
 const TableMetadata& TransactionContext::current() const {
   return metadata_builder->current();
+}
+
+Result<std::string> TransactionContext::NewDataLocation(std::string_view filename) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto location_provider, table->location_provider());
+  return location_provider->NewDataLocation(filename);
 }
 
 std::string TransactionContext::MetadataFileLocation(std::string_view filename) const {

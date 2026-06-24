@@ -28,14 +28,14 @@
 #include <span>
 #include <vector>
 
-#include "iceberg/iceberg_data_export.h"
+#include "iceberg/iceberg_export.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/result.h"
 
 namespace iceberg::puffin {
 
 /// \brief Puffin file format constants.
-struct ICEBERG_DATA_EXPORT PuffinFormat {
+struct ICEBERG_EXPORT PuffinFormat {
   /// Magic bytes: "PFA1" (Puffin Fratercula arctica, version 1)
   static constexpr std::array<uint8_t, 4> kMagicV1 = {0x50, 0x46, 0x41, 0x31};
 
@@ -63,17 +63,17 @@ enum class PuffinFlag : uint8_t {
 };
 
 /// \brief Check if a flag is set in the flags bytes.
-ICEBERG_DATA_EXPORT bool IsFlagSet(std::span<const uint8_t, 4> flags, PuffinFlag flag);
+ICEBERG_EXPORT bool IsFlagSet(std::span<const uint8_t, 4> flags, PuffinFlag flag);
 
 /// \brief Set a flag in the flags bytes.
-ICEBERG_DATA_EXPORT void SetFlag(std::span<uint8_t, 4> flags, PuffinFlag flag);
+ICEBERG_EXPORT void SetFlag(std::span<uint8_t, 4> flags, PuffinFlag flag);
 
 /// \brief Compress data using the specified codec.
-ICEBERG_DATA_EXPORT Result<std::vector<std::byte>> Compress(
-    PuffinCompressionCodec codec, std::span<const std::byte> input);
+ICEBERG_EXPORT Result<std::vector<std::byte>> Compress(PuffinCompressionCodec codec,
+                                                       std::span<const std::byte> input);
 
 /// \brief Decompress data using the specified codec.
-ICEBERG_DATA_EXPORT Result<std::vector<std::byte>> Decompress(
+ICEBERG_EXPORT Result<std::vector<std::byte>> Decompress(
     PuffinCompressionCodec codec, std::span<const std::byte> input);
 
 }  // namespace iceberg::puffin

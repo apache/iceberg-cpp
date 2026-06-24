@@ -178,6 +178,7 @@ class ICEBERG_EXPORT TransactionContext {
   const TableMetadata* base() const;
   const TableMetadata& current() const;
   std::string MetadataFileLocation(std::string_view filename) const;
+  Result<std::string> NewDataLocation(std::string_view filename) const;
 
   std::shared_ptr<Table> table;
   std::unique_ptr<TableMetadataBuilder> metadata_builder;

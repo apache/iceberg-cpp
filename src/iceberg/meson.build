@@ -49,6 +49,7 @@ iceberg_sources = files(
     'catalog/session_catalog.cc',
     'catalog/session_context.cc',
     'delete_file_index.cc',
+    'deletes/roaring_position_bitmap.cc',
     'expression/aggregate.cc',
     'expression/binder.cc',
     'expression/evaluator.cc',
@@ -101,6 +102,11 @@ iceberg_sources = files(
     'partition_field.cc',
     'partition_spec.cc',
     'partition_summary.cc',
+    'puffin/file_metadata.cc',
+    'puffin/json_serde.cc',
+    'puffin/puffin_format.cc',
+    'puffin/puffin_reader.cc',
+    'puffin/puffin_writer.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
@@ -175,12 +181,6 @@ iceberg_data_sources = files(
     'data/writer.cc',
     'deletes/position_delete_index.cc',
     'deletes/position_delete_range_consumer.cc',
-    'deletes/roaring_position_bitmap.cc',
-    'puffin/file_metadata.cc',
-    'puffin/json_serde.cc',
-    'puffin/puffin_format.cc',
-    'puffin/puffin_reader.cc',
-    'puffin/puffin_writer.cc',
 )
 
 # CRoaring does not export symbols, so on Windows it must
@@ -195,7 +195,13 @@ nlohmann_json_dep = dependency('nlohmann_json')
 spdlog_dep = dependency('spdlog')
 zlib_dep = dependency('zlib')
 
-iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, spdlog_dep, zlib_dep]
+iceberg_deps = [
+    nanoarrow_dep,
+    nlohmann_json_dep,
+    croaring_dep,
+    spdlog_dep,
+    zlib_dep,
+]
 
 iceberg_lib = library(
     'iceberg',
@@ -221,7 +227,7 @@ iceberg_dep = declare_dependency(
 )
 meson.override_dependency('iceberg', iceberg_dep)
 
-iceberg_data_deps = [iceberg_dep, croaring_dep]
+iceberg_data_deps = [iceberg_dep]
 iceberg_data_lib = library(
     'iceberg_data',
     sources: iceberg_data_sources,
