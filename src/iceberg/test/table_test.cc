@@ -160,6 +160,7 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   EXPECT_THAT(table->NewUpdateStatistics(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewUpdatePartitionStatistics(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewFastAppend(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table->NewRewriteFiles(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewSnapshotManager(), IsError(ErrorKind::kNotSupported));
 }
 

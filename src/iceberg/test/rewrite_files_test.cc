@@ -127,6 +127,30 @@ TEST_F(RewriteFilesTest, AddAndDelete) {
   EXPECT_EQ(std::stoll(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles)), 1);
 }
 
+TEST_F(RewriteFilesTest, DeleteDataFileCopiesCallerFile) {
+  CommitFileA();
+
+  const std::string original_path = file_a_->file_path;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
+  rw->DeleteDataFile(file_a_);
+  rw->AddDataFile(rewritten_file_a_);
+
+  file_a_->file_path = file_b_->file_path;
+
+  EXPECT_THAT(rw->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rw_missing_original, NewRewriteFiles());
+  auto missing_file = std::make_shared<DataFile>(*file_a_);
+  missing_file->file_path = original_path;
+  rw_missing_original->DeleteDataFile(missing_file);
+  rw_missing_original->AddDataFile(file_b_);
+  auto result = rw_missing_original->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Missing required files to delete"));
+}
+
 // Rewrite one of several data files, verifying only the target is affected.
 TEST_F(RewriteFilesTest, AddAndDeletePartialRewrite) {
   CommitFileA();
