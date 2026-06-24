@@ -151,9 +151,6 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
 
   /// \brief Configure an executor for DeleteWith() callbacks.
   ///
-  /// Only used with DeleteWith(). The caller must keep the executor alive until
-  /// Finalize() returns.
-  ///
   /// \param executor An executor reference.
   /// \return Reference to this for method chaining.
   ExpireSnapshots& ExecuteDeleteWith(Executor& executor);
