@@ -64,7 +64,9 @@ function(add_iceberg_test test_name)
   endif()
 
   if(MSVC_TOOLCHAIN)
-    target_compile_options(${test_name} PRIVATE /bigobj)
+    # /Zc:preprocessor: conforming preprocessor for the __VA_OPT__ in the logging
+    # macros (MSVC's traditional preprocessor rejects it).
+    target_compile_options(${test_name} PRIVATE /bigobj /Zc:preprocessor)
   endif()
 
   add_test(NAME ${test_name} COMMAND ${test_name})
@@ -106,7 +108,10 @@ add_iceberg_test(logging_test
                  SOURCES
                  cerr_logger_test.cc
                  log_level_test.cc
-                 logger_test.cc)
+                 logger_test.cc
+                 macros_active_level_test.cc
+                 macros_test.cc
+                 spdlog_logger_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
