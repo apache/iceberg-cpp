@@ -48,9 +48,10 @@ Result<std::unique_ptr<RewriteFiles>> RewriteFiles::Make(
 }
 
 RewriteFiles& RewriteFiles::DeleteDataFile(const std::shared_ptr<DataFile>& data_file) {
-  ICEBERG_BUILDER_RETURN_IF_ERROR(MergingSnapshotUpdate::DeleteDataFile(data_file));
-  // Track replaced data files for conflict detection
-  replaced_data_files_.insert(data_file);
+  auto staged_file =
+      data_file == nullptr ? nullptr : std::make_shared<DataFile>(*data_file);
+  ICEBERG_BUILDER_RETURN_IF_ERROR(MergingSnapshotUpdate::DeleteDataFile(staged_file));
+  replaced_data_files_.insert(std::move(staged_file));
   return *this;
 }
 

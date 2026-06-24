@@ -367,6 +367,10 @@ Result<std::shared_ptr<OverwriteFiles>> StaticTable::NewOverwrite() {
   return NotSupported("Cannot create an overwrite for a static table");
 }
 
+Result<std::shared_ptr<RewriteFiles>> StaticTable::NewRewriteFiles() {
+  return NotSupported("Cannot create a rewrite files for a static table");
+}
+
 Result<std::shared_ptr<SnapshotManager>> StaticTable::NewSnapshotManager() {
   return NotSupported("Cannot create a snapshot manager for a static table");
 }
