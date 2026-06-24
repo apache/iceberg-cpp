@@ -104,6 +104,7 @@ set(ICEBERG_SOURCES
     update/expire_snapshots.cc
     update/fast_append.cc
     update/merge_append.cc
+    update/replace_partitions.cc
     update/merging_snapshot_update.cc
     update/pending_update.cc
     update/row_delta.cc
