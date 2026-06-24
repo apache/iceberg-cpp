@@ -23,7 +23,8 @@ source_dir=${1}
 build_dir=${1}/build
 run_example=${ICEBERG_RUN_EXAMPLE:-OFF}
 
-mkdir ${build_dir}
+rm -rf "${build_dir}"
+mkdir "${build_dir}"
 pushd ${build_dir}
 
 is_windows() {
@@ -60,6 +61,3 @@ else
 fi
 
 popd
-
-# clean up between builds
-rm -rf ${build_dir}
