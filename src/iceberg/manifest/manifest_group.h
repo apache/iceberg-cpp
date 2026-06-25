@@ -40,8 +40,6 @@
 
 namespace iceberg {
 
-class ScanMetrics;
-
 /// \brief Context passed to task creation functions.
 struct ICEBERG_EXPORT TaskContext {
  public:
@@ -131,7 +129,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \param executor Executor to use, or std::nullopt to plan manifests serially.
   /// \return Reference to this for method chaining.
   ManifestGroup& PlanWith(OptionalExecutor executor);
-  
+
   /// \brief Attach scan metrics to receive per-manifest and per-file counters.
   ManifestGroup& ScanMetrics(std::shared_ptr<class ScanMetrics> scan_metrics);
 

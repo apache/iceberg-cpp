@@ -20,13 +20,13 @@
 #include "iceberg/update/fast_append.h"
 
 #include <format>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <thread>
 #include <unordered_set>
-#include <vector>
-#include <mutex>
 #include <variant>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -319,6 +319,8 @@ TEST_F(SnapshotUpdateTest, ConcurrentManifestPaths) {
     EXPECT_THAT(path, ::testing::HasSubstr("/metadata/"));
     EXPECT_THAT(path, ::testing::HasSubstr("-m"));
   }
+}
+
 // ---------------------------------------------------------------------------
 // Metrics integration tests
 // ---------------------------------------------------------------------------

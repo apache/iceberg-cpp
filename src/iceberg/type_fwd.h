@@ -227,6 +227,7 @@ struct SessionContext;
 
 /// \brief Metrics reporting.
 class MetricsReporter;
+class ScanMetrics;
 
 /// \brief Table.
 class Table;

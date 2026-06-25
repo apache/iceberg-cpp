@@ -165,6 +165,8 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   EXPECT_THAT(table->NewRowDelta(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewOverwrite(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewSnapshotManager(), IsError(ErrorKind::kNotSupported));
+}
+
 class TableFullyQualifiedNameTest : public ::testing::Test {
  protected:
   void SetUp() override {

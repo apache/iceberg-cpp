@@ -22,8 +22,8 @@
 #include <algorithm>
 #include <iterator>
 
-#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/file_io.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"

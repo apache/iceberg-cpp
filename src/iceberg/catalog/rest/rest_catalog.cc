@@ -559,7 +559,8 @@ std::shared_ptr<MetricsReporter> RestCatalog::MakeTableReporter(
   return reporter_;
 }
 
-Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns,  auth::AuthSession& session) const {
+Result<std::vector<Namespace>> RestCatalog::ListNamespaces(
+    const Namespace& ns, auth::AuthSession& session) const {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::ListNamespaces());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespaces());
   std::vector<Namespace> result;

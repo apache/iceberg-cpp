@@ -76,10 +76,4 @@ class ICEBERG_EXPORT SanitizeExpression
   int32_t today_;
 };
 
-// Java's ExpressionUtil.StringSanitizer/toSanitizedString (a string-formatting sibling
-// of SanitizeExpression above) isn't ported here: it had no production caller, only
-// tests. It belongs as a log statement in DataTableScan::PlanFiles() (table_scan.cc),
-// mirroring Java's SnapshotScan.planFiles(), once that path logs via
-// iceberg::Log(LogLevel::kInfo, ...) (logging/logger.h).
-
 }  // namespace iceberg

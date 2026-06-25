@@ -276,6 +276,10 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
 
   ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
 
+  if (const auto& override_reporter = update.reporter()) {
+    snapshot_reporter_ = override_reporter;
+  }
+
   // Create a temp builder to check if this is an empty update
   auto temp_update = TableMetadataBuilder::BuildFrom(&base);
   if (base.SnapshotById(result.snapshot->snapshot_id).has_value()) {
@@ -408,17 +412,11 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   ctx_->table = std::move(commit_result.value());
 
   // Fire CommitReport only when a new snapshot was produced (not for property-only
-  // commits). A SnapshotUpdate's own ReportWith() override takes precedence over the
-  // table's reporter.
-  std::shared_ptr<MetricsReporter> reporter = ctx_->table->reporter();
-  for (const auto& update : pending_updates_) {
-    if (update->kind() == PendingUpdate::Kind::kUpdateSnapshot) {
-      if (const auto& override_reporter =
-              internal::checked_cast<SnapshotUpdate&>(*update).reporter()) {
-        reporter = override_reporter;
-      }
-    }
-  }
+  // commits). A SnapshotUpdate's own ReportWith() override (captured into
+  // snapshot_reporter_ by ApplyUpdateSnapshot()) takes precedence over the table's
+  // reporter.
+  std::shared_ptr<MetricsReporter> reporter =
+      snapshot_reporter_ ? snapshot_reporter_ : ctx_->table->reporter();
   if (reporter) {
     auto snapshot_result = ctx_->table->metadata()->Snapshot();
     if (snapshot_result.has_value() && snapshot_result.value() &&
