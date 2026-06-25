@@ -18,6 +18,13 @@
 name: C++ Linter
 
 on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'ci/**'
+      - 'cmake_modules/**'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
@@ -38,6 +45,9 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      SCCACHE_DIR: ${{ github.workspace }}/.sccache
+      SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -48,6 +58,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
+      - name: Restore sccache cache
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: sccache-cpp-linter-ubuntu-${{ github.run_id }}
+          restore-keys: |
+            sccache-cpp-linter-ubuntu-
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: Run build
         env:
           CC: gcc-14
@@ -55,13 +74,25 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
             -DICEBERG_BUILD_SQL_CATALOG=ON \
             -DICEBERG_SQL_SQLITE=ON \
             -DICEBERG_SQL_POSTGRESQL=ON \
             -DICEBERG_SQL_MYSQL=ON
           cmake --build .
+      - name: Show sccache stats
+        shell: bash
+        run: sccache --show-stats
+      - name: Save sccache cache
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: sccache-cpp-linter-ubuntu-${{ github.run_id }}
       - uses: cpp-linter/cpp-linter-action@0f6d1b8d7e38b584cbee606eb23d850c217d54f8 # v2.15.1
         id: linter
+        if: github.event_name == 'pull_request'
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,7 +109,7 @@ jobs:
           # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
           extra-args: '-std=c++23 -I$PWD/src -I$PWD/build/src -I$PWD/build/_deps/sqlpp23-src/include -I/usr/include/postgresql -I/usr/include/mysql -fno-builtin-std-forward_like'
       - name: Fail fast?!
-        if: steps.linter.outputs.checks-failed != 0
+        if: github.event_name == 'pull_request' && steps.linter.outputs.checks-failed != 0
         run: |
           echo "some linter checks failed. ${STEPS_LINTER_OUTPUTS_CHECKS_FAILED}"
           exit 1
