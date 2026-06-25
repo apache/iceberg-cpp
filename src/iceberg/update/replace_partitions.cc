@@ -91,18 +91,15 @@ std::string ReplacePartitions::operation() { return DataOperation::kOverwrite; }
 
 Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
                                    const std::shared_ptr<Snapshot>& snapshot) {
-  // Java's BaseReplacePartitions requires at least one staged data file:
-  // dataSpec() throws if none was added. Call DataSpec() up front to surface
-  // the same error here, instead of silently committing an empty snapshot.
-  ICEBERG_ASSIGN_OR_RAISE(auto data_spec, DataSpec());
+  // Match Java BaseReplacePartitions: require at least one staged data file.
+  // Use the flags AddFile() sets — `DataSpec()` would also error on multi-spec
+  // stages and is not the guard we want here.
+  if (!replace_by_row_filter_ && replaced_partitions_.empty()) {
+    return InvalidArgument(
+        "ReplacePartitions requires at least one data file; call AddFile() first");
+  }
 
   if (snapshot == nullptr) {
-    return {};
-  }
-  // No-op update: no partitions were staged and no table-wide replace was
-  // requested, so there is nothing to conflict with. Calling the validators
-  // with AlwaysTrue here would turn an empty builder into a full-table check.
-  if (!replace_by_row_filter_ && replaced_partitions_.empty()) {
     return {};
   }
 
