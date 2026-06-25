@@ -775,11 +775,11 @@ function(resolve_thrift_dependency)
       target_link_libraries(thrift::thrift INTERFACE thrift)
     endif()
   else()
-    # System Thrift, located by cmake_modules/FindThrift.cmake (MODULE mode),
+    # System Thrift, located by cmake_modules/FindThriftAlt.cmake (MODULE mode),
     # which provides the `thrift::thrift` target iceberg_hive expects. Record it
     # as a system dependency so downstream find_package(Iceberg) re-finds it.
-    find_package(Thrift MODULE REQUIRED GLOBAL)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Thrift)
+    find_package(ThriftAlt MODULE REQUIRED GLOBAL)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ThriftAlt)
     set(ICEBERG_SYSTEM_DEPENDENCIES
         ${ICEBERG_SYSTEM_DEPENDENCIES}
         PARENT_SCOPE)

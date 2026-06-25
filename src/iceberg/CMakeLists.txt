@@ -348,10 +348,10 @@ endif()
 iceberg_install_cmake_package(iceberg iceberg_targets)
 
 # When linking a system Thrift, downstream find_package(Iceberg) calls
-# find_dependency(Thrift); ship FindThrift.cmake next to the package config (the
-# dir iceberg-config.cmake adds to CMAKE_MODULE_PATH) so that lookup resolves.
+# find_dependency(ThriftAlt); ship FindThriftAlt.cmake next to the package config
+# (the dir iceberg-config.cmake adds to CMAKE_MODULE_PATH) so that lookup resolves.
 if(ICEBERG_BUILD_HIVE AND NOT ICEBERG_THRIFT_BUNDLED)
-  install(FILES "${PROJECT_SOURCE_DIR}/cmake_modules/FindThrift.cmake"
+  install(FILES "${PROJECT_SOURCE_DIR}/cmake_modules/FindThriftAlt.cmake"
           DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/iceberg")
 endif()
 
