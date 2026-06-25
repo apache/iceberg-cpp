@@ -160,7 +160,8 @@ class ICEBERG_EXPORT Schema : public StructType {
   ///
   /// \param names Selected field names and nested names are dot-concatenated.
   /// \param case_sensitive Whether name matching is case-sensitive (default: true).
-  /// \return Projected schema containing only selected fields.
+  /// \return Projected schema containing only selected fields, or an error if any
+  /// requested field cannot be found.
   /// \note If the field name of a nested type has been selected, all of its
   /// sub-fields will be selected.
   Result<std::unique_ptr<Schema>> Select(std::span<const std::string> names,

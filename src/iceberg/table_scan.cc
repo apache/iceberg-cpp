@@ -419,6 +419,11 @@ Result<std::unique_ptr<ScanType>> TableScanBuilder<ScanType>::Build() {
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
+  if (!context_.selected_columns.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        std::ignore,
+        schema.get()->Select(context_.selected_columns, context_.case_sensitive));
+  }
   return ScanType::Make(metadata_, schema.get(), io_, std::move(context_));
 }
 

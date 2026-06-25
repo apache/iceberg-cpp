@@ -366,9 +366,10 @@ Result<std::unique_ptr<Schema>> Schema::Select(std::span<const std::string> name
   std::unordered_set<int32_t> selected_ids;
   for (const auto& name : names) {
     ICEBERG_ASSIGN_OR_RAISE(auto result, FindFieldByName(name, case_sensitive));
-    if (result.has_value()) {
-      selected_ids.insert(result.value().get().field_id());
+    if (!result.has_value()) {
+      return InvalidArgument("Cannot find selected column: {}", name);
     }
+    selected_ids.insert(result.value().get().field_id());
   }
 
   PruneColumnVisitor visitor(selected_ids, /*select_full_types=*/true);
