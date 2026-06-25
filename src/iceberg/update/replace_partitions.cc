@@ -91,6 +91,11 @@ std::string ReplacePartitions::operation() { return DataOperation::kOverwrite; }
 
 Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
                                    const std::shared_ptr<Snapshot>& snapshot) {
+  // Java's BaseReplacePartitions requires at least one staged data file:
+  // dataSpec() throws if none was added. Call DataSpec() up front to surface
+  // the same error here, instead of silently committing an empty snapshot.
+  ICEBERG_ASSIGN_OR_RAISE(auto data_spec, DataSpec());
+
   if (snapshot == nullptr) {
     return {};
   }

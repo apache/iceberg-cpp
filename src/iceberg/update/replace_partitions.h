@@ -49,6 +49,10 @@ namespace iceberg {
 /// When committing, these changes are applied to the latest table snapshot.
 /// Commit conflicts are resolved by re-applying to the new latest snapshot
 /// and reattempting the commit.
+///
+/// \note This is provided to implement SQL compatible with Hive table
+/// operations but is not recommended. Instead, use OverwriteFiles to
+/// explicitly overwrite data.
 class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
  public:
   /// \brief Create a new ReplacePartitions instance.
