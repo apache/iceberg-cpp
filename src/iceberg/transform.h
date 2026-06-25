@@ -159,6 +159,11 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// \return true if this transform can be applied to the type, false otherwise
   bool CanTransform(const Type& source_type) const;
 
+  /// \brief Validates whether this transform can bind to the given source type.
+  /// \param source_type The source type to validate against.
+  /// \return Error status if the transform cannot bind to the source type.
+  Status Validate(const std::shared_ptr<Type>& source_type) const;
+
   /// \brief Whether the transform preserves the order of values (is monotonic).
   bool PreservesOrder() const;
 

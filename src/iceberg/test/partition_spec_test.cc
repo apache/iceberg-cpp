@@ -219,6 +219,22 @@ TEST(PartitionSpecTest, InvalidTransformForType) {
   EXPECT_THAT(result_void, IsOk());
 }
 
+TEST(PartitionSpecTest, InvalidParameterizedTransform) {
+  auto field_id = SchemaField::MakeRequired(1, "id", int32());
+  auto field_name = SchemaField::MakeRequired(2, "name", string());
+  Schema schema({field_id, field_name}, Schema::kInitialSchemaId);
+
+  PartitionField bucket_field(1, 1000, "id_bucket", Transform::Bucket(0));
+  auto bucket_result = PartitionSpec::Make(schema, 1, {bucket_field}, false);
+  EXPECT_THAT(bucket_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(bucket_result, HasErrorMessage("Number of buckets must be positive"));
+
+  PartitionField truncate_field(2, 1000, "name_trunc", Transform::Truncate(0));
+  auto truncate_result = PartitionSpec::Make(schema, 1, {truncate_field}, false);
+  EXPECT_THAT(truncate_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(truncate_result, HasErrorMessage("Width must be positive"));
+}
+
 TEST(PartitionSpecTest, SourceIdNotFound) {
   auto field1 = SchemaField::MakeRequired(1, "id", int64());
   auto field2 = SchemaField::MakeRequired(2, "ts", timestamp());
