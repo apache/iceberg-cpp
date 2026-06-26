@@ -227,6 +227,20 @@ TEST_F(ArrowS3FileIOTest, ConfigureS3OptionsKeepsSchemelessEndpoint) {
   EXPECT_EQ(result->endpoint_override, "localhost:9000");
 }
 
+TEST_F(ArrowS3FileIOTest, ConfigureS3OptionsSslEnabledOverridesEndpointScheme) {
+  auto https =
+      ConfigureS3Options({{std::string(S3Properties::kEndpoint), "http://localhost:9000"},
+                          {std::string(S3Properties::kSslEnabled), "true"}});
+  ASSERT_THAT(https, IsOk());
+  EXPECT_EQ(https->scheme, "https");
+
+  auto http = ConfigureS3Options(
+      {{std::string(S3Properties::kEndpoint), "https://localhost:9000"},
+       {std::string(S3Properties::kSslEnabled), "false"}});
+  ASSERT_THAT(http, IsOk());
+  EXPECT_EQ(http->scheme, "http");
+}
+
 TEST_F(ArrowS3FileIOTest,
        ConfigureS3OptionsPathStyleAccessFalseEnablesVirtualAddressing) {
   auto result =

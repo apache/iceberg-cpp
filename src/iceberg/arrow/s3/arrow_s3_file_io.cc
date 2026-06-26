@@ -75,6 +75,17 @@ Status EnsureS3Initialized() {
   return {};
 }
 
+// Splits any URI scheme off `endpoint` into `options.scheme`, returning the bare
+// host[:port] that Arrow's `endpoint_override` expects.
+std::string SplitEndpointScheme(std::string_view endpoint,
+                                ::arrow::fs::S3Options& options) {
+  if (const auto pos = endpoint.find("://"); pos != std::string_view::npos) {
+    options.scheme = std::string(endpoint.substr(0, pos));
+    endpoint = endpoint.substr(pos + 3);
+  }
+  return std::string(endpoint);
+}
+
 #endif
 
 }  // namespace
@@ -116,27 +127,17 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     options.region = *region;
   }
 
-  // Configure endpoint (for MinIO, LocalStack, OSS, etc.)
+  // Configure endpoint (for MinIO, LocalStack, OSS, etc.) from `s3.endpoint` or
+  // the AWS standard env vars.
   if (const auto* endpoint = FindProperty(properties, S3Properties::kEndpoint);
       endpoint != nullptr) {
-    // `s3.endpoint` may be a full URI; Arrow wants host[:port], so strip the scheme.
-    std::string_view ep = *endpoint;
-    if (const auto pos = ep.find("://"); pos != std::string_view::npos) {
-      options.scheme = std::string(ep.substr(0, pos));
-      ep = ep.substr(pos + 3);
-    }
-    options.endpoint_override = std::string(ep);
-  } else {
-    // Fall back to AWS standard environment variables for endpoint override
-    const char* s3_endpoint_env = std::getenv("AWS_ENDPOINT_URL_S3");
-    if (s3_endpoint_env != nullptr) {
-      options.endpoint_override = s3_endpoint_env;
-    } else {
-      const char* endpoint_env = std::getenv("AWS_ENDPOINT_URL");
-      if (endpoint_env != nullptr) {
-        options.endpoint_override = endpoint_env;
-      }
-    }
+    options.endpoint_override = SplitEndpointScheme(*endpoint, options);
+  } else if (const char* s3_endpoint_env = std::getenv("AWS_ENDPOINT_URL_S3");
+             s3_endpoint_env != nullptr) {
+    options.endpoint_override = SplitEndpointScheme(s3_endpoint_env, options);
+  } else if (const char* endpoint_env = std::getenv("AWS_ENDPOINT_URL");
+             endpoint_env != nullptr) {
+    options.endpoint_override = SplitEndpointScheme(endpoint_env, options);
   }
 
   ICEBERG_ASSIGN_OR_RAISE(const auto path_style_access,
@@ -145,12 +146,11 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     options.force_virtual_addressing = !*path_style_access;
   }
 
-  // Configure SSL. Explicit `s3.ssl.enabled` overrides any scheme derived from
-  // the endpoint above.
+  // Explicit `s3.ssl.enabled` overrides any endpoint-derived scheme.
   ICEBERG_ASSIGN_OR_RAISE(const auto ssl_enabled,
                           ParseOptionalBool(properties, S3Properties::kSslEnabled));
-  if (ssl_enabled.has_value() && !*ssl_enabled) {
-    options.scheme = "http";
+  if (ssl_enabled.has_value()) {
+    options.scheme = *ssl_enabled ? "https" : "http";
   }
 
   // Configure timeouts
