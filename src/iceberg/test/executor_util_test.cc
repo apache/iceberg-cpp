@@ -20,8 +20,10 @@
 #include <atomic>
 #include <concepts>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <ranges>
+#include <span>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -51,19 +53,15 @@ struct IntTask {
   }
 };
 
-struct BoolTask {
-  Result<std::vector<bool>> operator()(bool) {
-    return Result<std::vector<bool>>{std::vector<bool>{}};
-  }
-};
-
 static_assert(internal::ParallelCollectible<std::vector<int>&, IntTask>);
 static_assert(
     std::same_as<decltype(ParallelCollect(std::nullopt, std::declval<std::vector<int>&>(),
                                           IntTask{})),
                  Result<std::vector<int>>>);
-static_assert(!internal::ParallelCollectible<decltype(std::views::iota(0, 3)), IntTask>);
-static_assert(!internal::ParallelCollectible<std::vector<bool>&, BoolTask>);
+static_assert(internal::ParallelCollectible<decltype(std::views::iota(0, 3)), IntTask>);
+static_assert(std::same_as<decltype(ParallelCollect(std::nullopt, std::views::iota(0, 3),
+                                                    IntTask{})),
+                           Result<std::vector<int>>>);
 
 }  // namespace
 
@@ -137,6 +135,45 @@ TEST(ParallelCollectTest, CollectsSingleRange) {
 
   EXPECT_THAT(result, IsOk());
   EXPECT_THAT(*result, UnorderedElementsAre(2, 4, 6));
+}
+
+TEST(ParallelCollectTest, CollectsIotaView) {
+  auto input = std::views::iota(1, 4);
+
+  auto result = ParallelCollect(std::nullopt, input, [](int value) {
+    return Result<std::unordered_set<int>>{{value * 2}};
+  });
+
+  EXPECT_THAT(result, IsOk());
+  EXPECT_THAT(*result, UnorderedElementsAre(2, 4, 6));
+}
+
+TEST(ParallelCollectTest, CollectsTransformView) {
+  std::vector<int> values = {1, 2, 3, 4};
+  std::span<const int> files(values);
+  auto input = std::views::iota(0, 2) | std::views::transform([files](int index) {
+                 return files.subspan(index * 2, 2);
+               });
+
+  auto result = ParallelCollect(std::nullopt, input, [](std::span<const int> group) {
+    return Result<std::vector<int>>{{group.front(), group.back()}};
+  });
+
+  EXPECT_THAT(result, IsOk());
+  EXPECT_THAT(*result, ElementsAre(1, 2, 3, 4));
+}
+
+TEST(ParallelCollectTest, CollectsMoveOnlyPrvalues) {
+  auto input = std::views::iota(1, 4) | std::views::transform([](int value) {
+                 return std::make_unique<int>(value);
+               });
+
+  auto result = ParallelCollect(std::nullopt, input, [](std::unique_ptr<int> value) {
+    return Result<std::vector<int>>{{*value}};
+  });
+
+  EXPECT_THAT(result, IsOk());
+  EXPECT_THAT(*result, ElementsAre(1, 2, 3));
 }
 
 TEST(ParallelCollectTest, KeepsTupleResultFromSingleRange) {

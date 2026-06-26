@@ -19,7 +19,10 @@
 
 #include "iceberg/update/merging_snapshot_update.h"
 
+#include <limits>
 #include <memory>
+#include <optional>
+#include <ranges>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -40,6 +43,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
@@ -91,6 +95,16 @@ class TestMergeAppend : public MergingSnapshotUpdate {
   }
   Result<std::shared_ptr<PartitionSpec>> DataSpec() const {
     return MergingSnapshotUpdate::DataSpec();
+  }
+  Result<std::vector<ManifestFile>> WriteDeletesForTest(
+      std::span<const std::shared_ptr<DataFile>> files,
+      const std::shared_ptr<PartitionSpec>& spec) {
+    auto entries = files | std::views::transform([](const auto& file) {
+                     return ContentFileWithSequenceNumber{
+                         .file = file, .data_sequence_number = std::nullopt};
+                   }) |
+                   std::ranges::to<std::vector>();
+    return WriteDeleteManifests(entries, spec);
   }
   int64_t GeneratedSnapshotId() { return SnapshotId(); }
   void SetDataSeqNumber(int64_t seq) { SetNewDataFilesDataSequenceNumber(seq); }
@@ -264,6 +278,14 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
 
   void SetTableFormatVersion(int8_t format_version) {
     table_->metadata()->format_version = format_version;
+  }
+
+  void SetManifestTargetSizeBytes(int64_t size_bytes) {
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    props->Set(std::string(TableProperties::kManifestTargetSizeBytes.key()),
+               std::to_string(size_bytes));
+    EXPECT_THAT(props->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
   }
 
   // Commit file_a_ with FastAppend and refresh the table.
@@ -637,6 +659,29 @@ TEST_F(MergingSnapshotUpdateTest, AddDeleteFileWithExplicitSequenceWritesSequenc
   ASSERT_EQ(entries.size(), 1U);
   ASSERT_TRUE(entries[0].sequence_number.has_value());
   EXPECT_EQ(entries[0].sequence_number.value(), 17);
+}
+
+TEST_F(MergingSnapshotUpdateTest, WriteDeleteGroups) {
+  SetManifestTargetSizeBytes(std::numeric_limits<int64_t>::max());
+
+  test::ThreadExecutor executor;
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->WriteManifestsWith(executor, 3);
+
+  constexpr size_t kFileCount = 15'000;
+  auto files = std::views::iota(0UZ, kFileCount) |
+               std::views::transform([this](size_t index) {
+                 return MakeDeleteFile(std::format("/delete/group_{}.parquet", index),
+                                       static_cast<int64_t>(index % 2));
+               }) |
+               std::ranges::to<std::vector>();
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->WriteDeletesForTest(files, spec_));
+
+  EXPECT_EQ(executor.submit_count(), 2);
+  ASSERT_EQ(manifests.size(), 2U);
+  for (const auto& manifest : manifests) {
+    EXPECT_EQ(manifest.content, ManifestContent::kDeletes);
+  }
 }
 
 TEST_F(MergingSnapshotUpdateTest, ApplyRebuildsDeleteSummaryAfterPreparingDeletes) {

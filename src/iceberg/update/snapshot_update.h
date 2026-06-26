@@ -124,6 +124,25 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     return self;
   }
 
+  /// \brief Configure an executor and max writer count for writing new manifests.
+  ///
+  /// If this method is not called, manifest writes remain serial. When configured,
+  /// files may be split into independent rolling-writer groups.
+  ///
+  /// \note Custom FileIO implementations and registered writer factories used for
+  /// manifest writes must support concurrent calls when an executor is configured.
+  auto& WriteManifestsWith(this auto& self, Executor& executor, int32_t parallelism) {
+    if (parallelism <= 0) [[unlikely]] {
+      return self.AddError(
+          ErrorKind::kInvalidArgument,
+          "Manifest write parallelism must be greater than 0, but was: {}", parallelism);
+    }
+
+    self.write_manifest_executor_ = std::ref(executor);
+    self.write_manifest_parallelism_ = parallelism;
+    return self;
+  }
+
   /// \brief Apply the update's changes to create a new snapshot.
   ///
   /// This method validates the changes, applies them to the current base
@@ -251,6 +270,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
  private:
   const bool can_inherit_snapshot_id_{true};
   const std::string commit_uuid_;
+  OptionalExecutor write_manifest_executor_;
+  int32_t write_manifest_parallelism_{1};
   std::atomic<int32_t> manifest_count_{0};
   std::atomic<int32_t> attempt_{0};
   std::vector<std::string> manifest_lists_;

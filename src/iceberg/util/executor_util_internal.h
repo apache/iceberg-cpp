@@ -42,6 +42,10 @@ struct ParallelReduce;
 
 namespace internal {
 
+template <typename Ref>
+using ParallelCollectArgT =
+    std::conditional_t<std::is_lvalue_reference_v<Ref>, Ref, std::remove_cvref_t<Ref>&&>;
+
 template <typename T, auto... Options>
 concept ParallelReducible = requires(std::vector<T>& values) {
   typename ParallelReduce<T, Options...>::result_type;
@@ -51,10 +55,9 @@ concept ParallelReducible = requires(std::vector<T>& values) {
 };
 
 template <std::ranges::input_range InputRange, typename Task>
-using ParallelCollectValueT =
-    ResultValueT<std::invoke_result_t<std::remove_reference_t<Task>&,
-                                      std::add_lvalue_reference_t<std::remove_reference_t<
-                                          std::ranges::range_reference_t<InputRange>>>>>;
+using ParallelCollectValueT = ResultValueT<std::invoke_result_t<
+    std::remove_reference_t<Task>&,
+    ParallelCollectArgT<std::ranges::range_reference_t<InputRange>>>>;
 
 template <std::size_t I, typename... Args>
 struct ParallelCollectTraits {
@@ -67,10 +70,13 @@ struct ParallelCollectTraits {
 template <typename InputRange, typename Task, auto... Options>
 concept ParallelCollectible =
     std::ranges::forward_range<InputRange> && std::ranges::sized_range<InputRange> &&
-    std::is_lvalue_reference_v<std::ranges::range_reference_t<InputRange>> &&
+    (std::is_lvalue_reference_v<std::ranges::range_reference_t<InputRange>> ||
+     std::constructible_from<
+         std::remove_cvref_t<std::ranges::range_reference_t<InputRange>>,
+         std::ranges::range_reference_t<InputRange>>) &&
     requires(std::remove_reference_t<Task>& task,
-             std::ranges::range_reference_t<InputRange> item) {
-      { std::invoke(task, item) } -> AsResult;
+             ParallelCollectArgT<std::ranges::range_reference_t<InputRange>> item) {
+      { std::invoke(task, std::forward<decltype(item)>(item)) } -> AsResult;
       requires(!std::same_as<void, ParallelCollectValueT<InputRange, Task>>);
       requires std::default_initializable<ParallelCollectValueT<InputRange, Task>>;
       requires ParallelReducible<ParallelCollectValueT<InputRange, Task>, Options...>;
@@ -198,13 +204,24 @@ auto ParallelCollect(OptionalExecutor executor, Args&&... args) {
   [&]<std::size_t... I>(std::index_sequence<I...>) {
     (
         [&] {
+          using item_ref = std::ranges::range_reference_t<
+              typename internal::ParallelCollectTraits<I, Args...>::input_type>;
+
           for (auto&& [item, value] :
                std::views::zip(std::get<I * 2>(args_tuple), std::get<I>(values_tuple))) {
-            group.Submit([&]() -> Status {
-              ICEBERG_ASSIGN_OR_RAISE(value,
-                                      std::invoke(std::get<I * 2 + 1>(args_tuple), item));
-              return {};
-            });
+            if constexpr (std::is_lvalue_reference_v<item_ref>) {
+              group.Submit([&]() -> Status {
+                ICEBERG_ASSIGN_OR_RAISE(
+                    value, std::invoke(std::get<I * 2 + 1>(args_tuple), item));
+                return {};
+              });
+            } else {
+              group.Submit([&, item = std::move(item)]() mutable -> Status {
+                ICEBERG_ASSIGN_OR_RAISE(
+                    value, std::invoke(std::get<I * 2 + 1>(args_tuple), std::move(item)));
+                return {};
+              });
+            }
           }
         }(),
         ...);
