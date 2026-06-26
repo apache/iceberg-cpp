@@ -39,6 +39,7 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/rest_metrics_reporter_internal.h"
+#include "iceberg/catalog/rest/rest_table.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
@@ -454,7 +455,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
                          std::shared_ptr<HttpClient> client,
-                         std::unique_ptr<ResourcePaths> paths,
+                         std::shared_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints,
                          std::unique_ptr<auth::AuthManager> auth_manager,
                          std::shared_ptr<auth::AuthSession> catalog_session,
@@ -898,6 +899,19 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   ICEBERG_ASSIGN_OR_RAISE(auto reporter, MakeTableReporter(identifier, table_session));
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session, table_io);
+
+  if (supported_endpoints_.contains(Endpoint::PlanTableScan())) {
+    RestScanContext rest_ctx{
+        .client = client_,
+        .paths = paths_,
+        .session = table_session,
+        .supported_endpoints = supported_endpoints_,
+        .identifier = identifier,
+    };
+    return RestTable::Make(identifier, std::move(result.metadata),
+                           std::move(result.metadata_location), std::move(table_io),
+                           std::move(table_catalog), std::move(rest_ctx));
+  }
 
   return Table::Make(identifier, std::move(result.metadata),
                      std::move(result.metadata_location), std::move(table_io),
