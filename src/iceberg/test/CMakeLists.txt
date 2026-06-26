@@ -234,6 +234,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    merge_append_test.cc
                    merging_snapshot_update_test.cc
                    name_mapping_update_test.cc
+                   rewrite_manifests_test.cc
                    row_delta_test.cc
                    snapshot_manager_test.cc
                    transaction_test.cc
