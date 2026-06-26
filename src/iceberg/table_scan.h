@@ -385,7 +385,7 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
 
   /// \brief Builds and returns a TableScan instance.
   /// \return A Result containing the TableScan or an error.
-  Result<std::unique_ptr<ScanType>> Build();
+  virtual Result<std::unique_ptr<ScanType>> Build();
 
  protected:
   TableScanBuilder(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io);
@@ -453,7 +453,7 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
+  virtual Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
 
  protected:
   using TableScan::TableScan;

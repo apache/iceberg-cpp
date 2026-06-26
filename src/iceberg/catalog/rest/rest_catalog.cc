@@ -39,6 +39,7 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
+#include "iceberg/catalog/rest/rest_table.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
@@ -451,7 +452,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   // Get snapshot loading mode
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, final_config.SnapshotLoadingMode());
 
-  auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders());
+  auto client = std::make_shared<HttpClient>(final_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
                           auth_manager->CatalogSession(*client, final_config.configs()));
 
@@ -466,8 +467,8 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
 }
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-                         std::unique_ptr<HttpClient> client,
-                         std::unique_ptr<ResourcePaths> paths,
+                         std::shared_ptr<HttpClient> client,
+                         std::shared_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints,
                          std::unique_ptr<auth::AuthManager> auth_manager,
                          std::shared_ptr<auth::AuthSession> catalog_session,
@@ -873,6 +874,20 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session);
+
+  if (supported_endpoints_.contains(Endpoint::PlanTableScan())) {
+    RestScanContext rest_ctx{
+        .client = client_,
+        .paths = paths_,
+        .session = table_session,
+        .supported_endpoints = supported_endpoints_,
+        .identifier = identifier,
+    };
+    return RestTable::Make(identifier, std::move(result.metadata),
+                           std::move(result.metadata_location), std::move(table_io),
+                           std::move(table_catalog), std::move(rest_ctx));
+  }
+
   return Table::Make(identifier, std::move(result.metadata),
                      std::move(result.metadata_location), std::move(table_io),
                      std::move(table_catalog));
