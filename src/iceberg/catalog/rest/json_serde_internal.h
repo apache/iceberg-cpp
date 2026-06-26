@@ -38,15 +38,12 @@ namespace iceberg::rest {
 template <typename Model>
 Result<Model> FromJson(const nlohmann::json& json);
 
-// Declares the two FromJson entry points for a model.
-#define ICEBERG_DECLARE_FROM_JSON(Model)                                         \
+#define ICEBERG_DECLARE_JSON_SERDE(Model)                                        \
   ICEBERG_REST_EXPORT Result<Model> Model##FromJson(const nlohmann::json& json); \
                                                                                  \
   template <>                                                                    \
-  ICEBERG_REST_EXPORT Result<Model> FromJson(const nlohmann::json& json);
-
-#define ICEBERG_DECLARE_JSON_SERDE(Model) \
-  ICEBERG_DECLARE_FROM_JSON(Model)        \
+  ICEBERG_REST_EXPORT Result<Model> FromJson(const nlohmann::json& json);        \
+                                                                                 \
   ICEBERG_REST_EXPORT nlohmann::json ToJson(const Model& model);
 
 /// \note Don't forget to add `ICEBERG_DEFINE_FROM_JSON` to the end of
@@ -64,19 +61,33 @@ ICEBERG_DECLARE_JSON_SERDE(RegisterTableRequest)
 ICEBERG_DECLARE_JSON_SERDE(RenameTableRequest)
 ICEBERG_DECLARE_JSON_SERDE(OAuthTokenResponse)
 
-// These models embed a Schema/TableMetadata whose default-value serialization can
-// fail, so their ToJson returns Result; FromJson is declared like the others.
-ICEBERG_DECLARE_FROM_JSON(LoadTableResult)
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const LoadTableResult& model);
-ICEBERG_DECLARE_FROM_JSON(CreateTableRequest)
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CreateTableRequest& model);
-ICEBERG_DECLARE_FROM_JSON(CommitTableRequest)
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableRequest& model);
-ICEBERG_DECLARE_FROM_JSON(CommitTableResponse)
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableResponse& model);
-
-#undef ICEBERG_DECLARE_FROM_JSON
 #undef ICEBERG_DECLARE_JSON_SERDE
+
+// These models embed a Schema/TableMetadata whose default-value serialization can fail,
+// so their ToJson returns Result. FromJson is declared like the macro-based models above.
+ICEBERG_REST_EXPORT Result<LoadTableResult> LoadTableResultFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<LoadTableResult> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const LoadTableResult& model);
+
+ICEBERG_REST_EXPORT Result<CreateTableRequest> CreateTableRequestFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<CreateTableRequest> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CreateTableRequest& model);
+
+ICEBERG_REST_EXPORT Result<CommitTableRequest> CommitTableRequestFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<CommitTableRequest> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableRequest& model);
+
+ICEBERG_REST_EXPORT Result<CommitTableResponse> CommitTableResponseFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<CommitTableResponse> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableResponse& model);
 
 ICEBERG_REST_EXPORT Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
     const nlohmann::json& json,
