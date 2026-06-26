@@ -15,11 +15,92 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Skeleton for the iceberg_hive library target.
+# The iceberg_hive library: a Hive Metastore (HMS) catalog client built on
+# generated Apache Thrift bindings. Layout mirrors iceberg_rest.
+
+# ----------------------------------------------------------------------
+# Hive Metastore Thrift bindings.
 #
-# Sources, dependency wiring and the actual `iceberg_hive` library target
-# are introduced in follow-up commits. For now this file installs only the
-# public export header so that the directory is wired into the build system
-# end-to-end.
+# These are checked into gen-cpp/ rather than generated at build time, so a
+# normal build needs no Thrift IDL compiler — only the Thrift C++ runtime,
+# which comes from Apache Arrow's bundled build. Regenerate them with
+# dev/update_hive_thrift.sh whenever thirdparty/hive_metastore/*.thrift changes.
+
+set(_thrift_gen_dir ${CMAKE_CURRENT_SOURCE_DIR}/gen-cpp)
+
+set(ICEBERG_HIVE_THRIFT_GEN_SOURCES
+    ${_thrift_gen_dir}/FacebookService.cpp
+    ${_thrift_gen_dir}/fb303_types.cpp
+    ${_thrift_gen_dir}/hive_metastore_constants.cpp
+    ${_thrift_gen_dir}/hive_metastore_types.cpp
+    ${_thrift_gen_dir}/ThriftHiveMetastore.cpp)
+
+# Upstream-generated code: skip lint/format, and downgrade the deprecated
+# std::iterator warning from Arrow's bundled Thrift 0.22 headers (removed
+# upstream in Thrift 0.23, THRIFT-5698) so it does not trip -Werror.
+set_source_files_properties(${ICEBERG_HIVE_THRIFT_GEN_SOURCES}
+                            PROPERTIES SKIP_LINTING TRUE
+                                       COMPILE_OPTIONS
+                                       "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-error=deprecated-declarations>"
+)
+
+# ----------------------------------------------------------------------
+# iceberg_hive library
+
+if(NOT TARGET thrift::thrift)
+  message(FATAL_ERROR "iceberg_hive requires a `thrift::thrift` target. Either keep "
+                      "ICEBERG_BUNDLE_THRIFT=ON with -DICEBERG_BUILD_BUNDLE=ON (the "
+                      "default, uses Arrow's bundled Thrift), or build with "
+                      "-DICEBERG_BUNDLE_THRIFT=OFF against a system Thrift install.")
+endif()
+
+set(ICEBERG_HIVE_SOURCES hive_catalog.cc hive_catalog_properties.cc
+                         ${ICEBERG_HIVE_THRIFT_GEN_SOURCES})
+
+set(ICEBERG_HIVE_STATIC_BUILD_INTERFACE_LIBS)
+set(ICEBERG_HIVE_SHARED_BUILD_INTERFACE_LIBS)
+set(ICEBERG_HIVE_STATIC_INSTALL_INTERFACE_LIBS)
+set(ICEBERG_HIVE_SHARED_INSTALL_INTERFACE_LIBS)
+
+# thrift::thrift is always required at build time (the generated bindings include
+# and link against it). For the *install* interface it depends on the Thrift source:
+#  * Bundled (from Arrow): the Thrift runtime is baked into the installed Arrow
+#    bundled-dependencies archive that iceberg core already carries, and there is
+#    no exported `thrift::thrift` target downstream. Referencing it in the install
+#    interface would make downstream find_package(Iceberg) fail with a missing
+#    `thrift::thrift` target, so it must be omitted.
+#  * System: downstream find_package(Iceberg) re-creates `thrift::thrift` via
+#    find_dependency(ThriftAlt) (FindThriftAlt.cmake is shipped next to the
+#    config), so it must be propagated.
+list(APPEND ICEBERG_HIVE_STATIC_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>" thrift::thrift)
+list(APPEND ICEBERG_HIVE_SHARED_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>" thrift::thrift)
+list(APPEND
+     ICEBERG_HIVE_STATIC_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+)
+list(APPEND
+     ICEBERG_HIVE_SHARED_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
+)
+if(NOT ICEBERG_THRIFT_BUNDLED)
+  list(APPEND ICEBERG_HIVE_STATIC_INSTALL_INTERFACE_LIBS thrift::thrift)
+  list(APPEND ICEBERG_HIVE_SHARED_INSTALL_INTERFACE_LIBS thrift::thrift)
+endif()
+
+add_iceberg_lib(iceberg_hive
+                SOURCES
+                ${ICEBERG_HIVE_SOURCES}
+                PRIVATE_INCLUDES
+                ${_thrift_gen_dir}
+                SHARED_LINK_LIBS
+                ${ICEBERG_HIVE_SHARED_BUILD_INTERFACE_LIBS}
+                STATIC_LINK_LIBS
+                ${ICEBERG_HIVE_STATIC_BUILD_INTERFACE_LIBS}
+                STATIC_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_HIVE_STATIC_INSTALL_INTERFACE_LIBS}
+                SHARED_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_HIVE_SHARED_INSTALL_INTERFACE_LIBS})
 
 iceberg_install_all_headers(iceberg/catalog/hive)

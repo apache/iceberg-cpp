@@ -66,6 +66,12 @@ class ICEBERG_EXPORT PositionOutputStream {
   /// \brief Return the current write position.
   virtual Result<int64_t> Position() const = 0;
 
+  /// \brief Return the current stored length of the output.
+  ///
+  /// This can differ from the current position for encrypting streams, and for other
+  /// non-length-preserving streams.
+  virtual Result<int64_t> StoredLength() const { return Position(); }
+
   /// \brief Write all bytes in data at the current position.
   virtual Status Write(std::span<const std::byte> data) = 0;
 

@@ -49,6 +49,8 @@ set(ICEBERG_SOURCES
     inheritable_metadata.cc
     json_serde.cc
     location_provider.cc
+    logging/cerr_logger.cc
+    logging/logger.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
     manifest/manifest_filter_manager.cc
@@ -99,11 +101,14 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    update/delete_files.cc
     update/expire_snapshots.cc
     update/fast_append.cc
     update/merge_append.cc
     update/merging_snapshot_update.cc
+    update/overwrite_files.cc
     update/pending_update.cc
+    update/row_delta.cc
     update/set_snapshot.cc
     update/snapshot_manager.cc
     update/snapshot_update.cc
@@ -129,6 +134,7 @@ set(ICEBERG_SOURCES
     util/struct_like_set.cc
     util/task_group.cc
     util/temporal_util.cc
+    util/thread_util.cc
     util/timepoint.cc
     util/transform_util.cc
     util/truncate_util.cc
@@ -340,6 +346,14 @@ if(ICEBERG_BUILD_BUNDLE)
 endif()
 
 iceberg_install_cmake_package(iceberg iceberg_targets)
+
+# When linking a system Thrift, downstream find_package(Iceberg) calls
+# find_dependency(ThriftAlt); ship FindThriftAlt.cmake next to the package config
+# (the dir iceberg-config.cmake adds to CMAKE_MODULE_PATH) so that lookup resolves.
+if(ICEBERG_BUILD_HIVE AND NOT ICEBERG_THRIFT_BUNDLED)
+  install(FILES "${PROJECT_SOURCE_DIR}/cmake_modules/FindThriftAlt.cmake"
+          DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/iceberg")
+endif()
 
 if(ICEBERG_BUILD_TESTS)
   add_subdirectory(test)

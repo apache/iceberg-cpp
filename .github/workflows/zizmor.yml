@@ -26,13 +26,17 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches: ["**"]
 
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 permissions: {}
 
 jobs:
   zizmor:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: Run zizmor 🌈
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions: {}
     steps:
       - name: Checkout repository

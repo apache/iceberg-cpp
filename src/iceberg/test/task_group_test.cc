@@ -95,7 +95,7 @@ TEST(FnOnceTest, SupportsMoveOnlyCapture) {
 
 TEST(TaskGroupTest, UsesExecutor) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   bool ran = false;
 
   group.SetExecutor(std::ref(executor));
@@ -111,7 +111,7 @@ TEST(TaskGroupTest, UsesExecutor) {
 
 TEST(TaskGroupTest, ReturnsSubmitError) {
   test::ThreadExecutor executor(ServiceUnavailable("executor busy"));
-  TaskGroup<> group;
+  TaskGroup group;
 
   group.SetExecutor(std::ref(executor));
   group.Submit([]() -> Status { return {}; });
@@ -121,7 +121,7 @@ TEST(TaskGroupTest, ReturnsSubmitError) {
 }
 
 TEST(TaskGroupTest, DirectMoveOnlyTask) {
-  TaskGroup<> group;
+  TaskGroup group;
   auto value = std::make_unique<int>(7);
   int observed = 0;
 
@@ -136,7 +136,7 @@ TEST(TaskGroupTest, DirectMoveOnlyTask) {
 
 TEST(TaskGroupTest, ClearsExecutor) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   int call_count = 0;
 
   group.SetExecutor(std::ref(executor));
@@ -152,25 +152,27 @@ TEST(TaskGroupTest, ClearsExecutor) {
 }
 
 TEST(TaskGroupTest, FluentSubmit) {
-  int call_count = 0;
+  test::ThreadExecutor executor;
+  std::atomic<int> call_count = 0;
 
-  auto status = TaskGroup<>()
+  auto status = TaskGroup()
+                    .SetExecutor(std::ref(executor))
                     .Submit([&]() -> Status {
-                      ++call_count;
+                      call_count.fetch_add(1, std::memory_order_relaxed);
                       return {};
                     })
                     .Submit([&]() -> Status {
-                      ++call_count;
+                      call_count.fetch_add(1, std::memory_order_relaxed);
                       return {};
                     })
                     .Run();
 
   EXPECT_THAT(status, IsOk());
-  EXPECT_EQ(call_count, 2);
+  EXPECT_EQ(call_count.load(std::memory_order_relaxed), 2);
 }
 
 TEST(TaskGroupTest, DirectAggregatesErrors) {
-  TaskGroup<> group;
+  TaskGroup group;
   int call_count = 0;
 
   group.Submit([&]() -> Status {
@@ -192,7 +194,7 @@ TEST(TaskGroupTest, DirectAggregatesErrors) {
 
 TEST(TaskGroupTest, ParallelSubmitsAll) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   std::atomic<int> call_count = 0;
 
   group.SetExecutor(std::ref(executor));
@@ -212,7 +214,7 @@ TEST(TaskGroupTest, ParallelSubmitsAll) {
 
 TEST(TaskGroupTest, ParallelAggregatesErrors) {
   test::ThreadExecutor executor;
-  TaskGroup<> group;
+  TaskGroup group;
   std::atomic<int> call_count = 0;
 
   group.SetExecutor(std::ref(executor));
@@ -236,16 +238,16 @@ TEST(TaskGroupTest, ParallelAggregatesErrors) {
 
 TEST(TaskGroupTest, ParallelSubmitErrors) {
   test::ThreadExecutor executor(ServiceUnavailable("executor busy"));
-  TaskGroup<> group;
-  int call_count = 0;
+  TaskGroup group;
+  std::atomic<int> call_count = 0;
 
   group.SetExecutor(std::ref(executor));
   group.Submit([&]() -> Status {
-    ++call_count;
+    call_count.fetch_add(1, std::memory_order_relaxed);
     return {};
   });
   group.Submit([&]() -> Status {
-    ++call_count;
+    call_count.fetch_add(1, std::memory_order_relaxed);
     return {};
   });
 
@@ -253,7 +255,7 @@ TEST(TaskGroupTest, ParallelSubmitErrors) {
   EXPECT_THAT(status, IsError(ErrorKind::kServiceUnavailable));
   EXPECT_THAT(status, HasErrorMessage("Task group failed with 2 errors"));
   EXPECT_THAT(status, HasErrorMessage("executor busy"));
-  EXPECT_EQ(call_count, 0);
+  EXPECT_EQ(call_count.load(std::memory_order_relaxed), 0);
   EXPECT_EQ(executor.submit_count(), 2);
 }
 

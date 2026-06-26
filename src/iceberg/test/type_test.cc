@@ -38,6 +38,7 @@ struct TypeTestCase {
   std::shared_ptr<iceberg::Type> type;
   iceberg::TypeId type_id;
   bool primitive;
+  bool nested = false;
   std::string repr;
 };
 
@@ -61,18 +62,29 @@ TEST_P(TypeTest, IsPrimitive) {
     const auto* primitive =
         dynamic_cast<const iceberg::PrimitiveType*>(test_case.type.get());
     ASSERT_NE(nullptr, primitive);
+  } else {
+    ASSERT_FALSE(test_case.type->is_primitive());
   }
 }
 
 TEST_P(TypeTest, IsNested) {
   const auto& test_case = GetParam();
-  if (!test_case.primitive) {
-    ASSERT_FALSE(test_case.type->is_primitive());
+  if (test_case.nested) {
     ASSERT_TRUE(test_case.type->is_nested());
 
     const auto* nested = dynamic_cast<const iceberg::NestedType*>(test_case.type.get());
     ASSERT_NE(nullptr, nested);
+  } else {
+    ASSERT_FALSE(test_case.type->is_nested());
   }
+}
+
+TEST_P(TypeTest, TypeKindPredicates) {
+  const auto& test_case = GetParam();
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kStruct, test_case.type->is_struct());
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kList, test_case.type->is_list());
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kMap, test_case.type->is_map());
+  ASSERT_EQ(test_case.type_id == iceberg::TypeId::kVariant, test_case.type->is_variant());
 }
 
 TEST_P(TypeTest, ReflexiveEquality) {
@@ -90,7 +102,7 @@ TEST_P(TypeTest, StdFormat) {
   ASSERT_EQ(test_case.repr, std::format("{}", *test_case.type));
 }
 
-const static std::array<TypeTestCase, 19> kPrimitiveTypes = {{
+const static std::array<TypeTestCase, 21> kPrimitiveTypes = {{
     {
         .name = "boolean",
         .type = iceberg::boolean(),
@@ -224,7 +236,29 @@ const static std::array<TypeTestCase, 19> kPrimitiveTypes = {{
         .primitive = true,
         .repr = "unknown",
     },
+    {
+        .name = "geometry",
+        .type = iceberg::geometry(),
+        .type_id = iceberg::TypeId::kGeometry,
+        .primitive = true,
+        .repr = "geometry",
+    },
+    {
+        .name = "geography",
+        .type = iceberg::geography(),
+        .type_id = iceberg::TypeId::kGeography,
+        .primitive = true,
+        .repr = "geography",
+    },
 }};
+
+const static TypeTestCase kVariantType = {
+    .name = "variant",
+    .type = iceberg::variant(),
+    .type_id = iceberg::TypeId::kVariant,
+    .primitive = false,
+    .repr = "variant",
+};
 
 const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
@@ -232,6 +266,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
         .type = std::make_shared<iceberg::ListType>(1, iceberg::int32(), true),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
+        .nested = true,
         .repr = "list<element (1): int (optional)>",
     },
     {
@@ -240,6 +275,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
             1, std::make_shared<iceberg::ListType>(2, iceberg::int32(), true), false),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
+        .nested = true,
         .repr = "list<element (1): list<element (2): int (optional)> (required)>",
     },
     {
@@ -249,6 +285,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
             iceberg::SchemaField::MakeRequired(2, "value", iceberg::string())),
         .type_id = iceberg::TypeId::kMap,
         .primitive = false,
+        .nested = true,
         .repr = "map<key (1): long (required): value (2): string (required)>",
     },
     {
@@ -259,6 +296,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
         }),
         .type_id = iceberg::TypeId::kStruct,
         .primitive = false,
+        .nested = true,
         .repr = R"(struct<
   foo (1): long (required)
   bar (2): string (optional)
@@ -269,6 +307,9 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
 INSTANTIATE_TEST_SUITE_P(Primitive, TypeTest, ::testing::ValuesIn(kPrimitiveTypes),
                          TypeTestCaseToString);
 
+INSTANTIATE_TEST_SUITE_P(Variant, TypeTest, ::testing::Values(kVariantType),
+                         TypeTestCaseToString);
+
 INSTANTIATE_TEST_SUITE_P(Nested, TypeTest, ::testing::ValuesIn(kNestedTypes),
                          TypeTestCaseToString);
 
@@ -277,6 +318,7 @@ TEST(TypeTest, Equality) {
   for (const auto& test_case : kPrimitiveTypes) {
     alltypes.push_back(test_case.type);
   }
+  alltypes.push_back(kVariantType.type);
   for (const auto& test_case : kNestedTypes) {
     alltypes.push_back(test_case.type);
   }
@@ -292,6 +334,33 @@ TEST(TypeTest, Equality) {
       }
     }
   }
+}
+
+TEST(TypeTest, GeographyExplicitDefaultAlgorithm) {
+  ASSERT_NE(*iceberg::geography("srid:4326"),
+            *iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kSpherical));
+  ASSERT_NE(*iceberg::geography(),
+            *iceberg::geography("OGC:CRS84", iceberg::EdgeAlgorithm::kSpherical));
+  ASSERT_EQ(
+      "geography(srid:4326, spherical)",
+      iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kSpherical)->ToString());
+  ASSERT_EQ(
+      "geography(OGC:CRS84, spherical)",
+      iceberg::geography("OGC:CRS84", iceberg::EdgeAlgorithm::kSpherical)->ToString());
+  ASSERT_NE(*iceberg::geography("srid:4326"),
+            *iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kKarney));
+}
+
+TEST(TypeTest, GeometryMakeRejectsEmptyCrs) {
+  auto result = iceberg::GeometryType::Make("");
+  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(result, iceberg::HasErrorMessage("GeometryType: CRS cannot be empty"));
+}
+
+TEST(TypeTest, GeographyMakeRejectsEmptyCrs) {
+  auto result = iceberg::GeographyType::Make("");
+  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(result, iceberg::HasErrorMessage("GeographyType: CRS cannot be empty"));
 }
 
 TEST(TypeTest, Decimal) {
@@ -359,11 +428,17 @@ TEST(TypeTest, List) {
   }
   ASSERT_THAT(
       []() {
-        iceberg::ListType list(
-            iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
+        iceberg::list(iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("child field name should be 'element', was 'wrongname'")));
+
+  auto make_result = iceberg::ListType::Make(
+      iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
+  ASSERT_THAT(make_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(make_result,
+              iceberg::HasErrorMessage(
+                  "ListType: child field name should be 'element', was 'wrongname'"));
 }
 
 TEST(TypeTest, Map) {
@@ -397,7 +472,7 @@ TEST(TypeTest, Map) {
       []() {
         iceberg::SchemaField key(5, "notkey", iceberg::int32(), true);
         iceberg::SchemaField value(7, "value", iceberg::string(), true);
-        iceberg::MapType map(key, value);
+        iceberg::map(key, value);
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("key field name should be 'key', was 'notkey'")));
@@ -405,10 +480,26 @@ TEST(TypeTest, Map) {
       []() {
         iceberg::SchemaField key(5, "key", iceberg::int32(), true);
         iceberg::SchemaField value(7, "notvalue", iceberg::string(), true);
-        iceberg::MapType map(key, value);
+        iceberg::map(key, value);
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("value field name should be 'value', was 'notvalue'")));
+
+  auto invalid_key_result =
+      iceberg::MapType::Make(iceberg::SchemaField(5, "notkey", iceberg::int32(), true),
+                             iceberg::SchemaField(7, "value", iceberg::string(), true));
+  ASSERT_THAT(invalid_key_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(
+      invalid_key_result,
+      iceberg::HasErrorMessage("MapType: key field name should be 'key', was 'notkey'"));
+
+  auto invalid_value_result = iceberg::MapType::Make(
+      iceberg::SchemaField(5, "key", iceberg::int32(), true),
+      iceberg::SchemaField(7, "notvalue", iceberg::string(), true));
+  ASSERT_THAT(invalid_value_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(invalid_value_result,
+              iceberg::HasErrorMessage(
+                  "MapType: value field name should be 'value', was 'notvalue'"));
 }
 
 TEST(TypeTest, Struct) {

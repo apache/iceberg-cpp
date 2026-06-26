@@ -40,12 +40,17 @@
 
 namespace iceberg {
 
-/// \brief Abstract base class for all merge-based snapshot write operations.
+/// \brief Abstract base class for merge-based snapshot write operations.
 ///
-/// Provides the complete filter → write → merge pipeline that all merge-based
-/// operations (MergeAppend, OverwriteFiles, RowDelta, ReplacePartitions,
-/// RewriteFiles) share. Subclasses only need to implement `operation()` and
-/// call the protected primitive API to describe what changes to make.
+/// This class is the C++ counterpart of Java's MergingSnapshotProducer. It
+/// provides the shared filter, write, and merge pipeline used by operations
+/// that accumulate file additions and deletions, produce a new Snapshot, and
+/// commit that snapshot as current. Commit conflicts are resolved by applying
+/// the same staged changes to the new latest snapshot and reattempting the
+/// commit.
+///
+/// Subclasses describe their changes by calling the protected primitive API and
+/// implement `operation()` to set the snapshot operation summary.
 ///
 /// The Apply() pipeline:
 ///   1. Filter data manifests (via data_filter_manager_)
@@ -98,9 +103,9 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   /// \brief Add all files in a pre-existing data manifest to the new snapshot.
   ///
-  /// The manifest must contain DATA content. If snapshot ID inheritance is
-  /// enabled and the manifest has no snapshot ID assigned, it is used directly;
-  /// otherwise it is copied with the current snapshot ID.
+  /// The manifest must contain only appended data files. If snapshot ID
+  /// inheritance is enabled and the manifest has no snapshot ID assigned, it is
+  /// used directly; otherwise it is copied with the current snapshot ID.
   Status AddManifest(ManifestFile manifest);
 
   /// \brief Register a data file (by object) to be deleted from the table.
@@ -116,14 +121,15 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   /// \brief Register an expression to delete matching rows.
   ///
-  /// Both data and delete filter managers receive the expression: delete files that
-  /// match the row filter can also be removed because those rows will be deleted.
+  /// Both data and delete filter managers receive the expression: delete files
+  /// that match the row filter can also be removed because those rows will be
+  /// deleted.
   Status DeleteByRowFilter(std::shared_ptr<Expression> expr);
 
   /// \brief Register a partition to be dropped.
   ///
-  /// Both data and delete filter managers receive the partition drop, since dropping
-  /// data in a partition also drops all delete files in that partition.
+  /// Both data and delete filter managers receive the partition drop, since
+  /// dropping data in a partition also drops all delete files in that partition.
   Status DropPartition(int32_t spec_id, PartitionValues partition);
 
   /// \brief Fail if any registered delete path is not found in any manifest.
@@ -288,6 +294,14 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
       const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
       bool case_sensitive = true);
 
+  /// \brief Return an error if a staged deletion vector conflicts with a deletion
+  /// vector added since starting_snapshot_id.
+  Status ValidateAddedDVs(const TableMetadata& metadata,
+                          std::optional<int64_t> starting_snapshot_id,
+                          std::shared_ptr<Expression> conflict_filter,
+                          const std::shared_ptr<Snapshot>& parent,
+                          std::shared_ptr<FileIO> io) const;
+
  private:
   struct PendingDeleteFile {
     std::shared_ptr<DataFile> file;
@@ -323,12 +337,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   Status AddDeleteFile(std::shared_ptr<DataFile> file,
                        std::optional<int64_t> data_sequence_number);
-
-  Status ValidateAddedDVs(const TableMetadata& metadata,
-                          std::optional<int64_t> starting_snapshot_id,
-                          std::shared_ptr<Expression> conflict_filter,
-                          const std::shared_ptr<Snapshot>& parent,
-                          std::shared_ptr<FileIO> io) const;
 
   Status ManagersReady() const;
 

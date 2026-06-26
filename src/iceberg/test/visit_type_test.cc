@@ -46,6 +46,7 @@ struct TypeTestCase {
   std::shared_ptr<iceberg::Type> type;
   iceberg::TypeId type_id;
   bool primitive;
+  bool nested = false;
   std::string repr;
 };
 
@@ -53,7 +54,7 @@ std::string TypeTestCaseToString(const ::testing::TestParamInfo<TypeTestCase>& i
   return info.param.name;
 }
 
-const static std::array<TypeTestCase, 19> kPrimitiveTypes = {{
+const static std::array<TypeTestCase, 21> kPrimitiveTypes = {{
     {
         .name = "boolean",
         .type = iceberg::boolean(),
@@ -187,7 +188,29 @@ const static std::array<TypeTestCase, 19> kPrimitiveTypes = {{
         .primitive = true,
         .repr = "unknown",
     },
+    {
+        .name = "geometry",
+        .type = iceberg::geometry(),
+        .type_id = iceberg::TypeId::kGeometry,
+        .primitive = true,
+        .repr = "geometry",
+    },
+    {
+        .name = "geography",
+        .type = iceberg::geography(),
+        .type_id = iceberg::TypeId::kGeography,
+        .primitive = true,
+        .repr = "geography",
+    },
 }};
+
+const static TypeTestCase kVariantType = {
+    .name = "variant",
+    .type = iceberg::variant(),
+    .type_id = iceberg::TypeId::kVariant,
+    .primitive = false,
+    .repr = "variant",
+};
 
 const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
@@ -195,6 +218,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
         .type = std::make_shared<iceberg::ListType>(1, iceberg::int32(), true),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
+        .nested = true,
         .repr = "list<element (1): int (optional)>",
     },
     {
@@ -203,6 +227,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
             1, std::make_shared<iceberg::ListType>(2, iceberg::int32(), true), false),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
+        .nested = true,
         .repr = "list<element (1): list<element (2): int (optional)> (required)>",
     },
     {
@@ -212,6 +237,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
             iceberg::SchemaField::MakeRequired(2, "value", iceberg::string())),
         .type_id = iceberg::TypeId::kMap,
         .primitive = false,
+        .nested = true,
         .repr = "map<key (1): long (required): value (2): string (required)>",
     },
     {
@@ -222,6 +248,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
         }),
         .type_id = iceberg::TypeId::kStruct,
         .primitive = false,
+        .nested = true,
         .repr = R"(struct<
   foo (1): long (required)
   bar (2): string (optional)
@@ -234,6 +261,9 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
 class VisitTypeTest : public ::testing::TestWithParam<TypeTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(Primitive, VisitTypeTest, ::testing::ValuesIn(kPrimitiveTypes),
+                         TypeTestCaseToString);
+
+INSTANTIATE_TEST_SUITE_P(Variant, VisitTypeTest, ::testing::Values(kVariantType),
                          TypeTestCaseToString);
 
 INSTANTIATE_TEST_SUITE_P(Nested, VisitTypeTest, ::testing::ValuesIn(kNestedTypes),
@@ -261,12 +291,12 @@ TEST_P(VisitTypeTest, VisitTypeReturnNestedTypeId) {
   const auto& test_case = GetParam();
   auto result = VisitType(*test_case.type, visitor);
 
-  if (test_case.primitive) {
-    ASSERT_THAT(result, IsError(ErrorKind::kNotImplemented));
-    ASSERT_THAT(result, HasErrorMessage("Type is not a nested type"));
-  } else {
+  if (test_case.nested) {
     ASSERT_THAT(result, IsOk());
     ASSERT_EQ(result.value(), test_case.type_id);
+  } else {
+    ASSERT_THAT(result, IsError(ErrorKind::kNotImplemented));
+    ASSERT_THAT(result, HasErrorMessage("Type is not a nested type"));
   }
 }
 

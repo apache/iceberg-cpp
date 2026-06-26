@@ -26,13 +26,9 @@ name: "ASF Allowlist Check"
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - ".github/**"
   push:
     branches:
       - main
-    paths:
-      - ".github/**"
 
 permissions:
   contents: read
@@ -40,7 +36,7 @@ permissions:
 jobs:
   asf-allowlist-check:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
     - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:

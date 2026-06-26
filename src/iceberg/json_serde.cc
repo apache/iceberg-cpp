@@ -276,8 +276,14 @@ Result<std::unique_ptr<SortField>> SortFieldFromJson(const nlohmann::json& json)
                                      null_order);
 }
 
-Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
-    const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema) {
+namespace {
+
+struct ParsedSortOrder {
+  int32_t order_id;
+  std::vector<SortField> fields;
+};
+
+Result<ParsedSortOrder> ParseSortOrder(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
   ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
 
@@ -286,19 +292,30 @@ Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto sort_field, SortFieldFromJson(field_json));
     sort_fields.push_back(std::move(*sort_field));
   }
-  return SortOrder::Make(*current_schema, order_id, std::move(sort_fields));
+  return ParsedSortOrder{.order_id = order_id, .fields = std::move(sort_fields)};
+}
+
+}  // namespace
+
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
+    const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema,
+    int32_t default_sort_order_id) {
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed, ParseSortOrder(json));
+  if (parsed.order_id == default_sort_order_id) {
+    return SortOrder::Make(*current_schema, parsed.order_id, std::move(parsed.fields));
+  }
+  return SortOrder::Make(parsed.order_id, std::move(parsed.fields));
+}
+
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
+    const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema) {
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed, ParseSortOrder(json));
+  return SortOrder::Make(*current_schema, parsed.order_id, std::move(parsed.fields));
 }
 
 Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json) {
-  ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
-  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
-
-  std::vector<SortField> sort_fields;
-  for (const auto& field_json : fields) {
-    ICEBERG_ASSIGN_OR_RAISE(auto sort_field, SortFieldFromJson(field_json));
-    sort_fields.push_back(std::move(*sort_field));
-  }
-  return SortOrder::Make(order_id, std::move(sort_fields));
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed, ParseSortOrder(json));
+  return SortOrder::Make(parsed.order_id, std::move(parsed.fields));
 }
 
 Result<nlohmann::json> ToJson(const SchemaField& field) {
@@ -399,6 +416,12 @@ Result<nlohmann::json> ToJson(const Type& type) {
       return "uuid";
     case TypeId::kUnknown:
       return "unknown";
+    case TypeId::kVariant:
+      return "variant";
+    case TypeId::kGeometry:
+      return type.ToString();
+    case TypeId::kGeography:
+      return type.ToString();
   }
   std::unreachable();
 }
@@ -471,9 +494,10 @@ Result<std::unique_ptr<Type>> ListTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto element_required,
                           GetJsonValue<bool>(json, kElementRequired));
 
-  return std::make_unique<ListType>(
-      SchemaField(element_id, std::string(ListType::kElementName),
-                  std::move(element_type), !element_required));
+  ICEBERG_ASSIGN_OR_RAISE(auto type, ListType::Make(SchemaField(
+                                         element_id, std::string(ListType::kElementName),
+                                         std::move(element_type), !element_required)));
+  return std::unique_ptr<Type>(std::move(type));
 }
 
 Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
@@ -490,79 +514,126 @@ Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
                         /*optional=*/false);
   SchemaField value_field(value_id, std::string(MapType::kValueName),
                           std::move(value_type), !value_required);
-  return std::make_unique<MapType>(std::move(key_field), std::move(value_field));
+  ICEBERG_ASSIGN_OR_RAISE(auto type,
+                          MapType::Make(std::move(key_field), std::move(value_field)));
+  return std::unique_ptr<Type>(std::move(type));
 }
 
 }  // namespace
 
 Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
   if (json.is_string()) {
-    std::string type_str = json.get<std::string>();
-    if (type_str == "boolean") {
+    const auto type_name = json.get<std::string>();
+    const auto normalized_type_name = StringUtils::ToLower(type_name);
+    if (normalized_type_name == "boolean") {
       return std::make_unique<BooleanType>();
-    } else if (type_str == "int") {
+    } else if (normalized_type_name == "int") {
       return std::make_unique<IntType>();
-    } else if (type_str == "long") {
+    } else if (normalized_type_name == "long") {
       return std::make_unique<LongType>();
-    } else if (type_str == "float") {
+    } else if (normalized_type_name == "float") {
       return std::make_unique<FloatType>();
-    } else if (type_str == "double") {
+    } else if (normalized_type_name == "double") {
       return std::make_unique<DoubleType>();
-    } else if (type_str == "date") {
+    } else if (normalized_type_name == "date") {
       return std::make_unique<DateType>();
-    } else if (type_str == "time") {
+    } else if (normalized_type_name == "time") {
       return std::make_unique<TimeType>();
-    } else if (type_str == "timestamp") {
+    } else if (normalized_type_name == "timestamp") {
       return std::make_unique<TimestampType>();
-    } else if (type_str == "timestamptz") {
+    } else if (normalized_type_name == "timestamptz") {
       return std::make_unique<TimestampTzType>();
-    } else if (type_str == "timestamp_ns") {
+    } else if (normalized_type_name == "timestamp_ns") {
       return std::make_unique<TimestampNsType>();
-    } else if (type_str == "timestamptz_ns") {
+    } else if (normalized_type_name == "timestamptz_ns") {
       return std::make_unique<TimestampTzNsType>();
-    } else if (type_str == "string") {
+    } else if (normalized_type_name == "string") {
       return std::make_unique<StringType>();
-    } else if (type_str == "binary") {
+    } else if (normalized_type_name == "binary") {
       return std::make_unique<BinaryType>();
-    } else if (type_str == "uuid") {
+    } else if (normalized_type_name == "uuid") {
       return std::make_unique<UuidType>();
-    } else if (type_str == "unknown") {
+    } else if (normalized_type_name == "unknown") {
       return std::make_unique<UnknownType>();
-    } else if (type_str.starts_with("fixed")) {
-      std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
+    } else if (normalized_type_name == "variant") {
+      return std::make_unique<VariantType>();
+    } else if (normalized_type_name.starts_with("fixed")) {
+      static const std::regex kFixedRegex(R"(fixed\[\s*(\d+)\s*\])");
       std::smatch match;
-      if (std::regex_match(type_str, match, fixed_regex)) {
+      if (std::regex_match(normalized_type_name, match, kFixedRegex)) {
         ICEBERG_ASSIGN_OR_RAISE(auto length,
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         return std::make_unique<FixedType>(length);
       }
-      return JsonParseError("Invalid fixed type: {}", type_str);
-    } else if (type_str.starts_with("decimal")) {
-      std::regex decimal_regex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
+      return JsonParseError("Invalid fixed type: {}", type_name);
+    } else if (normalized_type_name.starts_with("decimal")) {
+      static const std::regex kDecimalRegex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
       std::smatch match;
-      if (std::regex_match(type_str, match, decimal_regex)) {
+      if (std::regex_match(normalized_type_name, match, kDecimalRegex)) {
         ICEBERG_ASSIGN_OR_RAISE(auto precision,
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         ICEBERG_ASSIGN_OR_RAISE(auto scale,
                                 StringUtils::ParseNumber<int32_t>(match[2].str()));
         return std::make_unique<DecimalType>(precision, scale);
       }
-      return JsonParseError("Invalid decimal type: {}", type_str);
+      return JsonParseError("Invalid decimal type: {}", type_name);
+    } else if (normalized_type_name.starts_with("geometry")) {
+      static const std::regex kGeometryRegex(R"(geometry\s*(?:\(\s*([^)]*?)\s*\))?)",
+                                             std::regex_constants::icase);
+      std::smatch match;
+      if (std::regex_match(type_name, match, kGeometryRegex)) {
+        if (match[1].matched) {
+          auto crs = match[1].str();
+          if (crs.empty()) {
+            return JsonParseError("Invalid geometry type: {}", type_name);
+          }
+          ICEBERG_ASSIGN_OR_RAISE(auto type, GeometryType::Make(std::move(crs)));
+          return std::unique_ptr<Type>(std::move(type));
+        }
+        ICEBERG_ASSIGN_OR_RAISE(auto type, GeometryType::Make());
+        return std::unique_ptr<Type>(std::move(type));
+      }
+      return JsonParseError("Invalid geometry type: {}", type_name);
+    } else if (normalized_type_name.starts_with("geography")) {
+      static const std::regex kGeographyRegex(
+          R"(geography\s*(?:\(\s*([^,]*?)\s*(?:,\s*(\w*)\s*)?\))?)",
+          std::regex_constants::icase);
+      std::smatch match;
+      if (std::regex_match(type_name, match, kGeographyRegex)) {
+        auto crs = match[1].str();
+        if (match[1].matched && crs.empty()) {
+          return JsonParseError("Invalid geography type: {}", type_name);
+        }
+        if (match[2].matched) {
+          ICEBERG_ASSIGN_OR_RAISE(auto algorithm,
+                                  EdgeAlgorithmFromString(match[2].str()));
+          ICEBERG_ASSIGN_OR_RAISE(auto type,
+                                  GeographyType::Make(std::move(crs), algorithm));
+          return std::unique_ptr<Type>(std::move(type));
+        }
+        if (match[1].matched) {
+          ICEBERG_ASSIGN_OR_RAISE(auto type, GeographyType::Make(std::move(crs)));
+          return std::unique_ptr<Type>(std::move(type));
+        }
+        ICEBERG_ASSIGN_OR_RAISE(auto type, GeographyType::Make());
+        return std::unique_ptr<Type>(std::move(type));
+      }
+      return JsonParseError("Invalid geography type: {}", type_name);
     } else {
-      return JsonParseError("Unknown primitive type: {}", type_str);
+      return JsonParseError("Cannot parse type string: {}", type_name);
     }
   }
 
   // For complex types like struct, list, and map
-  ICEBERG_ASSIGN_OR_RAISE(auto type_str, GetJsonValue<std::string>(json, kType));
-  if (type_str == kStruct) {
+  ICEBERG_ASSIGN_OR_RAISE(auto complex_type_name, GetJsonValue<std::string>(json, kType));
+  if (complex_type_name == kStruct) {
     return StructTypeFromJson(json);
-  } else if (type_str == kList) {
+  } else if (complex_type_name == kList) {
     return ListTypeFromJson(json);
-  } else if (type_str == kMap) {
+  } else if (complex_type_name == kMap) {
     return MapTypeFromJson(json);
   } else {
-    return JsonParseError("Unknown complex type: {}", type_str);
+    return JsonParseError("Unknown complex type: {}", complex_type_name);
   }
 }
 
@@ -1177,8 +1248,9 @@ Status ParseSortOrders(const nlohmann::json& json, int8_t format_version,
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_array,
                             GetJsonValue<nlohmann::json>(json, kSortOrders));
     for (const auto& sort_order_json : sort_order_array) {
-      ICEBERG_ASSIGN_OR_RAISE(auto sort_order,
-                              SortOrderFromJson(sort_order_json, current_schema));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto sort_order,
+          SortOrderFromJson(sort_order_json, current_schema, default_sort_order_id));
       sort_orders.push_back(std::move(sort_order));
     }
   } else {

@@ -19,6 +19,7 @@
 
 #include "iceberg/schema_internal.h"
 
+#include <cerrno>
 #include <charconv>
 #include <cstring>
 #include <optional>
@@ -38,6 +39,33 @@ constexpr const char* kArrowExtensionName = "ARROW:extension:name";
 constexpr const char* kArrowExtensionMetadata = "ARROW:extension:metadata";
 constexpr const char* kArrowUuidExtensionName = "arrow.uuid";
 constexpr int32_t kUnknownFieldId = -1;
+
+Status CheckArrowCompatible(const Type& type) {
+  switch (type.type_id()) {
+    case TypeId::kVariant:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
+      return NotSupported("Iceberg type {} is not supported by Arrow conversion",
+                          type.ToString());
+    case TypeId::kStruct:
+      for (const auto& field : static_cast<const StructType&>(type).fields()) {
+        ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(*field.type()));
+      }
+      break;
+    case TypeId::kList:
+      ICEBERG_RETURN_UNEXPECTED(
+          CheckArrowCompatible(*static_cast<const ListType&>(type).element().type()));
+      break;
+    case TypeId::kMap: {
+      const auto& map_type = static_cast<const MapType&>(type);
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(*map_type.key().type()));
+      ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(*map_type.value().type()));
+    } break;
+    default:
+      break;
+  }
+  return {};
+}
 
 // Convert an Iceberg type to Arrow schema. Return value is Nanoarrow error code.
 ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view name,
@@ -153,6 +181,11 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
     case TypeId::kUnknown:
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA));
       break;
+    case TypeId::kVariant:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
+      ArrowBufferReset(&metadata_buffer);
+      return EINVAL;
   }
 
   if (!name.empty()) {
@@ -178,6 +211,8 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
   if (out == nullptr) [[unlikely]] {
     return InvalidArgument("Output Arrow schema cannot be null");
   }
+
+  ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(schema));
 
   ArrowSchemaInit(out);
 

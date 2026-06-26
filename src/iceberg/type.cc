@@ -23,6 +23,7 @@
 #include <format>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "iceberg/exception.h"
@@ -142,11 +143,15 @@ StructType::InitFieldByLowerCaseName(const StructType& self) {
   return field_by_lowercase_name;
 }
 
-ListType::ListType(SchemaField element) : element_(std::move(element)) {
-  ICEBERG_CHECK_OR_DIE(element_.name() == kElementName,
-                       "ListType: child field name should be '{}', was '{}'",
-                       kElementName, element_.name());
+Result<std::unique_ptr<ListType>> ListType::Make(SchemaField element) {
+  if (element.name() != kElementName) {
+    return InvalidArgument("ListType: child field name should be '{}', was '{}'",
+                           kElementName, element.name());
+  }
+  return std::make_unique<ListType>(std::move(element));
 }
+
+ListType::ListType(SchemaField element) : element_(std::move(element)) {}
 
 ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
     : element_(field_id, std::string(kElementName), std::move(type), optional) {}
@@ -198,15 +203,20 @@ bool ListType::Equals(const Type& other) const {
   return element_ == list.element_;
 }
 
-MapType::MapType(SchemaField key, SchemaField value)
-    : fields_{std::move(key), std::move(value)} {
-  ICEBERG_CHECK_OR_DIE(this->key().name() == kKeyName,
-                       "MapType: key field name should be '{}', was '{}'", kKeyName,
-                       this->key().name());
-  ICEBERG_CHECK_OR_DIE(this->value().name() == kValueName,
-                       "MapType: value field name should be '{}', was '{}'", kValueName,
-                       this->value().name());
+Result<std::unique_ptr<MapType>> MapType::Make(SchemaField key, SchemaField value) {
+  if (key.name() != kKeyName) {
+    return InvalidArgument("MapType: key field name should be '{}', was '{}'", kKeyName,
+                           key.name());
+  }
+  if (value.name() != kValueName) {
+    return InvalidArgument("MapType: value field name should be '{}', was '{}'",
+                           kValueName, value.name());
+  }
+  return std::make_unique<MapType>(std::move(key), std::move(value));
 }
+
+MapType::MapType(SchemaField key, SchemaField value)
+    : fields_{std::move(key), std::move(value)} {}
 
 const SchemaField& MapType::key() const { return fields_[0]; }
 const SchemaField& MapType::value() const { return fields_[1]; }
@@ -263,6 +273,10 @@ bool MapType::Equals(const Type& other) const {
   const auto& map = static_cast<const MapType&>(other);
   return fields_ == map.fields_;
 }
+
+TypeId VariantType::type_id() const { return kTypeId; }
+std::string VariantType::ToString() const { return "variant"; }
+bool VariantType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 TypeId BooleanType::type_id() const { return kTypeId; }
 std::string BooleanType::ToString() const { return "boolean"; }
@@ -354,6 +368,97 @@ TypeId UnknownType::type_id() const { return kTypeId; }
 std::string UnknownType::ToString() const { return "unknown"; }
 bool UnknownType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
+Result<std::unique_ptr<GeometryType>> GeometryType::Make() {
+  return std::unique_ptr<GeometryType>(new GeometryType());
+}
+
+Result<std::unique_ptr<GeometryType>> GeometryType::Make(std::string crs) {
+  if (crs.empty()) {
+    return InvalidArgument("GeometryType: CRS cannot be empty");
+  }
+  return std::unique_ptr<GeometryType>(new GeometryType(std::move(crs)));
+}
+
+GeometryType::GeometryType(std::string crs) {
+  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
+    crs_ = std::move(crs);
+  }
+}
+
+std::string_view GeometryType::crs() const {
+  return crs_.empty() ? kDefaultCrs : std::string_view(crs_);
+}
+TypeId GeometryType::type_id() const { return kTypeId; }
+std::string GeometryType::ToString() const {
+  if (crs_.empty()) {
+    return "geometry";
+  }
+  return std::format("geometry({})", crs_);
+}
+bool GeometryType::Equals(const Type& other) const {
+  if (other.type_id() != kTypeId) {
+    return false;
+  }
+  const auto& geometry = static_cast<const GeometryType&>(other);
+  return crs_ == geometry.crs_;
+}
+
+Result<std::unique_ptr<GeographyType>> GeographyType::Make() {
+  return std::unique_ptr<GeographyType>(new GeographyType());
+}
+
+Result<std::unique_ptr<GeographyType>> GeographyType::Make(std::string crs) {
+  if (crs.empty()) {
+    return InvalidArgument("GeographyType: CRS cannot be empty");
+  }
+  return std::unique_ptr<GeographyType>(new GeographyType(std::move(crs)));
+}
+
+Result<std::unique_ptr<GeographyType>> GeographyType::Make(std::string crs,
+                                                           EdgeAlgorithm algorithm) {
+  if (crs.empty()) {
+    return InvalidArgument("GeographyType: CRS cannot be empty");
+  }
+  return std::unique_ptr<GeographyType>(new GeographyType(std::move(crs), algorithm));
+}
+
+GeographyType::GeographyType(std::string crs) {
+  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
+    crs_ = std::move(crs);
+  }
+}
+
+GeographyType::GeographyType(std::string crs, EdgeAlgorithm algorithm)
+    : algorithm_(algorithm) {
+  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
+    crs_ = std::move(crs);
+  }
+}
+
+std::string_view GeographyType::crs() const {
+  return crs_.empty() ? kDefaultCrs : std::string_view(crs_);
+}
+EdgeAlgorithm GeographyType::algorithm() const {
+  return algorithm_.value_or(kDefaultAlgorithm);
+}
+TypeId GeographyType::type_id() const { return kTypeId; }
+std::string GeographyType::ToString() const {
+  if (algorithm_.has_value()) {
+    return std::format("geography({}, {})", crs(), iceberg::ToString(*algorithm_));
+  }
+  if (!crs_.empty()) {
+    return std::format("geography({})", crs_);
+  }
+  return "geography";
+}
+bool GeographyType::Equals(const Type& other) const {
+  if (other.type_id() != kTypeId) {
+    return false;
+  }
+  const auto& geography = static_cast<const GeographyType&>(other);
+  return crs_ == geography.crs_ && algorithm_ == geography.algorithm_;
+}
+
 FixedType::FixedType(int32_t length) : length_(length) {
   ICEBERG_CHECK_OR_DIE(length >= 0, "FixedType: length must be >= 0, was {}", length);
 }
@@ -374,7 +479,7 @@ std::string BinaryType::ToString() const { return "binary"; }
 bool BinaryType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 // ----------------------------------------------------------------------
-// Factory functions for creating primitive data types
+// Factory functions for creating data types
 
 #define TYPE_FACTORY(NAME, KLASS)                                     \
   const std::shared_ptr<KLASS>& NAME() {                              \
@@ -397,8 +502,27 @@ TYPE_FACTORY(binary, BinaryType)
 TYPE_FACTORY(string, StringType)
 TYPE_FACTORY(uuid, UuidType)
 TYPE_FACTORY(unknown, UnknownType)
+TYPE_FACTORY(variant, VariantType)
 
 #undef TYPE_FACTORY
+
+const std::shared_ptr<GeometryType>& geometry() {
+  static const std::shared_ptr<GeometryType> result = [] {
+    auto type = GeometryType::Make();
+    ICEBERG_CHECK_OR_DIE(type.has_value(), "Failed to create default geometry type");
+    return std::shared_ptr<GeometryType>(std::move(type.value()));
+  }();
+  return result;
+}
+
+const std::shared_ptr<GeographyType>& geography() {
+  static const std::shared_ptr<GeographyType> result = [] {
+    auto type = GeographyType::Make();
+    ICEBERG_CHECK_OR_DIE(type.has_value(), "Failed to create default geography type");
+    return std::shared_ptr<GeographyType>(std::move(type.value()));
+  }();
+  return result;
+}
 
 std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale) {
   return std::make_shared<DecimalType>(precision, scale);
@@ -408,12 +532,44 @@ std::shared_ptr<FixedType> fixed(int32_t length) {
   return std::make_shared<FixedType>(length);
 }
 
+std::shared_ptr<GeometryType> geometry(std::string crs) {
+  auto type = GeometryType::Make(std::move(crs));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
+}
+
+std::shared_ptr<GeographyType> geography(std::string crs) {
+  auto type = GeographyType::Make(std::move(crs));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
+}
+
+std::shared_ptr<GeographyType> geography(std::string crs, EdgeAlgorithm algorithm) {
+  auto type = GeographyType::Make(std::move(crs), algorithm);
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
+}
+
 std::shared_ptr<MapType> map(SchemaField key, SchemaField value) {
-  return std::make_shared<MapType>(key, value);
+  auto type = MapType::Make(std::move(key), std::move(value));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
 }
 
 std::shared_ptr<ListType> list(SchemaField element) {
-  return std::make_shared<ListType>(std::move(element));
+  auto type = ListType::Make(std::move(element));
+  if (!type.has_value()) {
+    throw IcebergError(type.error().message);
+  }
+  return std::move(type.value());
 }
 
 std::shared_ptr<StructType> struct_(std::vector<SchemaField> fields) {
@@ -462,9 +618,52 @@ std::string_view ToString(TypeId id) {
       return "binary";
     case TypeId::kUnknown:
       return "unknown";
+    case TypeId::kVariant:
+      return "variant";
+    case TypeId::kGeometry:
+      return "geometry";
+    case TypeId::kGeography:
+      return "geography";
   }
 
   std::unreachable();
+}
+
+std::string_view ToString(EdgeAlgorithm algorithm) {
+  switch (algorithm) {
+    case EdgeAlgorithm::kSpherical:
+      return "spherical";
+    case EdgeAlgorithm::kVincenty:
+      return "vincenty";
+    case EdgeAlgorithm::kThomas:
+      return "thomas";
+    case EdgeAlgorithm::kAndoyer:
+      return "andoyer";
+    case EdgeAlgorithm::kKarney:
+      return "karney";
+  }
+
+  std::unreachable();
+}
+
+Result<EdgeAlgorithm> EdgeAlgorithmFromString(std::string_view name) {
+  auto lower_name = StringUtils::ToLower(name);
+  if (lower_name == "spherical") {
+    return EdgeAlgorithm::kSpherical;
+  }
+  if (lower_name == "vincenty") {
+    return EdgeAlgorithm::kVincenty;
+  }
+  if (lower_name == "thomas") {
+    return EdgeAlgorithm::kThomas;
+  }
+  if (lower_name == "andoyer") {
+    return EdgeAlgorithm::kAndoyer;
+  }
+  if (lower_name == "karney") {
+    return EdgeAlgorithm::kKarney;
+  }
+  return InvalidArgument("Invalid edge interpolation algorithm: {}", name);
 }
 
 }  // namespace iceberg

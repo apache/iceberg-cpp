@@ -48,6 +48,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/table.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
@@ -89,7 +90,7 @@ Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
 
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client.Get(config_path, params, /*headers=*/{},
-                                     *DefaultErrorHandler::Instance(), session));
+                                     *ConfigErrorHandler::Instance(), session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return CatalogConfigFromJson(json);
 }
@@ -712,9 +713,14 @@ Result<CommitTableResponse> RestCatalog::UpdateTableInternal(
 
   ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
-  ICEBERG_ASSIGN_OR_RAISE(const auto response,
-                          client_->Post(path, json_request, /*headers=*/{},
-                                        *TableErrorHandler::Instance(), session));
+  ICEBERG_ASSIGN_OR_RAISE(auto is_create, TableRequirements::IsCreate(requirements));
+  const ErrorHandler* error_handler = TableCommitErrorHandler::Instance().get();
+  if (is_create) {
+    error_handler = CreateTableErrorHandler::Instance().get();
+  }
+  ICEBERG_ASSIGN_OR_RAISE(
+      const auto response,
+      client_->Post(path, json_request, /*headers=*/{}, *error_handler, session));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto commit_response, CommitTableResponseFromJson(json));

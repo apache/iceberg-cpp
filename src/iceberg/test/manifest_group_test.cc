@@ -39,6 +39,7 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -625,11 +626,15 @@ TEST_P(ManifestGroupTest, MultipleDataManifests) {
       auto group,
       ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
 
+  test::ThreadExecutor executor;
+  group->PlanWith(std::ref(executor));
+
   // Plan files - should return files from both manifests
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
+  EXPECT_EQ(executor.submit_count(), 2);
 }
 
 TEST_P(ManifestGroupTest, PartitionFilter) {

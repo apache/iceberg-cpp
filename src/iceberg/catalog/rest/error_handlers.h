@@ -19,10 +19,12 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <string>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/catalog/rest/type_fwd.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/error_handlers.h
@@ -41,6 +43,14 @@ class ICEBERG_REST_EXPORT ErrorHandler {
   /// \param error The error response parsed from the HTTP response body
   /// \return An Error object with appropriate ErrorKind and message
   virtual Status Accept(const ErrorResponse& error) const = 0;
+
+  /// \brief Parse an HTTP error response body.
+  ///
+  /// \param code The HTTP status code from the failed response
+  /// \param text The HTTP response body
+  /// \return The parsed error response
+  virtual Result<ErrorResponse> ParseResponse(uint32_t code,
+                                              const std::string& text) const = 0;
 };
 
 /// \brief Default error handler for REST API responses.
@@ -50,6 +60,8 @@ class ICEBERG_REST_EXPORT DefaultErrorHandler : public ErrorHandler {
   static const std::shared_ptr<DefaultErrorHandler>& Instance();
 
   Status Accept(const ErrorResponse& error) const override;
+  Result<ErrorResponse> ParseResponse(uint32_t code,
+                                      const std::string& text) const override;
 
  protected:
   constexpr DefaultErrorHandler() = default;
@@ -79,6 +91,18 @@ class ICEBERG_REST_EXPORT DropNamespaceErrorHandler final : public NamespaceErro
   constexpr DropNamespaceErrorHandler() = default;
 };
 
+/// \brief Error handler for the catalog config endpoint.
+class ICEBERG_REST_EXPORT ConfigErrorHandler final : public DefaultErrorHandler {
+ public:
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<ConfigErrorHandler>& Instance();
+
+  Status Accept(const ErrorResponse& error) const override;
+
+ private:
+  constexpr ConfigErrorHandler() = default;
+};
+
 /// \brief Table-level error handler.
 class ICEBERG_REST_EXPORT TableErrorHandler final : public DefaultErrorHandler {
  public:
@@ -91,6 +115,30 @@ class ICEBERG_REST_EXPORT TableErrorHandler final : public DefaultErrorHandler {
   constexpr TableErrorHandler() = default;
 };
 
+/// \brief Table commit operation error handler.
+class ICEBERG_REST_EXPORT TableCommitErrorHandler : public DefaultErrorHandler {
+ public:
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<TableCommitErrorHandler>& Instance();
+
+  Status Accept(const ErrorResponse& error) const override;
+
+ protected:
+  constexpr TableCommitErrorHandler() = default;
+};
+
+/// \brief Table create commit operation error handler.
+class ICEBERG_REST_EXPORT CreateTableErrorHandler final : public TableCommitErrorHandler {
+ public:
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<CreateTableErrorHandler>& Instance();
+
+  Status Accept(const ErrorResponse& error) const override;
+
+ private:
+  constexpr CreateTableErrorHandler() = default;
+};
+
 /// \brief View-level error handler.
 class ICEBERG_REST_EXPORT ViewErrorHandler final : public DefaultErrorHandler {
  public:
@@ -101,18 +149,6 @@ class ICEBERG_REST_EXPORT ViewErrorHandler final : public DefaultErrorHandler {
 
  private:
   constexpr ViewErrorHandler() = default;
-};
-
-/// \brief Table commit operation error handler.
-class ICEBERG_REST_EXPORT TableCommitErrorHandler final : public DefaultErrorHandler {
- public:
-  /// \brief Returns the singleton instance
-  static const std::shared_ptr<TableCommitErrorHandler>& Instance();
-
-  Status Accept(const ErrorResponse& error) const override;
-
- private:
-  constexpr TableCommitErrorHandler() = default;
 };
 
 /// \brief View commit operation error handler.
@@ -147,6 +183,19 @@ class ICEBERG_REST_EXPORT PlanTaskErrorHandler final : public DefaultErrorHandle
 
  private:
   constexpr PlanTaskErrorHandler() = default;
+};
+
+/// \brief OAuth token endpoint error handler.
+class ICEBERG_REST_EXPORT OAuthErrorHandler final : public ErrorHandler {
+ public:
+  static const std::shared_ptr<OAuthErrorHandler>& Instance();
+
+  Status Accept(const ErrorResponse& error) const override;
+  Result<ErrorResponse> ParseResponse(uint32_t code,
+                                      const std::string& text) const override;
+
+ private:
+  constexpr OAuthErrorHandler() = default;
 };
 
 }  // namespace iceberg::rest

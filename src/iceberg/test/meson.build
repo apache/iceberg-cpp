@@ -61,7 +61,13 @@ iceberg_tests = {
             'table_update_test.cc',
         ),
     },
-    'logging_test': {'sources': files('log_level_test.cc')},
+    'logging_test': {
+        'sources': files(
+            'cerr_logger_test.cc',
+            'log_level_test.cc',
+            'logger_test.cc',
+        ),
+    },
     'expression_test': {
         'sources': files(
             'aggregate_test.cc',
@@ -93,6 +99,7 @@ iceberg_tests = {
             'data_file_set_test.cc',
             'decimal_test.cc',
             'endian_test.cc',
+            'executor_util_test.cc',
             'file_io_test.cc',
             'formatter_test.cc',
             'lazy_test.cc',
@@ -130,6 +137,7 @@ if get_option('rest').enabled()
             'sources': files(
                 'auth_manager_test.cc',
                 'endpoint_test.cc',
+                'error_handlers_test.cc',
                 'rest_file_io_test.cc',
                 'rest_json_serde_test.cc',
                 'rest_util_test.cc',

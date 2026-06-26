@@ -28,6 +28,10 @@ on:
   schedule:
     - cron: '16 4 * * 1'
 
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

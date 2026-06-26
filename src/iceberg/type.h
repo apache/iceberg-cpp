@@ -46,20 +46,32 @@ class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
   ~Type() override = default;
 
   /// \brief Get the type ID.
-  [[nodiscard]] virtual TypeId type_id() const = 0;
+  virtual TypeId type_id() const = 0;
 
   /// \brief Is this a primitive type (may not have child fields)?
-  [[nodiscard]] virtual bool is_primitive() const = 0;
+  virtual bool is_primitive() const = 0;
 
   /// \brief Is this a nested type (may have child fields)?
-  [[nodiscard]] virtual bool is_nested() const = 0;
+  virtual bool is_nested() const = 0;
+
+  /// \brief Is this a struct type?
+  bool is_struct() const { return type_id() == TypeId::kStruct; }
+
+  /// \brief Is this a list type?
+  bool is_list() const { return type_id() == TypeId::kList; }
+
+  /// \brief Is this a map type?
+  bool is_map() const { return type_id() == TypeId::kMap; }
+
+  /// \brief Is this a variant type?
+  bool is_variant() const { return type_id() == TypeId::kVariant; }
 
   /// \brief Compare two types for equality.
   friend bool operator==(const Type& lhs, const Type& rhs) { return lhs.Equals(rhs); }
 
  protected:
   /// \brief Compare two types for equality.
-  [[nodiscard]] virtual bool Equals(const Type& other) const = 0;
+  virtual bool Equals(const Type& other) const = 0;
 };
 
 /// \brief A data type that does not have child fields.
@@ -76,28 +88,27 @@ class ICEBERG_EXPORT NestedType : public Type {
   bool is_nested() const override { return true; }
 
   /// \brief Get a view of the child fields.
-  [[nodiscard]] virtual std::span<const SchemaField> fields() const = 0;
+  virtual std::span<const SchemaField> fields() const = 0;
   using SchemaFieldConstRef = std::reference_wrapper<const SchemaField>;
   /// \brief Get a field by field ID.
   ///
   /// \note This is O(1) complexity.
-  [[nodiscard]] virtual Result<std::optional<SchemaFieldConstRef>> GetFieldById(
+  virtual Result<std::optional<SchemaFieldConstRef>> GetFieldById(
       int32_t field_id) const = 0;
   /// \brief Get a field by index.
   ///
   /// \note This is O(1) complexity.
-  [[nodiscard]] virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByIndex(
+  virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByIndex(
       int32_t index) const = 0;
   /// \brief Get a field by name.  Return an error Status if
   ///   the field name is not unique; prefer GetFieldById or GetFieldByIndex
   ///   when possible.
   ///
   /// \note This is O(1) complexity.
-  [[nodiscard]] virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByName(
+  virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByName(
       std::string_view name, bool case_sensitive) const = 0;
   /// \brief Get a field by name (case-sensitive).
-  [[nodiscard]] Result<std::optional<SchemaFieldConstRef>> GetFieldByName(
-      std::string_view name) const;
+  Result<std::optional<SchemaFieldConstRef>> GetFieldByName(std::string_view name) const;
 };
 
 /// \defgroup type-nested Nested Types
@@ -147,8 +158,11 @@ class ICEBERG_EXPORT ListType : public NestedType {
   constexpr static const TypeId kTypeId = TypeId::kList;
   constexpr static const std::string_view kElementName = "element";
 
-  /// \brief Construct a list of the given element.  The name of the child
-  ///   field should be "element".
+  static Result<std::unique_ptr<ListType>> Make(SchemaField element);
+
+  /// \brief Construct a list of the given element.
+  ///
+  /// Use Make or list to validate that the element field name is "element".
   explicit ListType(SchemaField element);
   /// \brief Construct a list of the given element type.
   ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional);
@@ -180,8 +194,11 @@ class ICEBERG_EXPORT MapType : public NestedType {
   constexpr static const std::string_view kKeyName = "key";
   constexpr static const std::string_view kValueName = "value";
 
-  /// \brief Construct a map of the given key/value fields.  The field names
-  ///   should be "key" and "value", respectively.
+  static Result<std::unique_ptr<MapType>> Make(SchemaField key, SchemaField value);
+
+  /// \brief Construct a map of the given key/value fields.
+  ///
+  /// Use Make or map to validate that the field names are "key" and "value".
   explicit MapType(SchemaField key, SchemaField value);
   ~MapType() override = default;
 
@@ -204,6 +221,30 @@ class ICEBERG_EXPORT MapType : public NestedType {
   bool Equals(const Type& other) const override;
 
   std::array<SchemaField, 2> fields_;
+};
+
+/// @}
+
+/// \defgroup type-semi-structured Semi-structured Types
+/// Semi-structured types may contain values whose structure varies across rows.
+/// @{
+
+/// \brief A semi-structured type whose structure may vary across rows.
+class ICEBERG_EXPORT VariantType : public Type {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kVariant;
+
+  VariantType() = default;
+  ~VariantType() override = default;
+
+  bool is_primitive() const override { return false; }
+  bool is_nested() const override { return false; }
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
 };
 
 /// @}
@@ -296,14 +337,15 @@ class ICEBERG_EXPORT DecimalType : public PrimitiveType {
   constexpr static const int32_t kMaxPrecision = 38;
 
   /// \brief Construct a decimal type with the given precision and scale.
+  /// \throws IcebergError if precision is outside the supported range.
   DecimalType(int32_t precision, int32_t scale);
   ~DecimalType() override = default;
 
   /// \brief Get the precision (the number of decimal digits).
-  [[nodiscard]] int32_t precision() const;
+  int32_t precision() const;
   /// \brief Get the scale (essentially, the number of decimal digits after
   ///   the decimal point; precisely, the value is scaled by $$10^{-s}$$.).
-  [[nodiscard]] int32_t scale() const;
+  int32_t scale() const;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -353,9 +395,9 @@ class ICEBERG_EXPORT TimeType : public PrimitiveType {
 class ICEBERG_EXPORT TimestampBase : public PrimitiveType {
  public:
   /// \brief Is this type zoned or naive?
-  [[nodiscard]] virtual bool is_zoned() const = 0;
+  virtual bool is_zoned() const = 0;
   /// \brief The time resolution.
-  [[nodiscard]] virtual TimeUnit time_unit() const = 0;
+  virtual TimeUnit time_unit() const = 0;
 };
 
 /// \brief A data type representing a timestamp in microseconds without
@@ -471,11 +513,12 @@ class ICEBERG_EXPORT FixedType : public PrimitiveType {
   constexpr static const TypeId kTypeId = TypeId::kFixed;
 
   /// \brief Construct a fixed type with the given length.
+  /// \throws IcebergError if length is negative.
   explicit FixedType(int32_t length);
   ~FixedType() override = default;
 
   /// \brief The length (the number of bytes to store).
-  [[nodiscard]] int32_t length() const;
+  int32_t length() const;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -518,11 +561,67 @@ class ICEBERG_EXPORT UnknownType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
+/// \brief A data type representing OGC geometry in WKB format.
+class ICEBERG_EXPORT GeometryType : public PrimitiveType {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kGeometry;
+  constexpr static std::string_view kDefaultCrs = "OGC:CRS84";
+
+  static Result<std::unique_ptr<GeometryType>> Make();
+  static Result<std::unique_ptr<GeometryType>> Make(std::string crs);
+  ~GeometryType() override = default;
+
+  std::string_view crs() const;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+
+ private:
+  GeometryType() = default;
+  explicit GeometryType(std::string crs);
+
+  std::string crs_;
+};
+
+/// \brief A data type representing OGC geography in WKB format.
+class ICEBERG_EXPORT GeographyType : public PrimitiveType {
+ public:
+  constexpr static const TypeId kTypeId = TypeId::kGeography;
+  constexpr static std::string_view kDefaultCrs = "OGC:CRS84";
+  constexpr static EdgeAlgorithm kDefaultAlgorithm = EdgeAlgorithm::kSpherical;
+
+  static Result<std::unique_ptr<GeographyType>> Make();
+  static Result<std::unique_ptr<GeographyType>> Make(std::string crs);
+  static Result<std::unique_ptr<GeographyType>> Make(std::string crs,
+                                                     EdgeAlgorithm algorithm);
+  ~GeographyType() override = default;
+
+  std::string_view crs() const;
+  EdgeAlgorithm algorithm() const;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+
+ private:
+  GeographyType() = default;
+  explicit GeographyType(std::string crs);
+  GeographyType(std::string crs, EdgeAlgorithm algorithm);
+
+  std::string crs_;
+  std::optional<EdgeAlgorithm> algorithm_;
+};
+
 /// @}
 
-/// \defgroup type-factories Factory functions for creating primitive data types
+/// \defgroup type-factories Factory functions for creating data types
 ///
-/// Factory functions for creating primitive data types
+/// Factory functions for creating data types
 /// @{
 
 /// \brief Return a BooleanType instance.
@@ -555,17 +654,38 @@ ICEBERG_EXPORT const std::shared_ptr<StringType>& string();
 ICEBERG_EXPORT const std::shared_ptr<UuidType>& uuid();
 /// \brief Return an UnknownType instance.
 ICEBERG_EXPORT const std::shared_ptr<UnknownType>& unknown();
+/// \brief Return a VariantType instance.
+ICEBERG_EXPORT const std::shared_ptr<VariantType>& variant();
+/// \brief Return the default GeometryType instance.
+ICEBERG_EXPORT const std::shared_ptr<GeometryType>& geometry();
+/// \brief Return the default GeographyType instance.
+ICEBERG_EXPORT const std::shared_ptr<GeographyType>& geography();
 
 /// \brief Create a DecimalType with the given precision and scale.
 /// \param precision The number of decimal digits (max 38).
 /// \param scale The number of decimal digits after the decimal point.
 /// \return A shared pointer to the DecimalType instance.
+/// \throws IcebergError if precision is outside the supported range.
 ICEBERG_EXPORT std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale);
 
 /// \brief Create a FixedType with the given length.
 /// \param length The number of bytes to store (must be >= 0).
 /// \return A shared pointer to the FixedType instance.
+/// \throws IcebergError if length is negative.
 ICEBERG_EXPORT std::shared_ptr<FixedType> fixed(int32_t length);
+
+/// \brief Create a GeometryType with the given CRS.
+/// \throws IcebergError if crs is empty.
+ICEBERG_EXPORT std::shared_ptr<GeometryType> geometry(std::string crs);
+
+/// \brief Create a GeographyType with the given CRS.
+/// \throws IcebergError if crs is empty.
+ICEBERG_EXPORT std::shared_ptr<GeographyType> geography(std::string crs);
+
+/// \brief Create a GeographyType with the given CRS and edge algorithm.
+/// \throws IcebergError if crs is empty.
+ICEBERG_EXPORT std::shared_ptr<GeographyType> geography(std::string crs,
+                                                        EdgeAlgorithm algorithm);
 
 /// \brief Create a StructType with the given fields.
 /// \param fields The fields of the struct.
@@ -575,12 +695,14 @@ ICEBERG_EXPORT std::shared_ptr<StructType> struct_(std::vector<SchemaField> fiel
 /// \brief Create a ListType with the given element field.
 /// \param element The element field of the list.
 /// \return A shared pointer to the ListType instance.
+/// \throws IcebergError if element's name is not "element".
 ICEBERG_EXPORT std::shared_ptr<ListType> list(SchemaField element);
 
 /// \brief Create a MapType with the given key and value fields.
 /// \param key The key field of the map.
 /// \param value The value field of the map.
 /// \return A shared pointer to the MapType instance.
+/// \throws IcebergError if the key or value field has an invalid name.
 ICEBERG_EXPORT std::shared_ptr<MapType> map(SchemaField key, SchemaField value);
 
 /// @}
@@ -593,5 +715,11 @@ ICEBERG_EXPORT std::shared_ptr<MapType> map(SchemaField key, SchemaField value);
 /// \param id The TypeId to convert to string
 /// \return A string_view containing the lowercase type name
 ICEBERG_EXPORT std::string_view ToString(TypeId id);
+
+/// \brief Get the lowercase string representation of an EdgeAlgorithm.
+ICEBERG_EXPORT std::string_view ToString(EdgeAlgorithm algorithm);
+
+/// \brief Parse a lowercase edge algorithm name.
+ICEBERG_EXPORT Result<EdgeAlgorithm> EdgeAlgorithmFromString(std::string_view name);
 
 }  // namespace iceberg

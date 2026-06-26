@@ -27,6 +27,17 @@ if(ICEBERG_S3 AND ICEBERG_BUNDLE_AWSSDK)
   set(ICEBERG_AWSSDK_BUNDLED TRUE)
 endif()
 
+# Mirror the AWS SDK bundle/system policy for Thrift (used by the Hive catalog):
+# ICEBERG_BUNDLE_THRIFT is the user's intent, ICEBERG_THRIFT_BUNDLED the resolved
+# conclusion that the rest of the build keys off.
+set(ICEBERG_THRIFT_BUNDLED FALSE)
+if(ICEBERG_BUILD_HIVE AND ICEBERG_BUNDLE_THRIFT)
+  if(NOT ICEBERG_BUILD_BUNDLE)
+    message(FATAL_ERROR "ICEBERG_BUNDLE_THRIFT requires ICEBERG_BUILD_BUNDLE to be ON")
+  endif()
+  set(ICEBERG_THRIFT_BUNDLED TRUE)
+endif()
+
 set(ICEBERG_AWSSDK_COMPONENTS)
 if(NOT ICEBERG_AWSSDK_BUNDLED)
   if(ICEBERG_S3)
@@ -741,4 +752,40 @@ endif()
 
 if(ICEBERG_BUILD_SQL_CATALOG)
   resolve_sql_catalog_dependencies()
+endif()
+
+# ----------------------------------------------------------------------
+# Thrift (Hive catalog)
+#
+# Provide a `thrift::thrift` target for iceberg_hive's generated Hive Metastore
+# bindings, either bundled (from Arrow's build) or from a system install. Must
+# run after resolve_arrow_dependency() so the bundled `thrift` target exists.
+
+function(resolve_thrift_dependency)
+  if(NOT ICEBERG_BUILD_HIVE)
+    return()
+  endif()
+  if(ICEBERG_THRIFT_BUNDLED)
+    # Arrow's bundled build creates the Thrift C++ runtime as a `thrift` target
+    # scoped to its FetchContent directory, where iceberg_hive cannot see it.
+    # Promote it to a global `thrift::thrift` alias so iceberg_hive can link the
+    # generated Hive Metastore bindings against it.
+    if(TARGET thrift AND NOT TARGET thrift::thrift)
+      add_library(thrift::thrift INTERFACE IMPORTED GLOBAL)
+      target_link_libraries(thrift::thrift INTERFACE thrift)
+    endif()
+  else()
+    # System Thrift, located by cmake_modules/FindThriftAlt.cmake (MODULE mode),
+    # which provides the `thrift::thrift` target iceberg_hive expects. Record it
+    # as a system dependency so downstream find_package(Iceberg) re-finds it.
+    find_package(ThriftAlt MODULE REQUIRED GLOBAL)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ThriftAlt)
+    set(ICEBERG_SYSTEM_DEPENDENCIES
+        ${ICEBERG_SYSTEM_DEPENDENCIES}
+        PARENT_SCOPE)
+  endif()
+endfunction()
+
+if(ICEBERG_BUILD_HIVE)
+  resolve_thrift_dependency()
 endif()

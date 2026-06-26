@@ -161,6 +161,9 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   EXPECT_THAT(table->NewUpdatePartitionStatistics(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewFastAppend(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewMergeAppend(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table->NewDeleteFiles(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table->NewRowDelta(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table->NewOverwrite(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewSnapshotManager(), IsError(ErrorKind::kNotSupported));
 }
 

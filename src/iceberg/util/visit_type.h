@@ -127,21 +127,24 @@ inline Status VisitTypeIdInline(TypeId id, VISITOR* visitor, ARGS&&... args) {
 /// \brief Visit a type using a categorical visitor pattern
 ///
 /// This function provides a simplified visitor interface that groups Iceberg types into
-/// four categories based on their structural properties:
+/// five categories based on their structural properties:
 ///
 /// - **Struct types**: Complex types with named fields (StructType)
 /// - **List types**: Sequential container types (ListType)
 /// - **Map types**: Key-value container types (MapType)
-/// - **Primitive types**: All leaf types without nested structure (14 primitive types)
+/// - **Variant type**: Semi-structured type that is neither nested nor primitive
+///   (VariantType)
+/// - **Primitive types**: All leaf types without nested structure (primitive types)
 ///
 /// This grouping is useful for algorithms that need to distinguish between container
 /// types and leaf types, but don't require separate handling for each primitive type
 /// variant (e.g., Int vs Long vs String).
 ///
-/// \tparam VISITOR Visitor class that must implement four Visit methods:
+/// \tparam VISITOR Visitor class that must implement five Visit methods:
 ///   - `VisitStruct(const StructType&, ARGS...)` for struct types
 ///   - `VisitList(const ListType&, ARGS...)` for list types
 ///   - `VisitMap(const MapType&, ARGS...)` for map types
+///   - `VisitVariant(const VariantType&, ARGS...)` for the variant type
 ///   - `VisitPrimitive(const PrimitiveType&, ARGS...)` for all primitive types
 /// \tparam ARGS Additional argument types forwarded to Visit methods
 /// \param type The type to visit

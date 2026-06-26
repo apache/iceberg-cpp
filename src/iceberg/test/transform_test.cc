@@ -22,6 +22,7 @@
 #include <format>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -48,6 +49,18 @@ TEST(TransformTest, Transform) {
   auto source_type = iceberg::string();
   auto identity_transform = transform->Bind(source_type);
   ASSERT_TRUE(identity_transform);
+}
+
+TEST(TransformTest, IdentityDoesNotSupportV3Types) {
+  const auto transform = Transform::Identity();
+  const std::vector<std::shared_ptr<Type>> unsupported_types = {
+      iceberg::variant(), iceberg::geometry(), iceberg::geography()};
+
+  for (const auto& type : unsupported_types) {
+    EXPECT_FALSE(transform->CanTransform(*type));
+    EXPECT_THAT(transform->Bind(type),
+                HasErrorMessage("is not a valid input type for identity transform"));
+  }
 }
 
 TEST(TransformFunctionTest, CreateBucketTransform) {

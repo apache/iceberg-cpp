@@ -102,7 +102,11 @@ add_iceberg_test(table_test
                  table_test.cc
                  table_update_test.cc)
 
-add_iceberg_test(logging_test SOURCES log_level_test.cc)
+add_iceberg_test(logging_test
+                 SOURCES
+                 cerr_logger_test.cc
+                 log_level_test.cc
+                 logger_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
@@ -139,6 +143,7 @@ add_iceberg_test(util_test
                  lazy_test.cc
                  location_util_test.cc
                  math_util_internal_test.cc
+                 executor_util_test.cc
                  roaring_position_bitmap_test.cc
                  position_delete_index_test.cc
                  position_delete_range_consumer_test.cc
@@ -222,12 +227,14 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(table_update_test
                    USE_BUNDLE
                    SOURCES
+                   delete_files_test.cc
                    expire_snapshots_test.cc
                    fast_append_test.cc
                    manifest_filter_manager_test.cc
                    merge_append_test.cc
                    merging_snapshot_update_test.cc
                    name_mapping_update_test.cc
+                   row_delta_test.cc
                    snapshot_manager_test.cc
                    transaction_test.cc
                    update_location_test.cc
@@ -236,7 +243,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    update_properties_test.cc
                    update_schema_test.cc
                    update_sort_order_test.cc
-                   update_statistics_test.cc)
+                   update_statistics_test.cc
+                   overwrite_files_test.cc)
 
   add_iceberg_test(data_test
                    USE_BUNDLE
@@ -289,6 +297,7 @@ if(ICEBERG_BUILD_REST)
   add_rest_iceberg_test(rest_catalog_test
                         SOURCES
                         auth_manager_test.cc
+                        error_handlers_test.cc
                         endpoint_test.cc
                         rest_file_io_test.cc
                         rest_json_serde_test.cc

@@ -22,14 +22,11 @@
 #include <map>
 
 #include <cpr/cpr.h>
-#include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/error_handlers.h"
-#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/rest_util.h"
-#include "iceberg/json_serde_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/util/macros.h"
 
@@ -141,23 +138,14 @@ ErrorResponse BuildDefaultErrorResponse(const cpr::Response& response) {
   };
 }
 
-/// \brief Tries to parse the response body as an ErrorResponse.
-Result<ErrorResponse> TryParseErrorResponse(const std::string& text) {
-  if (text.empty()) {
-    return InvalidArgument("Empty response body");
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto json_result, FromJsonString(text));
-  ICEBERG_ASSIGN_OR_RAISE(auto error_result, ErrorResponseFromJson(json_result));
-  return error_result;
-}
-
 /// \brief Handles failure responses by invoking the provided error handler.
 Status HandleFailureResponse(const cpr::Response& response,
                              const ErrorHandler& error_handler) {
   if (IsSuccessful(response.status_code)) {
     return {};
   }
-  auto parse_result = TryParseErrorResponse(response.text);
+  auto parse_result = error_handler.ParseResponse(
+      static_cast<uint32_t>(response.status_code), response.text);
   const ErrorResponse final_error =
       parse_result.value_or(BuildDefaultErrorResponse(response));
   return error_handler.Accept(final_error);

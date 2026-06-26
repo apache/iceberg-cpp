@@ -122,6 +122,20 @@ INSTANTIATE_TEST_SUITE_P(
         ToArrowSchemaParam{.iceberg_type = iceberg::unknown(),
                            .arrow_type = ::arrow::null()}));
 
+TEST(ToArrowSchemaTest, UnsupportedV3Types) {
+  const std::vector<std::shared_ptr<Type>> unsupported_types = {
+      iceberg::variant(), iceberg::geometry(), iceberg::geography()};
+
+  for (const auto& unsupported_type : unsupported_types) {
+    Schema schema(
+        {SchemaField::MakeOptional(/*field_id=*/1, "unsupported", unsupported_type)},
+        /*schema_id=*/0);
+    ArrowSchema arrow_schema;
+    ASSERT_THAT(ToArrowSchema(schema, &arrow_schema),
+                HasErrorMessage("is not supported by Arrow conversion"));
+  }
+}
+
 namespace {
 
 void CheckArrowField(const ::arrow::Field& field, ::arrow::Type::type type_id,
@@ -624,7 +638,7 @@ TEST(ArrowExecutorAdapterTest, RunsTaskGroupOnThreadPool) {
   std::mutex mutex;
   std::vector<std::thread::id> thread_ids;
 
-  auto status = TaskGroup<>()
+  auto status = TaskGroup()
                     .SetExecutor(std::ref(executor))
                     .Submit([&]() -> Status {
                       std::lock_guard lock(mutex);

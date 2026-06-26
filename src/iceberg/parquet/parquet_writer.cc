@@ -178,6 +178,10 @@ class FieldMetricsCollector {
 
   Status VisitMap(const MapType& /*type*/, const ::arrow::Array& /*array*/) { return {}; }
 
+  Status VisitVariant(const VariantType& /*type*/, const ::arrow::Array& /*array*/) {
+    return {};
+  }
+
   Status VisitPrimitive(const PrimitiveType& type, const ::arrow::Array& array) {
     switch (type.type_id()) {
       case TypeId::kFloat:

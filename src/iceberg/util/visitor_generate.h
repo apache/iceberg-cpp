@@ -39,6 +39,9 @@ namespace iceberg {
   ACTION(Fixed);                               \
   ACTION(Binary);                              \
   ACTION(Unknown);                             \
+  ACTION(Variant);                             \
+  ACTION(Geometry);                            \
+  ACTION(Geography);                           \
   ACTION(Struct);                              \
   ACTION(List);                                \
   ACTION(Map);
@@ -49,7 +52,12 @@ namespace iceberg {
 /// - Struct types -> calls ACTION with Struct
 /// - List types -> calls ACTION with List
 /// - Map types -> calls ACTION with Map
+/// - Variant type -> calls ACTION with Variant
 /// - All primitive types (default) -> calls ACTION with Primitive
+///
+/// Variant is dispatched explicitly because it is neither a nested nor a primitive
+/// type, so it must not be routed into the primitive default (which would cast it to
+/// PrimitiveType).
 #define ICEBERG_TYPE_SWITCH_WITH_PRIMITIVE_DEFAULT(ACTION) \
   case ::iceberg::TypeId::kStruct:                         \
     ACTION(Struct)                                         \
@@ -57,6 +65,8 @@ namespace iceberg {
     ACTION(List)                                           \
   case ::iceberg::TypeId::kMap:                            \
     ACTION(Map)                                            \
+  case ::iceberg::TypeId::kVariant:                        \
+    ACTION(Variant)                                        \
   default:                                                 \
     ACTION(Primitive)
 

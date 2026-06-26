@@ -181,6 +181,12 @@ class ApplyChangesVisitor {
     return base_type;
   }
 
+  Result<std::shared_ptr<Type>> VisitVariant(const VariantType& variant_type,
+                                             const std::shared_ptr<Type>& base_type,
+                                             int32_t parent_id) {
+    return base_type;
+  }
+
  private:
   Result<std::optional<SchemaField>> ProcessField(
       const SchemaField& field, const std::shared_ptr<Type>& field_type_result) {

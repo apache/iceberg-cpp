@@ -179,6 +179,15 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new MergeAppend to append data files and merge manifests.
   virtual Result<std::shared_ptr<MergeAppend>> NewMergeAppend();
 
+  /// \brief Create a new DeleteFiles to delete data files and commit the changes.
+  virtual Result<std::shared_ptr<DeleteFiles>> NewDeleteFiles();
+
+  /// \brief Create a new RowDelta to add rows and row-level deletes.
+  virtual Result<std::shared_ptr<RowDelta>> NewRowDelta();
+
+  /// \brief Create a new OverwriteFiles to overwrite data files and commit the changes.
+  virtual Result<std::shared_ptr<OverwriteFiles>> NewOverwrite();
+
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
@@ -247,6 +256,12 @@ class ICEBERG_EXPORT StaticTable : public Table {
   Result<std::shared_ptr<FastAppend>> NewFastAppend() override;
 
   Result<std::shared_ptr<MergeAppend>> NewMergeAppend() override;
+
+  Result<std::shared_ptr<DeleteFiles>> NewDeleteFiles() override;
+
+  Result<std::shared_ptr<RowDelta>> NewRowDelta() override;
+
+  Result<std::shared_ptr<OverwriteFiles>> NewOverwrite() override;
 
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 

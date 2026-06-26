@@ -17,11 +17,14 @@
 
 install_headers(
     [
+        'delete_files.h',
         'expire_snapshots.h',
         'fast_append.h',
         'merge_append.h',
         'merging_snapshot_update.h',
+        'overwrite_files.h',
         'pending_update.h',
+        'row_delta.h',
         'set_snapshot.h',
         'snapshot_manager.h',
         'snapshot_update.h',

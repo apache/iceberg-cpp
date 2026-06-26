@@ -45,6 +45,7 @@ class IdToFieldVisitor {
       std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>&
           id_to_field);
   Status Visit(const PrimitiveType& type);
+  Status Visit(const VariantType& type);
   Status Visit(const NestedType& type);
 
  private:
@@ -67,6 +68,8 @@ class NameToIdVisitor {
                const std::string& short_path);
   Status Visit(const PrimitiveType& type, const std::string& path,
                const std::string& short_path);
+  Status Visit(const VariantType& type, const std::string& path,
+               const std::string& short_path);
   void Finish();
 
  private:
@@ -85,6 +88,7 @@ class NameToIdVisitor {
 class PositionPathVisitor {
  public:
   Status Visit(const PrimitiveType& type);
+  Status Visit(const VariantType& type);
   Status Visit(const StructType& type);
   Status Visit(const ListType& type);
   Status Visit(const MapType& type);

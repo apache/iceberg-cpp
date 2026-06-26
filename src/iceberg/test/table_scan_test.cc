@@ -30,6 +30,7 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/scan_test_base.h"
 
 namespace iceberg {
@@ -394,11 +395,16 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          DataTableScanBuilder::Make(metadata_with_manifests, file_io_));
+
+  test::ThreadExecutor executor;
+  builder->PlanWith(executor);
+
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
+  EXPECT_EQ(executor.submit_count(), 2);
 }
 
 TEST_P(TableScanTest, PlanFilesWithFilter) {
