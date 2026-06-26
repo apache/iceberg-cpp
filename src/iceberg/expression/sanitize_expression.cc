@@ -343,5 +343,5 @@ Result<std::shared_ptr<Expression>> SanitizeExpression::Sanitize(
   }
   return Sanitize(expr);
 }
-// TODO : add StringSanitizer for logging.
+// TODO(evindj) : add StringSanitizer for logging.
 }  // namespace iceberg
