@@ -2612,4 +2612,18 @@ TEST(FetchPlanningResultResponseRoundtripTest, FailedWithError) {
   EXPECT_EQ(*result, *result2);
 }
 
+TEST(StorageCredentialValidateTest, RequiresPrefixAndConfig) {
+  EXPECT_THAT(
+      (StorageCredential{.prefix = "s3", .config = {{"s3.region", "us"}}}.Validate()),
+      IsOk());
+
+  auto empty_prefix = StorageCredential{.prefix = "", .config = {{"s3.region", "us"}}};
+  EXPECT_THAT(empty_prefix.Validate(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(empty_prefix.Validate(), HasErrorMessage("prefix must be non-empty"));
+
+  auto empty_config = StorageCredential{.prefix = "s3", .config = {}};
+  EXPECT_THAT(empty_config.Validate(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(empty_config.Validate(), HasErrorMessage("config must be non-empty"));
+}
+
 }  // namespace iceberg::rest

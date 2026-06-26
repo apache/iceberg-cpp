@@ -187,6 +187,18 @@ struct ICEBERG_REST_EXPORT StorageCredential {
   std::string prefix;
   std::unordered_map<std::string, std::string> config;
 
+  /// \brief Validates the StorageCredential. The REST spec requires both a
+  /// prefix and config; non-empty matches Java `Credential.validate()`.
+  Status Validate() const {
+    if (prefix.empty()) {
+      return ValidationFailed("Invalid storage credential: prefix must be non-empty");
+    }
+    if (config.empty()) {
+      return ValidationFailed("Invalid storage credential: config must be non-empty");
+    }
+    return {};
+  }
+
   bool operator==(const StorageCredential& other) const = default;
 };
 
@@ -202,6 +214,9 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
   Status Validate() const {
     if (!metadata) {
       return ValidationFailed("Invalid metadata: null");
+    }
+    for (const auto& credential : storage_credentials) {
+      ICEBERG_RETURN_UNEXPECTED(credential.Validate());
     }
     return {};
   }
