@@ -38,23 +38,16 @@ namespace iceberg::rest {
 template <typename Model>
 Result<Model> FromJson(const nlohmann::json& json);
 
-#define ICEBERG_DECLARE_JSON_SERDE(Model)                                        \
+// Declares the two FromJson entry points for a model.
+#define ICEBERG_DECLARE_FROM_JSON(Model)                                         \
   ICEBERG_REST_EXPORT Result<Model> Model##FromJson(const nlohmann::json& json); \
                                                                                  \
   template <>                                                                    \
-  ICEBERG_REST_EXPORT Result<Model> FromJson(const nlohmann::json& json);        \
-                                                                                 \
-  ICEBERG_REST_EXPORT nlohmann::json ToJson(const Model& model);
+  ICEBERG_REST_EXPORT Result<Model> FromJson(const nlohmann::json& json);
 
-// Same as ICEBERG_DECLARE_JSON_SERDE, but ToJson returns Result because the model
-// embeds a Schema/TableMetadata whose default-value serialization can fail.
-#define ICEBERG_DECLARE_JSON_SERDE_FALLIBLE(Model)                               \
-  ICEBERG_REST_EXPORT Result<Model> Model##FromJson(const nlohmann::json& json); \
-                                                                                 \
-  template <>                                                                    \
-  ICEBERG_REST_EXPORT Result<Model> FromJson(const nlohmann::json& json);        \
-                                                                                 \
-  ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const Model& model);
+#define ICEBERG_DECLARE_JSON_SERDE(Model) \
+  ICEBERG_DECLARE_FROM_JSON(Model)        \
+  ICEBERG_REST_EXPORT nlohmann::json ToJson(const Model& model);
 
 /// \note Don't forget to add `ICEBERG_DEFINE_FROM_JSON` to the end of
 /// `json_internal.cc` to define the `FromJson` function for the model.
@@ -67,16 +60,23 @@ ICEBERG_DECLARE_JSON_SERDE(GetNamespaceResponse)
 ICEBERG_DECLARE_JSON_SERDE(UpdateNamespacePropertiesRequest)
 ICEBERG_DECLARE_JSON_SERDE(UpdateNamespacePropertiesResponse)
 ICEBERG_DECLARE_JSON_SERDE(ListTablesResponse)
-ICEBERG_DECLARE_JSON_SERDE_FALLIBLE(LoadTableResult)
 ICEBERG_DECLARE_JSON_SERDE(RegisterTableRequest)
 ICEBERG_DECLARE_JSON_SERDE(RenameTableRequest)
-ICEBERG_DECLARE_JSON_SERDE_FALLIBLE(CreateTableRequest)
-ICEBERG_DECLARE_JSON_SERDE_FALLIBLE(CommitTableRequest)
-ICEBERG_DECLARE_JSON_SERDE_FALLIBLE(CommitTableResponse)
 ICEBERG_DECLARE_JSON_SERDE(OAuthTokenResponse)
 
+// These models embed a Schema/TableMetadata whose default-value serialization can
+// fail, so their ToJson returns Result; FromJson is declared like the others.
+ICEBERG_DECLARE_FROM_JSON(LoadTableResult)
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const LoadTableResult& model);
+ICEBERG_DECLARE_FROM_JSON(CreateTableRequest)
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CreateTableRequest& model);
+ICEBERG_DECLARE_FROM_JSON(CommitTableRequest)
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableRequest& model);
+ICEBERG_DECLARE_FROM_JSON(CommitTableResponse)
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableResponse& model);
+
+#undef ICEBERG_DECLARE_FROM_JSON
 #undef ICEBERG_DECLARE_JSON_SERDE
-#undef ICEBERG_DECLARE_JSON_SERDE_FALLIBLE
 
 ICEBERG_REST_EXPORT Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
     const nlohmann::json& json,
