@@ -25,6 +25,7 @@
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
@@ -107,11 +108,11 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
   // a string default on a date/timestamp/uuid field). Reject only defaults that cannot
   // be cast to the field type or fall outside its range (CastTo signals out-of-range as
   // an above-max/below-min sentinel).
-  auto field_type = std::static_pointer_cast<PrimitiveType>(field.type());
-  auto cast = value.CastTo(field_type);
-  if (!cast.has_value() || cast->IsAboveMax() || cast->IsBelowMin()) {
-    return InvalidSchema("{} of field {} has type {} that cannot be cast to {}", kind,
-                         field.name(), *value.type(), *field.type());
+  auto field_type = internal::checked_pointer_cast<PrimitiveType>(field.type());
+  ICEBERG_ASSIGN_OR_RAISE(auto cast, value.CastTo(field_type));
+  if (cast.IsAboveMax() || cast.IsBelowMin()) {
+    return InvalidSchema("{} of field {} ({}) is out of range for {}", kind, field.name(),
+                         *value.type(), *field.type());
   }
   return {};
 }

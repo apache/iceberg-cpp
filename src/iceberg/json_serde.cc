@@ -578,15 +578,14 @@ Status ValidateTimestamptzDefaultIsUtc(const Type& type, const nlohmann::json& v
     return {};
   }
   if (!value.is_string()) {
-    // Let LiteralFromJson report the type mismatch.
-    return {};
+    return JsonParseError("Invalid timestamptz default {} for {}: expected a string",
+                          SafeDumpJson(value), type.ToString());
   }
   const auto str = value.get<std::string>();
   ICEBERG_ASSIGN_OR_RAISE(bool is_utc, TemporalUtils::IsUtcOffset(str));
   if (!is_utc) {
     return JsonParseError(
-        "Invalid timestamptz default '{}' for {}: default values must use UTC "
-        "(offset 'Z' or '+00:00')",
+        "Invalid timestamptz default '{}' for {}: default values must use a UTC offset",
         str, type.ToString());
   }
   return {};
@@ -601,9 +600,9 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto name, GetJsonValue<std::string>(json, kName));
   ICEBERG_ASSIGN_OR_RAISE(auto required, GetJsonValue<bool>(json, kRequired));
   ICEBERG_ASSIGN_OR_RAISE(auto doc, GetJsonValueOrDefault<std::string>(json, kDoc));
-  ICEBERG_ASSIGN_OR_RAISE(std::optional<nlohmann::json> initial_default_json,
+  ICEBERG_ASSIGN_OR_RAISE(auto initial_default_json,
                           GetJsonValueOptional<nlohmann::json>(json, kInitialDefault));
-  ICEBERG_ASSIGN_OR_RAISE(std::optional<nlohmann::json> write_default_json,
+  ICEBERG_ASSIGN_OR_RAISE(auto write_default_json,
                           GetJsonValueOptional<nlohmann::json>(json, kWriteDefault));
 
   std::shared_ptr<const Literal> initial_default;

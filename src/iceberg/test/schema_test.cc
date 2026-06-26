@@ -162,9 +162,11 @@ TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
       1, "id", iceberg::int32(), false, /*doc=*/{}, /*initial_default=*/nullptr,
       std::make_shared<const iceberg::Literal>(iceberg::Literal::String("oops")))});
 
+  // The default literal is cast to the field type; an uncastable type surfaces the
+  // original cast error.
   auto status = schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
-  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
-  EXPECT_THAT(status, iceberg::HasErrorMessage("write-default"));
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kNotSupported));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("Cast from String"));
 }
 
 TEST(SchemaTest, ValidateCastsDefaultToFieldType) {
@@ -176,11 +178,12 @@ TEST(SchemaTest, ValidateCastsDefaultToFieldType) {
   EXPECT_THAT(widened.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
               iceberg::IsOk());
 
-  // A default whose type cannot be cast to the field type is still rejected.
-  iceberg::Schema uncastable({iceberg::SchemaField(
+  // A default outside the field type's range is rejected (CastTo returns an
+  // above-max/below-min sentinel).
+  iceberg::Schema out_of_range({iceberg::SchemaField(
       1, "id", iceberg::int32(), false, /*doc=*/{},
-      std::make_shared<const iceberg::Literal>(iceberg::Literal::String("oops")))});
-  EXPECT_THAT(uncastable.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Long(5'000'000'000)))});
+  EXPECT_THAT(out_of_range.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
               iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
 }
 
