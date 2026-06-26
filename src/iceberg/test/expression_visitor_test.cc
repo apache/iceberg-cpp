@@ -18,6 +18,7 @@
  */
 
 #include <chrono>
+#include <regex>
 
 #include <gtest/gtest.h>
 
@@ -509,6 +510,14 @@ TEST_F(RewriteNotTest, ComplexExpression) {
   EXPECT_EQ(rewritten->op(), Expression::Operation::kOr);
 }
 
+// gtest's MatchesRegex/ContainsRegex falls back to a minimal "simple regex" engine on
+// MSVC (no groups, character classes, repetition, or alternation), unlike the POSIX
+// extended regex used on Linux/macOS. std::regex (ECMAScript grammar) behaves
+// consistently across all three standard libraries.
+MATCHER_P(MatchesStdRegex, pattern, "") {
+  return std::regex_match(arg, std::regex(pattern));
+}
+
 class SanitizeExpressionTest : public ExpressionVisitorTest {};
 
 TEST_F(SanitizeExpressionTest, Constants) {
@@ -528,9 +537,8 @@ TEST_F(SanitizeExpressionTest, BoundLiteralPredicateHidesValue) {
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(bound_pred));
   EXPECT_EQ(sanitized->op(), Expression::Operation::kEq);
   EXPECT_TRUE(sanitized->is_unbound_predicate());
-  EXPECT_THAT(
-      sanitized->ToString(),
-      ::testing::MatchesRegex(R"re(ref\(name="name"\) == "\(hash-[0-9a-f]{8}\)")re"));
+  EXPECT_THAT(sanitized->ToString(),
+              MatchesStdRegex(R"re(ref\(name="name"\) == "\(hash-[0-9a-f]{8}\)")re"));
   EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr("alice")));
 }
 
@@ -562,7 +570,7 @@ TEST_F(SanitizeExpressionTest, SetPredicateSanitizesEachElement) {
   EXPECT_EQ(sanitized->op(), Expression::Operation::kIn);
   EXPECT_THAT(
       sanitized->ToString(),
-      ::testing::MatchesRegex(
+      MatchesStdRegex(
           R"re(ref\(name="name"\) in \["\(hash-[0-9a-f]{8}\)"(, "\(hash-[0-9a-f]{8}\)"){2}\])re"));
   for (const auto* leaked : {"alice", "bob", "carol"}) {
     EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr(leaked)));
@@ -584,9 +592,9 @@ TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByHoursAgo) {
   auto unbound_pred = Expressions::LessThan("ts", Literal::Timestamp(micros));
 
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
-  EXPECT_THAT(sanitized->ToString(),
-              ::testing::MatchesRegex(
-                  R"re(ref\(name="ts"\) < "\(timestamp-(49|50)-hours-ago\)")re"));
+  EXPECT_THAT(
+      sanitized->ToString(),
+      MatchesStdRegex(R"re(ref\(name="ts"\) < "\(timestamp-(49|50)-hours-ago\)")re"));
 }
 
 TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByDaysAgo) {
@@ -597,9 +605,8 @@ TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByDaysAgo) {
   auto unbound_pred = Expressions::LessThan("ts", Literal::Timestamp(micros));
 
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
-  EXPECT_THAT(
-      sanitized->ToString(),
-      ::testing::MatchesRegex(R"re(ref\(name="ts"\) < "\(timestamp-10-days-ago\)")re"));
+  EXPECT_THAT(sanitized->ToString(),
+              MatchesStdRegex(R"re(ref\(name="ts"\) < "\(timestamp-10-days-ago\)")re"));
 }
 
 TEST_F(SanitizeExpressionTest, UnboundPredicateOverTransformKeepsTransform) {
