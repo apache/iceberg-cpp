@@ -241,6 +241,7 @@ class TransactionContext;
 class DeleteFiles;
 class ExpireSnapshots;
 class FastAppend;
+class ReplacePartitions;
 class MergeAppend;
 class OverwriteFiles;
 class PendingUpdate;
