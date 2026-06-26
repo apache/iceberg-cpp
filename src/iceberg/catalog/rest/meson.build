@@ -30,6 +30,8 @@ iceberg_rest_sources = files(
     'resource_paths.cc',
     'rest_catalog.cc',
     'rest_file_io.cc',
+    'rest_table.cc',
+    'rest_table_scan.cc',
     'rest_util.cc',
     'types.cc',
 )
@@ -94,6 +96,8 @@ install_headers(
         'resource_paths.h',
         'rest_catalog.h',
         'rest_file_io.h',
+        'rest_table.h',
+        'rest_table_scan.h',
         'rest_util.h',
         'type_fwd.h',
         'types.h',
