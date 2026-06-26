@@ -341,6 +341,10 @@ Result<FieldProjection> ProjectStruct(
           child_projection, ProjectField(field, parquet_field, iter->second.local_index));
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
+    } else if (field.initial_default().has_value()) {
+      // Rows written before the field existed assume its `initial-default` value.
+      child_projection.kind = FieldProjection::Kind::kDefault;
+      child_projection.from = field.initial_default()->get();
     } else if (field.optional()) {
       child_projection.kind = FieldProjection::Kind::kNull;
     } else {

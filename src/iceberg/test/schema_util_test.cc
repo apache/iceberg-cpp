@@ -24,6 +24,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -177,6 +178,58 @@ TEST(SchemaUtilTest, ProjectMissingRequiredField) {
       Project(expected_schema, source_schema, /*prune_source=*/false);
   ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
   ASSERT_THAT(projection_result, HasErrorMessage("Missing required field"));
+}
+
+TEST(SchemaUtilTest, ProjectMissingRequiredFieldWithInitialDefault) {
+  Schema source_schema = CreateFlatSchema();
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeRequired(/*field_id=*/10, "extra", iceberg::int32())
+          .WithInitialDefault(Literal::Int(42)),
+  });
+
+  auto projection_result =
+      Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  AssertProjectedField(projection.fields[0], 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kDefault);
+  ASSERT_EQ(std::get<Literal>(projection.fields[1].from), Literal::Int(42));
+}
+
+TEST(SchemaUtilTest, ProjectMissingOptionalFieldWithInitialDefault) {
+  // An optional field with an initial-default reads the default, not null.
+  Schema source_schema = CreateFlatSchema();
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/10, "extra", iceberg::string())
+          .WithInitialDefault(Literal::String("n/a")),
+  });
+
+  auto projection_result =
+      Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kDefault);
+  ASSERT_EQ(std::get<Literal>(projection.fields[1].from), Literal::String("n/a"));
+}
+
+TEST(SchemaUtilTest, ProjectPresentFieldIgnoresInitialDefault) {
+  // initial-default only applies when the field is missing from the data file.
+  Schema source_schema = CreateFlatSchema();
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64())
+          .WithInitialDefault(Literal::Long(-1)),
+  });
+
+  auto projection_result =
+      Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+  AssertProjectedField(projection_result->fields[0], 0);
 }
 
 TEST(SchemaUtilTest, ProjectMetadataColumn) {

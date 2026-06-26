@@ -368,9 +368,8 @@ Result<bool> MergeField(SchemaField& existing, const SchemaField& required) {
     if (!changed) {
       return false;
     }
-    existing = SchemaField(existing.field_id(), std::string(existing.name()),
-                           std::make_shared<StructType>(std::move(fields)),
-                           existing.optional(), std::string(existing.doc()));
+    existing = existing.WithIdAndType(existing.field_id(),
+                                      std::make_shared<StructType>(std::move(fields)));
     return true;
   }
 

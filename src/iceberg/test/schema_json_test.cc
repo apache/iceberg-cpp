@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -192,6 +193,50 @@ TEST(SchemaJsonTest, RoundTrip) {
 
   auto dumped_json = ToJson(*schema).dump();
   ASSERT_EQ(dumped_json, json);
+}
+
+TEST(SchemaJsonTest, FieldWithDefaultValuesRoundTrip) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"initial-default":42,"name":"id","required":true,"type":"int","write-default":7},{"id":2,"initial-default":"n/a","name":"name","required":false,"type":"string"}],"schema-id":1,"type":"struct"})";
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(nlohmann::json::parse(json)));
+  ASSERT_EQ(schema->fields().size(), 2);
+
+  const auto& field1 = schema->fields()[0];
+  ASSERT_TRUE(field1.initial_default().has_value());
+  ASSERT_EQ(field1.initial_default()->get(), Literal::Int(42));
+  ASSERT_TRUE(field1.write_default().has_value());
+  ASSERT_EQ(field1.write_default()->get(), Literal::Int(7));
+
+  const auto& field2 = schema->fields()[1];
+  ASSERT_TRUE(field2.initial_default().has_value());
+  ASSERT_EQ(field2.initial_default()->get(), Literal::String("n/a"));
+  ASSERT_FALSE(field2.write_default().has_value());
+
+  ASSERT_EQ(ToJson(*schema).dump(), json);
+}
+
+TEST(SchemaJsonTest, FieldWithMismatchedDefaultValueFails) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"initial-default":"oops","name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"})";
+
+  auto result = SchemaFromJson(nlohmann::json::parse(json));
+  ASSERT_FALSE(result.has_value());
+}
+
+TEST(SchemaJsonTest, NestedFieldWithDefaultValuesRoundTrip) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"name":"person","required":true,"type":{"fields":[{"id":2,"initial-default":18,"name":"age","required":true,"type":"int","write-default":21}],"type":"struct"}}],"schema-id":1,"type":"struct"})";
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(nlohmann::json::parse(json)));
+  const auto& person = schema->fields()[0];
+  const auto& nested = dynamic_cast<const StructType&>(*person.type()).fields()[0];
+  ASSERT_TRUE(nested.initial_default().has_value());
+  ASSERT_EQ(nested.initial_default()->get(), Literal::Int(18));
+  ASSERT_TRUE(nested.write_default().has_value());
+  ASSERT_EQ(nested.write_default()->get(), Literal::Int(21));
+
+  ASSERT_EQ(ToJson(*schema).dump(), json);
 }
 
 TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
