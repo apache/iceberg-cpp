@@ -21,6 +21,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include <arrow/filesystem/filesystem.h>
 #if ICEBERG_S3_ENABLED
@@ -172,15 +173,21 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
 }
 #endif
 
+#if ICEBERG_S3_ENABLED
+Result<std::shared_ptr<::arrow::fs::FileSystem>> BuildArrowS3FileSystem(
+    const std::unordered_map<std::string, std::string>& properties) {
+  ICEBERG_RETURN_UNEXPECTED(EnsureS3Initialized());
+  ICEBERG_ASSIGN_OR_RAISE(auto options, ConfigureS3Options(properties));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto fs, ::arrow::fs::S3FileSystem::Make(options));
+  return std::shared_ptr<::arrow::fs::FileSystem>(std::move(fs));
+}
+#endif
+
 Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::unordered_map<std::string, std::string>& properties) {
 #if ICEBERG_S3_ENABLED
-  ICEBERG_RETURN_UNEXPECTED(EnsureS3Initialized());
-
-  // Configure S3 options from properties (uses default credentials if empty)
-  ICEBERG_ASSIGN_OR_RAISE(auto options, ConfigureS3Options(properties));
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto fs, ::arrow::fs::S3FileSystem::Make(options));
-
+  // Uses default credentials if properties are empty.
+  ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
   return std::make_unique<ArrowFileSystemFileIO>(std::move(fs));
 #else
   return NotSupported("Arrow S3 support is not enabled");

@@ -47,24 +47,17 @@ ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
 
-/// \brief Returns the S3-family vended credential (prefix starting with "s3")
-/// whose prefix is the longest match for `storage_location`, or nullptr if none
-/// applies (Iceberg REST spec / Java `S3FileIO` longest-prefix matching). The
-/// s3/s3a/s3n schemes are treated as equivalent when matching.
-ICEBERG_REST_EXPORT const StorageCredential* SelectS3StorageCredential(
-    const std::vector<StorageCredential>& credentials, std::string_view storage_location);
-
-/// \brief True if `credentials` is non-empty but contains no S3-family
-/// credential (prefix starting with "s3") — i.e. only unsupported schemes such
-/// as GCS/ADLS were vended, which an S3/local FileIO cannot honor.
+/// \brief True if `credentials` is non-empty but has no S3-family credential
+/// (prefix starting with "s3") — only unsupported schemes (GCS/ADLS) were vended.
 ICEBERG_REST_EXPORT bool HasOnlyNonS3StorageCredentials(
     const std::vector<StorageCredential>& credentials);
 
-/// \brief Builds an `arrow-fs-s3` FileIO, merging catalog, table, then
-/// credential config (later wins).
-ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredential(
+/// \brief Build an S3 FileIO that routes each object path to a per-prefix file
+/// system, one per S3-family vended credential (config merged catalog < table <
+/// credential). Non-S3 credentials are ignored.
+ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredentials(
     const std::unordered_map<std::string, std::string>& catalog_config,
     const std::unordered_map<std::string, std::string>& table_config,
-    const StorageCredential& s3_cred);
+    const std::vector<StorageCredential>& storage_credentials);
 
 }  // namespace iceberg::rest

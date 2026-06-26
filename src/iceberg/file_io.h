@@ -26,6 +26,8 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -171,6 +173,21 @@ class ICEBERG_EXPORT FileIO {
   /// \param file_locations The locations of the files to delete.
   /// \return void if all deletes succeed, or an error code if any delete fails.
   virtual Status DeleteFiles(const std::vector<std::string>& file_locations);
+};
+
+/// \brief Mix-in for FileIO implementations that route object paths to
+/// per-prefix file systems built from vended storage credentials, letting the
+/// catalog stay decoupled from the concrete (Arrow/S3) implementation.
+class ICEBERG_EXPORT SupportsStorageCredentials {
+ public:
+  virtual ~SupportsStorageCredentials() = default;
+
+  /// \brief Install per-prefix file systems. `properties_by_prefix` maps a
+  /// canonicalized prefix to its fully merged properties.
+  virtual Status SetStorageCredentials(
+      const std::vector<
+          std::pair<std::string, std::unordered_map<std::string, std::string>>>&
+          properties_by_prefix) = 0;
 };
 
 }  // namespace iceberg

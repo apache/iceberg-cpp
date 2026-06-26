@@ -22,6 +22,7 @@
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include <arrow/buffer.h>
@@ -35,6 +36,8 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/s3/arrow_s3_internal.h"
+#include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::arrow {
@@ -483,13 +486,53 @@ class ArrowOutputFile : public OutputFile {
 
 }  // namespace
 
-Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
+const std::shared_ptr<::arrow::fs::FileSystem>& ArrowFileSystemFileIO::FileSystemForPath(
+    std::string_view location) const {
+  if (fs_by_prefix_.empty()) {
+    return arrow_fs_;
+  }
+  // Longest matching prefix wins; fall back to the default file system.
+  const std::string canonical = LocationUtil::CanonicalizeS3Scheme(location);
+  const std::shared_ptr<::arrow::fs::FileSystem>* best = &arrow_fs_;
+  size_t best_len = 0;
+  for (const auto& [prefix, fs] : fs_by_prefix_) {
+    if (prefix.size() > best_len && LocationUtil::PathHasPrefix(canonical, prefix)) {
+      best = &fs;
+      best_len = prefix.size();
+    }
+  }
+  return *best;
+}
+
+Status ArrowFileSystemFileIO::SetStorageCredentials(
+    const std::vector<
+        std::pair<std::string, std::unordered_map<std::string, std::string>>>&
+        properties_by_prefix) {
+#if ICEBERG_S3_ENABLED
+  std::vector<std::pair<std::string, std::shared_ptr<::arrow::fs::FileSystem>>>
+      fs_by_prefix;
+  fs_by_prefix.reserve(properties_by_prefix.size());
+  for (const auto& [prefix, properties] : properties_by_prefix) {
+    ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
+    fs_by_prefix.emplace_back(prefix, std::move(fs));
+  }
+  fs_by_prefix_ = std::move(fs_by_prefix);
+  return {};
+#else
+  (void)properties_by_prefix;
+  return NotSupported("S3 storage credentials require Arrow S3 support");
+#endif
+}
+
+Result<std::string> ArrowFileSystemFileIO::ResolvePath(
+    const std::shared_ptr<::arrow::fs::FileSystem>& fs,
+    const std::string& file_location) {
   const auto pos = file_location.find("://");
   if (pos == std::string::npos) {
     return file_location;
   }
 
-  auto path = arrow_fs_->PathFromUri(file_location);
+  auto path = fs->PathFromUri(file_location);
   if (path.ok()) {
     return std::move(path).ValueOrDie();
   }
@@ -512,14 +555,14 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
 
   if (auto arrow_io = std::dynamic_pointer_cast<ArrowFileSystemFileIO>(io)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto resolved_path, arrow_io->ResolvePath(path));
+    const auto& fs = arrow_io->FileSystemForPath(path);
+    ICEBERG_ASSIGN_OR_RAISE(auto resolved_path, arrow_io->ResolvePath(fs, path));
     ::arrow::fs::FileInfo file_info(resolved_path, ::arrow::fs::FileType::File);
     if (length.has_value()) {
       ICEBERG_ASSIGN_OR_RAISE(auto size, ToInt64Length(*length));
       file_info.set_size(size);
     }
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input,
-                                   arrow_io->arrow_fs_->OpenInputFile(file_info));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs->OpenInputFile(file_info));
     return input;
   }
 
@@ -543,16 +586,15 @@ Result<std::shared_ptr<::arrow::io::OutputStream>> OpenArrowOutputStream(
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
 
   if (auto arrow_io = std::dynamic_pointer_cast<ArrowFileSystemFileIO>(io)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto resolved_path, arrow_io->ResolvePath(path));
+    const auto& fs = arrow_io->FileSystemForPath(path);
+    ICEBERG_ASSIGN_OR_RAISE(auto resolved_path, arrow_io->ResolvePath(fs, path));
     if (!overwrite) {
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(auto info,
-                                     arrow_io->arrow_fs_->GetFileInfo(resolved_path));
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(auto info, fs->GetFileInfo(resolved_path));
       if (info.type() != ::arrow::fs::FileType::NotFound) {
         return AlreadyExists("File already exists: {}", path);
       }
     }
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto output,
-                                   arrow_io->arrow_fs_->OpenOutputStream(resolved_path));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto output, fs->OpenOutputStream(resolved_path));
     return output;
   }
 
@@ -568,42 +610,60 @@ Result<std::shared_ptr<::arrow::io::OutputStream>> OpenArrowOutputStream(
 
 Result<std::unique_ptr<InputFile>> ArrowFileSystemFileIO::NewInputFile(
     std::string file_location) {
-  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-  return std::make_unique<ArrowInputFile>(arrow_fs_, std::move(file_location),
-                                          std::move(path), std::nullopt);
+  const auto& fs = FileSystemForPath(file_location);
+  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(fs, file_location));
+  return std::make_unique<ArrowInputFile>(fs, std::move(file_location), std::move(path),
+                                          std::nullopt);
 }
 
 Result<std::unique_ptr<InputFile>> ArrowFileSystemFileIO::NewInputFile(
     std::string file_location, size_t length) {
   ICEBERG_ASSIGN_OR_RAISE(auto size, ToInt64Length(length));
-  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-  return std::make_unique<ArrowInputFile>(arrow_fs_, std::move(file_location),
-                                          std::move(path), size);
+  const auto& fs = FileSystemForPath(file_location);
+  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(fs, file_location));
+  return std::make_unique<ArrowInputFile>(fs, std::move(file_location), std::move(path),
+                                          size);
 }
 
 Result<std::unique_ptr<OutputFile>> ArrowFileSystemFileIO::NewOutputFile(
     std::string file_location) {
-  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-  return std::make_unique<ArrowOutputFile>(arrow_fs_, std::move(file_location),
-                                           std::move(path));
+  const auto& fs = FileSystemForPath(file_location);
+  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(fs, file_location));
+  return std::make_unique<ArrowOutputFile>(fs, std::move(file_location), std::move(path));
 }
 
 /// \brief Delete a file at the given location.
 Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
-  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(path));
+  const auto& fs = FileSystemForPath(file_location);
+  ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(fs, file_location));
+  ICEBERG_ARROW_RETURN_NOT_OK(fs->DeleteFile(path));
   return {};
 }
 
 Status ArrowFileSystemFileIO::DeleteFiles(
     const std::vector<std::string>& file_locations) {
-  std::vector<std::string> paths;
-  paths.reserve(file_locations.size());
-  for (const auto& file_location : file_locations) {
-    ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-    paths.push_back(std::move(path));
+  if (fs_by_prefix_.empty()) {
+    // No per-prefix routing: one batched delete on the default file system.
+    std::vector<std::string> paths;
+    paths.reserve(file_locations.size());
+    for (const auto& file_location : file_locations) {
+      ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(arrow_fs_, file_location));
+      paths.push_back(std::move(path));
+    }
+    ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFiles(paths));
+    return {};
   }
-  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFiles(paths));
+
+  // Paths may route to different file systems: group by fs, then batch per fs.
+  std::unordered_map<::arrow::fs::FileSystem*, std::vector<std::string>> paths_by_fs;
+  for (const auto& file_location : file_locations) {
+    const auto& fs = FileSystemForPath(file_location);
+    ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(fs, file_location));
+    paths_by_fs[fs.get()].push_back(std::move(path));
+  }
+  for (auto& [fs, paths] : paths_by_fs) {
+    ICEBERG_ARROW_RETURN_NOT_OK(fs->DeleteFiles(paths));
+  }
   return {};
 }
 

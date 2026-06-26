@@ -29,6 +29,7 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/location_util.h"
 
 namespace iceberg::rest {
 
@@ -152,73 +153,33 @@ TEST(RestFileIOTest, MakeCatalogFileIOSkipsCheckWhenWarehouseAbsent) {
   ASSERT_THAT(result, IsOk());
 }
 
-TEST(RestFileIOTest, SelectS3StorageCredentialPicksLongestMatchingS3Prefix) {
-  std::vector<StorageCredential> credentials = {
-      {.prefix = "s3", .config = {{"s3.access-key-id", "a"}}},
-      {.prefix = "s3://bucket/data", .config = {{"s3.access-key-id", "b"}}},
-      {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "c"}}},
-  };
-  const auto* cred = SelectS3StorageCredential(credentials, "s3://bucket/data/db/t");
-  ASSERT_NE(cred, nullptr);
-  EXPECT_EQ(cred->prefix, "s3://bucket/data");
+TEST(RestFileIOTest, CanonicalizeS3SchemeTreatsS3CompatibleSchemesAsS3) {
+  // s3a/s3n/oss canonicalize to s3:// so a vended `s3` credential prefix-matches
+  // them uniformly (DLF vends `s3` for oss:// locations).
+  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("oss://bucket/db/t"), "s3://bucket/db/t");
+  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("s3a://bucket/x"), "s3://bucket/x");
+  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("s3n://bucket/x"), "s3://bucket/x");
+  // Already-canonical and non-S3 / scheme-less locations are unchanged.
+  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("s3://bucket/x"), "s3://bucket/x");
+  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("gs://bucket"), "gs://bucket");
+  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("/local/path"), "/local/path");
 }
 
-TEST(RestFileIOTest, SelectS3StorageCredentialMatchesAgainstStorageLocation) {
-  std::vector<StorageCredential> credentials = {
-      // Globally longest prefix, but for a path that does not cover this table.
-      {.prefix = "s3://other/very/long/prefix", .config = {{"s3.access-key-id", "x"}}},
-      {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "y"}}},
-  };
-  const auto* cred = SelectS3StorageCredential(credentials, "s3://bucket/db/t/data");
-  ASSERT_NE(cred, nullptr);
-  // The longest *matching* prefix wins, not the globally longest one.
-  EXPECT_EQ(cred->prefix, "s3://bucket");
-}
+TEST(RestFileIOTest, PathHasPrefixMatchesAtPathBoundary) {
+  // Must match only at a path boundary, so a `s3://bucket/db/t1` credential does
+  // not capture a sibling table under `s3://bucket/db/t1x/...`.
+  EXPECT_TRUE(LocationUtil::PathHasPrefix("s3://bucket/db/t1/data/f.parquet",
+                                          "s3://bucket/db/t1"));
+  EXPECT_TRUE(LocationUtil::PathHasPrefix("s3://bucket/db/t1", "s3://bucket/db/t1"));
+  EXPECT_FALSE(LocationUtil::PathHasPrefix("s3://bucket/db/t1x/data/f.parquet",
+                                           "s3://bucket/db/t1"));
+  EXPECT_FALSE(LocationUtil::PathHasPrefix("s3://bucket-other/x", "s3://bucket"));
 
-TEST(RestFileIOTest, SelectS3StorageCredentialMatchesEquivalentS3Schemes) {
-  std::vector<StorageCredential> s3_cred = {
-      {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "a"}}},
-  };
-  // s3a:// and s3n:// locations match an s3:// vended prefix (same backend).
-  EXPECT_NE(SelectS3StorageCredential(s3_cred, "s3a://bucket/db/t"), nullptr);
-  EXPECT_NE(SelectS3StorageCredential(s3_cred, "s3n://bucket/db/t"), nullptr);
-
-  // ...and the inverse: an s3a:// prefix matches an s3:// location.
-  std::vector<StorageCredential> s3a_cred = {
-      {.prefix = "s3a://bucket", .config = {{"s3.access-key-id", "b"}}},
-  };
-  const auto* cred = SelectS3StorageCredential(s3a_cred, "s3://bucket/db/t");
-  ASSERT_NE(cred, nullptr);
-  EXPECT_EQ(cred->prefix, "s3a://bucket");
-
-  // OSS is S3-compatible: an `s3` credential matches an oss:// location (Alibaba
-  // DLF vends an `s3` credential for tables whose location uses the oss:// scheme).
-  EXPECT_NE(SelectS3StorageCredential(s3_cred, "oss://bucket/db/t"), nullptr);
-}
-
-TEST(RestFileIOTest, SelectS3StorageCredentialIgnoresNonS3Prefixes) {
-  std::vector<StorageCredential> credentials = {
-      {.prefix = "gs://bucket", .config = {{"k", "v"}}},
-      {.prefix = "s3", .config = {{"s3.access-key-id", "a"}}},
-  };
-  const auto* cred = SelectS3StorageCredential(credentials, "s3://bucket/data");
-  ASSERT_NE(cred, nullptr);
-  EXPECT_EQ(cred->prefix, "s3");
-}
-
-TEST(RestFileIOTest, SelectS3StorageCredentialReturnsNullWhenNoneMatch) {
-  std::vector<StorageCredential> credentials = {
-      {.prefix = "gs://bucket", .config = {{"k", "v"}}},
-  };
-  // Non-S3 prefix, S3 location.
-  EXPECT_EQ(SelectS3StorageCredential(credentials, "s3://bucket"), nullptr);
-  // S3 credential whose prefix does not cover the location.
-  EXPECT_EQ(SelectS3StorageCredential(
-                {{.prefix = "s3://other", .config = {{"s3.access-key-id", "a"}}}},
-                "s3://bucket/data"),
-            nullptr);
-  // No credentials at all.
-  EXPECT_EQ(SelectS3StorageCredential({}, "s3://bucket"), nullptr);
+  // A bare-scheme credential (DLF vends `s3`) matches any authority/path.
+  EXPECT_TRUE(LocationUtil::PathHasPrefix("s3://bucket/db/t/f", "s3"));
+  EXPECT_TRUE(LocationUtil::PathHasPrefix(
+      LocationUtil::CanonicalizeS3Scheme("oss://bucket/db/t/f"), "s3"));
+  EXPECT_FALSE(LocationUtil::PathHasPrefix("gs://bucket/x", "s3"));
 }
 
 TEST(RestFileIOTest, HasOnlyNonS3StorageCredentials) {
@@ -232,25 +193,6 @@ TEST(RestFileIOTest, HasOnlyNonS3StorageCredentials) {
        {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "a"}}}}));
   // No credentials at all -> not "only non-S3".
   EXPECT_FALSE(HasOnlyNonS3StorageCredentials({}));
-}
-
-TEST(RestFileIOTest, MakeS3FileIOFromCredentialMergesConfigWithPrecedence) {
-  auto captured = std::make_shared<std::unordered_map<std::string, std::string>>();
-  FileIORegistry::Register(
-      std::string(FileIORegistry::kArrowS3FileIO),
-      [captured](const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::unique_ptr<FileIO>> {
-        *captured = properties;
-        return std::make_unique<MockFileIO>();
-      });
-  auto result = MakeS3FileIOFromCredential(
-      {{"a", "catalog"}, {"shared", "catalog"}}, {{"b", "table"}, {"shared", "table"}},
-      StorageCredential{.prefix = "s3", .config = {{"c", "cred"}, {"shared", "cred"}}});
-  ASSERT_THAT(result, IsOk());
-  EXPECT_EQ((*captured)["a"], "catalog");
-  EXPECT_EQ((*captured)["b"], "table");
-  EXPECT_EQ((*captured)["c"], "cred");
-  EXPECT_EQ((*captured)["shared"], "cred");
 }
 
 }  // namespace iceberg::rest

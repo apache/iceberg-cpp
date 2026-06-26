@@ -22,10 +22,13 @@
 #include <algorithm>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -35,18 +38,6 @@ namespace {
 bool IsBuiltinImpl(std::string_view io_impl) {
   return io_impl == FileIORegistry::kArrowLocalFileIO ||
          io_impl == FileIORegistry::kArrowS3FileIO;
-}
-
-// Rewrites S3-compatible schemes (s3a/s3n/oss) to the canonical s3:// so a vended
-// credential matches a table location using an equivalent scheme (e.g. DLF vends
-// an `s3` credential for oss:// locations).
-std::string CanonicalizeS3Scheme(std::string_view location) {
-  for (std::string_view scheme : {"s3a://", "s3n://", "oss://"}) {
-    if (location.starts_with(scheme)) {
-      return std::string("s3://").append(location.substr(scheme.size()));
-    }
-  }
-  return std::string(location);
 }
 
 }  // namespace
@@ -108,27 +99,6 @@ Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& c
   return FileIORegistry::Load(io_impl, config.configs());
 }
 
-const StorageCredential* SelectS3StorageCredential(
-    const std::vector<StorageCredential>& credentials,
-    std::string_view storage_location) {
-  const std::string location = CanonicalizeS3Scheme(storage_location);
-  const StorageCredential* best = nullptr;
-  size_t best_size = 0;
-  for (const auto& cred : credentials) {
-    if (!cred.prefix.starts_with("s3")) {
-      continue;
-    }
-    // Keep the longest S3 prefix that matches this location; matching globally
-    // would bind a credential to paths it does not cover.
-    const std::string prefix = CanonicalizeS3Scheme(cred.prefix);
-    if (location.starts_with(prefix) && (best == nullptr || prefix.size() > best_size)) {
-      best = &cred;
-      best_size = prefix.size();
-    }
-  }
-  return best;
-}
-
 bool HasOnlyNonS3StorageCredentials(const std::vector<StorageCredential>& credentials) {
   return !credentials.empty() &&
          std::ranges::none_of(credentials, [](const StorageCredential& cred) {
@@ -136,18 +106,42 @@ bool HasOnlyNonS3StorageCredentials(const std::vector<StorageCredential>& creden
          });
 }
 
-Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredential(
+Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredentials(
     const std::unordered_map<std::string, std::string>& catalog_config,
     const std::unordered_map<std::string, std::string>& table_config,
-    const StorageCredential& s3_cred) {
-  auto properties = catalog_config;
+    const std::vector<StorageCredential>& storage_credentials) {
+  auto default_properties = catalog_config;
   for (const auto& [key, value] : table_config) {
-    properties[key] = value;
+    default_properties[key] = value;
   }
-  for (const auto& [key, value] : s3_cred.config) {
-    properties[key] = value;
+
+  // Default S3 FileIO (for paths matching no credential prefix), built via the
+  // registry to keep this layer decoupled from the Arrow/S3 implementation.
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto io, FileIORegistry::Load(std::string(FileIORegistry::kArrowS3FileIO),
+                                    default_properties));
+
+  // One property set per S3-family credential, keyed by canonicalized prefix;
+  // the credential's config overrides the default properties.
+  std::vector<std::pair<std::string, std::unordered_map<std::string, std::string>>>
+      properties_by_prefix;
+  for (const auto& cred : storage_credentials) {
+    if (!cred.prefix.starts_with("s3")) {
+      continue;
+    }
+    auto properties = default_properties;
+    for (const auto& [key, value] : cred.config) {
+      properties[key] = value;
+    }
+    properties_by_prefix.emplace_back(LocationUtil::CanonicalizeS3Scheme(cred.prefix),
+                                      std::move(properties));
   }
-  return FileIORegistry::Load(std::string(FileIORegistry::kArrowS3FileIO), properties);
+
+  // Hand the per-prefix properties to the FileIO for per-path credential routing.
+  if (auto* credentialed = dynamic_cast<SupportsStorageCredentials*>(io.get())) {
+    ICEBERG_RETURN_UNEXPECTED(credentialed->SetStorageCredentials(properties_by_prefix));
+  }
+  return io;
 }
 
 }  // namespace iceberg::rest

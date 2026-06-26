@@ -525,29 +525,23 @@ Result<std::shared_ptr<auth::AuthSession>> RestCatalog::TableAuthSession(
 Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
     const SessionContext& /*context*/,
     const std::unordered_map<std::string, std::string>& table_config,
-    const std::vector<StorageCredential>& storage_credentials,
-    std::string_view storage_location) const {
-  // Bind one S3 FileIO from the vended credential whose prefix best matches the
-  // table location (the common one-credential-per-table case).
-  // TODO: support per-path credential routing, STS refresh via credentials.uri,
-  // and non-S3 (GCS/ADLS) credentials, like Java's S3FileIO.
-  if (const StorageCredential* s3_cred =
-          SelectS3StorageCredential(storage_credentials, storage_location);
-      s3_cred != nullptr) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto io, MakeS3FileIOFromCredential(config_.configs(), table_config, *s3_cred));
+    const std::vector<StorageCredential>& storage_credentials) const {
+  if (!storage_credentials.empty()) {
+    // Only non-S3 (GCS/ADLS) credentials vended, which we can't honor; fail fast.
+    if (HasOnlyNonS3StorageCredentials(storage_credentials)) {
+      auto prefixes =
+          storage_credentials | std::views::transform(&StorageCredential::prefix);
+      return NotSupported(
+          "Vended storage credentials {} are unsupported (only S3-family "
+          "credentials are supported)",
+          FormatRange(prefixes, ", ", "[", "]"));
+    }
+    // Build a FileIO that routes each path to its vended credential. TODO: STS
+    // refresh via credentials.uri is not yet supported.
+    ICEBERG_ASSIGN_OR_RAISE(auto io,
+                            MakeS3FileIOFromCredentials(config_.configs(), table_config,
+                                                        storage_credentials));
     return std::shared_ptr<FileIO>(std::move(io));
-  }
-
-  // Only non-S3 (e.g. GCS/ADLS) credentials were vended and we can't honor them;
-  // fail fast. (S3 credentials that simply don't match fall through below.)
-  if (HasOnlyNonS3StorageCredentials(storage_credentials)) {
-    auto prefixes =
-        storage_credentials | std::views::transform(&StorageCredential::prefix);
-    return NotSupported(
-        "Vended storage credentials {} are unsupported (only S3-family "
-        "credentials are supported)",
-        FormatRange(prefixes, ", ", "[", "]"));
   }
 
   ICEBERG_RETURN_UNEXPECTED(ValidateNoFileIOConfig(table_config));
@@ -789,9 +783,8 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
                           /*stage_create=*/true, *contextual_session));
   auto table_config = std::move(result.config);
   auto storage_credentials = std::move(result.storage_credentials);
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto table_io,
-      TableFileIO(context, table_config, storage_credentials, result.metadata->location));
+  ICEBERG_ASSIGN_OR_RAISE(auto table_io,
+                          TableFileIO(context, table_config, storage_credentials));
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
@@ -906,9 +899,8 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
     std::shared_ptr<auth::AuthSession> contextual_session) {
   auto table_config = std::move(result.config);
   auto storage_credentials = std::move(result.storage_credentials);
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto table_io,
-      TableFileIO(context, table_config, storage_credentials, result.metadata->location));
+  ICEBERG_ASSIGN_OR_RAISE(auto table_io,
+                          TableFileIO(context, table_config, storage_credentials));
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));

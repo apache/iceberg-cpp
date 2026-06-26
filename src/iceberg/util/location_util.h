@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <string>
 #include <string_view>
 
 #include "iceberg/iceberg_export.h"
@@ -36,6 +37,27 @@ class ICEBERG_EXPORT LocationUtil {
       path.remove_suffix(1);
     }
     return path;
+  }
+
+  /// \brief Rewrites S3-compatible schemes (s3a://, s3n://, oss://) to s3:// so
+  /// locations and credential prefixes can be prefix-matched uniformly.
+  static std::string CanonicalizeS3Scheme(std::string_view location) {
+    for (std::string_view scheme : {"s3a://", "s3n://", "oss://"}) {
+      if (location.starts_with(scheme)) {
+        return std::string("s3://").append(location.substr(scheme.size()));
+      }
+    }
+    return std::string(location);
+  }
+
+  /// \brief True if `prefix` matches `path` at a path boundary (equal, next char
+  /// '/', or a bare scheme), so `s3://bucket` does not match `s3://bucket-x`.
+  static bool PathHasPrefix(std::string_view path, std::string_view prefix) {
+    if (!path.starts_with(prefix)) {
+      return false;
+    }
+    return path.size() == prefix.size() || path[prefix.size()] == '/' ||
+           prefix.find("://") == std::string_view::npos;
   }
 };
 

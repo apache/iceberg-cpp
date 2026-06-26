@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -39,6 +40,11 @@ namespace iceberg::arrow {
 /// addressing style) can be unit tested without a live S3 endpoint.
 ICEBERG_BUNDLE_EXPORT Result<::arrow::fs::S3Options> ConfigureS3Options(
     const std::unordered_map<std::string, std::string>& properties);
+
+/// \brief Build an Arrow S3 file system from a properties map (initializes S3 if
+/// needed). Exposed so the credential-aware FileIO can build one fs per prefix.
+ICEBERG_BUNDLE_EXPORT Result<std::shared_ptr<::arrow::fs::FileSystem>>
+BuildArrowS3FileSystem(const std::unordered_map<std::string, std::string>& properties);
 #endif
 
 }  // namespace iceberg::arrow
