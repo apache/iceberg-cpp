@@ -31,7 +31,9 @@ project(
 )
 
 cpp = meson.get_compiler('cpp')
-args = cpp.get_supported_arguments(['/bigobj'])
+# /Zc:preprocessor: MSVC's conforming preprocessor, required for the __VA_OPT__
+# used by the logging macros. get_supported_arguments drops it on non-MSVC.
+args = cpp.get_supported_arguments(['/bigobj', '/Zc:preprocessor'])
 add_project_arguments(args, language: 'cpp')
 
 subdir('src')
