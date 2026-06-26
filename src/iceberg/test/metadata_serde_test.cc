@@ -534,7 +534,7 @@ TEST(MetadataSerdeTest, EncryptionKeysRoundTrip) {
   EXPECT_EQ(metadata.value()->encryption_keys[0].encrypted_key_metadata,
             "secret-key-metadata");
 
-  auto serialized = ToJson(*metadata.value());
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*metadata.value()));
   ASSERT_TRUE(serialized.contains("encryption-keys"));
   EXPECT_EQ(serialized["encryption-keys"], metadata_json["encryption-keys"]);
 }

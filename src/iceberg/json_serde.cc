@@ -301,28 +301,26 @@ Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json)
   return SortOrder::Make(order_id, std::move(sort_fields));
 }
 
-nlohmann::json ToJson(const SchemaField& field) {
+Result<nlohmann::json> ToJson(const SchemaField& field) {
   nlohmann::json json;
   json[kId] = field.field_id();
   json[kName] = field.name();
   json[kRequired] = !field.optional();
-  json[kType] = ToJson(*field.type());
+  ICEBERG_ASSIGN_OR_RAISE(json[kType], ToJson(*field.type()));
   if (!field.doc().empty()) {
     json[kDoc] = field.doc();
   }
-  // Defaults are validated to be primitive literals matching the field type, so
-  // single-value serialization cannot fail here.
   if (field.initial_default().has_value()) {
-    ICEBERG_ASSIGN_OR_THROW(json[kInitialDefault],
+    ICEBERG_ASSIGN_OR_RAISE(json[kInitialDefault],
                             ToJson(field.initial_default()->get()));
   }
   if (field.write_default().has_value()) {
-    ICEBERG_ASSIGN_OR_THROW(json[kWriteDefault], ToJson(field.write_default()->get()));
+    ICEBERG_ASSIGN_OR_RAISE(json[kWriteDefault], ToJson(field.write_default()->get()));
   }
   return json;
 }
 
-nlohmann::json ToJson(const Type& type) {
+Result<nlohmann::json> ToJson(const Type& type) {
   switch (type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = internal::checked_cast<const StructType&>(type);
@@ -330,7 +328,8 @@ nlohmann::json ToJson(const Type& type) {
       json[kType] = kStruct;
       nlohmann::json fields_json = nlohmann::json::array();
       for (const auto& field : struct_type.fields()) {
-        fields_json.push_back(ToJson(field));
+        ICEBERG_ASSIGN_OR_RAISE(auto field_json, ToJson(field));
+        fields_json.push_back(std::move(field_json));
       }
       json[kFields] = fields_json;
       return json;
@@ -343,7 +342,7 @@ nlohmann::json ToJson(const Type& type) {
       const auto& element_field = list_type.fields().front();
       json[kElementId] = element_field.field_id();
       json[kElementRequired] = !element_field.optional();
-      json[kElement] = ToJson(*element_field.type());
+      ICEBERG_ASSIGN_OR_RAISE(json[kElement], ToJson(*element_field.type()));
       return json;
     }
     case TypeId::kMap: {
@@ -353,12 +352,12 @@ nlohmann::json ToJson(const Type& type) {
 
       const auto& key_field = map_type.key();
       json[kKeyId] = key_field.field_id();
-      json[kKey] = ToJson(*key_field.type());
+      ICEBERG_ASSIGN_OR_RAISE(json[kKey], ToJson(*key_field.type()));
 
       const auto& value_field = map_type.value();
       json[kValueId] = value_field.field_id();
       json[kValueRequired] = !value_field.optional();
-      json[kValue] = ToJson(*value_field.type());
+      ICEBERG_ASSIGN_OR_RAISE(json[kValue], ToJson(*value_field.type()));
       return json;
     }
     case TypeId::kBoolean:
@@ -404,8 +403,9 @@ nlohmann::json ToJson(const Type& type) {
   std::unreachable();
 }
 
-nlohmann::json ToJson(const Schema& schema) {
-  nlohmann::json json = ToJson(internal::checked_cast<const Type&>(schema));
+Result<nlohmann::json> ToJson(const Schema& schema) {
+  ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
+                          ToJson(internal::checked_cast<const Type&>(schema)));
   json[kSchemaId] = schema.schema_id();
   if (!schema.IdentifierFieldIds().empty()) {
     json[kIdentifierFieldIds] = schema.IdentifierFieldIds();
@@ -414,7 +414,8 @@ nlohmann::json ToJson(const Schema& schema) {
 }
 
 Result<std::string> ToJsonString(const Schema& schema) {
-  return ToJsonString(ToJson(schema));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, ToJson(schema));
+  return ToJsonString(json);
 }
 
 nlohmann::json ToJson(const SnapshotRef& ref) {
@@ -956,7 +957,7 @@ Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json) {
   };
 }
 
-nlohmann::json ToJson(const TableMetadata& table_metadata) {
+Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
   nlohmann::json json;
 
   json[kFormatVersion] = table_metadata.format_version;
@@ -974,7 +975,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   if (table_metadata.format_version == 1) {
     for (const auto& schema : table_metadata.schemas) {
       if (schema->schema_id() == table_metadata.current_schema_id) {
-        json[kSchema] = ToJson(*schema);
+        ICEBERG_ASSIGN_OR_RAISE(json[kSchema], ToJson(*schema));
         break;
       }
     }
@@ -982,7 +983,14 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
 
   // write the current schema ID and schema list
   json[kCurrentSchemaId] = table_metadata.current_schema_id;
-  json[kSchemas] = ToJsonList(table_metadata.schemas);
+  // Schemas can carry fallible default-value serialization, so the shared ToJsonList
+  // helper (which assumes infallible ToJson) is not used here.
+  nlohmann::json schemas_json = nlohmann::json::array();
+  for (const auto& schema : table_metadata.schemas) {
+    ICEBERG_ASSIGN_OR_RAISE(auto schema_json, ToJson(*schema));
+    schemas_json.push_back(std::move(schema_json));
+  }
+  json[kSchemas] = std::move(schemas_json);
 
   // for older readers, continue writing the default spec as "partition-spec"
   if (table_metadata.format_version == 1) {
@@ -1032,7 +1040,8 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
 }
 
 Result<std::string> ToJsonString(const TableMetadata& table_metadata) {
-  return ToJsonString(ToJson(table_metadata));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, ToJson(table_metadata));
+  return ToJsonString(json);
 }
 
 namespace {
@@ -1435,7 +1444,7 @@ Result<Namespace> NamespaceFromJson(const nlohmann::json& json) {
   return ns;
 }
 
-nlohmann::json ToJson(const TableUpdate& update) {
+Result<nlohmann::json> ToJson(const TableUpdate& update) {
   nlohmann::json json;
   switch (update.kind()) {
     case TableUpdate::Kind::kAssignUUID: {
@@ -1454,7 +1463,7 @@ nlohmann::json ToJson(const TableUpdate& update) {
       const auto& u = internal::checked_cast<const table::AddSchema&>(update);
       json[kAction] = kActionAddSchema;
       if (u.schema()) {
-        json[kSchema] = ToJson(*u.schema());
+        ICEBERG_ASSIGN_OR_RAISE(json[kSchema], ToJson(*u.schema()));
       } else {
         json[kSchema] = nlohmann::json::value_t::null;
       }
