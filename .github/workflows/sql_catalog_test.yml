@@ -20,8 +20,7 @@ name: SQL Catalog Tests
 on:
   push:
     branches:
-      - '**'
-      - '!dependabot/**'
+      - main
     tags:
       - '**'
   pull_request:

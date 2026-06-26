@@ -21,10 +21,10 @@ name: GitHub Actions Security Analysis with zizmor 🌈
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    branches: ["**"]
 
 concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
