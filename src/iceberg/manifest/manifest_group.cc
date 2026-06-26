@@ -36,6 +36,7 @@
 #include "iceberg/expression/residual_evaluator.h"
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/metrics/scan_report.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/manifest_wrapper.h"
 #include "iceberg/schema.h"
@@ -198,6 +199,12 @@ ManifestGroup& ManifestGroup::PlanWith(OptionalExecutor executor) {
   return *this;
 }
 
+ManifestGroup& ManifestGroup::ScanMetrics(
+    std::shared_ptr<class ScanMetrics> scan_metrics) {
+  scan_metrics_ = std::move(scan_metrics);
+  return *this;
+}
+
 Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   auto create_file_scan_tasks =
       [this](std::vector<ManifestEntry>&& entries,
@@ -212,6 +219,21 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
         ContentFileUtil::DropUnselectedStats(*entry.data_file, ctx.columns_to_keep_stats);
       }
       ICEBERG_ASSIGN_OR_RAISE(auto delete_files, ctx.deletes->ForEntry(entry));
+      // Mirrors Java's ScanMetricsUtil.fileTask(): counted once per FileScanTask (i.e.
+      // once per data file), so a delete file shared by N data files contributes here
+      // N times, unlike indexed_delete_files which is deduplicated in DeleteFileIndex.
+      if (scan_metrics_) {
+        scan_metrics_->total_file_size_in_bytes->Increment(
+            ContentFileUtil::ContentSizeInBytes(*entry.data_file));
+        scan_metrics_->result_data_files->Increment(1);
+        scan_metrics_->result_delete_files->Increment(
+            static_cast<int64_t>(delete_files.size()));
+        int64_t deletes_size = 0;
+        for (const auto& delete_file : delete_files) {
+          deletes_size += ContentFileUtil::ContentSizeInBytes(*delete_file);
+        }
+        scan_metrics_->total_delete_file_size_in_bytes->Increment(deletes_size);
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto residual,
                               ctx.residuals->ResidualFor(entry.data_file->partition));
       tasks.push_back(std::make_shared<FileScanTask>(
@@ -229,6 +251,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   for (auto& task : tasks) {
     file_tasks.push_back(internal::checked_pointer_cast<FileScanTask>(task));
   }
+
   return file_tasks;
 }
 
@@ -254,6 +277,9 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
     return residual_cache[spec_id].get();
   };
 
+  if (scan_metrics_) {
+    delete_index_builder_.ScanMetrics(scan_metrics_.get());
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto delete_index, delete_index_builder_.Build());
 
   bool drop_stats = ManifestReader::ShouldDropStats(columns_);
@@ -346,6 +372,10 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
       .CaseSensitive(case_sensitive_)
       .Select(std::move(columns));
 
+  if (scan_metrics_) {
+    reader->SkipCounter(scan_metrics_->skipped_data_files);
+  }
+
   return reader;
 }
 
@@ -408,12 +438,19 @@ ManifestGroup::ReadEntries() {
                                 manifest_evaluator->Evaluate(manifest));
         if (!should_match) {
           // Skip this manifest because it doesn't match partition filter
+          if (scan_metrics_) {
+            scan_metrics_->skipped_data_manifests->Increment(1);
+          }
           return {};
+        }
+        if (scan_metrics_) {
+          scan_metrics_->scanned_data_manifests->Increment(1);
         }
 
         if (ignore_deleted_) {
           // only scan manifests that have entries other than deletes
           if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+            if (scan_metrics_) scan_metrics_->skipped_data_files->Increment(1);
             return {};
           }
         }
@@ -421,6 +458,7 @@ ManifestGroup::ReadEntries() {
         if (ignore_existing_) {
           // only scan manifests that have entries other than existing
           if (!manifest.has_added_files() && !manifest.has_deleted_files()) {
+            if (scan_metrics_) scan_metrics_->skipped_data_files->Increment(1);
             return {};
           }
         }

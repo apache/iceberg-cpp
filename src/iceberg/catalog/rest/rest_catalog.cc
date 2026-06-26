@@ -39,9 +39,11 @@
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
+#include "iceberg/catalog/rest/rest_metrics_reporter.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -52,6 +54,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::rest {
 
@@ -451,7 +454,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   // Get snapshot loading mode
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, final_config.SnapshotLoadingMode());
 
-  auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders());
+  auto client = std::make_shared<HttpClient>(final_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
                           auth_manager->CatalogSession(*client, final_config.configs()));
 
@@ -459,14 +462,23 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto file_io, MakeCatalogFileIO(final_config));
 
   auto default_context = SessionContext::Empty();
-  return std::shared_ptr<RestCatalog>(new RestCatalog(
+  auto catalog = std::shared_ptr<RestCatalog>(new RestCatalog(
       std::move(final_config), std::move(file_io), std::move(client), std::move(paths),
       std::move(endpoints), std::move(auth_manager), std::move(catalog_session),
       snapshot_mode, std::move(default_context)));
+  const auto& props = final_config.configs();
+  if (auto it = props.find(std::string(kMetricsReporterImpl));
+      it != props.end() && !it->second.empty() &&
+      it->second != kMetricsReporterTypeNoop) {
+    ICEBERG_ASSIGN_OR_RAISE(auto reporter, MetricsReporters::Load(props));
+    catalog->reporter_ = std::shared_ptr<MetricsReporter>(std::move(reporter));
+  }
+
+  return catalog;
 }
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-                         std::unique_ptr<HttpClient> client,
+                         std::shared_ptr<HttpClient> client,
                          std::unique_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints,
                          std::unique_ptr<auth::AuthManager> auth_manager,
@@ -483,6 +495,14 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
       snapshot_mode_(snapshot_mode),
       default_context_(std::move(default_context)) {
   ICEBERG_DCHECK(catalog_session_ != nullptr, "catalog_session must not be null");
+  const auto& props = config_.configs();
+  auto it = props.find(std::string(kMetricsReporterImpl));
+  if (it != props.end() && !it->second.empty() &&
+      it->second != kMetricsReporterTypeNoop) {
+    if (auto r = MetricsReporters::Load(props); r.has_value()) {
+      reporter_ = std::shared_ptr<MetricsReporter>(std::move(r.value()));
+    }
+  }
 }
 
 std::string_view RestCatalog::name() const { return name_; }
@@ -522,6 +542,21 @@ Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
     const std::unordered_map<std::string, std::string>& table_config) const {
   ICEBERG_RETURN_UNEXPECTED(ValidateNoFileIOConfig(table_config));
   return file_io_;
+}
+
+std::shared_ptr<MetricsReporter> RestCatalog::MakeTableReporter(
+    const TableIdentifier& identifier) const {
+  auto enabled = config_.Get(RestCatalogProperties::kMetricsReportingEnabled);
+  if (StringUtils::ToLower(enabled) == "true" &&
+      supported_endpoints_.contains(Endpoint::ReportMetrics())) {
+    auto path = paths_->Metrics(identifier);
+    if (path.has_value()) {
+      auto rest_reporter =
+          std::make_shared<RestMetricsReporter>(client_, *path, catalog_session_);
+      return MetricsReporters::Combine(reporter_, rest_reporter);
+    }
+  }
+  return reporter_;
 }
 
 Result<std::vector<Namespace>> RestCatalog::ListNamespaces(
@@ -764,7 +799,7 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
       auto staged_table,
       StagedTable::Make(identifier, std::move(result.metadata),
                         std::move(result.metadata_location), std::move(table_io),
-                        std::move(table_catalog)));
+                        std::move(table_catalog), MakeTableReporter(identifier)));
   return Transaction::Make(std::move(staged_table), TransactionKind::kCreate);
 }
 
@@ -875,7 +910,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
       shared_from_this(), context, identifier, table_config, table_session);
   return Table::Make(identifier, std::move(result.metadata),
                      std::move(result.metadata_location), std::move(table_io),
-                     std::move(table_catalog));
+                     std::move(table_catalog), MakeTableReporter(identifier));
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
@@ -891,7 +926,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
       shared_from_this(), context, identifier, table_config, table_session);
   return Table::Make(identifier, std::move(response.metadata),
                      std::move(response.metadata_location), std::move(table_io),
-                     std::move(table_catalog));
+                     std::move(table_catalog), MakeTableReporter(identifier));
 }
 
 }  // namespace iceberg::rest

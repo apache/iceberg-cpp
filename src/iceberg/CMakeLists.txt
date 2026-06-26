@@ -37,6 +37,7 @@ set(ICEBERG_SOURCES
     expression/projections.cc
     expression/residual_evaluator.cc
     expression/rewrite_not.cc
+    expression/sanitize_expression.cc
     expression/strict_metrics_evaluator.cc
     expression/term.cc
     file_io.cc

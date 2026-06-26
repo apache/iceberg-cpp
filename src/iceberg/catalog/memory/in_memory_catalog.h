@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <memory>
 #include <shared_mutex>
 
 #include "iceberg/catalog.h"
@@ -106,6 +107,7 @@ class ICEBERG_EXPORT InMemoryCatalog
   std::string warehouse_location_;
   std::unique_ptr<class InMemoryNamespace> root_namespace_;
   mutable std::shared_mutex mutex_;
+  std::shared_ptr<MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg

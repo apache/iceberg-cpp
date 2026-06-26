@@ -163,6 +163,11 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   std::shared_ptr<TransactionContext> ctx_;
   // Keep track of all created pending updates.
   std::vector<std::shared_ptr<PendingUpdate>> pending_updates_;
+  // Reporter override captured from the most recently applied SnapshotUpdate's
+  // ReportWith(), if any. Captured in ApplyUpdateSnapshot() rather than looked up from
+  // pending_updates_, since the table-created commit path (PendingUpdate::Commit())
+  // applies the update directly without ever registering it there.
+  std::shared_ptr<MetricsReporter> snapshot_reporter_;
   // To make the state simple, we require updates are added and committed in order.
   bool last_update_committed_ = true;
   // Tracks if transaction has been committed to prevent double-commit
