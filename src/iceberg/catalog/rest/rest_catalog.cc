@@ -667,7 +667,8 @@ Result<LoadTableResult> RestCatalog::CreateTableInternal(
       .properties = properties,
   };
 
-  ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
+  ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
+  ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client_->Post(path, json_request, /*headers=*/{},
                                         *TableErrorHandler::Instance(), session));
@@ -710,7 +711,8 @@ Result<CommitTableResponse> RestCatalog::UpdateTableInternal(
     request.updates.push_back(update->Clone());
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
+  ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
+  ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
   ICEBERG_ASSIGN_OR_RAISE(auto is_create, TableRequirements::IsCreate(requirements));
   const ErrorHandler* error_handler = TableCommitErrorHandler::Instance().get();
   if (is_create) {

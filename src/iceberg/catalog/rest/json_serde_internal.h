@@ -57,15 +57,37 @@ ICEBERG_DECLARE_JSON_SERDE(GetNamespaceResponse)
 ICEBERG_DECLARE_JSON_SERDE(UpdateNamespacePropertiesRequest)
 ICEBERG_DECLARE_JSON_SERDE(UpdateNamespacePropertiesResponse)
 ICEBERG_DECLARE_JSON_SERDE(ListTablesResponse)
-ICEBERG_DECLARE_JSON_SERDE(LoadTableResult)
 ICEBERG_DECLARE_JSON_SERDE(RegisterTableRequest)
 ICEBERG_DECLARE_JSON_SERDE(RenameTableRequest)
-ICEBERG_DECLARE_JSON_SERDE(CreateTableRequest)
-ICEBERG_DECLARE_JSON_SERDE(CommitTableRequest)
-ICEBERG_DECLARE_JSON_SERDE(CommitTableResponse)
 ICEBERG_DECLARE_JSON_SERDE(OAuthTokenResponse)
 
 #undef ICEBERG_DECLARE_JSON_SERDE
+
+// These models embed a Schema/TableMetadata whose ToJson returns Result, so their own
+// ToJson returns Result too. FromJson is declared like the macro-based models above.
+ICEBERG_REST_EXPORT Result<LoadTableResult> LoadTableResultFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<LoadTableResult> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const LoadTableResult& model);
+
+ICEBERG_REST_EXPORT Result<CreateTableRequest> CreateTableRequestFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<CreateTableRequest> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CreateTableRequest& model);
+
+ICEBERG_REST_EXPORT Result<CommitTableRequest> CommitTableRequestFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<CommitTableRequest> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableRequest& model);
+
+ICEBERG_REST_EXPORT Result<CommitTableResponse> CommitTableResponseFromJson(
+    const nlohmann::json& json);
+template <>
+ICEBERG_REST_EXPORT Result<CommitTableResponse> FromJson(const nlohmann::json& json);
+ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const CommitTableResponse& model);
 
 ICEBERG_REST_EXPORT Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
     const nlohmann::json& json,

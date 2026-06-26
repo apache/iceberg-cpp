@@ -489,7 +489,7 @@ Result<std::string> TableMetadataUtil::Write(FileIO& io, const TableMetadata* ba
 
 Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
                                 const TableMetadata& metadata) {
-  auto json = ToJson(metadata);
+  ICEBERG_ASSIGN_OR_RAISE(auto json, ToJson(metadata));
   ICEBERG_ASSIGN_OR_RAISE(auto json_string, ToJsonString(json));
   return io.WriteFile(location, json_string);
 }

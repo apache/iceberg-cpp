@@ -42,8 +42,8 @@ class TypeJsonTest : public ::testing::TestWithParam<SchemaJsonParam> {};
 TEST_P(TypeJsonTest, SingleTypeRoundTrip) {
   // To Json
   const auto& param = GetParam();
-  auto json = ToJson(*param.type).dump();
-  ASSERT_EQ(param.json, json);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*param.type));
+  ASSERT_EQ(param.json, json.dump());
 
   // From Json
   auto type_result = TypeFromJson(nlohmann::json::parse(param.json));
@@ -190,8 +190,8 @@ TEST(SchemaJsonTest, RoundTrip) {
   ASSERT_EQ(field2.type()->type_id(), TypeId::kString);
   ASSERT_TRUE(field2.optional());
 
-  auto dumped_json = ToJson(*schema).dump();
-  ASSERT_EQ(dumped_json, json);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
+  ASSERT_EQ(schema_json.dump(), json);
 }
 
 TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
@@ -206,7 +206,8 @@ TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
   ASSERT_EQ(field.name(), "mystery");
   ASSERT_EQ(field.type()->type_id(), TypeId::kUnknown);
   ASSERT_TRUE(field.optional());
-  ASSERT_EQ(ToJson(*schema).dump(), json);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
+  ASSERT_EQ(schema_json.dump(), json);
 }
 
 TEST(SchemaJsonTest, NestedUnknownFieldsRoundTrip) {
