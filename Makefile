@@ -15,13 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-.PHONY: help install-deps build-api-docs build-docs clean-docs serve-docs
+.PHONY: help install-deps build-api-docs build-docs clean clean-docs serve-docs
 
 help:
 	@echo "Available targets:"
 	@echo "  install-deps     - Install Python dependencies"
 	@echo "  build-api-docs   - Build API documentation with Doxygen"
 	@echo "  build-docs       - Build MkDocs documentation"
+	@echo "  clean            - Clean local CMake build artifacts"
 	@echo "  clean-docs       - Clean documentation build artifacts"
 	@echo "  serve-docs       - Serve documentation locally for development"
 	@echo "  all              - Build all documentation"
@@ -40,6 +41,9 @@ build-docs:
 	cd mkdocs && \
 	mkdocs build --clean && \
 	echo "MkDocs site built in site/"
+
+clean:
+	rm -rf build cmake-build cmake-build-debug cmake-build-release
 
 clean-docs:
 	rm -rf mkdocs/site
