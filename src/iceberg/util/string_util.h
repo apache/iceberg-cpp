@@ -40,22 +40,34 @@ concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 
 class ICEBERG_EXPORT StringUtils {
  public:
-  /// \brief Lower-case a UTF-8 string using Unicode simple case mapping.
+  /// \brief Lower-case a UTF-8 string using Unicode simple (1:1) case mapping.
   ///
-  /// Mirrors Iceberg Java's case-insensitive handling, which lower-cases names with
-  /// toLowerCase(Locale.ROOT). Invalid UTF-8 input is returned unchanged.
+  /// Intended for case-insensitive name matching, similar to Iceberg Java's
+  /// toLowerCase(Locale.ROOT). The mapping is locale-independent, matching the intent
+  /// of Locale.ROOT. It uses simple (1:1) case mapping rather than Java's full case
+  /// mapping, so results differ for a few code points; e.g. U+0130 (capital I with dot
+  /// above) maps to U+0069 ("i") here, but to U+0069 U+0307 ("i" + combining dot above)
+  /// in Java. For ASCII and the large majority of letters the two agree.
+  ///
+  /// Invalid UTF-8 input is returned unchanged.
   /// See https://github.com/apache/iceberg-cpp/issues/613.
   static std::string ToLower(std::string_view str);
 
-  /// \brief Upper-case ASCII letters; non-ASCII (multibyte UTF-8) bytes pass through
-  /// unchanged.
+  /// \brief Upper-case the ASCII letters (a-z) in a string; all other bytes, including
+  /// multi-byte UTF-8 sequences, are left unchanged.
   ///
-  /// Unlike ToLower this is ASCII-only, since upper-casing is not used for name matching.
+  /// Deliberately ASCII-only and, unlike ToLower, not Unicode-aware. It is only used to
+  /// normalize ASCII enum/codec strings (e.g. "gzip" -> "GZIP", "all" -> "ALL") for
+  /// case-insensitive comparison. A Unicode upper-case is intentionally not provided:
+  /// simple case mapping would be wrong for some letters (e.g. "ß" (U+00DF) would stay
+  /// unchanged instead of becoming "SS"), and no caller needs it.
   static std::string ToUpper(std::string_view str) {
     return str | std::ranges::views::transform(ToUpperAscii) |
            std::ranges::to<std::string>();
   }
 
+  /// \brief Case-insensitive equality; compares the ToLower forms of both operands and
+  /// therefore inherits ToLower's Unicode simple-mapping behavior.
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
     return ToLower(lhs) == ToLower(rhs);
   }
